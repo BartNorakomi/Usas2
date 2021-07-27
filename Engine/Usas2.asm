@@ -493,17 +493,33 @@ phase	$4000
 dephase
 
 ;
-; block $20
+; block $20 - &21
 ;
 MapA01Block:  equ   $20
-phase	$4000
+phase	$8000
 MapA01_001:
-  incbin "..\maps\A01-001.map"
+  incbin "..\maps\A01-001.map.pck"  ;469 bytes
 MapA01_002:
-  incbin "..\maps\A01-002.map"
+  incbin "..\maps\A01-002.map.pck"  ;467 bytes
 MapA01_003:
-  incbin "..\maps\A01-003.map"
-	ds		$6000-$,$ff
+  incbin "..\maps\A01-003.map.pck"  ;502 bytes
+MapA01_004:
+;  incbin "..\maps\A01-004.map.pck"  ;467 bytes
+MapA01_005:
+;  incbin "..\maps\A01-005.map.pck"  ;502 bytes
+MapA01_006:
+;  incbin "..\maps\A01-006.map.pck"  ;467 bytes
+MapA01_007:
+;  incbin "..\maps\A01-007.map.pck"  ;502 bytes
+MapA01_008:
+;  incbin "..\maps\A01-008.map.pck"  ;467 bytes
+MapA01_009:
+;  incbin "..\maps\A01-009.map.pck"  ;502 bytes
+MapA01_010:
+;  incbin "..\maps\A01-010.map.pck"  ;467 bytes
+MapA01_011:
+;  incbin "..\maps\A01-011.map.pck"  ;502 bytes
+	ds		$c000-$,$ff
 dephase
 
 totallenght:	Equ	$-Usas2

@@ -14,25 +14,37 @@ loadGraphics:
   ld    d,A01TilesBlock
   call  copyGraphicsToScreen
 
-  ld    a,MapA01Block       ;Map block
-  call  block12
+  ld    a,(slot.page2rom)            ;all RAM except page 12
+  out   ($a8),a          
 
-  ld    a,(Mapnumber)
-  inc   a
-  and   3
-  ld    (Mapnumber),a
+  ld    a,MapA01Block       ;Map block
+  call  block34
   
-  ld    hl,MapA01_001            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-  dec   a
-  ld    hl,MapA01_002            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-  dec   a
-  ld    hl,MapA01_003            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-  ld    hl,MapA01_001            ;start tile map. hl points to tiledata (16 bit)
-.go:
+  ld    hl,MapA01_001 ;$8000
+  ld    de,$4000
+  call  Depack
+
+;  ld    a,(Mapnumber)
+;  inc   a
+;  and   3
+;  ld    (Mapnumber),a
+  
+;  ld    hl,MapA01_001            ;start tile map. hl points to tiledata (16 bit)
+;  jr    z,.go
+;  dec   a
+;  ld    hl,MapA01_002            ;start tile map. hl points to tiledata (16 bit)
+;  jr    z,.go
+;  dec   a
+;  ld    hl,MapA01_003            ;start tile map. hl points to tiledata (16 bit)
+;  jr    z,.go
+;  ld    hl,MapA01_001            ;start tile map. hl points to tiledata (16 bit)
+;.go:
+
+  ld    hl,$4000
   call  buildupMap
+
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a          
 
   ld    hl,$6C00            ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
   ld    b,0
@@ -431,6 +443,105 @@ SetVdp_Write:
 	out     ($99),a       
 	ret
 
+Depack:     ;In: HL: source, DE: destination
+	inc	hl		;skip original file length
+	inc	hl		;which is stored in 4 bytes
+	inc	hl
+	inc	hl
+
+	ld	a,128
+	
+	exx
+	ld	de,1
+	exx
+	
+.depack_loop:
+	call .getbits
+	jr	c,.output_compressed	;if set, we got lz77 compression
+	ldi				;copy byte from compressed data to destination (literal byte)
+
+	jr	.depack_loop
+	
+;handle compressed data
+.output_compressed:
+	ld	c,(hl)		;get lowest 7 bits of offset, plus offset extension bit
+	inc	hl		;to next byte in compressed data
+
+.output_match:
+	ld	b,0
+	bit	7,c
+	jr	z,.output_match1	;no need to get extra bits if carry not set
+
+	call .getbits
+	call .rlbgetbits
+	call .rlbgetbits
+	call .rlbgetbits
+
+	jr	c,.output_match1	;since extension mark already makes bit 7 set 
+	res	7,c		;only clear it if the bit should be cleared
+.output_match1:
+	inc	bc
+	
+;return a gamma-encoded value
+;length returned in HL
+	exx			;to second register set!
+	ld	h,d
+	ld	l,e             ;initial length to 1
+	ld	b,e		;bitcount to 1
+
+;determine number of bits used to encode value
+.get_gamma_value_size:
+	exx
+	call .getbits
+	exx
+	jr	nc,.get_gamma_value_size_end	;if bit not set, bitlength of remaining is known
+	inc	b				;increase bitcount
+	jr	.get_gamma_value_size		;repeat...
+
+.get_gamma_value_bits:
+	exx
+	call .getbits
+	exx
+	
+	adc	hl,hl				;insert new bit in HL
+.get_gamma_value_size_end:
+	djnz	.get_gamma_value_bits		;repeat if more bits to go
+
+.get_gamma_value_end:
+	inc	hl		;length was stored as length-2 so correct this
+	exx			;back to normal register set
+	
+	ret	c
+;HL' = length
+
+	push	hl		;address compressed data on stack
+
+	exx
+	push	hl		;match length on stack
+	exx
+
+	ld	h,d
+	ld	l,e		;destination address in HL...
+	sbc	hl,bc		;calculate source address
+
+	pop	bc		;match length from stack
+
+	ldir			;transfer data
+
+	pop	hl		;address compressed data back from stack
+
+	jr	.depack_loop
+
+.rlbgetbits:
+	rl b
+.getbits:
+	add	a,a
+	ret	nz
+	ld	a,(hl)
+	inc	hl
+	rla
+	ret    
+
 DoubleTapCounter:         db  1
 ;freezecontrols?:          db  0
 ;
@@ -438,7 +549,6 @@ DoubleTapCounter:         db  1
 ;		  0	  0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  F5	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
-
 PopulateControls:	
 ;  ld    a,(freezecontrols?)
 ;  or    a
