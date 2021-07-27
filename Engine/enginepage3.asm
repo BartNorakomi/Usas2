@@ -1,0 +1,561 @@
+phase	$c000
+
+loadGraphics:
+
+.skipSpriteInit:
+
+  call  screenoff
+
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a          
+
+  ld    hl,$8000            ;page 1 - screen 5
+  ld    b,0
+  ld    d,A01TilesBlock
+  call  copyGraphicsToScreen
+
+  ld    a,MapA01Block       ;Map block
+  call  block12
+
+  ld    a,(Mapnumber)
+  inc   a
+  and   3
+  ld    (Mapnumber),a
+  
+  ld    hl,MapA01_001            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+  dec   a
+  ld    hl,MapA01_002            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+  dec   a
+  ld    hl,MapA01_003            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+  ld    hl,MapA01_001            ;start tile map. hl points to tiledata (16 bit)
+.go:
+  call  buildupMap
+
+  ld    hl,$6C00            ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
+  ld    b,0
+  ld    d,Graphicsblock5    ;block to copy from
+  call  copyScoreBoard
+  
+;  ld    hl,$8000            ;page 1 - screen 5
+;  ld    b,0
+;  ld    d,Graphicsblock2    ;block to copy from
+;  call  copyGraphicsToScreen
+
+;  ld    hl,$0000            ;page 2 - screen 5
+;  ld    b,1
+;  ld    d,Graphicsblock3    ;block to copy from
+;  call  copyGraphicsToScreen
+
+;  ld    hl,$8000            ;page 3 - screen 5
+;  ld    b,1
+;  ld    d,Graphicsblock4    ;block to copy from
+;  call  copyGraphicsToScreen
+
+  call  swap_spat_col_and_char_table
+  call  initiatebordermaskingsprites
+
+  ld    hl,GraphicsPalette
+  call  setpalette
+  
+  call  SetInterruptHandler ;set Lineint and Vblank
+  
+  jp    LevelEngine
+
+Mapnumber: db 3
+
+buildupMap:
+;first put 32*27 tiles to page 0, starting at (0,0)
+  push  hl
+
+  ld    a,32
+  ld    b,a                 ;32 tiles on x-axis
+  ld    (AmountTilesToPut),a
+  ld    a,0
+  ld    (DXtiles),a
+  ld    (SetTile+dx),a
+  ld    a,6 * 2             ;6 tiles (2 bytes each)
+  ld    (AmountTilesToSkip),a
+  ld    c,27                ;27 tiles on y axis
+  xor   a
+  ld    (SetTile+dy),a
+  ld    (SetTile+dpage),a
+  call  .xloop
+
+;now put 6*27 tiles to page 3, starting at (208,0)
+  pop   hl
+  ld    de,64
+  add   hl,de
+  xor   a
+  ld    (SetTile+dy),a
+
+  ld    a,3
+  ld    (SetTile+dpage),a
+
+  ld    a,6
+  ld    b,a                 ;32 tiles on x-axis
+  ld    (AmountTilesToPut),a
+  ld    a,208
+  ld    (DXtiles),a
+  ld    (SetTile+dx),a
+  ld    a,32 * 2             ;6 tiles (2 bytes each)
+  ld    (AmountTilesToSkip),a
+  ld    c,27                ;27 tiles on y axis
+  call  .xloop
+
+  ld    hl,.CopyRemainingParts1
+  call  docopy  
+  ld    hl,.CopyRemainingParts2
+  call  docopy 
+  ld    hl,.CopyRemainingParts3
+  call  docopy  
+  ld    hl,.CopyRemainingParts4
+  call  docopy  
+  ld    hl,.CopyRemainingParts5
+  call  docopy  
+  ret
+
+.CopyRemainingParts1:
+  db    208,000,000,003   ;sx,--,sy,spage
+  db    224,000,000,002   ;dx,--,dy,dpage
+  db    032,000,226,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+.CopyRemainingParts2:
+  db    208,000,000,003   ;sx,--,sy,spage
+  db    240,000,000,001   ;dx,--,dy,dpage
+  db    016,000,226,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+.CopyRemainingParts3:
+  db    016,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,001   ;dx,--,dy,dpage
+  db    240,000,226,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+.CopyRemainingParts4:
+  db    016,000,000,001   ;sx,--,sy,spage
+  db    000,000,000,002   ;dx,--,dy,dpage
+  db    224,000,226,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+.CopyRemainingParts5:
+  db    016,000,000,002   ;sx,--,sy,spage
+  db    000,000,000,003   ;dx,--,dy,dpage
+  db    208,000,226,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+      
+.xloop:  
+  ;get tilenr in de
+  ld    e,(hl)              ;each tile is 16 bit. bit 0-4 (value between 0-31) give us the x value if we multiply by 8
+  inc   hl
+  ld    d,(hl)
+  inc   hl                  ;next tile in tilemap
+  
+  ;set sx and sy of this tile
+  dec   de
+  
+  ld    a,e
+  add   a,a
+  add   a,a
+  add   a,a                 ;*8
+  ld    (SetTile+sx),a
+
+  rr    d
+  rr    e
+  rr    d
+  rr    e
+  ld    a,e                 ;each tile is 16 bit. bit 5-9 (value between 32-512) give us the y value
+  and   %1111 1000
+  ld    (SetTile+sy),a
+
+  exx
+  ld    hl,SetTile
+  call  docopy
+  exx
+
+  ld    a,(SetTile+dx)
+  add   a,8
+  ld    (SetTile+dx),a
+  djnz  .xloop
+
+  ld    a,(AmountTilesToSkip)
+  ld    e,a
+  ld    d,0
+  add   hl,de
+
+  ld    a,(SetTile+dy)
+  add   a,8
+  ld    (SetTile+dy),a
+
+  ld    a,(DXtiles)
+  ld    (SetTile+dx),a
+
+  ld    a,(AmountTilesToPut)
+  ld    b,a
+  dec   c
+  jr    nz,.xloop
+  ret
+
+SetTile:
+  db    000,000,000,001   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    008,000,008,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+DoCopy:
+  ld    a,32
+  di
+  out   ($99),a
+  ld    a,17+128
+  ei
+  out   ($99),a
+  ld    c,$9b
+.vdpready:
+  ld    a,2
+  di
+  out   ($99),a
+  ld    a,15+128
+  out   ($99),a
+  in    a,($99)
+  rra
+  ld    a,0
+  out   ($99),a
+  ld    a,15+128
+  ei
+  out   ($99),a
+  jr    c,.vdpready
+
+ld b,15
+otir
+ret
+
+;	dw    $a3ed,$a3ed,$a3ed,$a3ed
+;	dw    $a3ed,$a3ed,$a3ed,$a3ed
+;	dw    $a3ed,$a3ed,$a3ed,$a3ed
+;	dw    $a3ed,$a3ed,$a3ed
+;  ret
+
+lineintheight: equ 212-43
+SetInterruptHandler:
+  di
+  ld    hl,InterruptHandler 
+  ld    ($38+1),hl          ;set new normal interrupt
+  ld    a,$c3               ;jump command
+  ld    ($38),a
+ 
+  ld    a,(VDP_0)           ;set ei1
+  or    16                  ;ei1 checks for lineint and vblankint
+  ld    (VDP_0),a           ;ei0 (which is default at boot) only checks vblankint
+  out   ($99),a
+  ld    a,128
+  out   ($99),a
+
+  ld    a,lineintheight
+  out   ($99),a
+  ld    a,19+128            ;set lineinterrupt height
+  ei
+  out   ($99),a
+  ret
+
+bordermasksprite_graphics:
+include "../sprites/bordermasksprite.tgs.gen"
+bordermasksprite_color:
+include "../sprites/bordermasksprite.tcs.gen"
+bordermasksprite_color_withCEbit:
+include "../sprites/bordermaskspriteECbit.tcs.gen"
+
+initiatebordermaskingsprites:
+	ld		c,$98                 ;out port
+
+	ld		de,(sprchatableaddress)		      ;sprite character table in VRAM ($17800)
+  call  .bordermaskspritecharacter
+	ld		de,(invissprchatableaddress)		;sprite character table in VRAM ($17800)
+  call  .bordermaskspritecharacter
+	ld		de,(sprcoltableaddress)		      ;sprite color table in VRAM ($17400)
+  call  .bordermaskspritecolor
+	ld		de,(invissprcoltableaddress)		;sprite color table in VRAM ($17400)
+  call  .bordermaskspritecolor
+  ret
+
+.bordermaskspritecharacter:
+;put border masking sprites character
+  ld    hl,0 * 32             ;border mask at sprite position 0
+  add   hl,de
+	ld		a,1
+	call	SetVdp_Write
+  
+  ld    b,32 ;22                  ;22 sprites
+
+.loop1:
+  push  bc
+  ld    hl,bordermasksprite_graphics
+	call	outix32               ;1 sprites (1 * 32 = 32 bytes)
+  pop   bc
+  djnz  .loop1
+;/put border masking sprites character
+  ret
+  
+.bordermaskspritecolor:
+;put border masking sprites color
+  ld    hl,0 * 16             ;border mask at sprite position 0
+  add   hl,de
+	ld		a,1
+	call	SetVdp_Write
+
+  ld    b,16                  ;first 16 sprites
+.loop2:
+  push  bc
+  ld    hl,bordermasksprite_color_withCEbit
+	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
+  pop   bc
+  djnz  .loop2
+
+  ld    b,16                  ;next 16 sprites
+.loop3:
+  push  bc
+  ld    hl,bordermasksprite_color
+	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
+  pop   bc
+  djnz  .loop3
+;/put border masking sprites color
+  ret
+
+copyGraphicsToScreen:
+  ld    a,d                 ;Graphicsblock
+  call  block12
+  
+	ld		a,b
+	call	SetVdp_Write	
+	ld		hl,$4000
+  ld    c,$98
+  ld    a,64                ;first 128 line, copy 64*256 = $4000 bytes to Vram
+  ld    b,0
+      
+  call  .loop1    
+
+  ld    a,d                 ;Graphicsblock
+  add   a,2
+  call  block12
+  
+	ld		hl,$4000
+  ld    c,$98
+  ld    a,42                ;second 84 line, copy 64*256 = $4000 bytes to Vram
+  ld    b,0
+      
+  call  .loop1   
+
+  ;this last part is to fill the screen with a repetition
+	ld		hl,$4000
+  ld    c,$98
+  ld    a,22                ;second 84 line, copy 64*256 = $4000 bytes to Vram
+  ld    b,0
+      
+  call  .loop1   
+  ret
+
+.loop1:
+  otir
+  dec   a
+  jp    nz,.loop1
+  ret
+
+copyScoreBoard:
+  ld    a,d                 ;Graphicsblock
+  call  block12
+  
+	ld		a,b
+	call	SetVdp_Write	
+	ld		hl,$4000
+  ld    c,$98
+  ld    a,20                ;first 40 lines, copy 64*256 = $4000 bytes to Vram
+  ld    b,0
+      
+  jp    copyGraphicsToScreen.loop1    
+
+GraphicsPalette:
+  incbin "..\grapx\A01palette.PL" ;file palette 
+;  incbin "..\grapx\UsasTilesW1Apalette" ;file palette 
+;  incbin "..\grapx\usasWorld2palette" ;file palette 
+;  incbin "..\grapx\usasWorld1palette" ;file palette 
+;  incbin "..\grapx\usaspalette" ;file palette 
+;  incbin "..\grapx\bombapalette" ;file palette 
+;  incbin "..\grapx\mulanapalette" ;file palette 
+
+currentpage:                ds  1
+sprcoltableaddress:         ds  2
+spratttableaddress:         ds  2
+sprchatableaddress:         ds  2
+invissprcoltableaddress:    ds  2
+invisspratttableaddress:    ds  2
+invissprchatableaddress:    ds  2
+
+
+
+SetPalette:
+	xor		a
+	di
+	out		($99),a
+	ld		a,16+128
+	out		($99),a
+	ld		bc,$209A
+	otir
+	ei
+	ret
+
+;
+;Set VDP port #98 to start writing at address AHL (17-bit)
+;
+SetVdp_Write: 
+;first set register 14 (actually this only needs to be done once
+	rlc     h
+	rla
+	rlc     h
+	rla
+	srl     h
+	srl     h
+	di
+	out     ($99),a       ;set bits 15-17
+	ld      a,14+128
+	out     ($99),a
+;/first set register 14 (actually this only needs to be done once
+
+	ld      a,l           ;set bits 0-7
+	nop
+	out     ($99),a
+	ld      a,h           ;set bits 8-14
+	or      64            ; + write access
+	ei
+	out     ($99),a       
+	ret
+
+DoubleTapCounter:         db  1
+;freezecontrols?:          db  0
+;
+; bit	7	  6	  5		    4		    3		    2		  1		  0
+;		  0	  0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  F5	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+
+PopulateControls:	
+;  ld    a,(freezecontrols?)
+;  or    a
+;  jp    nz,.freezecontrols
+
+	ld		a,(NewPrContr)
+	ld		(NewPrContrOld),a
+	
+	ld		a,15		; select joystick port 1
+	di
+	out		($a0),a
+	ld		a,$8f
+	out		($a1),a
+	ld		a,14		; read joystick data
+	out		($a0),a
+	ei
+	in		a,($a2)
+	cpl
+	and		$3f			; 00BARLDU
+	ld		c,a
+
+	ld		de,$04F0
+	
+	in		a,($aa)
+	and		e
+	or		6
+	out		($aa),a
+	in		a,($a9)
+	cpl
+	and		$20			; 'F1' key
+	rlca				  ; 01000000
+	or		c
+	ld		c,a			; 01BARLDU
+	
+	in		a,($aa)	; M = B-trigger
+	and		e
+	or		d
+	out		($aa),a
+	in		a,($a9)
+	cpl
+	and		d			; xxxxxBxx
+	ld		b,a
+	in		a,($aa)
+	and		e
+	or		8
+	out		($aa),a
+	in		a,($a9)
+	cpl					; RDULxxxA
+	and		$F1		; RDUL000A
+	rlca				; DUL000AR
+	or		b			; DUL00BAR
+	rla					; UL00BAR0
+	rla					; L00BAR0D
+	rla					; 00BAR0DU
+	ld		b,a
+	rla					; 0BAR0DUL
+	rla					; BAR0DUL0
+	rla					; AR0DUL00
+	and		d			; 00000L00
+	or		b			; 00BARLDU
+	or		c			; 51BARLDU
+	
+	ld		b,a
+	ld		hl,Controls
+	ld		a,(hl)
+	xor		b
+	and		b
+	ld		(NewPrContr),a
+	ld		(hl),b
+
+  ld    a,(DoubleTapCounter)
+  dec   a
+  ret   z	
+  ld    (DoubleTapCounter),a
+	ret
+
+endenginepage3:
+dephase
+enginepage3length:	Equ	$-enginepage3
+
+variables: org $c000+enginepage3length
+slot:						
+.ram:		                    equ	  $e000
+.page1rom:	                equ	  slot.ram+1
+.page2rom:	                equ	  slot.ram+2
+.page12rom:	                equ	  slot.ram+3
+memblocks:
+.1:			                    equ	  slot.ram+4
+.2:			                    equ	  slot.ram+5
+.3:			                    equ	  slot.ram+6
+.4:			                    equ	  slot.ram+7	
+VDP_0:		                  equ   $F3DF
+VDP_8:		                  equ   $FFE7
+engaddr:	                  equ	  $03e
+loader.address:             equ   $8000
+enginepage3addr:            equ   $c000
+sx:                         equ   0
+sy:                         equ   2
+spage:                      equ   3
+dx:                         equ   4
+dy:                         equ   6
+dpage:                      equ   7 
+nx:                         equ   8
+ny:                         equ   10
+copytype:                   equ   14
+framecounter:               rb    1
+
+Controls:	                  rb		1
+NewPrContr:	                rb		1
+oldControls: 				        rb    1
+amountoftimeSamecontrols: 	rb    1
+NewPrContrOld:              rb    1
+
+AmountTilesToPut:           rb    1
+AmountTilesToSkip:          rb    1
+DXtiles:                    rb    1
+
+endenginepage3variables:  equ $+enginepage3length
+org variables
+
