@@ -20,25 +20,42 @@ loadGraphics:
   ld    a,MapA01Block       ;Map block
   call  block34
   
-  ld    hl,MapA01_001 ;$8000
+  ld    a,(Mapnumber)
+  inc   a
+  and   7
+  ld    (Mapnumber),a
+  
+  ld    hl,MapA01_001            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+  dec   a
+  ld    hl,MapA01_002            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+  dec   a
+  ld    hl,MapA01_003            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+  dec   a
+  ld    hl,MapA01_004            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+  dec   a
+  ld    hl,MapA01_005            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+  dec   a
+  ld    hl,MapA01_006            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+  dec   a
+  ld    hl,MapA01_007            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+  dec   a
+  ld    hl,MapA01_008            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+  dec   a
+  ld    hl,MapA01_009            ;start tile map. hl points to tiledata (16 bit)
+  jr    z,.go
+.go:
+
+;  ld    hl,MapA01_001 ;$8000
   ld    de,$4000
   call  Depack
-
-;  ld    a,(Mapnumber)
-;  inc   a
-;  and   3
-;  ld    (Mapnumber),a
-  
-;  ld    hl,MapA01_001            ;start tile map. hl points to tiledata (16 bit)
-;  jr    z,.go
-;  dec   a
-;  ld    hl,MapA01_002            ;start tile map. hl points to tiledata (16 bit)
-;  jr    z,.go
-;  dec   a
-;  ld    hl,MapA01_003            ;start tile map. hl points to tiledata (16 bit)
-;  jr    z,.go
-;  ld    hl,MapA01_001            ;start tile map. hl points to tiledata (16 bit)
-;.go:
 
   ld    hl,$4000
   call  buildupMap

@@ -504,17 +504,17 @@ MapA01_002:
 MapA01_003:
   incbin "..\maps\A01-003.map.pck"  ;502 bytes
 MapA01_004:
-;  incbin "..\maps\A01-004.map.pck"  ;467 bytes
+  incbin "..\maps\A01-004.map.pck"  ;467 bytes
 MapA01_005:
-;  incbin "..\maps\A01-005.map.pck"  ;502 bytes
+  incbin "..\maps\A01-005.map.pck"  ;502 bytes
 MapA01_006:
-;  incbin "..\maps\A01-006.map.pck"  ;467 bytes
+  incbin "..\maps\A01-006.map.pck"  ;467 bytes
 MapA01_007:
-;  incbin "..\maps\A01-007.map.pck"  ;502 bytes
+  incbin "..\maps\A01-007.map.pck"  ;502 bytes
 MapA01_008:
-;  incbin "..\maps\A01-008.map.pck"  ;467 bytes
+  incbin "..\maps\A01-008.map.pck"  ;467 bytes
 MapA01_009:
-;  incbin "..\maps\A01-009.map.pck"  ;502 bytes
+  incbin "..\maps\A01-009.map.pck"  ;502 bytes
 MapA01_010:
 ;  incbin "..\maps\A01-010.map.pck"  ;467 bytes
 MapA01_011:
