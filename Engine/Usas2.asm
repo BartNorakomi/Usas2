@@ -248,7 +248,7 @@ initMem.length:	equ	$-initMem
 
 ;
 init:		
-  ld    a,00        ;is zwart in onze huidige pallet
+  ld    a,01        ;is zwart in onze huidige pallet
 	ld		($f3e9),a	  ;foreground color 
 	ld		($f3ea),a	  ;background color 
 	ld		($f3eb),a	  ;border color

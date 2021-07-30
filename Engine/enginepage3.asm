@@ -57,6 +57,8 @@ loadGraphics:
   ld    de,$4000
   call  Depack
 
+  call  ConvertToMapinRam
+
   ld    hl,$4000
   call  buildupMap
 
@@ -93,7 +95,7 @@ loadGraphics:
   
   jp    LevelEngine
 
-Mapnumber: db 3
+Mapnumber: db -1
 
 buildupMap:
 ;first put 32*27 tiles to page 0, starting at (0,0)
@@ -227,7 +229,72 @@ buildupMap:
   dec   c
   jr    nz,.xloop
   ret
+  
+MapData:
+  ds    38 * 27           ;a map is 38 * 27 tiles big  
 
+ConvertToMapinRam:
+;tiles 0 - 251 are hard foreground
+;tiles 252 - 253 are ladder tiles
+;tiles 254 - 255 are lava
+;tiles 256 - > are background
+
+  ld    hl,$4000
+  ld    ix,MapData
+
+  ld    c,27
+.loop2:
+  ld    b,38
+.loop:
+  push  hl
+  call  .convertTile
+  pop   hl
+  inc   hl
+  inc   hl
+  inc   ix
+  djnz  .loop
+  
+  dec   c
+  jp    nz,.loop2
+  ret
+
+.convertTile:
+  ;get tilenr in de
+  ld    e,(hl)              ;each tile is 16 bit. bit 0-4 (value between 0-31) give us the x value if we multiply by 8
+  inc   hl
+  ld    d,(hl)
+  inc   hl                  ;next tile in tilemap
+  
+  ;set sx and sy of this tile
+  dec   de
+  
+  ld    hl,251
+  xor   a
+  sbc   hl,de
+  jp    nc,.hardforeground
+  ld    de,2
+  add   hl,de
+  jp    c,.laddertiles
+  ld    de,2
+  add   hl,de
+  jp    c,.lava
+    
+.background:
+  ld    (ix),0
+  ret
+
+.hardforeground:
+  ld    (ix),1
+  ret
+
+.laddertiles:
+  ld    (ix),2
+  ret
+
+.lava:
+  ld    (ix),3
+  ret
+  
 SetTile:
   db    000,000,000,001   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
@@ -296,6 +363,12 @@ include "../sprites/bordermasksprite.tcs.gen"
 bordermasksprite_color_withCEbit:
 include "../sprites/bordermaskspriteECbit.tcs.gen"
 
+clessprite_graphics:
+include "../sprites/cles.tgs.gen"
+clessprite_color:
+include "../sprites/cles.tcs.gen"
+
+
 initiatebordermaskingsprites:
 	ld		c,$98                 ;out port
 
@@ -316,7 +389,7 @@ initiatebordermaskingsprites:
 	ld		a,1
 	call	SetVdp_Write
   
-  ld    b,32 ;22                  ;22 sprites
+  ld    b,22 ;32 ;22                  ;22 sprites
 
 .loop1:
   push  bc
@@ -325,7 +398,16 @@ initiatebordermaskingsprites:
   pop   bc
   djnz  .loop1
 ;/put border masking sprites character
+
+
+  ld    hl,clessprite_graphics
+	call	outix32               ;1 sprites (1 * 32 = 32 bytes)
+	call	outix32               ;1 sprites (1 * 32 = 32 bytes)
+	call	outix32               ;1 sprites (1 * 32 = 32 bytes)
+	call	outix32               ;1 sprites (1 * 32 = 32 bytes)
+
   ret
+  
   
 .bordermaskspritecolor:
 ;put border masking sprites color
@@ -334,7 +416,7 @@ initiatebordermaskingsprites:
 	ld		a,1
 	call	SetVdp_Write
 
-  ld    b,16                  ;first 16 sprites
+  ld    b,11 ;16                  ;first 16 sprites
 .loop2:
   push  bc
   ld    hl,bordermasksprite_color_withCEbit
@@ -342,7 +424,7 @@ initiatebordermaskingsprites:
   pop   bc
   djnz  .loop2
 
-  ld    b,16                  ;next 16 sprites
+  ld    b,11 ;16                  ;next 16 sprites
 .loop3:
   push  bc
   ld    hl,bordermasksprite_color
@@ -350,6 +432,15 @@ initiatebordermaskingsprites:
   pop   bc
   djnz  .loop3
 ;/put border masking sprites color
+
+
+  ld    hl,clessprite_color
+	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
+	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
+	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
+	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
+
+
   ret
 
 copyGraphicsToScreen:

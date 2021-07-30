@@ -14,7 +14,9 @@ LevelEngine:
 ;  call  putStarFoxSprite
   call  PopulateControls
   call  moveCamera                ;sets R18 and R23
-  call  SetXBorderMaskingSprites
+  call  movePlayer
+  call  SetBorderMaskingSprites
+  call  SetClesSprites
   call  putspattovram
   call  swap_spat_col_and_char_table
 
@@ -445,6 +447,11 @@ moveCamera:
   ld    b,0           ;horizontal camera movent
   ld    c,0           ;vertical camera movent
 
+;cancel camera movement when m pressed
+  ld    a,(Controls)
+	bit		5,a           ;up pressed ?
+  jp    nz,.endcheckUppressed
+
   ld    a,(Controls)
 	bit		3,a           ;right pressed ?
   jr    z,.endcheckRightpressed
@@ -732,22 +739,149 @@ swap_spat_col_and_char_table:
 ;  jr    nz,.loop
 ;  ret
 
-SetXBorderMaskingSprites:
-  ld    hl,spat+1           ;y sprite 1
-  ld    de,4
-  ld    b,16                ;amount of sprites
+
+;  ld    a,(CameraX)
+;  and   %0000 1111
+;  ld    d,0
+;  ld    e,a
+;  ld    hl,R18ConversionTable
+;  add   hl,de
+;  ld    a,(hl)
+;  di
+;  out   ($99),a
+;  ld    a,18+128
+;  ei
+;  out   ($99),a
+
+
+movePlayer:
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(Controls)
+	bit		5,a           ;up pressed ?
+  ret   z
+
+  ld    a,(Controls)
+	bit		0,a           ;up pressed ?
+  jp    nz,.up
+
+  ld    a,(Controls)
+	bit		1,a           ;down pressed ?
+  jp    nz,.down
+
+  ld    a,(Controls)
+	bit		2,a           ;left pressed ?
+  jp    nz,.left
+
+  ld    a,(Controls)
+	bit		3,a           ;right pressed ?
+  ret   z
+
+.right:  
+  ld    hl,(ClesX)
+  inc   hl
+  ld    (ClesX),hl
+  ret
+
+.left:  
+  ld    hl,(ClesX)
+  dec   hl
+  ld    (ClesX),hl
+  ret
+  
+.up:  
+  ld    a,(Clesy)
+  dec   a
+  ld    (Clesy),a
+  ret
+
+.down:  
+  ld    a,(Clesy)
+  inc   a
+  ld    (Clesy),a
+  ret
+
+ClesX:  dw 100
+ClesY:  db 100
+SetClesSprites:
+  ld    a,(ClesY)
+  ld    b,a
+  add   a,16
+  ld    c,a
+
+  ld    a,(CameraX)         ;camera jumps 16 pixels every page, subtract this value from x Cles
+  and   %1111 0000
+  
+  ld    d,0
+  ld    e,a
+  
+  ld    hl,(ClesX)
+  sbc   hl,de               ;take x Cles and subtract the x camer
+
+  ld    a,h                 ;if the value now is <0 or >256 Cles is out of the screen
+  or    a
+;  jp    m,.outofscreenleft
+  jp    nz,.outofscreen
+
+  ld    a,l
+  jp    .putx
+
+.outofscreen:
+  ld    a,255
+.putx:
+
+  ld    de,3
+  ld    hl,spat+88          ;y sprite 22
+  ld    (hl),b
+  inc   hl                  ;x sprite 22
+  ld    (hl),a
+  add   hl,de
+  ld    (hl),b
+  inc   hl                  ;x sprite 22
+  ld    (hl),a
+  add   hl,de
+  ld    (hl),c
+  inc   hl                  ;x sprite 22
+  ld    (hl),a
+  add   hl,de
+  ld    (hl),c
+  inc   hl                  ;x sprite 22
+  ld    (hl),a
+  add   hl,de
+  ret
+
+SetBorderMaskingSprites:
+  ld    hl,spat+0           ;y sprite 1
+  ld    de,3
+  ld    b,11                ;amount of sprites left side screen
   
   ld    a,(CameraX)
   and   %0000 1111
   add   a,15
-  ld    c,2
+  ld    (.selfmodifyingcode+1),a
+  
+  ld    a,(CameraY)
+  dec   a
+  
+  ld    c,2                 ;2 columns of sprites
   .loop:
   ld    (hl),a
+  add   a,16                ;next sprite will be 16 pixels lower
+  inc   hl                  ;x sprite
+  .selfmodifyingcode:
+  ld    (hl),000
   add   hl,de
   djnz  .loop
 
+  ld    a,(.selfmodifyingcode+1)
   add   a,225
-  ld    b,16
+  ld    (.selfmodifyingcode+1),a  
+  ld    b,11                ;amount of sprites right side screen
+  ld    a,(CameraY)
+  dec   a
   dec   c
   jr    nz,.loop
   ret
@@ -784,13 +918,13 @@ putspattovram:
 spat:						;sprite attribute table
 	db		000,000,000,0	,016,000,004,0	,032,000,008,0	,048,000,012,0
 	db		064,000,016,0	,080,000,020,0	,096,000,024,0	,112,000,028,0
-	db		128,000,032,0	,144,000,036,0	,160,000,040,0	,176,000,044,0
-	db		192,000,048,0	,208,000,052,0	,224,000,056,0	,240,000,060,0
+	db		128,000,032,0	,144,000,036,0	,160,000,040,0	,000,000,044,0
+	db		016,000,048,0	,032,000,052,0	,048,000,056,0	,064,000,060,0
 	
-	db		000,000,064,0	,016,000,068,0	,032,000,072,0	,048,000,076,0
-	db		064,000,080,0	,080,000,084,0	,096,000,088,0	,112,000,092,0
-	db		128,000,096,0	,144,000,100,0	,160,000,104,0	,176,000,108,0
-	db		192,000,112,0	,208,000,116,0	,224,000,120,0	,240,000,124,0
+	db		080,000,064,0	,096,000,068,0	,112,000,072,0	,128,000,076,0
+	db		144,000,080,0	,160,000,084,0	,100,100,088,0	,100,100,092,0
+	db		116,100,096,0	,116,100,100,0	,000,000,104,0	,000,000,108,0
+	db		000,000,112,0	,000,000,116,0	,000,000,120,0	,000,000,124,0
 
 outix128:	
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
