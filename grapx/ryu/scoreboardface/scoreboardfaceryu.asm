@@ -1,0 +1,24 @@
+		fname	"scoreboardfaceryu.dat"
+
+  incbin "scoreboardfaceryu.SC5",7+128*00,20
+  incbin "scoreboardfaceryu.SC5",7+128*01,20
+  incbin "scoreboardfaceryu.SC5",7+128*02,20
+  incbin "scoreboardfaceryu.SC5",7+128*03,20
+  incbin "scoreboardfaceryu.SC5",7+128*04,20
+  incbin "scoreboardfaceryu.SC5",7+128*05,20
+  incbin "scoreboardfaceryu.SC5",7+128*06,20
+  incbin "scoreboardfaceryu.SC5",7+128*07,20
+  incbin "scoreboardfaceryu.SC5",7+128*08,20
+  incbin "scoreboardfaceryu.SC5",7+128*09,20
+  incbin "scoreboardfaceryu.SC5",7+128*10,20
+  incbin "scoreboardfaceryu.SC5",7+128*11,20
+  incbin "scoreboardfaceryu.SC5",7+128*12,20
+  incbin "scoreboardfaceryu.SC5",7+128*13,20
+  incbin "scoreboardfaceryu.SC5",7+128*14,20
+  incbin "scoreboardfaceryu.SC5",7+128*15,20
+  incbin "scoreboardfaceryu.SC5",7+128*16,20
+  incbin "scoreboardfaceryu.SC5",7+128*17,20
+  incbin "scoreboardfaceryu.SC5",7+128*18,20
+  incbin "scoreboardfaceryu.SC5",7+128*19,20
+  incbin "scoreboardfaceryu.SC5",7+128*20,20
+  incbin "scoreboardfaceryu.SC5",7+128*21,20

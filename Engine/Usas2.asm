@@ -497,30 +497,104 @@ dephase
 ;
 MapA01Block:  equ   $20
 phase	$8000
-MapA01_001:
+MapA01_001:   ;EngineType, palette,
+  db  1,1
   incbin "..\maps\A01-001.map.pck"  ;469 bytes
 MapA01_002:
+  db  1,1
   incbin "..\maps\A01-002.map.pck"  ;467 bytes
 MapA01_003:
+  db  1,1
   incbin "..\maps\A01-003.map.pck"  ;502 bytes
 MapA01_004:
+  db  2,1
   incbin "..\maps\A01-004.map.pck"  ;467 bytes
 MapA01_005:
+  db  1,1
   incbin "..\maps\A01-005.map.pck"  ;502 bytes
 MapA01_006:
+  db  1,1
   incbin "..\maps\A01-006.map.pck"  ;467 bytes
 MapA01_007:
+  db  1,1
   incbin "..\maps\A01-007.map.pck"  ;502 bytes
 MapA01_008:
+  db  1,1
   incbin "..\maps\A01-008.map.pck"  ;467 bytes
 MapA01_009:
+  db  1,1
   incbin "..\maps\A01-009.map.pck"  ;502 bytes
 MapA01_010:
+  db  1,1
 ;  incbin "..\maps\A01-010.map.pck"  ;467 bytes
 MapA01_011:
+  db  1,1
 ;  incbin "..\maps\A01-011.map.pck"  ;502 bytes
 	ds		$c000-$,$ff
 dephase
+
+;
+; block $22
+;
+ryucharacterfaceblock:        equ $22
+ryuactiontablesblock:         equ $22
+phase	$4000
+  incbin "..\grapx\character select\character faces\ryucharacterface.dat"
+  include "actiontables\ryuactiontables.asm"
+	ds		$6000-$,$ff
+dephase
+
+;
+; block $23 - $24
+; block $25 - $26
+; block $27 - $28
+; block $29 - $2a
+;
+ryuframelistblock:            equ $23
+phase	$8000
+  include "..\grapx\ryu\spritesryuPage0\frames.lst" 
+	ds		$c000-$,$ff
+dephase
+phase	$8000
+  include "..\grapx\ryu\spritesryuPage1\frames.lst" 
+	ds		$c000-$,$ff
+dephase
+phase	$8000
+  include "..\grapx\ryu\spritesryuPage2\frames.lst" 
+	ds		$c000-$,$ff
+dephase
+phase	$8000
+  include "..\grapx\ryu\spritesryuPage3\frames.lst" 
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $2b - $2c
+; block $2d - $2e
+; block $2f - $30
+; block $31 - $32
+;
+ryuspritedatablock:           equ $2b
+phase	$0000
+  incbin "..\grapx\ryu\spritesryuPage0\frames.dat"
+	ds		$4000-$,$ff
+dephase
+phase	$0000
+  incbin "..\grapx\ryu\spritesryuPage1\frames.dat"
+	ds		$4000-$,$ff
+dephase
+phase	$0000
+  incbin "..\grapx\ryu\spritesryuPage2\frames.dat"
+	ds		$4000-$,$ff
+dephase
+phase	$0000
+  incbin "..\grapx\ryu\spritesryuPage3\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+
+  include "actiontables\actiontableslenghts.asm"
+
 
 totallenght:	Equ	$-Usas2
 	ds		$80000-totallenght

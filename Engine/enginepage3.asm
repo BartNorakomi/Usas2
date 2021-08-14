@@ -21,10 +21,7 @@ loadGraphics:
   call  block34
   
   ld    a,(Mapnumber)
-  inc   a
-  and   7
-  ld    (Mapnumber),a
-  
+  or    a
   ld    hl,MapA01_001            ;start tile map. hl points to tiledata (16 bit)
   jr    z,.go
   dec   a
@@ -53,14 +50,50 @@ loadGraphics:
   jr    z,.go
 .go:
 
-;  ld    hl,MapA01_001 ;$8000
+  ld    a,(hl)                    ;engine type
+  dec   a                         ;1= 304x216 engine  2=256x216 SF2 engine
+  jp    z,.Engine304x216
+
+.Engine256x216:
+  ld    a,2
+  ld    (scrollEngine),a          ;1= 304x216 engine  2=256x216 SF2 engine
+
+  ld    de,32
+  ld    (checktile.selfmodifyingcodeMapLenght+1),de
+  ld    de,-29*8
+  ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
+
+  ld    a,32
+  ld    (ConvertToMapinRam.loop2+1),a
+  jp    .goDepack
+
+
+.Engine304x216:
+  ld    a,1
+  ld    (scrollEngine),a          ;1= 304x216 engine  2=256x216 SF2 engine
+                        ;
+  ld    de,38
+  ld    (checktile.selfmodifyingcodeMapLenght+1),de
+  ld    de,-35*8          ;-35*8
+  ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
+
+  ld    a,38
+  ld    (ConvertToMapinRam.loop2+1),a
+  jp    .goDepack
+
+
+.goDepack:
+  inc   hl
+  inc   hl
+    
   ld    de,$4000
   call  Depack
 
   call  ConvertToMapinRam
 
   ld    hl,$4000
-  call  buildupMap
+;  call  buildupMap38x27
+  call  buildupMap32x27
 
   ld    a,(slot.page12rom)            ;all RAM except page 12
   out   ($a8),a          
@@ -92,12 +125,67 @@ loadGraphics:
   call  setpalette
   
   call  SetInterruptHandler ;set Lineint and Vblank
-  
+
   jp    LevelEngine
 
-Mapnumber: db -1
+Mapnumber: db 3
 
-buildupMap:
+
+
+
+  
+  
+  
+
+
+
+
+
+buildupMap32x27:
+;first put 32*27 tiles to page 0, starting at (0,0)
+;  push  hl
+
+  ld    a,32
+  ld    b,a                 ;32 tiles on x-axis
+  ld    (AmountTilesToPut),a
+  ld    a,0
+  ld    (DXtiles),a
+  ld    (SetTile+dx),a
+  ld    a,0 * 2             ;6 tiles (2 bytes each)
+  ld    (AmountTilesToSkip),a
+  ld    c,27                ;27 tiles on y axis
+  xor   a
+  ld    (SetTile+dy),a
+  ld    (SetTile+dpage),a
+  call  buildupMap38x27.xloop
+
+;  pop   hl
+  
+  ld    hl,.CopyPage0to1
+  call  docopy  
+  ld    hl,.CopyPage0to2
+  call  docopy  
+  ld    hl,.CopyPage0to3
+  call  docopy  
+  ret
+
+.CopyPage0to1:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,001   ;dx,--,dy,dpage
+  db    000,001,226,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+.CopyPage0to2:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,002   ;dx,--,dy,dpage
+  db    000,001,226,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+.CopyPage0to3:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,003   ;dx,--,dy,dpage
+  db    000,001,226,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+buildupMap38x27:
 ;first put 32*27 tiles to page 0, starting at (0,0)
   push  hl
 
@@ -114,9 +202,9 @@ buildupMap:
   ld    (SetTile+dy),a
   ld    (SetTile+dpage),a
   call  .xloop
+  pop   hl
 
 ;now put 6*27 tiles to page 3, starting at (208,0)
-  pop   hl
   ld    de,64
   add   hl,de
   xor   a
@@ -195,9 +283,9 @@ buildupMap:
   ld    (SetTile+sx),a
 
   rr    d
-  rr    e
+  rr    e                   ;/2
   rr    d
-  rr    e
+  rr    e                   ;/4
   ld    a,e                 ;each tile is 16 bit. bit 5-9 (value between 32-512) give us the y value
   and   %1111 1000
   ld    (SetTile+sy),a
@@ -244,7 +332,7 @@ ConvertToMapinRam:
 
   ld    c,27
 .loop2:
-  ld    b,38
+  ld    b,32 ;32 ;38
 .loop:
   push  hl
   call  .convertTile
@@ -773,6 +861,12 @@ NewPrContrOld:              rb    1
 AmountTilesToPut:           rb    1
 AmountTilesToSkip:          rb    1
 DXtiles:                    rb    1
+
+
+Player1SxB1:                  rb    1
+spatpointer:                  rb		2
+
+scrollEngine:               rb  1
 
 endenginepage3variables:  equ $+enginepage3length
 org variables

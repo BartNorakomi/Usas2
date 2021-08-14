@@ -1,1 +1,8 @@
-een veld met de SF2 engine waarbij een object in de 'achtergrond' animeert (waveanimatie)
+een veld met de SF2 engine waarbij een object in de 'achtergrond' animeert (waveanimatie)\
+
+eindbaas die een hele grote (transparante) bal schiet die heel langzaam door het veld beweegt
+
+3 grote blokken met kettingen die een voor 1 naar beneden vallen, maar tegelijkertijd omhoog komen (waarbij ze om en om 2 pixels bewegen). Op deze manier beweegt geen enkele dus tegelijktijd met een andere
+
+leuke benen walk animation in Super Cyborg 2. Zowel main character als groene aliens
+
