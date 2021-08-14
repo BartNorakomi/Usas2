@@ -55,6 +55,21 @@ loadGraphics:
   jp    z,.Engine304x216
 
 .Engine256x216:
+  push  hl
+
+  ld    hl,(ClesX)
+  ld    de,34*8
+  xor   a
+  sbc   hl,de
+  jr    nz,.notzero
+  ld    hl,28*8
+  ld    (ClesX),hl
+  xor   a
+  ld    (CameraX),a
+    
+.notzero:
+  pop   hl
+
   ld    a,2
   ld    (scrollEngine),a          ;1= 304x216 engine  2=256x216 SF2 engine
 
@@ -89,11 +104,15 @@ loadGraphics:
   ld    de,$4000
   call  Depack
 
-  call  ConvertToMapinRam
+  call  ConvertToMapinRam         ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava
 
   ld    hl,$4000
-;  call  buildupMap38x27
-  call  buildupMap32x27
+  ld    a,(scrollEngine)          ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  call  z,buildupMap38x27
+  ld    a,(scrollEngine)          ;1= 304x216 engine  2=256x216 SF2 engine
+  cp    2
+  call  z,buildupMap32x27
 
   ld    a,(slot.page12rom)            ;all RAM except page 12
   out   ($a8),a          
@@ -862,11 +881,25 @@ AmountTilesToPut:           rb    1
 AmountTilesToSkip:          rb    1
 DXtiles:                    rb    1
 
-
+;These belong together
 Player1SxB1:                  rb    1
+Player1SyB1:                  rb    1
+Player1NxB1:                  rb    1
+Player1NyB1:                  rb    1
+Player1SxB2:                  rb    1
+Player1SyB2:                  rb    1
+Player1NxB2:                  rb    1
+Player1NyB2:                  rb    1
+P1Attpoint1Sx:                rb    1
+P1Attpoint1Sy:                rb    1
+P1Attpoint2Sx:                rb    1
+P1Attpoint2Sy:                rb    1
+;These belong together
+
 spatpointer:                  rb		2
 
 scrollEngine:               rb  1
+
 
 endenginepage3variables:  equ $+enginepage3length
 org variables

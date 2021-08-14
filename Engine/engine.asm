@@ -35,6 +35,10 @@ LevelEngine:
   jp    LevelEngine
 
 switchpage:
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  cp    2
+  ret   nz
+
 ;switch to next page
   ld    a,(screenpage)
   inc   a
@@ -54,6 +58,10 @@ switchpage:
   jp    SetPage
 
 Sf2EngineObjects:
+  ld    a,(Mapnumber)
+  cp    3
+  ret   nz
+
   ;handle object 1
   call  restoreBackgroundP1
   call  handleP1Action
@@ -82,7 +90,7 @@ Player1Framelistblock:        db  ryuframelistblock
 Player1Frame:                 dw  ryupage0frame000
 Player1FramePage:             db  0
 
-Player1x:                     db  230
+Player1x:                     db  100
 
 putplayer1:
   ld    a,(screenpage)
@@ -1695,7 +1703,10 @@ CameraEngine304x216:
   ld    a,19+128            ;set lineinterrupt height
   out   ($99),a
 
-ret
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  cp    2
+  ret   z
 
   ;set page. page 0=camerax 0-15 page 1=camerax 16-31 page 2=camerax 32-47 page 3=camerax 48-63
   ld    a,(CameraX)
