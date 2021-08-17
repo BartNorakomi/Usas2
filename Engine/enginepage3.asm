@@ -5,18 +5,7 @@ loadGraphics:
 .skipSpriteInit:
 
   call  screenoff
-
-  ld    a,(slot.page12rom)            ;all RAM except page 12
-  out   ($a8),a          
-
-  ld    hl,$8000            ;page 1 - screen 5
-  ld    b,0
-  ld    d,A01TilesBlock
-  call  copyGraphicsToScreen
-
-  ld    a,(slot.page2rom)            ;all RAM except page 12
-  out   ($a8),a          
-
+    
   ld    a,MapA01Block       ;Map block
   call  block34
   
@@ -50,13 +39,14 @@ loadGraphics:
   jr    z,.go
 .go:
 
+;Set Engine type
   ld    a,(hl)                    ;engine type
   dec   a                         ;1= 304x216 engine  2=256x216 SF2 engine
   jp    z,.Engine304x216
 
 .Engine256x216:
+  ;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
   push  hl
-
   ld    hl,(ClesX)
   ld    de,34*8
   xor   a
@@ -66,8 +56,7 @@ loadGraphics:
   ld    (ClesX),hl
   xor   a
   ld    (CameraX),a
-    
-.notzero:
+  .notzero:
   pop   hl
 
   ld    a,2
@@ -80,7 +69,7 @@ loadGraphics:
 
   ld    a,32
   ld    (ConvertToMapinRam.loop2+1),a
-  jp    .goDepack
+  jp    .EndSetEngineType
 
 
 .Engine304x216:
@@ -94,12 +83,46 @@ loadGraphics:
 
   ld    a,38
   ld    (ConvertToMapinRam.loop2+1),a
-  jp    .goDepack
+.EndSetEngineType:
+
+  inc   hl                        ;graphics Sc5 graphics tile set
+
+  ld    a,(hl)
+  dec   a
+  ld    d,A01TilesBlock
+  jr    z,.settiles
+  ld    d,B01TilesBlock
+
+  .settiles:
+  push  hl
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a          
+
+  ld    hl,$8000            ;page 1 - screen 5
+  ld    b,0
+  call  copyGraphicsToScreen
+
+  ld    a,(slot.page2rom)            ;all RAM except page 12
+  out   ($a8),a      
+  pop   hl
 
 
-.goDepack:
-  inc   hl
-  inc   hl
+
+;set palette
+  inc   hl                        ;palette
+  push  hl
+
+  ld    a,(hl)
+  dec   a
+  ld    hl,A01Palette
+  jr    z,.goSetPalette
+  ld    hl,B01Palette
+  .goSetPalette:
+  call  setpalette
+  pop   hl
+
+;unpack map data
+  inc   hl                        ;packed map data
     
   ld    de,$4000
   call  Depack
@@ -139,9 +162,6 @@ loadGraphics:
 
   call  swap_spat_col_and_char_table
   call  initiatebordermaskingsprites
-
-  ld    hl,GraphicsPalette
-  call  setpalette
   
   call  SetInterruptHandler ;set Lineint and Vblank
 
@@ -602,8 +622,10 @@ copyScoreBoard:
       
   jp    copyGraphicsToScreen.loop1    
 
-GraphicsPalette:
+A01Palette:
   incbin "..\grapx\A01palette.PL" ;file palette 
+B01Palette:
+  incbin "..\grapx\B01palette.PL" ;file palette 
 ;  incbin "..\grapx\UsasTilesW1Apalette" ;file palette 
 ;  incbin "..\grapx\usasWorld2palette" ;file palette 
 ;  incbin "..\grapx\usasWorld1palette" ;file palette 

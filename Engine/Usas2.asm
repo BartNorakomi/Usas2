@@ -477,9 +477,9 @@ dephase
 ;
 ; block $18 - $1b
 ;
-;GraphicsBlockTilesW1:  equ   $18
+B01TilesBlock:  equ   $18
 phase	$4000
-;  incbin "..\grapx\UsasTilesW1A.SC5",7,$6A00  ;skip header
+  incbin "..\grapx\B01.SC5",7,$6A00  ;skip header
 	ds		$c000-$,$ff
 dephase
 
@@ -497,38 +497,38 @@ dephase
 ;
 MapA01Block:  equ   $20
 phase	$8000
-MapA01_001:   ;EngineType, palette,
-  db  1,1
+MapA01_001:   ;EngineType, graphics, palette,
+  db  1,1,1
   incbin "..\maps\A01-001.map.pck"  ;469 bytes
 MapA01_002:
-  db  1,1
+  db  1,1,1
   incbin "..\maps\A01-002.map.pck"  ;467 bytes
 MapA01_003:
-  db  1,1
+  db  1,1,1
   incbin "..\maps\A01-003.map.pck"  ;502 bytes
 MapA01_004:
-  db  2,1
-  incbin "..\maps\A01-004.map.pck"  ;467 bytes
+  db  2,2,2
+  incbin "..\maps\B01-001.map.pck"  ;467 bytes
 MapA01_005:
-  db  1,1
+  db  1,1,1
   incbin "..\maps\A01-005.map.pck"  ;502 bytes
 MapA01_006:
-  db  1,1
+  db  1,1,1
   incbin "..\maps\A01-006.map.pck"  ;467 bytes
 MapA01_007:
-  db  1,1
+  db  1,1,1
   incbin "..\maps\A01-007.map.pck"  ;502 bytes
 MapA01_008:
-  db  1,1
+  db  1,1,1
   incbin "..\maps\A01-008.map.pck"  ;467 bytes
 MapA01_009:
-  db  1,1
+  db  1,1,1
   incbin "..\maps\A01-009.map.pck"  ;502 bytes
 MapA01_010:
-  db  1,1
+  db  1,1,1
 ;  incbin "..\maps\A01-010.map.pck"  ;467 bytes
 MapA01_011:
-  db  1,1
+  db  1,1,1
 ;  incbin "..\maps\A01-011.map.pck"  ;502 bytes
 	ds		$c000-$,$ff
 dephase

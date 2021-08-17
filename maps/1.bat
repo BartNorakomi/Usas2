@@ -27,6 +27,11 @@ tmx16 A01-009.tmx A01-009.map
 
 pack A01*.map
 
+dos2unix B01-001.tmx
+tmx16 B01-001.tmx B01-001.map
+
+pack B01*.map
+
 cd..
 cd engine
 tniasm Usas2.asm
