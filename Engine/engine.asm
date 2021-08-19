@@ -69,18 +69,6 @@ Sf2EngineObjects:
   ret
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 moveplayerleftinscreen:       equ 128
 blitpage:                     db  0
 screenpage:                   db  2
@@ -138,8 +126,23 @@ putplayer1:
   ret
 
 
+;Frameinfo looks like this:
 
+  ;width, height, offset x, offset y
+  ;x offset for first line
+  
+;ryuPage0frame000:
+;  db 024h,04Eh,06Ch,036h
+;  db 082h
+;  db 068h,022h,037h,06Bh,024h
+;  db 000h,000h
+;  db 000h,000h
 
+  ;lenght ($1f) + increment ($80) first spriteline, source address (base+00000h etc)
+;  dw 01F80h,base+00000h
+;  dw 01F80h,base+0001Fh
+;  dw 01F80h,base+0003Eh
+;  dw 01F80h,base+0005Dh
 
 
 ScreenLimitxRight:  equ 256-10
@@ -280,6 +283,10 @@ putplayer_noclip:
 
   set   6,d                   ;write access
 
+dec hl
+dec hl
+
+
   ld    (spatpointer),sp  
   ld    sp,hl
 
@@ -366,6 +373,9 @@ putplayer_clipright:
   rr    e
 
   set   6,d                   ;write access
+
+dec hl
+dec hl
 
   ld    (spatpointer),sp  
   ld    sp,hl
@@ -471,6 +481,9 @@ putplayer_clipleft:
   rr    e
 
   set   6,d                   ;write access
+
+dec hl
+dec hl
 
   ld    (spatpointer),sp  
   ld    sp,hl
@@ -783,8 +796,8 @@ RyuActions2:
 .LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
   db    0,2,1                 ;animation every 2,5 frames
 .LeftIdleTable:
-  dw ryupage1frame001 | db 1 | dw ryupage1frame000 | db 1
-  dw ryupage1frame001 | db 1 | dw ryupage1frame002 | db 1
+  dw ryupage0frame001 | db 1 | dw ryupage0frame000 | db 1
+  dw ryupage0frame001 | db 1 | dw ryupage0frame002 | db 1
   ds  12
 
 
