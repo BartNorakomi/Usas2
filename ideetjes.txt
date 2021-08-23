@@ -11,3 +11,10 @@ maak een map en voeg ALLLLLES samen
 scherm met een fadeout in de kleuren rondom (zie screenshot)
 
 scherm waarbij vuur uit de muren komt (zie screenshot)
+
+magic waarbij je tijdelijk wit knippert en een dash kunt maken of zo (zie Foregone)
+
+gebruik de physics van celeste:
+https://www.youtube.com/watch?v=yorTG9at90g&ab_channel=GameMaker%27sToolkit
+
+volledig zwarte sprites (zie screenshot 2)
