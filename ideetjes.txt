@@ -18,3 +18,13 @@ gebruik de physics van celeste:
 https://www.youtube.com/watch?v=yorTG9at90g&ab_channel=GameMaker%27sToolkit
 
 volledig zwarte sprites (zie screenshot 2)
+
+een wapen dat je in een boog gooit, zoals de torch van ghosts n goblins, en als ie op dezelfde y hoogte is, dan ga je zwart wit knipperen en komt ie naar je toe, zo behoudt je 2 sprites per lijn!
+
+Cles kan als ie happy is een kopie van zichzelf maken. beiden zijn dan zichtbaar alleen als zilhouete. De kopie kan je besturen, en kan niet aangetast worden.
+Het kost mana. Als de mana op is, of je annuleren drukt, dan gaat de kopie heel snel terug naar cles.
+Op deze manier kun je puzzels oplossen, zoals cles en zn kopie moeten op een trigger staan om een deur te openen. Of op zo'n dalend platform dingetje
+Helemaal cool als de kopie ook moods kan oppakken.
+
+coole lava animatie 18:12
+https://www.youtube.com/watch?v=N2PqVAo7NAc&ab_channel=AL82RetrogamingLongplays

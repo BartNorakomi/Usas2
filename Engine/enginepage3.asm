@@ -1,67 +1,98 @@
 phase	$c000
+WorldMapData:
+WorldMapDataWidth:      equ 3     ;amount of maps 
+WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
+              ;block          mapname     enginetype,tiledata,palette
+MapA01_001Data: db MapsBlock01 | dw MapA01_001 | db 1,1,1                  | MapA01_002Data: db MapsBlock01 | dw MapA01_002 | db 1,1,1                  | MapA01_003Data: db MapsBlock01 | dw MapA01_003 | db 1,1,1
+MapA01_004Data: db MapsBlock01 | dw MapA01_004 | db 1,1,1                  | MapA01_005Data: db MapsBlock01 | dw MapA01_005 | db 1,1,1                  | MapA01_006Data: db MapsBlock01 | dw MapA01_006 | db 1,1,1
+MapA01_007Data: db MapsBlock01 | dw MapA01_007 | db 1,1,1                  | MapA01_008Data: db MapsBlock01 | dw MapA01_008 | db 1,1,1                  | MapA01_009Data: db MapsBlock01 | dw MapA01_009 | db 1,1,1
+
+MapB01_001Data: db MapsBlock01 | dw MapB01_001 | db 1,2,2                  | MapB01_002Data: db MapsBlock01 | dw MapB01_002 | db 1,2,2                  | MapB01_003Data: db MapsBlock01 | dw MapB01_003 | db 1,2,2
+MapB01_004Data: db MapsBlock01 | dw MapB01_004 | db 1,2,2                  | MapB01_005Data: db MapsBlock01 | dw MapB01_005 | db 1,2,2                  | MapB01_006Data: db MapsBlock01 | dw MapB01_006 | db 1,2,2
+MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,2,2                  | MapB01_008Data: db MapsBlock01 | dw MapB01_008 | db 1,2,2                  | MapB01_009Data: db MapsBlock01 | dw MapB01_009 | db 1,2,2
+MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 2,2,2                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,2,2                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,2,2
+
+WorldMapPointer:  dw  MapB01_004Data
 
 loadGraphics:
 
 .skipSpriteInit:
-
   call  screenoff
-    
-  ld    a,MapA01Block       ;Map block
-  call  block34
-  
-  ld    a,(Mapnumber)
-  or    a
-  ld    hl,MapA01_001            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-  dec   a
-  ld    hl,MapA01_002            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-  dec   a
-  ld    hl,MapA01_003            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-  dec   a
-  ld    hl,MapA01_004            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-  dec   a
-  ld    hl,MapA01_005            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-  dec   a
-  ld    hl,MapA01_006            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-  dec   a
-  ld    hl,MapA01_007            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-  dec   a
-  ld    hl,MapA01_008            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-  dec   a
-  ld    hl,MapA01_009            ;start tile map. hl points to tiledata (16 bit)
-  jr    z,.go
-.go:
+  ld    ix,(WorldMapPointer)
+  call  SetEngineType                 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
+  call  SetTilesInVram                ;copies all the tiles to Vram
+  call  SetMapPalette                 ;sets palette
+  call  UnpackMapdata                 ;unpacks packed map to $4000 in ram
+  call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
+  call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
+  call  copyScoreBoard                ;copy scoreboard to page 0 - screen 5 - bottom 40 pixels (scoreboard)
+  call  swap_spat_col_and_char_table
+  call  initiatebordermaskingsprites
+  call  SetInterruptHandler           ;set Lineint and Vblank
+  jp    LevelEngine
 
+BuildUpMap:
+  ld    hl,$4000
+  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jp    z,buildupMap38x27
+  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
+  cp    2
+  jp    z,buildupMap32x27
+  ret
+  
+UnpackMapdata:
+;unpack map data
+  ld    a,(slot.page2rom)             ;all RAM except page 2
+  out   ($a8),a      
+
+  ld    a,(ix+0)                      ;Map block
+  call  block34
+
+  ld    l,(ix+1)                      ;map data in rom
+  ld    h,(ix+2)
+    
+  ld    de,$4000
+  call  Depack
+  ret
+
+SetMapPalette:
+;set palette
+  ld    a,(ix+5)                      ;palette
+  dec   a
+  ld    hl,A01Palette
+  jr    z,.goSetPalette
+  ld    hl,B01Palette
+  .goSetPalette:
+  call  setpalette
+  ret
+
+SetTilesInVram:  
+;set tiles in Vram
+  ld    a,(ix+4)                      ;tile data
+  dec   a
+  ld    d,A01TilesBlock
+  jr    z,.settiles
+  ld    d,B01TilesBlock
+
+  .settiles:
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a          
+
+  ld    hl,$8000                      ;page 1 - screen 5
+  ld    b,0
+  call  copyGraphicsToScreen
+
+  ret
+
+SetEngineType:                    ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
 ;Set Engine type
-  ld    a,(hl)                    ;engine type
+  ld    a,(ix+3)                  ;engine type
+  ld    (scrollEngine),a          ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a                         ;1= 304x216 engine  2=256x216 SF2 engine
   jp    z,.Engine304x216
 
 .Engine256x216:
-  ;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
-  push  hl
-  ld    hl,(ClesX)
-  ld    de,34*8
-  xor   a
-  sbc   hl,de
-  jr    nz,.notzero
-  ld    hl,28*8
-  ld    (ClesX),hl
-  xor   a
-  ld    (CameraX),a
-  .notzero:
-  pop   hl
-
-  ld    a,2
-  ld    (scrollEngine),a          ;1= 304x216 engine  2=256x216 SF2 engine
-
   ld    de,32
   ld    (checktile.selfmodifyingcodeMapLenght+1),de
   ld    de,-29*8
@@ -69,13 +100,20 @@ loadGraphics:
 
   ld    a,32
   ld    (ConvertToMapinRam.loop2+1),a
-  jp    .EndSetEngineType
 
+  ;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
+  ld    hl,(ClesX)
+  ld    de,34*8
+  xor   a
+  sbc   hl,de
+  ret   nz
+  ld    hl,28*8
+  ld    (ClesX),hl
+  xor   a
+  ld    (CameraX),a
+  ret
 
-.Engine304x216:
-  ld    a,1
-  ld    (scrollEngine),a          ;1= 304x216 engine  2=256x216 SF2 engine
-                        ;
+.Engine304x216:                        ;
   ld    de,38
   ld    (checktile.selfmodifyingcodeMapLenght+1),de
   ld    de,-35*8          ;-35*8
@@ -83,96 +121,7 @@ loadGraphics:
 
   ld    a,38
   ld    (ConvertToMapinRam.loop2+1),a
-.EndSetEngineType:
-
-  inc   hl                        ;graphics Sc5 graphics tile set
-
-  ld    a,(hl)
-  dec   a
-  ld    d,A01TilesBlock
-  jr    z,.settiles
-  ld    d,B01TilesBlock
-
-  .settiles:
-  push  hl
-  ld    a,(slot.page12rom)            ;all RAM except page 12
-  out   ($a8),a          
-
-  ld    hl,$8000            ;page 1 - screen 5
-  ld    b,0
-  call  copyGraphicsToScreen
-
-  ld    a,(slot.page2rom)            ;all RAM except page 12
-  out   ($a8),a      
-  pop   hl
-
-
-
-;set palette
-  inc   hl                        ;palette
-  push  hl
-
-  ld    a,(hl)
-  dec   a
-  ld    hl,A01Palette
-  jr    z,.goSetPalette
-  ld    hl,B01Palette
-  .goSetPalette:
-  call  setpalette
-  pop   hl
-
-;unpack map data
-  inc   hl                        ;packed map data
-    
-  ld    de,$4000
-  call  Depack
-
-  call  ConvertToMapinRam         ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava
-
-  ld    hl,$4000
-  ld    a,(scrollEngine)          ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  call  z,buildupMap38x27
-  ld    a,(scrollEngine)          ;1= 304x216 engine  2=256x216 SF2 engine
-  cp    2
-  call  z,buildupMap32x27
-
-  ld    a,(slot.page12rom)            ;all RAM except page 12
-  out   ($a8),a          
-
-  ld    hl,$6C00            ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
-  ld    b,0
-  ld    d,Graphicsblock5    ;block to copy from
-  call  copyScoreBoard
-  
-;  ld    hl,$8000            ;page 1 - screen 5
-;  ld    b,0
-;  ld    d,Graphicsblock2    ;block to copy from
-;  call  copyGraphicsToScreen
-
-;  ld    hl,$0000            ;page 2 - screen 5
-;  ld    b,1
-;  ld    d,Graphicsblock3    ;block to copy from
-;  call  copyGraphicsToScreen
-
-;  ld    hl,$8000            ;page 3 - screen 5
-;  ld    b,1
-;  ld    d,Graphicsblock4    ;block to copy from
-;  call  copyGraphicsToScreen
-
-  call  swap_spat_col_and_char_table
-  call  initiatebordermaskingsprites
-  
-  call  SetInterruptHandler ;set Lineint and Vblank
-
-  jp    LevelEngine
-
-Mapnumber: db 3
-
-
-
-
-  
+  ret
   
   
 
@@ -182,8 +131,6 @@ Mapnumber: db 3
 
 buildupMap32x27:
 ;first put 32*27 tiles to page 0, starting at (0,0)
-;  push  hl
-
   ld    a,32
   ld    b,a                 ;32 tiles on x-axis
   ld    (AmountTilesToPut),a
@@ -197,8 +144,6 @@ buildupMap32x27:
   ld    (SetTile+dy),a
   ld    (SetTile+dpage),a
   call  buildupMap38x27.xloop
-
-;  pop   hl
   
   ld    hl,.CopyPage0to1
   call  docopy  
@@ -367,7 +312,7 @@ ConvertToMapinRam:
 ;tiles 256 - > are background
 
   ld    hl,$4000
-  ld    ix,MapData
+  ld    iy,MapData
 
   ld    c,27
 .loop2:
@@ -378,7 +323,7 @@ ConvertToMapinRam:
   pop   hl
   inc   hl
   inc   hl
-  inc   ix
+  inc   iy
   djnz  .loop
   
   dec   c
@@ -407,19 +352,19 @@ ConvertToMapinRam:
   jp    c,.lava
     
 .background:
-  ld    (ix),0
+  ld    (iy),0
   ret
 
 .hardforeground:
-  ld    (ix),1
+  ld    (iy),1
   ret
 
 .laddertiles:
-  ld    (ix),2
+  ld    (iy),2
   ret
 
 .lava:
-  ld    (ix),3
+  ld    (iy),3
   ret
   
 SetTile:
@@ -610,16 +555,19 @@ copyGraphicsToScreen:
   ret
 
 copyScoreBoard:
-  ld    a,d                 ;Graphicsblock
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a          
+
+  ld    hl,$6C00            ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
+  ld    a,Graphicsblock5    ;block to copy from
   call  block12
   
-	ld		a,b
+	xor   a
 	call	SetVdp_Write	
 	ld		hl,$4000
   ld    c,$98
   ld    a,20                ;first 40 lines, copy 64*256 = $4000 bytes to Vram
   ld    b,0
-      
   jp    copyGraphicsToScreen.loop1    
 
 A01Palette:

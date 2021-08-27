@@ -495,41 +495,50 @@ dephase
 ;
 ; block $20 - &21
 ;
-MapA01Block:  equ   $20
+MapsBlock01:  equ   $20
 phase	$8000
 MapA01_001:   ;EngineType, graphics, palette,
-  db  1,1,1
   incbin "..\maps\A01-001.map.pck"  ;469 bytes
 MapA01_002:
-  db  1,1,1
   incbin "..\maps\A01-002.map.pck"  ;467 bytes
 MapA01_003:
-  db  1,1,1
   incbin "..\maps\A01-003.map.pck"  ;502 bytes
 MapA01_004:
-  db  2,2,2
-  incbin "..\maps\B01-001.map.pck"  ;467 bytes
+  incbin "..\maps\A01-004.map.pck"  ;467 bytes
 MapA01_005:
-  db  1,1,1
   incbin "..\maps\A01-005.map.pck"  ;502 bytes
 MapA01_006:
-  db  1,1,1
   incbin "..\maps\A01-006.map.pck"  ;467 bytes
 MapA01_007:
-  db  1,1,1
   incbin "..\maps\A01-007.map.pck"  ;502 bytes
 MapA01_008:
-  db  1,1,1
   incbin "..\maps\A01-008.map.pck"  ;467 bytes
 MapA01_009:
-  db  1,1,1
   incbin "..\maps\A01-009.map.pck"  ;502 bytes
-MapA01_010:
-  db  1,1,1
-;  incbin "..\maps\A01-010.map.pck"  ;467 bytes
-MapA01_011:
-  db  1,1,1
-;  incbin "..\maps\A01-011.map.pck"  ;502 bytes
+MapB01_001:
+  incbin "..\maps\b01-001.map.pck"  ;469 bytes
+MapB01_002:
+  incbin "..\maps\b01-002.map.pck"  ;469 bytes
+MapB01_003:
+  incbin "..\maps\b01-003.map.pck"  ;469 bytes
+MapB01_004:
+  incbin "..\maps\b01-004.map.pck"  ;469 bytes
+MapB01_005:
+  incbin "..\maps\b01-005.map.pck"  ;469 bytes
+MapB01_006:
+  incbin "..\maps\b01-006.map.pck"  ;469 bytes
+MapB01_007:
+  incbin "..\maps\b01-007.map.pck"  ;469 bytes
+MapB01_008:
+  incbin "..\maps\b01-008.map.pck"  ;469 bytes
+MapB01_009:
+  incbin "..\maps\b01-009.map.pck"  ;469 bytes
+MapB01_010:
+  incbin "..\maps\b01-010.map.pck"  ;469 bytes
+MapB01_011:
+  incbin "..\maps\b01-011.map.pck"  ;469 bytes
+MapB01_012:
+  incbin "..\maps\b01-012.map.pck"  ;469 bytes  
 	ds		$c000-$,$ff
 dephase
 
@@ -591,6 +600,15 @@ phase	$0000
   incbin "..\grapx\ryu\spritesryuPage3\frames.dat"
 	ds		$4000-$,$ff
 dephase
+
+;
+; block $33 - $34
+;
+MapsBlock02:  equ   $33
+phase	$8000
+	ds		$c000-$,$ff
+dephase
+
 
 
   include "actiontables\actiontableslenghts.asm"

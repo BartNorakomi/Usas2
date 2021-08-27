@@ -30,6 +30,39 @@ pack A01*.map
 dos2unix B01-001.tmx
 tmx16 B01-001.tmx B01-001.map
 
+dos2unix B01-002.tmx
+tmx16 B01-002.tmx B01-002.map
+
+dos2unix B01-003.tmx
+tmx16 B01-003.tmx B01-003.map
+
+dos2unix B01-004.tmx
+tmx16 B01-004.tmx B01-004.map
+
+dos2unix B01-005.tmx
+tmx16 B01-005.tmx B01-005.map
+
+dos2unix B01-006.tmx
+tmx16 B01-006.tmx B01-006.map
+
+dos2unix B01-007.tmx
+tmx16 B01-007.tmx B01-007.map
+
+dos2unix B01-008.tmx
+tmx16 B01-008.tmx B01-008.map
+
+dos2unix B01-009.tmx
+tmx16 B01-009.tmx B01-009.map
+
+dos2unix B01-010.tmx
+tmx16 B01-010.tmx B01-010.map
+
+dos2unix B01-011.tmx
+tmx16 B01-011.tmx B01-011.map
+
+dos2unix B01-012.tmx
+tmx16 B01-012.tmx B01-012.map
+
 pack B01*.map
 
 cd..

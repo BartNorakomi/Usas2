@@ -17,7 +17,7 @@ LevelEngine:
   call  CameraEngine              ;sets R18 and R23
   call  movePlayer
 ;  call  VramObjects
-  call  Sf2EngineObjects          ;restore background P1, handle action P1, put P1 in screen, play music, 
+;  call  Sf2EngineObjects          ;restore background P1, handle action P1, put P1 in screen, play music, 
                               ;restore background P2, handle action P2, put P2 in screen, collision detection, set prepared collision action
   call  SetBorderMaskingSprites
   call  SetClesSprites
@@ -58,9 +58,9 @@ switchpage:
   jp    SetPage
 
 Sf2EngineObjects:
-  ld    a,(Mapnumber)
+;  ld    a,(Mapnumber)
   cp    3
-  ret   nz
+;  ret   nz
 
   ;handle object 1
   call  restoreBackgroundP1
@@ -1036,64 +1036,43 @@ checkmapexit:
   ret
 
 .ExitBottomFound:  
-  ld    a,(Mapnumber)
-  add   3
-  ld    (Mapnumber),a
-
+  ld    de,WorldMapDataMapLenght*WorldMapDataWidth
   ld    a,10
   ld    (ClesY),a
-
   ld    a,0
   ld    (CameraY),a
   jp    .LoadnextMap
   
 .ExitTopFound:  
-  ld    a,(Mapnumber)
-  sub   3
-  ld    (Mapnumber),a
-
+  ld    de,-WorldMapDataMapLenght*WorldMapDataWidth
   ld    a,176
   ld    (ClesY),a
-
   ld    a,45
   ld    (CameraY),a
   jp    .LoadnextMap
   
 .ExitRightFound:  
-  ld    a,(Mapnumber)
-  inc   a
-  ld    (Mapnumber),a
-
+  ld    de,WorldMapDataMapLenght
   ld    hl,8
   ld    (ClesX),hl
-
   xor   a
   ld    (CameraX),a
   jp    .LoadnextMap
   
 .ExitLeftFound:  
-  ld    a,(Mapnumber)
-  cp    3
-  jr    z,.ExitleftButStartingMap
-  
-  dec   a
-  ld    (Mapnumber),a
-
+  ld    de,-WorldMapDataMapLenght
   ld    hl,34*8
   ld    (ClesX),hl
-
   ld    a,63
   ld    (CameraX),a
   jp    .LoadnextMap
 
-.ExitleftButStartingMap:
-  ld    hl,11
-  ld    (ClesX),hl
-  ret
-
 .LoadnextMap:
+  ld    hl,(WorldMapPointer)
+  add   hl,de
+  ld    (WorldMapPointer),hl
+
   pop   hl                  ;pop the call to this routine
-  
   call  CameraEngine304x216.setR18R19R23andPage  
   call  DisableLineint	
   jp    loadGraphics
@@ -1120,9 +1099,7 @@ DisableLineint:
   out   ($99),a
   ld    a,19+128            ;set lineinterrupt height
   out   ($99),a
-  
   ei
-
   ret
 
 tempisr2:	
