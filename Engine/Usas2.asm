@@ -609,10 +609,21 @@ phase	$8000
 	ds		$c000-$,$ff
 dephase
 
+;Player's sprite positions 
+;
+; block $35 - $38
+;
+PlayerSpritesBlock:      equ   $35  
+phase	$4000
+PlayerSpriteData_Char_RightStand:           include "..\sprites\secretsofgrindea\RightStand.tgs.gen"	  ;sprite character	right standing	;sprite 0
+PlayerSpriteData_Colo_RightStand:           include "..\sprites\secretsofgrindea\RightStand.tcs.gen"	  ;sprite color right standing	;sprite 0
+PlayerSpriteData_Char_LeftStand:           	include "..\sprites\secretsofgrindea\LeftStand.tgs.gen"	    ;sprite character	right standing	;sprite 0
+PlayerSpriteData_Colo_LeftStand:           	include "..\sprites\secretsofgrindea\LeftStand.tcs.gen"	    ;sprite color right standing	;sprite 0
+EndPlayerSprites1: | ds $c000-$,$ff | dephase ;bf80
+
+
 
 
   include "actiontables\actiontableslenghts.asm"
-
-
 totallenght:	Equ	$-Usas2
 	ds		$80000-totallenght

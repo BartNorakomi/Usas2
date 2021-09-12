@@ -11,6 +11,7 @@ LevelEngine:
 
 ;  ld    (hl),0
 
+;  call  swap_spat_col_and_char_table
   call  switchpage
 ;  call  putStarFoxSprite
   call  PopulateControls
@@ -19,9 +20,11 @@ LevelEngine:
 ;  call  VramObjects
 ;  call  Sf2EngineObjects          ;restore background P1, handle action P1, put P1 in screen, play music, 
                               ;restore background P2, handle action P2, put P2 in screen, collision detection, set prepared collision action
-  call  SetBorderMaskingSprites
-  call  SetClesSprites
-  call  putspattovram
+  call  SetBorderMaskingSprites   ;set border masking sprites data in Spat
+  call  HandlePlayerSprite        ;handles all stands, moves player, checks collision and prepares sprite offsets
+;  call  SetClesSprites
+  call  PutPlayersprite           ;outs char data to Vram, col data to Vram and sets spat data for player
+  call  putspattovram             ;outs all spat data to Vram
   call  swap_spat_col_and_char_table
   call  checkmapexit              ;check if you exit the map top bottom left or right
 
@@ -33,6 +36,214 @@ LevelEngine:
 .endcheckflag:  
   ld    (hl),0
   jp    LevelEngine
+
+
+
+
+
+
+ClesX:  dw 11
+ClesY:  db 150
+
+
+herospritenr:             db  22
+PutPlayersprite:
+	ld		a,(slot.page12rom)	;all RAM except page 1+2
+	out		($a8),a	
+  
+;put hero sprite character
+	ld		de,(invissprchatableaddress)		;sprite character table in VRAM ($17800)
+  ld    a,(herospritenr)
+  ld    h,0
+  ld    l,a
+  add   hl,hl       ;*2
+  add   hl,hl       ;*4
+  add   hl,hl       ;*8
+  add   hl,hl       ;*16
+  add   hl,hl       ;*32
+  add   hl,de
+	ld		a,1
+	call	SetVdp_Write
+
+;  ld    a,(standchar+1)
+;  cp    $80
+;  ld    h,0         ;characterspritesblock + 0
+;  ld    de,$0000+$4000
+;  jp    c,.setsprites
+;  ld    h,4         ;characterspritesblock + 4
+;  ld    de,$C000-$40
+;.setsprites:
+;  push  de
+
+;.nakedMod: equ	$+1
+	ld		a,PlayerSpritesBlock
+;  add   a,h
+	call	block1234		;set blocks in page 1/2
+
+standchar:	equ	$+1
+	ld		hl,PlayerSpriteData_Char_LeftStand      ;sprite character in ROM
+    
+	ld		c,$98
+	call	outix128    ;4 sprites (4 * 32 = 128 bytes)
+;/put hero sprite character
+
+;put hero sprite color
+	ld		de,(invissprcoltableaddress)		;sprite color table in VRAM ($17400)
+  ld    a,(herospritenr)
+  ld    h,0
+  ld    l,a
+  add   hl,hl       ;*2
+  add   hl,hl       ;*4
+  add   hl,hl       ;*8
+  add   hl,hl       ;*16
+  add   hl,de
+	ld		a,1
+	call	SetVdp_Write
+
+standcol:	equ	$+1
+	ld		hl,PlayerSpriteData_Colo_LeftStand      ;sprite color of first sprite in ROM
+	ld		c,$98
+
+;check if player is left side of screen, if so add 32 bit shift
+;	ld		a,(addxtohero)
+;  cp    250
+;	jp    nc,.playerleft
+;	cp    3
+;	jp    nc,.playerright
+;.playerleft:
+;  ld    c,128
+;  ld    b,128+64
+;.player32bitshiftloop:  
+;  ld    a,(hl)
+;  add   a,c
+;  out   ($98),a
+;  inc   hl
+;  djnz  .player32bitshiftloop
+;  jp    .end32bitshift
+;check if player is left side of screen, if so add 32 bit shift
+
+.playerright:
+	call	outix64     ;4 sprites (4 * 16 bytes = 46 bytes)
+;.backfromshield:
+;.end32bitshift:
+;/put hero sprite color
+
+.spriteattributetable:
+
+
+;	ld		a,(addytohero)
+;  sub   a,16
+;	add		a,a
+;	add		a,a
+;	add		a,a				;*8
+;	sub		a,4				;all sprites 4 pixels up
+;	ld		d,a       ;relative y
+;	ld		a,(addxtohero)
+;  sub   a,13
+;	add		a,a
+;	add		a,a
+;	add		a,a				;*8
+;32 bit shift here
+;  add   a,32      ;32 bit shift
+;/32 bit shift here
+;	ld		e,a       ;relative x
+
+;check if player is left side of screen, if so add 32 bit shift
+;	ld		a,(addxtohero)
+;  cp    250
+;	jp    nc,.playerleft2
+;	cp    3
+;	jp    nc,.endcheck32bitshift
+;.playerleft2:	
+;  ld    a,e
+;  add   a,32
+;  ld    e,a
+;.endcheck32bitshift:
+;check if player is left side of screen, if so add 32 bit shift
+
+;remove hero from screen ?
+;  ld    a,(invis?)
+;  or    a
+;  jr    nz,.invis
+
+;.setspathero:
+;  ld    a,(x_offset_hero_top)
+;  cp    200
+;  jp    nc,setrowspecialspritepositions
+
+
+
+;  ld    a,(herospritenr)
+;  add   a,a         ;*2
+;  add   a,a         ;*4
+;  ld    d,0
+;  ld    e,a
+;	ld		hl,spat			;sprite attribute table
+;  add   hl,de
+
+  ld    a,(ClesY)
+  ld    b,a
+  add   a,16
+  ld    c,a
+
+  ld    a,(CameraX)         ;camera jumps 16 pixels every page, subtract this value from x Cles
+  and   %1111 0000
+  
+  ld    d,0
+  ld    e,a
+  
+  ld    hl,(ClesX)
+  sbc   hl,de               ;take x Cles and subtract the x camer
+
+  ld    a,h                 ;if the value now is <0 or >256 Cles is out of the screen
+  or    a
+;  jp    m,.outofscreenleft
+  jp    nz,.outofscreen
+
+  ld    a,l
+  jp    .putx
+
+.outofscreen:
+  ld    a,255
+.putx:
+
+
+
+  ld    de,3
+  ld    hl,spat+88          ;y sprite 22
+  ld    (hl),b
+  inc   hl                  ;x sprite 22
+  ld    (hl),a
+  add   hl,de
+  ld    (hl),b
+  inc   hl                  ;x sprite 22
+  ld    (hl),a
+  add   hl,de
+  ld    (hl),c
+  inc   hl                  ;x sprite 22
+  ld    (hl),a
+  add   hl,de
+  ld    (hl),c
+  inc   hl                  ;x sprite 22
+  ld    (hl),a
+  add   hl,de
+
+	ld		a,(slot.ram)	;back to full RAM
+	out		($a8),a	
+  ret
+  
+
+
+
+
+
+
+
+
+
+
+
+  
 
 switchpage:
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
@@ -1158,11 +1369,11 @@ InterruptHandler:
 ;we set horizontal and vertical screen adjust
 ;we set status register 0
 vblank:
-  ld    a,(VDP_0+1)       ;screen on
-  or    %0100 0000
-  out   ($99),a
-  ld    a,1+128
-  out   ($99),a
+;  ld    a,(VDP_0+1)       ;screen on
+;  or    %0100 0000
+;  out   ($99),a
+;  ld    a,1+128
+;  out   ($99),a
 
   ld    a,(VDP_8)         ;sprites on
   and   %11111101
@@ -2090,8 +2301,158 @@ movePlayer:
   ld    (Clesy),a
   ret
 
-ClesX:  dw 11
-ClesY:  db 150
+PlayerSpritestandjumptable:  
+  dw    Rstanding,Rsitting,Rrunning ;,Lstanding,Lsitting,Lrunning,Rjumpup,Ljumpup,Rbeinghit,Lbeinghit,Rdying,Ldying
+;  dw    Rstandpunch,Lstandpunch,Rsitpunch,Lsitpunch,Rstandmagic,Lstandmagic,Rsitmagic,Lsitmagic,extrastand
+
+PlayerAniCount:     db  0
+PlayerSpriteStand:  db  0
+HandlePlayerSprite:
+  ld    a,(PlayerSpriteStand)
+  add   a,a
+  ld    d,0
+  ld    e,a
+  ld    hl,PlayerSpritestandjumptable
+  add   hl,de
+  ld    e,(hl)
+  inc   hl
+  ld    d,(hl)
+  ex    de,hl
+  jp    (hl)
+;	or		a				;stand=0	standing right
+;	dec		a				;stand=1	sitting right
+;	dec		a				;stand=2	running right
+;	dec		a				;stand=3	standing left
+;	dec		a				;stand=4	sitting left?
+;	dec		a				;stand=5	running left
+;	dec		a				;stand=6	jumping up right
+;	dec		a				;stand=7	jumping up left
+;	dec		a				;stand=8	Rbeinghit
+;	dec		a				;stand=9	Lbeinghit
+;	dec		a				;stand=10	Rdying
+;	dec		a				;stand=11	Ldying
+;	dec		a				;stand=12	r_standpunch
+;	dec		a				;stand=13	l_standpunch
+;	dec		a				;stand=14	r_sitpunch
+;	dec		a				;stand=15	l_sitpunch
+;	dec		a				;stand=16	r_standmagic
+;	dec		a				;stand=17	l_standmagic
+;	dec		a				;stand=18	r_sitmagic
+;	dec		a				;stand=19	l_sitmagic
+;	dec		a				;stand=20	a special action happens (spacestation entering pipes)
+
+Rsitting:
+  ret
+
+Rrunning:
+  ret
+
+Rstanding:
+;  call  checkfloor
+;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,.Maybe_Set_R_sit
+	bit		0,a           ;cursor up pressed ?
+;	jp		nz,.R_jump_andcheckpunch
+	bit		2,a           ;cursor left pressed ?
+;	jp		nz,.Set_L_run_andcheckpunch
+	bit		3,a           ;cursor right pressed ?
+	jp		nz,.Set_R_run_andcheckpunch
+
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic
+	ret
+
+.Set_L_run_andcheckpunch:
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+;	jp		nz,Set_L_standpunch
+	bit		5,a           ;b pressed ?
+;	jp		nz,Set_L_standmagic
+;  jp    Set_L_run
+
+.Maybe_Set_R_sit:
+;  call  CheckDoubleTapDownF1Menu
+  
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_sitpunch
+	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_sitmagic
+	jp		Set_R_sit
+
+.R_jump_andcheckpunch:
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+;	jp		z,Set_R_jump
+
+;  call  Set_R_jump
+;  ld    a,(firepunchon?)
+;  ld    (firepunchwhilejump?),a
+;  xor   1
+;  ld    (punchwhilejump?),a
+;  xor   a
+;  ld    (punchwhilejumpcounter),a
+  ret
+
+.Set_R_run_andcheckpunch:
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic
+  jp    Set_R_run
+
+Set_R_run:
+	ld		a,2				;running right
+	ld		(PlayerSpriteStand),a
+	ld		hl,1			;animate next frame
+	ld		(PlayerAniCount),hl
+  ret
+
+Set_R_sit:	
+	ld		a,1				;sitting right
+	ld		(PlayerSpriteStand),a
+Setrightsitpose:
+	ld		hl,$0000+(576*14)
+;	ld		(standchar),hl
+	ld		hl,$0000+(576*14)+384
+;	ld		(standcol),hl
+;  jp    Totallycentredpose
+  ret
+
+;Totallycentredpose:
+;  ld    a,100       ;y offset
+;  ld    d,centrex+00    ;x offset top row
+;  ld    e,centrex+00    ;x offset middle row
+;  ld    h,centrex+00    ;x offset bottom row
+;  jp    setxyoffsetsprite
+
+;y_offset_hero:      db  100
+;x_offset_hero_top:  db  106
+;x_offset_hero_mid:  db  102
+;x_offset_hero_bot:  db  103
+;setxyoffsetsprite:
+;  ld    (y_offset_hero),a
+;  ld    a,d
+;  ld    (x_offset_hero_top),a
+;  ld    a,e
+;  ld    (x_offset_hero_mid),a
+;  ld    a,h
+;  ld    (x_offset_hero_bot),a
+;  ret
+
+;ClesX:  dw 11
+;ClesY:  db 150
 SetClesSprites:
   ld    a,(ClesY)
   ld    b,a
@@ -2145,6 +2506,7 @@ SetBorderMaskingSprites:
   ld    b,11                ;amount of sprites left side screen
   
   ld    a,(CameraX)
+;  dec a
   and   %0000 1111
   add   a,15
   ld    (.selfmodifyingcode+1),a
