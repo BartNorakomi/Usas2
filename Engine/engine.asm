@@ -1,32 +1,21 @@
 LevelEngine:
+  call  SwapSpatColAndCharTable
+  call  switchpageSF2Engine
+  call  PopulateControls
+;  call  movePlayer                ;simply move the player (changing only it's x and y)
+  call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
+  call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
+;  call  VramObjects
+;  call  Sf2EngineObjects          ;restore background P1, handle action P1, put P1 in screen, play music, 
+                                  ;restore background P2, handle action P2, put P2 in screen, collision detection, set prepared collision action
+  call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
+  call  PutPlayersprite           ;outs char data to Vram, col data to Vram and sets spat data for player (coordinates depend on camera x+y)
+  call  PutSpatToVram             ;outs all spat data to Vram
+  call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
+
   ld    a,(framecounter)
   inc   a
   ld    (framecounter),a
-
-;  ld    a,1
-;  ld    hl,vblankflag
-;.checkflag:
-;  cp    (hl)
-;  jp    nc,.checkflag
-
-;  ld    (hl),0
-
-;  call  swap_spat_col_and_char_table
-  call  switchpage
-;  call  putStarFoxSprite
-  call  PopulateControls
-  call  CameraEngine              ;sets R18 and R23
-  call  movePlayer
-;  call  VramObjects
-;  call  Sf2EngineObjects          ;restore background P1, handle action P1, put P1 in screen, play music, 
-                              ;restore background P2, handle action P2, put P2 in screen, collision detection, set prepared collision action
-  call  SetBorderMaskingSprites   ;set border masking sprites data in Spat
-  call  HandlePlayerSprite        ;handles all stands, moves player, checks collision and prepares sprite offsets
-;  call  SetClesSprites
-  call  PutPlayersprite           ;outs char data to Vram, col data to Vram and sets spat data for player
-  call  putspattovram             ;outs all spat data to Vram
-  call  swap_spat_col_and_char_table
-  call  checkmapexit              ;check if you exit the map top bottom left or right
 
   ld    a,0           
   ld    hl,vblankintflag
@@ -42,7 +31,7 @@ LevelEngine:
 
 
 
-ClesX:  dw 11
+ClesX:  dw 210
 ClesY:  db 150
 
 
@@ -87,6 +76,8 @@ standchar:	equ	$+1
 	call	outix128    ;4 sprites (4 * 32 = 128 bytes)
 ;/put hero sprite character
 
+  exx               ;store hl. hl now points to color data
+
 ;put hero sprite color
 	ld		de,(invissprcoltableaddress)		;sprite color table in VRAM ($17400)
   ld    a,(herospritenr)
@@ -100,9 +91,8 @@ standchar:	equ	$+1
 	ld		a,1
 	call	SetVdp_Write
 
-standcol:	equ	$+1
-	ld		hl,PlayerSpriteData_Colo_LeftStand      ;sprite color of first sprite in ROM
-	ld		c,$98
+  exx               ;recall hl. hl now points to color data
+
 
 ;check if player is left side of screen, if so add 32 bit shift
 ;	ld		a,(addxtohero)
@@ -123,10 +113,19 @@ standcol:	equ	$+1
 ;check if player is left side of screen, if so add 32 bit shift
 
 .playerright:
+;	ld		c,$98
 	call	outix64     ;4 sprites (4 * 16 bytes = 46 bytes)
 ;.backfromshield:
 ;.end32bitshift:
 ;/put hero sprite color
+
+;after the color data there are 2 bytes for the top and bottom offset of the sprites
+  ld    a,(hl)
+  ld    (selfmodifyingcode_x_offset_hero_top),a  
+  inc   hl
+  ld    a,(hl)
+  ld    (selfmodifyingcode_x_offset_hero_bottom),a  
+
 
 .spriteattributetable:
 
@@ -207,25 +206,32 @@ standcol:	equ	$+1
   ld    a,255
 .putx:
 
-
-
   ld    de,3
-  ld    hl,spat+88          ;y sprite 22
-  ld    (hl),b
-  inc   hl                  ;x sprite 22
-  ld    (hl),a
+  ld    hl,spat+88          
+  ld    (hl),b              ;y sprite 22
+  inc   hl                  
+
+selfmodifyingcode_x_offset_hero_top: equ $+1
+  add   a,0
+
+  ld    (hl),a              ;x sprite 22
   add   hl,de
-  ld    (hl),b
-  inc   hl                  ;x sprite 22
-  ld    (hl),a
+  ld    (hl),b              ;y sprite 23      
+  inc   hl 
+  ld    (hl),a              ;x sprite 23
   add   hl,de
-  ld    (hl),c
-  inc   hl                  ;x sprite 22
-  ld    (hl),a
+  
+  ld    (hl),c              ;y sprite 24  
+  inc   hl      
+
+selfmodifyingcode_x_offset_hero_bottom: equ $+1
+  add   a,0
+
+  ld    (hl),a              ;x sprite 24
   add   hl,de
-  ld    (hl),c
-  inc   hl                  ;x sprite 22
-  ld    (hl),a
+  ld    (hl),c              ;y sprite 25
+  inc   hl               
+  ld    (hl),a              ;x sprite 25
   add   hl,de
 
 	ld		a,(slot.ram)	;back to full RAM
@@ -233,19 +239,7 @@ standcol:	equ	$+1
   ret
   
 
-
-
-
-
-
-
-
-
-
-
-  
-
-switchpage:
+switchpageSF2Engine:
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   cp    2
   ret   nz
@@ -1225,7 +1219,7 @@ VramObjects:
   db    010,000,010,000   ;nx,--,ny,--
   db    000,000,$D0       ;fast copy     
 
-checkmapexit:
+CheckMapExit:
   ld    hl,(ClesX)
   ld    de,-6
   add   hl,de
@@ -1369,90 +1363,35 @@ InterruptHandler:
 ;we set horizontal and vertical screen adjust
 ;we set status register 0
 vblank:
-;  ld    a,(VDP_0+1)       ;screen on
-;  or    %0100 0000
-;  out   ($99),a
-;  ld    a,1+128
-;  out   ($99),a
-
-  ld    a,(VDP_8)         ;sprites on
+  ld    a,(VDP_8)             ;sprites on
   and   %11111101
   ld    (VDP_8),a
   out   ($99),a
   ld    a,8+128
   out   ($99),a
 
-   
-;  ld    a,2*32+31         ;set page 2
-;  out   ($99),a
-;  ld    a,2+128
-;  out   ($99),a
+  ld    a,(R18onVblank)       ;horizontal screen adjust
+  out   ($99),a
+  ld    a,18+128
+  out   ($99),a
 
-;R#18 (register 18) uses bits 3 - 0 for horizontal screen adjust
-;MSB  7   6   5   4   3   2   1   0
-;R#18 v3  v2  v1  v0  h3  h2  h1  h0
-;h can have a value from 0 - 15 and the screen adjusts horizontally according to the table below
-;     7   6   5   4   3   2   1   0   15  14  13  12  11  10  9   8
-;H  left                       centre  
-;  ld    a,0               ;set horizontal screen adjust
-;  out   ($99),a
-;  ld    a,18+128
-;  out   ($99),a
-
-;  ld    a,0               ;set vertical screen adjust
-;  out   ($99),a
-;  ld    a,23+128
-;  out   ($99),a
-
-;If you have a split and are changing the vertical scrollregister (r#23) on it,
-;then you should always re-set the splitline (r#19). This because the splitline
-;is calculated from line 0 in the VRAM, and not from line 0 of the screen. 
-;In order to set the splitline to the ‘screenline’ it’s easiest to simply add 
-;the value of r#23 to it.
-;  ld    a,lineintheight
-;  out   ($99),a
-;  ld    a,19+128            ;set lineinterrupt height
-;  out   ($99),a
-
-;  ld    a,(VDP_8)         ;sprites off
-;  or    %00000010
-;  ld    (VDP_8),a
-;  out   ($99),a
-;  ld    a,8+128
-;  out   ($99),a
-
-;  xor   a                 ;set s#0
-;  out   ($99),a
-;  ld    a,15+128
-;  out   ($99),a
-
-;  ld    a,1               ;lineint flag gets set
-;  ld    (Worldmapvblankintflag),a  
-
-;this flag sais we can now swap horizontal& vertical offset 
-;we can swap page and we can swap sprite tables
-;  ld    a,(swaptablesonvblank?)
-;  or    a
-;  jr    z,.end
-;  call  Worldmapswap_spat_col_and_char_table
-
-;  ld    a,(currentpage)
-;  ld    (newlineintpage),a
-
-;  ld    a,(horizontalscreenoffset)              ;prepare horizontal screen adjust for next frame
-;  ld    (newlineinthoroff),a
-
-;  ld    a,(verticalscreenoffset)               ;set vertical screen adjust
-;  ld    (newlineintveroff),a
+  ld    a,(R23onVblank)       ;vertical screen adjust
+  out   ($99),a
+  ld    a,23+128
+  out   ($99),a
   
+  ld    a,(R19onVblank)       ;splitline height
+  out   ($99),a
+  ld    a,19+128
+  out   ($99),a
+
+  ld    a,(PageOnNextVblank)  ;set page
+  out   ($99),a
+  ld    a,2+128
+  out   ($99),a
+     
   ld    a,1               ;lineint flag gets set
   ld    (vblankintflag),a  
-
-;  xor   a
-;  ld    (swaptablesonvblank?),a
-
-
-;.end:
 
   pop   ix
   pop   hl
@@ -1474,11 +1413,6 @@ vblank:
 ;and we turn screen on again at the end of the line
 ;we play music and set s#0 again
 lineint:  
-  ld    a,2               ;Set Status register #2
-  out   ($99),a
-  ld    a,15+128          ;we are about to check for HR
-  out   ($99),a
-
 ;  ld    hl,linesplitvariables
 
 ;PREPARE ALL THESE INSTRUCTION TO BE EXECUTED WITH OUTI'S AFTER THE POLLING
@@ -1532,12 +1466,17 @@ lineint:
   ld    a,1+128
   out   ($99),a
  ;so after turning off the screen wait till the end of HBLANK, then perform actions
+
+  ld    a,2               ;Set Status register #2
+  out   ($99),a
+  ld    a,15+128          ;we are about to check for HR
+  out   ($99),a
  
   ld    b,%0010 0000      ;bit to check for HBlank detection
 .Waitline1:
-  in    a,($99)           ;Read Status register #2
-  and   b                 ;wait until start of HBLANK
-  jr    nz,.Waitline1
+;  in    a,($99)           ;Read Status register #2
+;  and   b                 ;wait until start of HBLANK
+;  jr    nz,.Waitline1
 
 .Waitline2:
   in    a,($99)           ;Read Status register #2
@@ -1566,23 +1505,6 @@ lineint:
   ld    a,8+128
   out   ($99),a
 
-  
-.Waitline3:
-;  in    a,($99)           ;Read Status register #2
-;  and   b                 ;wait until end of HBLANK
-;  jr    z,.Waitline3
-
-;  outi
-;  outi
-;  outi
-;  outi
-;  outi
-;  outi
-;  outi
-;  outi
-;  outi
-;  outi
-
   ld    a,(VDP_0+1)       ;screen on
   or    %0100 0000
   out   ($99),a
@@ -1593,37 +1515,6 @@ lineint:
   out   ($99),a
   ld    a,15+128
   out   ($99),a
-
-;  ld    a,3
-;  out   ($99),a
-;  ld    a,7+128 ;backdrop
-;  out   ($99),a
-
-;  call  handlemusicint     ;handle this from page3 or else!!
-
-;  ld    a,4
-;  out   ($99),a
-;  ld    a,7+128 ;backdrop
-;  out   ($99),a
-
-;  in    a,($a8)
-;  push  af                  ;store current RAM/ROM page settings
-;  ld    a,(slot.page12rom)        ;all RAM except page 1+2
-;  out   ($a8),a         
-
-;  call  handlesfxint
-
-;  ld    a,7
-;  out   ($99),a
-;  ld    a,7+128 ;backdrop
-;  out   ($99),a
-
-;  ld a,(lineintflag)
-;  inc a
-;  ld (lineintflag),a
-
-;  pop   af                  ;recall RAM/ROM page setting
-;  out   ($a8),a         
 
   pop   ix
   pop   hl
@@ -1672,9 +1563,11 @@ db 8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7
 ;db 8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7
 ;db 8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7
 
+
+
 CameraMoveRightXBoundary: equ 050       ;as soon as the player x>50 and walking right still the camera should start moving right
 CameraMoveLeftXBoundary:  equ 234       ;as soon as the player x<304-50 and walking left still the camera should start moving left
-CameraEngine:
+CameraEngine:                           ;prepare R18 and R23 to be set on Vblank. Camera movement depends on the Player's position in the screen
   ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   jp    z,CameraEngine304x216
@@ -1700,6 +1593,9 @@ CameraEngine256x216:
 
 .HorizontalMovementCamera:
 .playerfacingRight:
+
+
+
 ;camera should start moving to the right, when player x>50 and facing right
   ld    a,(PlayerFacingRight?)          ;is player facing right ?
   or    a
@@ -1764,29 +1660,18 @@ CameraEngine256x216:
   ld    hl,R18ConversionTable
   add   hl,de
   ld    a,(hl)
-  di
-  out   ($99),a
-  ld    a,18+128
-  ei
-  out   ($99),a
+  ld    (R18onVblank),a
 
   ld    a,(CameraY)
-  di
-  out   ($99),a
-  ld    a,23+128
-  ei
-  out   ($99),a
+  ld    (R23onVblank),a
 
   ld    a,(CameraY)
   ld    b,a
   ld    a,lineintheight
-  add   a,b
-  out   ($99),a
-  ld    a,19+128            ;set lineinterrupt height
-  out   ($99),a
+  add   a,b  
+  ld    (R19onVblank),a
+  ret  
 
-ret  
-  
 
 CameraEngine304x216:  
  .VerticalMovementCamera:               ;vertical movement of camera: Camera just locks on to the player when not jumping.
@@ -1800,8 +1685,8 @@ CameraEngine304x216:
   ld    (TempoldY),a
 
   cp    b
+  ld    c,+0           ;vertical camera movent
   jr    z,.HorizontalMovementCamera
-  
   ld    c,-1           ;vertical camera movent
   jr    c,.HorizontalMovementCamera
   ld    c,+1           ;vertical camera movent
@@ -1809,6 +1694,7 @@ CameraEngine304x216:
 
 .HorizontalMovementCamera:
 .playerfacingRight:
+
 ;camera should start moving to the right, when player x>50 and facing right
   ld    a,(PlayerFacingRight?)          ;is player facing right ?
   or    a
@@ -1882,46 +1768,35 @@ CameraEngine304x216:
   ld    e,a
   ld    hl,R18ConversionTable
   add   hl,de
-  ld    a,(hl)
-  di
-  out   ($99),a
-  ld    a,18+128
-  ei
-  out   ($99),a
-
+  ld    a,(hl)  
+  ld    (R18onVblank),a
+  
   ld    a,(CameraY)
-  di
-  out   ($99),a
-  ld    a,23+128
-  ei
-  out   ($99),a
+  ld    (R23onVblank),a
 
-  ld    a,(CameraY)
-  ld    b,a
-  ld    a,lineintheight
-  add   a,b
-  out   ($99),a
-  ld    a,19+128            ;set lineinterrupt height
-  out   ($99),a
-
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  cp    2
-  ret   z
+  add   a,lineintheight
+  ld    (R19onVblank),a
 
   ;set page. page 0=camerax 0-15 page 1=camerax 16-31 page 2=camerax 32-47 page 3=camerax 48-63
   ld    a,(CameraX)
   ld    b,0*32+31           ;x*32+31 (x=page)
   sub   a,16
-  jp    c,setpage
+  jr    c,.SetPageOnNextVblank
   ld    b,1*32+31           ;x*32+31 (x=page)
   sub   a,16
-  jp    c,setpage
+  jr    c,.SetPageOnNextVblank
   ld    b,2*32+31           ;x*32+31 (x=page)
   sub   a,16
-  jp    c,setpage
+  jr    c,.SetPageOnNextVblank
   ld    b,3*32+31           ;x*32+31 (x=page)
-  jp    setpage
+ 
+.SetPageOnNextVblank: 
+  ld    a,b
+  ld    (PageOnNextVblank),a
+  ret
+
+
+ 
   
 ;*************************************************************
 ; met $7f, $bf en $ff in $9000 wordt de SCC voorgeschakeld
@@ -2042,7 +1917,7 @@ block1234:
 	ei
 	ret
 
-swap_spat_col_and_char_table:
+SwapSpatColAndCharTable:
 	ld		a,(vdp_0+6)     ;check current sprite character table
   cp    %0010 1111      ;spr chr table at $17800 now ?
   ld    hl,$6c00        ;spr color table $16c00
@@ -2088,61 +1963,22 @@ swap_spat_col_and_char_table:
   ld    (invissprchatableaddress),hl
   ret
 
-;putStarFoxSprite:
-;	ld		a,(slot.page12rom)	;all RAM except page 1+2
-;	out		($a8),a	
-	
-;	ld		hl,(invissprchatableaddress)		;sprite character table in VRAM ($17800)
-;	ld		a,1
-;	call	SetVdp_Write	
-
-;	ld		a,StarFoxSpritesBlock
-;	call	block1234		        ;set blocks in page 1/2
-
-;	ld		hl,StarFoxShipSprite1Color
-;	ld		c,$98
-;	call	outix128
-;	call	outix128
-;	call	outix128            ;12 sprites (12 * 32 = 384 bytes)
-;	call	outix128
-;	call	outix128
-;	call	outix128
-;	call	outix128
-;	call	outix128            ;32 sprites (32 * 32 = 384 bytes)
-
-;	ld		hl,(invissprcoltableaddress)		;sprite color table in VRAM ($17400)
-;	ld		a,1
-;	call	SetVdp_Write
-
-;  ld    a,15
-;  ld    b,0
-;  ld    c,2
-;  .loop:
-;  out   ($98),a
-;  djnz  .loop
-;  dec   c
-;  jr    nz,.loop
-;  ret
-
-
-;  ld    a,(CameraX)
-;  and   %0000 1111
-;  ld    d,0
-;  ld    e,a
-;  ld    hl,R18ConversionTable
-;  add   hl,de
-;  ld    a,(hl)
-;  di
-;  out   ($99),a
-;  ld    a,18+128
-;  ei
-;  out   ($99),a
 
 ;MapData:
 ;  ds    38 * 27           ;a map is 38 * 27 tiles big  
 
 MapLenght:  equ 38
 checktile:  
+;get player X in tiles
+  ld    hl,(ClesX)
+  add   hl,de
+
+  srl   h
+  rr    l                   ;/2
+  srl   l                   ;/4
+  srl   l                   ;/8
+
+;get player Y in tiles
   ld    a,(Clesy)
   add   a,b
 
@@ -2150,7 +1986,9 @@ checktile:
   srl   a
   srl   a                   ;/8
 
-	ld		hl,MapData ;-1
+	ld		de,MapData
+	add   hl,de
+	
 .selfmodifyingcodeMapLenght:
 	ld		de,MapLenght        ;38 tiles
   jr    z,.yset
@@ -2161,19 +1999,6 @@ checktile:
   djnz  .setmapwidthy
 .yset:
 
-
-;now check for collision
-  ld    de,(ClesX)
-
-  srl   d
-  rr    e                   ;/2
-  srl   e                   ;/4
-  srl   e                   ;/8
-
-	add		hl,de
-  ld    e,c
-	add		hl,de
-  
   ld    a,(hl)
   cp    1                   ;1 = wall
 	ret
@@ -2182,28 +2007,32 @@ playermovementspeed:    db  2
 oldx:                   dw  0
 oldy:                   db  0
 PlayerFacingRight?:     db  1
-movePlayer:
+MovePlayer:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
-  ld    a,(NewPrContr)
-	bit		4,a           ;space pressed ?
-  jr    z,.endcheckSpacepressed
-  ld    a,(playermovementspeed)
-  inc   a
-  and   7
-  ld    (playermovementspeed),a
-  .endcheckSpacepressed:
+;  ld    a,(NewPrContr)
+;	bit		4,a           ;space pressed ?
+;  jr    z,.endcheckSpacepressed
+;  ld    a,(playermovementspeed)
+;  inc   a
+;  and   7
+;  ld    (playermovementspeed),a
+;  .endcheckSpacepressed:
 
 ;store old x and y, and recall these values in case of collision with a wall
   ld    hl,(ClesX)
   ld    (oldx),hl
   ld    a,(Clesy)
   ld    (oldy),a
+
+  ld    hl,(ClesX)
+  add   hl,de
+  ld    (ClesX),hl
   
-  call  .move
+;  call  .move
   
   ld    b,000               ;add y to check (y is expressed in pixels)
   ld    c,1                 ;add x to check (x is expressed in tiles)
@@ -2301,53 +2130,316 @@ movePlayer:
   ld    (Clesy),a
   ret
 
+RstandingSpriteStand:         equ 0
+RsittingSpriteStand:          equ 2
+RrunningSpriteStand:          equ 4
+LstandingSpriteStand:         equ 6
+LsittingSpriteStand:          equ 8
+LrunningSpriteStand:          equ 10
+
 PlayerSpritestandjumptable:  
-  dw    Rstanding,Rsitting,Rrunning ;,Lstanding,Lsitting,Lrunning,Rjumpup,Ljumpup,Rbeinghit,Lbeinghit,Rdying,Ldying
+  dw    Rstanding,Rsitting,Rrunning,Lstanding,Lsitting,Lrunning,Rjump,Ljump ;,Rbeinghit,Lbeinghit,Rdying,Ldying
 ;  dw    Rstandpunch,Lstandpunch,Rsitpunch,Lsitpunch,Rstandmagic,Lstandmagic,Rsitmagic,Lsitmagic,extrastand
 
+
+PlayerSpriteStand: dw  Rstanding
+
 PlayerAniCount:     db  0
-PlayerSpriteStand:  db  0
 HandlePlayerSprite:
-  ld    a,(PlayerSpriteStand)
-  add   a,a
-  ld    d,0
-  ld    e,a
-  ld    hl,PlayerSpritestandjumptable
-  add   hl,de
-  ld    e,(hl)
-  inc   hl
-  ld    d,(hl)
-  ex    de,hl
+  ld    hl,(PlayerSpriteStand)
   jp    (hl)
-;	or		a				;stand=0	standing right
-;	dec		a				;stand=1	sitting right
-;	dec		a				;stand=2	running right
-;	dec		a				;stand=3	standing left
-;	dec		a				;stand=4	sitting left?
-;	dec		a				;stand=5	running left
-;	dec		a				;stand=6	jumping up right
-;	dec		a				;stand=7	jumping up left
-;	dec		a				;stand=8	Rbeinghit
-;	dec		a				;stand=9	Lbeinghit
-;	dec		a				;stand=10	Rdying
-;	dec		a				;stand=11	Ldying
-;	dec		a				;stand=12	r_standpunch
-;	dec		a				;stand=13	l_standpunch
-;	dec		a				;stand=14	r_sitpunch
-;	dec		a				;stand=15	l_sitpunch
-;	dec		a				;stand=16	r_standmagic
-;	dec		a				;stand=17	l_standmagic
-;	dec		a				;stand=18	r_sitmagic
-;	dec		a				;stand=19	l_sitmagic
-;	dec		a				;stand=20	a special action happens (spacestation entering pipes)
+;stand=0	standing right
+;stand=1	sitting right
+;stand=2	running right
+;stand=3	standing left
+;stand=4	sitting left
+;stand=5	running left
+;stand=6	jumping right
+;stand=7	jumping left
+
+StartingJumpSpeed:        equ -4
+JumpSpeed:                db  0
+MaxDownwardFallSpeed:     equ 3
+GravityTimer:             equ 6     ;every x frames gravity changes jump speed
+
+Rjump:
+	ld		a,(Controls)
+;	bit		1,a           ;cursor down pressed ?
+;	jp		nz,.Maybe_Set_R_sit
+;	bit		0,a           ;cursor up pressed ?
+;	jp		nz,.R_jump_andcheckpunch
+;	bit		2,a           ;cursor left pressed ?
+;	jp		nz,MovePlayerLeft
+	bit		3,a           ;cursor right pressed ?
+	call  nz,MovePlayerRight
+
+  ld    hl,JumpSpeed
+
+	ld		a,(PlayerAniCount)
+	inc   a
+	cp    6
+	jr    nz,.set
+  ld    a,(hl)
+  inc   a
+  cp    MaxDownwardFallSpeed+1
+  jr    z,.maxfound
+  ld    (hl),a
+  .maxfound:
+
+	xor   a
+	.set:
+	ld		(PlayerAniCount),a
+
+  ld    a,(Clesy)
+  add   a,(hl)
+  ld    (Clesy),a
+  
+  ld    b,036               ;add y to check (y is expressed in pixels)
+  ld    de,013              ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jp    z,Set_R_stand       ;on collision change to R_Stand  
+  ret
+
+Ljump:
+	ld		a,(Controls)
+;	bit		1,a           ;cursor down pressed ?
+;	jp		nz,.Maybe_Set_R_sit
+;	bit		0,a           ;cursor up pressed ?
+;	jp		nz,.R_jump_andcheckpunch
+	bit		2,a           ;cursor left pressed ?
+	call	nz,MovePlayerLeft
+;	bit		3,a           ;cursor right pressed ?
+;	jp		nz,.AnimateRun
+
+
+  ld    hl,JumpSpeed
+
+	ld		a,(PlayerAniCount)
+	inc   a
+	cp    6
+	jr    nz,.set
+  ld    a,(hl)
+  inc   a
+  cp    MaxDownwardFallSpeed+1
+  jr    z,.maxfound
+  ld    (hl),a
+  .maxfound:
+
+	xor   a
+	.set:
+	ld		(PlayerAniCount),a
+
+  ld    a,(Clesy)
+  add   a,(hl)
+  ld    (Clesy),a
+  
+  ld    b,036               ;add y to check (y is expressed in pixels)
+  ld    de,013              ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jp    z,Set_L_stand       ;on collision change to R_Stand  
+  ret
+
+Lsitting:
+  ret
 
 Rsitting:
   ret
 
-Rrunning:
-  ret
+Lrunning:
+  ld    b,032               ;add y to check (y is expressed in pixels)
+  ld    de,000              ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jp    z,Set_L_stand       ;on collision change to L_Stand
 
-Rstanding:
+  call  MovePlayerLeft
+
+;  call  checkfloor
+;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+;	bit		1,a           ;cursor down pressed ?
+;	jp		nz,.Maybe_Set_R_sit
+	bit		0,a           ;cursor up pressed ?
+	jp		nz,Set_L_jump
+	bit		2,a           ;cursor left pressed ?
+	jp		nz,.AnimateRun
+;	bit		3,a           ;cursor right pressed ?
+;	jp		nz,.AnimateRun
+
+  ld    a,(NewPrContr)
+;	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+;	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic
+
+  jp    Set_L_stand
+  
+.AnimateRun:
+  ld    hl,LeftRunAnimation
+;  jp    AnimateRun
+
+AnimateRun:
+  ld    a,(framecounter)          ;animate every 4 frames
+  and   3
+  ret   nz
+  
+  ld    a,(PlayerAniCount)
+  add   a,2                       ;2 bytes used for pointer to sprite frame address
+  cp    2 * 10                    ;10 frame addresses
+  jr    nz,.SetPlayerAniCount
+  xor   a
+  .SetPlayerAniCount:
+  ld    (PlayerAniCount),a
+  
+  ld    d,0
+  ld    e,a
+  add   hl,de
+    
+  ld    e,(hl)
+  inc   hl
+  ld    d,(hl)
+    
+	ld		(standchar),de
+	ld    hl,PlayerSpriteData_Colo_LeftRun1-PlayerSpriteData_Char_LeftRun1
+;	add   hl,de
+;	ld		(standcol),hl
+  ret	
+   
+LeftRunAnimation:          ;xoffset sprite top, xoffset sprite bottom
+  dw  PlayerSpriteData_Char_LeftRun2 
+  dw  PlayerSpriteData_Char_LeftRun3 
+  dw  PlayerSpriteData_Char_LeftRun4 
+  dw  PlayerSpriteData_Char_LeftRun5 
+  dw  PlayerSpriteData_Char_LeftRun6 
+  dw  PlayerSpriteData_Char_LeftRun7 
+  dw  PlayerSpriteData_Char_LeftRun8 
+  dw  PlayerSpriteData_Char_LeftRun9 
+  dw  PlayerSpriteData_Char_LeftRun10
+  dw  PlayerSpriteData_Char_LeftRun1 
+    
+RightRunAnimation:
+  dw  PlayerSpriteData_Char_RightRun7 
+  dw  PlayerSpriteData_Char_RightRun8 
+  dw  PlayerSpriteData_Char_RightRun9 
+  dw  PlayerSpriteData_Char_RightRun10
+  dw  PlayerSpriteData_Char_RightRun1 
+  dw  PlayerSpriteData_Char_RightRun2 
+  dw  PlayerSpriteData_Char_RightRun3 
+  dw  PlayerSpriteData_Char_RightRun4 
+  dw  PlayerSpriteData_Char_RightRun5 
+  dw  PlayerSpriteData_Char_RightRun6 
+
+RunningTablePointer:                  db  18 ;12
+RunningTablePointerCenter:            equ 18 ;12
+RunningTablePointerRightEnd:          equ 38 ;26
+RunningTablePointerRunLeftEndValue:   equ 6
+RunningTablePointerRunRightEndValue:  equ 32 ;20
+RunningTable1:
+;      [run  L]                   C                   [run  R]
+;  dw  -1,-1,-1,-1,-0,-1,0,+1,+0,+1,+1,+1,+1
+;  dw  -2,-1,-1,-2,-1,-1,0,+1,+1,+2,+1,+1,+2
+;  dw  -2,-2,-1,-2,-1,-1,0,+1,+1,+2,+1,+2,+2
+   dw  -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
+
+EndMovePlayerHorizontally:
+  ld    a,(RunningTablePointer)
+  cp    RunningTablePointerCenter
+  ret   z
+  jp    c,.smaller
+  sub   a,2
+  jp    DoMovePlayer
+.smaller:
+  add   a,2
+  jp    DoMovePlayer
+  ret
+  
+MovePlayerRight: 
+  ld    a,(RunningTablePointer)
+  cp    RunningTablePointerRunLeftEndValue
+  jr    nc,.go
+  ld    a,RunningTablePointerRunLeftEndValue
+  .go:
+  
+  add   a,2
+  cp    RunningTablePointerRightEnd                ;check right end of running table
+  jr    nz,.SetRunningTablePointer
+  ld    a,RunningTablePointerRunRightEndValue
+  .SetRunningTablePointer:
+  jp    DoMovePlayer
+
+MovePlayerLeft:
+  ld    a,(RunningTablePointer)
+  cp    RunningTablePointerRunRightEndValue
+  jr    c,.go
+  ld    a,RunningTablePointerRunRightEndValue-2
+  .go:
+ 
+  ld    a,(RunningTablePointer)
+  sub   a,2
+  cp    -2                  ;check left end of running table
+  jr    nz,.SetRunningTablePointer
+  ld    a,RunningTablePointerRunLeftEndValue-2
+  .SetRunningTablePointer:
+  jp    DoMovePlayer
+
+DoMovePlayer:
+  ld    (RunningTablePointer),a
+  
+  ld    d,0
+  ld    e,a
+  
+  ld    hl,RunningTable1
+  add   hl,de
+  ld    e,(hl)              ;horizontal movement in de
+  inc   hl
+  ld    d,(hl)              ;horizontal movement in de
+ 
+  ld    hl,(ClesX)
+  add   hl,de
+  ld    (ClesX),hl
+  ret
+  
+Rrunning:
+  ld    b,032               ;add y to check (y is expressed in pixels)
+  ld    de,013              ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jp    z,Set_R_stand       ;on collision change to R_Stand
+
+  call  MovePlayerRight
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+;	bit		1,a           ;cursor down pressed ?
+;	jp		nz,.Maybe_Set_R_sit
+	bit		0,a           ;cursor up pressed ?
+	jp		nz,Set_R_jump
+;	bit		2,a           ;cursor left pressed ?
+;	jp		nz,.Set_L_run_andcheckpunch
+	bit		3,a           ;cursor right pressed ?
+	jp		nz,.AnimateRun
+
+  ld    a,(NewPrContr)
+;	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+;	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic
+
+  jp    Set_R_stand
+  
+.AnimateRun:
+  ld    hl,RightRunAnimation
+  jp    AnimateRun
+
+Lstanding:
+  call  EndMovePlayerHorizontally
+
 ;  call  checkfloor
 ;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
 ;
@@ -2357,11 +2449,11 @@ Rstanding:
 ;
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
-	jp		nz,.Maybe_Set_R_sit
+;	jp		nz,.Maybe_Set_R_sit
 	bit		0,a           ;cursor up pressed ?
-;	jp		nz,.R_jump_andcheckpunch
+	jp		nz,.L_jump_andcheckpunch
 	bit		2,a           ;cursor left pressed ?
-;	jp		nz,.Set_L_run_andcheckpunch
+	jp		nz,.Set_L_run_andcheckpunch
 	bit		3,a           ;cursor right pressed ?
 	jp		nz,.Set_R_run_andcheckpunch
 
@@ -2378,7 +2470,7 @@ Rstanding:
 ;	jp		nz,Set_L_standpunch
 	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_L_standmagic
-;  jp    Set_L_run
+  jp    Set_L_run
 
 .Maybe_Set_R_sit:
 ;  call  CheckDoubleTapDownF1Menu
@@ -2390,12 +2482,12 @@ Rstanding:
 ;	jp		nz,Set_R_sitmagic
 	jp		Set_R_sit
 
-.R_jump_andcheckpunch:
+.L_jump_andcheckpunch:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
 ;	jp		z,Set_R_jump
 
-;  call  Set_R_jump
+  call  Set_L_jump
 ;  ld    a,(firepunchon?)
 ;  ld    (firepunchwhilejump?),a
 ;  xor   1
@@ -2412,23 +2504,147 @@ Rstanding:
 ;	jp		nz,Set_R_standmagic
   jp    Set_R_run
 
+Rstanding:
+  call  EndMovePlayerHorizontally
+
+;  call  checkfloor
+;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		1,a           ;cursor down pressed ?
+;	jp		nz,.Maybe_Set_R_sit
+	bit		0,a           ;cursor up pressed ?
+	jp		nz,.R_jump_andcheckpunch
+	bit		2,a           ;cursor left pressed ?
+	jp		nz,.Set_L_run_andcheckpunch
+	bit		3,a           ;cursor right pressed ?
+	jp		nz,.Set_R_run_andcheckpunch
+
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic
+	ret
+
+.Set_L_run_andcheckpunch:
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+;	jp		nz,Set_L_standpunch
+	bit		5,a           ;b pressed ?
+;	jp		nz,Set_L_standmagic
+  jp    Set_L_run
+
+.Maybe_Set_R_sit:
+;  call  CheckDoubleTapDownF1Menu
+  
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_sitpunch
+	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_sitmagic
+	jp		Set_R_sit
+
+.R_jump_andcheckpunch:
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+	jp		z,Set_R_jump
+
+;  call  Set_R_jump
+;  ld    a,(firepunchon?)
+;  ld    (firepunchwhilejump?),a
+;  xor   1
+;  ld    (punchwhilejump?),a
+;  xor   a
+;  ld    (punchwhilejumpcounter),a
+  ret
+  
+.Set_R_run_andcheckpunch:
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic
+  jp    Set_R_run
+
+Set_R_jump:
+	ld		hl,Rjump
+	ld		(PlayerSpriteStand),hl
+
+	ld		hl,PlayerSpriteData_Char_RightRun9
+	ld		(standchar),hl
+
+  xor   a
+	ld		(PlayerAniCount),a
+	ld    a,StartingJumpSpeed
+	ld		(JumpSpeed),a
+  ld    a,1
+  ld    (PlayerFacingRight?),a		
+  ret
+  
+Set_L_jump:
+	ld		hl,Ljump
+	ld		(PlayerSpriteStand),hl
+
+	ld		hl,PlayerSpriteData_Char_LeftRun9
+	ld		(standchar),hl
+
+  xor   a
+	ld		(PlayerAniCount),a
+	ld    a,StartingJumpSpeed
+	ld		(JumpSpeed),a
+  xor   a
+  ld    (PlayerFacingRight?),a		
+  ret
+  
 Set_R_run:
-	ld		a,2				;running right
-	ld		(PlayerSpriteStand),a
-	ld		hl,1			;animate next frame
-	ld		(PlayerAniCount),hl
+	ld		hl,Rrunning
+	ld		(PlayerSpriteStand),hl
+  xor   a
+	ld		(PlayerAniCount),a
+  ld    a,1
+  ld    (PlayerFacingRight?),a		
+  ret
+
+Set_L_run:
+	ld		hl,Lrunning
+	ld		(PlayerSpriteStand),hl
+  xor   a
+	ld		(PlayerAniCount),a
+  xor   a
+  ld    (PlayerFacingRight?),a	
   ret
 
 Set_R_sit:	
-	ld		a,1				;sitting right
+	ld		a,RSittingSpriteStand
 	ld		(PlayerSpriteStand),a
-Setrightsitpose:
-	ld		hl,$0000+(576*14)
-;	ld		(standchar),hl
-	ld		hl,$0000+(576*14)+384
-;	ld		(standcol),hl
-;  jp    Totallycentredpose
+  ld    a,1
+  ld    (PlayerFacingRight?),a	
   ret
+
+Set_R_stand:
+	ld		hl,RStanding
+	ld		(PlayerSpriteStand),hl
+	ld		hl,PlayerSpriteData_Char_RightStand
+	ld		(standchar),hl
+  ld    a,1
+  ld    (PlayerFacingRight?),a	
+  ret
+
+Set_L_stand:
+	ld		hl,LStanding
+	ld		(PlayerSpriteStand),hl
+	ld		hl,PlayerSpriteData_Char_LeftStand
+	ld		(standchar),hl
+  xor   a
+  ld    (PlayerFacingRight?),a	
+  ret
+
+
 
 ;Totallycentredpose:
 ;  ld    a,100       ;y offset
@@ -2451,54 +2667,7 @@ Setrightsitpose:
 ;  ld    (x_offset_hero_bot),a
 ;  ret
 
-;ClesX:  dw 11
-;ClesY:  db 150
-SetClesSprites:
-  ld    a,(ClesY)
-  ld    b,a
-  add   a,16
-  ld    c,a
 
-  ld    a,(CameraX)         ;camera jumps 16 pixels every page, subtract this value from x Cles
-  and   %1111 0000
-  
-  ld    d,0
-  ld    e,a
-  
-  ld    hl,(ClesX)
-  sbc   hl,de               ;take x Cles and subtract the x camer
-
-  ld    a,h                 ;if the value now is <0 or >256 Cles is out of the screen
-  or    a
-;  jp    m,.outofscreenleft
-  jp    nz,.outofscreen
-
-  ld    a,l
-  jp    .putx
-
-.outofscreen:
-  ld    a,255
-.putx:
-
-  ld    de,3
-  ld    hl,spat+88          ;y sprite 22
-  ld    (hl),b
-  inc   hl                  ;x sprite 22
-  ld    (hl),a
-  add   hl,de
-  ld    (hl),b
-  inc   hl                  ;x sprite 22
-  ld    (hl),a
-  add   hl,de
-  ld    (hl),c
-  inc   hl                  ;x sprite 22
-  ld    (hl),a
-  add   hl,de
-  ld    (hl),c
-  inc   hl                  ;x sprite 22
-  ld    (hl),a
-  add   hl,de
-  ret
 
 SetBorderMaskingSprites:
   ld    hl,spat+0           ;y sprite 1
@@ -2554,7 +2723,7 @@ ScreenOn:
   out   ($99),a
   ret
 
-putspattovram:
+PutSpatToVram:
 	ld		hl,(invisspratttableaddress)		;sprite attribute table in VRAM ($17600)
 	ld		a,1
 	call	SetVdp_Write	

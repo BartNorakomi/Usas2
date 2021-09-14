@@ -27,7 +27,7 @@ loadGraphics:
   call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
   call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
   call  copyScoreBoard                ;copy scoreboard to page 0 - screen 5 - bottom 40 pixels (scoreboard)
-  call  swap_spat_col_and_char_table
+  call  SwapSpatColAndCharTable
   call  initiatebordermaskingsprites
   call  SetInterruptHandler           ;set Lineint and Vblank
   jp    LevelEngine
@@ -868,9 +868,11 @@ P1Attpoint2Sy:                rb    1
 ;These belong together
 
 spatpointer:                  rb		2
-
-scrollEngine:               rb  1
-
+scrollEngine:                 rb    1
+PageOnNextVblank:             rb    1
+R18onVblank:                  rb    1
+R23onVblank:                  rb    1
+R19onVblank:                  rb    1
 
 endenginepage3variables:  equ $+enginepage3length
 org variables
