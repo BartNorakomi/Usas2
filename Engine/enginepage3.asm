@@ -12,7 +12,7 @@ MapB01_004Data: db MapsBlock01 | dw MapB01_004 | db 1,2,2                  | Map
 MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,2,2                  | MapB01_008Data: db MapsBlock01 | dw MapB01_008 | db 1,2,2                  | MapB01_009Data: db MapsBlock01 | dw MapB01_009 | db 1,2,2
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 2,2,2                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,2,2                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,2,2
 
-WorldMapPointer:  dw  MapB01_008Data
+WorldMapPointer:  dw  MapB01_001Data
 ;WorldMapPointer:  dw  MapB01_004Data
 
 loadGraphics:

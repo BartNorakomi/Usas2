@@ -2,7 +2,6 @@ LevelEngine:
   call  SwapSpatColAndCharTable
   call  switchpageSF2Engine
   call  PopulateControls
-;  call  movePlayer                ;simply move the player (changing only it's x and y)
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
 ;  call  VramObjects
@@ -31,8 +30,8 @@ LevelEngine:
 
 
 
-ClesX:  dw 210
-ClesY:  db 150
+ClesX:      dw 210
+ClesY:      db 150
 
 
 herospritenr:             db  22
@@ -1677,22 +1676,32 @@ CameraEngine304x216:
  .VerticalMovementCamera:               ;vertical movement of camera: Camera just locks on to the player when not jumping.
 
 ;follow y position of player with camera
-
-
-  ld    a,(TempoldY)
-  ld    b,a
   ld    a,(Clesy)
-  ld    (TempoldY),a
 
-  cp    b
-  ld    c,+0           ;vertical camera movent
-  jr    z,.HorizontalMovementCamera
-  ld    c,-1           ;vertical camera movent
-  jr    c,.HorizontalMovementCamera
-  ld    c,+1           ;vertical camera movent
+;checkplayerbottom of screen  
+  cp    100
+  ld    c,+1            ;vertical camera movent
+  jr    nc,.movecameraY
+
+  cp    80 
+  ld    c,-1            ;vertical camera movent
+  jr    c,.movecameraY
+
+  ld    c,0             ;vertical camera movent
+
+.movecameraY:
+  ld    a,(CameraY)
+  add   a,c
+  jp    m,.negativeYValue
+  cp    45
+  jr    nc,.maxYRangeFound
+  ld    (CameraY),a
+  .negativeYValue:
+  .maxYRangeFound:
 
 
-.HorizontalMovementCamera:
+
+
 .playerfacingRight:
 
 ;camera should start moving to the right, when player x>50 and facing right
@@ -1743,14 +1752,6 @@ CameraEngine304x216:
 ;  jp    .movecamera
 
 .movecamera:
-  ld    a,(CameraY)
-  add   a,c
-  jp    m,.negativeYValue
-  cp    45
-  jr    nc,.maxYRangeFound
-  ld    (CameraY),a
-  .negativeYValue:
-  .maxYRangeFound:
 
   ld    a,(CameraX)
   add   a,b
@@ -2000,135 +2001,13 @@ checktile:
 .yset:
 
   ld    a,(hl)
-  cp    1                   ;1 = wall
+  dec   a                   ;1 = wall
 	ret
 
 playermovementspeed:    db  2
 oldx:                   dw  0
 oldy:                   db  0
 PlayerFacingRight?:     db  1
-MovePlayer:
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-;  ld    a,(NewPrContr)
-;	bit		4,a           ;space pressed ?
-;  jr    z,.endcheckSpacepressed
-;  ld    a,(playermovementspeed)
-;  inc   a
-;  and   7
-;  ld    (playermovementspeed),a
-;  .endcheckSpacepressed:
-
-;store old x and y, and recall these values in case of collision with a wall
-  ld    hl,(ClesX)
-  ld    (oldx),hl
-  ld    a,(Clesy)
-  ld    (oldy),a
-
-  ld    hl,(ClesX)
-  add   hl,de
-  ld    (ClesX),hl
-  
-;  call  .move
-  
-  ld    b,000               ;add y to check (y is expressed in pixels)
-  ld    c,1                 ;add x to check (x is expressed in tiles)
-  call  checktile           ;out z=collision found with wall
-  jr    z,.collided
-  ld    b,000               ;add y to check (y is expressed in pixels)
-  ld    c,2                 ;add x to check (x is expressed in tiles)
-  call  checktile           ;out z=collision found with wall
-  jr    z,.collided
-
-  ld    b,016               ;add y to check (y is expressed in pixels)
-  ld    c,1                 ;add x to check (x is expressed in tiles)
-  call  checktile           ;out z=collision found with wall
-  jr    z,.collided
-  ld    b,016               ;add y to check (y is expressed in pixels)
-  ld    c,2                 ;add x to check (x is expressed in tiles)
-  call  checktile           ;out z=collision found with wall
-  jr    z,.collided  
-
-  ld    b,032               ;add y to check (y is expressed in pixels)
-  ld    c,1                 ;add x to check (x is expressed in tiles)
-  call  checktile           ;out z=collision found with wall
-  jr    z,.collided
-  ld    b,032               ;add y to check (y is expressed in pixels)
-  ld    c,2                 ;add x to check (x is expressed in tiles)
-  call  checktile           ;out z=collision found with wall
-  jr    z,.collided  
-  ret
-  
-.collided:    
-  ld    hl,(oldx)
-  ld    (ClesX),hl
-  ld    a,(oldy)
-  ld    (Clesy),a
-  ret
-
-.move:
-  ld    a,(playermovementspeed)
-  ld    d,0
-  ld    e,a
-  
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-  ld    a,(Controls)
-	bit		5,a           ;m pressed ?
-  ret   nz
-
-  ld    a,(Controls)
-	bit		0,a           ;up pressed ?
-  call  nz,.up
-
-  ld    a,(Controls)
-	bit		1,a           ;down pressed ?
-  call  nz,.down
-
-  ld    a,(Controls)
-	bit		2,a           ;left pressed ?
-  call  nz,.left
-
-  ld    a,(Controls)
-	bit		3,a           ;right pressed ?
-  ret   z
-
-.right:  
-  ld    hl,(ClesX)
-  add   hl,de
-  ld    (ClesX),hl
-  
-  ld    a,1
-  ld    (PlayerFacingRight?),a
-  ret
-
-.left:  
-  xor   a
-  ld    hl,(ClesX)
-  sbc   hl,de
-  ld    (ClesX),hl
-
-;  xor   a
-  ld    (PlayerFacingRight?),a
-  ret
-  
-.up:  
-  ld    a,(Clesy)
-  sub   e
-  ld    (Clesy),a
-  ret
-
-.down:  
-  ld    a,(Clesy)
-  add   e
-  ld    (Clesy),a
-  ret
 
 RstandingSpriteStand:         equ 0
 RsittingSpriteStand:          equ 2
@@ -2138,7 +2017,7 @@ LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
 PlayerSpritestandjumptable:  
-  dw    Rstanding,Rsitting,Rrunning,Lstanding,Lsitting,Lrunning,Rjump,Ljump ;,Rbeinghit,Lbeinghit,Rdying,Ldying
+  dw    Rstanding,Rsitting,Rrunning,Lstanding,Lsitting,Lrunning,Jump ;,Ljump ;,Rbeinghit,Lbeinghit,Rdying,Ldying
 ;  dw    Rstandpunch,Lstandpunch,Rsitpunch,Lsitpunch,Rstandmagic,Lstandmagic,Rsitmagic,Lsitmagic,extrastand
 
 
@@ -2157,27 +2036,65 @@ HandlePlayerSprite:
 ;stand=6	jumping right
 ;stand=7	jumping left
 
-StartingJumpSpeed:        equ -4
+StartingJumpSpeed:        equ -5    ;initial starting jump take off speed
+FallingJumpSpeed:         equ 1
 JumpSpeed:                db  0
-MaxDownwardFallSpeed:     equ 3
-GravityTimer:             equ 6     ;every x frames gravity changes jump speed
+MaxDownwardFallSpeed:     equ 5
+GravityTimer:             equ 4     ;every x frames gravity changes jump speed
+YaddHeadPLayer:           equ 2
+YaddmiddlePLayer:         equ 17
+YaddFeetPlayer:           equ 33
+XaddLeftPlayer:           equ 0
+XaddRightPlayer:          equ 15
 
-Rjump:
+MoveHorizontallyWhileJump:
+  ld    b,0                 ;horizontal movement
+
 	ld		a,(Controls)
 ;	bit		1,a           ;cursor down pressed ?
 ;	jp		nz,.Maybe_Set_R_sit
 ;	bit		0,a           ;cursor up pressed ?
 ;	jp		nz,.R_jump_andcheckpunch
-;	bit		2,a           ;cursor left pressed ?
-;	jp		nz,MovePlayerLeft
+	bit		2,a                 ;cursor left pressed ?
+  jp    z,.EndCheckLeftPressed
+  dec   b
+  .EndCheckLeftPressed:
 	bit		3,a           ;cursor right pressed ?
-	call  nz,MovePlayerRight
+  jp    z,.EndCheckRightPressed
+  inc   b
+  .EndCheckRightPressed:
 
+  ld    a,b
+  or    a
+  jp    m,MovePlayerLeft
+  jp    z,EndMovePlayerHorizontally
+  jp    MovePlayerRight
+
+AnimateWhileJump:
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jp    z,.AnimateJumpFacingLeft
+
+.AnimateJumpFacingRight:
+	ld		hl,PlayerSpriteData_Char_RightRun9
+	ld		(standchar),hl
+  ret
+
+.AnimateJumpFacingLeft:
+	ld		hl,PlayerSpriteData_Char_LeftRun9
+	ld		(standchar),hl
+  ret
+  
+Jump:
+  call  MoveHorizontallyWhileJump
+  call  AnimateWhileJump
+
+.VerticalMovement:
   ld    hl,JumpSpeed
 
 	ld		a,(PlayerAniCount)
 	inc   a
-	cp    6
+	cp    GravityTimer
 	jr    nz,.set
   ld    a,(hl)
   inc   a
@@ -2193,94 +2110,61 @@ Rjump:
   ld    a,(Clesy)
   add   a,(hl)
   ld    (Clesy),a
-  
-  ld    b,036               ;add y to check (y is expressed in pixels)
-  ld    de,013              ;add x to check (x is expressed in pixels)
+
+  ld    a,(hl)              ;if vertical JumpSpeed is negative then CheckPlatformAbove. If it's positive then CheckPlatformBelow
+  or    a
+  jp    m,.CheckPlatformAbove
+  ret   z
+
+.CheckPlatformBelow:        ;check platform below
+  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
-  jp    z,Set_R_stand       ;on collision change to R_Stand  
+  jr    z,.SnapToPlatformBelow
+
+  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jr    z,.SnapToPlatformBelow  
   ret
-
-Ljump:
-	ld		a,(Controls)
-;	bit		1,a           ;cursor down pressed ?
-;	jp		nz,.Maybe_Set_R_sit
-;	bit		0,a           ;cursor up pressed ?
-;	jp		nz,.R_jump_andcheckpunch
-	bit		2,a           ;cursor left pressed ?
-	call	nz,MovePlayerLeft
-;	bit		3,a           ;cursor right pressed ?
-;	jp		nz,.AnimateRun
-
-
-  ld    hl,JumpSpeed
-
-	ld		a,(PlayerAniCount)
-	inc   a
-	cp    6
-	jr    nz,.set
-  ld    a,(hl)
-  inc   a
-  cp    MaxDownwardFallSpeed+1
-  jr    z,.maxfound
-  ld    (hl),a
-  .maxfound:
-
-	xor   a
-	.set:
-	ld		(PlayerAniCount),a
-
-  ld    a,(Clesy)
-  add   a,(hl)
+  
+  .SnapToPlatformBelow:
+  ld    a,(Clesy)           ;on collision snap y player to platform below and switch standing
+  sub   4                   ;move player up a little when snapping. This is done so that you always snap to the same tile
+  and   %1111 1000
+  add   a,7
   ld    (Clesy),a
-  
-  ld    b,036               ;add y to check (y is expressed in pixels)
-  ld    de,013              ;add x to check (x is expressed in pixels)
-  call  checktile           ;out z=collision found with wall
-  jp    z,Set_L_stand       ;on collision change to R_Stand  
-  ret
+ 
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jp    z,Set_L_stand       ;on collision change to L_Stand  
+  jp    Set_R_stand         ;on collision change to R_Stand    
 
+.CheckPlatformAbove:
+;check platform above
+  ld    b,YaddHeadPLayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+3   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jr    z,.SnapToCeilingAbove
+
+  ld    b,YaddHeadPLayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-3  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jr    z,.SnapToCeilingAbove
+  ret
+ 
+  .SnapToCeilingAbove:
+  ld    a,(Clesy)           ;on collision snap y player to ceiling above
+  and   %1111 1000
+  add   a,6
+  ld    (Clesy),a
+  ret
+ 
 Lsitting:
   ret
 
 Rsitting:
   ret
-
-Lrunning:
-  ld    b,032               ;add y to check (y is expressed in pixels)
-  ld    de,000              ;add x to check (x is expressed in pixels)
-  call  checktile           ;out z=collision found with wall
-  jp    z,Set_L_stand       ;on collision change to L_Stand
-
-  call  MovePlayerLeft
-
-;  call  checkfloor
-;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-	ld		a,(Controls)
-;	bit		1,a           ;cursor down pressed ?
-;	jp		nz,.Maybe_Set_R_sit
-	bit		0,a           ;cursor up pressed ?
-	jp		nz,Set_L_jump
-	bit		2,a           ;cursor left pressed ?
-	jp		nz,.AnimateRun
-;	bit		3,a           ;cursor right pressed ?
-;	jp		nz,.AnimateRun
-
-  ld    a,(NewPrContr)
-;	bit		4,a           ;space pressed ?
-;	jp		nz,Set_R_standpunch
-;	bit		5,a           ;b pressed ?
-;	jp		nz,Set_R_standmagic
-
-  jp    Set_L_stand
-  
-.AnimateRun:
-  ld    hl,LeftRunAnimation
-;  jp    AnimateRun
 
 AnimateRun:
   ld    a,(framecounter)          ;animate every 4 frames
@@ -2339,11 +2223,9 @@ RunningTablePointerRightEnd:          equ 38 ;26
 RunningTablePointerRunLeftEndValue:   equ 6
 RunningTablePointerRunRightEndValue:  equ 32 ;20
 RunningTable1:
-;      [run  L]                   C                   [run  R]
-;  dw  -1,-1,-1,-1,-0,-1,0,+1,+0,+1,+1,+1,+1
-;  dw  -2,-1,-1,-2,-1,-1,0,+1,+1,+2,+1,+1,+2
-;  dw  -2,-2,-1,-2,-1,-1,0,+1,+1,+2,+1,+2,+2
-   dw  -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
+;       [run  L]                   C                   [run  R]
+;  dw    -1,-1,-1,-1,-1,-1,-1,-1,-1,0,+1,+1,+1,+1,+1,+1,+1,+1,+1
+  dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
 
 EndMovePlayerHorizontally:
   ld    a,(RunningTablePointer)
@@ -2357,7 +2239,10 @@ EndMovePlayerHorizontally:
   jp    DoMovePlayer
   ret
   
-MovePlayerRight: 
+MovePlayerRight:
+  ld    a,1
+  ld    (PlayerFacingRight?),a		
+ 
   ld    a,(RunningTablePointer)
   cp    RunningTablePointerRunLeftEndValue
   jr    nc,.go
@@ -2372,6 +2257,9 @@ MovePlayerRight:
   jp    DoMovePlayer
 
 MovePlayerLeft:
+  xor   a
+  ld    (PlayerFacingRight?),a		
+
   ld    a,(RunningTablePointer)
   cp    RunningTablePointerRunRightEndValue
   jr    c,.go
@@ -2401,27 +2289,107 @@ DoMovePlayer:
   ld    hl,(ClesX)
   add   hl,de
   ld    (ClesX),hl
-  ret
   
-Rrunning:
-  ld    b,032               ;add y to check (y is expressed in pixels)
-  ld    de,013              ;add x to check (x is expressed in pixels)
-  call  checktile           ;out z=collision found with wall
-  jp    z,Set_R_stand       ;on collision change to R_Stand
+  ld    a,e
+  or    a
+  jp    m,.PlayerMovedLeft
+  ret   z
 
-  call  MovePlayerRight
+.PlayerMovedRight:
+  ld    b,YaddFeetPlayer-1  ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
+  call  checktile           ;out z=collision found with wall
+  jr    z,.SnapToWallRight
+
+  ld    b,YaddmiddlePLayer  ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
+  call  checktile           ;out z=collision found with wall
+  jr    z,.SnapToWallRight
+
+  ld    b,YaddHeadPLayer+1  ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
+  call  checktile           ;out z=collision found with wall
+  jr    z,.SnapToWallRight
+  ret
+
+  .SnapToWallRight:
+  ld    hl,(ClesX)          ;in case collision with wall is detected after the momevent, snap to the wall
+  ld    a,l
+  and   %1111 1000
+  ld    l,a
+  ld    (ClesX),hl
+  scf                       ;carry: collision detected
+  ret
+
+.PlayerMovedLeft:
+  ld    b,YaddFeetPlayer-1  ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
+  call  checktile           ;out z=collision found with wall
+  jr    z,.SnapToWallLeft
+
+  ld    b,YaddmiddlePLayer  ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
+  call  checktile           ;out z=collision found with wall
+  jr    z,.SnapToWallLeft
+
+  ld    b,YaddHeadPLayer+1  ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
+  call  checktile           ;out z=collision found with wall
+  jr    z,.SnapToWallLeft
+  ret
+
+  .SnapToWallLeft:
+  ld    hl,(ClesX)          ;in case collision with wall is detected after the momevent, snap to the wall
+  ld    a,l
+  and   %1111 1000
+  ld    l,a
+  ld    de,8
+  add   hl,de
+  
+  ld    (ClesX),hl
+  scf                       ;carry: collision detected
+  ret
+
+;XaddLeftPlayer:           equ 0
+;XaddRightPlayer:          equ 15
+;YaddHeadPLayer:           equ 2
+;YaddmiddlePLayer:         equ 17
+;YaddFeetPlayer:           equ 33
+
+
+CheckFloor:
+  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  ret   z
+
+  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  ret   z
+  scf
+  ret
+
+Rrunning:
+  call  MovePlayerRight     ;out: c-> collision detected
+  jp    c,Set_R_stand       ;on collision change to R_Stand
+  
+  call  CheckFloor          ;out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
-	ld		a,(Controls)
 ;	bit		1,a           ;cursor down pressed ?
 ;	jp		nz,.Maybe_Set_R_sit
+  ld    a,(NewPrContr)
 	bit		0,a           ;cursor up pressed ?
 	jp		nz,Set_R_jump
 ;	bit		2,a           ;cursor left pressed ?
 ;	jp		nz,.Set_L_run_andcheckpunch
+	ld		a,(Controls)
 	bit		3,a           ;cursor right pressed ?
 	jp		nz,.AnimateRun
 
@@ -2437,6 +2405,43 @@ Rrunning:
   ld    hl,RightRunAnimation
   jp    AnimateRun
 
+Lrunning:
+  call  MovePlayerLeft      ;out: c-> collision detected
+  jp    c,Set_L_stand       ;on collision change to R_Stand
+
+  call  CheckFloor          ;out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+
+;  call  checkfloor
+;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+;	bit		1,a           ;cursor down pressed ?
+;	jp		nz,.Maybe_Set_R_sit
+  ld    a,(NewPrContr)
+	bit		0,a           ;cursor up pressed ?
+	jp		nz,Set_R_jump
+	ld		a,(Controls)
+	bit		2,a           ;cursor left pressed ?
+	jp		nz,.AnimateRun
+;	bit		3,a           ;cursor right pressed ?
+;	jp		nz,.AnimateRun
+
+  ld    a,(NewPrContr)
+;	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+;	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic
+
+  jp    Set_L_stand
+  
+.AnimateRun:
+  ld    hl,LeftRunAnimation
+  jp    AnimateRun
+
 Lstanding:
   call  EndMovePlayerHorizontally
 
@@ -2447,11 +2452,14 @@ Lstanding:
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
+
+  ld    a,(NewPrContr)
+	bit		0,a           ;cursor up pressed ?
+	jp		nz,.L_jump_andcheckpunch
+
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
 ;	jp		nz,.Maybe_Set_R_sit
-	bit		0,a           ;cursor up pressed ?
-	jp		nz,.L_jump_andcheckpunch
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.Set_L_run_andcheckpunch
 	bit		3,a           ;cursor right pressed ?
@@ -2487,7 +2495,7 @@ Lstanding:
 	bit		4,a           ;space pressed ?
 ;	jp		z,Set_R_jump
 
-  call  Set_L_jump
+  call  Set_R_jump
 ;  ld    a,(firepunchon?)
 ;  ld    (firepunchwhilejump?),a
 ;  xor   1
@@ -2514,11 +2522,14 @@ Rstanding:
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
+  ld    a,(NewPrContr)
+	bit		0,a           ;cursor up pressed ?
+	jp		nz,.R_jump_andcheckpunch
+
+
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
 ;	jp		nz,.Maybe_Set_R_sit
-	bit		0,a           ;cursor up pressed ?
-	jp		nz,.R_jump_andcheckpunch
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.Set_L_run_andcheckpunch
 	bit		3,a           ;cursor right pressed ?
@@ -2572,42 +2583,31 @@ Rstanding:
   jp    Set_R_run
 
 Set_R_jump:
-	ld		hl,Rjump
+	ld		hl,Jump
 	ld		(PlayerSpriteStand),hl
-
-	ld		hl,PlayerSpriteData_Char_RightRun9
-	ld		(standchar),hl
 
   xor   a
 	ld		(PlayerAniCount),a
 	ld    a,StartingJumpSpeed
 	ld		(JumpSpeed),a
-  ld    a,1
-  ld    (PlayerFacingRight?),a		
   ret
-  
-Set_L_jump:
-	ld		hl,Ljump
-	ld		(PlayerSpriteStand),hl
 
-	ld		hl,PlayerSpriteData_Char_LeftRun9
-	ld		(standchar),hl
+Set_Fall:    
+	ld		hl,Jump
+	ld		(PlayerSpriteStand),hl
 
   xor   a
 	ld		(PlayerAniCount),a
-	ld    a,StartingJumpSpeed
+	ld    a,FallingJumpSpeed
 	ld		(JumpSpeed),a
-  xor   a
-  ld    (PlayerFacingRight?),a		
   ret
-  
+    
+    
 Set_R_run:
 	ld		hl,Rrunning
 	ld		(PlayerSpriteStand),hl
   xor   a
 	ld		(PlayerAniCount),a
-  ld    a,1
-  ld    (PlayerFacingRight?),a		
   ret
 
 Set_L_run:
@@ -2615,15 +2615,11 @@ Set_L_run:
 	ld		(PlayerSpriteStand),hl
   xor   a
 	ld		(PlayerAniCount),a
-  xor   a
-  ld    (PlayerFacingRight?),a	
   ret
 
 Set_R_sit:	
 	ld		a,RSittingSpriteStand
 	ld		(PlayerSpriteStand),a
-  ld    a,1
-  ld    (PlayerFacingRight?),a	
   ret
 
 Set_R_stand:
@@ -2631,8 +2627,6 @@ Set_R_stand:
 	ld		(PlayerSpriteStand),hl
 	ld		hl,PlayerSpriteData_Char_RightStand
 	ld		(standchar),hl
-  ld    a,1
-  ld    (PlayerFacingRight?),a	
   ret
 
 Set_L_stand:
@@ -2640,8 +2634,6 @@ Set_L_stand:
 	ld		(PlayerSpriteStand),hl
 	ld		hl,PlayerSpriteData_Char_LeftStand
 	ld		(standchar),hl
-  xor   a
-  ld    (PlayerFacingRight?),a	
   ret
 
 
