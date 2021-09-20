@@ -67,30 +67,30 @@
   db 63
   db 147
   db 184
-  db 238
-  db 223
-  db 125
-  db 248
-  db 252
+  db 227
+  db 95
+  db 253
+  db 143
+  db 143
   db 47
-  db 99
-  db 79
+  db 125
+  db 115
   db 3
   db 62
-  db 48
+  db 111
   db 16
   db 16
   db 239
   db 254
   db 124
-  db 120
+  db 232
   db 240
   db 112
-  db 240
+  db 208
   db 224
   db 128
-  db 64
-  db 128
+  db 192
+  db 192
   db 0
   db 128
   db 0
@@ -99,30 +99,30 @@
   db 56
   db 255
   db 255
-  db 243
-  db 99
+  db 254
+  db 227
   db 143
-  db 143
-  db 143
+  db 248
+  db 252
   db 126
-  db 125
-  db 115
+  db 99
+  db 79
   db 60
   db 61
-  db 79
+  db 95
   db 40
   db 0
   db 27
   db 2
   db 196
-  db 248
+  db 120
   db 208
   db 208
-  db 208
+  db 240
   db 224
   db 0
-  db 192
-  db 192
+  db 64
+  db 128
   db 192
   db 128
   db 0

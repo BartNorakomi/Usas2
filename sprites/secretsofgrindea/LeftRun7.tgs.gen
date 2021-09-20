@@ -66,9 +66,9 @@
 ; Sprite 1 - Mode : 2 sprites, color OR on 
   db 127
   db 63
-  db 28
+  db 31
+  db 6
   db 7
-  db 4
   db 5
   db 3
   db 1
@@ -77,30 +77,30 @@
   db 1
   db 0
   db 0
-  db 3
+  db 6
   db 0
   db 0
   db 250
   db 137
-  db 205
-  db 55
-  db 254
+  db 63
+  db 255
+  db 206
   db 252
   db 124
   db 124
   db 188
-  db 184
-  db 220
+  db 196
+  db 188
   db 24
   db 32
-  db 16
+  db 238
   db 12
   db 14
   db 64
   db 35
-  db 31
-  db 6
+  db 28
   db 7
+  db 4
   db 7
   db 3
   db 1
@@ -109,22 +109,22 @@
   db 1
   db 1
   db 3
-  db 4
+  db 5
   db 3
   db 0
   db 254
   db 255
-  db 63
-  db 255
-  db 206
+  db 205
+  db 55
+  db 254
   db 196
   db 196
   db 196
   db 196
-  db 68
-  db 188
+  db 56
+  db 220
   db 228
   db 220
-  db 238
+  db 254
   db 50
   db 0

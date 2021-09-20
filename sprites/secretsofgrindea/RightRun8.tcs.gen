@@ -27,33 +27,33 @@
   db 79
   db 78
   db 77
-  db 73
-  db 73
   db 76
-  db 76
+  db 73
+  db 75
+  db 75
 ; Sprite 1 - Mode : 2 sprites, color OR on 
-  db 12
-  db 7
-  db 7
-  db 7
-  db 7
-  db 7
-  db 7
-  db 12
+  db 11
   db 11
   db 7
   db 7
+  db 7
+  db 7
+  db 13
+  db 11
+  db 11
+  db 11
+  db 11
   db 14
   db 13
   db 14
   db 13
   db 15
   db 79
+  db 77
   db 76
-  db 75
   db 79
-  db 76
-  db 76
+  db 75
+  db 75
   db 79
   db 79
   db 76

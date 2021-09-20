@@ -25,15 +25,8 @@ LevelEngine:
   ld    (hl),0
   jp    LevelEngine
 
-
-
-
-
-
 ClesX:      dw 210
-ClesY:      db 150
-
-
+ClesY:      db 144-1
 herospritenr:             db  22
 PutPlayersprite:
 	ld		a,(slot.page12rom)	;all RAM except page 1+2
@@ -1235,7 +1228,7 @@ CheckMapExit:
   jr    c,.ExitTopFound
 
   ld    a,(ClesY)
-  cp    180
+  cp    180+8
   jr    nc,.ExitBottomFound
   ret
 
@@ -1249,7 +1242,7 @@ CheckMapExit:
   
 .ExitTopFound:  
   ld    de,-WorldMapDataMapLenght*WorldMapDataWidth
-  ld    a,176
+  ld    a,176+8
   ld    (ClesY),a
   ld    a,45
   ld    (CameraY),a
@@ -2000,7 +1993,7 @@ checktile:
   djnz  .setmapwidthy
 .yset:
 
-  ld    a,(hl)
+  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
   dec   a                   ;1 = wall
 	ret
 
@@ -2016,14 +2009,10 @@ LstandingSpriteStand:         equ 6
 LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
-PlayerSpritestandjumptable:  
-  dw    Rstanding,Rsitting,Rrunning,Lstanding,Lsitting,Lrunning,Jump ;,Ljump ;,Rbeinghit,Lbeinghit,Rdying,Ldying
-;  dw    Rstandpunch,Lstandpunch,Rsitpunch,Lsitpunch,Rstandmagic,Lstandmagic,Rsitmagic,Lsitmagic,extrastand
-
-
+;Rstanding,Rsitting,Rrunning,Lstanding,Lsitting,Lrunning,Jump,ClimbDown,ClimbUp,Climb
 PlayerSpriteStand: dw  Rstanding
 
-PlayerAniCount:     db  0
+PlayerAniCount:     db  0,0
 HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
@@ -2035,6 +2024,164 @@ HandlePlayerSprite:
 ;stand=5	running left
 ;stand=6	jumping right
 ;stand=7	jumping left
+
+ClimbUpMovementTable:
+  db    -0,-0,-0,-0,-0,-0,-0,-0
+  db    -0,-0,-0,-0,-0,-0,-0,-0
+  db    -0,-0,-0,-0,-1,-1,-1,-1
+  db    -2,-2,-3,-3,-3,-3,-2,-1
+  db    -0,+1,+2,+1,-0,-0,-0,-0
+  db    -0,-0,-0,-0,-0,-0,-0,-0,-100
+
+ClimbUp:
+  ld    a,(PlayerAniCount+1)
+  ld    d,0
+  ld    e,a
+  ld    hl,ClimbUpMovementTable
+  add   hl,de
+
+  ld    a,(Clesy)
+  add   a,(hl)
+  ld    (Clesy),a
+
+;animate
+  ld    a,(PlayerAniCount+1)
+  inc   a
+  ld    (PlayerAniCount+1),a
+  and   7
+  ret   nz
+    
+  ld    hl,ClimbuPAnimation-2  
+  ld    a,(PlayerAniCount)
+  add   a,2                       ;2 bytes used for pointer to sprite frame address
+  cp    2 * 06                    ;05 frame addresses
+  jr    z,.EndClimbUp
+  ld    (PlayerAniCount),a
+  
+  ld    d,0
+  ld    e,a
+  add   hl,de
+    
+  ld    e,(hl)
+  inc   hl
+  ld    d,(hl)    
+	ld		(standchar),de
+  ret	
+
+  .EndClimbUp:   
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jp    nz,Set_R_Stand
+  jp    Set_L_Stand
+    
+ClimbuPAnimation:          ;xoffset sprite top, xoffset sprite bottom
+  dw  PlayerSpriteData_Char_Climbing9 
+  dw  PlayerSpriteData_Char_Climbing10 
+  dw  PlayerSpriteData_Char_Climbing11
+  dw  PlayerSpriteData_Char_Climbing12
+  dw  PlayerSpriteData_Char_Climbing13
+
+Climb:
+  call  CheckFloor          ;out: z-> floor, c-> no floor. check if there is floor under the player
+  jp    z,Set_R_stand       ;on collision change to R_Stand    
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)
+	bit		2,a           ;cursor left pressed ?
+	jp		nz,.LeftPressed
+	bit		3,a           ;cursor right pressed ?
+	jp		nz,.RightPressed
+
+ ;check for a ladder when climbing up. If no ladder is found, jump off the top of the ladder
+  ld    b,YaddFeetPlayer-20 ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2 ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  dec   a                   ;check for tilenr 2=ladder 
+  jp    nz,Set_ClimbUp
+
+  ld    b,0           ;vertical movement
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+	jp		z,.EndCheckUpPressed
+  dec   b
+.EndCheckUpPressed:
+	bit		1,a           ;cursor down pressed ?
+	jp		z,.EndCheckDownPressed
+  inc   b
+.EndCheckDownPressed:
+
+  ld    a,b
+  or    a
+  ret   z
+
+  ld    a,(Clesy)
+  add   a,b
+  ld    (Clesy),a
+  call  AnimateClimbing
+  ret
+
+.RightPressed:
+  call  Set_Fall
+  ld    a,RunningTablePointerRightEnd-2
+  ld    (RunningTablePointer),a
+  ret
+
+.LeftPressed:
+  call  Set_Fall
+  xor   a
+  ld    (RunningTablePointer),a
+  ret
+
+ClimbDown:
+  ld    a,(Clesy)
+  inc   a
+  ld    (Clesy),a
+
+  call  AnimateClimbing
+  ret
+
+AnimateClimbing:
+;animate
+  ld    a,(PlayerAniCount+1)
+  inc   a
+  ld    (PlayerAniCount+1),a
+  cp    32
+  jp    z,Set_Climb
+  and   7
+  ret   nz
+    
+  ld    hl,ClimbAnimation  
+  ld    a,(PlayerAniCount)
+  add   a,2                       ;2 bytes used for pointer to sprite frame address
+  cp    2 * 08                    ;08 frame addresses
+  jr    nz,.SetPlayerAniCount
+  xor   a
+  .SetPlayerAniCount:
+  ld    (PlayerAniCount),a
+  
+  ld    d,0
+  ld    e,a
+  add   hl,de
+    
+  ld    e,(hl)
+  inc   hl
+  ld    d,(hl)    
+	ld		(standchar),de
+  ret	
+   
+ClimbAnimation:          ;xoffset sprite top, xoffset sprite bottom
+  dw  PlayerSpriteData_Char_Climbing1 
+  dw  PlayerSpriteData_Char_Climbing2 
+  dw  PlayerSpriteData_Char_Climbing3 
+  dw  PlayerSpriteData_Char_Climbing4 
+  dw  PlayerSpriteData_Char_Climbing5 
+  dw  PlayerSpriteData_Char_Climbing6 
+  dw  PlayerSpriteData_Char_Climbing7 
+  dw  PlayerSpriteData_Char_Climbing8 
 
 StartingJumpSpeed:        equ -5    ;initial starting jump take off speed
 FallingJumpSpeed:         equ 1
@@ -2088,8 +2235,15 @@ AnimateWhileJump:
 Jump:
   call  MoveHorizontallyWhileJump
   call  AnimateWhileJump
+  call  .VerticalMovement
 
-.VerticalMovement:
+  ld    a,(NewPrContr)
+	bit		0,a           ;cursor up pressed ?
+	jp    nz,.CheckClimbLadder  ;while jumping player can snap to a ladder and start climbing
+  ret
+
+
+  .VerticalMovement:
   ld    hl,JumpSpeed
 
 	ld		a,(PlayerAniCount)
@@ -2116,23 +2270,60 @@ Jump:
   jp    m,.CheckPlatformAbove
   ret   z
 
-.CheckPlatformBelow:        ;check platform below
-  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  .CheckPlatformBelow:        ;check platform below
+  ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
   jr    z,.SnapToPlatformBelow
 
-  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
   ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
   jr    z,.SnapToPlatformBelow  
-  ret
   
+  ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  dec   a                   ;check for tilenr 2=ladder 
+  jr    z,.LadderFound
+
+  ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  dec   a                   ;check for tilenr 2=ladder 
+  jr    z,.LadderFound
+;  scf
+  ret
+
+;while falling a ladder tile is found at player's feet. 
+;check 16 pixels left of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
+  .LadderFound:               
+  ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2-16   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jr    nz,.CheckLadderRightSide
+
+  ld    b,YaddFeetPlayer-9  ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2-16   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jr    nz,.SnapToPlatformBelow
+
+;check 16 pixels right of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
+  .CheckLadderRightSide:
+  ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2+16  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  ret   nz
+
+  ld    b,YaddFeetPlayer-9    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2+16  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  ret   z
+
   .SnapToPlatformBelow:
   ld    a,(Clesy)           ;on collision snap y player to platform below and switch standing
-  sub   4                   ;move player up a little when snapping. This is done so that you always snap to the same tile
   and   %1111 1000
-  add   a,7
+  dec   a
   ld    (Clesy),a
  
   ld    a,(PlayerFacingRight?)
@@ -2140,7 +2331,7 @@ Jump:
   jp    z,Set_L_stand       ;on collision change to L_Stand  
   jp    Set_R_stand         ;on collision change to R_Stand    
 
-.CheckPlatformAbove:
+  .CheckPlatformAbove:
 ;check platform above
   ld    b,YaddHeadPLayer    ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer+3   ;add x to check (x is expressed in pixels)
@@ -2159,13 +2350,133 @@ Jump:
   add   a,6
   ld    (Clesy),a
   ret
- 
+
+  .CheckClimbLadder: 
+  call  CheckClimbLadderUp
+
+	ld		hl,(PlayerSpriteStand)
+	ld		de,Climb
+  xor   a
+  sbc   hl,de
+  ret   nz
+
+	ld		hl,PlayerSpriteData_Char_Climbing1
+	ld		(standchar),hl
+  jp    Set_Climb_AndResetAniCount
+   
 Lsitting:
+	ld		hl,PlayerSpriteData_Char_LeftRun1
+	ld		(standchar),hl
+
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,Rsitting.CheckLadder
+	bit		0,a           ;cursor up pressed ?
+;	jp		nz,Set_R_jump
+;	bit		2,a           ;cursor left pressed ?
+;	jp		nz,.Set_L_run_andcheckpunch
+	ld		a,(Controls)
+	bit		3,a           ;cursor right pressed ?
+;	jp		nz,.AnimateRun
+
+  ld    a,(NewPrContr)
+;	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+;	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic	
+	jp		Set_L_stand
+  ret
+
+.CheckLadder:
   ret
 
 Rsitting:
+	ld		hl,PlayerSpriteData_Char_RightRun1
+	ld		(standchar),hl
+
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,.CheckLadder
+	bit		0,a           ;cursor up pressed ?
+;	jp		nz,Set_R_jump
+;	bit		2,a           ;cursor left pressed ?
+;	jp		nz,.Set_L_run_andcheckpunch
+	ld		a,(Controls)
+	bit		3,a           ;cursor right pressed ?
+;	jp		nz,.AnimateRun
+
+  ld    a,(NewPrContr)
+;	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+;	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic	
+	jp		Set_R_stand
   ret
 
+.CheckLadder:
+;check if there is a ladder tile below left foot AND right foot
+  ld    b,YaddFeetPlayer-0    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+6   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  dec   a                   ;check for tilenr 2=ladder 
+  jp    z,.ladderfound
+
+  ld    b,YaddFeetPlayer-0    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-7  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  dec   a                   ;check for tilenr 2=ladder 
+  ret   nz
+
+  .ladderfound:
+	call  Set_ClimbDown
+
+  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+  ld    a,l
+  and   %1111 1000
+  ld    l,a
+  ld    (ClesX),hl
+
+;after snapping player could be 1 tile too much to theright. Check again for ladder under right foot. If not, then move 1 tile to the left
+  ld    b,YaddFeetPlayer-0    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  dec   a                   ;check for tilenr 2=ladder 
+  jr    z,.NowCheckLeft
+
+  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+  ld    de,8
+  sbc   hl,de
+  ld    (ClesX),hl
+  ret
+
+.NowCheckLeft:
+;after snapping player could be 1 tile too much to the left. Check again for ladder under left foot. If not, then move 1 tile to the right
+  ld    b,YaddFeetPlayer-0    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  dec   a                   ;check for tilenr 2=ladder 
+  ret   z
+
+  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+  ld    de,8
+  add   hl,de
+  ld    (ClesX),hl
+  ret
+  
 AnimateRun:
   ld    a,(framecounter)          ;animate every 4 frames
   and   3
@@ -2227,7 +2538,7 @@ RunningTable1:
 ;  dw    -1,-1,-1,-1,-1,-1,-1,-1,-1,0,+1,+1,+1,+1,+1,+1,+1,+1,+1
   dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
 
-EndMovePlayerHorizontally:
+EndMovePlayerHorizontally:              ;slowly come to a full stop after running
   ld    a,(RunningTablePointer)
   cp    RunningTablePointerCenter
   ret   z
@@ -2370,11 +2681,28 @@ CheckFloor:
   scf
   ret
 
+CheckFloorInclLadder:
+  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  ret   z
+  dec   a                   ;check for tilenr 2=ladder 
+  ret   z  
+
+  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  ret   z
+  dec   a                   ;check for tilenr 2=ladder 
+  ret   z  
+  scf
+  ret
+
 Rrunning:
   call  MovePlayerRight     ;out: c-> collision detected
   jp    c,Set_R_stand       ;on collision change to R_Stand
   
-  call  CheckFloor          ;out: c-> no floor. check if there is floor under the player
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall
 
 ;
@@ -2386,7 +2714,7 @@ Rrunning:
 ;	jp		nz,.Maybe_Set_R_sit
   ld    a,(NewPrContr)
 	bit		0,a           ;cursor up pressed ?
-	jp		nz,Set_R_jump
+	jr		nz,.UpPressed
 ;	bit		2,a           ;cursor left pressed ?
 ;	jp		nz,.Set_L_run_andcheckpunch
 	ld		a,(Controls)
@@ -2401,15 +2729,20 @@ Rrunning:
 
   jp    Set_R_stand
   
-.AnimateRun:
+  .AnimateRun:
   ld    hl,RightRunAnimation
   jp    AnimateRun
+
+  .UpPressed:
+	call  Set_R_jump
+  call  CheckClimbLadderUp
+  ret
 
 Lrunning:
   call  MovePlayerLeft      ;out: c-> collision detected
   jp    c,Set_L_stand       ;on collision change to R_Stand
 
-  call  CheckFloor          ;out: c-> no floor. check if there is floor under the player
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall
 
 ;  call  checkfloor
@@ -2423,7 +2756,7 @@ Lrunning:
 ;	jp		nz,.Maybe_Set_R_sit
   ld    a,(NewPrContr)
 	bit		0,a           ;cursor up pressed ?
-	jp		nz,Set_R_jump
+	jr		nz,.UpPressed
 	ld		a,(Controls)
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.AnimateRun
@@ -2438,12 +2771,20 @@ Lrunning:
 
   jp    Set_L_stand
   
-.AnimateRun:
+  .AnimateRun:
   ld    hl,LeftRunAnimation
   jp    AnimateRun
 
+  .UpPressed:
+	call  Set_R_jump
+  call  CheckClimbLadderUp
+  ret
+
 Lstanding:
-  call  EndMovePlayerHorizontally
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
 
 ;  call  checkfloor
 ;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
@@ -2459,7 +2800,7 @@ Lstanding:
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
-;	jp		nz,.Maybe_Set_R_sit
+	jp		nz,.Maybe_Set_L_sit
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.Set_L_run_andcheckpunch
 	bit		3,a           ;cursor right pressed ?
@@ -2480,7 +2821,7 @@ Lstanding:
 ;	jp		nz,Set_L_standmagic
   jp    Set_L_run
 
-.Maybe_Set_R_sit:
+.Maybe_Set_L_sit:
 ;  call  CheckDoubleTapDownF1Menu
   
   ld    a,(NewPrContr)
@@ -2488,7 +2829,7 @@ Lstanding:
 ;	jp		nz,Set_R_sitpunch
 	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_R_sitmagic
-	jp		Set_R_sit
+	jp		Set_L_sit
 
 .L_jump_andcheckpunch:
   ld    a,(NewPrContr)
@@ -2496,13 +2837,9 @@ Lstanding:
 ;	jp		z,Set_R_jump
 
   call  Set_R_jump
-;  ld    a,(firepunchon?)
-;  ld    (firepunchwhilejump?),a
-;  xor   1
-;  ld    (punchwhilejump?),a
-;  xor   a
-;  ld    (punchwhilejumpcounter),a
+  call  CheckClimbLadderUp
   ret
+
 
 .Set_R_run_andcheckpunch:
   ld    a,(NewPrContr)
@@ -2513,7 +2850,10 @@ Lstanding:
   jp    Set_R_run
 
 Rstanding:
-  call  EndMovePlayerHorizontally
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
 
 ;  call  checkfloor
 ;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
@@ -2526,10 +2866,9 @@ Rstanding:
 	bit		0,a           ;cursor up pressed ?
 	jp		nz,.R_jump_andcheckpunch
 
-
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
-;	jp		nz,.Maybe_Set_R_sit
+	jp		nz,.Maybe_Set_R_sit
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.Set_L_run_andcheckpunch
 	bit		3,a           ;cursor right pressed ?
@@ -2561,17 +2900,9 @@ Rstanding:
 	jp		Set_R_sit
 
 .R_jump_andcheckpunch:
-  ld    a,(NewPrContr)
-	bit		4,a           ;space pressed ?
-	jp		z,Set_R_jump
 
-;  call  Set_R_jump
-;  ld    a,(firepunchon?)
-;  ld    (firepunchwhilejump?),a
-;  xor   1
-;  ld    (punchwhilejump?),a
-;  xor   a
-;  ld    (punchwhilejumpcounter),a
+  call  Set_R_jump
+  call  CheckClimbLadderUp
   ret
   
 .Set_R_run_andcheckpunch:
@@ -2581,6 +2912,84 @@ Rstanding:
 	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_R_standmagic
   jp    Set_R_run
+
+CheckClimbLadderUp:
+;check if there is a ladder when pressing up, if so climb the ladder. Check if there is a tile above left foot AND right foot
+  ld    b,YaddFeetPlayer-20    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+6   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  dec   a                   ;check for tilenr 2=ladder 
+  jp    z,.ladderfound
+
+  ld    b,YaddFeetPlayer-20    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-7  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  dec   a                   ;check for tilenr 2=ladder 
+  ret   nz
+
+  .ladderfound:
+	call  Set_Climb
+
+  ld    a,(ClesY)
+  dec   a
+  ld    (ClesY),a
+
+  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+  ld    a,l
+  and   %1111 1000
+  ld    l,a
+  ld    (ClesX),hl
+
+  ;after snapping player could be 1 tile too much to theright. Check again for ladder under right foot. If not, then move 1 tile to the left
+  ld    b,YaddFeetPlayer-20    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  dec   a                   ;check for tilenr 2=ladder 
+  jr    z,.NowCheckLeft
+
+  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+  ld    de,8
+  sbc   hl,de
+  ld    (ClesX),hl
+  ret
+
+  .NowCheckLeft:
+  ;after snapping player could be 1 tile too much to the left. Check again for ladder under left foot. If not, then move 1 tile to the right
+  ld    b,YaddFeetPlayer-20   ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  dec   a                   ;check for tilenr 2=ladder 
+  ret   z
+
+  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+  ld    de,8
+  add   hl,de
+  ld    (ClesX),hl
+  ret
+
+Set_ClimbDown:
+	ld		hl,ClimbDown
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_ClimbUp:
+	ld		hl,ClimbUp
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_Climb_AndResetAniCount:
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  Set_Climb:
+	ld		hl,Climb
+	ld		(PlayerSpriteStand),hl
+  ret
 
 Set_R_jump:
 	ld		hl,Jump
@@ -2601,8 +3010,7 @@ Set_Fall:
 	ld    a,FallingJumpSpeed
 	ld		(JumpSpeed),a
   ret
-    
-    
+        
 Set_R_run:
 	ld		hl,Rrunning
 	ld		(PlayerSpriteStand),hl
@@ -2618,8 +3026,13 @@ Set_L_run:
   ret
 
 Set_R_sit:	
-	ld		a,RSittingSpriteStand
-	ld		(PlayerSpriteStand),a
+	ld		hl,RSitting
+	ld		(PlayerSpriteStand),hl
+  ret
+
+Set_L_sit:	
+	ld		hl,LSitting
+	ld		(PlayerSpriteStand),hl
   ret
 
 Set_R_stand:

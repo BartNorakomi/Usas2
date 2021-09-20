@@ -21,7 +21,7 @@ volledig zwarte sprites (zie screenshot 2)
 
 een wapen dat je in een boog gooit, zoals de torch van ghosts n goblins, en als ie op dezelfde y hoogte is, dan ga je zwart wit knipperen en komt ie naar je toe, zo behoudt je 2 sprites per lijn!
 
-Cles kan als ie happy is een kopie van zichzelf maken. beiden zijn dan zichtbaar alleen als zilhouete. De kopie kan je besturen, en kan niet aangetast worden.
+Cles kan als ie happy is een kopie van zichzelf maken. beiden zijn dan zichtbaar alleen als silhouete. De kopie kan je besturen, en kan niet aangetast worden.
 Het kost mana. Als de mana op is, of je annuleren drukt, dan gaat de kopie heel snel terug naar cles.
 Op deze manier kun je puzzels oplossen, zoals cles en zn kopie moeten op een trigger staan om een deur te openen. Of op zo'n dalend platform dingetje
 Helemaal cool als de kopie ook moods kan oppakken.
@@ -29,7 +29,7 @@ Helemaal cool als de kopie ook moods kan oppakken.
 coole lava animatie 18:12
 https://www.youtube.com/watch?v=N2PqVAo7NAc&ab_channel=AL82RetrogamingLongplays
 
-like spider enemy 12:36
+leuke spider enemy 12:36
 https://www.youtube.com/watch?v=1ZtwOGN-ZeE&ab_channel=AL82RetrogamingLongplays
 
 samples:
@@ -64,7 +64,13 @@ Climb ladder: 30:13
 Shoot arrow: 12:09
 https://www.youtube.com/watch?v=X9BAaxurcgE&ab_channel=HexDSL
 
-climb ladder: 33:15
+climb ladder: 15:34
 https://www.youtube.com/watch?v=5zLwA2I8TKk&list=PL5Lgag0FDBLXxg2WIdUxBNwih54vN6lhu&index=5&ab_channel=DocFirebird
 
+duwen 22:18
+https://www.youtube.com/watch?v=5zLwA2I8TKk&list=PL5Lgag0FDBLXxg2WIdUxBNwih54vN6lhu&index=6&ab_channel=DocFirebird
 
+starwars the force magic, waarbij je een enemy optilt en uit elkaar laat spatten
+
+https://www.youtube.com/watch?v=yVFT5qnJzg4&ab_channel=Gellot
+17:05 lava palette scroll idee
