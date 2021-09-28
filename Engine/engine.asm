@@ -2009,29 +2009,76 @@ LstandingSpriteStand:         equ 6
 LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
-;Rstanding,Rsitting,Rrunning,Lstanding,Lsitting,Lrunning,Jump,ClimbDown,ClimbUp,Climb
+;Rstanding,Rsitting,Rrunning,Lstanding,Lsitting,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
 HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
-;stand=0	standing right
-;stand=1	sitting right
-;stand=2	running right
-;stand=3	standing left
-;stand=4	sitting left
-;stand=5	running left
-;stand=6	jumping right
-;stand=7	jumping left
 
 ClimbUpMovementTable:
-  db    -0,-0,-0,-0,-0,-0,-0,-0
-  db    -0,-0,-0,-0,-0,-0,-0,-0
-  db    -0,-0,-0,-0,-1,-1,-1,-1
-  db    -2,-2,-3,-3,-3,-3,-2,-1
-  db    -0,+1,+2,+1,-0,-0,-0,-0
-  db    -0,-0,-0,-0,-0,-0,-0,-0,-100
+;  db    -0,-0,-0,-0,-0,-0,-0,-0
+;  db    -0,-0,-0,-0,-0,-0,-0,-0
+;  db    -0,-0,-0,-0,-1,-1,-1,-1
+;  db    -2,-2,-3,-3,-3,-3,-2,-1
+;  db    -0,+1,+2,+1,-0,-0,-0,-0
+;  db    -0,-0,-0,-0,-0,-0,-0,-0,-100
+
+  db    -0,-0,-0,-1
+  db    -1,-1,-2,-2
+  db    -2,-3,-3,-3
+  db    -3,-2,-1,+0
+  db    +0,+1,+2,+2
+  db    +0,+0,+0,+0,-100
+
+RAttack3:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  ld    hl,PlayerSpriteData_Char_RightPunch1a
+  cp    3
+  jr    c,.setSprite
+  cp    7
+  ld    hl,PlayerSpriteData_Char_RightPunch1b
+  jr    c,.setSprite  
+  ld    hl,PlayerSpriteData_Char_RightPunch1c
+  .setSprite:
+	ld		(standchar),hl
+	
+	cp    15
+	ret   nz
+  jp    Set_R_Stand
+
+RAttack2:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  ld    hl,PlayerSpriteData_Char_RightKick2a
+  cp    8
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightKick2b
+  .setSprite:
+	ld		(standchar),hl
+	
+	cp    20
+	ret   nz
+  jp    Set_R_Stand
+
+RAttack1:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  ld    hl,PlayerSpriteData_Char_RightKick1a
+  cp    8
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightKick1b
+  .setSprite:
+	ld		(standchar),hl
+	
+	cp    20
+	ret   nz
+  jp    Set_R_Stand
 
 ClimbUp:
   ld    a,(PlayerAniCount+1)
@@ -2048,7 +2095,7 @@ ClimbUp:
   ld    a,(PlayerAniCount+1)
   inc   a
   ld    (PlayerAniCount+1),a
-  and   7
+  and   3
   ret   nz
     
   ld    hl,ClimbuPAnimation-2  
@@ -2239,7 +2286,7 @@ Jump:
 
   ld    a,(NewPrContr)
 	bit		0,a           ;cursor up pressed ?
-	jp    nz,.CheckClimbLadder  ;while jumping player can snap to a ladder and start climbing
+	jp    nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
   ret
 
 
@@ -2351,18 +2398,27 @@ Jump:
   ld    (Clesy),a
   ret
 
-  .CheckClimbLadder: 
-  call  CheckClimbLadderUp
+  .CheckJumpOrClimbLadder: 
+  call  CheckClimbLadderUp  ;out: PlayerSpriteStand->Climb if ladder found
 
 	ld		hl,(PlayerSpriteStand)
 	ld		de,Climb
   xor   a
   sbc   hl,de
-  ret   nz
+  jr    nz,.CheckDoubleJump
 
 	ld		hl,PlayerSpriteData_Char_Climbing1
 	ld		(standchar),hl
   jp    Set_Climb_AndResetAniCount
+   
+  .CheckDoubleJump:
+  ld    a,(DoubleJumpAvailable?)
+  or    a
+  ret   z
+  
+  xor   a
+  ld    (DoubleJumpAvailable?),a
+  jp    Set_R_jump.SkipTurnOnDoubleJump
    
 Lsitting:
 	ld		hl,PlayerSpriteData_Char_LeftRun1
@@ -2865,6 +2921,14 @@ Rstanding:
   ld    a,(NewPrContr)
 	bit		0,a           ;cursor up pressed ?
 	jp		nz,.R_jump_andcheckpunch
+	bit		4,a           ;space pressed ?
+	jp		nz,Set_R_attack1
+	bit		5,a           ;'M' pressed ?
+	jp		nz,Set_R_attack2
+	bit		6,a           ;F1 pressed ?
+	jp		nz,Set_R_attack3
+	bit		7,a           ;F1 pressed ?
+	jp		nz,Set_R_attack1
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
@@ -2967,6 +3031,31 @@ CheckClimbLadderUp:
   ld    (ClesX),hl
   ret
 
+Set_R_attack1:
+	ld		hl,RAttack1
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_R_attack2:
+	ld		hl,RAttack2
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_R_attack3:
+	ld		hl,RAttack3
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+
 Set_ClimbDown:
 	ld		hl,ClimbDown
 	ld		(PlayerSpriteStand),hl
@@ -2992,6 +3081,10 @@ Set_Climb_AndResetAniCount:
   ret
 
 Set_R_jump:
+  ld    a,1
+  ld    (DoubleJumpAvailable?),a
+
+  .SkipTurnOnDoubleJump:  
 	ld		hl,Jump
 	ld		(PlayerSpriteStand),hl
 
@@ -3002,6 +3095,9 @@ Set_R_jump:
   ret
 
 Set_Fall:    
+  ld    a,1
+  ld    (DoubleJumpAvailable?),a
+
 	ld		hl,Jump
 	ld		(PlayerSpriteStand),hl
 

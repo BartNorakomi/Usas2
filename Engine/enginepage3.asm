@@ -12,8 +12,8 @@ MapB01_004Data: db MapsBlock01 | dw MapB01_004 | db 1,2,2                  | Map
 MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,2,2                  | MapB01_008Data: db MapsBlock01 | dw MapB01_008 | db 1,2,2                  | MapB01_009Data: db MapsBlock01 | dw MapB01_009 | db 1,2,2
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 2,2,2                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,2,2                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,2,2
 
-WorldMapPointer:  dw  MapA01_001Data
-;WorldMapPointer:  dw  MapB01_004Data
+;WorldMapPointer:  dw  MapA01_001Data
+WorldMapPointer:  dw  MapB01_001Data
 
 loadGraphics:
 
@@ -728,7 +728,7 @@ Depack:     ;In: HL: source, DE: destination
 	rla
 	ret    
 
-DoubleTapCounter:         db  1
+;DoubleTapCounter:         db  1
 ;freezecontrols?:          db  0
 ;
 ; bit	7	  6	  5		    4		    3		    2		  1		  0
@@ -805,10 +805,10 @@ PopulateControls:
 	ld		(NewPrContr),a
 	ld		(hl),b
 
-  ld    a,(DoubleTapCounter)
-  dec   a
-  ret   z	
-  ld    (DoubleTapCounter),a
+;  ld    a,(DoubleTapCounter)
+;  dec   a
+;  ret   z	
+;  ld    (DoubleTapCounter),a
 	ret
 
 endenginepage3:
@@ -873,6 +873,8 @@ PageOnNextVblank:             rb    1
 R18onVblank:                  rb    1
 R23onVblank:                  rb    1
 R19onVblank:                  rb    1
+
+DoubleJumpAvailable?:         rb    1
 
 endenginepage3variables:  equ $+enginepage3length
 org variables

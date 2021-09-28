@@ -681,13 +681,33 @@ PlayerSpriteData_Colo_Climbing8:            include "..\sprites\secretsofgrindea
 PlayerSpriteData_Char_Climbing9:            include "..\sprites\secretsofgrindea\Climbing9.tgs.gen"	  
 PlayerSpriteData_Colo_Climbing9:            include "..\sprites\secretsofgrindea\Climbing9.tcs.gen"	  | db +0,+0
 PlayerSpriteData_Char_Climbing10:           include "..\sprites\secretsofgrindea\Climbing10.tgs.gen"	  
-PlayerSpriteData_Colo_Climbing10:           include "..\sprites\secretsofgrindea\Climbing10.tcs.gen"	  | db +0,+0
+PlayerSpriteData_Colo_Climbing10:           include "..\sprites\secretsofgrindea\Climbing10.tcs.gen"	| db +0,+0
 PlayerSpriteData_Char_Climbing11:           include "..\sprites\secretsofgrindea\Climbing11.tgs.gen"	  
-PlayerSpriteData_Colo_Climbing11:           include "..\sprites\secretsofgrindea\Climbing11.tcs.gen"	  | db +0,+0
+PlayerSpriteData_Colo_Climbing11:           include "..\sprites\secretsofgrindea\Climbing11.tcs.gen"	| db +0,+0
 PlayerSpriteData_Char_Climbing12:           include "..\sprites\secretsofgrindea\Climbing12.tgs.gen"	  
-PlayerSpriteData_Colo_Climbing12:           include "..\sprites\secretsofgrindea\Climbing12.tcs.gen"	  | db +0,+0
+PlayerSpriteData_Colo_Climbing12:           include "..\sprites\secretsofgrindea\Climbing12.tcs.gen"	| db +0,+0
 PlayerSpriteData_Char_Climbing13:           include "..\sprites\secretsofgrindea\Climbing13.tgs.gen"	  
-PlayerSpriteData_Colo_Climbing13:           include "..\sprites\secretsofgrindea\Climbing13.tcs.gen"	  | db +0,+0
+PlayerSpriteData_Colo_Climbing13:           include "..\sprites\secretsofgrindea\Climbing13.tcs.gen"	| db +0,+0
+
+PlayerSpriteData_Char_RightKick1a:          include "..\sprites\secretsofgrindea\RightKick1a.tgs.gen"	  
+PlayerSpriteData_Colo_RightKick1a:          include "..\sprites\secretsofgrindea\RightKick1a.tcs.gen"	| db -3,+6
+PlayerSpriteData_Char_RightKick1b:          include "..\sprites\secretsofgrindea\RightKick1b.tgs.gen"	  
+PlayerSpriteData_Colo_RightKick1b:          include "..\sprites\secretsofgrindea\RightKick1b.tcs.gen"	| db -3,+6
+
+PlayerSpriteData_Char_RightKick2a:          include "..\sprites\secretsofgrindea\RightKick2a.tgs.gen"	  
+PlayerSpriteData_Colo_RightKick2a:          include "..\sprites\secretsofgrindea\RightKick2a.tcs.gen"	| db +0,+6
+PlayerSpriteData_Char_RightKick2b:          include "..\sprites\secretsofgrindea\RightKick2b.tgs.gen"	  
+PlayerSpriteData_Colo_RightKick2b:          include "..\sprites\secretsofgrindea\RightKick2b.tcs.gen"	| db +0,+6
+
+PlayerSpriteData_Char_RightKick3:           include "..\sprites\secretsofgrindea\RightKick3.tgs.gen"	  
+PlayerSpriteData_Colo_RightKick3:           include "..\sprites\secretsofgrindea\RightKick3.tcs.gen"	| db +0,+6
+
+PlayerSpriteData_Char_RightPunch1a:         include "..\sprites\secretsofgrindea\RightPunch1a.tgs.gen"	  
+PlayerSpriteData_Colo_RightPunch1a:         include "..\sprites\secretsofgrindea\RightPunch1a.tcs.gen"| db +4,-1
+PlayerSpriteData_Char_RightPunch1b:         include "..\sprites\secretsofgrindea\RightPunch1b.tgs.gen"	  
+PlayerSpriteData_Colo_RightPunch1b:         include "..\sprites\secretsofgrindea\RightPunch1b.tcs.gen"| db +4,-1
+PlayerSpriteData_Char_RightPunch1c:         include "..\sprites\secretsofgrindea\RightPunch1c.tgs.gen"	  
+PlayerSpriteData_Colo_RightPunch1c:         include "..\sprites\secretsofgrindea\RightPunch1c.tcs.gen"| db +4,-1
 
 
 EndPlayerSprites1: | ds $c000-$,$ff | dephase ;bf80
