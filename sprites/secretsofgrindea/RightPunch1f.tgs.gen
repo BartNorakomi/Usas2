@@ -64,67 +64,67 @@
   db 247
   db 54
 ; Sprite 1 - Mode : 2 sprites, color OR on 
-  db 15
+  db 31
   db 0
-  db 53
-  db 58
-  db 124
-  db 243
-  db 252
-  db 252
-  db 243
-  db 226
-  db 103
-  db 5
-  db 1
-  db 0
-  db 7
-  db 1
+  db 9
+  db 3
+  db 14
+  db 23
+  db 61
+  db 56
+  db 31
+  db 30
+  db 12
+  db 110
+  db 249
+  db 128
+  db 211
+  db 225
   db 247
   db 126
   db 254
-  db 60
-  db 2
-  db 2
-  db 198
-  db 62
-  db 7
-  db 207
-  db 187
+  db 0
+  db 32
+  db 253
+  db 255
+  db 252
   db 126
-  db 128
+  db 192
+  db 0
+  db 192
+  db 192
+  db 0
+  db 16
+  db 240
+  db 28
+  db 15
+  db 15
   db 12
-  db 249
-  db 128
-  db 12
-  db 31
+  db 17
   db 63
   db 47
-  db 71
-  db 143
   db 31
-  db 15
+  db 16
+  db 29
   db 51
-  db 163
-  db 100
-  db 6
-  db 2
-  db 3
-  db 7
-  db 6
+  db 113
+  db 247
+  db 127
+  db 51
+  db 0
   db 13
   db 129
   db 226
   db 252
+  db 216
+  db 31
+  db 1
+  db 130
   db 254
-  db 254
-  db 254
-  db 254
-  db 253
-  db 254
-  db 125
-  db 254
-  db 127
-  db 243
-  db 63
-  db 79
+  db 64
+  db 128
+  db 192
+  db 192
+  db 224
+  db 240
+  db 0

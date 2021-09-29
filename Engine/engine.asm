@@ -2032,6 +2032,84 @@ ClimbUpMovementTable:
   db    +0,+1,+2,+2
   db    +0,+0,+0,+0,-100
 
+LAttack3:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  ld    hl,PlayerSpriteData_Char_RightPunch1a
+  cp    3
+  jr    c,.setSprite
+  cp    7
+  ld    hl,PlayerSpriteData_Char_RightPunch1b
+  jr    c,.setSprite  
+  ld    hl,PlayerSpriteData_Char_RightPunch1c
+  .setSprite:
+	ld		(standchar),hl
+	
+	cp    15
+	ret   nz
+  jp    Set_L_Stand
+
+LAttack2:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  ld    hl,PlayerSpriteData_Char_LeftPunch2a
+  cp    3
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch2b
+  cp    5
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch2c
+  cp    20
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch2d
+  cp    22
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch2e
+  .setSprite:
+	ld		(standchar),hl
+	
+	cp    25
+	ret   nz
+  jp    Set_L_Stand
+
+LAttack1:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  ld    hl,PlayerSpriteData_Char_LeftPunch1a
+  cp    3
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch1b
+  cp    5
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch1c
+  cp    07
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch1d
+  cp    09
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch1e
+  cp    21
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch1f
+  cp    23
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch1g
+  cp    25
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch1h
+  cp    28
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftPunch1i
+  .setSprite:
+	ld		(standchar),hl
+	
+	cp    32
+	ret   nz
+  jp    Set_L_Stand
+
 RAttack3:
   ld    a,(PlayerAniCount)
   inc   a
@@ -2854,6 +2932,14 @@ Lstanding:
 	bit		0,a           ;cursor up pressed ?
 	jp		nz,.L_jump_andcheckpunch
 
+	bit		4,a           ;space pressed ?
+	jp		nz,Set_L_attack1
+	bit		5,a           ;'M' pressed ?
+	jp		nz,Set_L_attack2
+	bit		6,a           ;F1 pressed ?
+	jp		nz,Set_L_attack3
+
+
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
 	jp		nz,.Maybe_Set_L_sit
@@ -2927,8 +3013,6 @@ Rstanding:
 	jp		nz,Set_R_attack2
 	bit		6,a           ;F1 pressed ?
 	jp		nz,Set_R_attack3
-	bit		7,a           ;F1 pressed ?
-	jp		nz,Set_R_attack1
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
@@ -3055,6 +3139,29 @@ Set_R_attack3:
   ld    (PlayerAniCount),hl
   ret
 
+Set_L_attack1:
+	ld		hl,LAttack1
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_L_attack2:
+	ld		hl,LAttack2
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_L_attack3:
+	ld		hl,LAttack3
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
 
 Set_ClimbDown:
 	ld		hl,ClimbDown
