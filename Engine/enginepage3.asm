@@ -7,13 +7,13 @@ MapA01_001Data: db MapsBlock01 | dw MapA01_001 | db 1,1,1                  | Map
 MapA01_004Data: db MapsBlock01 | dw MapA01_004 | db 1,1,1                  | MapA01_005Data: db MapsBlock01 | dw MapA01_005 | db 1,1,1                  | MapA01_006Data: db MapsBlock01 | dw MapA01_006 | db 1,1,1
 MapA01_007Data: db MapsBlock01 | dw MapA01_007 | db 1,1,1                  | MapA01_008Data: db MapsBlock01 | dw MapA01_008 | db 1,1,1                  | MapA01_009Data: db MapsBlock01 | dw MapA01_009 | db 1,1,1
 
-MapB01_001Data: db MapsBlock01 | dw MapB01_001 | db 1,2,2                  | MapB01_002Data: db MapsBlock01 | dw MapB01_002 | db 1,2,2                  | MapB01_003Data: db MapsBlock01 | dw MapB01_003 | db 1,2,2
-MapB01_004Data: db MapsBlock01 | dw MapB01_004 | db 1,2,2                  | MapB01_005Data: db MapsBlock01 | dw MapB01_005 | db 1,2,2                  | MapB01_006Data: db MapsBlock01 | dw MapB01_006 | db 1,2,2
-MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,2,2                  | MapB01_008Data: db MapsBlock01 | dw MapB01_008 | db 1,2,2                  | MapB01_009Data: db MapsBlock01 | dw MapB01_009 | db 1,2,2
-MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 2,2,2                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,2,2                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,2,2
+MapB01_001Data: db MapsBlock01 | dw MapB01_001 | db 1,3,3                  | MapB01_002Data: db MapsBlock01 | dw MapB01_002 | db 1,3,3                  | MapB01_003Data: db MapsBlock01 | dw MapB01_003 | db 1,3,3
+MapB01_004Data: db MapsBlock01 | dw MapB01_004 | db 1,3,3                  | MapB01_005Data: db MapsBlock01 | dw MapB01_005 | db 1,3,3                  | MapB01_006Data: db MapsBlock01 | dw MapB01_006 | db 1,3,3
+MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | MapB01_008Data: db MapsBlock01 | dw MapB01_008 | db 1,3,3                  | MapB01_009Data: db MapsBlock01 | dw MapB01_009 | db 1,3,3
+MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_001Data
-WorldMapPointer:  dw  MapB01_001Data
+WorldMapPointer:  dw  MapB01_002Data
 
 loadGraphics:
 
@@ -63,7 +63,10 @@ SetMapPalette:
   dec   a
   ld    hl,A01Palette
   jr    z,.goSetPalette
+  dec   a
   ld    hl,B01Palette
+  jr    z,.goSetPalette
+  ld    hl,KarniMataPalette
   .goSetPalette:
   call  setpalette
   ret
@@ -74,7 +77,10 @@ SetTilesInVram:
   dec   a
   ld    d,A01TilesBlock
   jr    z,.settiles
+  dec   a
   ld    d,B01TilesBlock
+  jr    z,.settiles
+  ld    d,KarniMataTilesBlock
 
   .settiles:
   ld    a,(slot.page12rom)            ;all RAM except page 12
@@ -83,7 +89,6 @@ SetTilesInVram:
   ld    hl,$8000                      ;page 1 - screen 5
   ld    b,0
   call  copyGraphicsToScreen
-
   ret
 
 SetEngineType:                    ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
@@ -312,6 +317,14 @@ ConvertToMapinRam:
 ;tiles 254 - 255 are lava
 ;tiles 256 - > are background
 
+;new
+;tiles 0 - 31 are ladder tiles
+;tiles 32 - 47 are spikes and lava
+;tiles 48 - 255 are hard foreground
+;tiles 256 - > are background
+
+
+
   ld    hl,$4000
   ld    iy,MapData
 
@@ -341,16 +354,15 @@ ConvertToMapinRam:
   ;set sx and sy of this tile
   dec   de
   
-  ld    hl,251
+  ld    hl,31
+  xor   a
+  sbc   hl,de
+  jp    nc,.laddertiles
+
+  ld    hl,255
   xor   a
   sbc   hl,de
   jp    nc,.hardforeground
-  ld    de,2
-  add   hl,de
-  jp    c,.laddertiles
-  ld    de,2
-  add   hl,de
-  jp    c,.lava
     
 .background:
   ld    (iy),0
@@ -512,8 +524,6 @@ initiatebordermaskingsprites:
 	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
 	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
 	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
-
-
   ret
 
 copyGraphicsToScreen:
@@ -535,18 +545,18 @@ copyGraphicsToScreen:
   
 	ld		hl,$4000
   ld    c,$98
-  ld    a,42                ;second 84 line, copy 64*256 = $4000 bytes to Vram
+  ld    a,64 ; 42                ;second 84 line, copy 64*256 = $4000 bytes to Vram
   ld    b,0
       
   call  .loop1   
 
   ;this last part is to fill the screen with a repetition
-	ld		hl,$4000
-  ld    c,$98
-  ld    a,22                ;second 84 line, copy 64*256 = $4000 bytes to Vram
-  ld    b,0
+;	ld		hl,$4000
+;  ld    c,$98
+;  ld    a,22                ;second 84 line, copy 64*256 = $4000 bytes to Vram
+;  ld    b,0
       
-  call  .loop1   
+;  call  .loop1   
   ret
 
 .loop1:
@@ -575,6 +585,9 @@ A01Palette:
   incbin "..\grapx\A01palette.PL" ;file palette 
 B01Palette:
   incbin "..\grapx\B01palette.PL" ;file palette 
+KarniMataPalette:
+  incbin "..\grapx\KarniMatapalette.PL" ;file palette 
+
 ;  incbin "..\grapx\UsasTilesW1Apalette" ;file palette 
 ;  incbin "..\grapx\usasWorld2palette" ;file palette 
 ;  incbin "..\grapx\usasWorld1palette" ;file palette 

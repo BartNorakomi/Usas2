@@ -1,0 +1,4 @@
+dos2unix file.tmx
+tmx16 file.tmx file.raw
+
+CygWin op computer laten staan

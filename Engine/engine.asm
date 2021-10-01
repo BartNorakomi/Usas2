@@ -26,7 +26,7 @@ LevelEngine:
   jp    LevelEngine
 
 ClesX:      dw 210
-ClesY:      db 144-1
+ClesY:      db 50 ; 144-1
 herospritenr:             db  22
 PutPlayersprite:
 	ld		a,(slot.page12rom)	;all RAM except page 1+2
@@ -2032,17 +2032,30 @@ ClimbUpMovementTable:
   db    +0,+1,+2,+2
   db    +0,+0,+0,+0,-100
 
-LAttack3:
+AttackRotator:  db 0
+
+LAttack:
+  ld    a,(AttackRotator)
+  or    a
+  jp    z,LAttack0
+  dec   a
+  jp    z,LAttack1
+  dec   a
+  jp    z,LAttack2
+  dec   a
+  jp    z,LAttack3
+
+LAttack4:
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
-  ld    hl,PlayerSpriteData_Char_RightPunch1a
+  ld    hl,PlayerSpriteData_Char_LeftPunch3a
   cp    3
   jr    c,.setSprite
   cp    7
-  ld    hl,PlayerSpriteData_Char_RightPunch1b
+  ld    hl,PlayerSpriteData_Char_LeftPunch3b
   jr    c,.setSprite  
-  ld    hl,PlayerSpriteData_Char_RightPunch1c
+  ld    hl,PlayerSpriteData_Char_LeftPunch3c
   .setSprite:
 	ld		(standchar),hl
 	
@@ -2050,7 +2063,7 @@ LAttack3:
 	ret   nz
   jp    Set_L_Stand
 
-LAttack2:
+LAttack3:
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
@@ -2074,7 +2087,7 @@ LAttack2:
 	ret   nz
   jp    Set_L_Stand
 
-LAttack1:
+LAttack2:
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
@@ -2110,17 +2123,52 @@ LAttack1:
 	ret   nz
   jp    Set_L_Stand
 
-RAttack3:
+LAttack1:
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
-  ld    hl,PlayerSpriteData_Char_RightPunch1a
+
+  ld    hl,PlayerSpriteData_Char_LeftHighKick
+	ld		(standchar),hl
+	
+	cp    15
+	ret   nz
+  jp    Set_L_Stand
+
+LAttack0:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+
+  ld    hl,PlayerSpriteData_Char_LeftLowKick
+	ld		(standchar),hl
+	
+	cp    15
+	ret   nz
+  jp    Set_L_Stand
+
+RAttack:
+  ld    a,(AttackRotator)
+  or    a
+  jp    z,RAttack0
+  dec   a
+  jp    z,RAttack1
+  dec   a
+  jp    z,RAttack2
+  dec   a
+  jp    z,RAttack3
+
+RAttack4:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  ld    hl,PlayerSpriteData_Char_RightPunch3a
   cp    3
   jr    c,.setSprite
   cp    7
-  ld    hl,PlayerSpriteData_Char_RightPunch1b
+  ld    hl,PlayerSpriteData_Char_RightPunch3b
   jr    c,.setSprite  
-  ld    hl,PlayerSpriteData_Char_RightPunch1c
+  ld    hl,PlayerSpriteData_Char_RightPunch3c
   .setSprite:
 	ld		(standchar),hl
 	
@@ -2128,18 +2176,63 @@ RAttack3:
 	ret   nz
   jp    Set_R_Stand
 
+RAttack3:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  ld    hl,PlayerSpriteData_Char_RightPunch2a
+  cp    3
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightPunch2b
+  cp    5
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightPunch2c
+  cp    20
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightPunch2d
+  cp    22
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightPunch2e
+  .setSprite:
+	ld		(standchar),hl
+	
+	cp    25
+	ret   nz
+  jp    Set_R_Stand
+
 RAttack2:
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
-  ld    hl,PlayerSpriteData_Char_RightKick2a
-  cp    8
+  ld    hl,PlayerSpriteData_Char_RightPunch1a
+  cp    3
   jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_RightKick2b
+  ld    hl,PlayerSpriteData_Char_RightPunch1b
+  cp    5
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightPunch1c
+  cp    07
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightPunch1d
+  cp    09
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightPunch1e
+  cp    21
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightPunch1f
+  cp    23
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightPunch1g
+  cp    25
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightPunch1h
+  cp    28
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightPunch1i
   .setSprite:
 	ld		(standchar),hl
 	
-	cp    20
+	cp    32
 	ret   nz
   jp    Set_R_Stand
 
@@ -2147,14 +2240,23 @@ RAttack1:
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
-  ld    hl,PlayerSpriteData_Char_RightKick1a
-  cp    8
-  jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_RightKick1b
-  .setSprite:
+
+  ld    hl,PlayerSpriteData_Char_RightHighKick
 	ld		(standchar),hl
 	
-	cp    20
+	cp    15
+	ret   nz
+  jp    Set_R_Stand
+
+RAttack0:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+
+  ld    hl,PlayerSpriteData_Char_RightLowKick
+	ld		(standchar),hl
+	
+	cp    15
 	ret   nz
   jp    Set_R_Stand
 
@@ -2933,11 +3035,11 @@ Lstanding:
 	jp		nz,.L_jump_andcheckpunch
 
 	bit		4,a           ;space pressed ?
-	jp		nz,Set_L_attack1
-	bit		5,a           ;'M' pressed ?
-	jp		nz,Set_L_attack2
-	bit		6,a           ;F1 pressed ?
-	jp		nz,Set_L_attack3
+	jp		nz,Set_L_attack
+;	bit		5,a           ;'M' pressed ?
+;	jp		nz,Set_L_attack2
+;	bit		6,a           ;F1 pressed ?
+;	jp		nz,Set_L_attack3
 
 
 	ld		a,(Controls)
@@ -3008,11 +3110,11 @@ Rstanding:
 	bit		0,a           ;cursor up pressed ?
 	jp		nz,.R_jump_andcheckpunch
 	bit		4,a           ;space pressed ?
-	jp		nz,Set_R_attack1
-	bit		5,a           ;'M' pressed ?
-	jp		nz,Set_R_attack2
-	bit		6,a           ;F1 pressed ?
-	jp		nz,Set_R_attack3
+	jp		nz,Set_R_attack
+;	bit		5,a           ;'M' pressed ?
+;	jp		nz,Set_R_attack2
+;	bit		6,a           ;F1 pressed ?
+;	jp		nz,Set_R_attack3
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
@@ -3115,48 +3217,32 @@ CheckClimbLadderUp:
   ld    (ClesX),hl
   ret
 
-Set_R_attack1:
-	ld		hl,RAttack1
+Set_R_attack:
+  ld    a,(AttackRotator)
+  inc   a
+  cp    5
+  jr    nz,.SetAttackRotator
+  xor   a
+  .SetAttackRotator:
+  ld    (AttackRotator),a
+
+	ld		hl,RAttack
 	ld		(PlayerSpriteStand),hl
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ret
 
-Set_R_attack2:
-	ld		hl,RAttack2
-	ld		(PlayerSpriteStand),hl
+Set_L_Attack:
+  ld    a,(AttackRotator)
+  inc   a
+  cp    5
+  jr    nz,.SetAttackRotator
+  xor   a
+  .SetAttackRotator:
+  ld    (AttackRotator),a
 
-  ld    hl,0 
-  ld    (PlayerAniCount),hl
-  ret
-
-Set_R_attack3:
-	ld		hl,RAttack3
-	ld		(PlayerSpriteStand),hl
-
-  ld    hl,0 
-  ld    (PlayerAniCount),hl
-  ret
-
-Set_L_attack1:
-	ld		hl,LAttack1
-	ld		(PlayerSpriteStand),hl
-
-  ld    hl,0 
-  ld    (PlayerAniCount),hl
-  ret
-
-Set_L_attack2:
-	ld		hl,LAttack2
-	ld		(PlayerSpriteStand),hl
-
-  ld    hl,0 
-  ld    (PlayerAniCount),hl
-  ret
-
-Set_L_attack3:
-	ld		hl,LAttack3
+	ld		hl,LAttack
 	ld		(PlayerSpriteStand),hl
 
   ld    hl,0 
