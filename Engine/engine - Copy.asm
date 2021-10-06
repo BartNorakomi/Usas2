@@ -25,7 +25,7 @@ LevelEngine:
   ld    (hl),0
   jp    LevelEngine
 
-ClesX:      dw 100 ;210
+ClesX:      dw 210
 ClesY:      db 50 ; 144-1
 herospritenr:             db  22
 PutPlayersprite:
@@ -86,32 +86,30 @@ standchar:	equ	$+1
   exx               ;recall hl. hl now points to color data
 
 
-X32BitShiftValue: equ 32
 ;check if player is left side of screen, if so add 32 bit shift
-  push  hl
-  ld    hl,(ClesX)
-  ld    de,X32BitShiftValue
-  sbc   hl,de
-  pop   hl
-	jp    nc,.PlayerRightSide
-
-  .PlayerLeftSide:
-  ld    c,128
-  ld    b,64
-  .Player32bitShifLoop:  
-  ld    a,(hl)
-  add   a,c
-  out   ($98),a
-  inc   hl
-  djnz  .Player32bitShifLoop
-  jp    .end32bitshift
+;	ld		a,(addxtohero)
+;  cp    250
+;	jp    nc,.playerleft
+;	cp    3
+;	jp    nc,.playerright
+;.playerleft:
+;  ld    c,128
+;  ld    b,128+64
+;.player32bitshiftloop:  
+;  ld    a,(hl)
+;  add   a,c
+;  out   ($98),a
+;  inc   hl
+;  djnz  .player32bitshiftloop
+;  jp    .end32bitshift
 ;check if player is left side of screen, if so add 32 bit shift
 
-  .PlayerRightSide:
+.playerright:
+;	ld		c,$98
 	call	outix64     ;4 sprites (4 * 16 bytes = 46 bytes)
-.end32bitshift:
-
-
+;.backfromshield:
+;.end32bitshift:
+;/put hero sprite color
 
 ;after the color data there are 2 bytes for the top and bottom offset of the sprites
   ld    a,(hl)
@@ -188,25 +186,23 @@ X32BitShiftValue: equ 32
   ld    hl,(ClesX)
   sbc   hl,de               ;take x Cles and subtract the x camer
 
-;  ld    a,h                 ;if the value now is <0 or >256 Cles is out of the screen
-;  or    a
-;  jp    nz,.outofscreen
+  ld    a,h                 ;if the value now is <0 or >256 Cles is out of the screen
+  or    a
+;  jp    m,.outofscreenleft
+  jp    nz,.outofscreen
 
   ld    a,l
+  jp    .putx
 
-  cp    32
-  jr    nc,.PutPlayerxY
-  add   a,32
-;  jp    .PutPlayerxY
-;.outofscreen:
-;  ld    a,255
-.PutPlayerxY:
+.outofscreen:
+  ld    a,255
+.putx:
 
   ld    de,3
   ld    hl,spat+88          
   ld    (hl),b              ;y sprite 22
   inc   hl                  
- 
+
 selfmodifyingcode_x_offset_hero_top: equ $+1
   add   a,0
 
@@ -1216,7 +1212,7 @@ VramObjects:
   db    000,000,$D0       ;fast copy     
 
 ExitRight256x216: equ 29*8
-ExitRight304x216: equ 38*8-3
+ExitRight304x216: equ 37*8
 
 CheckMapExit:
   ld    a,(ClesY)
@@ -1227,20 +1223,16 @@ CheckMapExit:
   cp    4
   jr    c,.ExitTopFound
 
-  ld    a,(ClesX)
-  or    a
-  jr    z,.PossibleExitLeftFound
+  ld    hl,(ClesX)
+  ld    de,4
+  sbc   hl,de
+  jr    c,.ExitLeftFound
 
   ld    hl,ExitRight304x216
   ld    de,(ClesX)
   sbc   hl,de
-  ret   nc
-
-  ld    hl,(ClesX)
-  ld    de,50*8
-  sbc   hl,de
-  jr    c,.ExitRightFound
-  jr    .ExitLeftFound  
+  jr    c,.ExitRightFound  
+  ret
 
   ld    hl,(ClesX)
 .selfmodifyingcodeMapexitRight:
@@ -1267,19 +1259,15 @@ CheckMapExit:
   
 .ExitRightFound:  
   ld    de,WorldMapDataMapLenght
-  ld    hl,1
+  ld    hl,4
   ld    (ClesX),hl
   xor   a
   ld    (CameraX),a
   jp    .LoadnextMap
-
-.PossibleExitLeftFound:
-  ld    a,(ClesX+1)
-  or    a
-  ret   nz
-  .ExitLeftFound:  
+  
+.ExitLeftFound:  
   ld    de,-WorldMapDataMapLenght
-  ld    hl,ExitRight304x216
+  ld    hl,36*8+7
   ld    (ClesX),hl
   ld    a,63
   ld    (CameraX),a
@@ -1988,10 +1976,6 @@ checktile:
   ld    hl,(ClesX)
   add   hl,de
 
-  ld    a,h
-  or    a
-  jp    m,.CheckTileIsOutOfScreenLeft
-
   srl   h
   rr    l                   ;/2
   srl   l                   ;/4
@@ -2021,11 +2005,6 @@ checktile:
   ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
   dec   a                   ;1 = wall
 	ret
-
-.CheckTileIsOutOfScreenLeft:
-  xor   a
-  dec   a
-  ret
 
 playermovementspeed:    db  2
 oldx:                   dw  0
@@ -2448,8 +2427,8 @@ GravityTimer:             equ 4     ;every x frames gravity changes jump speed
 YaddHeadPLayer:           equ 2
 YaddmiddlePLayer:         equ 17
 YaddFeetPlayer:           equ 33
-XaddLeftPlayer:           equ 00 - 8
-XaddRightPlayer:          equ 15 - 8
+XaddLeftPlayer:           equ 0
+XaddRightPlayer:          equ 15
 
 MoveHorizontallyWhileJump:
   ld    b,0                 ;horizontal movement
