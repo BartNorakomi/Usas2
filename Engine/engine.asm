@@ -175,6 +175,7 @@ X32BitShiftValue: equ 32
 ;  add   hl,de
 
   ld    a,(ClesY)
+  sub   a,16
   ld    b,a
   add   a,16
   ld    c,a
@@ -1261,7 +1262,7 @@ CheckMapExit:
   ld    de,-WorldMapDataMapLenght*WorldMapDataWidth
   ld    a,176+8 + 24
   ld    (ClesY),a
-  ld    a,45
+  ld    a,44
   ld    (CameraY),a
   jp    .LoadnextMap
   
@@ -2005,7 +2006,7 @@ checktile:
   srl   a
   srl   a                   ;/8
 
-	ld		de,MapData
+	ld		de,MapData-80
 	add   hl,de
 	
 .selfmodifyingcodeMapLenght:
@@ -2039,7 +2040,7 @@ LstandingSpriteStand:         equ 6
 LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
-;Rstanding,Rsitting,Rrunning,Lstanding,Lsitting,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack
+;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
@@ -2338,10 +2339,16 @@ ClimbuPAnimation:          ;xoffset sprite top, xoffset sprite bottom
   dw  PlayerSpriteData_Char_Climbing12
   dw  PlayerSpriteData_Char_Climbing13
 
+FloorFoundWhileClimbing:    ;floor below player is found, go to R_stand or L_stand
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jp    z,Set_L_stand
+  jp    Set_R_stand
+
 Climb:
   call  CheckFloor          ;out: z-> floor, c-> no floor. check if there is floor under the player
-  jp    z,Set_R_stand       ;on collision change to R_Stand    
-
+  jr    z,FloorFoundWhileClimbing
+  
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -2499,7 +2506,6 @@ Jump:
 	jp    nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
   ret
 
-
   .VerticalMovement:
   ld    hl,JumpSpeed
 
@@ -2518,9 +2524,21 @@ Jump:
 	.set:
 	ld		(PlayerAniCount),a
 
+  ;unable to jump through the top of the screen
+  ld    a,(Clesy)
+  cp    7
+  jp    nc,.EndCheckTopOfScreen
+
+  ld    a,(hl)              ;if vertical JumpSpeed is negative then CheckPlatformAbove. If it's positive then CheckPlatformBelow
+  or    a
+  jp    m,.SkipverticalMovement
+  .EndCheckTopOfScreen:
+  
   ld    a,(Clesy)
   add   a,(hl)
   ld    (Clesy),a
+
+  .SkipverticalMovement:
 
   ld    a,(hl)              ;if vertical JumpSpeed is negative then CheckPlatformAbove. If it's positive then CheckPlatformBelow
   or    a
@@ -2588,7 +2606,7 @@ Jump:
   jp    z,Set_L_stand       ;on collision change to L_Stand  
   jp    Set_R_stand         ;on collision change to R_Stand    
 
-  .CheckPlatformAbove:
+  .CheckPlatformAbove:  
 ;check platform above
   ld    b,YaddHeadPLayer    ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer+3   ;add x to check (x is expressed in pixels)
@@ -2628,7 +2646,7 @@ Jump:
   
   xor   a
   ld    (DoubleJumpAvailable?),a
-  jp    Set_R_jump.SkipTurnOnDoubleJump
+  jp    Set_jump.SkipTurnOnDoubleJump
    
 Lsitting:
 	ld		hl,PlayerSpriteData_Char_LeftRun1
@@ -2645,7 +2663,7 @@ Lsitting:
 	bit		1,a           ;cursor down pressed ?
 	jp		nz,Rsitting.CheckLadder
 	bit		0,a           ;cursor up pressed ?
-;	jp		nz,Set_R_jump
+;	jp		nz,Set_jump
 ;	bit		2,a           ;cursor left pressed ?
 ;	jp		nz,.Set_L_run_andcheckpunch
 	ld		a,(Controls)
@@ -2678,7 +2696,7 @@ Rsitting:
 	bit		1,a           ;cursor down pressed ?
 	jp		nz,.CheckLadder
 	bit		0,a           ;cursor up pressed ?
-;	jp		nz,Set_R_jump
+;	jp		nz,Set_jump
 ;	bit		2,a           ;cursor left pressed ?
 ;	jp		nz,.Set_L_run_andcheckpunch
 	ld		a,(Controls)
@@ -2851,7 +2869,7 @@ MovePlayerLeft:
   .SetRunningTablePointer:
   jp    DoMovePlayer
 
-DoMovePlayer:
+DoMovePlayer:               ;carry: collision detected
   ld    (RunningTablePointer),a
   
   ld    d,0
@@ -2965,12 +2983,6 @@ CheckFloorInclLadder:
   ret
 
 Rrunning:
-  call  MovePlayerRight     ;out: c-> collision detected
-  jp    c,Set_R_stand       ;on collision change to R_Stand
-  
-  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
-  jp    c,Set_Fall
-
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -2985,7 +2997,7 @@ Rrunning:
 ;	jp		nz,.Set_L_run_andcheckpunch
 	ld		a,(Controls)
 	bit		3,a           ;cursor right pressed ?
-	jp		nz,.AnimateRun
+	jp		nz,.MoveAndAnimate
 
   ld    a,(NewPrContr)
 ;	bit		4,a           ;space pressed ?
@@ -2995,22 +3007,22 @@ Rrunning:
 
   jp    Set_R_stand
   
-  .AnimateRun:
+  .MoveAndAnimate:
+  call  MovePlayerRight     ;out: c-> collision detected
+  jp    c,Set_R_stand       ;on collision change to R_Stand
+  
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall  
+  
   ld    hl,RightRunAnimation
   jp    AnimateRun
 
   .UpPressed:
-	call  Set_R_jump
+	call  Set_jump
   call  CheckClimbLadderUp
   ret
 
 Lrunning:
-  call  MovePlayerLeft      ;out: c-> collision detected
-  jp    c,Set_L_stand       ;on collision change to R_Stand
-
-  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
-  jp    c,Set_Fall
-
 ;  call  checkfloor
 ;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
 ;
@@ -3025,7 +3037,7 @@ Lrunning:
 	jr		nz,.UpPressed
 	ld		a,(Controls)
 	bit		2,a           ;cursor left pressed ?
-	jp		nz,.AnimateRun
+	jp		nz,.MoveAndAnimate
 ;	bit		3,a           ;cursor right pressed ?
 ;	jp		nz,.AnimateRun
 
@@ -3037,12 +3049,18 @@ Lrunning:
 
   jp    Set_L_stand
   
-  .AnimateRun:
+  .MoveAndAnimate:
+  call  MovePlayerLeft      ;out: c-> collision detected
+  jp    c,Set_L_stand       ;on collision change to R_Stand
+
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+    
   ld    hl,LeftRunAnimation
   jp    AnimateRun
 
   .UpPressed:
-	call  Set_R_jump
+	call  Set_jump
   call  CheckClimbLadderUp
   ret
 
@@ -3108,9 +3126,9 @@ Lstanding:
 .L_jump_andcheckpunch:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
-;	jp		z,Set_R_jump
+;	jp		z,Set_jump
 
-  call  Set_R_jump
+  call  Set_jump
   call  CheckClimbLadderUp
   ret
 
@@ -3181,7 +3199,7 @@ Rstanding:
 
 .R_jump_andcheckpunch:
 
-  call  Set_R_jump
+  call  Set_jump
   call  CheckClimbLadderUp
   ret
   
@@ -3301,9 +3319,15 @@ Set_Climb_AndResetAniCount:
   Set_Climb:
 	ld		hl,Climb
 	ld		(PlayerSpriteStand),hl
+
+	ld		hl,PlayerSpriteData_Char_Climbing1
+	ld		(standchar),hl	
+
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
   ret
 
-Set_R_jump:
+Set_jump:
   ld    a,1
   ld    (DoubleJumpAvailable?),a
 
