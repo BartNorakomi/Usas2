@@ -25,8 +25,8 @@ LevelEngine:
   ld    (hl),0
   jp    LevelEngine
 
-ClesX:      dw 100 ;210
-ClesY:      db 50 ; 144-1
+ClesX:      dw 50 ;210
+ClesY:      db 20 ; 144-1
 herospritenr:             db  22
 PutPlayersprite:
 	ld		a,(slot.page12rom)	;all RAM except page 1+2
@@ -2040,7 +2040,7 @@ LstandingSpriteStand:         equ 6
 LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
-;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack
+;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairs
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
@@ -2064,6 +2064,122 @@ ClimbUpMovementTable:
   db    +0,+0,+0,+0,-100
 
 AttackRotator:  db 0
+
+ClimbStairs:
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+	jp		nz,.ClimbUp
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,.ClimbDown
+	bit		2,a           ;cursor left pressed ?
+	jp		nz,.ClimbUp
+	bit		3,a           ;cursor right pressed ?
+	jp		nz,.ClimbDown
+
+  ld    a,(NewPrContr)
+;	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+;	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic	
+;	jp		Set_L_stand
+  ret
+
+  .ClimbDown:
+  ;when turning around during stair climbing x offset has to be changed by 6 pixels
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jr    nz,.PlayerFacingRight
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,(ClesX)
+  ld    de,6
+  add   hl,de
+  ld    (ClesX),hl
+  
+	ld		hl,PlayerSpriteData_Char_RightStand
+	ld		(standchar),hl  
+  .PlayerFacingRight:
+  ;when turning around during stair climbing x offset has to be changed by 6 pixels
+      
+  ld    a,(ClesY)
+  inc   a
+  ld    (ClesY),a
+
+  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+  inc   hl
+  ld    (ClesX),hl
+
+  ld    hl,RightRunAnimation
+  call  AnimateRun
+
+  ;check if there are still stairs when climbing down, if not, then run right
+  ld    b,YaddFeetPlayer-00    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  ret   z
+
+  ;check if there are still stairs when climbing down, if not, then run right
+  ld    b,YaddFeetPlayer+08    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+10   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  ret   z
+
+  jp    Set_R_Run
+  
+
+  .ClimbUp:
+  ;when turning around during stair climbing x offset has to be changed by 6 pixels
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jr    z,.PlayerFacingLeft
+
+  xor   a
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,(ClesX)
+  ld    de,-6
+  add   hl,de
+  ld    (ClesX),hl
+
+	ld		hl,PlayerSpriteData_Char_LeftStand
+	ld		(standchar),hl  
+  .PlayerFacingLeft:
+  ;when turning around during stair climbing x offset has to be changed by 6 pixels
+  
+  ld    a,(ClesY)
+  dec   a
+  ld    (ClesY),a
+
+  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+  dec   hl
+  ld    (ClesX),hl
+
+  ld    hl,LeftRunAnimation
+  call  AnimateRun
+
+  ;check if there are still stairs when climbing up, if not, then run left
+  ld    b,YaddFeetPlayer-01    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+7   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  ret   z
+
+  ;check if there are still stairs when climbing up, if not, then run left
+  ld    b,YaddFeetPlayer+07    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+15   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  ret   z
+  jp    Set_L_Run
 
 LAttack:
   ld    a,(AttackRotator)
@@ -2526,7 +2642,7 @@ Jump:
 
   ;unable to jump through the top of the screen
   ld    a,(Clesy)
-  cp    7
+  cp    9
   jp    nc,.EndCheckTopOfScreen
 
   ld    a,(hl)              ;if vertical JumpSpeed is negative then CheckPlatformAbove. If it's positive then CheckPlatformBelow
@@ -3080,7 +3196,7 @@ Lstanding:
 
   ld    a,(NewPrContr)
 	bit		0,a           ;cursor up pressed ?
-	jp		nz,.L_jump_andcheckpunch
+	jp		nz,.UpPressed
 
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_L_attack
@@ -3123,13 +3239,14 @@ Lstanding:
 ;	jp		nz,Set_R_sitmagic
 	jp		Set_L_sit
 
-.L_jump_andcheckpunch:
+.UpPressed:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
 ;	jp		z,Set_jump
 
   call  Set_jump
   call  CheckClimbLadderUp
+  call  CheckClimbStairsUp
   ret
 
 
@@ -3155,8 +3272,9 @@ Rstanding:
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
   ld    a,(NewPrContr)
-	bit		0,a           ;cursor up pressed ?
-	jp		nz,.R_jump_andcheckpunch
+	bit		0,a           ;cursor up pressed ?	
+	jp		nz,.UpPressed	
+	
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_R_attack
 ;	bit		5,a           ;'M' pressed ?
@@ -3166,7 +3284,7 @@ Rstanding:
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
-	jp		nz,.Maybe_Set_R_sit
+	jp		nz,.DownPressed
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.Set_L_run_andcheckpunch
 	bit		3,a           ;cursor right pressed ?
@@ -3187,7 +3305,7 @@ Rstanding:
 ;	jp		nz,Set_L_standmagic
   jp    Set_L_run
 
-.Maybe_Set_R_sit:
+.DownPressed:
 ;  call  CheckDoubleTapDownF1Menu
   
   ld    a,(NewPrContr)
@@ -3195,9 +3313,11 @@ Rstanding:
 ;	jp		nz,Set_R_sitpunch
 	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_R_sitmagic
-	jp		Set_R_sit
+	call	Set_R_sit
+  call  CheckClimbStairsDown  
+  ret
 
-.R_jump_andcheckpunch:
+.UpPressed:
 
   call  Set_jump
   call  CheckClimbLadderUp
@@ -3210,6 +3330,84 @@ Rstanding:
 	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_R_standmagic
   jp    Set_R_run
+
+CheckClimbStairsDown:
+;check if there are stairs when pressing up, if so climb the stairs. Check if there is a tile above left foot AND right foot
+  ld    b,YaddFeetPlayer+09    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+8   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  jp    z,.stairsfound
+
+  ld    b,YaddFeetPlayer+09    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+14   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  ret   nz
+
+  .stairsfound:      
+	call  Set_Stairs_Climb
+
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    a,l
+  and   %1111 1000
+  ld    l,a
+  ld    (ClesX),hl
+
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    de,6
+  add   hl,de
+  ld    (ClesX),hl
+;  ld    a,(Clesy)
+;  add   a,0
+;  ld    (Clesy),a
+  
+  ld    b,YaddFeetPlayer+09    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+8   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  ret   nz
+  
+;  ld    hl,(ClesX)          ;sub 8 pixels to player in case we snapped too much to the right
+;  ld    de,-8
+;  add   hl,de
+;  ld    (ClesX),hl
+  ret
+
+CheckClimbStairsUp:
+;check if there are stairs when pressing up, if so climb the stairs. Check if there is a tile above left foot AND right foot
+  ld    b,YaddFeetPlayer-01    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+8   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  jp    z,.stairsfound
+
+  ld    b,YaddFeetPlayer-01    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  ret   nz
+
+  .stairsfound:  
+	call  Set_Stairs_Climb
+
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    a,l
+  and   %1111 1000
+  ld    l,a
+  ld    (ClesX),hl
+
+  ld    b,YaddFeetPlayer-01    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+8   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  ret   nz
+  
+  ld    hl,(ClesX)          ;add 8 pixels to player in case we snapped too much to the left
+  ld    de,8
+  add   hl,de
+  ld    (ClesX),hl
+  ret
 
 CheckClimbLadderUp:
 ;check if there is a ladder when pressing up, if so climb the ladder. Check if there is a tile above left foot AND right foot
@@ -3296,6 +3494,15 @@ Set_L_Attack:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ret
+
+Set_Stairs_Climb:
+	ld		hl,ClimbStairs
+	ld		(PlayerSpriteStand),hl
+
+;  ld    hl,0 
+;  ld    (PlayerAniCount),hl
+  ret
+
 
 Set_ClimbDown:
 	ld		hl,ClimbDown

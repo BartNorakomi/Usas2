@@ -13,7 +13,7 @@ MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | Map
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_001Data
-WorldMapPointer:  dw  MapB01_011Data
+WorldMapPointer:  dw  MapB01_009Data
 
 loadGraphics:
 
@@ -317,15 +317,12 @@ CheckTile256x216MapLenght:  equ 32 + 2
 CheckTile304x216MapLenght:  equ 38 + 2
 
 ConvertToMapinRam:
-;tiles 0 - 251 are hard foreground
-;tiles 252 - 253 are ladder tiles
-;tiles 254 - 255 are lava
-;tiles 256 - > are background
-
 ;new
 ;tiles 0 - 31 are ladder tiles
 ;tiles 32 - 47 are spikes and lava
-;tiles 48 - 255 are hard foreground
+;tiles 48 - 49 are stairs left up
+;tiles 50 - 51 are stairs right up
+;tiles 52 - 255 are hard foreground
 ;tiles 256 - > are background
 
 ;convert into
@@ -333,6 +330,8 @@ ConvertToMapinRam:
 ;tile 1 = hardforeground
 ;tile 2 = laddertiles
 ;tile 3 = lava
+;tile 4 = stairsleftup
+;tile 5 = stairsrightup
 
   ld    hl,$4000
   ld    iy,MapData
@@ -387,10 +386,25 @@ ConvertToMapinRam:
   ;set sx and sy of this tile
   dec   de
   
-  ld    hl,31
+  ld    hl,31               ;ladder
   xor   a
   sbc   hl,de
   jp    nc,.laddertiles
+
+  ld    hl,47               ;spikes & lava
+  xor   a
+  sbc   hl,de
+  jp    nc,.hardforeground ;.lava
+
+  ld    hl,49               ;stairs left up
+  xor   a
+  sbc   hl,de
+  jp    nc,.stairsleftup
+
+  ld    hl,51               ;stairs right up
+  xor   a
+  sbc   hl,de
+  jp    nc,.stairsrightup
 
   ld    hl,255
   xor   a
@@ -411,6 +425,14 @@ ConvertToMapinRam:
 
 .lava:
   ld    (iy),3
+  ret
+
+.stairsleftup:
+  ld    (iy),4
+  ret
+
+.stairsrightup:
+  ld    (iy),5
   ret
   
 SetTile:
