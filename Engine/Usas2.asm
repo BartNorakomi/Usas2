@@ -455,9 +455,10 @@ dephase
 ;
 Graphicsblock5:  equ   $15
 phase	$4000
-  incbin "..\grapx\scoreboard.SC5",7,$2000  ;skip header
-;  incbin "..\grapx\bomba4.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\Mulana4.SC5",7,$6A00  ;skip header
+scoreboard:
+  incbin "..\grapx\scoreboard.SC5",7,$1000  ;skip header
+itemsKarniMata:
+  incbin "..\grapx\itemsKarniMata.SC5",7,$1000  ;skip header
 	ds		$6000-$,$ff
 dephase
 
@@ -533,6 +534,14 @@ MapB01_008:
   incbin "..\maps\b01-008.map.pck"  ;469 bytes
 MapB01_009:
   incbin "..\maps\b01-009.map.pck"  ;469 bytes
+.amountofobjects: db  1
+       ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, offsettable                                                 ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
+.object1: db 1,        1,     001,100,100,16,32,        00,       00,+32,+00,+00,+00, 00,16,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+
+
+
+
+
 MapB01_010:
   incbin "..\maps\b01-010.map.pck"  ;469 bytes
 MapB01_011:

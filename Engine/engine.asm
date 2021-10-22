@@ -3,8 +3,9 @@ LevelEngine:
   call  switchpageSF2Engine
   call  PopulateControls
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
+
+	call	handle_enemies_and_objects
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
-;  call  VramObjects
 ;  call  Sf2EngineObjects          ;restore background P1, handle action P1, put P1 in screen, play music, 
                                   ;restore background P2, handle action P2, put P2 in screen, collision detection, set prepared collision action
   call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
@@ -25,8 +26,195 @@ LevelEngine:
   ld    (hl),0
   jp    LevelEngine
 
-ClesX:      dw 50 ;210
-ClesY:      db 20 ; 144-1
+
+
+
+handle_enemies_and_objects:                           ;2. call movement_enemies_and_objects (if within movement area)
+;	ld		a,(slot.page2rom)	; all RAM except page 2
+;	out		($a8),a	
+
+  ld    de,enemies_and_objects+(0*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | or a | call nz,.docheck              ;4. set x&y of object in spat and out the col and char (if within screen display)
+;  ld    de,enemies_and_objects+(1*lenghtenemytable)
+;  ld    a,(de) | or a | call nz,.docheck
+;  ld    de,enemies_and_objects+(2*lenghtenemytable)
+;  ld    a,(de) | or a | call nz,.docheck
+ 
+;	ld		a,(slot.ram)	      ;back to full RAM
+;	out		($a8),a	
+  ret
+
+  .docheck:
+  ld    ixl,e
+  ld    ixh,d
+    
+  call  movement_enemies_and_objects                  ;sprite is in movement area, so let it move !! ^__^
+  ret
+
+movement_enemies_and_objects:
+;  ld    a,(movementpatternsblock)
+;	call	block34			      ;at address $8000 / page 2
+
+  
+  ld    a,(ix+enemies_and_objects.movementpattern)             ;movementpattern
+  dec   a
+  ld    b,a
+  add   a,a                 ;*2
+  add   a,b                 ;*3
+  ld    d,0
+  ld    e,a
+  ld    hl,movementpatternaddress
+  add   hl,de
+  jp    (hl)
+
+;This is at $4000 inside a block (movementpatternsblock)
+movementpatternaddress:
+  jp    Platform                      ;movement pattern 1   (in enginepage3)
+  jp    Currency                            ;movement pattern 2   (in engine)
+
+Platform:
+;move object
+  ld    a,(ix+enemies_and_objects.y)
+  inc   a
+  cp    180
+  jr    c,.go
+  xor   a
+  .go:
+  ld    (ix+enemies_and_objects.y),a
+  
+  call  VramObjects
+  ret
+
+enemyexplosion:
+jp enemyexplosion
+  ret
+
+Currency:
+  ret
+
+
+VramObjectX:  db  100
+VramObjectY:  db  100
+VramObjects:
+;first clean the object
+  ld    hl,.CleanObject
+  call  docopy
+
+;press space to increase width of object
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+;  ld    a,(NewPrContr)
+;	bit		4,a           ;space pressed ?
+;  jr    z,.endcheckSpacepressed
+
+;  ld    a,(.CopyObject+nx)
+;  add   a,2
+;  cp    40
+;  jr    nz,.endnx  
+;  ld    a,10
+;  .endnx:
+;  ld    (.CopyObject+nx),a  
+;  ld    (.CleanObject+nx),a  
+;  .endcheckSpacepressed:
+
+;  ld    a,(NewPrContr)
+;	bit		5,a           ;m pressed ?
+;  jr    z,.endcheckMpressed
+
+;  ld    a,(.CopyObject+ny)
+;  add   a,2
+;  cp    40
+;  jr    nz,.endny
+;  ld    a,10
+;  .endny:
+;  ld    (.CopyObject+ny),a  
+;  ld    (.CleanObject+ny),a  
+;  .endcheckMpressed:  
+
+;set pages to copy to and to clean from
+  ld    a,(PageOnNextVblank)
+  cp    0*32+31           ;x*32+31 (x=page)
+  ld    b,0               ;copy to page 0
+  ld    c,1               ;clean object from vram data in page 1
+  ld    d,+000            ;x offset CopyObject
+  ld    e,-016            ;x offset CleanObject 
+  jr    z,.pagefound
+
+  cp    1*32+31           ;x*32+31 (x=page)
+  ld    b,1               ;copy to page 1
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-016            ;x offset CopyObject
+  ld    e,-016            ;x offset CleanObject 
+  jr    z,.pagefound
+
+  cp    2*32+31           ;x*32+31 (x=page)
+  ld    b,2               ;copy to page 2
+  ld    c,3               ;clean object from vram data in page 3
+  ld    d,-032            ;x offset CopyObject
+  ld    e,-016            ;x offset CleanObject 
+  jr    z,.pagefound
+
+  ld    b,3               ;copy to page 3
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-048            ;x offset CopyObject
+  ld    e,+016            ;x offset CleanObject 
+  jr    z,.pagefound
+
+.pagefound:
+  ld    a,b
+  ld    (.CopyObject+dpage),a  
+  ld    (.CleanObject+dpage),a
+  ld    a,c
+  ld    (.CleanObject+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ix+enemies_and_objects.y)
+  ld    (.CleanObject+sy),a
+  ld    (.CleanObject+dy),a
+  ld    (.CopyObject+dy),a
+
+  ld    a,(ix+enemies_and_objects.x)
+  add   d
+  ld    (.CopyObject+dx),a
+  ld    (.CleanObject+dx),a
+  add   e
+  ld    (.CleanObject+sx),a
+  
+  ld    a,(ix+enemies_and_objects.nx)
+  ld    (.CopyObject+nx),a  
+  ld    (.CleanObject+nx),a  
+
+  ld    a,(ix+enemies_and_objects.ny)
+  ld    (.CopyObject+ny),a  
+  ld    (.CleanObject+ny),a  
+
+;set sx
+  ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
+  ld    (.CopyObject+sx),a  
+
+;put object
+  ld    hl,.CopyObject
+  call  docopy
+  ret
+
+.CleanObject:
+  db    084,000,100,001   ;sx,--,sy,spage
+  db    100,000,100,000   ;dx,--,dy,dpage
+  db    010,000,010,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy     
+  
+.CopyObject:
+  db    000,000,216,001   ;sx,--,sy,spage
+  db    100,000,100,000   ;dx,--,dy,dpage
+  db    010,000,010,000   ;nx,--,ny,--
+  db    000,000,$98       ;fast copy     
+
+
+ClesX:      dw 145 ;210
+ClesY:      db 80 ; 144-1
 herospritenr:             db  22
 PutPlayersprite:
 	ld		a,(slot.page12rom)	;all RAM except page 1+2
@@ -1102,119 +1290,6 @@ restorebackgroundplayer1page2:
 	db    $2a,0,$50,0
 	db    0,0,$d0  
 
-VramObjectX:  db  100
-VramObjectY:  db  100
-VramObjects:
-;first clean the object
-  ld    hl,.CleanObject
-  call  docopy
-
-;press space to increase width of object
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-  ld    a,(NewPrContr)
-	bit		4,a           ;space pressed ?
-  jr    z,.endcheckSpacepressed
-
-  ld    a,(.CopyObject+nx)
-  add   a,2
-  cp    40
-  jr    nz,.endnx  
-  ld    a,10
-  .endnx:
-  ld    (.CopyObject+nx),a  
-  ld    (.CleanObject+nx),a  
-  .endcheckSpacepressed:
-
-  ld    a,(NewPrContr)
-	bit		5,a           ;m pressed ?
-  jr    z,.endcheckMpressed
-
-  ld    a,(.CopyObject+ny)
-  add   a,2
-  cp    40
-  jr    nz,.endny
-  ld    a,10
-  .endny:
-  ld    (.CopyObject+ny),a  
-  ld    (.CleanObject+ny),a  
-  .endcheckMpressed:  
-
-;set pages to copy to and to clean from
-  ld    a,(currentpage)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000            ;x offset CopyObject
-  ld    e,-016            ;x offset CleanObject 
-  jr    z,.pagefound
-
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016            ;x offset CopyObject
-  ld    e,-016            ;x offset CleanObject 
-  jr    z,.pagefound
-
-  ld    a,(currentpage)
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032            ;x offset CopyObject
-  ld    e,-016            ;x offset CleanObject 
-  jr    z,.pagefound
-
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048            ;x offset CopyObject
-  ld    e,+016            ;x offset CleanObject 
-  jr    z,.pagefound
-
-.pagefound:
-  ld    a,b
-  ld    (.CopyObject+dpage),a  
-  ld    (.CleanObject+dpage),a
-  ld    a,c
-  ld    (.CleanObject+spage),a
-
-;move object
-  ld    a,(VramObjectY)
-  inc   a
-  cp    180
-  jr    c,.go
-  xor   a
-  .go:
-  ld    (VramObjectY),a
-  ld    (.CleanObject+sy),a
-  ld    (.CleanObject+dy),a
-  ld    (.CopyObject+dy),a
-
-  ld    a,(VramObjectX)
-  add   d
-  ld    (.CopyObject+dx),a
-  ld    (.CleanObject+dx),a
-  add   e
-  ld    (.CleanObject+sx),a
-
-;put object
-  ld    hl,.CopyObject
-  call  docopy
-  ret
-
-.CleanObject:
-  db    084,000,100,001   ;sx,--,sy,spage
-  db    100,000,100,000   ;dx,--,dy,dpage
-  db    010,000,010,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy     
-  
-.CopyObject:
-  db    000,000,220,000   ;sx,--,sy,spage
-  db    100,000,100,000   ;dx,--,dy,dpage
-  db    010,000,010,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy     
 
 ExitRight256x216: equ 29*8
 ExitRight304x216: equ 38*8-3
@@ -1714,9 +1789,6 @@ CameraEngine304x216:
   .negativeYValue:
   .maxYRangeFound:
 
-
-
-
 .playerfacingRight:
 
 ;camera should start moving to the right, when player x>50 and facing right
@@ -1767,7 +1839,6 @@ CameraEngine304x216:
 ;  jp    .movecamera
 
 .movecamera:
-
   ld    a,(CameraX)
   add   a,b
   jp    m,.negativeValue
@@ -2040,7 +2111,7 @@ LstandingSpriteStand:         equ 6
 LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
-;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairs
+;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
@@ -2048,24 +2119,129 @@ HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
 
-ClimbUpMovementTable:
-;  db    -0,-0,-0,-0,-0,-0,-0,-0
-;  db    -0,-0,-0,-0,-0,-0,-0,-0
-;  db    -0,-0,-0,-0,-1,-1,-1,-1
-;  db    -2,-2,-3,-3,-3,-3,-2,-1
-;  db    -0,+1,+2,+1,-0,-0,-0,-0
-;  db    -0,-0,-0,-0,-0,-0,-0,-0,-100
+ClimbStairsRightUp:
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+	jp		nz,.ClimbUp
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,.ClimbDown
+	bit		2,a           ;cursor left pressed ?
+	jp		nz,.ClimbDown
+	bit		3,a           ;cursor right pressed ?
+	jp		nz,.ClimbUp
 
-  db    -0,-0,-0,-1
-  db    -1,-1,-2,-2
-  db    -2,-3,-3,-3
-  db    -3,-2,-1,+0
-  db    +0,+1,+2,+2
-  db    +0,+0,+0,+0,-100
+  ld    a,(NewPrContr)
+;	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+;	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic	
+;	jp		Set_L_stand
+  ret
 
-AttackRotator:  db 0
+  .ClimbDown:
+  ;when turning around during stair climbing x offset has to be changed by 6 pixels
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jr    z,.PlayerFacingLeft
 
-ClimbStairs:
+  xor   a
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,(ClesX)
+  ld    de,-6
+  add   hl,de
+  ld    (ClesX),hl
+  
+	ld		hl,PlayerSpriteData_Char_LeftStand
+	ld		(standchar),hl  
+  .PlayerFacingLeft:
+  ;when turning around during stair climbing x offset has to be changed by 6 pixels
+      
+  ld    a,(ClesY)
+  inc   a
+  ld    (ClesY),a
+
+  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+  dec   hl
+  ld    (ClesX),hl
+
+  ld    hl,LeftRunAnimation
+  call  AnimateRun
+
+  ;check if there are still stairs when climbing down, if not, then run left
+  ld    b,YaddFeetPlayer-00    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+13   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairsrightup
+  ret   z
+
+  ;check if there are still stairs when climbing down, if not, then run left
+  ld    b,YaddFeetPlayer+08    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+05   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairsrightup
+  ret   z
+
+  ld    a,RunningTablePointerRunLeftEndValue
+  ld    (RunningTablePointer),a ;this will make sure you end the stairs climb with max movement speed in the correct direction
+  jp    Set_L_Run
+  
+
+  .ClimbUp:
+  ;when turning around during stair climbing x offset has to be changed by 6 pixels
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jr    nz,.PlayerFacingRight
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,(ClesX)
+  ld    de,+6
+  add   hl,de
+  ld    (ClesX),hl
+
+	ld		hl,PlayerSpriteData_Char_RightStand
+	ld		(standchar),hl  
+  .PlayerFacingRight:
+  ;when turning around during stair climbing x offset has to be changed by 6 pixels
+  
+  ld    a,(ClesY)
+  dec   a
+  ld    (ClesY),a
+
+  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+  inc   hl
+  ld    (ClesX),hl
+
+  ld    hl,RightRunAnimation
+  call  AnimateRun
+
+  ;check if there are still stairs when climbing up, if not, then run left
+  ld    b,YaddFeetPlayer-01    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+8   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairsrightup
+  ret   z
+
+  ;check if there are still stairs when climbing up, if not, then run left
+  ld    b,YaddFeetPlayer+07    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+0   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairsrightup
+  ret   z
+
+  ld    a,RunningTablePointerRunRightEndValue
+  ld    (RunningTablePointer),a ;this will make sure you end the stairs climb with max movement speed in the correct direction
+  jp    Set_R_Run
+
+
+ClimbStairsLeftUp:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -2133,8 +2309,9 @@ ClimbStairs:
   sub   3                   ;check for tilenr 4=stairsleftup
   ret   z
 
+  ld    a,RunningTablePointerRunRightEndValue
+  ld    (RunningTablePointer),a ;this will make sure you end the stairs climb with max movement speed in the correct direction
   jp    Set_R_Run
-  
 
   .ClimbUp:
   ;when turning around during stair climbing x offset has to be changed by 6 pixels
@@ -2179,8 +2356,12 @@ ClimbStairs:
   call  checktile           ;out z=collision found with wall
   sub   3                   ;check for tilenr 4=stairsleftup
   ret   z
+
+  ld    a,RunningTablePointerRunLeftEndValue
+  ld    (RunningTablePointer),a ;this will make sure you end the stairs climb with max movement speed in the correct direction
   jp    Set_L_Run
 
+AttackRotator:  db 0
 LAttack:
   ld    a,(AttackRotator)
   or    a
@@ -2407,6 +2588,13 @@ RAttack0:
 	ret   nz
   jp    Set_R_Stand
 
+ClimbUpMovementTable:
+  db    -0,-0,-0,-1
+  db    -1,-1,-2,-2
+  db    -2,-3,-3,-3
+  db    -3,-2,-1,+0
+  db    +0,+1,+2,+2
+  db    +0,+0,+0,+0,-100
 ClimbUp:
   ld    a,(PlayerAniCount+1)
   ld    d,0
@@ -2611,11 +2799,95 @@ AnimateWhileJump:
 	ld		hl,PlayerSpriteData_Char_LeftRun9
 	ld		(standchar),hl
   ret
+
+CheckSnapToStairsWhileJump:
+;check if there are stairs when pressing up, if so climb the stairs.
+;[Check ladder going Right UP]
+  ld    b,YaddFeetPlayer-00    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+08   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  jp    z,.stairsfoundleftup
+
+  ld    b,YaddFeetPlayer-00    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+08-08   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairssrightup
+  ret   nz
+
+.stairsfoundrightup:
+  pop   af                    ;pop the call  
+
+	call  Set_Stairs_Climb_RightUp
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a          ;is player facing right ?
+
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    a,l
+  and   %1111 1000
+  ld    l,a
+  ld    (ClesX),hl
+
+  ld    a,(ClesY)
+  and   %1111 1000
+  dec   a
+  ld    (ClesY),a
+
+  ld    b,YaddFeetPlayer-00    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+08-08   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairssrightup
+  ret   z
+  
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    de,8
+  add   hl,de
+  ld    (ClesX),hl
+  ret  
+
+
+.stairsfoundleftup:  
+  pop   af                    ;pop the call  
+
+	call  Set_Stairs_Climb_LeftUp
+
+  xor   a
+  ld    (PlayerFacingRight?),a          ;is player facing right ?
+
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    a,l
+  and   %1111 1000
+  ld    l,a
+  ld    (ClesX),hl
+
+  ld    a,(ClesY)
+  and   %1111 1000
+  dec   a
+  ld    (ClesY),a
+
+  ld    b,YaddFeetPlayer-00    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+08   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   3                   ;check for tilenr 4=stairsleftup
+  ret   z
+  
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    de,-8
+  add   hl,de
+  ld    (ClesX),hl
+  ret  
   
 Jump:
   call  MoveHorizontallyWhileJump
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+  call  nz,CheckSnapToStairsWhileJump
   call  AnimateWhileJump
   call  .VerticalMovement
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+  call  nz,CheckSnapToStairsWhileJump
 
   ld    a,(NewPrContr)
 	bit		0,a           ;cursor up pressed ?
@@ -2722,7 +2994,7 @@ Jump:
   jp    z,Set_L_stand       ;on collision change to L_Stand  
   jp    Set_R_stand         ;on collision change to R_Stand    
 
-  .CheckPlatformAbove:  
+  .CheckPlatformAbove:    
 ;check platform above
   ld    b,YaddHeadPLayer    ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer+3   ;add x to check (x is expressed in pixels)
@@ -3111,17 +3383,24 @@ Rrunning:
 	jr		nz,.UpPressed
 ;	bit		2,a           ;cursor left pressed ?
 ;	jp		nz,.Set_L_run_andcheckpunch
+
 	ld		a,(Controls)
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,.DownPressed
 	bit		3,a           ;cursor right pressed ?
 	jp		nz,.MoveAndAnimate
 
-  ld    a,(NewPrContr)
 ;	bit		4,a           ;space pressed ?
 ;	jp		nz,Set_R_standpunch
 ;	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_R_standmagic
 
   jp    Set_R_stand
+
+.DownPressed:
+	call	Set_R_sit
+  call  CheckClimbStairsDown  
+  ret
   
   .MoveAndAnimate:
   call  MovePlayerRight     ;out: c-> collision detected
@@ -3129,13 +3408,18 @@ Rrunning:
   
   call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall  
+
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+	call  nz,CheckClimbStairsUp
   
   ld    hl,RightRunAnimation
   jp    AnimateRun
 
   .UpPressed:
 	call  Set_jump
-  call  CheckClimbLadderUp
+  call  CheckClimbLadderUp	
+	call  CheckClimbStairsUp    
   ret
 
 Lrunning:
@@ -3151,7 +3435,10 @@ Lrunning:
   ld    a,(NewPrContr)
 	bit		0,a           ;cursor up pressed ?
 	jr		nz,.UpPressed
+
 	ld		a,(Controls)
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,.DownPressed
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.MoveAndAnimate
 ;	bit		3,a           ;cursor right pressed ?
@@ -3164,20 +3451,30 @@ Lrunning:
 ;	jp		nz,Set_R_standmagic
 
   jp    Set_L_stand
-  
+
+.DownPressed:
+	call	Set_L_sit
+  call  CheckClimbStairsDown  
+  ret
+    
   .MoveAndAnimate:
   call  MovePlayerLeft      ;out: c-> collision detected
   jp    c,Set_L_stand       ;on collision change to R_Stand
 
   call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall
-    
+
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+	call  nz,CheckClimbStairsUp
+	    
   ld    hl,LeftRunAnimation
   jp    AnimateRun
 
   .UpPressed:
 	call  Set_jump
   call  CheckClimbLadderUp
+	call  CheckClimbStairsUp  
   ret
 
 Lstanding:
@@ -3208,7 +3505,7 @@ Lstanding:
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
-	jp		nz,.Maybe_Set_L_sit
+	jp		nz,.DownPressed
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.Set_L_run_andcheckpunch
 	bit		3,a           ;cursor right pressed ?
@@ -3229,7 +3526,7 @@ Lstanding:
 ;	jp		nz,Set_L_standmagic
   jp    Set_L_run
 
-.Maybe_Set_L_sit:
+.DownPressed:
 ;  call  CheckDoubleTapDownF1Menu
   
   ld    a,(NewPrContr)
@@ -3237,7 +3534,9 @@ Lstanding:
 ;	jp		nz,Set_R_sitpunch
 	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_R_sitmagic
-	jp		Set_L_sit
+	call	Set_L_sit
+  call  CheckClimbStairsDown  
+  ret
 
 .UpPressed:
   ld    a,(NewPrContr)
@@ -3318,9 +3617,9 @@ Rstanding:
   ret
 
 .UpPressed:
-
   call  Set_jump
   call  CheckClimbLadderUp
+  call  CheckClimbStairsUp  
   ret
   
 .Set_R_run_andcheckpunch:
@@ -3332,7 +3631,65 @@ Rstanding:
   jp    Set_R_run
 
 CheckClimbStairsDown:
-;check if there are stairs when pressing up, if so climb the stairs. Check if there is a tile above left foot AND right foot
+  call  .StairsGoingLeftUp
+  
+.StairsGoingRightUp:
+;check if there are stairs when pressing down, if so climb the stairs. Check if there is a tile below left foot AND right foot
+;[Check stairs going RIGHT UP]
+  ld    b,YaddFeetPlayer+09    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer-04   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairsrightup
+  jp    z,.stairsfound1
+
+  ld    b,YaddFeetPlayer+09    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+02   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairsrightup
+  ret   nz
+
+  ld    hl,(ClesX)          ;2nd check checks 6 pixels further to the left. If stairs found, then move player 6 pixels to the right, so we have the same x value for check 1 and 2
+  ld    de,6
+  add   hl,de
+  ld    (ClesX),hl
+
+  .stairsfound1:      
+	call  Set_Stairs_Climb_RightUp
+
+  xor   a
+  ld    (PlayerFacingRight?),a          ;is player facing right ?
+
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    a,l
+  and   %1111 1000
+  ld    l,a
+  ld    (ClesX),hl
+
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    de,-16 + 18
+  add   hl,de
+  ld    (ClesX),hl
+
+;  ld    a,(Clesy)
+;  add   a,18 - 18
+;  ld    (Clesy),a
+  
+  ld    b,YaddFeetPlayer+09    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer-4   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairsrightup
+  ret   nz
+  
+  ld    hl,(ClesX)          ;sub 8 pixels to player in case we snapped too much to the right
+  ld    de,-8
+  add   hl,de
+  ld    (ClesX),hl
+  ret
+
+
+.StairsGoingLeftUp:
+;check if there are stairs when pressing down, if so climb the stairs. Check if there is a tile below left foot AND right foot
+;[Check stairs going LEFT UP]
   ld    b,YaddFeetPlayer+09    ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer+8   ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
@@ -3345,8 +3702,16 @@ CheckClimbStairsDown:
   sub   3                   ;check for tilenr 4=stairsleftup
   ret   nz
 
+  ld    hl,(ClesX)          ;2nd check checks 6 pixels further to the left. If stairs found, then move player 6 pixels to the right, so we have the same x value for check 1 and 2
+  ld    de,6
+  add   hl,de
+  ld    (ClesX),hl
+
   .stairsfound:      
-	call  Set_Stairs_Climb
+	call  Set_Stairs_Climb_LeftUp
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a          ;is player facing right ?
 
   ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
   ld    a,l
@@ -3368,14 +3733,71 @@ CheckClimbStairsDown:
   sub   3                   ;check for tilenr 4=stairsleftup
   ret   nz
   
-;  ld    hl,(ClesX)          ;sub 8 pixels to player in case we snapped too much to the right
-;  ld    de,-8
+  ld    hl,(ClesX)          ;sub 8 pixels to player in case we snapped too much to the right
+  ld    de,-8
+  add   hl,de
+  ld    (ClesX),hl
+  ret
+
+CheckClimbStairsUp:
+  call  .StairsGoingLeftUp
+
+.StairsGoingRightUp:
+;check if there are stairs when pressing up, if so climb the stairs. Check if there is a tile above left foot AND right foot
+;[Check ladder going Right UP]
+  ld    b,YaddFeetPlayer-01    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+04   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairssrightup
+  jp    z,.stairsfound1
+
+  ld    b,YaddFeetPlayer-01    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+12   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairssrightup
+  ret   nz
+
+  ld    hl,(ClesX)          ;2nd check checks 8 pixels further than the 1st check. If stairs is found, move player 8 pixels to the right.
+  ld    de,8
+  add   hl,de
+  ld    (ClesX),hl
+
+  .stairsfound1:  
+  
+	call  Set_Stairs_Climb_RightUp
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a          ;is player facing right ?
+
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    a,l
+  and   %1111 1000
+  ld    l,a
+  ld    (ClesX),hl
+
+;after snapping to an x position, player is either 8 pixels left of stairs, ON the stairs, or 8 pixels right of stairs
+  ld    b,YaddFeetPlayer-01    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+8   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairssrightup
+  ret   z
+;  jr    z,.snaptostairs
+  
+  ld    hl,(ClesX)          ;add 8 pixels to player in case we snapped too much to the left
+  ld    de,-8
+  add   hl,de
+  ld    (ClesX),hl
+
+;.snaptostairs:
+;  ld    hl,(ClesX)
+;  ld    de,6
 ;  add   hl,de
 ;  ld    (ClesX),hl
   ret
 
-CheckClimbStairsUp:
+.StairsGoingLeftUp:
 ;check if there are stairs when pressing up, if so climb the stairs. Check if there is a tile above left foot AND right foot
+;[Check ladder going LEFT UP]
   ld    b,YaddFeetPlayer-01    ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer+8   ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
@@ -3389,7 +3811,10 @@ CheckClimbStairsUp:
   ret   nz
 
   .stairsfound:  
-	call  Set_Stairs_Climb
+	call  Set_Stairs_Climb_LeftUp
+
+  xor   a
+  ld    (PlayerFacingRight?),a          ;is player facing right ?
 
   ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
   ld    a,l
@@ -3495,12 +3920,20 @@ Set_L_Attack:
   ld    (PlayerAniCount),hl
   ret
 
-Set_Stairs_Climb:
-	ld		hl,ClimbStairs
+Set_Stairs_Climb_RightUp:
+	ld		hl,ClimbStairsRightUp
 	ld		(PlayerSpriteStand),hl
 
-;  ld    hl,0 
-;  ld    (PlayerAniCount),hl
+  xor   a
+	ld		(PlayerAniCount),a
+  ret
+
+Set_Stairs_Climb_LeftUp:
+	ld		hl,ClimbStairsLeftUp
+	ld		(PlayerSpriteStand),hl
+
+  xor   a
+	ld		(PlayerAniCount),a
   ret
 
 

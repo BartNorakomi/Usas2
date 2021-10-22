@@ -23,10 +23,11 @@ loadGraphics:
   call  SetEngineType                 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
   call  SetTilesInVram                ;copies all the tiles to Vram
   call  SetMapPalette                 ;sets palette
-  call  UnpackMapdata                 ;unpacks packed map to $4000 in ram
+  call  UnpackMapdata_SetObjects      ;unpacks packed map to $4000 in ram and sets objects
   call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
   call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
-  call  copyScoreBoard                ;copy scoreboard to page 0 - screen 5 - bottom 40 pixels (scoreboard)
+  call  CopyScoreBoard                ;copy scoreboard to page 0 - screen 5 - bottom 40 pixels (scoreboard)
+  call  CopyItemsKarniMata            ;copy items to page 1 - screen 5 - bottom 40 pixels (scoreboard)
   call  SwapSpatColAndCharTable
   call  initiatebordermaskingsprites
   call  SetInterruptHandler           ;set Lineint and Vblank
@@ -42,7 +43,7 @@ BuildUpMap:
   jp    z,buildupMap32x27
   ret
   
-UnpackMapdata:
+UnpackMapdata_SetObjects:
 ;unpack map data
   ld    a,(slot.page2rom)             ;all RAM except page 2
   out   ($a8),a      
@@ -55,6 +56,16 @@ UnpackMapdata:
     
   ld    de,$4000
   call  Depack
+  
+  ;FOR NOW LETS ASUME DEPACK ALWAYS ENDS HL 2 BYTES FURTHER TO THE RIGHT
+  dec   hl
+  dec   hl
+  
+  ld    a,(hl)                        ;amount of objects for this map
+  inc   hl                            ;object 1 - table
+  ld    de,enemies_and_objects        ;copy just 1 object for now
+  ld    bc,lenghtenemytable
+  ldir
   ret
 
 SetMapPalette:
@@ -630,11 +641,28 @@ copyScoreBoard:
   
 	xor   a
 	call	SetVdp_Write	
-	ld		hl,$4000
+	ld		hl,scoreboard
   ld    c,$98
-  ld    a,20                ;first 40 lines, copy 64*256 = $4000 bytes to Vram
+  ld    a,32/2              ;copy 32 lines..
   ld    b,0
   jp    copyGraphicsToScreen.loop1    
+
+CopyItemsKarniMata:
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a          
+
+  ld    hl,$6C00+$8000            ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
+  ld    a,Graphicsblock5    ;block to copy from
+  call  block12
+  
+	xor   a
+	call	SetVdp_Write	
+	ld		hl,itemsKarniMata
+  ld    c,$98
+  ld    a,16/2              ;copy 16 lines..
+  ld    b,0
+  jp    copyGraphicsToScreen.loop1    
+
 
 A01Palette:
   incbin "..\grapx\A01palette.PL" ;file palette 
@@ -943,6 +971,41 @@ R23onVblank:                  rb    1
 R19onVblank:                  rb    1
 
 DoubleJumpAvailable?:         rb    1
+
+
+amountofenemies:        equ 22
+;lenghtenemyoffsettable: equ 24+16
+lenghtenemytable:       equ 46+16
+;chatabaddenemspr0:      rb  lenghtexplosioncharcoladresses  ;4*16
+;                        rb  4* 64
+
+
+;       ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, offsettable                                                 ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
+;.object1: db 1,        1,     001,100,100,16,32,        00,       00,+00,+00,+00,+00, 00,16,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+
+
+enemies_and_objects:    rb  lenghtenemytable * amountofenemies
+.alive?:                equ 0
+.inscreen?:             equ 1
+.movementpattern:       equ 2
+.y:                     equ 3
+.x:                     equ 4
+.ny:                    equ 5
+.nx:                    equ 6
+.sprnrinspat:           equ 7
+.nrsprites:             equ 8
+.v1:                    equ 9
+.v2:                    equ 10
+.v3:                    equ 11
+.v4:                    equ 12
+.sprchar:               equ 40+16
+.enemyjusthit?:         equ 41+16
+.hp:                    equ 42+16
+.item:                  equ 44+16
+.attack:                equ 45+16
+.offsettable:           equ 11
+
+
 
 endenginepage3variables:  equ $+enginepage3length
 org variables
