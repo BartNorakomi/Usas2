@@ -7,6 +7,7 @@ LevelEngine:
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
   call  BackdropBlack
 
+	call	handle_enemies_and_objects
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
 ;  call  Sf2EngineObjects          ;restore background P1, handle action P1, put P1 in screen, play music, 
                                   ;restore background P2, handle action P2, put P2 in screen, collision detection, set prepared collision action
@@ -15,25 +16,18 @@ LevelEngine:
   call  PutSpatToVram             ;outs all spat data to Vram
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
 
-  xor   a                         ;wait for lineint flag to be set. It's better (for now) to put the VRAM objects directly after the lineint
-  ld    hl,lineintflag
-.checkflag1:
-  cp    (hl)
-  jr    z,.checkflag1
-	call	handle_enemies_and_objects
-
   ld    a,(framecounter)
   inc   a
   ld    (framecounter),a
 
-  xor   a
+  ld    a,0           
   ld    hl,vblankintflag
+;  ld    hl,lineintflag
 .checkflag:
   cp    (hl)
   jr    z,.checkflag
-  ld    (hl),a  
-  ld    (lineintflag),a
-  
+.endcheckflag:  
+  ld    (hl),0
   jp    LevelEngine
 
 
@@ -119,17 +113,13 @@ PlatformVertically:
 PlatformHorizontally:
 ;move object
   ld    a,(ix+enemies_and_objects.x)
-  add   (ix+enemies_and_objects.v2)
-  ld    (ix+enemies_and_objects.x),a  
-  cp    254
-  jr    z,.ChangeDirection
-  cp    17+16     ;17 for 32 pix wide objects, 17+16 for 16 pix wide objects
-  jr    nz,VramObjects
-
-  .ChangeDirection:
-  ld    a,(ix+enemies_and_objects.v2)
-  neg
-  ld    (ix+enemies_and_objects.v2),a
+  inc   a
+  cp    256-16-32
+  jr    nz,.go
+  ld    a,16
+  .go:
+  ld    (ix+enemies_and_objects.x),a
+  
   call  VramObjects
   ret
 
@@ -145,66 +135,47 @@ VramObjectX:  db  100
 VramObjectY:  db  100
 VramObjects:
 ;first clean the object
+
   call  BackdropRed
 
   ld    hl,.CleanObject
   call  docopy
 
-  ld    a,(ix+enemies_and_objects.x)
-  or    a
-  jp    p,.ObjectOnLeftSideOfScreen
+;press space to increase width of object
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+;  ld    a,(NewPrContr)
+;	bit		4,a           ;space pressed ?
+;  jr    z,.endcheckSpacepressed
+
+;  ld    a,(.CopyObject+nx)
+;  add   a,2
+;  cp    40
+;  jr    nz,.endnx  
+;  ld    a,10
+;  .endnx:
+;  ld    (.CopyObject+nx),a  
+;  ld    (.CleanObject+nx),a  
+;  .endcheckSpacepressed:
+
+;  ld    a,(NewPrContr)
+;	bit		5,a           ;m pressed ?
+;  jr    z,.endcheckMpressed
+
+;  ld    a,(.CopyObject+ny)
+;  add   a,2
+;  cp    40
+;  jr    nz,.endny
+;  ld    a,10
+;  .endny:
+;  ld    (.CopyObject+ny),a  
+;  ld    (.CleanObject+ny),a  
+;  .endcheckMpressed:  
 
 .ObjectOnRightSideOfScreen:
-;set sx
-  ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
-  ld    (.CopyObject+sx),a  
-;set copy direction
-  ld    a,%0000 0000      ;Copy from left to right
-  ld    (.CleanObject+copydirection),a
-  ld    (.CopyObject+copydirection),a
-
-;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound1
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048+01         ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-
-.ObjectOnLeftSideOfScreen:
-;set sx
-  ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
-  dec   a
-  add   a,(ix+enemies_and_objects.nx)
-  ld    (.CopyObject+sx),a  
-;set copy direction
-  ld    a,%0000 0100      ;Copy from right to left
-  ld    (.CleanObject+copydirection),a
-  ld    (.CopyObject+copydirection),a
-
 ;set pages to copy to and to clean from
   ld    a,(PageOnNextVblank)
   cp    0*32+31           ;x*32+31 (x=page)
@@ -212,34 +183,59 @@ VramObjects:
   ld    c,1               ;clean object from vram data in page 1
   ld    d,+000            ;dx offset CopyObject
   ld    e,-016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
+  jp    z,.pagefound
 
   cp    1*32+31           ;x*32+31 (x=page)
   ld    b,1               ;copy to page 1
-  ld    c,0               ;clean object from vram data in page 2
+  ld    c,2               ;clean object from vram data in page 2
   ld    d,-016            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound1
 
   cp    2*32+31           ;x*32+31 (x=page)
   ld    b,2               ;copy to page 2
-  ld    c,1               ;clean object from vram data in page 3
+  ld    c,3               ;clean object from vram data in page 3
   ld    d,-032            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
 
-  cp    3*32+31           ;x*32+31 (x=page)
   ld    b,3               ;copy to page 3
   ld    c,2               ;clean object from vram data in page 2
   ld    d,-048            ;dx offset CopyObject
   ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
+  jp    z,.pagefound
 
-.pagefoundLeft:
-  ld    a,d
-  add   a,(ix+enemies_and_objects.nx)
-  ld    d,a
- 
+.ObjectOnLeftSideOfScreen:
+;set pages to copy to and to clean from
+  ld    a,(PageOnNextVblank)
+  cp    0*32+31           ;x*32+31 (x=page)
+  ld    b,0               ;copy to page 0
+  ld    c,1               ;clean object from vram data in page 1
+  ld    d,+000+032        ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jr    z,.pagefound
+
+  cp    1*32+31           ;x*32+31 (x=page)
+  ld    b,1               ;copy to page 1
+  ld    c,0               ;clean object from vram data in page 2
+  ld    d,-016+032        ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jr    z,.pagefound
+
+  cp    2*32+31           ;x*32+31 (x=page)
+  ld    b,2               ;copy to page 2
+  ld    c,1               ;clean object from vram data in page 3
+  ld    d,-032+032        ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jr    z,.pagefound
+
+  ld    b,3               ;copy to page 3
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-048+032        ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jr    z,.pagefound
+
+
 .pagefound:
   ld    a,b
   ld    (.CopyObject+dpage),a  
@@ -260,14 +256,17 @@ VramObjects:
   add   e
   ld    (.CleanObject+sx),a
   
-  ld    a,(ix+enemies_and_objects.nx)  
+  ld    a,(ix+enemies_and_objects.nx)
   ld    (.CopyObject+nx),a  
-  add   a,2                 ;we clean 2 more pixels, because we use fast copy ($D0) for cleaning, which is not pixel precise (Bitmap mode)
   ld    (.CleanObject+nx),a  
 
   ld    a,(ix+enemies_and_objects.ny)
   ld    (.CopyObject+ny),a  
   ld    (.CleanObject+ny),a  
+
+;set sx
+  ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
+  ld    (.CopyObject+sx),a  
 
 ;put object
   ld    hl,.CopyObject
@@ -285,13 +284,15 @@ VramObjects:
   db    000,000,000,000   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
   db    000,000,000,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+  db    000,%0000 0000,$D0       ;fast copy
+;  db    000,%0000 0100,$90       ;fast copy -> Copy from right to left     
   
 .CopyObject:
   db    000,000,216,001   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
   db    000,000,000,000   ;nx,--,ny,--
-  db    000,%0000 0100,$98       ;slow transparant copy -> Copy from right to left
+  db    000,%0000 0000,$98       ;slow transparant copy
+;  db    000,%0000 0100,$98       ;slow transparant copy -> Copy from right to left
 
 
 ClesX:      dw 145 ;210

@@ -31,7 +31,19 @@ loadGraphics:
   call  SwapSpatColAndCharTable
   call  initiatebordermaskingsprites
   call  SetInterruptHandler           ;set Lineint and Vblank
+  call  WaitVblank
+  call  WaitVblank
   jp    LevelEngine
+
+WaitVblank:
+  xor   a
+  ld    hl,vblankintflag
+.checkflag:
+  cp    (hl)
+  jr    z,.checkflag
+  ld    (hl),a  
+  ld    (lineintflag),a
+  ret
 
 BuildUpMap:
   ld    hl,$4000
@@ -61,7 +73,13 @@ UnpackMapdata_SetObjects:
   dec   hl
   dec   hl
   
+  xor   a                             ;object 1 - alive? Turn this one off for now, remove this later
+  ld    (enemies_and_objects),a
+  
   ld    a,(hl)                        ;amount of objects for this map
+  or    a
+  ret   z
+  
   inc   hl                            ;object 1 - table
   ld    de,enemies_and_objects        ;copy just 1 object for now
   ld    bc,lenghtenemytable
@@ -522,7 +540,6 @@ include "../sprites/cles.tcs.gen"
 
 initiatebordermaskingsprites:
 	ld		c,$98                 ;out port
-
 	ld		de,(sprchatableaddress)		      ;sprite character table in VRAM ($17800)
   call  .bordermaskspritecharacter
 	ld		de,(invissprchatableaddress)		;sprite character table in VRAM ($17800)
@@ -935,6 +952,7 @@ dy:                         equ   6
 dpage:                      equ   7 
 nx:                         equ   8
 ny:                         equ   10
+copydirection:              equ   13
 copytype:                   equ   14
 framecounter:               rb    1
 
