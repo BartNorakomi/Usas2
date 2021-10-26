@@ -7,6 +7,9 @@ LevelEngine:
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
   call  BackdropBlack
 
+	call	handle_enemies_and_objects
+
+
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
 ;  call  Sf2EngineObjects          ;restore background P1, handle action P1, put P1 in screen, play music, 
                                   ;restore background P2, handle action P2, put P2 in screen, collision detection, set prepared collision action
@@ -20,7 +23,9 @@ LevelEngine:
 .checkflag1:
   cp    (hl)
   jr    z,.checkflag1
-	call	handle_enemies_and_objects
+
+;  call  SwapSpatColAndCharTable
+;	call	handle_enemies_and_objects
 
   ld    a,(framecounter)
   inc   a
@@ -33,8 +38,8 @@ LevelEngine:
   jr    z,.checkflag
   ld    (hl),a  
   ld    (lineintflag),a
-  
   jp    LevelEngine
+
 
 
 BackdropGreen:
@@ -117,19 +122,30 @@ PlatformVertically:
   ret
 
 PlatformHorizontally:
+  call  CheckCollisionObjectPlayer
+
+  ld    a,(framecounter)
+  and   3
+  jp    nz,VramObjects
+
+  ld    a,(ix+enemies_and_objects.y)
+;  inc   a
+  ld    (ix+enemies_and_objects.y),a
+
 ;move object
   ld    a,(ix+enemies_and_objects.x)
-  add   (ix+enemies_and_objects.v2)
+;  add   (ix+enemies_and_objects.v2)
   ld    (ix+enemies_and_objects.x),a  
   cp    254
   jr    z,.ChangeDirection
   cp    17+16     ;17 for 32 pix wide objects, 17+16 for 16 pix wide objects
-  jr    nz,VramObjects
+  jp    nz,VramObjects
 
   .ChangeDirection:
   ld    a,(ix+enemies_and_objects.v2)
   neg
   ld    (ix+enemies_and_objects.v2),a
+    
   call  VramObjects
   ret
 
@@ -140,9 +156,130 @@ jp enemyexplosion
 Currency:
   ret
 
+CheckCollisionObjectPlayer:
+;check player collides with object on the bottom side. This little part is preparing b. THIS CAN BE SPED UP BY SETTING THIS AS A FIXED VARIABLE IN THE OBJECT LIST
+  ld    a,(ix+enemies_and_objects.ny)
+  add   a,30
+  ld    b,a
 
-VramObjectX:  db  100
-VramObjectY:  db  100
+;check player collides with object on the top side. c= no collision
+  ld    a,(ClesY)
+  add   a,16
+  sub   (ix+enemies_and_objects.y)
+  ret   c
+
+;check player collides with object on the bottom side. nc= no collision
+  sub   b                             ;b= ny + 30
+  ret   nc
+
+;check player collides with object on the bottom side. c= no collision / alternative version of the routine without the prep. part
+;  ld    a,(ClesY)
+;  sub   a,14
+;  sub   (ix+enemies_and_objects.ny)
+;  sub   (ix+enemies_and_objects.y)
+;  ret   nc  
+
+
+;check collision on the left side of object. c= no collision
+  ld    hl,(ClesX)                    ;hl: x player (165)
+  ld    de,06
+  add   hl,de
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.x)  ;de: x object (180)
+  sbc   hl,de  
+  ret   c
+
+;check player collides with object on the right side. nc= no collision  
+  ld    a,(ix+enemies_and_objects.nx)
+  add   15
+  ld    e,a
+  sbc   hl,de  
+  ret   nc
+
+;At this point there is collision between player and object. Now 4 new checks are made:
+;1. check if player hits the bottom part of the object, then snap player to the object on the bottom side
+;2. check if player hits the top    part of the object, then snap player to the object on the top    side
+;3. check if player hits the right  part of the object, then snap player to the object on the right  side
+;4. check if player hits the left   part of the object, then snap player to the object on the left   side
+    
+;1. check if player hits the bottom part of the object, then snap player to the object on the bottom side
+  ld    a,(ClesY)
+  sub   a,14-6
+  sub   (ix+enemies_and_objects.ny)
+  sub   (ix+enemies_and_objects.y)
+  jp    nc,.CollisionBottomOfObject
+
+;2. check if player hits the top    part of the object, then snap player to the object on the top    side
+  ld    a,(ClesY)
+  add   a,16 - 6
+  sub   (ix+enemies_and_objects.y)
+  jp    c,.CollisionTopOfObject
+
+;3. check if player hits the right  part of the object, then snap player to the object on the right  side
+  ld    hl,(ClesX)                    ;hl: x player (165)
+  ld    de,-22
+  add   hl,de
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.x)  ;de: x object (180)
+  sbc   hl,de  
+  jp    nc,.CollisionRightOfObject
+
+;4. check if player hits the left   part of the object, then snap player to the object on the left   side
+  ld    hl,(ClesX)                    ;hl: x player (165)
+  ld    de,06-4
+  add   hl,de
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.x)  ;de: x object (180)
+  sbc   hl,de  
+  jp    c,.CollisionLeftOfObject
+  ret
+
+.CollisionRightOfObject:
+  ld    a,(ix+enemies_and_objects.x)
+  add   a,(ix+enemies_and_objects.nx)
+  add   10
+
+  ld    h,0
+  ld    l,a
+  ld    (ClesX),hl                   
+  ret
+  
+.CollisionLeftOfObject:
+  ld    a,(ix+enemies_and_objects.x)
+  sub   6
+
+  ld    h,0
+  ld    l,a
+  ld    (ClesX),hl                   
+  ret
+
+.CollisionTopOfObject:
+  ld    a,(JumpSpeed)              ;if vertical JumpSpeed is negative or 0 then return. If it's positive then snap to object
+  or    a
+  ret   m
+  ret   z
+  
+  ld    a,(ix+enemies_and_objects.y)
+  sub   a,37 - 5 - 16
+  ld    (ClesY),a
+  ret
+
+.CollisionBottomOfObject:
+  ld    a,(ix+enemies_and_objects.y)
+  add   a,(ix+enemies_and_objects.ny)
+  add   a,15
+  ld    (ClesY),a
+  ret
+
+
+  
+
+ClesX:      dw 180 ;210
+ClesY:      db 111 ; 144-1
+herospritenr:             db  22
+
+VramObjectX:  db  000
+VramObjectY:  db  000
 VramObjects:
 ;first clean the object
   call  BackdropRed
@@ -294,9 +431,7 @@ VramObjects:
   db    000,%0000 0100,$98       ;slow transparant copy -> Copy from right to left
 
 
-ClesX:      dw 145 ;210
-ClesY:      db 80 ; 144-1
-herospritenr:             db  22
+
 PutPlayersprite:
 	ld		a,(slot.page12rom)	;all RAM except page 1+2
 	out		($a8),a	
