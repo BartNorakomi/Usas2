@@ -1,16 +1,10 @@
 LevelEngine:
-  call  SwapSpatColAndCharTable
-  call  switchpageSF2Engine
-  call  PopulateControls
 
   call  BackdropBlue
-  call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
-  call  BackdropBlack
-
-	call	handle_enemies_and_objects
-
-
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
+  call  BackdropBlack
+  call  PopulateControls
+
 ;  call  Sf2EngineObjects          ;restore background P1, handle action P1, put P1 in screen, play music, 
                                   ;restore background P2, handle action P2, put P2 in screen, collision detection, set prepared collision action
   call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
@@ -18,14 +12,25 @@ LevelEngine:
   call  PutSpatToVram             ;outs all spat data to Vram
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
 
+;Routines starting at lineint:
   xor   a                         ;wait for lineint flag to be set. It's better (for now) to put the VRAM objects directly after the lineint
   ld    hl,lineintflag
 .checkflag1:
   cp    (hl)
   jr    z,.checkflag1
 
-;  call  SwapSpatColAndCharTable
-;	call	handle_enemies_and_objects
+  call  SwapSpatColAndCharTable
+  call  switchpageSF2Engine
+
+  call  BackdropBlue
+  call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
+  call  BackdropBlack
+
+	call	handle_enemies_and_objects
+
+;  ld    ix,enemies_and_objects+(0*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+
 
   ld    a,(framecounter)
   inc   a
@@ -57,7 +62,7 @@ BackdropBlack:
 BackdropBlue:
   xor   a
   SetBackDrop:
-;ret
+ret
   di
   out   ($99),a
   ld    a,7+128
@@ -109,44 +114,83 @@ movementpatternaddress:
   jp    PlatformHorizontally                ;movement pattern 2   
 
 PlatformVertically:
+  call  VramObjects                         ;put object in Vram/screen
+  call  .MovePlatForm                       ;move
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  ret
+
+.MovePlatForm:
+  ld    a,(framecounter)
+  and   1
+  ret   nz
+
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    z,.EndCheckPLayerSnapToPlatform
+
+  ld    a,(ClesY)
+  add   a,(ix+enemies_and_objects.v3)
+  ld    (ClesY),a
+  .EndCheckPLayerSnapToPlatform:
+
+
 ;move object
   ld    a,(ix+enemies_and_objects.y)
-  inc   a
+  add   (ix+enemies_and_objects.v3)
+  ld    (ix+enemies_and_objects.y),a  
   cp    180
-  jr    c,.go
-  xor   a
-  .go:
-  ld    (ix+enemies_and_objects.y),a
-  
-  call  VramObjects
+  jr    z,.ChangeDirection
+  cp    40
+  ret   nz
+
+  .ChangeDirection:
+  ld    a,(ix+enemies_and_objects.v3)
+  neg
+  ld    (ix+enemies_and_objects.v3),a
   ret
 
 PlatformHorizontally:
-  call  CheckCollisionObjectPlayer
+  call  VramObjects                         ;put object in Vram/screen
+  call  .MovePlatForm                       ;move
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  ret
 
+.MovePlatForm:
   ld    a,(framecounter)
   and   3
-  jp    nz,VramObjects
+  ret   nz
 
-  ld    a,(ix+enemies_and_objects.y)
-;  inc   a
-  ld    (ix+enemies_and_objects.y),a
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    z,.EndCheckPLayerSnapToPlatform
+
+  ld    a,(ix+enemies_and_objects.v2)
+  or    a
+  jp    m,.MoveLeft
+  .MoveRight:
+  ld    hl,(ClesX)
+  inc   hl
+  ld    (ClesX),hl  
+  jp    .EndCheckPLayerSnapToPlatform
+  .MoveLeft:
+  ld    hl,(ClesX)
+  dec   hl
+  ld    (ClesX),hl  
+  .EndCheckPLayerSnapToPlatform:
 
 ;move object
   ld    a,(ix+enemies_and_objects.x)
-;  add   (ix+enemies_and_objects.v2)
+  add   (ix+enemies_and_objects.v2)
   ld    (ix+enemies_and_objects.x),a  
   cp    254
   jr    z,.ChangeDirection
   cp    17+16     ;17 for 32 pix wide objects, 17+16 for 16 pix wide objects
-  jp    nz,VramObjects
+  ret   nz
 
   .ChangeDirection:
   ld    a,(ix+enemies_and_objects.v2)
   neg
   ld    (ix+enemies_and_objects.v2),a
-    
-  call  VramObjects
   ret
 
 enemyexplosion:
@@ -156,7 +200,11 @@ jp enemyexplosion
 Currency:
   ret
 
+SnapToPlatform?:  db  0
 CheckCollisionObjectPlayer:
+  xor   a
+  ld    (SnapToPlatForm?),a
+
 ;check player collides with object on the bottom side. This little part is preparing b. THIS CAN BE SPED UP BY SETTING THIS AS A FIXED VARIABLE IN THE OBJECT LIST
   ld    a,(ix+enemies_and_objects.ny)
   add   a,30
@@ -196,6 +244,8 @@ CheckCollisionObjectPlayer:
   sbc   hl,de  
   ret   nc
 
+;.loop: jp .loop
+
 ;At this point there is collision between player and object. Now 4 new checks are made:
 ;1. check if player hits the bottom part of the object, then snap player to the object on the bottom side
 ;2. check if player hits the top    part of the object, then snap player to the object on the top    side
@@ -217,7 +267,7 @@ CheckCollisionObjectPlayer:
 
 ;3. check if player hits the right  part of the object, then snap player to the object on the right  side
   ld    hl,(ClesX)                    ;hl: x player (165)
-  ld    de,-22
+  ld    de,-21 ;NX IS NOT INCLUDED HERE YET
   add   hl,de
   ld    d,0
   ld    e,(ix+enemies_and_objects.x)  ;de: x object (180)
@@ -237,7 +287,7 @@ CheckCollisionObjectPlayer:
 .CollisionRightOfObject:
   ld    a,(ix+enemies_and_objects.x)
   add   a,(ix+enemies_and_objects.nx)
-  add   10
+  add   09
 
   ld    h,0
   ld    l,a
@@ -246,7 +296,7 @@ CheckCollisionObjectPlayer:
   
 .CollisionLeftOfObject:
   ld    a,(ix+enemies_and_objects.x)
-  sub   6
+  sub   7
 
   ld    h,0
   ld    l,a
@@ -260,14 +310,29 @@ CheckCollisionObjectPlayer:
   ret   z
   
   ld    a,(ix+enemies_and_objects.y)
-  sub   a,37 - 5 - 16
+  sub   a,16
   ld    (ClesY),a
-  ret
+  
+  ld    a,1
+  ld    (SnapToPlatform?),a
+  
+;check if player is jumping. If so, then set standing
+
+	ld		hl,(PlayerSpriteStand)
+	ld		de,Jump
+	xor   a
+	sbc   hl,de
+  ret   nz  
+  
+  ld    a,(PlayerFacingRight?)          ;is player facing right ?
+  or    a
+  jp    z,Set_L_stand
+  jp    Set_R_stand
 
 .CollisionBottomOfObject:
   ld    a,(ix+enemies_and_objects.y)
   add   a,(ix+enemies_and_objects.ny)
-  add   a,15
+  add   a,14
   ld    (ClesY),a
   ret
 
@@ -3626,8 +3691,12 @@ Rrunning:
   call  MovePlayerRight     ;out: c-> collision detected
   jp    c,Set_R_stand       ;on collision change to R_Stand
   
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,.EndCheckSnapToPlatform
   call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall  
+  .EndCheckSnapToPlatform:
 
 	ld		a,(Controls)
 	bit		0,a           ;cursor up pressed ?
@@ -3681,8 +3750,12 @@ Lrunning:
   call  MovePlayerLeft      ;out: c-> collision detected
   jp    c,Set_L_stand       ;on collision change to R_Stand
 
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,.EndCheckSnapToPlatform
   call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall
+  .EndCheckSnapToPlatform:
 
 	ld		a,(Controls)
 	bit		0,a           ;cursor up pressed ?
@@ -3700,8 +3773,12 @@ Lrunning:
 Lstanding:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,.EndCheckSnapToPlatform
   call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall
+  .EndCheckSnapToPlatform:
 
 ;  call  checkfloor
 ;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
@@ -3780,8 +3857,12 @@ Lstanding:
 Rstanding:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,..EndCheckSnapToPlatform
   call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall
+  ..EndCheckSnapToPlatform:
 
 ;  call  checkfloor
 ;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
