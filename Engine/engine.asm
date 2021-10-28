@@ -1,5 +1,6 @@
 LevelEngine:
 
+  call  switchpageSF2Engine
   call  BackdropBlue
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
   call  BackdropBlack
@@ -20,7 +21,6 @@ LevelEngine:
   jr    z,.checkflag1
 
   call  SwapSpatColAndCharTable
-  call  switchpageSF2Engine
 
   call  BackdropBlue
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
@@ -45,7 +45,9 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-
+ClesX:      dw 005 ;210
+ClesY:      db 050 ; 144-1
+herospritenr:             db  22
 
 BackdropGreen:
   ld    a,08
@@ -339,9 +341,7 @@ CheckCollisionObjectPlayer:
 
   
 
-ClesX:      dw 180 ;210
-ClesY:      db 111 ; 144-1
-herospritenr:             db  22
+
 
 VramObjectX:  db  000
 VramObjectY:  db  000
@@ -1572,7 +1572,7 @@ restorebackgroundplayer1page2:
 	db    0,0,$d0  
 
 
-ExitRight256x216: equ 29*8
+ExitRight256x216: equ 252 ; 29*8
 ExitRight304x216: equ 38*8-3
 
 CheckMapExit:
@@ -1588,6 +1588,7 @@ CheckMapExit:
   or    a
   jr    z,.PossibleExitLeftFound
 
+.selfmodifyingcodeMapexitRight:
   ld    hl,ExitRight304x216
   ld    de,(ClesX)
   sbc   hl,de
@@ -1598,13 +1599,6 @@ CheckMapExit:
   sbc   hl,de
   jr    c,.ExitRightFound
   jr    .ExitLeftFound  
-
-  ld    hl,(ClesX)
-.selfmodifyingcodeMapexitRight:
-  ld    de,000
-  add   hl,de
-  jr    c,.ExitRightFound  
-  ret
 
 .ExitBottomFound:  
   ld    de,WorldMapDataMapLenght*WorldMapDataWidth
@@ -1963,8 +1957,6 @@ CameraEngine256x216:
   ld    c,-1           ;vertical camera movent
   jr    c,.HorizontalMovementCamera
   ld    c,+1           ;vertical camera movent
-
-
 .HorizontalMovementCamera:
 .playerfacingRight:
 
@@ -2339,7 +2331,6 @@ SwapSpatColAndCharTable:
 ;MapData:
 ;  ds    38 * 27           ;a map is 38 * 27 tiles big  
 
-MapLenght:  equ 38
 checktile:  
 ;get player X in tiles
   ld    hl,(ClesX)
@@ -2362,11 +2353,12 @@ checktile:
   srl   a
   srl   a                   ;/8
 
-	ld		de,MapData-80
+.selfmodifyingcodeStartingPosMapForCheckTile:
+	ld		de,MapData- 000000  ;start 2 rows higher (MapData-80 for normal engine, MapData-68 for SF2 engine)
 	add   hl,de
 	
 .selfmodifyingcodeMapLenght:
-	ld		de,000              ;32+2 for 256x216 and 28+2 tiles for 304x216
+	ld		de,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
   jr    z,.yset
   
   ld    b,a

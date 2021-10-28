@@ -7,17 +7,15 @@ MapA01_001Data: db MapsBlock01 | dw MapA01_001 | db 1,1,1                  | Map
 MapA01_004Data: db MapsBlock01 | dw MapA01_004 | db 1,1,1                  | MapA01_005Data: db MapsBlock01 | dw MapA01_005 | db 1,1,1                  | MapA01_006Data: db MapsBlock01 | dw MapA01_006 | db 1,1,1
 MapA01_007Data: db MapsBlock01 | dw MapA01_007 | db 1,1,1                  | MapA01_008Data: db MapsBlock01 | dw MapA01_008 | db 1,1,1                  | MapA01_009Data: db MapsBlock01 | dw MapA01_009 | db 1,1,1
 
-MapB01_001Data: db MapsBlock01 | dw MapB01_001 | db 1,3,3                  | MapB01_002Data: db MapsBlock01 | dw MapB01_002 | db 1,3,3                  | MapB01_003Data: db MapsBlock01 | dw MapB01_003 | db 1,3,3
+MapB01_001Data: db MapsBlock01 | dw MapB01_001 | db 2,3,3                  | MapB01_002Data: db MapsBlock01 | dw MapB01_002 | db 1,3,3                  | MapB01_003Data: db MapsBlock01 | dw MapB01_003 | db 1,3,3
 MapB01_004Data: db MapsBlock01 | dw MapB01_004 | db 1,3,3                  | MapB01_005Data: db MapsBlock01 | dw MapB01_005 | db 1,3,3                  | MapB01_006Data: db MapsBlock01 | dw MapB01_006 | db 1,3,3
 MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | MapB01_008Data: db MapsBlock01 | dw MapB01_008 | db 1,3,3                  | MapB01_009Data: db MapsBlock01 | dw MapB01_009 | db 1,3,3
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_001Data
-WorldMapPointer:  dw  MapB01_011Data
+WorldMapPointer:  dw  MapB01_002Data
 
 loadGraphics:
-
-.skipSpriteInit:
   call  screenoff
   ld    ix,(WorldMapPointer)
   call  SetEngineType                 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
@@ -127,24 +125,25 @@ SetEngineType:                    ;sets engine type (1= 304x216 engine  2=256x21
   dec   a                         ;1= 304x216 engine  2=256x216 SF2 engine
   jp    z,.Engine304x216
 
-.Engine256x216:
+.Engine256x216:                   ;SF2 engine
   ld    de,CheckTile256x216MapLenght
   ld    (checktile.selfmodifyingcodeMapLenght+1),de
   ld    de,ExitRight256x216
   ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-
   ld    a,MapLenght256x216
   ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
-
+  ld    de,MapData- 68
+  ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
+  
   ;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
   ld    hl,(ClesX)
-  ld    de,34*8
+  ld    de,ExitRight304x216
   xor   a
   sbc   hl,de
   ret   nz
-  ld    hl,28*8
+  ld    hl,252 ;28*8
   ld    (ClesX),hl
-  xor   a
+  ld    a,15
   ld    (CameraX),a
   ret
 
@@ -153,9 +152,10 @@ SetEngineType:                    ;sets engine type (1= 304x216 engine  2=256x21
   ld    (checktile.selfmodifyingcodeMapLenght+1),de
   ld    de,ExitRight304x216
   ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-
   ld    a,MapLenght304x216
   ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
+  ld    de,MapData- 80
+  ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
   ret
   
 buildupMap32x27:
@@ -334,8 +334,8 @@ buildupMap38x27:
 MapData:
   ds    (38+2) * (27+4) ,0  ;a map is 38 * 27 tiles big  
 
-;  ds    27*2,0              ;2 empty rows at the right so player can walk out of screen on the rightside without walking into a potential wall
-;  ds    40*2,0              ;2 empty coloms at the bottom so player can exit bottom of screen normally
+;  ds    27*2,0              ;2 empty coloms at the right so player can walk out of screen on the rightside without walking into a potential wall
+;  ds    40*2,0              ;2 empty rows at the bottom so player can exit bottom of screen normally
 
 
 MapHeight:                  equ 27
@@ -382,7 +382,7 @@ ConvertToMapinRam:
   
   dec   c
   jp    nz,.SelfModifyingCodeMapLenght
-
+;duplicate the last row 4 tiles
   ld    hl,40*26 + MapData 
   ld    de,40*27 + MapData 
   ld    bc,40
@@ -402,7 +402,6 @@ ConvertToMapinRam:
   ld    de,40*30 + MapData 
   ld    bc,40
   ldir  
-
   ret
 
 .convertTile:
