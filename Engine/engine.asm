@@ -1,13 +1,9 @@
 LevelEngine:
-
-  call  switchpageSF2Engine
   call  BackdropBlue
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
   call  BackdropBlack
   call  PopulateControls
-
-;  call  Sf2EngineObjects          ;restore background P1, handle action P1, put P1 in screen, play music, 
-                                  ;restore background P2, handle action P2, put P2 in screen, collision detection, set prepared collision action
+  call  Sf2EngineObjects          ;di, restore background object, handle action object, put object in screen, handle interaction object and player, prepare page to be set on Vblank, ei 
   call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
   call  PutPlayersprite           ;outs char data to Vram, col data to Vram and sets spat data for player (coordinates depend on camera x+y)
   call  PutSpatToVram             ;outs all spat data to Vram
@@ -45,9 +41,13 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 005 ;210
+ClesX:      dw 105 ;210
 ClesY:      db 050 ; 144-1
 herospritenr:             db  22
+
+BackdropOrange:
+  ld    a,13
+  jp    SetBackDrop
 
 BackdropGreen:
   ld    a,08
@@ -72,12 +72,31 @@ ret
   out   ($99),a	
   ret
 
+switchpageSF2Engine:
+;switch to next page
+  ld    a,(screenpage)
+  inc   a
+  cp    3
+  jr    nz,.not3
+  xor   a
+.not3:  
+  ld    (screenpage),a
+
+  add   a,a                   ;x32
+  add   a,a
+  add   a,a
+  add   a,a
+  add   a,a
+  add   a,31
+  ld    (PageOnNextVblank),a
+  ret
+
 handle_enemies_and_objects:                           ;2. call movement_enemies_and_objects (if within movement area)
 ;	ld		a,(slot.page2rom)	; all RAM except page 2
 ;	out		($a8),a	
 
   ld    de,enemies_and_objects+(0*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | or a | call nz,.docheck              ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
 ;  ld    de,enemies_and_objects+(1*lenghtenemytable)
 ;  ld    a,(de) | or a | call nz,.docheck
 ;  ld    de,enemies_and_objects+(2*lenghtenemytable)
@@ -114,6 +133,7 @@ movement_enemies_and_objects:
 movementpatternaddress:
   jp    PlatformVertically                  ;movement pattern 1   
   jp    PlatformHorizontally                ;movement pattern 2   
+  jp    Sf2Hugeobject                       ;movement pattern 3
 
 PlatformVertically:
   call  VramObjects                         ;put object in Vram/screen
@@ -214,7 +234,7 @@ CheckCollisionObjectPlayer:
 
 ;check player collides with object on the top side. c= no collision
   ld    a,(ClesY)
-  add   a,16
+  add   a,17
   sub   (ix+enemies_and_objects.y)
   ret   c
 
@@ -254,36 +274,43 @@ CheckCollisionObjectPlayer:
 ;3. check if player hits the right  part of the object, then snap player to the object on the right  side
 ;4. check if player hits the left   part of the object, then snap player to the object on the left   side
     
-;1. check if player hits the bottom part of the object, then snap player to the object on the bottom side
-  ld    a,(ClesY)
-  sub   a,14-6
-  sub   (ix+enemies_and_objects.ny)
-  sub   (ix+enemies_and_objects.y)
-  jp    nc,.CollisionBottomOfObject
-
 ;2. check if player hits the top    part of the object, then snap player to the object on the top    side
   ld    a,(ClesY)
-  add   a,16 - 6
+  add   a,09
   sub   (ix+enemies_and_objects.y)
   jp    c,.CollisionTopOfObject
 
-;3. check if player hits the right  part of the object, then snap player to the object on the right  side
-  ld    hl,(ClesX)                    ;hl: x player (165)
-  ld    de,-21 ;NX IS NOT INCLUDED HERE YET
+;1. check if player hits the bottom part of the object, then snap player to the object on the bottom side
+  ld    a,(ClesY)
+  sub   a,08
+  jr    c,.skip                     ;if Cles is in the top of the screen we don't really need to check collision with bottom part of object
+  sub   (ix+enemies_and_objects.ny)
+  jr    c,.skip                     ;if Cles is in the top of the screen we don't really need to check collision with bottom part of object
+  sub   (ix+enemies_and_objects.y)
+  jp    nc,.CollisionBottomOfObject
+  .skip:
+
+;4. check if player hits the left   part of the object, then snap player to the object on the left   side
+  ld    hl,(ClesX)                  ;hl: x player (165)
+  ld    de,-4                       ;exact edge at de=4
   add   hl,de
   ld    d,0
-  ld    e,(ix+enemies_and_objects.x)  ;de: x object (180)
+  ld    e,(ix+enemies_and_objects.x);de: x object (180)
+  sbc   hl,de  
+  jp    c,.CollisionLeftOfObject
+
+;3. check if player hits the right  part of the object, then snap player to the object on the right  side
+  ld    hl,(ClesX)                  ;hl: x player (165)
+  ld    a,(ix+enemies_and_objects.nx)
+  add   -1                          ;exact edge at de=7
+;  ld    d,0
+  ld    e,a
+  sbc   hl,de  
+  ld    e,(ix+enemies_and_objects.x);de: x object (180)
   sbc   hl,de  
   jp    nc,.CollisionRightOfObject
 
-;4. check if player hits the left   part of the object, then snap player to the object on the left   side
-  ld    hl,(ClesX)                    ;hl: x player (165)
-  ld    de,06-4
-  add   hl,de
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.x)  ;de: x object (180)
-  sbc   hl,de  
-  jp    c,.CollisionLeftOfObject
+  jp    .CollisionTopOfObject       ;if none of the sides are detected, player is in the middle of object. Snap on top.
   ret
 
 .CollisionRightOfObject:
@@ -312,7 +339,7 @@ CheckCollisionObjectPlayer:
   ret   z
   
   ld    a,(ix+enemies_and_objects.y)
-  sub   a,16
+  sub   a,17
   ld    (ClesY),a
   
   ld    a,1
@@ -704,41 +731,143 @@ selfmodifyingcode_x_offset_hero_bottom: equ $+1
 	out		($a8),a	
   ret
   
-
-switchpageSF2Engine:
+Sf2EngineObjects:
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   cp    2
   ret   nz
 
-;switch to next page
-  ld    a,(screenpage)
-  inc   a
-  cp    3
-  jr    nz,.not3
-  xor   a
-.not3:  
-  ld    (screenpage),a
+;	ld		a,(slot.page2rom)	; all RAM except page 2
+;	out		($a8),a	
 
-  add   a,a                   ;x32
-  add   a,a
-  add   a,a
-  add   a,a
-  add   a,a
-  add   a,31
-  ld    b,a
-  jp    SetPage
-
-Sf2EngineObjects:
-;  ld    a,(Mapnumber)
-  cp    3
-;  ret   nz
-
-  ;handle object 1
-  call  restoreBackgroundP1
-  call  handleP1Action
-  call  putplayer1
+  ld    de,enemies_and_objects+(0*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
+  ld    a,(de) | cp 2 | call z,.docheck
+ 
+;	ld		a,(slot.ram)	      ;back to full RAM
+;	out		($a8),a	
   ret
 
+  .docheck:
+;  dec   de
+  ld    ixl,e
+  ld    ixh,d
+    
+  call  movement_SF2_objects
+  ret
+
+movement_SF2_objects:
+;  ld    a,(movementpatternsblock)
+;	call	block34			      ;at address $8000 / page 2  
+  ld    a,(ix+enemies_and_objects.movementpattern)             ;movementpattern
+  dec   a
+  ld    b,a
+  add   a,a                 ;*2
+  add   a,b                 ;*3
+  ld    d,0
+  ld    e,a
+  ld    hl,movementpatternaddress
+  add   hl,de
+  jp    (hl)
+
+;This is at $4000 inside a block (movementpatternsblock)
+;movementpatternaddress:
+;  jp    PlatformVertically                  ;movement pattern 1   
+;  jp    PlatformHorizontally                ;movement pattern 2   
+;  jp    Sf2Hugeobject                       ;movement pattern 3
+
+;PlatformVertically:
+;  call  VramObjects                         ;put object in Vram/screen
+;  call  .MovePlatForm                       ;move
+;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+;  ret
+
+Sf2Hugeobject:                              ;movement pattern 3
+  call  MoveSF2Object
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  BackdropOrange  
+  call  restoreBackgroundP1
+  call  handleP1Action
+  call  PutSF2Object
+  call  BackdropBlack
+  call  switchpageSF2Engine  
+  ret
+
+NoneMovingObjectStepTable:  ;move x, move y (128 = end table/repeat)
+  db  10,+0,+0
+  db  128
+
+HugeBlockStepTable:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  50,+0,+2,  50,+2,+0,  50,+0,-2,  50,-2,+0
+  db  128
+
+MoveSF2Object:
+  ld    de,HugeBlockStepTable
+;  ld    de,NoneMovingObjectStepTable
+  call  MoveObjectWithStepTable
+  ret
+
+MoveObjectWithStepTable:
+  ;if repeating steps are not 0, go to movement object
+  ld    a,(ix+enemies_and_objects.v1)         ;repeating steps
+  dec   a
+  ld    (ix+enemies_and_objects.v1),a         ;repeating steps
+  jp    p,.moveObject
+  
+  .NextStep:
+  ld    a,(ix+enemies_and_objects.v2)         ;pointer to movement table
+  ld    h,0
+  ld    l,a
+  add   hl,de
+  add   a,3
+  ld    (ix+enemies_and_objects.v2),a         ;pointer to movement table
+  
+  ld    a,(hl)                                ;repeating steps(128 = end table/repeat)
+  cp    128
+  jr    nz,.EndCheckEndTable
+  ld    (ix+enemies_and_objects.v2),+3        ;pointer to movement table
+  ex    de,hl
+  ld    a,(hl)
+
+  .EndCheckEndTable:
+  ld    (ix+enemies_and_objects.v1),a         ;repeating steps
+  inc   hl
+  ld    a,(hl)                                ;y movement
+  ld    (ix+enemies_and_objects.v3),a         ;v3=y movement
+  inc   hl
+  ld    a,(hl)                                ;x movement
+  ld    (ix+enemies_and_objects.v4),a         ;v4=x movement
+
+  .moveObject:
+  ld    a,(ix+enemies_and_objects.y)          ;y object
+  add   a,(ix+enemies_and_objects.v3)         ;add y movement to y
+  ld    (ix+enemies_and_objects.y),a          ;y object
+  ld    (Object1y),a
+
+  ld    a,(ix+enemies_and_objects.x)          ;x object
+  add   a,(ix+enemies_and_objects.v4)         ;add x movement to x
+  ld    (ix+enemies_and_objects.x),a          ;x object
+  ld    (Object1x),a
+
+  ;Move player along with object if standing on it
+  ld    a,(SnapToPlatform?)
+  or    a
+  ret   z
+
+  ld    a,(ix+enemies_and_objects.v4)         ;x movement
+  or    a
+  ld    d,0
+  jp    p,.positive
+  ld    d,255  
+  .positive:
+  ld    e,a
+
+  ld    hl,(ClesX)
+  add   hl,de
+  ld    (ClesX),hl  
+
+  ld    a,(ClesY)
+  add   a,(ix+enemies_and_objects.v3)         ;y movement
+  ld    (ClesY),a  
+  ret
 
 moveplayerleftinscreen:       equ 128
 blitpage:                     db  0
@@ -749,9 +878,10 @@ Player1Framelistblock:        db  ryuframelistblock
 Player1Frame:                 dw  ryupage0frame000
 Player1FramePage:             db  0
 
-Player1x:                     db  100
+Object1y:                     db  000
+Object1x:                     db  000
 
-putplayer1:
+PutSF2Object:
   ld    a,(screenpage)
   or    a                     ;if current page =0 then que page 1 to be restored
   ld    ix,restorebackgroundplayer1page1
@@ -783,16 +913,12 @@ putplayer1:
 	ld    a,ryuspritedatablock
   call	block12
 
-  ld    a,(player1x)
-  dec   a
-  ld    (player1x),a
-
-  ld    bc,player1x
-  ld    hl,(Player1Frame)     ;points to player width
+  ld    bc,Object1x
+  ld    hl,(Player1Frame)     ;points to object width
   ld    iy,Player1SxB1        ;player collision detection blocks
 
   di
-  call  Putplayer
+  call  GoPutSF2Object
   ei
   ret
 
@@ -818,16 +944,16 @@ putplayer1:
 
 ScreenLimitxRight:  equ 256-10
 ScreenLimitxLeft:   equ 10
-Putplayer:
+GoPutSF2Object:
 ;screen limit right
-  ld    a,(bc)                ;player x
+  ld    a,(bc)                ;object x
   cp    ScreenLimitxRight
   jp    c,.LimitRight
   ld    a,ScreenLimitxRight
 ;  ld    (bc),a
   .LimitRight:
 ;screen limit left
-  ld    a,(bc)                ;player x
+  ld    a,(bc)                ;object x
   cp    ScreenLimitxLeft
   jp    nc,.LimitLeft
   ld    a,ScreenLimitxLeft
@@ -841,16 +967,16 @@ Putplayer:
 PutSpriteRightSideOfScreen:
   ;Set up restore background que player
   ;set width
-  ld    a,(hl)                ;player width
-  ld    (ix+nx),a             ;set player width to be restored by background
+  ld    a,(hl)                ;object width
+  ld    (ix+nx),a             ;set object width to be restored by background
     ;set height
-  inc   hl                    ;player height
+  inc   hl                    ;object height
   ld    a,(hl)
-  ld    (ix+ny),a             ;set player height to be restored by background
-    ;set sx,dx by adding offset x to player x
+  ld    (ix+ny),a             ;set object height to be restored by background
+    ;set sx,dx by adding offset x to object x
   inc   hl                    ;offset x
   ld    e,(hl)                ;offset x
-  ld    a,(bc)                ;player x
+  ld    a,(bc)                ;object x
   sub   a,moveplayerleftinscreen
   add   a,e
 
@@ -1467,8 +1593,8 @@ RyuActions2:
 .LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
   db    0,2,1                 ;animation every 2,5 frames
 .LeftIdleTable:
-  dw ryupage0frame001 | db 1 | dw ryupage0frame000 | db 1
-  dw ryupage0frame001 | db 1 | dw ryupage0frame002 | db 1
+  dw ryupage0frame000 | db 1 | dw ryupage0frame000 | db 1
+  dw ryupage0frame000 | db 1 | dw ryupage0frame000 | db 1
   ds  12
 
 
@@ -1941,27 +2067,9 @@ CameraEngine:                           ;prepare R18 and R23 to be set on Vblank
   jp    z,CameraEngine304x216
   
 CameraEngine256x216:
- .VerticalMovementCamera:               ;vertical movement of camera: Camera just locks on to the player when not jumping.
+  Call  VerticalMovementCamera
 
-;follow y position of player with camera
-
-
-  ld    a,(TempoldY)
-  ld    b,a
-  ld    a,(Clesy)
-  ld    (TempoldY),a
-
-  cp    b
-  jr    z,.HorizontalMovementCamera
-  
-  ld    c,-1           ;vertical camera movent
-  jr    c,.HorizontalMovementCamera
-  ld    c,+1           ;vertical camera movent
-.HorizontalMovementCamera:
 .playerfacingRight:
-
-
-
 ;camera should start moving to the right, when player x>50 and facing right
   ld    a,(PlayerFacingRight?)          ;is player facing right ?
   or    a
@@ -2000,15 +2108,6 @@ CameraEngine256x216:
 ;  jp    .movecamera
 
 .movecamera:
-  ld    a,(CameraY)
-  add   a,c
-  jp    m,.negativeYValue
-  cp    45
-  jr    nc,.maxYRangeFound
-  ld    (CameraY),a
-  .negativeYValue:
-  .maxYRangeFound:
-
   ld    a,(CameraX)
   add   a,b
   jp    m,.negativeValue
@@ -2038,36 +2137,31 @@ CameraEngine256x216:
   ld    (R19onVblank),a
   ret  
 
-
-CameraEngine304x216:  
- .VerticalMovementCamera:               ;vertical movement of camera: Camera just locks on to the player when not jumping.
-
+VerticalMovementCamera:
 ;follow y position of player with camera
   ld    a,(Clesy)
 
-;checkplayerbottom of screen  
-  cp    100
+  cp    100             ;check if player is in the bottom part of screen  
   ld    c,+1            ;vertical camera movent
   jr    nc,.movecameraY
-
-  cp    80 
+  cp    080             ;check if player is in the top part of screen  
   ld    c,-1            ;vertical camera movent
-  jr    c,.movecameraY
+  ret   nc
 
-  ld    c,0             ;vertical camera movent
-
-.movecameraY:
+  .movecameraY:
   ld    a,(CameraY)
   add   a,c
-  jp    m,.negativeYValue
+  ret   m
   cp    45
-  jr    nc,.maxYRangeFound
+  ret   nc
   ld    (CameraY),a
-  .negativeYValue:
-  .maxYRangeFound:
+  ret
+
+
+CameraEngine304x216:  
+  Call  VerticalMovementCamera
 
 .playerfacingRight:
-
 ;camera should start moving to the right, when player x>50 and facing right
   ld    a,(PlayerFacingRight?)          ;is player facing right ?
   or    a
@@ -2171,15 +2265,15 @@ CameraEngine304x216:
 ; $b000 -> $7800 -> 
 ;*************************************************************
 
-setpage:              ;in a->x*32+31 (x=page)
-  ld    a,b
-  ld    (currentpage),a
-  di
-  out   ($99),a
-  ld    a,2+128
-  ei
-  out   ($99),a
-  ret
+;setpage:              ;in a->x*32+31 (x=page)
+;  ld    a,b
+;  ld    (currentpage),a
+;  di
+;  out   ($99),a
+;  ld    a,2+128
+;  ei
+;  out   ($99),a
+;  ret
 
 block1:
 	di

@@ -517,7 +517,11 @@ MapA01_008:
 MapA01_009:
   incbin "..\maps\A01-009.map.pck"  | .amountofobjects: db  0
 MapB01_001:
-  incbin "..\maps\b01-001.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\b01-001.map.pck"  | .amountofobjects: db  1
+       ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, offsettable                                                 ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
+.object1: db 2,        1,     003,048,072,48,48,        00,       00,+00,+00,+00,+00, 00,16,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object1: db 2,        1,     003,140,100,48,48,        00,       00,+00,+00,+00,+00, 00,16,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+
 MapB01_002:
   incbin "..\maps\b01-002.map.pck"  | .amountofobjects: db  0
 MapB01_003:
@@ -562,7 +566,7 @@ ryucharacterfaceblock:        equ $22
 ryuactiontablesblock:         equ $22
 phase	$4000
   incbin "..\grapx\character select\character faces\ryucharacterface.dat"
-  include "actiontables\ryuactiontables.asm"
+;  include "actiontables\ryuactiontables.asm"
 	ds		$6000-$,$ff
 dephase
 
@@ -799,6 +803,6 @@ dephase
 
 
 
-  include "actiontables\actiontableslenghts.asm"
+;  include "actiontables\actiontableslenghts.asm"
 totallenght:	Equ	$-Usas2
 	ds		$80000-totallenght

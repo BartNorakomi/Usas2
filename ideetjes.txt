@@ -92,3 +92,10 @@ coole enemy: 0:13, coole poort die open en dicht gaat: 4:57, coole spin: 10:35 (
 https://www.youtube.com/watch?v=g2K4YjBrIW8&ab_channel=BestIndieGames
 
 coole boss 1:09:11 https://www.youtube.com/watch?v=GxMfUa6Dhe0&ab_channel=Haelian
+
+cool monster 0:00 https://www.youtube.com/watch?v=D6TjLBBeRA4&ab_channel=IGN
+
+een map, soort van tunnel, waarbij de achtergrond scroll in een lus herhaalt
+met sprites kun je dan kandelaren en pilaren enzo maken voor de variatie
+je kunt spelen met de snelheid van de speler... op een lopende band bijvoorbeeld.... of met wind effect..
+Achtergrond moet dus repeaten met 48 pixels... 6 tiles.. Dit is perfect voor de bijengraten..
