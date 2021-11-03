@@ -29,6 +29,9 @@ loadGraphics:
   call  SwapSpatColAndCharTable
   call  initiatebordermaskingsprites
   call  SetInterruptHandler           ;set Lineint and Vblank
+  xor   a
+  ld    (R23onVblank),a               ;vertical screen adjust
+  ld    (R19onVblank),a               ;vertical screen adjust
   call  WaitVblank
   call  WaitVblank
   jp    LevelEngine
@@ -331,11 +334,13 @@ buildupMap38x27:
   jr    nz,.xloop
   ret
 
+  db    0
 MapData:
-  ds    (38+2) * (27+4) ,0  ;a map is 38 * 27 tiles big  
+  ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
+MapDataLenght:  Equ $-MapData
 
-;  ds    27*2,0              ;2 empty coloms at the right so player can walk out of screen on the rightside without walking into a potential wall
-;  ds    40*2,0              ;2 empty rows at the bottom so player can exit bottom of screen normally
+;Engine256x216: a map is 32x27. We add 2 empty tiles on the right per row, and the remainder is filled with background tiles. Total mapsize will be 34x27 + empty fill
+;Engine304x216: a map is 38x27. We add 2 empty tiles on the right per row, and we have two extra rows with background tiles. Total mapsize will be 40x27 + empty rows
 
 
 MapHeight:                  equ 27
@@ -346,6 +351,11 @@ CheckTile256x216MapLenght:  equ 32 + 2
 CheckTile304x216MapLenght:  equ 38 + 2
 
 ConvertToMapinRam:
+  ld    hl,MapData-1
+  ld    de,MapData
+  ld    bc,MapDataLenght
+  ldir
+
 ;new
 ;tiles 0 - 31 are ladder tiles
 ;tiles 32 - 47 are spikes and lava
@@ -382,6 +392,9 @@ ConvertToMapinRam:
   
   dec   c
   jp    nz,.SelfModifyingCodeMapLenght
+  
+  ret
+  
 ;duplicate the last row 4 tiles
   ld    hl,40*26 + MapData 
   ld    de,40*27 + MapData 

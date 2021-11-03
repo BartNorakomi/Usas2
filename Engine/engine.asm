@@ -24,10 +24,6 @@ LevelEngine:
 
 	call	handle_enemies_and_objects
 
-;  ld    ix,enemies_and_objects+(0*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-
-
   ld    a,(framecounter)
   inc   a
   ld    (framecounter),a
@@ -41,8 +37,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 105 ;210
-ClesY:      db 050 ; 144-1
+ClesX:      dw 150 ;150 ;210
+ClesY:      db 010 ; 144-1
 herospritenr:             db  22
 
 BackdropOrange:
@@ -280,19 +276,9 @@ CheckCollisionObjectPlayer:
   sub   (ix+enemies_and_objects.y)
   jp    c,.CollisionTopOfObject
 
-;1. check if player hits the bottom part of the object, then snap player to the object on the bottom side
-  ld    a,(ClesY)
-  sub   a,08
-  jr    c,.skip                     ;if Cles is in the top of the screen we don't really need to check collision with bottom part of object
-  sub   (ix+enemies_and_objects.ny)
-  jr    c,.skip                     ;if Cles is in the top of the screen we don't really need to check collision with bottom part of object
-  sub   (ix+enemies_and_objects.y)
-  jp    nc,.CollisionBottomOfObject
-  .skip:
-
 ;4. check if player hits the left   part of the object, then snap player to the object on the left   side
   ld    hl,(ClesX)                  ;hl: x player (165)
-  ld    de,-4                       ;exact edge at de=4
+  ld    de,1                       ;exact edge at de=4
   add   hl,de
   ld    d,0
   ld    e,(ix+enemies_and_objects.x);de: x object (180)
@@ -302,7 +288,7 @@ CheckCollisionObjectPlayer:
 ;3. check if player hits the right  part of the object, then snap player to the object on the right  side
   ld    hl,(ClesX)                  ;hl: x player (165)
   ld    a,(ix+enemies_and_objects.nx)
-  add   -1                          ;exact edge at de=7
+  add   4                          ;exact edge at de=7
 ;  ld    d,0
   ld    e,a
   sbc   hl,de  
@@ -310,16 +296,27 @@ CheckCollisionObjectPlayer:
   sbc   hl,de  
   jp    nc,.CollisionRightOfObject
 
+;1. check if player hits the bottom part of the object, then snap player to the object on the bottom side
+  ld    a,(ClesY)
+  sub   a,06
+  jr    c,.skip                     ;if Cles is in the top of the screen we don't really need to check collision with bottom part of object
+  sub   (ix+enemies_and_objects.ny)
+  jr    c,.skip                     ;if Cles is in the top of the screen we don't really need to check collision with bottom part of object
+  sub   (ix+enemies_and_objects.y)
+  jp    nc,.CollisionBottomOfObject
+  .skip:
+
   jp    .CollisionTopOfObject       ;if none of the sides are detected, player is in the middle of object. Snap on top.
   ret
 
 .CollisionRightOfObject:
   ld    a,(ix+enemies_and_objects.x)
-  add   a,(ix+enemies_and_objects.nx)
-  add   09
-
   ld    h,0
   ld    l,a
+  ld    de,09
+  add   hl,de
+  ld    e,(ix+enemies_and_objects.nx)
+  add   hl,de
   ld    (ClesX),hl                   
   ret
   
@@ -735,22 +732,17 @@ Sf2EngineObjects:
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   cp    2
   ret   nz
-
 ;	ld		a,(slot.page2rom)	; all RAM except page 2
 ;	out		($a8),a	
-
   ld    de,enemies_and_objects+(0*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
   ld    a,(de) | cp 2 | call z,.docheck
- 
 ;	ld		a,(slot.ram)	      ;back to full RAM
 ;	out		($a8),a	
   ret
 
   .docheck:
-;  dec   de
   ld    ixl,e
-  ld    ixh,d
-    
+  ld    ixh,d    
   call  movement_SF2_objects
   ret
 
@@ -774,18 +766,12 @@ movement_SF2_objects:
 ;  jp    PlatformHorizontally                ;movement pattern 2   
 ;  jp    Sf2Hugeobject                       ;movement pattern 3
 
-;PlatformVertically:
-;  call  VramObjects                         ;put object in Vram/screen
-;  call  .MovePlatForm                       ;move
-;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-;  ret
-
 Sf2Hugeobject:                              ;movement pattern 3
   call  MoveSF2Object
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  BackdropOrange  
-  call  restoreBackgroundP1
-  call  handleP1Action
+  call  restoreBackgroundObject
+  call  ObjectAnimation
   call  PutSF2Object
   call  BackdropBlack
   call  switchpageSF2Engine  
@@ -1580,25 +1566,18 @@ PlayerLeftOfscreenSetBlocksAndattackpoints:
   ld    (iy+11),a             ;attack point 2 sy
   ret
 	
-  
-  
-  
-  
-
 base:                         equ   $4000         ;address of heroframes
-
 RyuActions2:
 .LeftIdleFrame:                ;current spriteframe, total animationsteps
   db    0,4
 .LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
-  db    0,2,1                 ;animation every 2,5 frames
+  db    0,8,1                 ;animation every 2,5 frames
 .LeftIdleTable:
-  dw ryupage0frame000 | db 1 | dw ryupage0frame000 | db 1
-  dw ryupage0frame000 | db 1 | dw ryupage0frame000 | db 1
+  dw ryupage0frame000 | db 1 | dw ryupage0frame001 | db 1
+  dw ryupage0frame002 | db 1 | dw ryupage0frame003 | db 1
   ds  12
 
-
-handleP1Action:
+ObjectAnimation:
 ;  ld    ix,P1RightIdleFrame
   ld    ix,RyuActions2.LeftIdleFrame
   ld    iy,Player1Frame
@@ -1670,7 +1649,7 @@ AnimatePlayer:                ;animates, forces writing spriteframe, out: z=anim
 
 
   
-restoreBackgroundP1:
+restoreBackgroundObject:
   ld    a,(screenpage)
   or    a                     ;if current page =0 then restore page 2
   ld    hl,restorebackgroundplayer1page2
@@ -1684,17 +1663,17 @@ restoreBackgroundP1:
 restorebackgroundplayer1page0:
 	db    0,0,0,3
 	db    0,0,0,0
-	db    $2a,0,$50,0
+	db    $02,0,$02,0
 	db    0,0,$d0  
 restorebackgroundplayer1page1:
 	db    0,0,0,3
 	db    0,0,0,1
-	db    $2a,0,$50,0
+	db    $02,0,$02,0
 	db    0,0,$d0  
 restorebackgroundplayer1page2:
 	db    0,0,0,3
 	db    0,0,0,2
-	db    $2a,0,$50,0
+	db    $02,0,$02,0
 	db    0,0,$d0  
 
 
