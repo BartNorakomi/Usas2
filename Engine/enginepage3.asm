@@ -57,6 +57,16 @@ BuildUpMap:
   ret
   
 UnpackMapdata_SetObjects:
+  ;set all objects Alive? to 0 / clear all objects from the list
+  ld    b,amountofenemies
+  ld    hl,enemies_and_objects
+  ld    de,lenghtenemytable
+  xor   a
+  .ClearEnemyTableLoop:
+  ld    (hl),a
+  add   hl,de
+  djnz  .ClearEnemyTableLoop
+
 ;unpack map data
   ld    a,(slot.page2rom)             ;all RAM except page 2
   out   ($a8),a      
@@ -73,18 +83,19 @@ UnpackMapdata_SetObjects:
   ;FOR NOW LETS ASUME DEPACK ALWAYS ENDS HL 2 BYTES FURTHER TO THE RIGHT
   dec   hl
   dec   hl
-  
-  xor   a                             ;object 1 - alive? Turn this one off for now, remove this later
-  ld    (enemies_and_objects),a
-  
+    
   ld    a,(hl)                        ;amount of objects for this map
   or    a
   ret   z
   
   inc   hl                            ;object 1 - table
   ld    de,enemies_and_objects        ;copy just 1 object for now
+  
+  .CopyAllEnemiesLoop:
   ld    bc,lenghtenemytable
   ldir
+  dec   a
+  jp    nz,.CopyAllEnemiesLoop
   ret
 
 SetMapPalette:
@@ -505,15 +516,15 @@ DoCopy:
   out   ($99),a
   jr    c,.vdpready
 
-ld b,15
-otir
-ret
+;ld b,15
+;otir
+;ret
 
-;	dw    $a3ed,$a3ed,$a3ed,$a3ed
-;	dw    $a3ed,$a3ed,$a3ed,$a3ed
-;	dw    $a3ed,$a3ed,$a3ed,$a3ed
-;	dw    $a3ed,$a3ed,$a3ed
-;  ret
+	dw    $a3ed,$a3ed,$a3ed,$a3ed
+	dw    $a3ed,$a3ed,$a3ed,$a3ed
+	dw    $a3ed,$a3ed,$a3ed,$a3ed
+	dw    $a3ed,$a3ed,$a3ed
+  ret
 
 lineintheight: equ 212-43
 SetInterruptHandler:
@@ -1005,7 +1016,7 @@ DoubleJumpAvailable?:         rb    1
 
 amountofenemies:        equ 22
 ;lenghtenemyoffsettable: equ 24+16
-lenghtenemytable:       equ 46+16
+lenghtenemytable:       equ 44
 ;chatabaddenemspr0:      rb  lenghtexplosioncharcoladresses  ;4*16
 ;                        rb  4* 64
 
@@ -1023,17 +1034,15 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .ny:                    equ 5
 .nx:                    equ 6
 .sprnrinspat:           equ 7
+.ObjectNumber:          equ 7
 .nrsprites:             equ 8
 .v1:                    equ 9
 .v2:                    equ 10
 .v3:                    equ 11
 .v4:                    equ 12
-.sprchar:               equ 40+16
-.enemyjusthit?:         equ 41+16
-.hp:                    equ 42+16
-.item:                  equ 44+16
-.attack:                equ 45+16
-.offsettable:           equ 11
+.v5:                    equ 13
+.SnapPlayer?:           equ 13
+
 
 
 

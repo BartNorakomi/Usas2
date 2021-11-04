@@ -22,6 +22,8 @@ LevelEngine:
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
   call  BackdropBlack
 
+  xor   a
+  ld    (SnapToPlatForm?),a
 	call	handle_enemies_and_objects
 
   ld    a,(framecounter)
@@ -90,11 +92,10 @@ switchpageSF2Engine:
 handle_enemies_and_objects:                           ;2. call movement_enemies_and_objects (if within movement area)
 ;	ld		a,(slot.page2rom)	; all RAM except page 2
 ;	out		($a8),a	
-
   ld    de,enemies_and_objects+(0*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-;  ld    de,enemies_and_objects+(1*lenghtenemytable)
-;  ld    a,(de) | or a | call nz,.docheck
+  ld    de,enemies_and_objects+(1*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
 ;  ld    de,enemies_and_objects+(2*lenghtenemytable)
 ;  ld    a,(de) | or a | call nz,.docheck
  
@@ -133,24 +134,24 @@ movementpatternaddress:
 
 PlatformVertically:
   call  VramObjects                         ;put object in Vram/screen
-  call  .MovePlatForm                       ;move
+  call  MovePlatFormVertically              ;move
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   ret
 
-.MovePlatForm:
+PlatformHorizontally:
+  call  VramObjects                         ;put object in Vram/screen
+  call  MovePlatFormHorizontally            ;move
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  ret
+  
+MovePlatFormVertically:
   ld    a,(framecounter)
   and   1
   ret   nz
 
-  ld    a,(SnapToPlatform?)
+  ld    a,(ix+enemies_and_objects.SnapPlayer?)
   or    a
-  jr    z,.EndCheckPLayerSnapToPlatform
-
-  ld    a,(ClesY)
-  add   a,(ix+enemies_and_objects.v3)
-  ld    (ClesY),a
-  .EndCheckPLayerSnapToPlatform:
-
+  call  nz,MovePlayerAlongWithObject
 
 ;move object
   ld    a,(ix+enemies_and_objects.y)
@@ -167,38 +168,18 @@ PlatformVertically:
   ld    (ix+enemies_and_objects.v3),a
   ret
 
-PlatformHorizontally:
-  call  VramObjects                         ;put object in Vram/screen
-  call  .MovePlatForm                       ;move
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-  ret
-
-.MovePlatForm:
+MovePlatFormHorizontally:
   ld    a,(framecounter)
   and   3
   ret   nz
 
-  ld    a,(SnapToPlatform?)
+  ld    a,(ix+enemies_and_objects.SnapPlayer?)
   or    a
-  jr    z,.EndCheckPLayerSnapToPlatform
-
-  ld    a,(ix+enemies_and_objects.v2)
-  or    a
-  jp    m,.MoveLeft
-  .MoveRight:
-  ld    hl,(ClesX)
-  inc   hl
-  ld    (ClesX),hl  
-  jp    .EndCheckPLayerSnapToPlatform
-  .MoveLeft:
-  ld    hl,(ClesX)
-  dec   hl
-  ld    (ClesX),hl  
-  .EndCheckPLayerSnapToPlatform:
+  call  nz,MovePlayerAlongWithObject
 
 ;move object
   ld    a,(ix+enemies_and_objects.x)
-  add   (ix+enemies_and_objects.v2)
+  add   (ix+enemies_and_objects.v4)
   ld    (ix+enemies_and_objects.x),a  
   cp    254
   jr    z,.ChangeDirection
@@ -206,22 +187,16 @@ PlatformHorizontally:
   ret   nz
 
   .ChangeDirection:
-  ld    a,(ix+enemies_and_objects.v2)
+  ld    a,(ix+enemies_and_objects.v4)
   neg
-  ld    (ix+enemies_and_objects.v2),a
-  ret
-
-enemyexplosion:
-jp enemyexplosion
-  ret
-
-Currency:
+  ld    (ix+enemies_and_objects.v4),a
   ret
 
 SnapToPlatform?:  db  0
 CheckCollisionObjectPlayer:
   xor   a
-  ld    (SnapToPlatForm?),a
+;  ld    (SnapToPlatForm?),a
+  ld    (ix+enemies_and_objects.SnapPlayer?),a
 
 ;check player collides with object on the bottom side. This little part is preparing b. THIS CAN BE SPED UP BY SETTING THIS AS A FIXED VARIABLE IN THE OBJECT LIST
   ld    a,(ix+enemies_and_objects.ny)
@@ -330,17 +305,17 @@ CheckCollisionObjectPlayer:
   ret
 
 .CollisionTopOfObject:
-  ld    a,(JumpSpeed)              ;if vertical JumpSpeed is negative or 0 then return. If it's positive then snap to object
+  ld    a,(JumpSpeed)              ;if vertical JumpSpeed is negative then return. If it's positive then snap to object
   or    a
   ret   m
-  ret   z
   
   ld    a,(ix+enemies_and_objects.y)
   sub   a,17
   ld    (ClesY),a
   
-  ld    a,1
-  ld    (SnapToPlatform?),a
+  ld    a,1                         ;snap player to this platform
+  ld    (SnapToPlatform?),a  
+  ld    (ix+enemies_and_objects.SnapPlayer?),a
   
 ;check if player is jumping. If so, then set standing
 
@@ -362,19 +337,18 @@ CheckCollisionObjectPlayer:
   ld    (ClesY),a
   ret
 
-
-  
-
-
-
 VramObjectX:  db  000
 VramObjectY:  db  000
 VramObjects:
 ;first clean the object
   call  BackdropRed
 
-  ld    hl,.CleanObject
+;which Clean Object (DoCopy) table do we use ?
+  ld    l,(ix+enemies_and_objects.ObjectNumber)
+  ld    h,(ix+enemies_and_objects.ObjectNumber+1)
+  push  hl
   call  docopy
+  pop   iy
 
   ld    a,(ix+enemies_and_objects.x)
   or    a
@@ -386,7 +360,7 @@ VramObjects:
   ld    (.CopyObject+sx),a  
 ;set copy direction
   ld    a,%0000 0000      ;Copy from left to right
-  ld    (.CleanObject+copydirection),a
+  ld    (iy+copydirection),a
   ld    (.CopyObject+copydirection),a
 
 ;set pages to copy to and to clean from
@@ -428,7 +402,7 @@ VramObjects:
   ld    (.CopyObject+sx),a  
 ;set copy direction
   ld    a,%0000 0100      ;Copy from right to left
-  ld    (.CleanObject+copydirection),a
+  ld    (iy+copydirection),a
   ld    (.CopyObject+copydirection),a
 
 ;set pages to copy to and to clean from
@@ -469,49 +443,43 @@ VramObjects:
 .pagefound:
   ld    a,b
   ld    (.CopyObject+dpage),a  
-  ld    (.CleanObject+dpage),a
+  ld    (iy+dpage),a
   ld    a,c
-  ld    (.CleanObject+spage),a
+  ld    (iy+spage),a
 
 ;set object sy,dy,sx,dx,nx,ny
   ld    a,(ix+enemies_and_objects.y)
-  ld    (.CleanObject+sy),a
-  ld    (.CleanObject+dy),a
+  ld    (iy+sy),a
+  ld    (iy+dy),a
   ld    (.CopyObject+dy),a
 
   ld    a,(ix+enemies_and_objects.x)
   add   d
   ld    (.CopyObject+dx),a
-  ld    (.CleanObject+dx),a
+  ld    (iy+dx),a
   add   e
-  ld    (.CleanObject+sx),a
+  ld    (iy+sx),a
   
   ld    a,(ix+enemies_and_objects.nx)  
   ld    (.CopyObject+nx),a  
   add   a,2                 ;we clean 2 more pixels, because we use fast copy ($D0) for cleaning, which is not pixel precise (Bitmap mode)
-  ld    (.CleanObject+nx),a  
+  ld    (iy+nx),a  
 
   ld    a,(ix+enemies_and_objects.ny)
   ld    (.CopyObject+ny),a  
-  ld    (.CleanObject+ny),a  
+  ld    (iy+ny),a  
 
 ;put object
   ld    hl,.CopyObject
   call  docopy
   call  BackdropGreen
-  ld    hl,.CopyObject
-  call  docopy
-  call  BackdropBlack
+;  ld    hl,.CopyObject
+;  call  docopy
+;  call  BackdropBlack
   ret
 
 .pagefound1:
   jp    .pagefound
-
-.CleanObject:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    000,000,000,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
   
 .CopyObject:
   db    000,000,216,001   ;sx,--,sy,spage
@@ -519,7 +487,17 @@ VramObjects:
   db    000,000,000,000   ;nx,--,ny,--
   db    000,%0000 0100,$98       ;slow transparant copy -> Copy from right to left
 
+CleanOb1:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
+CleanOb2:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 PutPlayersprite:
 	ld		a,(slot.page12rom)	;all RAM except page 1+2
@@ -834,10 +812,11 @@ MoveObjectWithStepTable:
   ld    (Object1x),a
 
   ;Move player along with object if standing on it
-  ld    a,(SnapToPlatform?)
+  ld    a,(ix+enemies_and_objects.SnapPlayer?)         ;x movement
+;  ld    a,(SnapToPlatform?)
   or    a
   ret   z
-
+  MovePlayerAlongWithObject:
   ld    a,(ix+enemies_and_objects.v4)         ;x movement
   or    a
   ld    d,0
