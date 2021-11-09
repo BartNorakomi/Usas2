@@ -40,7 +40,7 @@ LevelEngine:
   jp    LevelEngine
 
 ClesX:      dw 150 ;150 ;210
-ClesY:      db 010 ; 144-1
+ClesY:      db 080 ; 144-1
 herospritenr:             db  22
 
 BackdropOrange:
@@ -96,8 +96,8 @@ handle_enemies_and_objects:                           ;2. call movement_enemies_
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
   ld    de,enemies_and_objects+(1*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-;  ld    de,enemies_and_objects+(2*lenghtenemytable)
-;  ld    a,(de) | or a | call nz,.docheck
+  ld    de,enemies_and_objects+(2*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
  
 ;	ld		a,(slot.ram)	      ;back to full RAM
 ;	out		($a8),a	
@@ -130,7 +130,87 @@ movement_enemies_and_objects:
 movementpatternaddress:
   jp    PlatformVertically                  ;movement pattern 1   
   jp    PlatformHorizontally                ;movement pattern 2   
-  jp    Sf2Hugeobject                       ;movement pattern 3
+  jp    Sf2Hugeobject1                      ;movement pattern 3
+  jp    Sf2Hugeobject2                      ;movement pattern 4
+  jp    Sf2Hugeobject3                      ;movement pattern 5
+  jp    PushingStone                        ;movement pattern 6
+
+PushingStone:
+  call  VramObjects                         ;put object in Vram/screen
+  call  MoveStoneWhenPushed                 ;move
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object
+  inc   b
+  jp    z,.CollisionRightSide               ;if you collide with a pushing stone from the right side and you are running, then change to pushing pose; if you are pushing, then move stone
+  inc   b 
+  jp    z,.CollisionLeftSide                ;if you collide with a pushing stone from the left side and you are running, then change to pushing pose; if you are pushing, then move stone
+  ret
+
+.CollisionRightSide:
+;if you collide with a pushing stone from the right side and you are running, then change to pushing pose
+	ld		de,(PlayerSpriteStand)
+	ld		hl,Lrunning
+  sbc   hl,de
+  jp    z,Set_L_Push
+;if you collide with a pushing stone from the right side and you are pushing, then move stone
+	ld		hl,Lpushing
+  xor   a
+  sbc   hl,de
+  ret   nz
+  ld    (ix+enemies_and_objects.v4),-1    
+  ret
+
+.CollisionLeftSide:
+;if you collide with a pushing stone from the left side and you are running, then change to pushing pose
+	ld		de,(PlayerSpriteStand)
+	ld		hl,Rrunning
+  sbc   hl,de
+  jp    z,Set_R_Push
+;if you collide with a pushing stone from the left side and you are pushing, then move stone
+	ld		hl,Rpushing
+  xor   a
+  sbc   hl,de
+  ret   nz
+  ld    (ix+enemies_and_objects.v4),+1    
+  ret
+
+MoveStoneWhenPushed:
+  ld    a,(framecounter)
+  and   1
+  ret   nz
+
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=horizontal movement. Return if 0
+  ld    (ix+enemies_and_objects.v4),+0    
+  or    a
+  ret   z
+  
+	ld		hl,Rpushing                         ;check if we are pushing Right
+	ld		de,(PlayerSpriteStand)
+  xor   a
+  sbc   hl,de
+  jp    z,.MovingRight
+
+	ld		hl,Lpushing                         ;check if we are pushing Left
+  xor   a
+  sbc   hl,de
+  ret   nz
+  
+  .MovingLeft:
+  ;if Pushing Stone moves left, check if it hits wall on the left side
+  ld    b,YaddFeetPlayer-1                  ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-31               ;add to x to check right side of player for collision (player moved right)
+  call  checktile                           ;out z=collision found with wall
+  ret   z
+  dec   (ix+enemies_and_objects.x)          ;move pushing stone left
+  ret
+
+  .MovingRight:
+  ;if Pushing Stone moves right, check if it hits wall on the right side
+  ld    b,YaddFeetPlayer-1                  ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer+16               ;add to x to check left side of player for collision (player moved left)
+  call  checktile                           ;out z=collision found with wall
+  ret   z
+  inc   (ix+enemies_and_objects.x)          ;move pushing stone right
+  ret
 
 PlatformVertically:
   call  VramObjects                         ;put object in Vram/screen
@@ -292,7 +372,9 @@ CheckCollisionObjectPlayer:
   add   hl,de
   ld    e,(ix+enemies_and_objects.nx)
   add   hl,de
-  ld    (ClesX),hl                   
+  ld    (ClesX),hl       
+  
+  ld    b,255                       ;collision right side of object detected (used for the pushing blocks)            
   ret
   
 .CollisionLeftOfObject:
@@ -302,10 +384,12 @@ CheckCollisionObjectPlayer:
   ld    h,0
   ld    l,a
   ld    (ClesX),hl                   
+
+  ld    b,254                       ;collision leftside of object detected (used for the pushing blocks)            
   ret
 
 .CollisionTopOfObject:
-  ld    a,(JumpSpeed)              ;if vertical JumpSpeed is negative then return. If it's positive then snap to object
+  ld    a,(JumpSpeed)               ;if vertical JumpSpeed is negative then return. If it's positive then snap to object
   or    a
   ret   m
   
@@ -494,6 +578,12 @@ CleanOb1:
   db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 CleanOb2:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+
+CleanOb3:
   db    000,000,000,000   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
   db    000,000,000,000   ;nx,--,ny,--
@@ -714,6 +804,10 @@ Sf2EngineObjects:
 ;	out		($a8),a	
   ld    de,enemies_and_objects+(0*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
   ld    a,(de) | cp 2 | call z,.docheck
+  ld    de,enemies_and_objects+(1*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
+  ld    a,(de) | cp 2 | call z,.docheck
+  ld    de,enemies_and_objects+(2*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
+  ld    a,(de) | cp 2 | call z,.docheck
 ;	ld		a,(slot.ram)	      ;back to full RAM
 ;	out		($a8),a	
   ret
@@ -721,10 +815,7 @@ Sf2EngineObjects:
   .docheck:
   ld    ixl,e
   ld    ixh,d    
-  call  movement_SF2_objects
-  ret
 
-movement_SF2_objects:
 ;  ld    a,(movementpatternsblock)
 ;	call	block34			      ;at address $8000 / page 2  
   ld    a,(ix+enemies_and_objects.movementpattern)             ;movementpattern
@@ -743,15 +834,218 @@ movement_SF2_objects:
 ;  jp    PlatformVertically                  ;movement pattern 1   
 ;  jp    PlatformHorizontally                ;movement pattern 2   
 ;  jp    Sf2Hugeobject                       ;movement pattern 3
+;  jp    Sf2Hugeobject2                      ;movement pattern 4
+;  jp    Sf2Hugeobject3                      ;movement pattern 5
 
-Sf2Hugeobject:                              ;movement pattern 3
-  call  MoveSF2Object
+
+
+
+PutSF2Object2:
+  ld    a,(screenpage)
+  or    a                     ;if current page =0 then que page 1 to be restored
+  ld    ix,RestoreBackgroundObject2Page1
+  jp    z,.startsetupque
+  dec   a                     ;if current page =1 then que page 2 to be restored
+  ld    ix,RestoreBackgroundObject2Page2
+  jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
+  ld    ix,RestoreBackgroundObject2Page0
+  .startsetupque:
+
+	ld		a,(slot.page12rom)    ;all RAM except page 1+2
+	out		($a8),a	
+
+  ;set framelist in page 2 in rom ($8000 - $bfff)
+;  ld    a,(Player1FramePage)
+;  add   a,a
+;  ld    hl,Player1Framelistblock
+;	add   a,(hl)
+	
+	ld    a,ryuframelistblock
+  call	block34
+
+  ;set framedata in page 1 in rom ($4000 - $7fff)
+;  ld    a,(Player1FramePage)
+;  add   a,a
+;  ld    hl,Player1Spritedatablock
+;	add   a,(hl)
+	
+	ld    a,ryuspritedatablock
+  call	block12
+
+  ld    bc,Object1x
+  ld    hl,(Player1Frame)     ;points to object width
+  ld    iy,Player1SxB1        ;player collision detection blocks
+
+  di
+  call  GoPutSF2Object
+  ei
+  ret
+
+PutSF2Object3:
+  ld    a,(screenpage)
+  or    a                     ;if current page =0 then que page 1 to be restored
+  ld    ix,RestoreBackgroundObject3Page1
+  jp    z,.startsetupque
+  dec   a                     ;if current page =1 then que page 2 to be restored
+  ld    ix,RestoreBackgroundObject3Page2
+  jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
+  ld    ix,RestoreBackgroundObject3Page0
+  .startsetupque:
+
+	ld		a,(slot.page12rom)    ;all RAM except page 1+2
+	out		($a8),a	
+
+  ;set framelist in page 2 in rom ($8000 - $bfff)
+;  ld    a,(Player1FramePage)
+;  add   a,a
+;  ld    hl,Player1Framelistblock
+;	add   a,(hl)
+	
+	ld    a,ryuframelistblock
+  call	block34
+
+  ;set framedata in page 1 in rom ($4000 - $7fff)
+;  ld    a,(Player1FramePage)
+;  add   a,a
+;  ld    hl,Player1Spritedatablock
+;	add   a,(hl)
+	
+	ld    a,ryuspritedatablock
+  call	block12
+
+  ld    bc,Object1x
+  ld    hl,(Player1Frame)     ;points to object width
+  ld    iy,Player1SxB1        ;player collision detection blocks
+
+  di
+  call  GoPutSF2Object
+  ei
+  ret
+
+restoreBackgroundObject1:
+  ld    a,(screenpage)
+  or    a                     ;if current page =0 then restore page 2
+  ld    hl,RestoreBackgroundObject1Page2
+  jp    z,DoCopy
+  dec   a                     ;if current page =1 then restore page 0
+  ld    hl,RestoreBackgroundObject1Page0
+  jp    z,DoCopy         ;if current page =2 then restore page 1
+  ld    hl,RestoreBackgroundObject1Page1
+  jp    DoCopy
+
+restoreBackgroundObject2:
+  ld    a,(screenpage)
+  or    a                     ;if current page =0 then restore page 2
+  ld    hl,RestoreBackgroundObject2Page2
+  jp    z,DoCopy
+  dec   a                     ;if current page =1 then restore page 0
+  ld    hl,RestoreBackgroundObject2Page0
+  jp    z,DoCopy         ;if current page =2 then restore page 1
+  ld    hl,RestoreBackgroundObject2Page1
+  jp    DoCopy
+
+restoreBackgroundObject3:
+  ld    a,(screenpage)
+  or    a                     ;if current page =0 then restore page 2
+  ld    hl,RestoreBackgroundObject3Page2
+  jp    z,DoCopy
+  dec   a                     ;if current page =1 then restore page 0
+  ld    hl,RestoreBackgroundObject3Page0
+  jp    z,DoCopy         ;if current page =2 then restore page 1
+  ld    hl,RestoreBackgroundObject3Page1
+  jp    DoCopy
+
+RestoreBackgroundObject1Page0:
+	db    0,0,0,3
+	db    0,0,0,0
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject1Page1:
+	db    0,0,0,3
+	db    0,0,0,1
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject1Page2:
+	db    0,0,0,3
+	db    0,0,0,2
+	db    $02,0,$02,0
+	db    0,0,$d0  
+
+RestoreBackgroundObject2Page0:
+	db    0,0,0,3
+	db    0,0,0,0
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject2Page1:
+	db    0,0,0,3
+	db    0,0,0,1
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject2Page2:
+	db    0,0,0,3
+	db    0,0,0,2
+	db    $02,0,$02,0
+	db    0,0,$d0  
+
+RestoreBackgroundObject3Page0:
+	db    0,0,0,3
+	db    0,0,0,0
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject3Page1:
+	db    0,0,0,3
+	db    0,0,0,1
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject3Page2:
+	db    0,0,0,3
+	db    0,0,0,2
+	db    $02,0,$02,0
+	db    0,0,$d0  
+	
+HugeObjectFrame:  db  -1
+
+Sf2Hugeobject1:                             ;movement pattern 3
+  ld    a,(HugeObjectFrame)
+  inc   a
+  ld    (HugeObjectFrame),a
+  jp    nz,CheckCollisionObjectPlayer
+
+  call  MoveSF2Object1
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  BackdropOrange  
-  call  restoreBackgroundObject
+  call  restoreBackgroundObject1
   call  ObjectAnimation
   call  PutSF2Object
   call  BackdropBlack
+;  call  switchpageSF2Engine  
+  ret
+
+Sf2Hugeobject2:                             ;movement pattern 4
+  ld    a,(HugeObjectFrame)
+  cp    1
+  jp    nz,CheckCollisionObjectPlayer
+
+  call  MoveSF2Object2
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  restoreBackgroundObject2
+;  call  ObjectAnimation
+  call  PutSF2Object2
+  ret
+
+Sf2Hugeobject3:                             ;movement pattern 5
+  ld    a,(HugeObjectFrame)
+  cp    2
+  jp    nz,CheckCollisionObjectPlayer
+
+  call  MoveSF2Object3
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  restoreBackgroundObject3
+;  call  ObjectAnimation
+  call  PutSF2Object3
+
+  ld    a,-1
+  ld    (HugeObjectFrame),a
   call  switchpageSF2Engine  
   ret
 
@@ -759,12 +1053,36 @@ NoneMovingObjectStepTable:  ;move x, move y (128 = end table/repeat)
   db  10,+0,+0
   db  128
 
-HugeBlockStepTable:  ;repeating steps(128 = end table/repeat), move y, move x
+HugeBlockStepTable1:  ;repeating steps(128 = end table/repeat), move y, move x
   db  50,+0,+2,  50,+2,+0,  50,+0,-2,  50,-2,+0
   db  128
 
-MoveSF2Object:
-  ld    de,HugeBlockStepTable
+HugeBlockStepTable2:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  40,+0,+2,  40,+0,-2,  40,+0,-2,  40,+0,+2
+  db  128
+
+HugeBlockStepTable3:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  10,+0,+2,  10,+1,+2,  10,+1,+1,  10,+2,+1,  10,+2,+0
+  db  10,+2,+0,  10,+2,-1,  10,+1,-1,  10,+1,-2,  10,+0,-2
+  db  10,+0,-2,  10,-1,-2,  10,-1,-1,  10,-2,-1,  10,-2,-0
+  db  10,-2,-0,  10,-2,+1,  10,-1,+1,  10,-1,+2,  10,-0,+2
+  db  128
+
+
+MoveSF2Object1:
+  ld    de,HugeBlockStepTable1
+;  ld    de,NoneMovingObjectStepTable
+  call  MoveObjectWithStepTable
+  ret
+  
+MoveSF2Object2:
+  ld    de,HugeBlockStepTable2
+;  ld    de,NoneMovingObjectStepTable
+  call  MoveObjectWithStepTable
+  ret
+
+MoveSF2Object3:
+  ld    de,HugeBlockStepTable3
 ;  ld    de,NoneMovingObjectStepTable
   call  MoveObjectWithStepTable
   ret
@@ -846,15 +1164,20 @@ Player1FramePage:             db  0
 Object1y:                     db  000
 Object1x:                     db  000
 
+;Object2y:                     db  100
+;Object2x:                     db  100
+
+
+
 PutSF2Object:
   ld    a,(screenpage)
   or    a                     ;if current page =0 then que page 1 to be restored
-  ld    ix,restorebackgroundplayer1page1
+  ld    ix,RestoreBackgroundObject1Page1
   jp    z,.startsetupque
   dec   a                     ;if current page =1 then que page 2 to be restored
-  ld    ix,restorebackgroundplayer1page2
+  ld    ix,RestoreBackgroundObject1Page2
   jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
-  ld    ix,restorebackgroundplayer1page0
+  ld    ix,RestoreBackgroundObject1Page0
   .startsetupque:
 
 	ld		a,(slot.page12rom)    ;all RAM except page 1+2
@@ -905,6 +1228,7 @@ PutSF2Object:
 ;  dw 01F80h,base+0001Fh
 ;  dw 01F80h,base+0003Eh
 ;  dw 01F80h,base+0005Dh
+
 
 
 ScreenLimitxRight:  equ 256-10
@@ -1628,32 +1952,6 @@ AnimatePlayer:                ;animates, forces writing spriteframe, out: z=anim
 
 
   
-restoreBackgroundObject:
-  ld    a,(screenpage)
-  or    a                     ;if current page =0 then restore page 2
-  ld    hl,restorebackgroundplayer1page2
-  jp    z,DoCopy
-  dec   a                     ;if current page =1 then restore page 0
-  ld    hl,restorebackgroundplayer1page0
-  jp    z,DoCopy         ;if current page =2 then restore page 1
-  ld    hl,restorebackgroundplayer1page1
-  jp    DoCopy
-
-restorebackgroundplayer1page0:
-	db    0,0,0,3
-	db    0,0,0,0
-	db    $02,0,$02,0
-	db    0,0,$d0  
-restorebackgroundplayer1page1:
-	db    0,0,0,3
-	db    0,0,0,1
-	db    $02,0,$02,0
-	db    0,0,$d0  
-restorebackgroundplayer1page2:
-	db    0,0,0,3
-	db    0,0,0,2
-	db    $02,0,$02,0
-	db    0,0,$d0  
 
 
 ExitRight256x216: equ 252 ; 29*8
@@ -1748,9 +2046,14 @@ DisableLineint:
 ;  ei
   out   ($99),a
 
-  ld    a,0
+  xor   a
   out   ($99),a
   ld    a,19+128            ;set lineinterrupt height
+  out   ($99),a
+
+  xor   a
+  out   ($99),a
+  ld    a,23+128            ;set r#23 height
   out   ($99),a
   ei
   ret
@@ -2037,12 +2340,12 @@ CameraEngine256x216:
   ld    de,CameraMoveRightXBoundary
   xor   a 
   sbc   hl,de                           ;hl=playerX - CameraMoveRightXBoundary
-  jp    c,CameraEngine304x216.setR18R19R23andPage
+  jp    c,.setR18R19R23
 
   ld    a,(CameraX)                     ;is cameraX > playerX - CameraMoveRightXBoundary ?
   ld    e,a
   sbc   hl,de
-  jp    c,CameraEngine304x216.setR18R19R23andPage
+  jp    c,.setR18R19R23
 
   ld    b,1           ;horizontal camera movent
   jp    .movecamera
@@ -2053,14 +2356,14 @@ CameraEngine256x216:
   ld    hl,CameraMoveLeftXBoundary
   xor   a
   sbc   hl,de                           ;hl=CameraMoveLeftXBoundary - playerX 
-  jp    c,CameraEngine304x216.setR18R19R23andPage
+  jp    c,.setR18R19R23
 
   ld    a,(CameraX)  
   sub   64
   neg 
   ld    e,a
   sbc   hl,de
-  jp    c,CameraEngine304x216.setR18R19R23andPage
+  jp    c,.setR18R19R23
  
   ld    b,-1           ;horizontal camera movent 
 ;  jp    .movecamera
@@ -2075,7 +2378,7 @@ CameraEngine256x216:
   .negativeValue:
   .maxRangeFound:
  
-.setR18R19R23andPage:
+.setR18R19R23:
   ld    a,(CameraX)
   and   %0000 1111
   ld    d,0
@@ -2088,12 +2391,9 @@ CameraEngine256x216:
   ld    a,(CameraY)
   ld    (R23onVblank),a
 
-  ld    a,(CameraY)
-  ld    b,a
-  ld    a,lineintheight
-  add   a,b  
+  add   a,lineintheight
   ld    (R19onVblank),a
-  ret  
+  ret
 
 VerticalMovementCamera:
 ;follow y position of player with camera
@@ -2440,13 +2740,165 @@ LstandingSpriteStand:         equ 6
 LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
-;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp
+;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, RPushing, LPushing
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
 HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
+
+RPushing:
+;  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+;  ld    a,(SnapToPlatform?)
+;  or    a
+;  jr    nz,.EndCheckSnapToPlatform
+;  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+;  jp    c,Set_Fall
+;  .EndCheckSnapToPlatform:
+
+;  call  checkfloor
+;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+
+;  ld    a,(NewPrContr)
+;	bit		0,a           ;cursor up pressed ?
+;	jp		nz,.UpPressed
+
+;	bit		4,a           ;space pressed ?
+;	jp		nz,Set_L_attack
+;	bit		5,a           ;'M' pressed ?
+;	jp		nz,Set_L_attack2
+;	bit		6,a           ;F1 pressed ?
+;	jp		nz,Set_L_attack3
+
+
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+	jp		nz,.UpPressed
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,.DownPressed
+	bit		3,a           ;cursor right pressed ?
+;	jp		nz,.PushingLeft
+;  jp    Set_L_Stand
+	jp		z,Set_R_Stand
+  
+  .PushingLeft:
+  call  MovePlayerRight     ;out: c-> collision detected
+;  jp    c,Set_R_stand       ;on collision change to R_Stand
+  
+;  ld    a,(SnapToPlatform?)
+;  or    a
+;  jr    nz,.EndCheckSnapToPlatform
+;  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+;  jp    c,Set_Fall  
+;  .EndCheckSnapToPlatform:
+  
+  ld    hl,RightPushingAnimation
+  jp    AnimatePushing  
+
+  .DownPressed:
+	call	Set_R_sit
+  call  CheckClimbStairsDown  
+  ret
+
+  .UpPressed:
+	call  Set_jump
+  call  CheckClimbLadderUp	
+	call  CheckClimbStairsUp    
+  ret
+  
+LPushing:
+;  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+;  ld    a,(SnapToPlatform?)
+;  or    a
+;  jr    nz,.EndCheckSnapToPlatform
+;  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+;  jp    c,Set_Fall
+;  .EndCheckSnapToPlatform:
+
+;  call  checkfloor
+;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+
+;  ld    a,(NewPrContr)
+;	bit		0,a           ;cursor up pressed ?
+;	jp		nz,.UpPressed
+
+;	bit		4,a           ;space pressed ?
+;	jp		nz,Set_L_attack
+;	bit		5,a           ;'M' pressed ?
+;	jp		nz,Set_L_attack2
+;	bit		6,a           ;F1 pressed ?
+;	jp		nz,Set_L_attack3
+
+
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+	jp		nz,.UpPressed
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,.DownPressed
+	bit		2,a           ;cursor left pressed ?
+;	jp		nz,.PushingLeft
+;  jp    Set_L_Stand
+	jp		z,Set_L_Stand
+  
+  .PushingLeft:
+  call  MovePlayerLeft      ;out: c-> collision detected
+;  jp    c,Set_R_stand       ;on collision change to R_Stand
+  
+;  ld    a,(SnapToPlatform?)
+;  or    a
+;  jr    nz,.EndCheckSnapToPlatform
+;  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+;  jp    c,Set_Fall  
+;  .EndCheckSnapToPlatform:
+  
+  ld    hl,LeftPushingAnimation
+  jp    AnimatePushing  
+
+  .DownPressed:
+	call	Set_L_sit
+  call  CheckClimbStairsDown  
+  ret
+
+  .UpPressed:
+	call  Set_jump
+  call  CheckClimbLadderUp	
+	call  CheckClimbStairsUp    
+  ret
+
+LeftPushingAnimation:          ;xoffset sprite top, xoffset sprite bottom
+  dw  PlayerSpriteData_Char_LeftPush1 
+  dw  PlayerSpriteData_Char_LeftPush2 
+  dw  PlayerSpriteData_Char_LeftPush3 
+  dw  PlayerSpriteData_Char_LeftPush4 
+  dw  PlayerSpriteData_Char_LeftPush5 
+  dw  PlayerSpriteData_Char_LeftPush6 
+  dw  PlayerSpriteData_Char_LeftPush7 
+  dw  PlayerSpriteData_Char_LeftPush8 
+  dw  PlayerSpriteData_Char_LeftPush9 
+    
+RightPushingAnimation:
+  dw  PlayerSpriteData_Char_RightPush1 
+  dw  PlayerSpriteData_Char_RightPush2 
+  dw  PlayerSpriteData_Char_RightPush3 
+  dw  PlayerSpriteData_Char_RightPush4 
+  dw  PlayerSpriteData_Char_RightPush5 
+  dw  PlayerSpriteData_Char_RightPush6 
+  dw  PlayerSpriteData_Char_RightPush7 
+  dw  PlayerSpriteData_Char_RightPush8 
+  dw  PlayerSpriteData_Char_RightPush9 
 
 ClimbStairsRightUp:
 ;
@@ -3207,6 +3659,8 @@ CheckSnapToStairsWhileJump:
   ld    (ClesX),hl
   ret  
   
+  
+  
 Jump:
   call  MoveHorizontallyWhileJump
 	ld		a,(Controls)
@@ -3478,6 +3932,17 @@ Rsitting:
   ld    (ClesX),hl
   ret
   
+AnimatePushing:
+  ld    a,(framecounter)          ;animate every 4 frames
+  and   7
+  ret   nz
+  
+  ld    a,(PlayerAniCount)
+  add   a,2                       ;2 bytes used for pointer to sprite frame address
+  cp    2 * 09                    ;09 frame addresses
+  jr    nz,AnimateRun.SetPlayerAniCount
+  jr    AnimateRun.reset
+
 AnimateRun:
   ld    a,(framecounter)          ;animate every 4 frames
   and   3
@@ -3487,6 +3952,7 @@ AnimateRun:
   add   a,2                       ;2 bytes used for pointer to sprite frame address
   cp    2 * 10                    ;10 frame addresses
   jr    nz,.SetPlayerAniCount
+  .reset:
   xor   a
   .SetPlayerAniCount:
   ld    (PlayerAniCount),a
@@ -3500,7 +3966,7 @@ AnimateRun:
   ld    d,(hl)
     
 	ld		(standchar),de
-	ld    hl,PlayerSpriteData_Colo_LeftRun1-PlayerSpriteData_Char_LeftRun1
+;	ld    hl,PlayerSpriteData_Colo_LeftRun1-PlayerSpriteData_Char_LeftRun1
 ;	add   hl,de
 ;	ld		(standcol),hl
   ret	
@@ -3898,6 +4364,8 @@ Lstanding:
 ;	jp		nz,Set_R_standmagic
   jp    Set_R_run
 
+
+
 Rstanding:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
@@ -4179,6 +4647,8 @@ CheckClimbStairsUp:
   ld    (ClesX),hl
   ret
 
+
+
 CheckClimbLadderUp:
 ;check if there is a ladder when pressing up, if so climb the ladder. Check if there is a tile above left foot AND right foot
   ld    b,YaddFeetPlayer-20    ;add y to check (y is expressed in pixels)
@@ -4377,7 +4847,19 @@ Set_L_stand:
 	ld		(standchar),hl
   ret
 
+Set_L_Push:
+	ld		hl,LPushing
+	ld		(PlayerSpriteStand),hl
+  xor   a
+	ld		(PlayerAniCount),a
+  ret
 
+Set_R_Push:
+	ld		hl,RPushing
+	ld		(PlayerSpriteStand),hl
+  xor   a
+	ld		(PlayerAniCount),a
+  ret
 
 ;Totallycentredpose:
 ;  ld    a,100       ;y offset
@@ -4475,6 +4957,7 @@ spat:						;sprite attribute table
 	db		144,000,080,0	,160,000,084,0	,100,100,088,0	,100,100,092,0
 	db		116,100,096,0	,116,100,100,0	,000,000,104,0	,000,000,108,0
 	db		000,000,112,0	,000,000,116,0	,000,000,120,0	,000,000,124,0
+
 
 outix128:	
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	

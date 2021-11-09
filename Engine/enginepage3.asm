@@ -13,7 +13,7 @@ MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | Map
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_001Data
-WorldMapPointer:  dw  MapB01_001Data
+WorldMapPointer:  dw  MapB01_010Data
 
 loadGraphics:
   call  screenoff
@@ -28,12 +28,14 @@ loadGraphics:
   call  CopyItemsKarniMata            ;copy items to page 1 - screen 5 - bottom 40 pixels (scoreboard)
   call  SwapSpatColAndCharTable
   call  initiatebordermaskingsprites
+halt
   call  SetInterruptHandler           ;set Lineint and Vblank
-  xor   a
-  ld    (R23onVblank),a               ;vertical screen adjust
-  ld    (R19onVblank),a               ;vertical screen adjust
-  call  WaitVblank
-  call  WaitVblank
+;  xor   a
+;  ld    (R23onVblank),a               ;vertical screen adjust
+;  ld    (R19onVblank),a               ;vertical screen adjust
+;  call  WaitVblank
+;  call  WaitVblank
+;  call  WaitVblank
   jp    LevelEngine
 
 WaitVblank:
