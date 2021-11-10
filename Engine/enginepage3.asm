@@ -1044,6 +1044,7 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .v4:                    equ 12
 .v5:                    equ 13
 .SnapPlayer?:           equ 13
+.v6:                    equ 14
 
 
 

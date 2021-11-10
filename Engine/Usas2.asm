@@ -561,9 +561,12 @@ MapB01_009:
 .object1: db 1,        1,     002,076,150,16,16|dw CleanOb1|      db +64,+00,+00,+01,+00,16,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 .object2: db 1,        1,     002,090,100,16,16|dw CleanOb2|      db +64,+00,+00,+01,+00,16,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 MapB01_010:
-  incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  1
-       ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, offsettab                                             ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
-.object1: db 1,        1,     006,104,110,16,16|dw CleanOb1|      db 112,+00,+00,+00,+00,16,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+  incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  3
+       ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, v6                                       ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
+.object1: db 1,        1,     006,040,130,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object1: db 1,        1,     006,104,160,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+.object2: db 1,        1,     006,104,140,16,16|dw CleanOb2|      db 112,+00,+01,+00,+00,+00,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+.object3: db 1,        1,     006,184,082,16,16|dw CleanOb3|      db 112,+00,+01,+00,+00,+00,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 MapB01_011:
   incbin "..\maps\b01-011.map.pck"  | .amountofobjects: db  1
        ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, offsettab                                             ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
