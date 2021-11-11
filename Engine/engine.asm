@@ -138,22 +138,30 @@ movementpatternaddress:
 CheckFloorOrStonePushingStone:
   ;check left side
   ld    b,+32                               ;add y to check (y is expressed in pixels)
-  ld    de,+17                              ;add x to check (x is expressed in pixels)
+;  ld    de,+17                              ;add x to check (x is expressed in pixels)
+  ld    de,+16                              ;add x to check (x is expressed in pixels)
   call  checktileObject                     ;out z=collision found with wall
   ret   z
   ;check right side
   ld    b,+32                               ;add y to check (y is expressed in pixels)
-  ld    de,+00                              ;add x to check (x is expressed in pixels)
+;  ld    de,+00                              ;add x to check (x is expressed in pixels)
+  ld    de,+01                              ;add x to check (x is expressed in pixels)
   call  checktileObject                     ;out z=collision found with wall
   ret   z
 
-  ;check y collision with object 1 (stone 1)
+  ;check y collision with object 1 (stone 1) top
   ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
   cp    (ix+enemies_and_objects.y)
   jp    z,.NoCollision1
   sub   a,17
   cp    (ix+enemies_and_objects.y)
   jp    nc,.NoCollision1
+
+  ;check y collision with object 1 (stone 1) bottom
+  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+  add   a,17
+  cp    (ix+enemies_and_objects.y)
+  jp    c,.NoCollision1
 
   ;check x collision with object 1 (stone 1) check on the left side of this stone
   ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
@@ -169,13 +177,19 @@ CheckFloorOrStonePushingStone:
 
   .NoCollision1:
    
-  ;check y collision with object 2 (stone 2)
+  ;check y collision with object 2 (stone 2) top
   ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
   cp    (ix+enemies_and_objects.y)
   jp    z,.NoCollision2
   sub   a,17
   cp    (ix+enemies_and_objects.y)
   jp    nc,.NoCollision2
+
+  ;check y collision with object 2 (stone 2) bottom
+  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+  add   a,17
+  cp    (ix+enemies_and_objects.y)
+  jp    c,.NoCollision2
 
   ;check x collision with object 2 (stone 2) check on the left side of this stone
   ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
@@ -191,13 +205,19 @@ CheckFloorOrStonePushingStone:
 
   .NoCollision2:
   
-  ;check y collision with object 3 (stone 3)
+  ;check y collision with object 3 (stone 3) top
   ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
   cp    (ix+enemies_and_objects.y)
   jp    z,.NoCollision3
   sub   a,17
   cp    (ix+enemies_and_objects.y)
   jp    nc,.NoCollision3
+
+  ;check y collision with object 3 (stone 3) bottom
+  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+  add   a,17
+  cp    (ix+enemies_and_objects.y)
+  jp    c,.NoCollision3
 
   ;check x collision with object 3 (stone 3) check on the left side of this stone
   ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
@@ -239,22 +259,26 @@ FallingStone:
   ret
 
 CheckCollisionStone1:
-  ;check y collision with object 3 (stone 3)
+  ;check y collision with object 1 (stone 1) top
   ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
   cp    (ix+enemies_and_objects.y)
   ret   z
-
   sub   a,16
   cp    (ix+enemies_and_objects.y)
   ret   nc
+  ;check y collision with object 1 (stone 1) bottom
+  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+  add   a,17
+  cp    (ix+enemies_and_objects.y)
+  ret   c
 
-  ;check x collision with object 3 (stone 3) check on the left side of this stone
+  ;check x collision with object 1 (stone 1) check on the left side of this stone
   ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
   add   a,17
   cp    (ix+enemies_and_objects.x)
   ret   c
 
-  ;check x collision with object 3 (stone 3) check on the right side of this stone
+  ;check x collision with object 1 (stone 1) check on the right side of this stone
   ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
   add   a,15 -33
   cp    (ix+enemies_and_objects.x)
@@ -269,21 +293,26 @@ CheckCollisionStone1:
   ret
   
 CheckCollisionStone2:
-  ;check y collision with object 3 (stone 3)
+  ;check y collision with object 2 (stone 2) top
   ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
   cp    (ix+enemies_and_objects.y)
   ret   z
   sub   a,16
   cp    (ix+enemies_and_objects.y)
   ret   nc
-
-  ;check x collision with object 3 (stone 3) check on the left side of this stone
+  ;check y collision with object 2 (stone 2) bottom
+  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+  add   a,17
+  cp    (ix+enemies_and_objects.y)
+  ret   c
+  
+  ;check x collision with object 2 (stone 2) check on the left side of this stone
   ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
   add   a,17
   cp    (ix+enemies_and_objects.x)
   ret   c
 
-  ;check x collision with object 3 (stone 3) check on the right side of this stone
+  ;check x collision with object 2 (stone 2) check on the right side of this stone
   ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
   add   a,15 -33
   cp    (ix+enemies_and_objects.x)
@@ -298,13 +327,18 @@ CheckCollisionStone2:
   ret
     
 CheckCollisionStone3:
-  ;check y collision with object 3 (stone 3)
+  ;check y collision with object 3 (stone 3) top
   ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
   cp    (ix+enemies_and_objects.y)
   ret   z
   sub   a,16
   cp    (ix+enemies_and_objects.y)
   ret   nc
+  ;check y collision with object 3 (stone 3) bottom
+  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+  add   a,17
+  cp    (ix+enemies_and_objects.y)
+  ret   c
 
   ;check x collision with object 3 (stone 3) check on the left side of this stone
   ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
@@ -366,7 +400,48 @@ MoveObject:                                 ;adds v3 to y, adds v4 to x. x+y are
   ld    (ix+enemies_and_objects.x),a        ;x object
   ret
 
+PuzzleBlocks1Y: db  032 | PuzzleBlocks1X: db  110
+PuzzleBlocks2Y: db  032 | PuzzleBlocks2X: db  160
+PuzzleBlocks3Y: db  120 | PuzzleBlocks3X: db  170
+PuzzleBlocks4Y: db  024 | PuzzleBlocks4X: db  062
+PuzzleBlocks5Y: db  024 | PuzzleBlocks5X: db  104
+PuzzleBlocks6Y: db  096 | PuzzleBlocks6X: db  120
+PuzzleBlocks7Y: db  024 | PuzzleBlocks7X: db  120
+PuzzleBlocks8Y: db  024 | PuzzleBlocks8X: db  176
+PuzzleBlocks9Y: db  072 | PuzzleBlocks9X: db  096
+
+SetCoordinatesPuzzlePushingStones:
+  ld    (ix+enemies_and_objects.v7),1       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
+
+  ld    l,(ix+enemies_and_objects.coordinates)
+  ld    h,(ix+enemies_and_objects.coordinates+1)
+  
+  ld    a,(hl)
+  ld    (ix+enemies_and_objects.y),a        ;y object
+  inc   hl
+  ld    a,(hl)
+  ld    (ix+enemies_and_objects.x),a        ;x object
+  ret
+
+StoreCoordinatesPuzzlePushingStones:
+  ld    l,(ix+enemies_and_objects.coordinates)
+  ld    h,(ix+enemies_and_objects.coordinates+1)
+  
+  ld    a,(ix+enemies_and_objects.y)        ;y object
+  ld    (hl),a
+  inc   hl
+  ld    a,(ix+enemies_and_objects.x)        ;x object
+  ld    (hl),a
+  ret
+  
 PushingStone:
+  ld    a,(ix+enemies_and_objects.v7)       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
+  or    a
+  jp    z,SetCoordinatesPuzzlePushingStones
+  ld    a,(ix+enemies_and_objects.v7)       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
+  dec   a
+  call  z,StoreCoordinatesPuzzlePushingStones
+
   ld    a,(ix+enemies_and_objects.v2)       ;falling stone?
   or    a
   jp    nz,FallingStone

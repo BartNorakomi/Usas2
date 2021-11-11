@@ -495,6 +495,8 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
+
+
 ;
 ; block $20 - &21
 ;
@@ -503,19 +505,34 @@ phase	$8000
 MapA01_001:   ;EngineType, graphics, palette,
   incbin "..\maps\A01-001.map.pck"  | .amountofobjects: db  0
 MapA01_002:
-  incbin "..\maps\A01-002.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\A01-002.map.pck"  | .amountofobjects: db  3
+       ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, v6, v7   coordinates                            ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
+;pushing stones
+.object1: db 1,        1,     006,032,110,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks1Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+.object2: db 1,        1,     006,032,160,16,16|dw CleanOb2|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks2Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+.object3: db 1,        1,     006,120,170,16,16|dw CleanOb3|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks3Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 MapA01_003:
   incbin "..\maps\A01-003.map.pck"  | .amountofobjects: db  0
 MapA01_004:
   incbin "..\maps\A01-004.map.pck"  | .amountofobjects: db  0
 MapA01_005:
-  incbin "..\maps\A01-005.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\A01-005.map.pck"  | .amountofobjects: db  3
+       ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, v6, v7   coordinates                            ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
+;pushing stones
+.object1: db 1,        1,     006,024,062,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks4Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+.object2: db 1,        1,     006,024,104,16,16|dw CleanOb2|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks5Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+.object3: db 1,        1,     006,096,120,16,16|dw CleanOb3|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks6Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 MapA01_006:
   incbin "..\maps\A01-006.map.pck"  | .amountofobjects: db  0
 MapA01_007:
   incbin "..\maps\A01-007.map.pck"  | .amountofobjects: db  0
 MapA01_008:
-  incbin "..\maps\A01-008.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\A01-008.map.pck"  | .amountofobjects: db  3
+       ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, v6, v7   coordinates                            ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
+;pushing stones
+.object1: db 1,        1,     006,024,120,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks7Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+.object2: db 1,        1,     006,024,176,16,16|dw CleanOb2|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks8Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+.object3: db 1,        1,     006,072,096,16,16|dw CleanOb3|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks9Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 MapA01_009:
   incbin "..\maps\A01-009.map.pck"  | .amountofobjects: db  0
 MapB01_001:
@@ -562,9 +579,9 @@ MapB01_009:
 .object2: db 1,        1,     002,090,100,16,16|dw CleanOb2|      db +64,+00,+00,+01,+00,16,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 MapB01_010:
   incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  3
-       ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, v6                                       ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
+       ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, v6, v7                                     ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
+;pushing stones
 .object1: db 1,        1,     006,040,130,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-;.object1: db 1,        1,     006,104,160,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 .object2: db 1,        1,     006,104,140,16,16|dw CleanOb2|      db 112,+00,+01,+00,+00,+00,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 .object3: db 1,        1,     006,184,082,16,16|dw CleanOb3|      db 112,+00,+01,+00,+00,+00,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 MapB01_011:
