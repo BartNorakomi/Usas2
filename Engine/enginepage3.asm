@@ -12,7 +12,7 @@ MapB01_004Data: db MapsBlock01 | dw MapB01_004 | db 1,3,3                  | Map
 MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | MapB01_008Data: db MapsBlock01 | dw MapB01_008 | db 1,3,3                  | MapB01_009Data: db MapsBlock01 | dw MapB01_009 | db 1,3,3
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
-WorldMapPointer:  dw  MapA01_002Data
+WorldMapPointer:  dw  MapA01_004Data
 ;WorldMapPointer:  dw  MapB01_010Data
 
 loadGraphics:
@@ -701,7 +701,7 @@ CopyItemsKarniMata:
 	call	SetVdp_Write	
 	ld		hl,itemsKarniMata
   ld    c,$98
-  ld    a,16/2              ;copy 16 lines..
+  ld    a,32/2              ;copy 16 lines..
   ld    b,0
   jp    copyGraphicsToScreen.loop1    
 

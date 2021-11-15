@@ -98,6 +98,10 @@ handle_enemies_and_objects:                           ;2. call movement_enemies_
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
   ld    de,enemies_and_objects+(2*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(3*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(4*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
  
 ;	ld		a,(slot.ram)	      ;back to full RAM
 ;	out		($a8),a	
@@ -134,7 +138,227 @@ movementpatternaddress:
   jp    Sf2Hugeobject2                      ;movement pattern 4
   jp    Sf2Hugeobject3                      ;movement pattern 5
   jp    PushingStone                        ;movement pattern 6
+  jp    PushingStonePuzzleSwitch            ;movement pattern 7
 
+;PuzzleSwitchTable1: db  0,0,0,0,0,0,0,0,0,0
+PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
+;StoneOnWhichSwitch?:db  0,0,0,0,0,0,0,0,0,0
+
+PushingStonePuzzleSwitch:
+  ld    a,(ix+enemies_and_objects.v1)       ;initialize?
+  or    a
+  jp    nz,InitiatlizeSwitch                ;when entering screen turn switch on or off
+
+  call  CheckPlayerOrStoneOnSwitch          ;Check if player or stone are on switch, if yes, then turn switch on, if no, then turn switch off
+  call  CheckActivateSwitch                 ;check if a switch needs to be (de)activated
+  ret
+
+CheckActivateSwitch:
+  ld    a,(ix+enemies_and_objects.v4)       ;activate switch to turn on or off
+  or    a
+  ret   z
+
+  ld    a,(ix+enemies_and_objects.v2)       ;switch number? (1-4)
+  add   a,a                                 ;*2
+  add   a,a                                 ;*4
+  add   a,a                                 ;*8
+  add   a,a                                 ;*16
+  ld    (.ActivateSwitch+sx),a
+  
+  ld    a,(ix+enemies_and_objects.v3)       ;switch on?
+  or    a
+  jr    z,.EndCheckSwitchOn
+  ld    a,(.ActivateSwitch+sx)
+  add   a,64
+  ld    (.ActivateSwitch+sx),a
+  .EndCheckSwitchOn:
+
+  ld    a,(ix+enemies_and_objects.x)        ;x coordinate switch
+  ld    (.ActivateSwitch+dx),a
+  ld    a,(ix+enemies_and_objects.y)        ;y coordinate switch
+  ld    (.ActivateSwitch+dy),a
+
+  ld    a,(ix+enemies_and_objects.v4)       ;activate switch to turn on  or off
+  dec   a
+  ld    b,a
+  ;set sy + dy
+  ld    a,(.ActivateSwitch+dy)
+  add   a,b
+  ld    (.ActivateSwitch+dy),a
+
+  ld    a,232
+  add   a,b
+  ld    (.ActivateSwitch+sy),a
+
+  xor   a
+  ld    (.ActivateSwitch+dPage),a
+  ld    hl,.ActivateSwitch
+  call  DoCopy
+
+  ld    a,1
+  ld    (.ActivateSwitch+dPage),a
+  ld    a,(.ActivateSwitch+dx)
+  sub   a,16
+  ld    (.ActivateSwitch+dx),a
+  ld    hl,.ActivateSwitch
+  call  DoCopy
+
+  ld    a,2
+  ld    (.ActivateSwitch+dPage),a
+  ld    a,(.ActivateSwitch+dx)
+  sub   a,16
+  ld    (.ActivateSwitch+dx),a
+  ld    hl,.ActivateSwitch
+  call  DoCopy
+
+  ld    a,3
+  ld    (.ActivateSwitch+dPage),a
+  ld    a,(.ActivateSwitch+dx)
+  sub   a,16
+  ld    (.ActivateSwitch+dx),a
+  ld    hl,.ActivateSwitch
+  call  DoCopy
+
+  ld    a,(ix+enemies_and_objects.v4)       ;activate switch to turn on  or off
+  inc   a
+  ld    (ix+enemies_and_objects.v4),a       ;activate switch to turn on  or off
+
+  cp    16
+  ret   nz
+  ld    (ix+enemies_and_objects.v4),0       ;activate switch to turn on  or off  
+  ret
+ 
+.ActivateSwitch:
+  db    000,000,232,001   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    016,000,001,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy  
+  
+
+CheckPlayerOrStoneOnSwitch:
+  call  CheckCollisionObjectPlayer
+
+  ld    a,(ix+enemies_and_objects.SnapPlayer?)  
+  or    a
+  jp    nz,PlayerOnSwitch
+  ;player is not on switch, turn off switch
+  ld    a,(ix+enemies_and_objects.v3)       ;switch on?
+  or    a
+  ret   z                                   ;return if switch is already off
+
+
+
+  ;at this point Player no longer stands on switch. From the right to the left, find this switch nr which is on in the PuzzleSwitchTable and turn it off
+  ld    hl,PuzzleSwitchTable1+9
+  ld    b,10                                ;10 entries in table
+  ld    a,(ix+enemies_and_objects.v2)       ;switch number? (1-4)
+  set   7,a
+  .loop:
+  cp    (hl)
+  jr    z,.SwitchFound
+  dec   hl
+  djnz  .loop
+
+  .SwitchFound:
+  ;if table entry corresponds with switch number, then turn switch off  
+  res   7,(hl)                              ;this switch in the PuzzleSwitchTable is now on
+  
+  ld    (ix+enemies_and_objects.v3),0       ;switch on?
+  ld    (ix+enemies_and_objects.v4),1       ;activate switch to turn on  or off
+  ret
+
+PlayerOnSwitch:
+;if switch is already on, no action needs to be taken
+  ld    a,(ix+enemies_and_objects.v3)       ;switch on?
+  or    a
+  ret   nz
+
+  ;at this point Player stands on switch. If this is the next free switch in the table, turn on switch.
+  ld    hl,PuzzleSwitchTable1
+  ld    b,10                                ;10 entries in table
+  .loop:
+  bit   7,(hl)
+  jr    z,.EmptyTableEntryFound
+  inc   hl
+  djnz  .loop
+  ret
+
+  .EmptyTableEntryFound:
+  ;if table entry corresponds with switch number, then turn switch on
+  ld    a,(hl)
+  cp    (ix+enemies_and_objects.v2)         ;switch number? (1-4)
+  ret   nz
+  
+  set   7,(hl)                              ;this switch in the PuzzleSwitchTable is now on
+
+  ld    (ix+enemies_and_objects.v3),1       ;switch on?
+  ld    (ix+enemies_and_objects.v4),1       ;activate switch to turn on  or off
+  ret
+
+
+InitiatlizeSwitch:
+;When player enters screen switch is in on or off position. Copy the correct position at the coordinates of the switch
+  ld    (ix+enemies_and_objects.v1),0       ;initialize?
+
+  ld    a,(ix+enemies_and_objects.v2)       ;switch number? (1-4)
+  add   a,a                                 ;*2
+  add   a,a                                 ;*4
+  add   a,a                                 ;*8
+  add   a,a                                 ;*16
+  ld    (.CopySwitch+sx),a
+  
+  ld    a,(ix+enemies_and_objects.v3)       ;switch on?
+  or    a
+  jr    z,.EndCheckSwitchOn
+  ld    a,(.CopySwitch+sx)
+  add   a,64
+  ld    (.CopySwitch+sx),a
+  .EndCheckSwitchOn:
+
+  ld    a,(ix+enemies_and_objects.x)        ;x coordinate switch
+  ld    (.CopySwitch+dx),a
+  ld    a,(ix+enemies_and_objects.y)        ;y coordinate switch
+  ld    (.CopySwitch+dy),a
+  xor   a
+  ld    (.CopySwitch+dPage),a
+
+  ld    hl,.CopySwitch
+  call  DoCopy
+
+  ld    a,1
+  ld    (.CopySwitch+dPage),a
+  ld    a,(.CopySwitch+dx)
+  sub   a,16
+  ld    (.CopySwitch+dx),a
+
+  ld    hl,.CopySwitch
+  call  DoCopy
+
+  ld    a,2
+  ld    (.CopySwitch+dPage),a
+  ld    a,(.CopySwitch+dx)
+  sub   a,16
+  ld    (.CopySwitch+dx),a
+
+  ld    hl,.CopySwitch
+  call  DoCopy
+
+  ld    a,3
+  ld    (.CopySwitch+dPage),a
+  ld    a,(.CopySwitch+dx)
+  sub   a,16
+  ld    (.CopySwitch+dx),a
+
+  ld    hl,.CopySwitch
+  call  DoCopy
+  ret
+
+.CopySwitch:
+  db    000,000,232,001   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    016,000,016,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy
+  
 CheckFloorOrStonePushingStone:
   ;check left side
   ld    b,+32                               ;add y to check (y is expressed in pixels)
@@ -400,15 +624,18 @@ MoveObject:                                 ;adds v3 to y, adds v4 to x. x+y are
   ld    (ix+enemies_and_objects.x),a        ;x object
   ret
 
-PuzzleBlocks1Y: db  032 | PuzzleBlocks1X: db  110
-PuzzleBlocks2Y: db  032 | PuzzleBlocks2X: db  160
-PuzzleBlocks3Y: db  120 | PuzzleBlocks3X: db  170
-PuzzleBlocks4Y: db  024 | PuzzleBlocks4X: db  062
-PuzzleBlocks5Y: db  024 | PuzzleBlocks5X: db  104
-PuzzleBlocks6Y: db  096 | PuzzleBlocks6X: db  120
-PuzzleBlocks7Y: db  024 | PuzzleBlocks7X: db  120
-PuzzleBlocks8Y: db  024 | PuzzleBlocks8X: db  176
-PuzzleBlocks9Y: db  072 | PuzzleBlocks9X: db  096
+PuzzleBlocks1Y: db  032 | PuzzleBlocks1X: db  111
+PuzzleBlocks2Y: db  032 | PuzzleBlocks2X: db  161
+PuzzleBlocks3Y: db  120 | PuzzleBlocks3X: db  171
+PuzzleBlocks4Y: db  024 | PuzzleBlocks4X: db  063
+PuzzleBlocks5Y: db  024 | PuzzleBlocks5X: db  105
+PuzzleBlocks6Y: db  096 | PuzzleBlocks6X: db  121
+PuzzleBlocks7Y: db  024 | PuzzleBlocks7X: db  121
+PuzzleBlocks8Y: db  024 | PuzzleBlocks8X: db  177
+PuzzleBlocks9Y: db  072 | PuzzleBlocks9X: db  097
+PuzzleBlocks10Y:db  032 | PuzzleBlocks10X:db  040
+PuzzleBlocks11Y:db  032 | PuzzleBlocks11X:db  080
+PuzzleBlocks12Y:db  032 | PuzzleBlocks12X:db  160
 
 SetCoordinatesPuzzlePushingStones:
   ld    (ix+enemies_and_objects.v7),1       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
@@ -447,6 +674,7 @@ PushingStone:
   jp    nz,FallingStone
 
   call  CheckFloorOrStonePushingStone       ;Check if Stone is still on a platform or on top of another stone. If not, stone falls. Out z=collision found
+
   call  VramObjects                         ;put object in Vram/screen
   call  MoveStoneWhenPushed                 ;check if stoned needs to be moved
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object
@@ -960,6 +1188,39 @@ VramObjects:
   ld    (.CopyObject+ny),a  
   ld    (iy+ny),a  
 
+;With this little routine, we switch sy between even and uneven dx to simulate fluent pixel per pixel movement, when in fact we only move per 2 pixels. Copy instruction should be $d0
+;  ld    a,(.CopyObject+dx)
+;  and   %0000 0001
+;  ld    a,216
+;  jr    z,.setSy
+;  ld    a,216+16
+;  .setSy:
+;  ld    (VramObjects.CopyObject+sy),a
+;  ld    a,$d0
+;  ld    (VramObjects.CopyObject+copytype),a
+
+;this routine switches between fast copies (when x is even) and slow copies (when x is odd)
+  ld    a,(ix+enemies_and_objects.x)
+  or    a
+  jp    p,.ObjectOnLeftSideOfScreen2
+
+.ObjectOnRightSideOfScreen2:
+  ld    a,(.CopyObject+dx)
+  and   %0000 0001
+  ld    a,$d0
+  jr    z,.setSy
+  ld    a,$90
+  jp    .setSy
+
+.ObjectOnLeftSideOfScreen2:
+  ld    a,(.CopyObject+dx)
+  and   %0000 0001
+  ld    a,$90
+  jr    z,.setSy
+  ld    a,$d0
+  .setSy:
+  ld    (VramObjects.CopyObject+copytype),a
+
 ;put object
   ld    hl,.CopyObject
   call  docopy
@@ -976,7 +1237,8 @@ VramObjects:
   db    000,000,216,001   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
   db    000,000,000,000   ;nx,--,ny,--
-  db    000,%0000 0100,$98       ;slow transparant copy -> Copy from right to left
+;  db    000,%0000 0100,$d0       ;slow transparant copy -> Copy from right to left
+  db    000,%0000 0100,$90       ;slow transparant copy -> Copy from right to left
 
 CleanOb1:
   db    000,000,000,000   ;sx,--,sy,spage
@@ -5150,6 +5412,7 @@ Set_Stairs_Climb_RightUp:
 
   xor   a
 	ld		(PlayerAniCount),a
+  ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
   ret
 
 Set_Stairs_Climb_LeftUp:
@@ -5158,12 +5421,16 @@ Set_Stairs_Climb_LeftUp:
 
   xor   a
 	ld		(PlayerAniCount),a
+  ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
   ret
 
 
 Set_ClimbDown:
 	ld		hl,ClimbDown
 	ld		(PlayerSpriteStand),hl
+
+  xor   a
+  ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
@@ -5172,6 +5439,9 @@ Set_ClimbDown:
 Set_ClimbUp:
 	ld		hl,ClimbUp
 	ld		(PlayerSpriteStand),hl
+
+  xor   a
+  ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
@@ -5183,6 +5453,9 @@ Set_Climb_AndResetAniCount:
   Set_Climb:
 	ld		hl,Climb
 	ld		(PlayerSpriteStand),hl
+
+  xor   a
+  ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
 
 	ld		hl,PlayerSpriteData_Char_Climbing1
 	ld		(standchar),hl	

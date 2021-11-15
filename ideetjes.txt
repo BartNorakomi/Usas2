@@ -99,3 +99,6 @@ een map, soort van tunnel, waarbij de achtergrond scroll in een lus herhaalt
 met sprites kun je dan kandelaren en pilaren enzo maken voor de variatie
 je kunt spelen met de snelheid van de speler... op een lopende band bijvoorbeeld.... of met wind effect..
 Achtergrond moet dus repeaten met 48 pixels... 6 tiles.. Dit is perfect voor de bijengraten..
+
+40:03 monster hoofd
+https://www.youtube.com/watch?v=3dHoO6UQo2Q&ab_channel=zazi77
