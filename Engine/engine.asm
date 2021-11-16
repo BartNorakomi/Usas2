@@ -102,6 +102,12 @@ handle_enemies_and_objects:                           ;2. call movement_enemies_
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
   ld    de,enemies_and_objects+(4*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(5*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(6*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(7*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
  
 ;	ld		a,(slot.ram)	      ;back to full RAM
 ;	out		($a8),a	
@@ -139,10 +145,108 @@ movementpatternaddress:
   jp    Sf2Hugeobject3                      ;movement pattern 5
   jp    PushingStone                        ;movement pattern 6
   jp    PushingStonePuzzleSwitch            ;movement pattern 7
+  jp    PushingStonePuzzleOverview          ;movement pattern 8
 
-;PuzzleSwitchTable1: db  0,0,0,0,0,0,0,0,0,0
 PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
-;StoneOnWhichSwitch?:db  0,0,0,0,0,0,0,0,0,0
+ShowOverView?:  db  1
+
+PushingStonePuzzleOverview:
+  ld    a,(ShowOverView?)
+  or    a
+  jr    nz,InitiatlizeOverview              ;when entering screen turn switches on or off
+  ret
+
+InitiatlizeOverview:
+;When player enters screen show all switches in the overview that are on/off
+ 
+  ld    l,(ix+enemies_and_objects.coordinates)
+  ld    h,(ix+enemies_and_objects.coordinates+1)
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.v7)       ;set which number ?
+  add   hl,de
+
+  call  .CheckSwitch
+
+  ld    a,(ix+enemies_and_objects.v7)       ;set which number ?
+  inc   a
+  ld    (ix+enemies_and_objects.v7),a       ;set which number ?
+  cp    10                                  ;10 switches in total
+  ret   nz
+  
+  ld    a,(ix+enemies_and_objects.x)        ;reset x coordinate switch
+  sub   16*10
+  ld    (ix+enemies_and_objects.x),a        ;x coordinate switch  
+  
+  xor   a
+  ld    (ShowOverView?),a
+  ld    (ix+enemies_and_objects.v7),a       ;set which number ?
+  ret
+  
+  .CheckSwitch:
+  push  hl
+  ld    a,(hl)
+  ld    b,128
+  bit   7,a                                 ;on/off ?
+  jr    z,.EndCheckOnOff
+  ld    b,128+64
+  .EndCheckOnOff:
+
+  and   %0111 1111                          ;switch number (1-4)
+  add   a,a                                 ;*2
+  add   a,a                                 ;*4
+  add   a,a                                 ;*8
+  add   a,a                                 ;*16
+  add   a,b
+  ld    (.CopySwitch+sx),a
+
+  ld    a,(ix+enemies_and_objects.x)        ;x coordinate switch
+  ld    (.CopySwitch+dx),a
+  ld    a,(ix+enemies_and_objects.y)        ;y coordinate switch
+  ld    (.CopySwitch+dy),a
+  xor   a
+  ld    (.CopySwitch+dPage),a
+
+  ld    hl,.CopySwitch
+  call  DoCopy
+
+  ld    a,1
+  ld    (.CopySwitch+dPage),a
+  ld    a,(.CopySwitch+dx)
+  sub   a,16
+  ld    (.CopySwitch+dx),a
+
+  ld    hl,.CopySwitch
+  call  DoCopy
+
+  ld    a,2
+  ld    (.CopySwitch+dPage),a
+  ld    a,(.CopySwitch+dx)
+  sub   a,16
+  ld    (.CopySwitch+dx),a
+
+  ld    hl,.CopySwitch
+  call  DoCopy
+
+  ld    a,3
+  ld    (.CopySwitch+dPage),a
+  ld    a,(.CopySwitch+dx)
+  sub   a,16
+  ld    (.CopySwitch+dx),a
+
+  ld    hl,.CopySwitch
+  call  DoCopy
+  pop   hl
+  inc   hl
+  ld    a,(ix+enemies_and_objects.x)        ;x coordinate switch
+  add   a,16
+  ld    (ix+enemies_and_objects.x),a        ;x coordinate switch  
+  ret
+
+.CopySwitch:
+  db    000,000,232,001   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    016,000,016,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy
 
 PushingStonePuzzleSwitch:
   ld    a,(ix+enemies_and_objects.v1)       ;initialize?
@@ -234,21 +338,72 @@ CheckActivateSwitch:
   db    016,000,001,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy  
   
-
 CheckPlayerOrStoneOnSwitch:
+;first check if player is standing on switch
   call  CheckCollisionObjectPlayer
 
   ld    a,(ix+enemies_and_objects.SnapPlayer?)  
   or    a
-  jp    nz,PlayerOnSwitch
-  ;player is not on switch, turn off switch
+  jp    nz,PlayerOrStoneOnSwitch
+
+  .CheckStone1:
+;check stone 2 on switch right side
+  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+  sub   a,14
+  cp    (ix+enemies_and_objects.x)
+  jp    nc,.CheckStone2
+;check stone 2 on switch left side
+  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+  add   a,14
+  cp    (ix+enemies_and_objects.x)
+  jp    c,.CheckStone2
+;check stone 2 on switch y
+  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+  add   a,16
+  cp    (ix+enemies_and_objects.y)
+  jp    z,PlayerOrStoneOnSwitch
+
+  .CheckStone2:
+;check stone 2 on switch right side
+  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+  sub   a,14
+  cp    (ix+enemies_and_objects.x)
+  jp    nc,.CheckStone3
+;check stone 2 on switch left side
+  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+  add   a,14
+  cp    (ix+enemies_and_objects.x)
+  jp    c,.CheckStone3
+;check stone 2 on switch y
+  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+  add   a,16
+  cp    (ix+enemies_and_objects.y)
+  jp    z,PlayerOrStoneOnSwitch
+  
+  .CheckStone3:
+;check stone 3 on switch right side
+  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+  sub   a,14
+  cp    (ix+enemies_and_objects.x)
+  jp    nc,.NotOnSwitch
+;check stone 3 on switch left side
+  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+  add   a,14
+  cp    (ix+enemies_and_objects.x)
+  jp    c,.NotOnSwitch
+;check stone 3 on switch y
+  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+  add   a,16
+  cp    (ix+enemies_and_objects.y)
+  jp    z,PlayerOrStoneOnSwitch
+
+.NotOnSwitch:  
+  ;player or stone is not on switch, turn off switch
   ld    a,(ix+enemies_and_objects.v3)       ;switch on?
   or    a
   ret   z                                   ;return if switch is already off
 
-
-
-  ;at this point Player no longer stands on switch. From the right to the left, find this switch nr which is on in the PuzzleSwitchTable and turn it off
+  ;at this point Player or stone no longer stands on switch. From the right to the left, find this switch nr which is on in the PuzzleSwitchTable and turn it off
   ld    hl,PuzzleSwitchTable1+9
   ld    b,10                                ;10 entries in table
   ld    a,(ix+enemies_and_objects.v2)       ;switch number? (1-4)
@@ -264,10 +419,17 @@ CheckPlayerOrStoneOnSwitch:
   res   7,(hl)                              ;this switch in the PuzzleSwitchTable is now on
   
   ld    (ix+enemies_and_objects.v3),0       ;switch on?
+  ld    l,(ix+enemies_and_objects.coordinates)
+  ld    h,(ix+enemies_and_objects.coordinates+1)
+  ld    (hl),0  
+  
   ld    (ix+enemies_and_objects.v4),1       ;activate switch to turn on  or off
+
+  ld    a,1
+  ld    (ShowOverView?),a
   ret
 
-PlayerOnSwitch:
+PlayerOrStoneOnSwitch:
 ;if switch is already on, no action needs to be taken
   ld    a,(ix+enemies_and_objects.v3)       ;switch on?
   or    a
@@ -293,6 +455,13 @@ PlayerOnSwitch:
 
   ld    (ix+enemies_and_objects.v3),1       ;switch on?
   ld    (ix+enemies_and_objects.v4),1       ;activate switch to turn on  or off
+
+  ld    l,(ix+enemies_and_objects.coordinates)
+  ld    h,(ix+enemies_and_objects.coordinates+1)
+  ld    (hl),1
+
+  ld    a,1
+  ld    (ShowOverView?),a
   ret
 
 
@@ -306,8 +475,18 @@ InitiatlizeSwitch:
   add   a,a                                 ;*8
   add   a,a                                 ;*16
   ld    (.CopySwitch+sx),a
-  
-  ld    a,(ix+enemies_and_objects.v3)       ;switch on?
+
+;check if switch was on or off / PuzzleSwitch1On?
+  ld    l,(ix+enemies_and_objects.coordinates)
+  ld    h,(ix+enemies_and_objects.coordinates+1)
+
+  ld    a,1
+  ld    (ShowOverView?),a
+
+  ld    a,(hl)
+  ld    (ix+enemies_and_objects.v3),a       ;switch on?
+ 
+;  ld    a,(ix+enemies_and_objects.v3)       ;switch on?
   or    a
   jr    z,.EndCheckSwitchOn
   ld    a,(.CopySwitch+sx)
@@ -628,14 +807,30 @@ PuzzleBlocks1Y: db  032 | PuzzleBlocks1X: db  111
 PuzzleBlocks2Y: db  032 | PuzzleBlocks2X: db  161
 PuzzleBlocks3Y: db  120 | PuzzleBlocks3X: db  171
 PuzzleBlocks4Y: db  024 | PuzzleBlocks4X: db  063
-PuzzleBlocks5Y: db  024 | PuzzleBlocks5X: db  105
-PuzzleBlocks6Y: db  096 | PuzzleBlocks6X: db  121
-PuzzleBlocks7Y: db  024 | PuzzleBlocks7X: db  121
-PuzzleBlocks8Y: db  024 | PuzzleBlocks8X: db  177
-PuzzleBlocks9Y: db  072 | PuzzleBlocks9X: db  097
-PuzzleBlocks10Y:db  032 | PuzzleBlocks10X:db  040
-PuzzleBlocks11Y:db  032 | PuzzleBlocks11X:db  080
-PuzzleBlocks12Y:db  032 | PuzzleBlocks12X:db  160
+PuzzleBlocks5Y: db  024 | PuzzleBlocks5X: db  199
+PuzzleBlocks6Y: db  096 | PuzzleBlocks6X: db  157
+PuzzleBlocks7Y: db  024 | PuzzleBlocks7X: db  127
+PuzzleBlocks8Y: db  024 | PuzzleBlocks8X: db  175
+PuzzleBlocks9Y: db  072 | PuzzleBlocks9X: db  103
+PuzzleBlocks10Y:db  032 | PuzzleBlocks10X:db  039
+PuzzleBlocks11Y:db  032 | PuzzleBlocks11X:db  081
+PuzzleBlocks12Y:db  032 | PuzzleBlocks12X:db  161
+
+PuzzleSwitch1On?: db  000
+PuzzleSwitch2On?: db  000
+PuzzleSwitch3On?: db  000
+PuzzleSwitch4On?: db  000
+PuzzleSwitch5On?: db  000
+PuzzleSwitch6On?: db  000
+PuzzleSwitch7On?: db  000
+PuzzleSwitch8On?: db  000
+PuzzleSwitch9On?: db  000
+PuzzleSwitch10On?:db  000
+PuzzleSwitch11On?:db  000
+PuzzleSwitch12On?:db  000
+PuzzleSwitch13On?:db  000
+PuzzleSwitch14On?:db  000
+PuzzleSwitch15On?:db  000
 
 SetCoordinatesPuzzlePushingStones:
   ld    (ix+enemies_and_objects.v7),1       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
