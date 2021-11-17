@@ -108,16 +108,47 @@ handle_enemies_and_objects:                           ;2. call movement_enemies_
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
   ld    de,enemies_and_objects+(7*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
- 
+  ld    de,enemies_and_objects+(8*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(9*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(10*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(11*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(12*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(13*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(14*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(15*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(16*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(17*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(18*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(19*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(20*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+  ld    de,enemies_and_objects+(21*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+
 ;	ld		a,(slot.ram)	      ;back to full RAM
 ;	out		($a8),a	
   ret
 
   .docheck:
+  call  BackdropRed
+  
   ld    ixl,e
   ld    ixh,d
     
   call  movement_enemies_and_objects                  ;sprite is in movement area, so let it move !! ^__^
+  call  BackdropBlack
   ret
 
 movement_enemies_and_objects:
@@ -148,7 +179,11 @@ movementpatternaddress:
   jp    PushingStonePuzzleOverview          ;movement pattern 8
 
 PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
+PuzzleSwitchTable2: db  0,1,2,3,1,3,0
 ShowOverView?:  db  1
+
+
+;2,1,3,0,3,0,1
 
 PushingStonePuzzleOverview:
   ld    a,(ShowOverView?)
@@ -170,20 +205,21 @@ InitiatlizeOverview:
   ld    a,(ix+enemies_and_objects.v7)       ;set which number ?
   inc   a
   ld    (ix+enemies_and_objects.v7),a       ;set which number ?
-  cp    10                                  ;10 switches in total
+  cp    (ix+enemies_and_objects.v6)         ;total nr of switches
   ret   nz
   
-  ld    a,(ix+enemies_and_objects.x)        ;reset x coordinate switch
-  sub   16*10
+  ld    a,(ix+enemies_and_objects.x+1)      ;reset x coordinate switch
   ld    (ix+enemies_and_objects.x),a        ;x coordinate switch  
   
-  xor   a
+  ld    a,(ShowOverView?)
+  dec   a
   ld    (ShowOverView?),a
+
+  xor   a
   ld    (ix+enemies_and_objects.v7),a       ;set which number ?
   ret
   
   .CheckSwitch:
-  push  hl
   ld    a,(hl)
   ld    b,128
   bit   7,a                                 ;on/off ?
@@ -235,8 +271,26 @@ InitiatlizeOverview:
 
   ld    hl,.CopySwitch
   call  DoCopy
-  pop   hl
-  inc   hl
+  
+  ld    a,(ix+enemies_and_objects.y)        ;x coordinate switch
+  add   a,4
+  ld    (ix+enemies_and_objects.y),a        ;x coordinate switch  
+  ld    a,(.CopySwitch+sy)                  ;sy
+  add   a,4
+  ld    (.CopySwitch+sy),a                  ;sy
+  cp    232+16
+  jp    z,.NextSwitch
+  pop   af
+  ret
+  
+  .NextSwitch:
+  ld    a,(ix+enemies_and_objects.y)        ;x coordinate switch
+  sub   a,16
+  ld    (ix+enemies_and_objects.y),a        ;x coordinate switch  
+  ld    a,(.CopySwitch+sy)                  ;sy
+  sub   a,16
+  ld    (.CopySwitch+sy),a                  ;sy
+  
   ld    a,(ix+enemies_and_objects.x)        ;x coordinate switch
   add   a,16
   ld    (ix+enemies_and_objects.x),a        ;x coordinate switch  
@@ -245,8 +299,8 @@ InitiatlizeOverview:
 .CopySwitch:
   db    000,000,232,001   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
-  db    016,000,016,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy
+  db    016,000,004,000   ;nx,--,ny,--
+  db    000,%0000 0000,$d0       ;fast copy
 
 PushingStonePuzzleSwitch:
   ld    a,(ix+enemies_and_objects.v1)       ;initialize?
@@ -404,7 +458,12 @@ CheckPlayerOrStoneOnSwitch:
   ret   z                                   ;return if switch is already off
 
   ;at this point Player or stone no longer stands on switch. From the right to the left, find this switch nr which is on in the PuzzleSwitchTable and turn it off
-  ld    hl,PuzzleSwitchTable1+9
+
+  ld    l,(ix+enemies_and_objects.coordinates+2)
+  ld    h,(ix+enemies_and_objects.coordinates+3)
+  ld    de,9
+  add   hl,de
+;  ld    hl,PuzzleSwitchTable2+9
   ld    b,10                                ;10 entries in table
   ld    a,(ix+enemies_and_objects.v2)       ;switch number? (1-4)
   set   7,a
@@ -425,7 +484,10 @@ CheckPlayerOrStoneOnSwitch:
   
   ld    (ix+enemies_and_objects.v4),1       ;activate switch to turn on  or off
 
-  ld    a,1
+  ld    a,(ShowOverView?)
+  inc   a
+  cp    3
+  ret   z
   ld    (ShowOverView?),a
   ret
 
@@ -436,7 +498,9 @@ PlayerOrStoneOnSwitch:
   ret   nz
 
   ;at this point Player stands on switch. If this is the next free switch in the table, turn on switch.
-  ld    hl,PuzzleSwitchTable1
+  ld    l,(ix+enemies_and_objects.coordinates+2)
+  ld    h,(ix+enemies_and_objects.coordinates+3)
+;  ld    hl,PuzzleSwitchTable2
   ld    b,10                                ;10 entries in table
   .loop:
   bit   7,(hl)
@@ -460,7 +524,10 @@ PlayerOrStoneOnSwitch:
   ld    h,(ix+enemies_and_objects.coordinates+1)
   ld    (hl),1
 
-  ld    a,1
+  ld    a,(ShowOverView?)
+  inc   a
+  cp    3
+  ret   z
   ld    (ShowOverView?),a
   ret
 
@@ -480,8 +547,12 @@ InitiatlizeSwitch:
   ld    l,(ix+enemies_and_objects.coordinates)
   ld    h,(ix+enemies_and_objects.coordinates+1)
 
-  ld    a,1
+  ld    a,(ShowOverView?)
+  inc   a
+  cp    3
+  jr    z,.skip
   ld    (ShowOverView?),a
+  .skip:
 
   ld    a,(hl)
   ld    (ix+enemies_and_objects.v3),a       ;switch on?
@@ -816,6 +887,10 @@ PuzzleBlocks10Y:db  032 | PuzzleBlocks10X:db  039
 PuzzleBlocks11Y:db  032 | PuzzleBlocks11X:db  081
 PuzzleBlocks12Y:db  032 | PuzzleBlocks12X:db  161
 
+PuzzleBlocks13Y:db  11*8 | PuzzleBlocks13X:db  18*8+1
+PuzzleBlocks14Y:db  17*8 | PuzzleBlocks14X:db  18*8+1
+PuzzleBlocks15Y:db  23*8 | PuzzleBlocks15X:db  18*8+1
+
 PuzzleSwitch1On?: db  000
 PuzzleSwitch2On?: db  000
 PuzzleSwitch3On?: db  000
@@ -830,7 +905,25 @@ PuzzleSwitch11On?:db  000
 PuzzleSwitch12On?:db  000
 PuzzleSwitch13On?:db  000
 PuzzleSwitch14On?:db  000
+
 PuzzleSwitch15On?:db  000
+PuzzleSwitch16On?:db  000
+PuzzleSwitch17On?:db  000
+PuzzleSwitch18On?:db  000
+PuzzleSwitch19On?:db  000
+PuzzleSwitch20On?:db  000
+PuzzleSwitch21On?:db  000
+PuzzleSwitch22On?:db  000
+PuzzleSwitch23On?:db  000
+PuzzleSwitch24On?:db  000
+PuzzleSwitch25On?:db  000
+PuzzleSwitch26On?:db  000
+PuzzleSwitch27On?:db  000
+PuzzleSwitch28On?:db  000
+PuzzleSwitch29On?:db  000
+PuzzleSwitch30On?:db  000
+PuzzleSwitch31On?:db  000
+PuzzleSwitch32On?:db  000
 
 SetCoordinatesPuzzlePushingStones:
   ld    (ix+enemies_and_objects.v7),1       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
@@ -937,6 +1030,11 @@ PushingStone:
   ld    (ix+enemies_and_objects.v4),+1      ;horizontal movement    
   ret
 
+;When Stone is not moving set x coordinate to odd. The reason we do that is that when copying the block x coordinate is even, and we then can use a fast copy instruction
+SetOddX:
+  set   0,(ix+enemies_and_objects.x)
+  ret
+
 MoveStoneWhenPushed:
   ld    a,(framecounter)
   and   1
@@ -945,7 +1043,8 @@ MoveStoneWhenPushed:
   ld    a,(ix+enemies_and_objects.v4)       ;v4=horizontal movement. Return if 0
   ld    (ix+enemies_and_objects.v4),+0    
   or    a
-  ret   z
+  jp    z,SetOddX
+;  ret   z
   
 	ld		hl,Rpushing                         ;check if we are pushing Right
 	ld		de,(PlayerSpriteStand)
