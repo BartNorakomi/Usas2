@@ -40,7 +40,7 @@ LevelEngine:
   jp    LevelEngine
 
 ClesX:      dw 150 ;150 ;210
-ClesY:      db 100 ; 144-1
+ClesY:      db 020 ; 144-1
 herospritenr:             db  22
 
 BackdropOrange:
@@ -179,11 +179,9 @@ movementpatternaddress:
   jp    PushingStonePuzzleOverview          ;movement pattern 8
 
 PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
-PuzzleSwitchTable2: db  0,1,2,3,1,3,0
+PuzzleSwitchTable2: db  0,1,2,3,1,3,0, 0,0,0
+PuzzleSwitchTable3: db  0,1,2,3 ,0,0,0,0,0,0,0
 ShowOverView?:  db  1
-
-
-;2,1,3,0,3,0,1
 
 PushingStonePuzzleOverview:
   ld    a,(ShowOverView?)
@@ -891,6 +889,10 @@ PuzzleBlocks13Y:db  11*8 | PuzzleBlocks13X:db  18*8+1
 PuzzleBlocks14Y:db  17*8 | PuzzleBlocks14X:db  18*8+1
 PuzzleBlocks15Y:db  23*8 | PuzzleBlocks15X:db  18*8+1
 
+PuzzleBlocks16Y:db  09*8 | PuzzleBlocks16X:db  18*8+1
+PuzzleBlocks17Y:db  15*8 | PuzzleBlocks17X:db  12*8+1
+PuzzleBlocks18Y:db  15*8 | PuzzleBlocks18X:db  24*8+1
+
 PuzzleSwitch1On?: db  000
 PuzzleSwitch2On?: db  000
 PuzzleSwitch3On?: db  000
@@ -924,6 +926,12 @@ PuzzleSwitch29On?:db  000
 PuzzleSwitch30On?:db  000
 PuzzleSwitch31On?:db  000
 PuzzleSwitch32On?:db  000
+
+PuzzleSwitch33On?:db  000
+PuzzleSwitch34On?:db  000
+PuzzleSwitch35On?:db  000
+PuzzleSwitch36On?:db  000
+PuzzleSwitch37On?:db  000
 
 SetCoordinatesPuzzlePushingStones:
   ld    (ix+enemies_and_objects.v7),1       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
