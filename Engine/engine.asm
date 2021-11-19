@@ -39,8 +39,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 150 ;150 ;210
-ClesY:      db 020 ; 144-1
+ClesX:      dw 030 ;150 ;210
+ClesY:      db 170 ; 144-1
 herospritenr:             db  22
 
 BackdropOrange:
@@ -180,7 +180,8 @@ movementpatternaddress:
 
 PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
 PuzzleSwitchTable2: db  0,1,2,3,1,3,0, 0,0,0
-PuzzleSwitchTable3: db  0,1,2,3 ,0,0,0,0,0,0,0
+PuzzleSwitchTable3: db  0,1,2,3 ,0,0,0,0,0,0
+PuzzleSwitchTable4: db  3,1,3,2,0 ,0,0,0,0,0
 ShowOverView?:  db  1
 
 PushingStonePuzzleOverview:
@@ -893,6 +894,14 @@ PuzzleBlocks16Y:db  09*8 | PuzzleBlocks16X:db  18*8+1
 PuzzleBlocks17Y:db  15*8 | PuzzleBlocks17X:db  12*8+1
 PuzzleBlocks18Y:db  15*8 | PuzzleBlocks18X:db  24*8+1
 
+PuzzleBlocks19Y:db  04*8 | PuzzleBlocks19X:db  09*8-1
+PuzzleBlocks20Y:db  04*8 | PuzzleBlocks20X:db  13*8+1
+PuzzleBlocks21Y:db  04*8 | PuzzleBlocks21X:db  18*8+1
+PuzzleBlocks22Y:db  10*8 | PuzzleBlocks22X:db  10*8+1
+
+PuzzleBlocksEmpty:db  00*8 | PuzzleBlocksEmptyX:db  00*8+1
+
+
 PuzzleSwitch1On?: db  000
 PuzzleSwitch2On?: db  000
 PuzzleSwitch3On?: db  000
@@ -932,6 +941,15 @@ PuzzleSwitch34On?:db  000
 PuzzleSwitch35On?:db  000
 PuzzleSwitch36On?:db  000
 PuzzleSwitch37On?:db  000
+
+PuzzleSwitch38On?:db  000
+PuzzleSwitch39On?:db  000
+PuzzleSwitch40On?:db  000
+PuzzleSwitch41On?:db  000
+PuzzleSwitch42On?:db  000
+PuzzleSwitch43On?:db  000
+PuzzleSwitch44On?:db  000
+PuzzleSwitch45On?:db  000
 
 SetCoordinatesPuzzlePushingStones:
   ld    (ix+enemies_and_objects.v7),1       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
