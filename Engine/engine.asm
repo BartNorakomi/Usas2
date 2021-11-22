@@ -39,8 +39,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 030 ;150 ;210
-ClesY:      db 170 ; 144-1
+ClesX:      dw 130 ;150 ;210
+ClesY:      db 120 ; 144-1
 herospritenr:             db  22
 
 BackdropOrange:
@@ -90,8 +90,15 @@ switchpageSF2Engine:
   ret
 
 handle_enemies_and_objects:                           ;2. call movement_enemies_and_objects (if within movement area)
-;	ld		a,(slot.page2rom)	; all RAM except page 2
-;	out		($a8),a	
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  cp    1
+  ret   nz
+  
+	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
+	out		($a8),a	
+  ld    a,(movementpatternsblock)
+	call	block1234			                                ;at address $4000 / page 1+2
+
   ld    de,enemies_and_objects+(0*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
   ld    de,enemies_and_objects+(1*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
@@ -137,8 +144,8 @@ handle_enemies_and_objects:                           ;2. call movement_enemies_
   ld    de,enemies_and_objects+(21*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
 
-;	ld		a,(slot.ram)	      ;back to full RAM
-;	out		($a8),a	
+	ld		a,(slot.ram)	      ;back to full RAM
+	out		($a8),a	
   ret
 
   .docheck:
@@ -151,13 +158,9 @@ handle_enemies_and_objects:                           ;2. call movement_enemies_
   call  BackdropBlack
   ret
 
+movementpatternsblock:  db  movementpatterns1block
 movement_enemies_and_objects:
-;  ld    a,(movementpatternsblock)
-;	call	block34			      ;at address $8000 / page 2
-
-  
-  ld    a,(ix+enemies_and_objects.movementpattern)             ;movementpattern
-  dec   a
+  ld    a,(ix+enemies_and_objects.movementpattern)    ;movementpattern
   ld    b,a
   add   a,a                 ;*2
   add   a,b                 ;*3
@@ -167,16 +170,33 @@ movement_enemies_and_objects:
   add   hl,de
   jp    (hl)
 
-;This is at $4000 inside a block (movementpatternsblock)
-movementpatternaddress:
-  jp    PlatformVertically                  ;movement pattern 1   
-  jp    PlatformHorizontally                ;movement pattern 2   
-  jp    Sf2Hugeobject1                      ;movement pattern 3
-  jp    Sf2Hugeobject2                      ;movement pattern 4
-  jp    Sf2Hugeobject3                      ;movement pattern 5
-  jp    PushingStone                        ;movement pattern 6
-  jp    PushingStonePuzzleSwitch            ;movement pattern 7
-  jp    PushingStonePuzzleOverview          ;movement pattern 8
+VramObjectX:  db  000
+VramObjectY:  db  000
+
+CopyObject:                                           ;copy any object into screen in the normal engine
+  db    000,000,216,001   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+;  db    000,%0000 0100,$d0       ;slow transparant copy -> Copy from right to left
+  db    000,%0000 0100,$90       ;slow transparant copy -> Copy from right to left
+
+CleanOb1:                                             ;these 3 objects are used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+
+CleanOb2:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+
+CleanOb3:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
 PuzzleSwitchTable2: db  0,1,2,3,1,3,0, 0,0,0
@@ -184,695 +204,24 @@ PuzzleSwitchTable3: db  0,1,2,3 ,0,0,0,0,0,0
 PuzzleSwitchTable4: db  3,1,3,2,0 ,0,0,0,0,0
 ShowOverView?:  db  1
 
-PushingStonePuzzleOverview:
-  ld    a,(ShowOverView?)
-  or    a
-  jr    nz,InitiatlizeOverview              ;when entering screen turn switches on or off
-  ret
-
-InitiatlizeOverview:
-;When player enters screen show all switches in the overview that are on/off
- 
-  ld    l,(ix+enemies_and_objects.coordinates)
-  ld    h,(ix+enemies_and_objects.coordinates+1)
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.v7)       ;set which number ?
-  add   hl,de
-
-  call  .CheckSwitch
-
-  ld    a,(ix+enemies_and_objects.v7)       ;set which number ?
-  inc   a
-  ld    (ix+enemies_and_objects.v7),a       ;set which number ?
-  cp    (ix+enemies_and_objects.v6)         ;total nr of switches
-  ret   nz
-  
-  ld    a,(ix+enemies_and_objects.x+1)      ;reset x coordinate switch
-  ld    (ix+enemies_and_objects.x),a        ;x coordinate switch  
-  
-  ld    a,(ShowOverView?)
-  dec   a
-  ld    (ShowOverView?),a
-
-  xor   a
-  ld    (ix+enemies_and_objects.v7),a       ;set which number ?
-  ret
-  
-  .CheckSwitch:
-  ld    a,(hl)
-  ld    b,128
-  bit   7,a                                 ;on/off ?
-  jr    z,.EndCheckOnOff
-  ld    b,128+64
-  .EndCheckOnOff:
-
-  and   %0111 1111                          ;switch number (1-4)
-  add   a,a                                 ;*2
-  add   a,a                                 ;*4
-  add   a,a                                 ;*8
-  add   a,a                                 ;*16
-  add   a,b
-  ld    (.CopySwitch+sx),a
-
-  ld    a,(ix+enemies_and_objects.x)        ;x coordinate switch
-  ld    (.CopySwitch+dx),a
-  ld    a,(ix+enemies_and_objects.y)        ;y coordinate switch
-  ld    (.CopySwitch+dy),a
-  xor   a
-  ld    (.CopySwitch+dPage),a
-
-  ld    hl,.CopySwitch
-  call  DoCopy
-
-  ld    a,1
-  ld    (.CopySwitch+dPage),a
-  ld    a,(.CopySwitch+dx)
-  sub   a,16
-  ld    (.CopySwitch+dx),a
-
-  ld    hl,.CopySwitch
-  call  DoCopy
-
-  ld    a,2
-  ld    (.CopySwitch+dPage),a
-  ld    a,(.CopySwitch+dx)
-  sub   a,16
-  ld    (.CopySwitch+dx),a
-
-  ld    hl,.CopySwitch
-  call  DoCopy
-
-  ld    a,3
-  ld    (.CopySwitch+dPage),a
-  ld    a,(.CopySwitch+dx)
-  sub   a,16
-  ld    (.CopySwitch+dx),a
-
-  ld    hl,.CopySwitch
-  call  DoCopy
-  
-  ld    a,(ix+enemies_and_objects.y)        ;x coordinate switch
-  add   a,4
-  ld    (ix+enemies_and_objects.y),a        ;x coordinate switch  
-  ld    a,(.CopySwitch+sy)                  ;sy
-  add   a,4
-  ld    (.CopySwitch+sy),a                  ;sy
-  cp    232+16
-  jp    z,.NextSwitch
-  pop   af
-  ret
-  
-  .NextSwitch:
-  ld    a,(ix+enemies_and_objects.y)        ;x coordinate switch
-  sub   a,16
-  ld    (ix+enemies_and_objects.y),a        ;x coordinate switch  
-  ld    a,(.CopySwitch+sy)                  ;sy
-  sub   a,16
-  ld    (.CopySwitch+sy),a                  ;sy
-  
-  ld    a,(ix+enemies_and_objects.x)        ;x coordinate switch
-  add   a,16
-  ld    (ix+enemies_and_objects.x),a        ;x coordinate switch  
-  ret
-
-.CopySwitch:
+CopySwitch1:
   db    000,000,232,001   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
   db    016,000,004,000   ;nx,--,ny,--
   db    000,%0000 0000,$d0       ;fast copy
-
-PushingStonePuzzleSwitch:
-  ld    a,(ix+enemies_and_objects.v1)       ;initialize?
-  or    a
-  jp    nz,InitiatlizeSwitch                ;when entering screen turn switch on or off
-
-  call  CheckPlayerOrStoneOnSwitch          ;Check if player or stone are on switch, if yes, then turn switch on, if no, then turn switch off
-  call  CheckActivateSwitch                 ;check if a switch needs to be (de)activated
-  ret
-
-CheckActivateSwitch:
-  ld    a,(ix+enemies_and_objects.v4)       ;activate switch to turn on or off
-  or    a
-  ret   z
-
-  ld    a,(ix+enemies_and_objects.v2)       ;switch number? (1-4)
-  add   a,a                                 ;*2
-  add   a,a                                 ;*4
-  add   a,a                                 ;*8
-  add   a,a                                 ;*16
-  ld    (.ActivateSwitch+sx),a
-  
-  ld    a,(ix+enemies_and_objects.v3)       ;switch on?
-  or    a
-  jr    z,.EndCheckSwitchOn
-  ld    a,(.ActivateSwitch+sx)
-  add   a,64
-  ld    (.ActivateSwitch+sx),a
-  .EndCheckSwitchOn:
-
-  ld    a,(ix+enemies_and_objects.x)        ;x coordinate switch
-  ld    (.ActivateSwitch+dx),a
-  ld    a,(ix+enemies_and_objects.y)        ;y coordinate switch
-  ld    (.ActivateSwitch+dy),a
-
-  ld    a,(ix+enemies_and_objects.v4)       ;activate switch to turn on  or off
-  dec   a
-  ld    b,a
-  ;set sy + dy
-  ld    a,(.ActivateSwitch+dy)
-  add   a,b
-  ld    (.ActivateSwitch+dy),a
-
-  ld    a,232
-  add   a,b
-  ld    (.ActivateSwitch+sy),a
-
-  xor   a
-  ld    (.ActivateSwitch+dPage),a
-  ld    hl,.ActivateSwitch
-  call  DoCopy
-
-  ld    a,1
-  ld    (.ActivateSwitch+dPage),a
-  ld    a,(.ActivateSwitch+dx)
-  sub   a,16
-  ld    (.ActivateSwitch+dx),a
-  ld    hl,.ActivateSwitch
-  call  DoCopy
-
-  ld    a,2
-  ld    (.ActivateSwitch+dPage),a
-  ld    a,(.ActivateSwitch+dx)
-  sub   a,16
-  ld    (.ActivateSwitch+dx),a
-  ld    hl,.ActivateSwitch
-  call  DoCopy
-
-  ld    a,3
-  ld    (.ActivateSwitch+dPage),a
-  ld    a,(.ActivateSwitch+dx)
-  sub   a,16
-  ld    (.ActivateSwitch+dx),a
-  ld    hl,.ActivateSwitch
-  call  DoCopy
-
-  ld    a,(ix+enemies_and_objects.v4)       ;activate switch to turn on  or off
-  inc   a
-  ld    (ix+enemies_and_objects.v4),a       ;activate switch to turn on  or off
-
-  cp    16
-  ret   nz
-  ld    (ix+enemies_and_objects.v4),0       ;activate switch to turn on  or off  
-  ret
  
-.ActivateSwitch:
+ActivateSwitch:
   db    000,000,232,001   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
   db    016,000,001,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy  
   
-CheckPlayerOrStoneOnSwitch:
-;first check if player is standing on switch
-  call  CheckCollisionObjectPlayer
-
-  ld    a,(ix+enemies_and_objects.SnapPlayer?)  
-  or    a
-  jp    nz,PlayerOrStoneOnSwitch
-
-  .CheckStone1:
-;check stone 2 on switch right side
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  sub   a,14
-  cp    (ix+enemies_and_objects.x)
-  jp    nc,.CheckStone2
-;check stone 2 on switch left side
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,14
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.CheckStone2
-;check stone 2 on switch y
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  jp    z,PlayerOrStoneOnSwitch
-
-  .CheckStone2:
-;check stone 2 on switch right side
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  sub   a,14
-  cp    (ix+enemies_and_objects.x)
-  jp    nc,.CheckStone3
-;check stone 2 on switch left side
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,14
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.CheckStone3
-;check stone 2 on switch y
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  jp    z,PlayerOrStoneOnSwitch
-  
-  .CheckStone3:
-;check stone 3 on switch right side
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  sub   a,14
-  cp    (ix+enemies_and_objects.x)
-  jp    nc,.NotOnSwitch
-;check stone 3 on switch left side
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,14
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.NotOnSwitch
-;check stone 3 on switch y
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  jp    z,PlayerOrStoneOnSwitch
-
-.NotOnSwitch:  
-  ;player or stone is not on switch, turn off switch
-  ld    a,(ix+enemies_and_objects.v3)       ;switch on?
-  or    a
-  ret   z                                   ;return if switch is already off
-
-  ;at this point Player or stone no longer stands on switch. From the right to the left, find this switch nr which is on in the PuzzleSwitchTable and turn it off
-
-  ld    l,(ix+enemies_and_objects.coordinates+2)
-  ld    h,(ix+enemies_and_objects.coordinates+3)
-  ld    de,9
-  add   hl,de
-;  ld    hl,PuzzleSwitchTable2+9
-  ld    b,10                                ;10 entries in table
-  ld    a,(ix+enemies_and_objects.v2)       ;switch number? (1-4)
-  set   7,a
-  .loop:
-  cp    (hl)
-  jr    z,.SwitchFound
-  dec   hl
-  djnz  .loop
-
-  .SwitchFound:
-  ;if table entry corresponds with switch number, then turn switch off  
-  res   7,(hl)                              ;this switch in the PuzzleSwitchTable is now on
-  
-  ld    (ix+enemies_and_objects.v3),0       ;switch on?
-  ld    l,(ix+enemies_and_objects.coordinates)
-  ld    h,(ix+enemies_and_objects.coordinates+1)
-  ld    (hl),0  
-  
-  ld    (ix+enemies_and_objects.v4),1       ;activate switch to turn on  or off
-
-  ld    a,(ShowOverView?)
-  inc   a
-  cp    3
-  ret   z
-  ld    (ShowOverView?),a
-  ret
-
-PlayerOrStoneOnSwitch:
-;if switch is already on, no action needs to be taken
-  ld    a,(ix+enemies_and_objects.v3)       ;switch on?
-  or    a
-  ret   nz
-
-  ;at this point Player stands on switch. If this is the next free switch in the table, turn on switch.
-  ld    l,(ix+enemies_and_objects.coordinates+2)
-  ld    h,(ix+enemies_and_objects.coordinates+3)
-;  ld    hl,PuzzleSwitchTable2
-  ld    b,10                                ;10 entries in table
-  .loop:
-  bit   7,(hl)
-  jr    z,.EmptyTableEntryFound
-  inc   hl
-  djnz  .loop
-  ret
-
-  .EmptyTableEntryFound:
-  ;if table entry corresponds with switch number, then turn switch on
-  ld    a,(hl)
-  cp    (ix+enemies_and_objects.v2)         ;switch number? (1-4)
-  ret   nz
-  
-  set   7,(hl)                              ;this switch in the PuzzleSwitchTable is now on
-
-  ld    (ix+enemies_and_objects.v3),1       ;switch on?
-  ld    (ix+enemies_and_objects.v4),1       ;activate switch to turn on  or off
-
-  ld    l,(ix+enemies_and_objects.coordinates)
-  ld    h,(ix+enemies_and_objects.coordinates+1)
-  ld    (hl),1
-
-  ld    a,(ShowOverView?)
-  inc   a
-  cp    3
-  ret   z
-  ld    (ShowOverView?),a
-  ret
-
-
-InitiatlizeSwitch:
-;When player enters screen switch is in on or off position. Copy the correct position at the coordinates of the switch
-  ld    (ix+enemies_and_objects.v1),0       ;initialize?
-
-  ld    a,(ix+enemies_and_objects.v2)       ;switch number? (1-4)
-  add   a,a                                 ;*2
-  add   a,a                                 ;*4
-  add   a,a                                 ;*8
-  add   a,a                                 ;*16
-  ld    (.CopySwitch+sx),a
-
-;check if switch was on or off / PuzzleSwitch1On?
-  ld    l,(ix+enemies_and_objects.coordinates)
-  ld    h,(ix+enemies_and_objects.coordinates+1)
-
-  ld    a,(ShowOverView?)
-  inc   a
-  cp    3
-  jr    z,.skip
-  ld    (ShowOverView?),a
-  .skip:
-
-  ld    a,(hl)
-  ld    (ix+enemies_and_objects.v3),a       ;switch on?
- 
-;  ld    a,(ix+enemies_and_objects.v3)       ;switch on?
-  or    a
-  jr    z,.EndCheckSwitchOn
-  ld    a,(.CopySwitch+sx)
-  add   a,64
-  ld    (.CopySwitch+sx),a
-  .EndCheckSwitchOn:
-
-  ld    a,(ix+enemies_and_objects.x)        ;x coordinate switch
-  ld    (.CopySwitch+dx),a
-  ld    a,(ix+enemies_and_objects.y)        ;y coordinate switch
-  ld    (.CopySwitch+dy),a
-  xor   a
-  ld    (.CopySwitch+dPage),a
-
-  ld    hl,.CopySwitch
-  call  DoCopy
-
-  ld    a,1
-  ld    (.CopySwitch+dPage),a
-  ld    a,(.CopySwitch+dx)
-  sub   a,16
-  ld    (.CopySwitch+dx),a
-
-  ld    hl,.CopySwitch
-  call  DoCopy
-
-  ld    a,2
-  ld    (.CopySwitch+dPage),a
-  ld    a,(.CopySwitch+dx)
-  sub   a,16
-  ld    (.CopySwitch+dx),a
-
-  ld    hl,.CopySwitch
-  call  DoCopy
-
-  ld    a,3
-  ld    (.CopySwitch+dPage),a
-  ld    a,(.CopySwitch+dx)
-  sub   a,16
-  ld    (.CopySwitch+dx),a
-
-  ld    hl,.CopySwitch
-  call  DoCopy
-  ret
-
-.CopySwitch:
+CopySwitch2:
   db    000,000,232,001   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
   db    016,000,016,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy
   
-CheckFloorOrStonePushingStone:
-  ;check left side
-  ld    b,+32                               ;add y to check (y is expressed in pixels)
-;  ld    de,+17                              ;add x to check (x is expressed in pixels)
-  ld    de,+16                              ;add x to check (x is expressed in pixels)
-  call  checktileObject                     ;out z=collision found with wall
-  ret   z
-  ;check right side
-  ld    b,+32                               ;add y to check (y is expressed in pixels)
-;  ld    de,+00                              ;add x to check (x is expressed in pixels)
-  ld    de,+01                              ;add x to check (x is expressed in pixels)
-  call  checktileObject                     ;out z=collision found with wall
-  ret   z
-
-  ;check y collision with object 1 (stone 1) top
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jp    z,.NoCollision1
-  sub   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    nc,.NoCollision1
-
-  ;check y collision with object 1 (stone 1) bottom
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    c,.NoCollision1
-
-  ;check x collision with object 1 (stone 1) check on the left side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.NoCollision1
-
-  ;check x collision with object 1 (stone 1) check on the right side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  .NoCollision1:
-   
-  ;check y collision with object 2 (stone 2) top
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jp    z,.NoCollision2
-  sub   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    nc,.NoCollision2
-
-  ;check y collision with object 2 (stone 2) bottom
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    c,.NoCollision2
-
-  ;check x collision with object 2 (stone 2) check on the left side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.NoCollision2
-
-  ;check x collision with object 2 (stone 2) check on the right side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  .NoCollision2:
-  
-  ;check y collision with object 3 (stone 3) top
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jp    z,.NoCollision3
-  sub   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    nc,.NoCollision3
-
-  ;check y collision with object 3 (stone 3) bottom
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    c,.NoCollision3
-
-  ;check x collision with object 3 (stone 3) check on the left side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.NoCollision3
-
-  ;check x collision with object 3 (stone 3) check on the right side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  .NoCollision3:
-  ld    (ix+enemies_and_objects.v2),1       ;falling stone
-  ld    a,(PlayerFacingRight?)              ;is player facing right ?
-  or    a
-  jp    z,Set_L_stand
-  jp    Set_R_stand
-  
-checktileObject:                            ;same as checktile for player, but now for object
-;get object X in tiles
-  ld    l,(ix+enemies_and_objects.x)        ;x object
-  ld    h,0
-  add   hl,de
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  jp    CheckTile.XandYset
-
-FallingStone:
-  ld    (ix+enemies_and_objects.v4),+0      ;horizontal movement
-  call  VramObjects                         ;put object in Vram/screen
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object. Uses v5/snapplayer?
-  call  AccelerateFall
-  call  MoveObject                          ;adds v3 to y, adds v4 to x. x+y are 8 bit
-  call  CheckFloorFallingStone              ;check collision with floor
-  call  CheckCollisionStone1                ;check collision with other stones while falling
-  call  CheckCollisionStone2                ;check collision with other stones while falling
-  call  CheckCollisionStone3                ;check collision with other stones while falling
-  ret
-
-CheckCollisionStone1:
-  ;check y collision with object 1 (stone 1) top
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  sub   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   nc
-  ;check y collision with object 1 (stone 1) bottom
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  ret   c
-
-  ;check x collision with object 1 (stone 1) check on the left side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  ;check x collision with object 1 (stone 1) check on the right side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   nc
-
-  ;other stone found, snap to stone
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;0=pushing stone, 1=falling stone
-  ret
-  
-CheckCollisionStone2:
-  ;check y collision with object 2 (stone 2) top
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  sub   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   nc
-  ;check y collision with object 2 (stone 2) bottom
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  ret   c
-  
-  ;check x collision with object 2 (stone 2) check on the left side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  ;check x collision with object 2 (stone 2) check on the right side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   nc
-
-  ;other stone found, snap to stone
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;0=pushing stone, 1=falling stone
-  ret
-    
-CheckCollisionStone3:
-  ;check y collision with object 3 (stone 3) top
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  sub   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   nc
-  ;check y collision with object 3 (stone 3) bottom
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  ret   c
-
-  ;check x collision with object 3 (stone 3) check on the left side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  ;check x collision with object 3 (stone 3) check on the right side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   nc
-
-  ;other stone found, snap to stone
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;0=pushing stone, 1=falling stone
-  ret
-
-
-CheckFloorFallingStone:                     ;if a floor is found, snap to tile, and change back to pushing stone
-  ld    b,+32                               ;add y to check (y is expressed in pixels)
-  ld    de,+08                              ;add x to check (x is expressed in pixels)
-  call  checktileObject                     ;out z=collision found with wall
-  ret   nz
-  
-  ;floor found, snap to floor
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;pushing stone
-  ld    (ix+enemies_and_objects.v3),1       ;vertical movement
-  ld    (ix+enemies_and_objects.v6),0       ;v6 acceleration timer
-  ret
-
-AccelerateFall:
-  ld    a,(ix+enemies_and_objects.v6)       ;v6 acceleration timer
-  inc   a
-  and   3
-  ld    (ix+enemies_and_objects.v6),a
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v3)       ;vertical movement
-  inc   a
-  cp    5
-  ret   z
-  ld    (ix+enemies_and_objects.v3),a
-  ret
- 
-MoveObject:                                 ;adds v3 to y, adds v4 to x. x+y are 8 bit
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  add   a,(ix+enemies_and_objects.v3)       ;add y movement to y
-  ld    (ix+enemies_and_objects.y),a        ;y object
-
-  ld    a,(ix+enemies_and_objects.x)        ;x object
-  add   a,(ix+enemies_and_objects.v4)       ;add x movement to x
-  ld    (ix+enemies_and_objects.x),a        ;x object
-  ret
-
 PuzzleBlocks1Y: db  032 | PuzzleBlocks1X: db  111
 PuzzleBlocks2Y: db  032 | PuzzleBlocks2X: db  161
 PuzzleBlocks3Y: db  120 | PuzzleBlocks3X: db  171
@@ -900,7 +249,6 @@ PuzzleBlocks21Y:db  04*8 | PuzzleBlocks21X:db  18*8+1
 PuzzleBlocks22Y:db  10*8 | PuzzleBlocks22X:db  10*8+1
 
 PuzzleBlocksEmpty:db  00*8 | PuzzleBlocksEmptyX:db  00*8+1
-
 
 PuzzleSwitch1On?: db  000
 PuzzleSwitch2On?: db  000
@@ -950,282 +298,6 @@ PuzzleSwitch42On?:db  000
 PuzzleSwitch43On?:db  000
 PuzzleSwitch44On?:db  000
 PuzzleSwitch45On?:db  000
-
-SetCoordinatesPuzzlePushingStones:
-  ld    (ix+enemies_and_objects.v7),1       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
-
-  ld    l,(ix+enemies_and_objects.coordinates)
-  ld    h,(ix+enemies_and_objects.coordinates+1)
-  
-  ld    a,(hl)
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  inc   hl
-  ld    a,(hl)
-  ld    (ix+enemies_and_objects.x),a        ;x object
-  ret
-
-StoreCoordinatesPuzzlePushingStones:
-  ld    l,(ix+enemies_and_objects.coordinates)
-  ld    h,(ix+enemies_and_objects.coordinates+1)
-  
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  ld    (hl),a
-  inc   hl
-  ld    a,(ix+enemies_and_objects.x)        ;x object
-  ld    (hl),a
-  ret
-  
-PushingStone:
-  ld    a,(ix+enemies_and_objects.v7)       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
-  or    a
-  jp    z,SetCoordinatesPuzzlePushingStones
-  ld    a,(ix+enemies_and_objects.v7)       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
-  dec   a
-  call  z,StoreCoordinatesPuzzlePushingStones
-
-  ld    a,(ix+enemies_and_objects.v2)       ;falling stone?
-  or    a
-  jp    nz,FallingStone
-
-  call  CheckFloorOrStonePushingStone       ;Check if Stone is still on a platform or on top of another stone. If not, stone falls. Out z=collision found
-
-  call  VramObjects                         ;put object in Vram/screen
-  call  MoveStoneWhenPushed                 ;check if stoned needs to be moved
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object
-  inc   b
-  jp    z,.CollisionRightSide               ;if you collide with a pushing stone from the right side and you are running, then change to pushing pose; if you are pushing, then move stone
-  inc   b 
-  jp    z,.CollisionLeftSide                ;if you collide with a pushing stone from the left side and you are running, then change to pushing pose; if you are pushing, then move stone
-  ret
-
-  .CollisionRightSide:
-;if you collide with a pushing stone from the right side and you are running, then change to pushing pose
-	ld		de,(PlayerSpriteStand)
-	ld		hl,Lrunning
-  sbc   hl,de
-  jp    z,Set_L_Push
-;if you collide with a pushing stone from the right side and you are pushing, then move stone
-	ld		hl,Lpushing
-  xor   a
-  sbc   hl,de
-  ret   nz
-
-  ;unable to push stone if there is another stone lying on top of this one
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-
-  ld    (ix+enemies_and_objects.v4),-1      ;horizontal movement
-  ret
-
-  .CollisionLeftSide:
-;if you collide with a pushing stone from the left side and you are running, then change to pushing pose
-	ld		de,(PlayerSpriteStand)
-	ld		hl,Rrunning
-  sbc   hl,de
-  jp    z,Set_R_Push
-;if you collide with a pushing stone from the left side and you are pushing, then move stone
-	ld		hl,Rpushing
-  xor   a
-  sbc   hl,de
-  ret   nz
-
-  ;unable to push stone if there is another stone lying on top of this one
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-
-  ld    (ix+enemies_and_objects.v4),+1      ;horizontal movement    
-  ret
-
-;When Stone is not moving set x coordinate to odd. The reason we do that is that when copying the block x coordinate is even, and we then can use a fast copy instruction
-SetOddX:
-  set   0,(ix+enemies_and_objects.x)
-  ret
-
-MoveStoneWhenPushed:
-  ld    a,(framecounter)
-  and   1
-  ret   nz
-
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=horizontal movement. Return if 0
-  ld    (ix+enemies_and_objects.v4),+0    
-  or    a
-  jp    z,SetOddX
-;  ret   z
-  
-	ld		hl,Rpushing                         ;check if we are pushing Right
-	ld		de,(PlayerSpriteStand)
-  xor   a
-  sbc   hl,de
-  jp    z,.MovingRight
-
-	ld		hl,Lpushing                         ;check if we are pushing Left
-  xor   a
-  sbc   hl,de
-  ret   nz
-  
-  .MovingLeft:
-  call  CheckCollisionOtherStonesLeft       ;out: z= collision found
-  ret   z
-  
-  ;if Pushing Stone moves left, check if it hits wall on the left side
-  ld    b,YaddFeetPlayer-1                  ;add y to check (y is expressed in pixels)
-  ld    de,XaddRightPlayer-31               ;add to x to check right side of player for collision (player moved right)
-  call  checktile                           ;out z=collision found with wall
-  ret   z
-  dec   (ix+enemies_and_objects.x)          ;move pushing stone left
-  ret
-
-  .MovingRight:
-  call  CheckCollisionOtherStonesRight      ;out: z= collision found
-  ret   z
-    
-  ;if Pushing Stone moves right, check if it hits wall on the right side
-  ld    b,YaddFeetPlayer-1                  ;add y to check (y is expressed in pixels)
-  ld    de,XaddRightPlayer+16               ;add to x to check left side of player for collision (player moved left)
-  call  checktile                           ;out z=collision found with wall
-  ret   z
-  inc   (ix+enemies_and_objects.x)          ;move pushing stone right
-  ret
-
-CheckCollisionOtherStonesLeft:              ;out: z= collision found
-  ;check collision with object 1 (stone 1)
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone1
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone1:
-
-  ;check collision with object 2 (stone 2)
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone2
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone2:
-
-  ;check collision with object 3 (stone 3)
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   nz
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,18
-  cp    (ix+enemies_and_objects.x)
-  ret
-
-CheckCollisionOtherStonesRight:             ;out: z= collision found
-  ;check collision with object 1 (stone 1)
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone1
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,-18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone1:
-  
-  ;check collision with object 2 (stone 2)
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone2  
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,-18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone2:
-    
-  ;check collision with object 3 (stone 3)
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   nz  
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,-18
-  cp    (ix+enemies_and_objects.x)
-  ret
-
-PlatformVertically:
-  call  VramObjects                         ;put object in Vram/screen
-  call  MovePlatFormVertically              ;move
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-  ret
-
-PlatformHorizontally:
-  call  VramObjects                         ;put object in Vram/screen
-  call  MovePlatFormHorizontally            ;move
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-  ret
-  
-MovePlatFormVertically:
-  ld    a,(framecounter)
-  and   1
-  ret   nz
-
-  ld    a,(ix+enemies_and_objects.SnapPlayer?)
-  or    a
-  call  nz,MovePlayerAlongWithObject
-
-;move object
-  ld    a,(ix+enemies_and_objects.y)
-  add   (ix+enemies_and_objects.v3)
-  ld    (ix+enemies_and_objects.y),a  
-  cp    180
-  jr    z,.ChangeDirection
-  cp    40
-  ret   nz
-
-  .ChangeDirection:
-  ld    a,(ix+enemies_and_objects.v3)
-  neg
-  ld    (ix+enemies_and_objects.v3),a
-  ret
-
-MovePlatFormHorizontally:
-  ld    a,(framecounter)
-  and   3
-  ret   nz
-
-  ld    a,(ix+enemies_and_objects.SnapPlayer?)
-  or    a
-  call  nz,MovePlayerAlongWithObject
-
-;move object
-  ld    a,(ix+enemies_and_objects.x)
-  add   (ix+enemies_and_objects.v4)
-  ld    (ix+enemies_and_objects.x),a  
-  cp    254
-  jr    z,.ChangeDirection
-  cp    17+16     ;17 for 32 pix wide objects, 17+16 for 16 pix wide objects
-  ret   nz
-
-  .ChangeDirection:
-  ld    a,(ix+enemies_and_objects.v4)
-  neg
-  ld    (ix+enemies_and_objects.v4),a
-  ret
 
 SnapToPlatform?:  db  0
 CheckCollisionObjectPlayer:               ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object
@@ -1376,207 +448,6 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   ld    (ClesY),a
   ret
 
-VramObjectX:  db  000
-VramObjectY:  db  000
-VramObjects:
-;first clean the object
-  call  BackdropRed
-
-;which Clean Object (DoCopy) table do we use ?
-  ld    l,(ix+enemies_and_objects.ObjectNumber)
-  ld    h,(ix+enemies_and_objects.ObjectNumber+1)
-  push  hl
-  call  docopy
-  pop   iy
-
-  ld    a,(ix+enemies_and_objects.x)
-  or    a
-  jp    p,.ObjectOnLeftSideOfScreen
-
-.ObjectOnRightSideOfScreen:
-;set sx
-  ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
-  ld    (.CopyObject+sx),a  
-;set copy direction
-  ld    a,%0000 0000      ;Copy from left to right
-  ld    (iy+copydirection),a
-  ld    (.CopyObject+copydirection),a
-
-;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound1
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048+01         ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-
-.ObjectOnLeftSideOfScreen:
-;set sx
-  ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
-  dec   a
-  add   a,(ix+enemies_and_objects.nx)
-  ld    (.CopyObject+sx),a  
-;set copy direction
-  ld    a,%0000 0100      ;Copy from right to left
-  ld    (iy+copydirection),a
-  ld    (.CopyObject+copydirection),a
-
-;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000            ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,0               ;clean object from vram data in page 2
-  ld    d,-016            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,1               ;clean object from vram data in page 3
-  ld    d,-032            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-.pagefoundLeft:
-  ld    a,d
-  add   a,(ix+enemies_and_objects.nx)
-  ld    d,a
- 
-.pagefound:
-  ld    a,b
-  ld    (.CopyObject+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,c
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ix+enemies_and_objects.y)
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-  ld    (.CopyObject+dy),a
-
-  ld    a,(ix+enemies_and_objects.x)
-  add   d
-  ld    (.CopyObject+dx),a
-  ld    (iy+dx),a
-  add   e
-  ld    (iy+sx),a
-  
-  ld    a,(ix+enemies_and_objects.nx)  
-  ld    (.CopyObject+nx),a  
-  add   a,2                 ;we clean 2 more pixels, because we use fast copy ($D0) for cleaning, which is not pixel precise (Bitmap mode)
-  ld    (iy+nx),a  
-
-  ld    a,(ix+enemies_and_objects.ny)
-  ld    (.CopyObject+ny),a  
-  ld    (iy+ny),a  
-
-;With this little routine, we switch sy between even and uneven dx to simulate fluent pixel per pixel movement, when in fact we only move per 2 pixels. Copy instruction should be $d0
-;  ld    a,(.CopyObject+dx)
-;  and   %0000 0001
-;  ld    a,216
-;  jr    z,.setSy
-;  ld    a,216+16
-;  .setSy:
-;  ld    (VramObjects.CopyObject+sy),a
-;  ld    a,$d0
-;  ld    (VramObjects.CopyObject+copytype),a
-
-;this routine switches between fast copies (when x is even) and slow copies (when x is odd)
-  ld    a,(ix+enemies_and_objects.x)
-  or    a
-  jp    p,.ObjectOnLeftSideOfScreen2
-
-.ObjectOnRightSideOfScreen2:
-  ld    a,(.CopyObject+dx)
-  and   %0000 0001
-  ld    a,$d0
-  jr    z,.setSy
-  ld    a,$90
-  jp    .setSy
-
-.ObjectOnLeftSideOfScreen2:
-  ld    a,(.CopyObject+dx)
-  and   %0000 0001
-  ld    a,$90
-  jr    z,.setSy
-  ld    a,$d0
-  .setSy:
-  ld    (VramObjects.CopyObject+copytype),a
-
-;put object
-  ld    hl,.CopyObject
-  call  docopy
-  call  BackdropGreen
-;  ld    hl,.CopyObject
-;  call  docopy
-;  call  BackdropBlack
-  ret
-
-.pagefound1:
-  jp    .pagefound
-  
-.CopyObject:
-  db    000,000,216,001   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    000,000,000,000   ;nx,--,ny,--
-;  db    000,%0000 0100,$d0       ;slow transparant copy -> Copy from right to left
-  db    000,%0000 0100,$90       ;slow transparant copy -> Copy from right to left
-
-CleanOb1:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    000,000,000,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
-
-CleanOb2:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    000,000,000,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
-
-CleanOb3:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    000,000,000,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 PutPlayersprite:
 	ld		a,(slot.page12rom)	;all RAM except page 1+2
@@ -1784,31 +655,33 @@ selfmodifyingcode_x_offset_hero_bottom: equ $+1
 	ld		a,(slot.ram)	;back to full RAM
 	out		($a8),a	
   ret
-  
+
 Sf2EngineObjects:
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   cp    2
   ret   nz
-;	ld		a,(slot.page2rom)	; all RAM except page 2
-;	out		($a8),a	
+
+	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
+	out		($a8),a	
+  ld    a,(movementpatternsblock)
+	call	block1234			                                ;at address $4000 / page 1+2
+  
   ld    de,enemies_and_objects+(0*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
   ld    a,(de) | cp 2 | call z,.docheck
   ld    de,enemies_and_objects+(1*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
   ld    a,(de) | cp 2 | call z,.docheck
   ld    de,enemies_and_objects+(2*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
   ld    a,(de) | cp 2 | call z,.docheck
-;	ld		a,(slot.ram)	      ;back to full RAM
-;	out		($a8),a	
+
+	ld		a,(slot.ram)	      ;back to full RAM
+	out		($a8),a	
   ret
 
   .docheck:
   ld    ixl,e
   ld    ixh,d    
 
-;  ld    a,(movementpatternsblock)
-;	call	block34			      ;at address $8000 / page 2  
   ld    a,(ix+enemies_and_objects.movementpattern)             ;movementpattern
-  dec   a
   ld    b,a
   add   a,a                 ;*2
   add   a,b                 ;*3
@@ -1817,99 +690,6 @@ Sf2EngineObjects:
   ld    hl,movementpatternaddress
   add   hl,de
   jp    (hl)
-
-;This is at $4000 inside a block (movementpatternsblock)
-;movementpatternaddress:
-;  jp    PlatformVertically                  ;movement pattern 1   
-;  jp    PlatformHorizontally                ;movement pattern 2   
-;  jp    Sf2Hugeobject                       ;movement pattern 3
-;  jp    Sf2Hugeobject2                      ;movement pattern 4
-;  jp    Sf2Hugeobject3                      ;movement pattern 5
-
-
-
-
-PutSF2Object2:
-  ld    a,(screenpage)
-  or    a                     ;if current page =0 then que page 1 to be restored
-  ld    ix,RestoreBackgroundObject2Page1
-  jp    z,.startsetupque
-  dec   a                     ;if current page =1 then que page 2 to be restored
-  ld    ix,RestoreBackgroundObject2Page2
-  jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
-  ld    ix,RestoreBackgroundObject2Page0
-  .startsetupque:
-
-	ld		a,(slot.page12rom)    ;all RAM except page 1+2
-	out		($a8),a	
-
-  ;set framelist in page 2 in rom ($8000 - $bfff)
-;  ld    a,(Player1FramePage)
-;  add   a,a
-;  ld    hl,Player1Framelistblock
-;	add   a,(hl)
-	
-	ld    a,ryuframelistblock
-  call	block34
-
-  ;set framedata in page 1 in rom ($4000 - $7fff)
-;  ld    a,(Player1FramePage)
-;  add   a,a
-;  ld    hl,Player1Spritedatablock
-;	add   a,(hl)
-	
-	ld    a,ryuspritedatablock
-  call	block12
-
-  ld    bc,Object1x
-  ld    hl,(Player1Frame)     ;points to object width
-  ld    iy,Player1SxB1        ;player collision detection blocks
-
-  di
-  call  GoPutSF2Object
-  ei
-  ret
-
-PutSF2Object3:
-  ld    a,(screenpage)
-  or    a                     ;if current page =0 then que page 1 to be restored
-  ld    ix,RestoreBackgroundObject3Page1
-  jp    z,.startsetupque
-  dec   a                     ;if current page =1 then que page 2 to be restored
-  ld    ix,RestoreBackgroundObject3Page2
-  jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
-  ld    ix,RestoreBackgroundObject3Page0
-  .startsetupque:
-
-	ld		a,(slot.page12rom)    ;all RAM except page 1+2
-	out		($a8),a	
-
-  ;set framelist in page 2 in rom ($8000 - $bfff)
-;  ld    a,(Player1FramePage)
-;  add   a,a
-;  ld    hl,Player1Framelistblock
-;	add   a,(hl)
-	
-	ld    a,ryuframelistblock
-  call	block34
-
-  ;set framedata in page 1 in rom ($4000 - $7fff)
-;  ld    a,(Player1FramePage)
-;  add   a,a
-;  ld    hl,Player1Spritedatablock
-;	add   a,(hl)
-	
-	ld    a,ryuspritedatablock
-  call	block12
-
-  ld    bc,Object1x
-  ld    hl,(Player1Frame)     ;points to object width
-  ld    iy,Player1SxB1        ;player collision detection blocks
-
-  di
-  call  GoPutSF2Object
-  ei
-  ret
 
 restoreBackgroundObject1:
   ld    a,(screenpage)
@@ -1994,152 +774,6 @@ RestoreBackgroundObject3Page2:
 	
 HugeObjectFrame:  db  -1
 
-Sf2Hugeobject1:                             ;movement pattern 3
-  ld    a,(HugeObjectFrame)
-  inc   a
-  ld    (HugeObjectFrame),a
-  jp    nz,CheckCollisionObjectPlayer
-
-  call  MoveSF2Object1
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-  call  BackdropOrange  
-  call  restoreBackgroundObject1
-  call  ObjectAnimation
-  call  PutSF2Object
-  call  BackdropBlack
-;  call  switchpageSF2Engine  
-  ret
-
-Sf2Hugeobject2:                             ;movement pattern 4
-  ld    a,(HugeObjectFrame)
-  cp    1
-  jp    nz,CheckCollisionObjectPlayer
-
-  call  MoveSF2Object2
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-  call  restoreBackgroundObject2
-;  call  ObjectAnimation
-  call  PutSF2Object2
-  ret
-
-Sf2Hugeobject3:                             ;movement pattern 5
-  ld    a,(HugeObjectFrame)
-  cp    2
-  jp    nz,CheckCollisionObjectPlayer
-
-  call  MoveSF2Object3
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-  call  restoreBackgroundObject3
-;  call  ObjectAnimation
-  call  PutSF2Object3
-
-  ld    a,-1
-  ld    (HugeObjectFrame),a
-  call  switchpageSF2Engine  
-  ret
-
-NoneMovingObjectStepTable:  ;move x, move y (128 = end table/repeat)
-  db  10,+0,+0
-  db  128
-
-HugeBlockStepTable1:  ;repeating steps(128 = end table/repeat), move y, move x
-  db  50,+0,+2,  50,+2,+0,  50,+0,-2,  50,-2,+0
-  db  128
-
-HugeBlockStepTable2:  ;repeating steps(128 = end table/repeat), move y, move x
-  db  40,+0,+2,  40,+0,-2,  40,+0,-2,  40,+0,+2
-  db  128
-
-HugeBlockStepTable3:  ;repeating steps(128 = end table/repeat), move y, move x
-  db  10,+0,+2,  10,+1,+2,  10,+1,+1,  10,+2,+1,  10,+2,+0
-  db  10,+2,+0,  10,+2,-1,  10,+1,-1,  10,+1,-2,  10,+0,-2
-  db  10,+0,-2,  10,-1,-2,  10,-1,-1,  10,-2,-1,  10,-2,-0
-  db  10,-2,-0,  10,-2,+1,  10,-1,+1,  10,-1,+2,  10,-0,+2
-  db  128
-
-
-MoveSF2Object1:
-  ld    de,HugeBlockStepTable1
-;  ld    de,NoneMovingObjectStepTable
-  call  MoveObjectWithStepTable
-  ret
-  
-MoveSF2Object2:
-  ld    de,HugeBlockStepTable2
-;  ld    de,NoneMovingObjectStepTable
-  call  MoveObjectWithStepTable
-  ret
-
-MoveSF2Object3:
-  ld    de,HugeBlockStepTable3
-;  ld    de,NoneMovingObjectStepTable
-  call  MoveObjectWithStepTable
-  ret
-
-MoveObjectWithStepTable:
-  ;if repeating steps are not 0, go to movement object
-  ld    a,(ix+enemies_and_objects.v1)         ;repeating steps
-  dec   a
-  ld    (ix+enemies_and_objects.v1),a         ;repeating steps
-  jp    p,.moveObject
-  
-  .NextStep:
-  ld    a,(ix+enemies_and_objects.v2)         ;pointer to movement table
-  ld    h,0
-  ld    l,a
-  add   hl,de
-  add   a,3
-  ld    (ix+enemies_and_objects.v2),a         ;pointer to movement table
-  
-  ld    a,(hl)                                ;repeating steps(128 = end table/repeat)
-  cp    128
-  jr    nz,.EndCheckEndTable
-  ld    (ix+enemies_and_objects.v2),+3        ;pointer to movement table
-  ex    de,hl
-  ld    a,(hl)
-
-  .EndCheckEndTable:
-  ld    (ix+enemies_and_objects.v1),a         ;repeating steps
-  inc   hl
-  ld    a,(hl)                                ;y movement
-  ld    (ix+enemies_and_objects.v3),a         ;v3=y movement
-  inc   hl
-  ld    a,(hl)                                ;x movement
-  ld    (ix+enemies_and_objects.v4),a         ;v4=x movement
-
-  .moveObject:
-  ld    a,(ix+enemies_and_objects.y)          ;y object
-  add   a,(ix+enemies_and_objects.v3)         ;add y movement to y
-  ld    (ix+enemies_and_objects.y),a          ;y object
-  ld    (Object1y),a
-
-  ld    a,(ix+enemies_and_objects.x)          ;x object
-  add   a,(ix+enemies_and_objects.v4)         ;add x movement to x
-  ld    (ix+enemies_and_objects.x),a          ;x object
-  ld    (Object1x),a
-
-  ;Move player along with object if standing on it
-  ld    a,(ix+enemies_and_objects.SnapPlayer?)         ;x movement
-;  ld    a,(SnapToPlatform?)
-  or    a
-  ret   z
-  MovePlayerAlongWithObject:
-  ld    a,(ix+enemies_and_objects.v4)         ;x movement
-  or    a
-  ld    d,0
-  jp    p,.positive
-  ld    d,255  
-  .positive:
-  ld    e,a
-
-  ld    hl,(ClesX)
-  add   hl,de
-  ld    (ClesX),hl  
-
-  ld    a,(ClesY)
-  add   a,(ix+enemies_and_objects.v3)         ;y movement
-  ld    (ClesY),a  
-  ret
 
 moveplayerleftinscreen:       equ 128
 blitpage:                     db  0
@@ -2155,8 +789,6 @@ Object1x:                     db  000
 
 ;Object2y:                     db  100
 ;Object2x:                     db  100
-
-
 
 PutSF2Object:
   ld    a,(screenpage)
@@ -2197,8 +829,98 @@ PutSF2Object:
   di
   call  GoPutSF2Object
   ei
+
+  ld    a,(movementpatternsblock)
+	call	block1234			                                ;at address $4000 / page 1+2  
   ret
 
+PutSF2Object2:
+  ld    a,(screenpage)
+  or    a                     ;if current page =0 then que page 1 to be restored
+  ld    ix,RestoreBackgroundObject2Page1
+  jp    z,.startsetupque
+  dec   a                     ;if current page =1 then que page 2 to be restored
+  ld    ix,RestoreBackgroundObject2Page2
+  jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
+  ld    ix,RestoreBackgroundObject2Page0
+  .startsetupque:
+
+	ld		a,(slot.page12rom)    ;all RAM except page 1+2
+	out		($a8),a	
+
+  ;set framelist in page 2 in rom ($8000 - $bfff)
+;  ld    a,(Player1FramePage)
+;  add   a,a
+;  ld    hl,Player1Framelistblock
+;	add   a,(hl)
+	
+	ld    a,ryuframelistblock
+  call	block34
+
+  ;set framedata in page 1 in rom ($4000 - $7fff)
+;  ld    a,(Player1FramePage)
+;  add   a,a
+;  ld    hl,Player1Spritedatablock
+;	add   a,(hl)
+	
+	ld    a,ryuspritedatablock
+  call	block12
+
+  ld    bc,Object1x
+  ld    hl,(Player1Frame)     ;points to object width
+  ld    iy,Player1SxB1        ;player collision detection blocks
+
+  di
+  call  GoPutSF2Object
+  ei
+
+  ld    a,(movementpatternsblock)
+	call	block1234			                                ;at address $4000 / page 1+2  
+  ret
+
+PutSF2Object3:
+  ld    a,(screenpage)
+  or    a                     ;if current page =0 then que page 1 to be restored
+  ld    ix,RestoreBackgroundObject3Page1
+  jp    z,.startsetupque
+  dec   a                     ;if current page =1 then que page 2 to be restored
+  ld    ix,RestoreBackgroundObject3Page2
+  jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
+  ld    ix,RestoreBackgroundObject3Page0
+  .startsetupque:
+
+	ld		a,(slot.page12rom)    ;all RAM except page 1+2
+	out		($a8),a	
+
+  ;set framelist in page 2 in rom ($8000 - $bfff)
+;  ld    a,(Player1FramePage)
+;  add   a,a
+;  ld    hl,Player1Framelistblock
+;	add   a,(hl)
+	
+	ld    a,ryuframelistblock
+  call	block34
+
+  ;set framedata in page 1 in rom ($4000 - $7fff)
+;  ld    a,(Player1FramePage)
+;  add   a,a
+;  ld    hl,Player1Spritedatablock
+;	add   a,(hl)
+	
+	ld    a,ryuspritedatablock
+  call	block12
+
+  ld    bc,Object1x
+  ld    hl,(Player1Frame)     ;points to object width
+  ld    iy,Player1SxB1        ;player collision detection blocks
+
+  di
+  call  GoPutSF2Object
+  ei
+
+  ld    a,(movementpatternsblock)
+	call	block1234			                                ;at address $4000 / page 1+2  
+  ret
 
 ;Frameinfo looks like this:
 
