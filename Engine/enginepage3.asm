@@ -12,8 +12,8 @@ MapB01_004Data: db MapsBlock01 | dw MapB01_004 | db 1,3,3                  | Map
 MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | MapB01_008Data: db MapsBlock01 | dw MapB01_008 | db 1,3,3                  | MapB01_009Data: db MapsBlock01 | dw MapB01_009 | db 1,3,3
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
-WorldMapPointer:  dw  MapA01_007Data
-;WorldMapPointer:  dw  MapB01_001Data
+;WorldMapPointer:  dw  MapA01_007Data
+WorldMapPointer:  dw  MapB01_010Data
 
 loadGraphics:
   call  screenoff
@@ -381,7 +381,7 @@ ConvertToMapinRam:
 ;tile 0 = background
 ;tile 1 = hardforeground
 ;tile 2 = laddertiles
-;tile 3 = lava
+;tile 3 = lava,poison,spikes
 ;tile 4 = stairsleftup
 ;tile 5 = stairsrightup
 
@@ -448,7 +448,7 @@ ConvertToMapinRam:
   ld    hl,47               ;spikes & lava
   xor   a
   sbc   hl,de
-  jp    nc,.hardforeground ;.lava
+  jp    nc,.lava            ;lava
 
   ld    hl,49               ;stairs left up
   xor   a

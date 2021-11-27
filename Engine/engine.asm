@@ -484,7 +484,19 @@ PutPlayersprite:
 
 standchar:	equ	$+1
 	ld		hl,PlayerSpriteData_Char_LeftStand      ;sprite character in ROM
-    
+  
+  ;if player invulnerable, display empty sprite even x frames
+  ld    a,(PlayerInvulnerable?)
+  or    a
+  jp    z,.EndCheckPlayerInvulnerable
+  dec   a
+  ld    (PlayerInvulnerable?),a
+  ld    a,(framecounter)
+  and   3
+  jr    nz,.EndCheckPlayerInvulnerable
+  ld    hl,PlayerSpriteData_Char_Empty
+  .EndCheckPlayerInvulnerable:    
+      
 	ld		c,$98
 	call	outix128    ;4 sprites (4 * 32 = 128 bytes)
 ;/put hero sprite character
@@ -2445,6 +2457,7 @@ playermovementspeed:    db  2
 oldx:                   dw  0
 oldy:                   db  0
 PlayerFacingRight?:     db  1
+PlayerInvulnerable?:    db  0
 
 RstandingSpriteStand:         equ 0
 RsittingSpriteStand:          equ 2
@@ -2460,6 +2473,112 @@ PlayerAniCount:     db  0,0
 HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
+
+RBeingHit:
+  call  MovePlayerLeft.skipFacingDirection      ;out: c-> collision detected
+
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  cp    24
+  jp    z,Set_R_Stand  
+
+  ld    hl,PlayerSpriteData_Char_RightBeingHit1
+  cp    08
+  jp    c,.SetCharacter
+  cp    16
+  jp    nc,.SetCharacter
+  ld    hl,PlayerSpriteData_Char_RightBeingHit2
+  .SetCharacter:
+	ld		(standchar),hl
+
+  ld    a,50                ;50 frames invulnerable after being hit
+  ld    (PlayerInvulnerable?),a
+  ret
+
+LBeingHit:
+  call  MovePlayerRight.skipFacingDirection     ;out: c-> collision detected
+
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  cp    24
+  jp    z,Set_L_Stand  
+
+  ld    hl,PlayerSpriteData_Char_LeftBeingHit1
+  cp    08
+  jp    c,.SetCharacter
+  cp    16
+  jp    nc,.SetCharacter
+  ld    hl,PlayerSpriteData_Char_LeftBeingHit2
+  .SetCharacter:
+	ld		(standchar),hl
+
+  ld    a,50                ;50 frames invulnerable after being hit
+  ld    (PlayerInvulnerable?),a
+  ret
+
+RRolling:
+  ld    a,(PlayerAniCount+1)
+  inc   a
+  ld    (PlayerAniCount+1),a
+  cp    100
+  jp    z,Set_R_Stand
+  cp    4
+  jp    c,.Sit
+  
+  ld    hl,RightRollingAnimation
+  jp    AnimateRolling  
+
+  .sit:
+  ld    de,PlayerSpriteData_Char_RightSitting  
+	ld		(standchar),de
+  ret
+
+LRolling:
+  ld    a,(PlayerAniCount+1)
+  inc   a
+  ld    (PlayerAniCount+1),a
+  cp    100
+  jp    z,Set_L_Stand
+  cp    4
+  jp    c,.Sit
+
+  ld    hl,LeftRollingAnimation
+  jp    AnimateRolling  
+
+  .sit:
+  ld    de,PlayerSpriteData_Char_LeftSitting  
+	ld		(standchar),de
+  ret
+  
+LeftRollingAnimation:          ;xoffset sprite top, xoffset sprite bottom
+  dw  PlayerSpriteData_Char_LeftRolling1 
+  dw  PlayerSpriteData_Char_LeftRolling2 
+  dw  PlayerSpriteData_Char_LeftRolling3 
+  dw  PlayerSpriteData_Char_LeftRolling4 
+  dw  PlayerSpriteData_Char_LeftRolling5 
+  dw  PlayerSpriteData_Char_LeftRolling6 
+  dw  PlayerSpriteData_Char_LeftRolling7 
+  dw  PlayerSpriteData_Char_LeftRolling8 
+  dw  PlayerSpriteData_Char_LeftRolling9 
+  dw  PlayerSpriteData_Char_LeftRolling10 
+  dw  PlayerSpriteData_Char_LeftRolling11 
+  dw  PlayerSpriteData_Char_LeftRolling12 
+    
+RightRollingAnimation:
+  dw  PlayerSpriteData_Char_RightRolling1 
+  dw  PlayerSpriteData_Char_RightRolling2 
+  dw  PlayerSpriteData_Char_RightRolling3 
+  dw  PlayerSpriteData_Char_RightRolling4 
+  dw  PlayerSpriteData_Char_RightRolling5 
+  dw  PlayerSpriteData_Char_RightRolling6 
+  dw  PlayerSpriteData_Char_RightRolling7 
+  dw  PlayerSpriteData_Char_RightRolling8 
+  dw  PlayerSpriteData_Char_RightRolling9 
+  dw  PlayerSpriteData_Char_RightRolling10 
+  dw  PlayerSpriteData_Char_RightRolling11
+  dw  PlayerSpriteData_Char_RightRolling12
 
 RPushing:
 ;  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
@@ -3533,10 +3652,13 @@ Jump:
   jp    Set_jump.SkipTurnOnDoubleJump
    
 Lsitting:
-	ld		hl,PlayerSpriteData_Char_LeftRun1
+	ld		hl,PlayerSpriteData_Char_LeftSitting
 	ld		(standchar),hl
 
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+  call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
+  jp    z,Set_L_BeingHit
 
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -3544,32 +3666,36 @@ Lsitting:
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
 	ld		a,(Controls)
+	bit		2,a           ;cursor left pressed ?
+	jp		nz,.EndCheckLeftPressed
+	bit		3,a           ;cursor right pressed ?
+	jp		nz,Set_R_sit
+  .EndCheckLeftPressed:
 	bit		1,a           ;cursor down pressed ?
 	jp		nz,Rsitting.CheckLadder
-	bit		0,a           ;cursor up pressed ?
+;	bit		0,a           ;cursor up pressed ?
 ;	jp		nz,Set_jump
 ;	bit		2,a           ;cursor left pressed ?
 ;	jp		nz,.Set_L_run_andcheckpunch
-	ld		a,(Controls)
-	bit		3,a           ;cursor right pressed ?
+;	ld		a,(Controls)
+;	bit		3,a           ;cursor right pressed ?
 ;	jp		nz,.AnimateRun
 
-  ld    a,(NewPrContr)
+;  ld    a,(NewPrContr)
 ;	bit		4,a           ;space pressed ?
 ;	jp		nz,Set_R_standpunch
 ;	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_R_standmagic	
 	jp		Set_L_stand
-  ret
-
-.CheckLadder:
-  ret
 
 Rsitting:
-	ld		hl,PlayerSpriteData_Char_RightRun1
+	ld		hl,PlayerSpriteData_Char_RightSitting
 	ld		(standchar),hl
 
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+  call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
+  jp    z,Set_R_BeingHit
 
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -3577,23 +3703,27 @@ Rsitting:
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
 	ld		a,(Controls)
+	bit		3,a           ;cursor right pressed ?
+	jp		nz,.EndCheckRightPressed
+	bit		2,a           ;cursor left pressed ?
+	jp		nz,Set_L_sit
+  .EndCheckRightPressed:
 	bit		1,a           ;cursor down pressed ?
 	jp		nz,.CheckLadder
-	bit		0,a           ;cursor up pressed ?
+;	bit		0,a           ;cursor up pressed ?
 ;	jp		nz,Set_jump
 ;	bit		2,a           ;cursor left pressed ?
 ;	jp		nz,.Set_L_run_andcheckpunch
-	ld		a,(Controls)
-	bit		3,a           ;cursor right pressed ?
+;	ld		a,(Controls)
+;	bit		3,a           ;cursor right pressed ?
 ;	jp		nz,.AnimateRun
 
-  ld    a,(NewPrContr)
+;  ld    a,(NewPrContr)
 ;	bit		4,a           ;space pressed ?
 ;	jp		nz,Set_R_standpunch
 ;	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_R_standmagic	
 	jp		Set_R_stand
-  ret
 
 .CheckLadder:
 ;check if there is a ladder tile below left foot AND right foot
@@ -3644,6 +3774,17 @@ Rsitting:
   add   hl,de
   ld    (ClesX),hl
   ret
+
+AnimateRolling:
+  ld    a,(framecounter)          ;animate every 4 frames
+  and   1
+  ret   nz
+  
+  ld    a,(PlayerAniCount)
+  add   a,2                       ;2 bytes used for pointer to sprite frame address
+  cp    2 * 12                    ;08 frame addresses
+  jr    nz,AnimateRun.SetPlayerAniCount
+  jr    AnimateRun.reset
   
 AnimatePushing:
   ld    a,(framecounter)          ;animate every 4 frames
@@ -3733,7 +3874,7 @@ EndMovePlayerHorizontally:              ;slowly come to a full stop after runnin
 MovePlayerRight:
   ld    a,1
   ld    (PlayerFacingRight?),a		
- 
+  .skipFacingDirection: 
   ld    a,(RunningTablePointer)
   cp    RunningTablePointerRunLeftEndValue
   jr    nc,.go
@@ -3750,7 +3891,7 @@ MovePlayerRight:
 MovePlayerLeft:
   xor   a
   ld    (PlayerFacingRight?),a		
-
+  .skipFacingDirection:
   ld    a,(RunningTablePointer)
   cp    RunningTablePointerRunRightEndValue
   jr    c,.go
@@ -3878,6 +4019,23 @@ CheckFloorInclLadder:
   scf
   ret
 
+CheckLavaPoisonSpikes:      ;out z-> lava poison or spikes found
+  ld    a,(PlayerInvulnerable?)
+  or    a
+  ret   nz
+  
+  ld    b,YaddFeetPlayer-7    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2 ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   2                   ;check for tilenr 3=lava poison spikes
+  ret   z  
+
+  ld    b,YaddFeetPlayer-7    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   2                   ;check for tilenr 3=lava poison spikes
+  ret
+  
 Rrunning:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -3921,6 +4079,9 @@ Rrunning:
   jp    c,Set_Fall  
   .EndCheckSnapToPlatform:
 
+  call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
+  jp    z,Set_R_BeingHit
+  
 	ld		a,(Controls)
 	bit		0,a           ;cursor up pressed ?
 	call  nz,CheckClimbStairsUp
@@ -3980,6 +4141,9 @@ Lrunning:
   jp    c,Set_Fall
   .EndCheckSnapToPlatform:
 
+  call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
+  jp    z,Set_L_BeingHit
+
 	ld		a,(Controls)
 	bit		0,a           ;cursor up pressed ?
 	call  nz,CheckClimbStairsUp
@@ -4003,6 +4167,9 @@ Lstanding:
   jp    c,Set_Fall
   .EndCheckSnapToPlatform:
 
+  call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
+  jp    z,Set_L_BeingHit
+
 ;  call  checkfloor
 ;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
 ;
@@ -4017,8 +4184,9 @@ Lstanding:
 
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_L_attack
-;	bit		5,a           ;'M' pressed ?
-;	jp		nz,Set_L_attack2
+	bit		5,a           ;'M' pressed ?
+	jp		nz,Set_L_Rolling
+
 ;	bit		6,a           ;F1 pressed ?
 ;	jp		nz,Set_L_attack3
 
@@ -4068,7 +4236,6 @@ Lstanding:
   call  CheckClimbStairsUp
   ret
 
-
 .Set_R_run_andcheckpunch:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
@@ -4076,8 +4243,6 @@ Lstanding:
 	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_R_standmagic
   jp    Set_R_run
-
-
 
 Rstanding:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
@@ -4088,6 +4253,9 @@ Rstanding:
   call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall
   ..EndCheckSnapToPlatform:
+
+  call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
+  jp    z,Set_R_BeingHit
 
 ;  call  checkfloor
 ;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
@@ -4102,8 +4270,8 @@ Rstanding:
 	
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_R_attack
-;	bit		5,a           ;'M' pressed ?
-;	jp		nz,Set_R_attack2
+	bit		5,a           ;'M' pressed ?
+	jp		nz,Set_R_Rolling
 ;	bit		6,a           ;F1 pressed ?
 ;	jp		nz,Set_R_attack3
 
@@ -4448,6 +4616,22 @@ Set_L_Attack:
   ld    (PlayerAniCount),hl
   ret
 
+Set_R_Rolling:
+	ld		hl,RRolling
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_L_Rolling:
+	ld		hl,LRolling
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
 Set_Stairs_Climb_RightUp:
 	ld		hl,ClimbStairsRightUp
 	ld		(PlayerSpriteStand),hl
@@ -4585,28 +4769,19 @@ Set_R_Push:
 	ld		(PlayerAniCount),a
   ret
 
-;Totallycentredpose:
-;  ld    a,100       ;y offset
-;  ld    d,centrex+00    ;x offset top row
-;  ld    e,centrex+00    ;x offset middle row
-;  ld    h,centrex+00    ;x offset bottom row
-;  jp    setxyoffsetsprite
+Set_L_BeingHit:
+	ld		hl,LBeingHit
+	ld		(PlayerSpriteStand),hl
+  xor   a
+	ld		(PlayerAniCount),a
+  ret
 
-;y_offset_hero:      db  100
-;x_offset_hero_top:  db  106
-;x_offset_hero_mid:  db  102
-;x_offset_hero_bot:  db  103
-;setxyoffsetsprite:
-;  ld    (y_offset_hero),a
-;  ld    a,d
-;  ld    (x_offset_hero_top),a
-;  ld    a,e
-;  ld    (x_offset_hero_mid),a
-;  ld    a,h
-;  ld    (x_offset_hero_bot),a
-;  ret
-
-
+Set_R_BeingHit:
+	ld		hl,RBeingHit
+	ld		(PlayerSpriteStand),hl
+  xor   a
+	ld		(PlayerAniCount),a
+  ret
 
 SetBorderMaskingSprites:
   ld    hl,spat+0           ;y sprite 1
