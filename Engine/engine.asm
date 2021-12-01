@@ -39,8 +39,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 130 ;150 ;210
-ClesY:      db 120 ; 144-1
+ClesX:      dw 080 ;150 ;210
+ClesY:      db 050 ; 144-1
 herospritenr:             db  22
 
 BackdropOrange:
@@ -326,7 +326,6 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
 ;  sub   (ix+enemies_and_objects.ny)
 ;  sub   (ix+enemies_and_objects.y)
 ;  ret   nc  
-
 
 ;check collision on the left side of object. c= no collision
   ld    hl,(ClesX)                    ;hl: x player (165)
@@ -2521,37 +2520,179 @@ LBeingHit:
 RRolling:
   ld    a,(PlayerAniCount+1)
   inc   a
-  ld    (PlayerAniCount+1),a
   cp    100
-  jp    z,Set_R_Stand
+  jp    z,.endRollingRight          ;end rolling after 100 frames
+  ld    (PlayerAniCount+1),a
   cp    4
-  jp    c,.Sit
-  
+  jp    c,.Sit                      ;the first 4 frames show sitting pose
+  .ContinueRollingWhenCollisionTopFound:
+
   ld    hl,RightRollingAnimation
-  jp    AnimateRolling  
+  call   AnimateRolling             ;animate
+
+  ld    a,(SnapToPlatform?)         ;check if we need to snap to a platform or object
+  or    a
+  jr    nz,.EndCheckSnapToPlatform
+  call  CheckFloorInclLadder        ;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,.Set_Fall  
+  .EndCheckSnapToPlatform:
+
+  call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
+  jp    z,Set_R_BeingHit  
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)
+	bit		0,a                         ;cursor up pressed ?
+	jr		nz,.UpPressed
+	bit		2,a                         ;cursor left pressed ?
+	jp		nz,Set_L_Rolling.SkipPlayerAniCount
+    
+	ld		a,(Controls)
+	bit		1,a                         ;cursor down pressed ?
+	jp		nz,.DownPressed             ;check stairs or ladders
+	bit		3,a                         ;cursor right pressed ?
+	jp		nz,MovePlayerRight
+  jp    EndMovePlayerHorizontally   ;slowly come to a full stop when not moving horizontally
+
+  .DownPressed:                     ;check stairs or ladders
+  call  CheckClimbStairsDown  
+  jp    RSitting.CheckLadder
+
+  .UpPressed:                       ;jump and check stairs or ladders
+  call  CheckClimbLadderUp	
+	call  CheckClimbStairsUp    
+
+  ld    b,YaddHeadPLayer+1          ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2         ;add x to check (x is expressed in pixels)
+  call  checktile                   ;out z=collision found with wall
+  ret   z
+
+  ld    b,YaddHeadPLayer+1          ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  call  checktile                   ;out z=collision found with wall
+  ret   z
+	jp    Set_jump
 
   .sit:
   ld    de,PlayerSpriteData_Char_RightSitting  
 	ld		(standchar),de
   ret
 
+  .endRollingRight:
+  ld    b,YaddHeadPLayer+1          ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
+  call  checktile                   ;out z=collision found with wall
+  jr    z,.ContinueRollingWhenCollisionTopFound
+
+  ld    b,YaddHeadPLayer+1          ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  call  checktile                   ;out z=collision found with wall
+  jr    z,.ContinueRollingWhenCollisionTopFound
+  jp    Set_R_Stand                 ;end rolling after 100 frames
+  
+  .Set_Fall:                        ;there is a little bug when falling from an object after rolling where players gets snapped back on top of the object. So move player 2 pixels to the right when falling
+  ;if this turns out to be annoying, then add the above check and only inc/dec hl if there is a ceiling at eye height
+  ld    hl,(clesx)
+  inc   hl    
+  inc   hl    
+  inc   hl    
+  ld    (clesx),hl  
+  jp    Set_Fall
+
 LRolling:
   ld    a,(PlayerAniCount+1)
   inc   a
-  ld    (PlayerAniCount+1),a
   cp    100
-  jp    z,Set_L_Stand
+  jp    z,.endRollingLeft           ;end rolling after 100 frames
+  ld    (PlayerAniCount+1),a
   cp    4
-  jp    c,.Sit
-
+  jp    c,.Sit                      ;the first 4 frames show sitting pose
+  
+  .ContinueRollingWhenCollisionTopFound:
   ld    hl,LeftRollingAnimation
-  jp    AnimateRolling  
+  call   AnimateRolling             ;animate
+
+  ld    a,(SnapToPlatform?)         ;check if we need to snap to a platform or object
+  or    a
+  jr    nz,.EndCheckSnapToPlatform
+  call  CheckFloorInclLadder        ;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,.Set_Fall  
+  .EndCheckSnapToPlatform:
+
+  call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
+  jp    z,Set_L_BeingHit  
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)
+	bit		0,a                         ;cursor up pressed ?
+	jr		nz,.UpPressed
+	bit		3,a                         ;cursor right pressed ?
+	jp		nz,Set_R_Rolling.SkipPlayerAniCount
+    
+	ld		a,(Controls)
+	bit		1,a                         ;cursor down pressed ?
+	jp		nz,.DownPressed             ;check stairs or ladders
+	bit		2,a                         ;cursor left pressed ?
+	jp		nz,MovePlayerLeft 
+  jp    EndMovePlayerHorizontally   ;slowly come to a full stop when not moving horizontally
+
+  .DownPressed:                     ;check stairs or ladders
+  call  CheckClimbStairsDown  
+  jp    RSitting.CheckLadder
+
+  .UpPressed:                       ;jump and check stairs or ladders
+  call  CheckClimbLadderUp	
+	call  CheckClimbStairsUp    
+
+  ld    b,YaddHeadPLayer+1          ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2         ;add x to check (x is expressed in pixels)
+  call  checktile                   ;out z=collision found with wall
+  ret   z
+
+  ld    b,YaddHeadPLayer+1          ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  call  checktile                   ;out z=collision found with wall
+  ret   z
+	jp    Set_jump
+
 
   .sit:
   ld    de,PlayerSpriteData_Char_LeftSitting  
 	ld		(standchar),de
   ret
+
+  .endRollingLeft:
+  ld    b,YaddHeadPLayer+1          ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
+  call  checktile                   ;out z=collision found with wall
+  jr    z,.ContinueRollingWhenCollisionTopFound
+
+  ld    b,YaddHeadPLayer+1          ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  call  checktile                   ;out z=collision found with wall
+  jr    z,.ContinueRollingWhenCollisionTopFound
+  jp    Set_L_Stand                 ;end rolling after 100 frames
   
+  .Set_Fall:                        ;there is a little bug when falling from an object after rolling where players gets snapped back on top of the object. So move player 2 pixels to the right when falling
+  ;if this turns out to be annoying, then add the above check and only inc/dec hl if there is a ceiling at eye height
+  ld    hl,(clesx)
+  dec   hl    
+  dec   hl    
+  dec   hl    
+  dec   hl    
+  dec   hl    
+  dec   hl    
+  ld    (clesx),hl  
+  jp    Set_Fall
+    
 LeftRollingAnimation:          ;xoffset sprite top, xoffset sprite bottom
   dw  PlayerSpriteData_Char_LeftRolling1 
   dw  PlayerSpriteData_Char_LeftRolling2 
@@ -3404,14 +3545,58 @@ AnimateWhileJump:
   jp    z,.AnimateJumpFacingLeft
 
 .AnimateJumpFacingRight:
-	ld		hl,PlayerSpriteData_Char_RightRun9
+  ld    a,(DoubleJumpAvailable?)
+  or    a
+  jr    z,.RollingJumpRight
+
+  ld    a,(JumpSpeed)
+  add   a,2
+	ld		hl,PlayerSpriteData_Char_RightJump1
+	jp    m,.SetRightJumpAnimationFrame  
+  cp    3
+	ld		hl,PlayerSpriteData_Char_RightJump2
+	jr    c,.SetRightJumpAnimationFrame  
+	.LastJumpFrameRight:
+	ld		hl,PlayerSpriteData_Char_RightJump3
+	.SetRightJumpAnimationFrame:
 	ld		(standchar),hl
   ret
 
+.RollingJumpRight:
+  ld    a,(JumpSpeed)
+  sub   a,5
+  jp    p,.LastJumpFrameRight
+  
+  ld    hl,RightRollingAnimation
+  jp    AnimateRolling  
+  ret
+
 .AnimateJumpFacingLeft:
-	ld		hl,PlayerSpriteData_Char_LeftRun9
+  ld    a,(DoubleJumpAvailable?)
+  or    a
+  jr    z,.RollingJumpLeft
+  
+  ld    a,(JumpSpeed)
+  add   a,2
+	ld		hl,PlayerSpriteData_Char_LeftJump1
+	jp    m,.SetLeftJumpAnimationFrame  
+  cp    3
+	ld		hl,PlayerSpriteData_Char_LeftJump2
+	jr    c,.SetLeftJumpAnimationFrame  
+	.LastJumpFrameLeft:
+	ld		hl,PlayerSpriteData_Char_LeftJump3
+	.SetLeftJumpAnimationFrame:
 	ld		(standchar),hl
   ret
+
+.RollingJumpLeft:
+  ld    a,(JumpSpeed)
+  sub   a,5
+  jp    p,.LastJumpFrameLeft
+
+  ld    hl,LeftRollingAnimation
+  jp    AnimateRolling  
+
 
 CheckSnapToStairsWhileJump:
 ;check if there are stairs when pressing up, if so climb the stairs.
@@ -3491,8 +3676,6 @@ CheckSnapToStairsWhileJump:
   ld    (ClesX),hl
   ret  
   
-  
-  
 Jump:
   call  MoveHorizontallyWhileJump
 	ld		a,(Controls)
@@ -3510,9 +3693,24 @@ Jump:
   ret
 
   .VerticalMovement:
+  ;as soon as up is released, player stops jumping up. This way the jump height can be controlled
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+  jr    nz,.EndCheckUpPressed
+  ld    a,(JumpSpeed)
+  or    a
+  jp    p,.EndCheckUpPressed
+  ld    a,(framecounter)
+  rrca
+  jr    c,.EndCheckUpPressed
+  ld    a,(JumpSpeed)
+  inc   a
+  ld    (JumpSpeed),a
+  .EndCheckUpPressed:
+
   ld    hl,JumpSpeed
 
-	ld		a,(PlayerAniCount)
+	ld		a,(PlayerAniCount+1)
 	inc   a
 	cp    GravityTimer
 	jr    nz,.set
@@ -3525,7 +3723,7 @@ Jump:
 
 	xor   a
 	.set:
-	ld		(PlayerAniCount),a
+	ld		(PlayerAniCount+1),a
 
   ;unable to jump through the top of the screen
   ld    a,(Clesy)
@@ -3938,6 +4136,13 @@ DoMovePlayer:               ;carry: collision detected
   call  checktile           ;out z=collision found with wall
   jr    z,.SnapToWallRight
 
+  ;when player is rolling we don't have to check for collision on eye height
+	ld		hl,(PlayerSpriteStand)
+	ld		de,RRolling
+	xor   a
+	sbc   hl,de
+	ret   z
+
   ld    b,YaddHeadPLayer+1  ;add y to check (y is expressed in pixels)
   ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
   call  checktile           ;out z=collision found with wall
@@ -3964,6 +4169,13 @@ DoMovePlayer:               ;carry: collision detected
   call  checktile           ;out z=collision found with wall
   jr    z,.SnapToWallLeft
 
+  ;when player is rolling we don't have to check for collision on eye height
+	ld		hl,(PlayerSpriteStand)
+	ld		de,LRolling
+	xor   a
+	sbc   hl,de
+	ret   z
+
   ld    b,YaddHeadPLayer+1  ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
   call  checktile           ;out z=collision found with wall
@@ -3987,7 +4199,6 @@ DoMovePlayer:               ;carry: collision detected
 ;YaddHeadPLayer:           equ 2
 ;YaddmiddlePLayer:         equ 17
 ;YaddFeetPlayer:           equ 33
-
 
 CheckFloor:
   ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
@@ -4049,18 +4260,17 @@ Rrunning:
 	jr		nz,.UpPressed
 ;	bit		2,a           ;cursor left pressed ?
 ;	jp		nz,.Set_L_run_andcheckpunch
+;	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+	bit		5,a           ;'M' pressed ?
+	jp		nz,Set_R_Rolling
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
 	jp		nz,.DownPressed
 	bit		3,a           ;cursor right pressed ?
 	jp		nz,.MoveAndAnimate
-
-;	bit		4,a           ;space pressed ?
-;	jp		nz,Set_R_standpunch
-;	bit		5,a           ;b pressed ?
-;	jp		nz,Set_R_standmagic
-
+	
   jp    Set_R_stand
 
 .DownPressed:
@@ -4108,6 +4318,10 @@ Lrunning:
   ld    a,(NewPrContr)
 	bit		0,a           ;cursor up pressed ?
 	jr		nz,.UpPressed
+;	bit		4,a           ;space pressed ?
+;	jp		nz,Set_R_standpunch
+	bit		5,a           ;'M' pressed ?
+	jp		nz,Set_L_Rolling
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
@@ -4116,13 +4330,7 @@ Lrunning:
 	jp		nz,.MoveAndAnimate
 ;	bit		3,a           ;cursor right pressed ?
 ;	jp		nz,.AnimateRun
-
-  ld    a,(NewPrContr)
-;	bit		4,a           ;space pressed ?
-;	jp		nz,Set_R_standpunch
-;	bit		5,a           ;b pressed ?
-;	jp		nz,Set_R_standmagic
-
+	
   jp    Set_L_stand
 
 .DownPressed:
@@ -4617,19 +4825,19 @@ Set_L_Attack:
   ret
 
 Set_R_Rolling:
-	ld		hl,RRolling
-	ld		(PlayerSpriteStand),hl
-
   ld    hl,0 
   ld    (PlayerAniCount),hl
+  .SkipPlayerAniCount:
+	ld		hl,RRolling
+	ld		(PlayerSpriteStand),hl
   ret
 
 Set_L_Rolling:
-	ld		hl,LRolling
-	ld		(PlayerSpriteStand),hl
-
   ld    hl,0 
   ld    (PlayerAniCount),hl
+  .SkipPlayerAniCount:
+	ld		hl,LRolling
+	ld		(PlayerSpriteStand),hl
   ret
 
 Set_Stairs_Climb_RightUp:
@@ -4698,8 +4906,8 @@ Set_jump:
 	ld		hl,Jump
 	ld		(PlayerSpriteStand),hl
 
-  xor   a
-	ld		(PlayerAniCount),a
+  ld    hl,0
+	ld		(PlayerAniCount),hl
 	ld    a,StartingJumpSpeed
 	ld		(JumpSpeed),a
   ret
@@ -4711,8 +4919,8 @@ Set_Fall:
 	ld		hl,Jump
 	ld		(PlayerSpriteStand),hl
 
-  xor   a
-	ld		(PlayerAniCount),a
+  ld    hl,0
+	ld		(PlayerAniCount),hl
 	ld    a,FallingJumpSpeed
 	ld		(JumpSpeed),a
   ret

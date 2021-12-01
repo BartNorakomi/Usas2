@@ -82,8 +82,8 @@
   db 0
   db 121
   db 188
-  db 222
-  db 209
+  db 214
+  db 213
   db 240
   db 61
   db 253
@@ -114,8 +114,8 @@
   db 0
   db 247
   db 223
-  db 247
-  db 239
+  db 255
+  db 235
   db 127
   db 251
   db 14
