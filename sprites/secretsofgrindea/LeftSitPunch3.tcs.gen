@@ -37,7 +37,7 @@
   db 7
   db 7
   db 7
-  db 7
+  db 15
   db 7
   db 7
   db 7
@@ -53,12 +53,12 @@
   db 76
   db 73
   db 79
+  db 255
   db 75
   db 75
   db 75
   db 75
-  db 75
-  db 77
+  db 79
   db 76
   db 77
   db 78

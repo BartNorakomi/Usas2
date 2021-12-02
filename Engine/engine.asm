@@ -2465,13 +2465,63 @@ LstandingSpriteStand:         equ 6
 LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
-;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, RPushing, LPushing
+;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit, RSitPunch, LSitPunch
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
 HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
+
+RSitPunch:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  ld    hl,PlayerSpriteData_Char_RightSitPunch1
+  cp    2
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightSitPunch2
+  cp    4
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightSitPunch3
+  cp    15
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightSitPunch2
+  cp    18
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightSitPunch1
+  .setSprite:
+	ld		(standchar),hl
+	
+	cp    21
+	ret   nz
+  jp    Set_R_Sit
+  ret
+
+LSitPunch:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  ld    hl,PlayerSpriteData_Char_LeftSitPunch1
+  cp    2
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftSitPunch2
+  cp    4
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftSitPunch3
+  cp    15
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftSitPunch2
+  cp    18
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_LeftSitPunch1
+  .setSprite:
+	ld		(standchar),hl
+	
+	cp    21
+	ret   nz
+  jp    Set_L_Sit
+  ret
 
 RBeingHit:
   call  MovePlayerLeft.skipFacingDirection      ;out: c-> collision detected
@@ -3117,15 +3167,18 @@ ClimbStairsLeftUp:
 
 AttackRotator:  db 0
 LAttack:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+;  jp    LAttack3
+  
   ld    a,(AttackRotator)
   or    a
-  jp    z,LAttack0
-  dec   a
-  jp    z,LAttack1
-  dec   a
   jp    z,LAttack2
   dec   a
   jp    z,LAttack3
+  dec   a
+  jp    z,LAttack2
+  jp    LAttack3
 
 LAttack4:
   ld    a,(PlayerAniCount)
@@ -3158,10 +3211,10 @@ LAttack3:
   ld    hl,PlayerSpriteData_Char_LeftPunch2c
   cp    20
   jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_LeftPunch2d
+  ld    hl,PlayerSpriteData_Char_LeftPunch2b
   cp    22
   jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_LeftPunch2e
+  ld    hl,PlayerSpriteData_Char_LeftPunch2a
   .setSprite:
 	ld		(standchar),hl
 	
@@ -3230,15 +3283,18 @@ LAttack0:
   jp    Set_L_Stand
 
 RAttack:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+;  jp    RAttack2
+
   ld    a,(AttackRotator)
   or    a
-  jp    z,RAttack0
-  dec   a
-  jp    z,RAttack1
-  dec   a
   jp    z,RAttack2
   dec   a
   jp    z,RAttack3
+  dec   a
+  jp    z,RAttack2
+  jp    RAttack3
 
 RAttack4:
   ld    a,(PlayerAniCount)
@@ -3271,10 +3327,10 @@ RAttack3:
   ld    hl,PlayerSpriteData_Char_RightPunch2c
   cp    20
   jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_RightPunch2d
+  ld    hl,PlayerSpriteData_Char_RightPunch2b
   cp    22
   jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_RightPunch2e
+  ld    hl,PlayerSpriteData_Char_RightPunch2a
   .setSprite:
 	ld		(standchar),hl
 	
@@ -3544,7 +3600,10 @@ AnimateWhileJump:
   or    a
   jp    z,.AnimateJumpFacingLeft
 
-.AnimateJumpFacingRight:
+  ld    a,(KickWhileJump?)
+  dec   a
+  jr    nz,.KickWhileJumpRight
+
   ld    a,(DoubleJumpAvailable?)
   or    a
   jr    z,.RollingJumpRight
@@ -3562,6 +3621,11 @@ AnimateWhileJump:
 	ld		(standchar),hl
   ret
 
+.KickWhileJumpRight:
+	ld		hl,PlayerSpriteData_Char_RightLowKick
+	ld		(standchar),hl
+  ret
+
 .RollingJumpRight:
   ld    a,(JumpSpeed)
   sub   a,5
@@ -3572,6 +3636,10 @@ AnimateWhileJump:
   ret
 
 .AnimateJumpFacingLeft:
+  ld    a,(KickWhileJump?)
+  dec   a
+  jr    nz,.KickWhileJumpLeft
+
   ld    a,(DoubleJumpAvailable?)
   or    a
   jr    z,.RollingJumpLeft
@@ -3597,6 +3665,10 @@ AnimateWhileJump:
   ld    hl,LeftRollingAnimation
   jp    AnimateRolling  
 
+.KickWhileJumpLeft:
+	ld		hl,PlayerSpriteData_Char_LeftHighKick
+	ld		(standchar),hl
+  ret
 
 CheckSnapToStairsWhileJump:
 ;check if there are stairs when pressing up, if so climb the stairs.
@@ -3675,8 +3747,20 @@ CheckSnapToStairsWhileJump:
   add   hl,de
   ld    (ClesX),hl
   ret  
-  
+
+KickWhileJump?:  db  1
 Jump:
+  ld    a,(KickWhileJump?)
+  dec   a
+  jr    z,.EndDecreaseKickWhileJumpCounter
+  ld    (KickWhileJump?),a  
+  .EndDecreaseKickWhileJumpCounter:
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
   call  MoveHorizontallyWhileJump
 	ld		a,(Controls)
 	bit		0,a           ;cursor up pressed ?
@@ -3688,8 +3772,15 @@ Jump:
   call  nz,CheckSnapToStairsWhileJump
 
   ld    a,(NewPrContr)
+	bit		4,a           ;trig a pressed ?
+	jp    nz,.SetKickWhileJump
 	bit		0,a           ;cursor up pressed ?
 	jp    nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
+  ret
+
+  .SetKickWhileJump:
+  ld    a,10
+  ld    (KickWhileJump?),a
   ret
 
   .VerticalMovement:
@@ -3863,6 +3954,12 @@ Lsitting:
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+	jp		nz,Set_L_SitPunch
+;	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic	
+
 	ld		a,(Controls)
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.EndCheckLeftPressed
@@ -3879,11 +3976,6 @@ Lsitting:
 ;	bit		3,a           ;cursor right pressed ?
 ;	jp		nz,.AnimateRun
 
-;  ld    a,(NewPrContr)
-;	bit		4,a           ;space pressed ?
-;	jp		nz,Set_R_standpunch
-;	bit		5,a           ;b pressed ?
-;	jp		nz,Set_R_standmagic	
 	jp		Set_L_stand
 
 Rsitting:
@@ -3900,6 +3992,12 @@ Rsitting:
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
+  ld    a,(NewPrContr)
+	bit		4,a           ;space pressed ?
+	jp		nz,Set_R_SitPunch
+;	bit		5,a           ;b pressed ?
+;	jp		nz,Set_R_standmagic	
+
 	ld		a,(Controls)
 	bit		3,a           ;cursor right pressed ?
 	jp		nz,.EndCheckRightPressed
@@ -3916,11 +4014,6 @@ Rsitting:
 ;	bit		3,a           ;cursor right pressed ?
 ;	jp		nz,.AnimateRun
 
-;  ld    a,(NewPrContr)
-;	bit		4,a           ;space pressed ?
-;	jp		nz,Set_R_standpunch
-;	bit		5,a           ;b pressed ?
-;	jp		nz,Set_R_standmagic	
 	jp		Set_R_stand
 
 .CheckLadder:
@@ -4260,8 +4353,8 @@ Rrunning:
 	jr		nz,.UpPressed
 ;	bit		2,a           ;cursor left pressed ?
 ;	jp		nz,.Set_L_run_andcheckpunch
-;	bit		4,a           ;space pressed ?
-;	jp		nz,Set_R_standpunch
+	bit		4,a           ;space pressed ?
+	jp		nz,Set_R_attack
 	bit		5,a           ;'M' pressed ?
 	jp		nz,Set_R_Rolling
 
@@ -4318,8 +4411,8 @@ Lrunning:
   ld    a,(NewPrContr)
 	bit		0,a           ;cursor up pressed ?
 	jr		nz,.UpPressed
-;	bit		4,a           ;space pressed ?
-;	jp		nz,Set_R_standpunch
+	bit		4,a           ;space pressed ?
+	jp		nz,Set_L_attack
 	bit		5,a           ;'M' pressed ?
 	jp		nz,Set_L_Rolling
 
@@ -4986,6 +5079,20 @@ Set_L_BeingHit:
 
 Set_R_BeingHit:
 	ld		hl,RBeingHit
+	ld		(PlayerSpriteStand),hl
+  xor   a
+	ld		(PlayerAniCount),a
+  ret
+
+Set_L_SitPunch:
+	ld		hl,LSitPunch
+	ld		(PlayerSpriteStand),hl
+  xor   a
+	ld		(PlayerAniCount),a
+  ret
+
+Set_R_SitPunch:
+	ld		hl,RSitPunch
 	ld		(PlayerSpriteStand),hl
   xor   a
 	ld		(PlayerAniCount),a
