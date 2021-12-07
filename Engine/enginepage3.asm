@@ -557,12 +557,6 @@ include "../sprites/bordermasksprite.tcs.gen"
 bordermasksprite_color_withCEbit:
 include "../sprites/bordermaskspriteECbit.tcs.gen"
 
-clessprite_graphics:
-include "../sprites/cles.tgs.gen"
-clessprite_color:
-include "../sprites/cles.tcs.gen"
-
-
 initiatebordermaskingsprites:
 	ld		c,$98                 ;out port
 	ld		de,(sprchatableaddress)		      ;sprite character table in VRAM ($17800)
@@ -591,14 +585,6 @@ initiatebordermaskingsprites:
   pop   bc
   djnz  .loop1
 ;/put border masking sprites character
-
-
-  ld    hl,clessprite_graphics
-	call	outix32               ;1 sprites (1 * 32 = 32 bytes)
-	call	outix32               ;1 sprites (1 * 32 = 32 bytes)
-	call	outix32               ;1 sprites (1 * 32 = 32 bytes)
-	call	outix32               ;1 sprites (1 * 32 = 32 bytes)
-
   ret
   
   
@@ -625,13 +611,6 @@ initiatebordermaskingsprites:
   pop   bc
   djnz  .loop3
 ;/put border masking sprites color
-
-
-  ld    hl,clessprite_color
-	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
-	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
-	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
-	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
   ret
 
 copyGraphicsToScreen:

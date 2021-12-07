@@ -2481,18 +2481,18 @@ RSitPunch:
   cp    2
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightSitPunch2
-  cp    4
+  cp    3
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightSitPunch3
-  cp    15
+  cp    20
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightSitPunch2
-  cp    18
+  cp    21
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightSitPunch1
   .setSprite:
 	ld		(standchar),hl
-	
+
 	cp    21
 	ret   nz
   jp    Set_R_Sit
@@ -2506,13 +2506,13 @@ LSitPunch:
   cp    2
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftSitPunch2
-  cp    4
+  cp    3
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftSitPunch3
-  cp    15
+  cp    20
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftSitPunch2
-  cp    18
+  cp    21
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftSitPunch1
   .setSprite:
@@ -2598,14 +2598,14 @@ RRolling:
   ld    a,(NewPrContr)
 	bit		0,a                         ;cursor up pressed ?
 	jr		nz,.UpPressed
-	bit		2,a                         ;cursor left pressed ?
-	jp		nz,Set_L_Rolling.SkipPlayerAniCount
     
 	ld		a,(Controls)
 	bit		1,a                         ;cursor down pressed ?
 	jp		nz,.DownPressed             ;check stairs or ladders
 	bit		3,a                         ;cursor right pressed ?
 	jp		nz,MovePlayerRight
+	bit		2,a                         ;cursor left pressed ?
+	jp		nz,Set_L_Rolling.SkipPlayerAniCount
   jp    EndMovePlayerHorizontally   ;slowly come to a full stop when not moving horizontally
 
   .DownPressed:                     ;check stairs or ladders
@@ -2650,6 +2650,7 @@ RRolling:
   inc   hl    
   inc   hl    
   inc   hl    
+  inc   hl    
   ld    (clesx),hl  
   jp    Set_Fall
 
@@ -2684,14 +2685,14 @@ LRolling:
   ld    a,(NewPrContr)
 	bit		0,a                         ;cursor up pressed ?
 	jr		nz,.UpPressed
-	bit		3,a                         ;cursor right pressed ?
-	jp		nz,Set_R_Rolling.SkipPlayerAniCount
     
 	ld		a,(Controls)
 	bit		1,a                         ;cursor down pressed ?
 	jp		nz,.DownPressed             ;check stairs or ladders
 	bit		2,a                         ;cursor left pressed ?
 	jp		nz,MovePlayerLeft 
+	bit		3,a                         ;cursor right pressed ?
+	jp		nz,Set_R_Rolling.SkipPlayerAniCount
   jp    EndMovePlayerHorizontally   ;slowly come to a full stop when not moving horizontally
 
   .DownPressed:                     ;check stairs or ladders
@@ -3571,6 +3572,7 @@ YaddmiddlePLayer:         equ 17
 YaddFeetPlayer:           equ 33
 XaddLeftPlayer:           equ 00 - 8
 XaddRightPlayer:          equ 15 - 8
+KickWhileJumpDuration:    equ 10
 
 MoveHorizontallyWhileJump:
   ld    b,0                 ;horizontal movement
@@ -3622,7 +3624,15 @@ AnimateWhileJump:
   ret
 
 .KickWhileJumpRight:
-	ld		hl,PlayerSpriteData_Char_RightLowKick
+  sub   KickWhileJumpDuration-2                 ;only change kicking pose 1, so it doesn't change from highkick to lowkick mid air
+  ret   nz
+
+  ld    a,(JumpSpeed)
+  or    a
+	ld		hl,PlayerSpriteData_Char_RightHighKick
+	jp    m,.GoKickRight
+	ld		hl,PlayerSpriteData_Char_RightLowKick	
+	.GoKickRight:
 	ld		(standchar),hl
   ret
 
@@ -3666,9 +3676,18 @@ AnimateWhileJump:
   jp    AnimateRolling  
 
 .KickWhileJumpLeft:
+  sub   KickWhileJumpDuration-2                 ;only change kicking pose 1, so it doesn't change from highkick to lowkick mid air
+  ret   nz
+  
+  ld    a,(JumpSpeed)
+  or    a
 	ld		hl,PlayerSpriteData_Char_LeftHighKick
+	jp    m,.GoKickLeft
+	ld		hl,PlayerSpriteData_Char_LeftLowKick
+	.GoKickLeft:
 	ld		(standchar),hl
   ret
+
 
 CheckSnapToStairsWhileJump:
 ;check if there are stairs when pressing up, if so climb the stairs.
@@ -3779,7 +3798,7 @@ Jump:
   ret
 
   .SetKickWhileJump:
-  ld    a,10
+  ld    a,KickWhileJumpDuration
   ld    (KickWhileJump?),a
   ret
 
@@ -3941,6 +3960,9 @@ Jump:
   jp    Set_jump.SkipTurnOnDoubleJump
    
 Lsitting:
+  xor   a
+  ld    (PlayerFacingRight?),a		
+
 	ld		hl,PlayerSpriteData_Char_LeftSitting
 	ld		(standchar),hl
 
@@ -3979,6 +4001,9 @@ Lsitting:
 	jp		Set_L_stand
 
 Rsitting:
+  ld    a,1
+  ld    (PlayerFacingRight?),a		
+
 	ld		hl,PlayerSpriteData_Char_RightSitting
 	ld		(standchar),hl
 
