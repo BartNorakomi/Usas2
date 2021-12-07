@@ -67,7 +67,7 @@
   db 2
   db 143
   db 112
-  db 193
+  db 129
   db 127
   db 97
   db 62
@@ -78,11 +78,11 @@
   db 55
   db 50
   db 62
-  db 56
+  db 100
   db 124
   db 0
   db 89
-  db 202
+  db 206
   db 241
   db 30
   db 248
@@ -99,7 +99,7 @@
   db 253
   db 249
   db 143
-  db 190
+  db 254
   db 65
   db 127
   db 61
@@ -110,11 +110,11 @@
   db 47
   db 46
   db 0
-  db 68
+  db 92
   db 0
   db 135
   db 223
-  db 53
+  db 49
   db 223
   db 230
   db 24

@@ -100,9 +100,6 @@ met sprites kun je dan kandelaren en pilaren enzo maken voor de variatie
 je kunt spelen met de snelheid van de speler... op een lopende band bijvoorbeeld.... of met wind effect..
 Achtergrond moet dus repeaten met 48 pixels... 6 tiles.. Dit is perfect voor de bijengraten..
 
-40:03 monster hoofd
-https://www.youtube.com/watch?v=3dHoO6UQo2Q&ab_channel=zazi77
-
 4:30 blob jump
 https://www.youtube.com/watch?v=_EXhrmh6teM&ab_channel=TensorGaming
 
@@ -126,5 +123,3 @@ https://www.youtube.com/watch?v=E4eL3Kn3LF4&ab_channel=Retromation
 https://www.youtube.com/watch?v=iuIGdgoW2sM&ab_channel=Retromation
 14:10 monstertje 26:06 26:25 26:50 50:33
 
-https://www.youtube.com/watch?v=jSfQXpuDEmc&ab_channel=Retromation
-1:54 monsters 

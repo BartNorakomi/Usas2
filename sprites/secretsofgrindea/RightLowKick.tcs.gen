@@ -46,7 +46,7 @@
   db 13
   db 13
   db 15
-  db 14
+  db 13
   db 15
   db 79
   db 78
@@ -56,11 +56,11 @@
   db 77
   db 78
   db 78
-  db 78
+  db 77
   db 76
   db 76
   db 78
   db 78
   db 255
-  db 79
+  db 78
   db 255
