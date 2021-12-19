@@ -1,3 +1,6 @@
+Muziek: tool
+https://www.youtube.com/watch?v=r714p3hegF4&ab_channel=TheCollectorsWarehouse
+
 een veld met de SF2 engine waarbij een object in de 'achtergrond' animeert (waveanimatie)\
 
 eindbaas die een hele grote (transparante) bal schiet die heel langzaam door het veld beweegt

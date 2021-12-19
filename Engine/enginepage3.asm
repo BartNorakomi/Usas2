@@ -12,8 +12,8 @@ MapB01_004Data: db MapsBlock01 | dw MapB01_004 | db 1,3,3                  | Map
 MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | MapB01_008Data: db MapsBlock01 | dw MapB01_008 | db 1,3,3                  | MapB01_009Data: db MapsBlock01 | dw MapB01_009 | db 1,3,3
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
-WorldMapPointer:  dw  MapA01_009Data
-;WorldMapPointer:  dw  MapB01_010Data
+;WorldMapPointer:  dw  MapA01_009Data
+WorldMapPointer:  dw  MapB01_011Data
 
 loadGraphics:
   call  screenoff
@@ -997,7 +997,7 @@ DoubleJumpAvailable?:         rb    1
 
 amountofenemies:        equ 22
 ;lenghtenemyoffsettable: equ 24+16
-lenghtenemytable:       equ 44
+lenghtenemytable:       equ 45
 ;chatabaddenemspr0:      rb  lenghtexplosioncharcoladresses  ;4*16
 ;                        rb  4* 64
 
@@ -1008,24 +1008,24 @@ lenghtenemytable:       equ 44
 
 enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .alive?:                equ 0
-.inscreen?:             equ 1
+.Sprite?:               equ 1
 .movementpattern:       equ 2
-.y:                     equ 3
-.x:                     equ 4
-.ny:                    equ 5
-.nx:                    equ 6
-.sprnrinspat:           equ 7
-.ObjectNumber:          equ 7
-.nrsprites:             equ 8
-.v1:                    equ 9
-.v2:                    equ 10
-.v3:                    equ 11
-.v4:                    equ 12
-.v5:                    equ 13
-.SnapPlayer?:           equ 13
-.v6:                    equ 14
-.v7:                    equ 15
-.coordinates:           equ 16
+.y:                     equ 3+1
+.x:                     equ 4+1
+.ny:                    equ 5+1
+.nx:                    equ 6+1
+.sprnrinspat:           equ 7+1
+.ObjectNumber:          equ 7+1
+.nrsprites:             equ 8+1
+.v1:                    equ 9+1
+.v2:                    equ 10+1
+.v3:                    equ 11+1
+.v4:                    equ 12+1
+.v5:                    equ 13+1
+.SnapPlayer?:           equ 13+1
+.v6:                    equ 14+1
+.v7:                    equ 15+1
+.coordinates:           equ 16+1
 
 
 

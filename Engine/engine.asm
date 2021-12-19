@@ -4,6 +4,7 @@ LevelEngine:
   call  BackdropBlack
   call  PopulateControls
   call  Sf2EngineObjects          ;di, restore background object, handle action object, put object in screen, handle interaction object and player, prepare page to be set on Vblank, ei 
+  call  Handle_HardWareSprite_Enemies_And_objects
   call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
   call  PutPlayersprite           ;outs char data to Vram, col data to Vram and sets spat data for player (coordinates depend on camera x+y)
   call  PutSpatToVram             ;outs all spat data to Vram
@@ -89,9 +90,210 @@ switchpageSF2Engine:
   ld    (PageOnNextVblank),a
   ret
 
-handle_enemies_and_objects:                           ;2. call movement_enemies_and_objects (if within movement area)
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  cp    1
+Handle_HardWareSprite_Enemies_And_objects:
+	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
+	out		($a8),a	
+  ld    a,(movementpatternsblock)
+	call	block1234			                                ;at address $4000 / page 1+2
+
+  ld    de,enemies_and_objects+(0*lenghtenemytable)                           
+  ld    a,(de) | inc a | call z,.docheck            
+  ld    de,enemies_and_objects+(1*lenghtenemytable)                        
+  ld    a,(de) | inc a | call z,.docheck             
+  ld    de,enemies_and_objects+(2*lenghtenemytable)                                 
+  ld    a,(de) | inc a | call z,.docheck            
+  ld    de,enemies_and_objects+(3*lenghtenemytable)                               
+  ld    a,(de) | inc a | call z,.docheck            
+  ld    de,enemies_and_objects+(4*lenghtenemytable)                                     
+  ld    a,(de) | inc a | call z,.docheck             
+
+	ld		a,(slot.ram)	      ;back to full RAM
+	out		($a8),a	
+  ret
+
+  .docheck:
+  call  BackdropRed
+  
+  ld    ixl,e
+  ld    ixh,d
+    
+  call  movement_enemies_and_objects                  ;sprite is in movement area, so let it move !! ^__^
+  call  BackdropBlack
+  ld    a,(ix+enemies_and_objects.Sprite?)            ;Is this a hardware sprite that needs to be put in screen ?
+  or    a
+  ret   z
+
+;Put enemy/object hardware sprite
+;  ld    a,(ix+enemies_and_objects.sprnrinspat)     ;spnrinspat
+;  add   a,a                 ;*2
+;  add   a,a                 ;*4
+;  ld    d,0
+;  ld    e,a
+;  ld    hl,spat
+;  add   hl,de               ;y sprite in spat
+
+;  ld    (hl),100            ;y sprite
+;  inc   hl
+;  ld    (hl),100            ;x sprite
+;  inc   hl
+;  ld    (hl),100            ;y sprite
+;  inc   hl
+;  ld    (hl),100            ;x sprite
+
+
+	ld		a,(slot.page12rom)	;all RAM except page 1+2
+	out		($a8),a	
+  
+;put hero sprite character
+	ld		de,(invissprchatableaddress)		;sprite character table in VRAM ($17800)
+  ld    a,26                            ;spritenumber
+  ld    h,0
+  ld    l,a
+  add   hl,hl       ;*2
+  add   hl,hl       ;*4
+  add   hl,hl       ;*8
+  add   hl,hl       ;*16
+  add   hl,hl       ;*32
+  add   hl,de
+	ld		a,1
+	call	SetVdp_Write
+
+	ld		a,EnemySpritesblock1
+	call	block1234		;set blocks in page 1/2
+
+	ld		hl,RightRetardZombieWalk1_Char      ;sprite character in ROM
+        
+	ld		c,$98
+	call	outix128    ;4 sprites (4 * 32 = 128 bytes)
+;/put hero sprite character
+
+  exx               ;store hl. hl now points to color data
+
+;put hero sprite color
+	ld		de,(invissprcoltableaddress)		;sprite color table in VRAM ($17400)
+  ld    a,26                            ;spritenumber
+  ld    h,0
+  ld    l,a
+  add   hl,hl       ;*2
+  add   hl,hl       ;*4
+  add   hl,hl       ;*8
+  add   hl,hl       ;*16
+  add   hl,de
+	ld		a,1
+	call	SetVdp_Write
+
+  exx               ;recall hl. hl now points to color data
+
+
+;X32BitShiftValue: equ 32
+;check if player is left side of screen, if so add 32 bit shift
+;  push  hl
+;  ld    hl,(ClesX)
+;  ld    de,X32BitShiftValue
+;  sbc   hl,de
+;  pop   hl
+;	jp    nc,.PlayerRightSide
+
+;  .PlayerLeftSide:
+;  ld    c,128
+;  ld    b,64
+;  .Player32bitShifLoop:  
+;  ld    a,(hl)
+;  add   a,c
+;  out   ($98),a
+;  inc   hl
+;  djnz  .Player32bitShifLoop
+;  jp    .end32bitshift
+;check if player is left side of screen, if so add 32 bit shift
+
+;  .PlayerRightSide:
+	call	outix64     ;4 sprites (4 * 16 bytes = 46 bytes)
+;.end32bitshift:
+
+
+
+;after the color data there are 2 bytes for the top and bottom offset of the sprites
+;  ld    a,(hl)
+;  ld    (selfmodifyingcode_x_offset_hero_top),a  
+;  inc   hl
+;  ld    a,(hl)
+;  ld    (selfmodifyingcode_x_offset_hero_bottom),a  
+
+
+;.spriteattributetable:
+
+
+;  ld    a,(ClesY)
+;  sub   a,16
+;  ld    b,a
+;  add   a,16
+;  ld    c,a
+
+;  ld    a,(CameraX)         ;camera jumps 16 pixels every page, subtract this value from x Cles
+;  and   %1111 0000
+  
+;  ld    d,0
+;  ld    e,a
+  
+;  ld    hl,(ClesX)
+;  sbc   hl,de               ;take x Cles and subtract the x camer
+
+;  ld    a,h                 ;if the value now is <0 or >256 Cles is out of the screen
+;  or    a
+;  jp    nz,.outofscreen
+
+;  ld    a,l
+
+;  cp    32
+;  jr    nc,.PutPlayerxY
+;  add   a,32
+;  jp    .PutPlayerxY
+;.outofscreen:
+;  ld    a,255
+;.PutPlayerxY:
+
+
+  ld    a,(CameraX)         ;camera jumps 16 pixels every page, subtract this value from x Cles
+  and   %1111 0000
+  ld    b,a
+  
+  ld    a,100
+  sub   a,b
+  ld    b,a
+
+
+  ld    de,3
+  ld    hl,spat+104          
+  ld    (hl),100              ;y sprite 26
+  inc   hl                  
+  ld    (hl),b              ;x sprite 26
+  add   hl,de
+  ld    (hl),100              ;y sprite 27      
+  inc   hl 
+  ld    (hl),b              ;x sprite 27
+  add   hl,de
+  
+  ld    (hl),116              ;y sprite 28  
+  inc   hl      
+
+;selfmodifyingcode_x_offset_hero_bottom: equ $+1
+;  add   a,0
+
+  ld    (hl),b              ;x sprite 28
+  add   hl,de
+  ld    (hl),116            ;y sprite 29
+  inc   hl               
+  ld    (hl),b              ;x sprite 29
+  add   hl,de
+
+	ld		a,(slot.ram)	;back to full RAM
+	out		($a8),a	
+  ret
+
+
+handle_enemies_and_objects:
+  ld    a,(scrollEngine)                              ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
   ret   nz
   
 	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
@@ -149,25 +351,17 @@ handle_enemies_and_objects:                           ;2. call movement_enemies_
   ret
 
   .docheck:
-  call  BackdropRed
-  
+  call  BackdropRed  
   ld    ixl,e
   ld    ixh,d
-    
   call  movement_enemies_and_objects                  ;sprite is in movement area, so let it move !! ^__^
   call  BackdropBlack
   ret
-
+  
 movementpatternsblock:  db  movementpatterns1block
 movement_enemies_and_objects:
-  ld    a,(ix+enemies_and_objects.movementpattern)    ;movementpattern
-  ld    b,a
-  add   a,a                 ;*2
-  add   a,b                 ;*3
-  ld    d,0
-  ld    e,a
-  ld    hl,movementpatternaddress
-  add   hl,de
+  ld    l,(ix+enemies_and_objects.movementpattern)    ;movementpattern
+  ld    h,(ix+enemies_and_objects.movementpattern+1)  ;movementpattern
   jp    (hl)
 
 VramObjectX:  db  000
@@ -692,14 +886,8 @@ Sf2EngineObjects:
   ld    ixl,e
   ld    ixh,d    
 
-  ld    a,(ix+enemies_and_objects.movementpattern)             ;movementpattern
-  ld    b,a
-  add   a,a                 ;*2
-  add   a,b                 ;*3
-  ld    d,0
-  ld    e,a
-  ld    hl,movementpatternaddress
-  add   hl,de
+  ld    l,(ix+enemies_and_objects.movementpattern)    ;movementpattern
+  ld    h,(ix+enemies_and_objects.movementpattern+1)  ;movementpattern
   jp    (hl)
 
 restoreBackgroundObject1:

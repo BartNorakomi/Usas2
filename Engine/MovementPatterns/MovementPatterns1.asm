@@ -1,14 +1,16 @@
 ;This is at $4000 inside a block (movementpatternsblock)
-movementpatternaddress:
-  jp    PlatformVertically                  ;movement pattern 1   
-  jp    PlatformHorizontally                ;movement pattern 2   
-  jp    Sf2Hugeobject1                      ;movement pattern 3
-  jp    Sf2Hugeobject2                      ;movement pattern 4
-  jp    Sf2Hugeobject3                      ;movement pattern 5
-  jp    PushingStone                        ;movement pattern 6
-  jp    PushingStonePuzzleSwitch            ;movement pattern 7
-  jp    PushingStonePuzzleOverview          ;movement pattern 8
+;PlatformVertically              
+;PlatformHorizontally            
+;Sf2Hugeobject1                  
+;Sf2Hugeobject2                  
+;Sf2Hugeobject3                    
+;PushingStone                       
+;PushingPuzzleSwitch                
+;PushingPuzzlOverview              
+;RetardedZombie                   
 
+RetardedZombie:
+  ret
 
 Sf2Hugeobject1:                             ;movement pattern 3
   ld    a,(HugeObjectFrame)
@@ -155,7 +157,7 @@ MoveObjectWithStepTable:
   ld    (ClesY),a  
   ret
   
-PushingStonePuzzleOverview:
+PushingPuzzlOverview:
   ld    a,(ShowOverView?)
   or    a
   jr    nz,InitiatlizeOverview              ;when entering screen turn switches on or off
@@ -267,7 +269,7 @@ InitiatlizeOverview:
   ret
   
 
-PushingStonePuzzleSwitch:
+PushingPuzzleSwitch:
   ld    a,(ix+enemies_and_objects.v1)       ;initialize?
   or    a
   jp    nz,InitiatlizeSwitch                ;when entering screen turn switch on or off
