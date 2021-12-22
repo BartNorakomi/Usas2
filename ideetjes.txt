@@ -3,6 +3,9 @@ https://www.youtube.com/watch?v=r714p3hegF4&ab_channel=TheCollectorsWarehouse
 
 een veld met de SF2 engine waarbij een object in de 'achtergrond' animeert (waveanimatie)\
 
+een bosfight zonder software sprites, waarbij 2 identieke pages gebruikt worden, waarbij de achtergrond in het 2e scherm 2 of 3 pixels vertikaal verschoven is.
+Elke hit laat het beeld trillen door deze 2 pages af te wisselen. Hierdoor trilt alleen de voorgrond. Cool effect dusssuh!! 
+
 eindbaas die een hele grote (transparante) bal schiet die heel langzaam door het veld beweegt
 
 3 grote blokken met kettingen die een voor 1 naar beneden vallen, maar tegelijkertijd omhoog komen (waarbij ze om en om 2 pixels bewegen). Op deze manier beweegt geen enkele dus tegelijktijd met een andere
@@ -28,6 +31,9 @@ Cles kan als ie happy is een kopie van zichzelf maken. beiden zijn dan zichtbaar
 Het kost mana. Als de mana op is, of je annuleren drukt, dan gaat de kopie heel snel terug naar cles.
 Op deze manier kun je puzzels oplossen, zoals cles en zn kopie moeten op een trigger staan om een deur te openen. Of op zo'n dalend platform dingetje
 Helemaal cool als de kopie ook moods kan oppakken.
+
+scythe die heen en weer beweegt, cool deadly object: (11:16). Hetzelfde principe maar dan de diepte in zie je eerder in die video
+https://www.youtube.com/watch?v=VoU4NvMFeXs&ab_channel=MOB-XGame
 
 coole lava animatie 18:12
 https://www.youtube.com/watch?v=N2PqVAo7NAc&ab_channel=AL82RetrogamingLongplays

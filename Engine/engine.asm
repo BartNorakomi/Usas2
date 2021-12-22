@@ -91,10 +91,15 @@ switchpageSF2Engine:
   ret
 
 Handle_HardWareSprite_Enemies_And_objects:
+;several optimizations are possible here:
+;1. selfmodifying ld hl,(invissprchatableaddress) into ld hl,nn
+;2. several calls can be written out, like call SetVdp_Write
+;3. the call outix32 can be changed into their respective numbers with a jp endOutChar at the end
+;4. ld a,(CameraX) and %1111 0000 neg can be hardcoded
 	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
 	out		($a8),a	
   ld    a,(movementpatternsblock)
-	call	block1234			                                ;at address $4000 / page 1+2
+	call	block123 ;4			                                ;at address $4000 / page 1+2
 
   ld    de,enemies_and_objects+(0*lenghtenemytable)                           
   ld    a,(de) | inc a | call z,.docheck            
@@ -111,185 +116,162 @@ Handle_HardWareSprite_Enemies_And_objects:
 	out		($a8),a	
   ret
 
-  .docheck:
-  call  BackdropRed
-  
+  .docheck:  
   ld    ixl,e
   ld    ixh,d
-    
-  call  movement_enemies_and_objects                  ;sprite is in movement area, so let it move !! ^__^
-  call  BackdropBlack
-  ld    a,(ix+enemies_and_objects.Sprite?)            ;Is this a hardware sprite that needs to be put in screen ?
-  or    a
-  ret   z
+  call  movement_enemies_and_objects            ;handle sprite movement and animation
+;out hl -> sprite character data to out to Vram
+;out a -> EnemySpritesblock
+;out exx
+;out de -> spritenumber*26 (used for character and color data addreess)
 
-;Put enemy/object hardware sprite
-;  ld    a,(ix+enemies_and_objects.sprnrinspat)     ;spnrinspat
-;  add   a,a                 ;*2
-;  add   a,a                 ;*4
-;  ld    d,0
-;  ld    e,a
-;  ld    hl,spat
-;  add   hl,de               ;y sprite in spat
-
-;  ld    (hl),100            ;y sprite
-;  inc   hl
-;  ld    (hl),100            ;x sprite
-;  inc   hl
-;  ld    (hl),100            ;y sprite
-;  inc   hl
-;  ld    (hl),100            ;x sprite
-
-
-	ld		a,(slot.page12rom)	;all RAM except page 1+2
-	out		($a8),a	
+  ;set block containing sprite data
+	di
+	ld		(memblocks.4),a                         ;set to block 4 at $a000
+	ld		($b000),a
+	ei
   
-;put hero sprite character
-	ld		de,(invissprchatableaddress)		;sprite character table in VRAM ($17800)
-  ld    a,26                            ;spritenumber
-  ld    h,0
-  ld    l,a
-  add   hl,hl       ;*2
-  add   hl,hl       ;*4
-  add   hl,hl       ;*8
-  add   hl,hl       ;*16
-  add   hl,hl       ;*32
+  ;set address to write sprite character data to
+	ld		hl,(invissprchatableaddress)		        ;sprite character table in VRAM ($17800)   
   add   hl,de
+  add   hl,de  
 	ld		a,1
 	call	SetVdp_Write
 
-	ld		a,EnemySpritesblock1
-	call	block1234		;set blocks in page 1/2
-
-	ld		hl,RightRetardZombieWalk1_Char      ;sprite character in ROM
-        
+  ;out character data
+  exx                                           ;recall hl. hl now points to character data
 	ld		c,$98
-	call	outix128    ;4 sprites (4 * 32 = 128 bytes)
-;/put hero sprite character
+  ld    a,(ix+enemies_and_objects.nrsprites)    ;amount of sprites (1 sprite=15    2 sprites=12    3 sprites=9    4 sprites=6    5 sprites=3        6 sprites=0     (18 - (amount of sprites*3)))  
+  ld    (.SelfModifyinJRCharacterData),a
+  ld    (.SelfModifyinJRColorData),a  
+  .SelfModifyinJRCharacterData:  equ $+1
+  jr    .Charloop
+  call  outix32 | call  outix32 | call  outix32 | call  outix32 | call  outix32
+  .CharLoop:  
+  call  outix32
+  .endOutChar:
+  exx                                           ;store hl. hl now points to color data
 
-  exx               ;store hl. hl now points to color data
-
-;put hero sprite color
-	ld		de,(invissprcoltableaddress)		;sprite color table in VRAM ($17400)
-  ld    a,26                            ;spritenumber
-  ld    h,0
-  ld    l,a
-  add   hl,hl       ;*2
-  add   hl,hl       ;*4
-  add   hl,hl       ;*8
-  add   hl,hl       ;*16
+  ;set address to write sprite color data to
+	ld		hl,(invissprcoltableaddress)		        ;sprite color table in VRAM ($17400)
   add   hl,de
 	ld		a,1
 	call	SetVdp_Write
 
-  exx               ;recall hl. hl now points to color data
+  ;check if sprite is left or right part of map
+  ld    l,(ix+enemies_and_objects.x)  
+  ld    h,(ix+enemies_and_objects.x+1)      ;x
+  ld    de,304/2                            ;half of the map width
+  sbc   hl,de
+  jp    c,.LeftSideOfMap
 
+.RightSideOfMap:
+  ;out color data
+  exx                                           ;recall hl. hl now points to color data
+  .SelfModifyinJRColorData:  equ $+1
+  jr    .ColLoop
+  call  outix16 | call  outix16 | call  outix16 | call  outix16 | call  outix16
+  .ColLoop:  
+  call  outix16
 
-;X32BitShiftValue: equ 32
-;check if player is left side of screen, if so add 32 bit shift
-;  push  hl
-;  ld    hl,(ClesX)
-;  ld    de,X32BitShiftValue
-;  sbc   hl,de
-;  pop   hl
-;	jp    nc,.PlayerRightSide
-
-;  .PlayerLeftSide:
-;  ld    c,128
-;  ld    b,64
-;  .Player32bitShifLoop:  
-;  ld    a,(hl)
-;  add   a,c
-;  out   ($98),a
-;  inc   hl
-;  djnz  .Player32bitShifLoop
-;  jp    .end32bitshift
-;check if player is left side of screen, if so add 32 bit shift
-
-;  .PlayerRightSide:
-	call	outix64     ;4 sprites (4 * 16 bytes = 46 bytes)
-;.end32bitshift:
-
-
-
-;after the color data there are 2 bytes for the top and bottom offset of the sprites
-;  ld    a,(hl)
-;  ld    (selfmodifyingcode_x_offset_hero_top),a  
-;  inc   hl
-;  ld    a,(hl)
-;  ld    (selfmodifyingcode_x_offset_hero_bottom),a  
-
-
-;.spriteattributetable:
-
-
-;  ld    a,(ClesY)
-;  sub   a,16
-;  ld    b,a
-;  add   a,16
-;  ld    c,a
-
-;  ld    a,(CameraX)         ;camera jumps 16 pixels every page, subtract this value from x Cles
-;  and   %1111 0000
+  ;write sprite coordinates to spat (take in account offset values per sprite and camera position)
+  ld    e,(ix+enemies_and_objects.spataddress)  
+  ld    d,(ix+enemies_and_objects.spataddress+1);de points to spat  
   
-;  ld    d,0
-;  ld    e,a
-  
-;  ld    hl,(ClesX)
-;  sbc   hl,de               ;take x Cles and subtract the x camer
-
-;  ld    a,h                 ;if the value now is <0 or >256 Cles is out of the screen
-;  or    a
-;  jp    nz,.outofscreen
-
-;  ld    a,l
-
-;  cp    32
-;  jr    nc,.PutPlayerxY
-;  add   a,32
-;  jp    .PutPlayerxY
-;.outofscreen:
-;  ld    a,255
-;.PutPlayerxY:
-
-
-  ld    a,(CameraX)         ;camera jumps 16 pixels every page, subtract this value from x Cles
+  ld    a,(CameraX)                             ;camera jumps 16 pixels every page, subtract this value from x Cles
   and   %1111 0000
-  ld    b,a
+  neg
+  add   a,(ix+enemies_and_objects.x)
+  add   -16                                     ;move all sprite 16 pixels left so they can walk out of screen left completely  
+  ld    c,a                                     ;x coordinate in c
+  ld    b,(ix+enemies_and_objects.y)            ;y coordinate in b
+
+  exx
+  ld    b,(ix+enemies_and_objects.nrspritesSimple)
+  .LoopRightSideOfScreen:
+  exx
   
-  ld    a,100
-  sub   a,b
-  ld    b,a
-
-
-  ld    de,3
-  ld    hl,spat+104          
-  ld    (hl),100              ;y sprite 26
-  inc   hl                  
-  ld    (hl),b              ;x sprite 26
-  add   hl,de
-  ld    (hl),100              ;y sprite 27      
-  inc   hl 
-  ld    (hl),b              ;x sprite 27
-  add   hl,de
-  
-  ld    (hl),116              ;y sprite 28  
-  inc   hl      
-
-;selfmodifyingcode_x_offset_hero_bottom: equ $+1
-;  add   a,0
-
-  ld    (hl),b              ;x sprite 28
-  add   hl,de
-  ld    (hl),116            ;y sprite 29
+  ld    a,(hl)                                  ;offset y (sprite offsets are in hl and are stored in rom right after the color data)
+  add   a,b
+  ld    (de),a                                  ;y sprite
+  inc   de                  
   inc   hl               
-  ld    (hl),b              ;x sprite 29
-  add   hl,de
+  ld    a,(hl)                                  ;offset x
+  add   a,c  
+  cp    65                                      ;check if x<65. If so sprite is out of camera range
+  jr    nc,.RightSideChecked
+  ld    a,255
+  .RightSideChecked:
+  ld    (de),a                                  ;x sprite
+  inc   de
+  inc   de
+  inc   de                                      ;y next sprite
+  inc   hl
+  
+  exx
+  djnz  .LoopRightSideOfScreen
 
 	ld		a,(slot.ram)	;back to full RAM
 	out		($a8),a	
   ret
 
+.LeftSideOfMap:
+  ;out color data
+  exx                                           ;recall hl. hl now points to color data
+  ld    a,(ix+enemies_and_objects.nrspritesSimple)
+  add   a,a                                     ;*2
+  add   a,a                                     ;*4
+  add   a,a                                     ;*8
+  add   a,a                                     ;*16
+  ld    b,a                                     ;number of sprites * 16
+  ld    c,128
+  .CEbitloop:
+  ld    a,(hl)
+  add   a,c
+  out   ($98),a
+  inc   hl
+  djnz  .CEbitloop
+
+  ;write sprite coordinates to spat (take in account offset values per sprite and camera position)
+  ld    e,(ix+enemies_and_objects.spataddress)  
+  ld    d,(ix+enemies_and_objects.spataddress+1);de points to spat  
+  
+  ld    a,(CameraX)                             ;camera jumps 16 pixels every page, subtract this value from x Cles
+  and   %1111 0000
+  neg
+  add   a,(ix+enemies_and_objects.x)
+  add   32-16                                   ;CE bit correction and move all sprite 16 pixels left so they can walk out of screen left completely
+  ld    c,a                                     ;x coordinate in c
+  ld    b,(ix+enemies_and_objects.y)            ;y coordinate in b
+
+  exx
+  ld    b,(ix+enemies_and_objects.nrspritesSimple)
+  .LoopLeftSideOfScreen:
+  exx
+  
+  ld    a,(hl)                                  ;offset y (sprite offsets are in hl and are stored in rom right after the color data)
+  add   a,b
+  ld    (de),a                                  ;y sprite
+  inc   de                  
+  inc   hl               
+  ld    a,(hl)                                  ;offset x
+  add   a,c
+  cp    200                                     ;check if x>200. If so sprite is out of camera range
+  jr    c,.LeftSideChecked
+  xor   a
+  .LeftSideChecked:
+  ld    (de),a                                  ;x sprite
+  inc   de
+  inc   de
+  inc   de                                      ;y next sprite
+  inc   hl
+  
+  exx
+  djnz  .LoopLeftSideOfScreen
+
+	ld		a,(slot.ram)	;back to full RAM
+	out		($a8),a		
+  ret
 
 handle_enemies_and_objects:
   ld    a,(scrollEngine)                              ;1= 304x216 engine  2=256x216 SF2 engine
@@ -2593,6 +2575,19 @@ SwapSpatColAndCharTable:
 ;MapData:
 ;  ds    38 * 27           ;a map is 38 * 27 tiles big  
 
+CheckTileEnemy:  
+;get enemy X in tiles
+  ld    l,(ix+enemies_and_objects.x)  
+  ld    h,(ix+enemies_and_objects.x+1)      ;x
+  add   hl,de
+
+;  ld    a,h
+;  or    a
+;  jp    m,checktile.CheckTileIsOutOfScreenLeft
+
+  ld    a,(ix+enemies_and_objects.y)  
+  jp    checktile.XandYset
+  
 checktile:  
 ;get player X in tiles
   ld    hl,(ClesX)
@@ -4278,6 +4273,28 @@ Rsitting:
   add   hl,de
   ld    (ClesX),hl
   ret
+ 
+AnimateSprite:
+  ld    a,(framecounter)                    ;animate every x frames
+  and   b
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  jp    nz,.SetAnimationCounter
+  add   a,2                                 ;2 bytes used for pointer to sprite frame address
+  cp    c                                   ;amount of frame addresses
+  jP    nz,.SetAnimationCounter
+  xor   a
+  .SetAnimationCounter:
+  ld    (ix+enemies_and_objects.v1),a     ;v1=Animation Counter
+  
+  ld    d,0
+  ld    e,a
+  add   hl,de
+    
+  ld    e,(hl)
+  inc   hl
+  ld    d,(hl)
+  ex    de,hl                     ;out hl -> sprite character data to out to Vram
+  ret	
 
 AnimateRolling:
   ld    a,(framecounter)          ;animate every 4 frames
@@ -4286,7 +4303,7 @@ AnimateRolling:
   
   ld    a,(PlayerAniCount)
   add   a,2                       ;2 bytes used for pointer to sprite frame address
-  cp    2 * 12                    ;08 frame addresses
+  cp    2 * 12                    ;12 frame addresses
   jr    nz,AnimateRun.SetPlayerAniCount
   jr    AnimateRun.reset
   
@@ -5388,6 +5405,7 @@ spat:						;sprite attribute table
 
 outix128:	
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
+outix112:
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
 outix96:	
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
@@ -5395,6 +5413,7 @@ outix80:
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi
 outix64:	
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
+outix48:
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
 outix32:	
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
