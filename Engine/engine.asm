@@ -99,7 +99,7 @@ Handle_HardWareSprite_Enemies_And_objects:
 	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
 	out		($a8),a	
   ld    a,(movementpatternsblock)
-	call	block123 ;4			                                ;at address $4000 / page 1+2
+	call	block12 			                                ;at address $4000 / page 1
 
   ld    de,enemies_and_objects+(0*lenghtenemytable)                           
   ld    a,(de) | inc a | call z,.docheck            
@@ -127,8 +127,11 @@ Handle_HardWareSprite_Enemies_And_objects:
 
   ;set block containing sprite data
 	di
-	ld		(memblocks.4),a                         ;set to block 4 at $a000
-	ld		($b000),a
+	ld		(memblocks.3),a                         ;set to block 3+4 at $8000- $c000
+	ld		($9000),a
+	inc		a
+	ld		(memblocks.4),a
+	ld		($b000),a	
 	ei
   
   ;set address to write sprite character data to
@@ -2574,6 +2577,19 @@ SwapSpatColAndCharTable:
 
 ;MapData:
 ;  ds    38 * 27           ;a map is 38 * 27 tiles big  
+
+CheckTileEnemyInHL:  
+;get enemy X in tiles
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;x
+  add   hl,de
+
+;  ld    a,h
+;  or    a
+;  jp    m,checktile.CheckTileIsOutOfScreenLeft
+
+  ld    a,(ix+enemies_and_objects.y)  
+  jp    checktile.XandYset
 
 CheckTileEnemy:  
 ;get enemy X in tiles

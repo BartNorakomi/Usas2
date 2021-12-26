@@ -13,7 +13,7 @@ MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | Map
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_010Data
+WorldMapPointer:  dw  MapB01_011Data
 
 loadGraphics:
   call  screenoff
@@ -26,6 +26,7 @@ loadGraphics:
   call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
   call  CopyScoreBoard                ;copy scoreboard to page 0 - screen 5 - bottom 40 pixels (scoreboard)
   call  CopyItemsKarniMata            ;copy items to page 1 - screen 5 - bottom 40 pixels (scoreboard)
+  call  RemoveSpritesFromScreen
   call  SwapSpatColAndCharTable
   call  initiatebordermaskingsprites
 halt
@@ -37,6 +38,16 @@ halt
 ;  call  WaitVblank
 ;  call  WaitVblank
   jp    LevelEngine
+
+RemoveSpritesFromScreen:
+  ld    hl,spat
+  ld    de,4
+  ld    b,32
+  .loop:
+  ld    (hl),217
+  add   hl,de
+  djnz  .loop
+  ret
 
 WaitVblank:
   xor   a
@@ -997,7 +1008,7 @@ DoubleJumpAvailable?:         rb    1
 
 amountofenemies:        equ 22
 ;lenghtenemyoffsettable: equ 24+16
-lenghtenemytable:       equ 45 + 1 +1 +2 +1
+lenghtenemytable:       equ 22 + fill
 ;chatabaddenemspr0:      rb  lenghtexplosioncharcoladresses  ;4*16
 ;                        rb  4* 64
 
@@ -1010,30 +1021,25 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .alive?:                equ 0
 .Sprite?:               equ 1
 .movementpattern:       equ 2
-.y:                     equ 3+1
-.x:                     equ 4+1
-.ny:                    equ 5+1+1
-.nx:                    equ 6+1+1
-.sprnrinspat:           equ 7+1+1
-.SprNrTimes16:          equ 7+1+1
-.ObjectNumber:          equ 7+1+1
-.nrsprites:             equ 8+1+1+1
-.nrspritesSimple:       equ 8+1+1+1+1
-.v1:                    equ 9+1+1+1+1
-.v2:                    equ 10+1+1+1+1
-.v3:                    equ 11+1+1+1+1
-.v4:                    equ 12+1+1+1+1
-.v5:                    equ 13+1+1+1+1
-.SnapPlayer?:           equ 13+1+1+1+1
-.v6:                    equ 14+1+1+1+1
-.v7:                    equ 15+1+1+1+1
-.coordinates:           equ 16+1+1+1+1
-.spataddress:           equ 16+1+1+1+1
-;.offsettable:           equ 18+1+1+1
-
-
-
-
+.y:                     equ 4
+.x:                     equ 5
+.ny:                    equ 7
+.nx:                    equ 8
+.sprnrinspat:           equ 9
+.SprNrTimes16:          equ 9
+.ObjectNumber:          equ 9
+.nrsprites:             equ 11
+.nrspritesSimple:       equ 12
+.v1:                    equ 13
+.v2:                    equ 14
+.v3:                    equ 15
+.v4:                    equ 16
+.v5:                    equ 17
+.SnapPlayer?:           equ 17
+.v6:                    equ 18
+.v7:                    equ 19
+.coordinates:           equ 20
+.spataddress:           equ 20
 
 endenginepage3variables:  equ $+enginepage3length
 org variables

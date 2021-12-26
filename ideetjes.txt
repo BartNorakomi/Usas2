@@ -3,6 +3,13 @@ https://www.youtube.com/watch?v=r714p3hegF4&ab_channel=TheCollectorsWarehouse
 
 een veld met de SF2 engine waarbij een object in de 'achtergrond' animeert (waveanimatie)\
 
+double tap down om om te schakelen naar camera mode... ??
+
+de map kan natuurlijk ook gedeeltelijk zichtbaar zijn in het scoreboard. en scrollt dan in het pauzescherm.
+
+waterval: 4:28.   11:49 vet coole deur (kan gebruikt worden als deur in de puzzellevels), er zit ook een coole bug in deze video
+https://www.youtube.com/watch?v=DZ9oZiKZaCU
+
 een bosfight zonder software sprites, waarbij 2 identieke pages gebruikt worden, waarbij de achtergrond in het 2e scherm 2 of 3 pixels vertikaal verschoven is.
 Elke hit laat het beeld trillen door deze 2 pages af te wisselen. Hierdoor trilt alleen de voorgrond. Cool effect dusssuh!! 
 

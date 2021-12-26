@@ -7,7 +7,9 @@
 ;PushingStone                       
 ;PushingPuzzleSwitch                
 ;PushingPuzzlOverview              
-;RetardedZombie                   
+;RetardedZombie   
+;GreenSpider                
+;GreySpider
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -50,8 +52,8 @@ CheckCollisionWallEnemy:                    ;checks for collision wall and if fo
 
   .MovingLeft:
   ld    b,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
-  ld    de,-16                              ;add to x to check right side of sprite for collision
-  call  CheckTileEnemy                      ;out z=collision found with wall  
+  ld    hl,-16                              ;add to x to check right side of sprite for collision
+  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
   ret   nz
 
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
@@ -65,8 +67,7 @@ CheckCollisionWallEnemy:                    ;checks for collision wall and if fo
   ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
   ld    hl,-16
   add   hl,de
-  ex    de,hl
-  call  CheckTileEnemy                      ;out z=collision found with wall  
+  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
   ret   nz
 
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
@@ -83,45 +84,238 @@ CheckFloorEnemy:
   ld    a,(ix+enemies_and_objects.ny)       
   add   a,16
   ld    b,a                                 ;add to y (y is expressed in pixels)
-  ld    de,-00  ;(-16+width)                ;add to x to check right side of sprite for collision
-  jp    CheckTileEnemy                      ;out z=collision found with wall
+
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
+  ld    hl,16
+  sbc   hl,de                               ;hl = 16 - width
+  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
 
   .MovingRight:
   ld    a,(ix+enemies_and_objects.ny)       
   add   a,16
   ld    b,a                                 ;add to y (y is expressed in pixels)
+
   ld    d,0
   ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  ld    hl,-32  ;(-16-width)
-  add   hl,de
-  ex    de,hl
-  call  CheckTileEnemy                      ;out z=collision found with wall  
+  sla   e                                   ;*2
+  ld    hl,-48
+  add   hl,de                               ;hl = -48 + width + width
+  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+
+distancecheck:                              ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+;check x
+;nx and ny are not included at this point
+;  ld    a,(ix+enemies_and_objects.nx)       ;width object
+;	srl		a                                   ;/2
+;  ld    d,a
+
+  ld    hl,(Clesx)                          ;hl = x player
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  
+  sbc   hl,de
+  ld    a,l
+  jr    nc,.PlayerIsRightSideofObject
+  neg
+  .PlayerIsRightSideofObject:
+  cp    b
+  ret   nc
+  
+ ;/check x  
+;check y
+  ld    a,(Clesy)
+  sub   (ix+enemies_and_objects.y)          ;y enemy/object
+  jp    p,.endcheckpositive2
+  neg
+.endcheckpositive2:
+  cp    c
+;/check y  
+  ret
+
+checkFacingPlayer:                          ;out: c = object/enemy is facing player
+  ld    hl,(Clesx)                          ;hl = x player  
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  sbc   hl,de
+  jr    c,.PlayerIsLeftSideofObject
+  
+  .PlayerIsRightSideofObject:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ret   nz
+  scf
+  ret
+  
+  .PlayerIsLeftSideofObject:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ret   p
+  scf
   ret
 ;/Generic Enemy Routines ##############################################################################
 
-RetardedZombie:
+GreenSpider:
 ;v1=Animation Counter
-;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning)
+;v2=Phase (0=walking slow, 1=fast)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
-;v5=Wait Timer
-  call  .HandlePhase                        ;(0=rising from grave, 1=walking, 2=falling, 3=turning)  ;out hl -> sprite character data to out to Vram
-	ld		a,EnemySpritesblock1                ;set block at $a000, page 2 - block containing sprite data
+;v5=Grey Spider Slow Down Timer
+;v6=Green Spider(0) / Grey Spider(1)
+  call  .HandlePhase                        ;(0=walking slow, 1=fast)
+  ld    a,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
+  or    a
+	ld		a,GreenSpiderSpriteblock            ;set block at $a000, page 2 - block containing sprite data
+	jr    z,.BlockSet
+	ld		a,GreySpiderSpriteblock            ;set block at $a000, page 2 - block containing sprite data
+  .BlockSet:
   exx                                       ;store hl. hl now points to color data
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
   ret
 
   .HandlePhase:                             ;out hl -> sprite character data to out to Vram
-  ld    a,(ix+enemies_and_objects.v2)       ;(0=rising from grave, 1=walking, 2=falling, 3=turning)
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking slow, 1=fast)
+  or    a
+  jp    z,GreenSpiderWalkSlow
+  dec   a
+  jp    z,GreenSpiderWalkFast
+
+  GreenSpiderWalkSlow:
+  ld    a,(framecounter)
+  rrca
+  call  c,MoveSpriteHorizontally
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  .CheckFloor                         ;checks for collision wall and if found invert direction
+  call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
+  
+  .Animate:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    hl,GreenSpiderOrangeEyesRightWalkAnimation
+  jp    p,.GoAnimate
+  ld    hl,GreenSpiderOrangeEyesLeftWalkAnimation
+  .GoAnimate:
+  ld    b,7                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;07 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  .DistanceToPlayerCheck:
+  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
+  ret   nc
+  ld    b,60                                ;b-> x distance
+  ld    c,40                                ;c-> y distance
+  call  distancecheck                       ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   nc
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=walking slow, 1=fast)
+  ret
+
+  .CheckFloor:
+  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  inc   a                                   ;check for background tile (0=background, 1=hard foreground, 2=ladder, 3=lava.)
+  ret   nz                                  ;return if background tile is NOT found
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  neg
+  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
+  ret
+
+  GreenSpiderWalkFast:
+  call  MoveSpriteHorizontally
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  GreenSpiderWalkSlow.CheckFloor       ;checks for collision wall and if found invert direction
+  call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
+  
+  .Animate:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    hl,GreenSpiderRightWalkAnimation
+  jp    p,.GoAnimate
+  ld    hl,GreenSpiderLeftWalkAnimation
+  .GoAnimate:
+  ld    b,3                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;07 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  .DistanceToPlayerCheck:
+  bit   0,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
+  jr    z,.GreenSpider
+  dec   (ix+enemies_and_objects.v5)         ;v5=Grey Spider Slow Down Timer
+  jr    z,.WalkSlow
+  ret
+  .GreenSpider:
+
+  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
+  jp    nc,.WalkSlow
+  
+  ld    b,70                                ;b-> x distance
+  ld    c,40                                ;c-> y distance
+  call  distancecheck                       ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   c
+  .WalkSlow:
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking slow, 1=fast)
+  ret
+
+GreenSpiderOrangeEyesLeftWalkAnimation:
+  dw  LeftGreenSpiderOrangeEyesWalk1_Char 
+  dw  LeftGreenSpiderOrangeEyesWalk2_Char 
+  dw  LeftGreenSpiderOrangeEyesWalk3_Char 
+  dw  LeftGreenSpiderOrangeEyesWalk4_Char
+  
+GreenSpiderOrangeEyesRightWalkAnimation:
+  dw  RightGreenSpiderOrangeEyesWalk1_Char 
+  dw  RightGreenSpiderOrangeEyesWalk2_Char 
+  dw  RightGreenSpiderOrangeEyesWalk3_Char 
+  dw  RightGreenSpiderOrangeEyesWalk4_Char
+  
+GreenSpiderLeftWalkAnimation:
+  dw  LeftGreenSpiderWalk1_Char 
+  dw  LeftGreenSpiderWalk2_Char 
+  dw  LeftGreenSpiderWalk3_Char 
+  dw  LeftGreenSpiderWalk4_Char
+
+GreenSpiderRightWalkAnimation:
+  dw  RightGreenSpiderWalk1_Char 
+  dw  RightGreenSpiderWalk2_Char 
+  dw  RightGreenSpiderWalk3_Char 
+  dw  RightGreenSpiderWalk4_Char
+
+RetardedZombie:
+;v1=Animation Counter
+;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Wait Timer
+  call  .HandlePhase                        ;(0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)  ;out hl -> sprite character data to out to Vram
+	ld		a,RetardZombieSpriteblock           ;set block at $a000, page 2 - block containing sprite data
+  exx                                       ;store hl. hl now points to color data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+
+  .HandlePhase:                             ;out hl -> sprite character data to out to Vram
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
   or    a
   jp    z,RetardedZombie_RisingFromGrave
   dec   a
   jp    z,RetardedZombie_Walking
   dec   a
   jp    z,RetardedZombie_Falling
-;  dec   a
-;  jp    z,RetardedZombie_Turning
+  dec   a
+  jp    z,RetardedZombie_Turning
+  dec   a
+  jp    z,RetardedZombie_Sitting
+
+  RetardedZombie_Sitting:  
+  ld    hl,RetardZombieSittingAnimation
+  ld    b,3                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 13                            ;02 animation frame addresses
+  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram  ret  
+
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 12
+  ret   nz
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)  
+  ret
 
   RetardedZombie_Turning:
   call  .HandleWaitTimer
@@ -139,7 +333,7 @@ RetardedZombie:
   and   31
   ld    (ix+enemies_and_objects.v5),a       ;v5=Wait Timer
   ret   nz
-  ld    (ix+enemies_and_objects.v2),1       ;(0=rising from grave, 1=walking, 2=falling, 3=turning)
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   neg
   ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
@@ -150,13 +344,22 @@ RetardedZombie:
   call  .IncreaseFallingSpeed
   call  MoveSpriteVertically  
   call  .CheckFloorFalling                  ;checks for collision wall and if found invert direction
-  ;end with out hl -> sprite character data to out to Vram
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  ld    hl,RightRetardZombieWalk1_Char
-  ret   z
-  ld    hl,LeftRetardZombieWalk1_Char
-  ret
-  
+;  jp    .Animate                            ;out hl -> sprite character data to out to Vram
+  .Animate:
+  ld    e,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  bit   7,e
+  jr    z,.Right
+  .Left:
+  ld    hl,RetardZombieLeftFallingAnimation
+  ld    b,1                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 02                            ;02 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram  ret  
+  .Right:
+  ld    hl,RetardZombieRightFallingAnimation
+  ld    b,1                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 02                            ;02 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram  ret  
+   
   .IncreaseFallingSpeed:
   ld    a,(framecounter)
   and   7
@@ -171,23 +374,26 @@ RetardedZombie:
   .CheckFloorFalling:
   call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
   ret   nz
-  ld    (ix+enemies_and_objects.v2),1       ;(0=rising from grave, 1=walking, 2=falling, 3=turning)
+  ld    (ix+enemies_and_objects.v2),4       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
   ld    (ix+enemies_and_objects.v3),1       ;v3=Vertical Movement
-
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  
   ld    a,(ix+enemies_and_objects.y)        ;y
   and   %1111 1000
   ld    (ix+enemies_and_objects.y),a        ;y
   ret
     
   RetardedZombie_RisingFromGrave:
-  call  .Animate                            ;out hl -> sprite character data to out to Vram
-
-  .Animate:
   ld    hl,RetardZombieRisingFromGraveAnimation
-  .GoAnimate:
-  ld    b,7                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 25                            ;07 animation frame addresses
-  jp    AnimateSprite
+  ld    b,3                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 26                            ;25 animation frame addresses
+  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 25                              ;25 animation frame addresses
+  ret   nz
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)    
+  ret
       
   RetardedZombie_Walking:
   call  .CheckTurning  
@@ -195,23 +401,9 @@ RetardedZombie:
   rrca
   call  c,MoveSpriteHorizontally
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
-  call  .CheckFloor                         ;checks for collision wall and if found invert direction
+  call  .CheckFloor                         ;checks for collision Floor and if found fall
   call  CheckOutOfMap                       ;remove sprite from play when leaving the map
-  call  .Animate                            ;out hl -> sprite character data to out to Vram
-  ret
-
-  .CheckTurning:
-  ld    a,r
-  or    a
-  ret   nz
-  ld    (ix+enemies_and_objects.v2),3       ;(0=rising from grave, 1=walking, 2=falling, 3=turning)  
-  ret
-
-  .CheckFloor:
-  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
-  ret   z
-  ld    (ix+enemies_and_objects.v2),2       ;(0=rising from grave, 1=walking, 2=falling, 3=turning)
-  ret
+  jr    nc,.Reset
   
   .Animate:
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
@@ -222,8 +414,56 @@ RetardedZombie:
   .GoAnimate:
   ld    b,7                                 ;animate every x frames (based on framecounter)
   ld    c,2 * 07                            ;07 animation frame addresses
-  jp    AnimateSprite
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
+  .Reset:
+  ld    (ix+enemies_and_objects.alive?),-1 
+  ld    (ix+enemies_and_objects.y),24
+  ld    (ix+enemies_and_objects.x),152
+  ld    (ix+enemies_and_objects.x+1),0
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
+  ld    (ix+enemies_and_objects.v4),1       ;v4=Horizontal Movement
+  ld    hl,RetardZombieRising1_Char
+  ret
+
+  .CheckTurning:
+  ret
+  ld    a,r
+  or    a
+  ret   nz
+  ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)  
+  ret
+
+  .CheckFloor:
+  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  ret   z
+  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ret
+
+RetardZombieSittingAnimation:
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting2_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting2_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting2_Char 
+  dw  RetardZombieSitting2_Char 
+  dw  RetardZombieSitting2_Char 
+  
+RetardZombieRightFallingAnimation:
+  dw  RightRetardZombieFalling1_Char 
+  dw  RightRetardZombieFalling2_Char 
+
+RetardZombieLeftFallingAnimation:
+  dw  LeftRetardZombieFalling1_Char 
+  dw  LeftRetardZombieFalling2_Char 
+  
 RightRetardZombieWalkingAnimation:
   dw  RightRetardZombieWalk1_Char 
   dw  RightRetardZombieWalk2_Char 
@@ -264,9 +504,10 @@ RetardZombieRisingFromGraveAnimation:
   dw  RetardZombieRising19_Char  
   dw  RetardZombieRising20_Char  
   dw  RetardZombieRising21_Char  
-  dw  RetardZombieRising22_Char  
+  dw  RetardZombieRising22_Char   
   dw  RetardZombieRising23_Char  
   dw  RetardZombieRising24_Char  
+  dw  RetardZombieRising25_Char
   dw  RetardZombieRising25_Char
     
 Sf2Hugeobject1:                             ;movement pattern 3
