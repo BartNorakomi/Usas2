@@ -2672,32 +2672,24 @@ HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
 
-RSitPunch:
-  ld    a,(PlayerAniCount)
-  inc   a
-  ld    (PlayerAniCount),a
-  ld    hl,PlayerSpriteData_Char_RightSitPunch1
-  cp    2
-  jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_RightSitPunch2
-  cp    3
-  jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_RightSitPunch3
-  cp    20
-  jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_RightSitPunch2
-  cp    21
-  jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_RightSitPunch1
-  .setSprite:
-	ld		(standchar),hl
-
-	cp    21
-	ret   nz
-  jp    Set_R_Sit
-  ret
-
 LSitPunch:
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)	
+	bit		4,a                       ;space pressed ?
+	jp		z,.EndCheckSpace
+  ld    a,(PlayerAniCount)
+  cp    08                        ;if space is pressed during attacking (at least 8 frames in), end the attack and initiate a new attack
+  jr    c,.EndCheckSpace
+  ld    a,1
+  ld    (InitiateNewAttack?),a
+  ld    a,18
+  ld    (PlayerAniCount),a
+  .EndCheckSpace:
+  
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
@@ -2719,9 +2711,83 @@ LSitPunch:
 	
 	cp    21
 	ret   nz
-  jp    Set_L_Sit
-  ret
+  
+  ld    a,(InitiateNewAttack?)
+  or    a
+  jp    z,Set_L_Sit
+  xor   a
+  ld    (InitiateNewAttack?),a
+  
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		3,a           ;cursor right pressed ?
+	jp		nz,Set_R_SitPunch
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,Set_L_SitPunch
+	jp		Set_L_Attack
 
+RSitPunch:
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)	
+	bit		4,a                       ;space pressed ?
+	jp		z,.EndCheckSpace
+  ld    a,(PlayerAniCount)
+  cp    08                        ;if space is pressed during attacking (at least 8 frames in), end the attack and initiate a new attack
+  jr    c,.EndCheckSpace
+  ld    a,1
+  ld    (InitiateNewAttack?),a
+  ld    a,18
+  ld    (PlayerAniCount),a
+  .EndCheckSpace:
+
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  ld    hl,PlayerSpriteData_Char_RightSitPunch1
+  cp    2
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightSitPunch2
+  cp    3
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightSitPunch3
+  cp    20
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightSitPunch2
+  cp    21
+  jr    c,.setSprite
+  ld    hl,PlayerSpriteData_Char_RightSitPunch1
+  .setSprite:
+	ld		(standchar),hl
+
+	cp    21
+	ret   nz
+  
+  ld    a,(InitiateNewAttack?)
+  or    a
+  jp    z,Set_R_Sit
+  xor   a
+  ld    (InitiateNewAttack?),a
+  
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		2,a           ;cursor left pressed ?
+	jp		nz,Set_L_SitPunch
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,Set_R_SitPunch
+	jp		Set_R_Attack
+    
 RBeingHit:
   call  MovePlayerLeft.skipFacingDirection      ;out: c-> collision detected
 
@@ -3369,7 +3435,22 @@ AttackRotator:  db 0
 LAttack:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
-;  jp    LAttack3
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)	
+	bit		4,a                       ;space pressed ?
+	jp		z,.EndCheckSpace
+  ld    a,(PlayerAniCount)
+  cp    08                        ;if space is pressed during attacking (at least 8 frames in), end the attack and initiate a new attack
+  jr    c,.EndCheckSpace
+  ld    a,1
+  ld    (InitiateNewAttack?),a
+  ld    a,20
+  ld    (PlayerAniCount),a
+  .EndCheckSpace:
   
   ld    a,(AttackRotator)
   or    a
@@ -3403,10 +3484,10 @@ LAttack3:
   inc   a
   ld    (PlayerAniCount),a
   ld    hl,PlayerSpriteData_Char_LeftPunch2a
-  cp    3
+  cp    4
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftPunch2b
-  cp    5
+  cp    7
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftPunch2c
   cp    20
@@ -3420,43 +3501,65 @@ LAttack3:
 	
 	cp    25
 	ret   nz
-  jp    Set_L_Stand
+	   
+  ld    a,(InitiateNewAttack?)
+  or    a
+  jp    z,Set_L_Stand
+  xor   a
+  ld    (InitiateNewAttack?),a
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,Set_L_SitPunch
+	bit		3,a           ;cursor right pressed ?
+	jp		nz,Set_R_Attack
+	jp		Set_L_Attack
 
 LAttack2:
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
   ld    hl,PlayerSpriteData_Char_LeftPunch1a
-  cp    3
+  cp    03
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftPunch1b
-  cp    5
+  cp    07
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftPunch1c
-  cp    07
+  cp    08
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftPunch1d
   cp    09
   jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_LeftPunch1e
+  ld    hl,PlayerSpriteData_Char_LeftPunch2c
   cp    21
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftPunch1f
-  cp    23
+  cp    22
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftPunch1g
-  cp    25
+  cp    23
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftPunch1h
-  cp    28
+  cp    24
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_LeftPunch1i
   .setSprite:
 	ld		(standchar),hl
 	
-	cp    32
+	cp    25
 	ret   nz
-  jp    Set_L_Stand
+  ld    a,(InitiateNewAttack?)
+  or    a
+  jp    z,Set_L_Stand
+  xor   a
+  ld    (InitiateNewAttack?),a
+  jp    Set_L_Attack
 
 LAttack1:
   ld    a,(PlayerAniCount)
@@ -3482,10 +3585,27 @@ LAttack0:
 	ret   nz
   jp    Set_L_Stand
 
+InitiateNewAttack?:  db  0
 RAttack:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)	
+	bit		4,a                       ;space pressed ?
+	jp		z,.EndCheckSpace
+  ld    a,(PlayerAniCount)
+  cp    08                        ;if space is pressed during attacking (at least 8 frames in), end the attack and initiate a new attack
+  jr    c,.EndCheckSpace
+  ld    a,1
+  ld    (InitiateNewAttack?),a
+  ld    a,20
+  ld    (PlayerAniCount),a
+  .EndCheckSpace:
 
-;  jp    RAttack2
+;  jp    RAttack3
 
   ld    a,(AttackRotator)
   or    a
@@ -3519,10 +3639,10 @@ RAttack3:
   inc   a
   ld    (PlayerAniCount),a
   ld    hl,PlayerSpriteData_Char_RightPunch2a
-  cp    3
+  cp    4
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightPunch2b
-  cp    5
+  cp    7
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightPunch2c
   cp    20
@@ -3536,43 +3656,65 @@ RAttack3:
 	
 	cp    25
 	ret   nz
-  jp    Set_R_Stand
+	   
+  ld    a,(InitiateNewAttack?)
+  or    a
+  jp    z,Set_R_Stand
+  xor   a
+  ld    (InitiateNewAttack?),a
+  
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,Set_R_SitPunch
+	bit		2,a           ;cursor left pressed ?
+	jp		nz,Set_L_Attack
+	jp		Set_R_Attack
 
 RAttack2:
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
   ld    hl,PlayerSpriteData_Char_RightPunch1a
-  cp    3
+  cp    03
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightPunch1b
-  cp    5
+  cp    07
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightPunch1c
-  cp    07
+  cp    08
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightPunch1d
   cp    09
   jr    c,.setSprite
-  ld    hl,PlayerSpriteData_Char_RightPunch1e
+  ld    hl,PlayerSpriteData_Char_RightPunch2c
   cp    21
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightPunch1f
-  cp    23
+  cp    22
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightPunch1g
-  cp    25
+  cp    23
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightPunch1h
-  cp    28
+  cp    24
   jr    c,.setSprite
   ld    hl,PlayerSpriteData_Char_RightPunch1i
   .setSprite:
 	ld		(standchar),hl
 	
-	cp    32
+	cp    25
 	ret   nz
-  jp    Set_R_Stand
+  ld    a,(InitiateNewAttack?)
+  or    a
+  jp    z,Set_R_Stand
+  xor   a
+  ld    (InitiateNewAttack?),a
+  jp    Set_R_Attack
 
 RAttack1:
   ld    a,(PlayerAniCount)
@@ -5143,6 +5285,9 @@ Set_R_attack:
 	ld		hl,RAttack
 	ld		(PlayerSpriteStand),hl
 
+  ld    a,1
+  ld    (PlayerFacingRight?),a
+
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ret
@@ -5158,6 +5303,9 @@ Set_L_Attack:
 
 	ld		hl,LAttack
 	ld		(PlayerSpriteStand),hl
+
+  xor   a
+  ld    (PlayerFacingRight?),a
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
@@ -5333,13 +5481,19 @@ Set_R_BeingHit:
 Set_L_SitPunch:
 	ld		hl,LSitPunch
 	ld		(PlayerSpriteStand),hl
+
   xor   a
+  ld    (PlayerFacingRight?),a	
 	ld		(PlayerAniCount),a
   ret
 
 Set_R_SitPunch:
 	ld		hl,RSitPunch
 	ld		(PlayerSpriteStand),hl
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a
+	
   xor   a
 	ld		(PlayerAniCount),a
   ret

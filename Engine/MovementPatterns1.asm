@@ -29,12 +29,12 @@ MoveSpriteHorizontallyAndVertically:        ;Add v3 to y. Add v4 to x (16 bit)
   MoveSpriteHorizontally:                   ;Add v3 to y. Add v4 to x (16 bit)
   ld    l,(ix+enemies_and_objects.x)  
   ld    h,(ix+enemies_and_objects.x+1)      ;x
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  bit   7,e
-  jr    z,.set
-  dec   d
-  .set:
+
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    e,a
+  add   a,a                                 ;sign in carry flag
+  sbc   a                                   ;high byto 0 or -1
+  ld    d,a
   add   hl,de
   ld    (ix+enemies_and_objects.x),l  
   ld    (ix+enemies_and_objects.x+1),h      ;x
@@ -47,44 +47,41 @@ MoveSpriteVertically:                       ;Add v3 to y. Add v4 to x (16 bit)
   ret
 
 CheckCollisionWallEnemy:                    ;checks for collision wall and if found invert horizontal movement
+  ld    b,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
+  ld    hl,-16                              ;add to x to check right side of sprite for collision
+
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   jr    z,.MovingRight
 
   .MovingLeft:
-  ld    b,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
-  ld    hl,-16                              ;add to x to check right side of sprite for collision
   call  CheckTileEnemyInHL                  ;out z=collision found with wall  
   ret   nz
-
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   neg
   ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
   ret
 
   .MovingRight:
-  ld    b,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
   ld    d,0
   ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  ld    hl,-16
   add   hl,de
   call  CheckTileEnemyInHL                  ;out z=collision found with wall  
   ret   nz
-
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   neg
   ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
   ret
   
 CheckFloorEnemy:
+  ld    a,(ix+enemies_and_objects.ny)       
+  add   a,16
+  ld    b,a                                 ;add to y (y is expressed in pixels)
+
   ld    e,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   bit   7,e
   jr    z,.MovingRight
 
   .MovingLeft:
-  ld    a,(ix+enemies_and_objects.ny)       
-  add   a,16
-  ld    b,a                                 ;add to y (y is expressed in pixels)
-
   ld    d,0
   ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
   ld    hl,16
@@ -92,10 +89,6 @@ CheckFloorEnemy:
   jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
 
   .MovingRight:
-  ld    a,(ix+enemies_and_objects.ny)       
-  add   a,16
-  ld    b,a                                 ;add to y (y is expressed in pixels)
-
   ld    d,0
   ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
   sla   e                                   ;*2
@@ -152,6 +145,40 @@ checkFacingPlayer:                          ;out: c = object/enemy is facing pla
   ret   p
   scf
   ret
+  
+CollisionEnemyPlayer:
+;NEXT UP: try to code this the 'normal' way
+
+
+  ld    e,(ix+enemies_and_objects.nx)       ;width object
+  ld    d,0
+	srl		e                                   ;/2
+  push  de
+
+  ld    l,(ix+enemies_and_objects.x)  
+  ld    h,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  add   hl,de                               ;hl is the exact middle of the enemy/object
+  ex    de,hl                               ;de is the exact middle of the enemy/object
+
+  ld    hl,(Clesx)                          ;hl = x player
+  ld    bc,8  + 8
+  add   hl,bc                               ;hl is the exact middle of the player
+
+  sbc   hl,de
+  ld    a,l
+  jr    nc,.PlayerIsLeftSideofObject
+  neg
+  .PlayerIsLeftSideofObject:
+
+  pop   de
+  cp    e                                   ;compare the distance from object to player with the width/2 of the object
+  ret   nc
+
+  ld    a,(Clesy)
+  dec   a
+  ld    (Clesy),a
+
+  ret
 ;/Generic Enemy Routines ##############################################################################
 
 GreenSpider:
@@ -161,7 +188,8 @@ GreenSpider:
 ;v4=Horizontal Movement
 ;v5=Grey Spider Slow Down Timer
 ;v6=Green Spider(0) / Grey Spider(1)
-  call  .HandlePhase                        ;(0=walking slow, 1=fast)
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+  call  .HandlePhase                        ;(0=walking slow, 1=fast) ;out hl -> sprite character data to out to Vram
   ld    a,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
   or    a
 	ld		a,GreenSpiderSpriteblock            ;set block at $a000, page 2 - block containing sprite data
@@ -177,13 +205,49 @@ GreenSpider:
   ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking slow, 1=fast)
   or    a
   jp    z,GreenSpiderWalkSlow
-  dec   a
-  jp    z,GreenSpiderWalkFast
+;  dec   a
+;  jp    z,GreenSpiderWalkFast
+
+  GreenSpiderWalkFast:
+;  call  MoveSpriteHorizontally
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  GreenSpiderWalkSlow.CheckFloor      ;checks for collision wall and if found invert direction
+  call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
+  
+  .Animate:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    hl,GreenSpiderRightWalkAnimation
+  jp    p,.GoAnimate
+  ld    hl,GreenSpiderLeftWalkAnimation
+  .GoAnimate:
+  ld    b,3                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;07 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  .DistanceToPlayerCheck:
+  bit   0,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
+  jr    z,.GreenSpider
+  dec   (ix+enemies_and_objects.v5)         ;v5=Grey Spider Slow Down Timer
+  jr    z,.WalkSlow
+  ret
+  .GreenSpider:
+
+  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
+  jp    nc,.WalkSlow
+  
+  ld    b,70                                ;b-> x distance
+  ld    c,40                                ;c-> y distance
+  call  distancecheck                       ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   c
+  .WalkSlow:
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking slow, 1=fast)
+  ret
 
   GreenSpiderWalkSlow:
   ld    a,(framecounter)
   rrca
-  call  c,MoveSpriteHorizontally
+;  call  c,MoveSpriteHorizontally
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
   call  .CheckFloor                         ;checks for collision wall and if found invert direction
   call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
@@ -218,42 +282,6 @@ GreenSpider:
   ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
   ret
 
-  GreenSpiderWalkFast:
-  call  MoveSpriteHorizontally
-  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
-  call  GreenSpiderWalkSlow.CheckFloor       ;checks for collision wall and if found invert direction
-  call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
-  
-  .Animate:
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  or    a
-  ld    hl,GreenSpiderRightWalkAnimation
-  jp    p,.GoAnimate
-  ld    hl,GreenSpiderLeftWalkAnimation
-  .GoAnimate:
-  ld    b,3                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 04                            ;07 animation frame addresses
-  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
-
-  .DistanceToPlayerCheck:
-  bit   0,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
-  jr    z,.GreenSpider
-  dec   (ix+enemies_and_objects.v5)         ;v5=Grey Spider Slow Down Timer
-  jr    z,.WalkSlow
-  ret
-  .GreenSpider:
-
-  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
-  jp    nc,.WalkSlow
-  
-  ld    b,70                                ;b-> x distance
-  ld    c,40                                ;c-> y distance
-  call  distancecheck                       ;in: b,c->x,y distance between player and object,  out: carry->object within distance
-  ret   c
-  .WalkSlow:
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking slow, 1=fast)
-  ret
-
 GreenSpiderOrangeEyesLeftWalkAnimation:
   dw  LeftGreenSpiderOrangeEyesWalk1_Char 
   dw  LeftGreenSpiderOrangeEyesWalk2_Char 
@@ -284,6 +312,7 @@ RetardedZombie:
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Wait Timer
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
   call  .HandlePhase                        ;(0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)  ;out hl -> sprite character data to out to Vram
 	ld		a,RetardZombieSpriteblock           ;set block at $a000, page 2 - block containing sprite data
   exx                                       ;store hl. hl now points to color data
@@ -399,7 +428,7 @@ RetardedZombie:
   call  .CheckTurning  
   ld    a,(framecounter)
   rrca
-  call  c,MoveSpriteHorizontally
+;  call  c,MoveSpriteHorizontally
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
   call  .CheckFloor                         ;checks for collision Floor and if found fall
   call  CheckOutOfMap                       ;remove sprite from play when leaving the map

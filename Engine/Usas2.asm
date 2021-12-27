@@ -719,10 +719,10 @@ MapB01_012:
   incbin "..\maps\b01-012.map.pck"  | .amountofobjects: db  2
 ;platform (moving horizontally)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#,nrsprites,nrspr,  v1, v2, v3, v4, v5, v6, v7,coordinates  
-.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 20,32|dw CleanOb1| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,0         | ds fill
+.object1: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*18|db 20,32|dw CleanOb1| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,0         | ds fill
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*13|db 16,30|dw 26*16|db 18-(04*3),04  ,+00,+00,+00,+01,+00,+01,+00|dw spat+(26*4)| ds fill
+.object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*15|db 16,30|dw 26*16|db 18-(04*3),04  ,+00,+00,+00,+01,+00,+01,+00|dw spat+(26*4)| ds fill
 
 	ds		$c000-$,$ff
 dephase
