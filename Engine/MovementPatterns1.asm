@@ -147,37 +147,61 @@ checkFacingPlayer:                          ;out: c = object/enemy is facing pla
   ret
   
 CollisionEnemyPlayer:
-;NEXT UP: try to code this the 'normal' way
-
-
-  ld    e,(ix+enemies_and_objects.nx)       ;width object
-  ld    d,0
-	srl		e                                   ;/2
-  push  de
-
-  ld    l,(ix+enemies_and_objects.x)  
-  ld    h,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  add   hl,de                               ;hl is the exact middle of the enemy/object
-  ex    de,hl                               ;de is the exact middle of the enemy/object
-
+;check if player collides with left side of enemy/object
   ld    hl,(Clesx)                          ;hl = x player
-  ld    bc,8  + 8
-  add   hl,bc                               ;hl is the exact middle of the player
 
+  ld    bc,20
+  add   hl,bc
+
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+
+  or    a                                   ;reset flag
   sbc   hl,de
-  ld    a,l
-  jr    nc,.PlayerIsLeftSideofObject
-  neg
-  .PlayerIsLeftSideofObject:
+  ret   c
 
-  pop   de
-  cp    e                                   ;compare the distance from object to player with the width/2 of the object
+;check if player collides with right side of enemy/object
+  ld    c,(ix+enemies_and_objects.nx)       ;width object
+
+ld a,09 ;nx + 10
+add a,c
+ld c,a
+
+  sbc   hl,bc  
   ret   nc
+
+;check if player collides with top side of enemy/object
+  ld    a,(Clesy)
+  add   a,11
+  sub   (ix+enemies_and_objects.y)
+  ret   c
+
+;check if player collides with bottom side of enemy/object
+  ld    c,(ix+enemies_and_objects.ny)       ;width object
+
+ld e,a ;store a
+ld a,20 ;ny + 20
+add a,c
+ld c,a
+ld a,e
+
+  sub   a,c
+  ret   nc
+
+
+
+  ld    a,(PlayerInvulnerable?)
+  or    a
+  ret   nz
+
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jp    z,Set_L_BeingHit
+  jp    Set_R_BeingHit
 
   ld    a,(Clesy)
   dec   a
   ld    (Clesy),a
-
   ret
 ;/Generic Enemy Routines ##############################################################################
 
@@ -209,7 +233,7 @@ GreenSpider:
 ;  jp    z,GreenSpiderWalkFast
 
   GreenSpiderWalkFast:
-;  call  MoveSpriteHorizontally
+  call  MoveSpriteHorizontally
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
   call  GreenSpiderWalkSlow.CheckFloor      ;checks for collision wall and if found invert direction
   call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
@@ -236,7 +260,7 @@ GreenSpider:
   call  checkFacingPlayer                   ;out: c = object/enemy is facing player
   jp    nc,.WalkSlow
   
-  ld    b,70                                ;b-> x distance
+  ld    b,99                                ;b-> x distance
   ld    c,40                                ;c-> y distance
   call  distancecheck                       ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   c
@@ -247,7 +271,7 @@ GreenSpider:
   GreenSpiderWalkSlow:
   ld    a,(framecounter)
   rrca
-;  call  c,MoveSpriteHorizontally
+  call  c,MoveSpriteHorizontally
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
   call  .CheckFloor                         ;checks for collision wall and if found invert direction
   call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
@@ -266,7 +290,7 @@ GreenSpider:
   .DistanceToPlayerCheck:
   call  checkFacingPlayer                   ;out: c = object/enemy is facing player
   ret   nc
-  ld    b,60                                ;b-> x distance
+  ld    b,99                                ;b-> x distance
   ld    c,40                                ;c-> y distance
   call  distancecheck                       ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   nc
@@ -428,7 +452,7 @@ RetardedZombie:
   call  .CheckTurning  
   ld    a,(framecounter)
   rrca
-;  call  c,MoveSpriteHorizontally
+  call  c,MoveSpriteHorizontally
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
   call  .CheckFloor                         ;checks for collision Floor and if found fall
   call  CheckOutOfMap                       ;remove sprite from play when leaving the map

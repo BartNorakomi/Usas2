@@ -2806,7 +2806,7 @@ RBeingHit:
   .SetCharacter:
 	ld		(standchar),hl
 
-  ld    a,50                ;50 frames invulnerable after being hit
+  ld    a,100                ;50 frames invulnerable after being hit
   ld    (PlayerInvulnerable?),a
   ret
 
@@ -2828,7 +2828,7 @@ LBeingHit:
   .SetCharacter:
 	ld		(standchar),hl
 
-  ld    a,50                ;50 frames invulnerable after being hit
+  ld    a,100                ;50 frames invulnerable after being hit
   ld    (PlayerInvulnerable?),a
   ret
 
@@ -3501,7 +3501,8 @@ LAttack3:
 	
 	cp    25
 	ret   nz
-	   
+	
+	.CheckInitiateNewAttack:   
   ld    a,(InitiateNewAttack?)
   or    a
   jp    z,Set_L_Stand
@@ -3554,12 +3555,8 @@ LAttack2:
 	
 	cp    25
 	ret   nz
-  ld    a,(InitiateNewAttack?)
-  or    a
-  jp    z,Set_L_Stand
-  xor   a
-  ld    (InitiateNewAttack?),a
-  jp    Set_L_Attack
+
+  jp    LAttack3.CheckInitiateNewAttack
 
 LAttack1:
   ld    a,(PlayerAniCount)
@@ -3656,7 +3653,8 @@ RAttack3:
 	
 	cp    25
 	ret   nz
-	   
+	
+	.CheckInitiateNewAttack:   
   ld    a,(InitiateNewAttack?)
   or    a
   jp    z,Set_R_Stand
@@ -3709,12 +3707,8 @@ RAttack2:
 	
 	cp    25
 	ret   nz
-  ld    a,(InitiateNewAttack?)
-  or    a
-  jp    z,Set_R_Stand
-  xor   a
-  ld    (InitiateNewAttack?),a
-  jp    Set_R_Attack
+
+  jp    RAttack3.CheckInitiateNewAttack
 
 RAttack1:
   ld    a,(PlayerAniCount)
