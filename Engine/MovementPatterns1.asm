@@ -20,13 +20,25 @@ CheckOutOfMap:
   sbc   hl,de
   ret   c
   ;out of map
+  RemoveSprite:
   ld    (ix+enemies_and_objects.alive?),0  
-  ld    (ix+enemies_and_objects.y),217      ;x  
+  ld    (ix+enemies_and_objects.y),217      ;y  
   ret
 
 MoveSpriteHorizontallyAndVertically:        ;Add v3 to y. Add v4 to x (16 bit)
   call  MoveSpriteVertically
+
   MoveSpriteHorizontally:                   ;Add v3 to y. Add v4 to x (16 bit)
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		6,a                                 ;F1 pressed ?
+	ret   nz
+	
   ld    l,(ix+enemies_and_objects.x)  
   ld    h,(ix+enemies_and_objects.x+1)      ;x
 
@@ -150,7 +162,7 @@ CollisionEnemyPlayer:
 ;check if player collides with left side of enemy/object
   ld    hl,(Clesx)                          ;hl = x player
 
-  ld    bc,20
+  ld    bc,20-2                             ;reduce this value to reduce the hitbox size (on the left side)
   add   hl,bc
 
   ld    e,(ix+enemies_and_objects.x)  
@@ -163,7 +175,7 @@ CollisionEnemyPlayer:
 ;check if player collides with right side of enemy/object
   ld    c,(ix+enemies_and_objects.nx)       ;width object
 
-ld a,09 ;nx + 10
+ld a,09-4 ;nx + 10                          ;reduce this value to reduce the hitbox size (on the right side)
 add a,c
 ld c,a
 
@@ -172,7 +184,7 @@ ld c,a
 
 ;check if player collides with top side of enemy/object
   ld    a,(Clesy)
-  add   a,11
+  add   a,11-4                              ;reduce this value to reduce the hitbox size (on the left side)
   sub   (ix+enemies_and_objects.y)
   ret   c
 
@@ -180,7 +192,7 @@ ld c,a
   ld    c,(ix+enemies_and_objects.ny)       ;width object
 
 ld e,a ;store a
-ld a,20 ;ny + 20
+ld a,20-4 ;ny + 20   ;if this is 20-8 it would be same reduction top as bottom, but at the bottom its better if there is less reduction                         ;reduce this value to reduce the hitbox size (on the left side)
 add a,c
 ld c,a
 ld a,e
@@ -203,7 +215,83 @@ ld a,e
   dec   a
   ld    (Clesy),a
   ret
+  
+  CheckPlayerPunchesEnemy:
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)	
+	bit		4,a                                 ;space pressed ?
+  ret   z
+  
+;Enemy dies
+  ld    hl,ExplosionSmall
+  ld    (ix+enemies_and_objects.movementpattern),l
+  ld    (ix+enemies_and_objects.movementpattern+1),h
+  
+  ;x position of explosion is x - 8 + (nx/2)
+  ld    a,(ix+enemies_and_objects.nx)
+	srl		a                                   ;/2
+  sub   8
+  ld    d,0
+  ld    e,a
+  ld    l,(ix+enemies_and_objects.x)  
+  ld    h,(ix+enemies_and_objects.x+1)      ;x
+  add   hl,de
+  ld    (ix+enemies_and_objects.x),l  
+  ld    (ix+enemies_and_objects.x+1),h      ;x
+  
+  ;y position of explosion is y + ny - 16
+  ld    a,(ix+enemies_and_objects.y)
+  add   a,(ix+enemies_and_objects.ny)
+  sub   a,16
+  ld    (ix+enemies_and_objects.y),a
+
+  ;backup y and move sprite out of screen
+  ld    a,(ix+enemies_and_objects.y)        ;y  
+  ld    (ix+enemies_and_objects.v2),a       ;y backup
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.y),217      ;y
+  ret
+  
 ;/Generic Enemy Routines ##############################################################################
+
+ExplosionSmall:
+;v1=Animation Counter
+;v2=y backup
+  ld    a,(ix+enemies_and_objects.v2)       ;y backup
+  ld    (ix+enemies_and_objects.y),a        ;y    
+  
+  call  .Animate
+  
+	ld		a,RedExplosionSpriteblock           ;set block at $a000, page 2 - block containing sprite data
+  exx                                       ;store hl. hl now points to color data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+
+  ld    (ix+enemies_and_objects.nrsprites),18-(02*3)
+  ld    (ix+enemies_and_objects.nrspritesSimple),2
+  ret
+
+  .Animate:
+  ld    hl,ExplosionSmallAnimation
+  ld    b,7                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 05                            ;04 animation frame addresses
+  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 04                              ;04 animation frame addresses
+  ret   nz
+  jp    RemoveSprite
+
+ExplosionSmallAnimation:
+  dw  RedExplosionSmall1_Char 
+  dw  RedExplosionSmall2_Char 
+  dw  RedExplosionSmall3_Char 
+  dw  RedExplosionSmall4_Char
+  dw  RedExplosionSmall4_Char
 
 GreenSpider:
 ;v1=Animation Counter
@@ -214,13 +302,14 @@ GreenSpider:
 ;v6=Green Spider(0) / Grey Spider(1)
   call  CollisionEnemyPlayer                ;Check if player is hit by enemy
   call  .HandlePhase                        ;(0=walking slow, 1=fast) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
   ld    a,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
   or    a
 	ld		a,GreenSpiderSpriteblock            ;set block at $a000, page 2 - block containing sprite data
 	jr    z,.BlockSet
-	ld		a,GreySpiderSpriteblock            ;set block at $a000, page 2 - block containing sprite data
+	ld		a,GreySpiderSpriteblock             ;set block at $a000, page 2 - block containing sprite data
   .BlockSet:
-  exx                                       ;store hl. hl now points to color data
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
   ret
@@ -284,7 +373,7 @@ GreenSpider:
   ld    hl,GreenSpiderOrangeEyesLeftWalkAnimation
   .GoAnimate:
   ld    b,7                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 04                            ;07 animation frame addresses
+  ld    c,2 * 04                            ;04 animation frame addresses
   jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
   .DistanceToPlayerCheck:
@@ -336,10 +425,10 @@ RetardedZombie:
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Wait Timer
-  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
   call  .HandlePhase                        ;(0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)  ;out hl -> sprite character data to out to Vram
-	ld		a,RetardZombieSpriteblock           ;set block at $a000, page 2 - block containing sprite data
   exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+	ld		a,RetardZombieSpriteblock           ;set block at $a000, page 2 - block containing sprite data
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
   ret
@@ -357,7 +446,8 @@ RetardedZombie:
   dec   a
   jp    z,RetardedZombie_Sitting
 
-  RetardedZombie_Sitting:  
+  RetardedZombie_Sitting:
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy  
   ld    hl,RetardZombieSittingAnimation
   ld    b,3                                 ;animate every x frames (based on framecounter)
   ld    c,2 * 13                            ;02 animation frame addresses
@@ -371,6 +461,7 @@ RetardedZombie:
   ret
 
   RetardedZombie_Turning:
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy  
   call  .HandleWaitTimer
   
   ;end with out hl -> sprite character data to out to Vram
@@ -394,6 +485,7 @@ RetardedZombie:
   jp    RetardedZombie_Walking
   
   RetardedZombie_Falling:
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy  
   call  .IncreaseFallingSpeed
   call  MoveSpriteVertically  
   call  .CheckFloorFalling                  ;checks for collision wall and if found invert direction
@@ -449,6 +541,7 @@ RetardedZombie:
   ret
       
   RetardedZombie_Walking:
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy  
   call  .CheckTurning  
   ld    a,(framecounter)
   rrca

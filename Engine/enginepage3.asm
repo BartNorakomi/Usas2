@@ -30,7 +30,9 @@ loadGraphics:
   call  SwapSpatColAndCharTable
   call  initiatebordermaskingsprites
 halt
-  call  SetInterruptHandler           ;set Lineint and Vblank
+  call  SetInterruptHandler           ;set Lineint and Vblank  
+  xor   a
+  ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
 ;  xor   a
 ;  ld    (R23onVblank),a               ;vertical screen adjust
 ;  ld    (R19onVblank),a               ;vertical screen adjust

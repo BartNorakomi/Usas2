@@ -626,7 +626,6 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   ld    (ClesY),a
   ret
 
-
 PutPlayersprite:
 	ld		a,(slot.page12rom)	;all RAM except page 1+2
 	out		($a8),a	
@@ -672,7 +671,7 @@ standchar:	equ	$+1
   ld    a,(framecounter)
   and   3
   jr    nz,.EndCheckPlayerInvulnerable
-  ld    hl,PlayerSpriteData_Char_Empty
+;  ld    hl,PlayerSpriteData_Char_Empty
   .EndCheckPlayerInvulnerable:    
       
 	ld		c,$98
@@ -711,7 +710,7 @@ X32BitShiftValue: equ 32
   ld    b,64
   .Player32bitShifLoop:  
   ld    a,(hl)
-  add   a,c
+  add   a,c  
   out   ($98),a
   inc   hl
   djnz  .Player32bitShifLoop
@@ -719,6 +718,24 @@ X32BitShiftValue: equ 32
 ;check if player is left side of screen, if so add 32 bit shift
 
   .PlayerRightSide:
+  ;Check Player Hit. If player is hit then show player alternating colors red + white
+  ld    a,(PlayerInvulnerable?)
+  or    a
+  jr    z,.EndCheckPlayerHit
+  
+  ld    a,(framecounter)
+  and   3
+  ld    d,14
+  jp    nz,.EndCheckPlayerHit    
+  ld    b,64
+  .PlayerRedColorLoop:  
+  ld    a,d
+  out   ($98),a
+  inc   hl
+  djnz  .PlayerRedColorLoop
+  jp    .end32bitshift
+  .EndCheckPlayerHit:
+
 	call	outix64     ;4 sprites (4 * 16 bytes = 46 bytes)
 .end32bitshift:
 
@@ -2789,7 +2806,7 @@ RSitPunch:
 	jp		Set_R_Attack
     
 RBeingHit:
-  call  MovePlayerLeft.skipFacingDirection      ;out: c-> collision detected
+  call  MovePlayerLeft ;.skipFacingDirection      ;out: c-> collision detected
 
   ld    a,(PlayerAniCount)
   inc   a
@@ -2811,7 +2828,7 @@ RBeingHit:
   ret
 
 LBeingHit:
-  call  MovePlayerRight.skipFacingDirection     ;out: c-> collision detected
+  call  MovePlayerRight ;.skipFacingDirection     ;out: c-> collision detected
 
   ld    a,(PlayerAniCount)
   inc   a
@@ -5431,6 +5448,8 @@ Set_L_sit:
   ret
 
 Set_R_stand:
+  ld    a,1
+  ld    (PlayerFacingRight?),a	
 	ld		hl,RStanding
 	ld		(PlayerSpriteStand),hl
 	ld		hl,PlayerSpriteData_Char_RightStand
@@ -5438,6 +5457,8 @@ Set_R_stand:
   ret
 
 Set_L_stand:
+  xor   a
+  ld    (PlayerFacingRight?),a	
 	ld		hl,LStanding
 	ld		(PlayerSpriteStand),hl
 	ld		hl,PlayerSpriteData_Char_LeftStand
@@ -5463,6 +5484,9 @@ Set_L_BeingHit:
 	ld		(PlayerSpriteStand),hl
   xor   a
 	ld		(PlayerAniCount),a
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a                    ;since we move right, but face left, let's pretend we actually face right. This way the camera moves accordingly
   ret
 
 Set_R_BeingHit:
@@ -5470,6 +5494,7 @@ Set_R_BeingHit:
 	ld		(PlayerSpriteStand),hl
   xor   a
 	ld		(PlayerAniCount),a
+  ld    (PlayerFacingRight?),a                    ;since we move left, but face right, let's pretend we actually face left. This way the camera moves accordingly
   ret
 
 Set_L_SitPunch:
