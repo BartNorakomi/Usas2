@@ -671,7 +671,7 @@ standchar:	equ	$+1
   ld    a,(framecounter)
   and   3
   jr    nz,.EndCheckPlayerInvulnerable
-;  ld    hl,PlayerSpriteData_Char_Empty
+  ld    hl,PlayerSpriteData_Char_Empty
   .EndCheckPlayerInvulnerable:    
       
 	ld		c,$98
@@ -692,20 +692,17 @@ standchar:	equ	$+1
   add   hl,de
 	ld		a,1
 	call	SetVdp_Write
-
   exx               ;recall hl. hl now points to color data
 
-
-X32BitShiftValue: equ 32
 ;check if player is left side of screen, if so add 32 bit shift
   push  hl
   ld    hl,(ClesX)
-  ld    de,X32BitShiftValue
+  ld    de,090              ;if play x<90 then player left side of screen
   sbc   hl,de
   pop   hl
-	jp    nc,.PlayerRightSide
+	jp    nc,PlayerRightSideOfMap
 
-  .PlayerLeftSide:
+PlayerLeftSideOfMap:
   ld    c,128
   ld    b,64
   .Player32bitShifLoop:  
@@ -714,94 +711,15 @@ X32BitShiftValue: equ 32
   out   ($98),a
   inc   hl
   djnz  .Player32bitShifLoop
-  jp    .end32bitshift
-;check if player is left side of screen, if so add 32 bit shift
 
-  .PlayerRightSide:
-  ;Check Player Hit. If player is hit then show player alternating colors red + white
-  ld    a,(PlayerInvulnerable?)
-  or    a
-  jr    z,.EndCheckPlayerHit
-  
-  ld    a,(framecounter)
-  and   3
-  ld    d,14
-  jp    nz,.EndCheckPlayerHit    
-  ld    b,64
-  .PlayerRedColorLoop:  
-  ld    a,d
-  out   ($98),a
-  inc   hl
-  djnz  .PlayerRedColorLoop
-  jp    .end32bitshift
-  .EndCheckPlayerHit:
-
-	call	outix64     ;4 sprites (4 * 16 bytes = 46 bytes)
-.end32bitshift:
-
-
-
-;after the color data there are 2 bytes for the top and bottom offset of the sprites
+  ;after the color data there are 2 bytes for the top and bottom offset of the sprites
   ld    a,(hl)
-  ld    (selfmodifyingcode_x_offset_hero_top),a  
+  ld    (.selfmodifyingcode_x_offset_hero_top_LeftSide),a  
   inc   hl
   ld    a,(hl)
-  ld    (selfmodifyingcode_x_offset_hero_bottom),a  
+  ld    (.selfmodifyingcode_x_offset_hero_bottom_LeftSide),a  
 
-
-.spriteattributetable:
-
-
-;	ld		a,(addytohero)
-;  sub   a,16
-;	add		a,a
-;	add		a,a
-;	add		a,a				;*8
-;	sub		a,4				;all sprites 4 pixels up
-;	ld		d,a       ;relative y
-;	ld		a,(addxtohero)
-;  sub   a,13
-;	add		a,a
-;	add		a,a
-;	add		a,a				;*8
-;32 bit shift here
-;  add   a,32      ;32 bit shift
-;/32 bit shift here
-;	ld		e,a       ;relative x
-
-;check if player is left side of screen, if so add 32 bit shift
-;	ld		a,(addxtohero)
-;  cp    250
-;	jp    nc,.playerleft2
-;	cp    3
-;	jp    nc,.endcheck32bitshift
-;.playerleft2:	
-;  ld    a,e
-;  add   a,32
-;  ld    e,a
-;.endcheck32bitshift:
-;check if player is left side of screen, if so add 32 bit shift
-
-;remove hero from screen ?
-;  ld    a,(invis?)
-;  or    a
-;  jr    nz,.invis
-
-;.setspathero:
-;  ld    a,(x_offset_hero_top)
-;  cp    200
-;  jp    nc,setrowspecialspritepositions
-
-
-
-;  ld    a,(herospritenr)
-;  add   a,a         ;*2
-;  add   a,a         ;*4
-;  ld    d,0
-;  ld    e,a
-;	ld		hl,spat			;sprite attribute table
-;  add   hl,de
-
+  .spriteattributetable:
   ld    a,(ClesY)
   sub   a,16
   ld    b,a
@@ -817,41 +735,33 @@ X32BitShiftValue: equ 32
   ld    hl,(ClesX)
   sbc   hl,de               ;take x Cles and subtract the x camer
 
-;  ld    a,h                 ;if the value now is <0 or >256 Cles is out of the screen
-;  or    a
-;  jp    nz,.outofscreen
-
   ld    a,l
-
-  cp    32
-  jr    nc,.PutPlayerxY
-  add   a,32
-;  jp    .PutPlayerxY
-;.outofscreen:
-;  ld    a,255
-.PutPlayerxY:
+  add   a,32                ;32 bit shift added to sprite x
 
   ld    de,3
   ld    hl,spat+88          
   ld    (hl),b              ;y sprite 22
   inc   hl                  
- 
-selfmodifyingcode_x_offset_hero_top: equ $+1
+  .selfmodifyingcode_x_offset_hero_top_LeftSide: equ $+1
   add   a,0
-
+  cp    256-32                                      ;check if x>256-32. If so sprite is out of camera range
+  jr    c,.LeftSideChecked1
+  ld    a,255
+  .LeftSideChecked1:
   ld    (hl),a              ;x sprite 22
   add   hl,de
   ld    (hl),b              ;y sprite 23      
   inc   hl 
   ld    (hl),a              ;x sprite 23
-  add   hl,de
-  
+  add   hl,de  
   ld    (hl),c              ;y sprite 24  
   inc   hl      
-
-selfmodifyingcode_x_offset_hero_bottom: equ $+1
+  .selfmodifyingcode_x_offset_hero_bottom_LeftSide: equ $+1
   add   a,0
-
+  cp    256-32                                      ;check if x>256-32. If so sprite is out of camera range
+  jr    c,.LeftSideChecked2
+  ld    a,255
+  .LeftSideChecked2:
   ld    (hl),a              ;x sprite 24
   add   hl,de
   ld    (hl),c              ;y sprite 25
@@ -859,6 +769,87 @@ selfmodifyingcode_x_offset_hero_bottom: equ $+1
   ld    (hl),a              ;x sprite 25
   add   hl,de
 
+	ld		a,(slot.ram)	;back to full RAM
+	out		($a8),a	
+  ret
+
+PlayerRightSideOfMap:
+  ;Check Player Hit. If player is hit then show player alternating colors red + white
+;  ld    a,(PlayerInvulnerable?)
+;  or    a
+;  jr    z,.EndCheckPlayerHit
+  
+;  ld    a,(framecounter)
+;  and   3
+;  ld    d,14
+;  jp    nz,.EndCheckPlayerHit    
+;  ld    b,64
+;  .PlayerRedColorLoop:  
+;  ld    a,d
+;  out   ($98),a
+;  inc   hl
+;  djnz  .PlayerRedColorLoop
+;  jp    .end32bitshift
+;  .EndCheckPlayerHit:
+
+	call	outix64     ;4 sprites (4 * 16 bytes = 46 bytes)
+;.end32bitshift:
+
+  ;after the color data there are 2 bytes for the top and bottom offset of the sprites
+  ld    a,(hl)
+  ld    (.selfmodifyingcode_x_offset_hero_top_RightSide),a  
+  inc   hl
+  ld    a,(hl)
+  ld    (.selfmodifyingcode_x_offset_hero_bottom_RightSide),a  
+
+  .spriteattributetable:
+  ld    a,(ClesY)
+  sub   a,16
+  ld    b,a
+  add   a,16
+  ld    c,a
+
+  ld    a,(CameraX)         ;camera jumps 16 pixels every page, subtract this value from x Cles
+  and   %1111 0000
+  
+  ld    d,0
+  ld    e,a
+  
+  ld    hl,(ClesX)
+  sbc   hl,de               ;take x Cles and subtract the x camer
+  ld    a,l
+
+  .PutPlayerxY:
+  ld    de,3
+  ld    hl,spat+88          
+  ld    (hl),b              ;y sprite 22
+  inc   hl                  
+  .selfmodifyingcode_x_offset_hero_top_RightSide: equ $+1
+  add   a,0
+  cp    32                                      ;check if x<32. If so sprite is out of camera range
+  jr    nc,.RightSideChecked1
+  ld    a,255
+  .RightSideChecked1:
+  ld    (hl),a              ;x sprite 22
+  add   hl,de
+  ld    (hl),b              ;y sprite 23      
+  inc   hl 
+  ld    (hl),a              ;x sprite 23
+  add   hl,de
+  ld    (hl),c              ;y sprite 24  
+  inc   hl      
+  .selfmodifyingcode_x_offset_hero_bottom_RightSide: equ $+1
+  add   a,0
+  cp    32                                      ;check if x<32. If so sprite is out of camera range
+  jr    nc,.RightSideChecked2
+  ld    a,255
+  .RightSideChecked2:
+  ld    (hl),a              ;x sprite 24
+  add   hl,de
+  ld    (hl),c              ;y sprite 25
+  inc   hl               
+  ld    (hl),a              ;x sprite 25
+  add   hl,de
 	ld		a,(slot.ram)	;back to full RAM
 	out		($a8),a	
   ret
@@ -2690,6 +2681,7 @@ HandlePlayerSprite:
   jp    (hl)
 
 LSitPunch:
+  call  .SetAttackHitBox
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -2747,7 +2739,24 @@ LSitPunch:
 	jp		nz,Set_L_SitPunch
 	jp		Set_L_Attack
 
+.SetAttackHitBox:
+  ld    a,1
+  ld    (EnableHitbox?),a
+  ld    hl,(ClesX)
+  ld    de,-14  + 19
+  add   hl,de
+  ld    (HitBoxSX),hl
+;  ld    a,16
+;  ld    (HitBoxNX),a
+;  ld    a,12
+;  ld    (HitBoxNY),a
+  ld    a,(ClesY)
+  add   a,17 - 8
+  ld    (HitBoxSY),a
+  ret
+  
 RSitPunch:
+  call  .SetAttackHitBox
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -2805,31 +2814,85 @@ RSitPunch:
 	jp		nz,Set_R_SitPunch
 	jp		Set_R_Attack
     
-RBeingHit:
-  call  MovePlayerLeft ;.skipFacingDirection      ;out: c-> collision detected
-
-  ld    a,(PlayerAniCount)
-  inc   a
-  ld    (PlayerAniCount),a
-  cp    24
-  jp    z,Set_R_Stand  
-
-  ld    hl,PlayerSpriteData_Char_RightBeingHit1
-  cp    08
-  jp    c,.SetCharacter
-  cp    16
-  jp    nc,.SetCharacter
-  ld    hl,PlayerSpriteData_Char_RightBeingHit2
-  .SetCharacter:
-	ld		(standchar),hl
-
-  ld    a,100                ;50 frames invulnerable after being hit
-  ld    (PlayerInvulnerable?),a
+.SetAttackHitBox:
+  ld    a,1
+  ld    (EnableHitbox?),a
+  ld    hl,(ClesX)
+  ld    de,+14  + 19
+  add   hl,de
+  ld    (HitBoxSX),hl
+;  ld    a,16
+;  ld    (HitBoxNX),a
+;  ld    a,12
+;  ld    (HitBoxNY),a
+  ld    a,(ClesY)
+  add   a,17 - 8
+  ld    (HitBoxSY),a    
   ret
 
-LBeingHit:
-  call  MovePlayerRight ;.skipFacingDirection     ;out: c-> collision detected
+;RunningTablePointerWhenHit:           ds  1       ;this variable is used to decide how player moves when hit
+;RunningTablePointer:                  db  18 ;12
+;RunningTablePointerCenter:            equ 18 ;12
+;RunningTablePointerRightEnd:          equ 38 ;26
+;RunningTablePointerRunLeftEndValue:   equ 6
+;RunningTablePointerRunRightEndValue:  equ 32 ;20
+;RunningTable1:
+;       [run  L]                   C                   [run  R]
+;  dw    -1,-1,-1,-1,-1,-1,-1,-1,-1,0,+1,+1,+1,+1,+1,+1,+1,+1,+1
+;  dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
 
+CheckMoveHorizontallyWhenHitFaceLeft:     
+  ld    a,RunningTablePointerRunRightEndValue-2
+  ld    (RunningTablePointer),a      
+  ld    a,(RunningTablePointerWhenHit)
+  sub   3
+  ld    hl,CheckMoveHorizontallyWhenHitFaceRight.MoveTabl3
+  jr    c,CheckMoveHorizontallyWhenHitFaceRight.TableFound
+  sub   13
+  ld    hl,CheckMoveHorizontallyWhenHitFaceRight.MoveTabl2
+  jr    c,CheckMoveHorizontallyWhenHitFaceRight.TableFound
+  ld    hl,CheckMoveHorizontallyWhenHitFaceRight.MoveTabl1
+  jp    CheckMoveHorizontallyWhenHitFaceRight.TableFound
+  
+CheckMoveHorizontallyWhenHitFaceRight:  
+  ld    a,RunningTablePointerRunLeftEndValue
+  ld    (RunningTablePointer),a
+  ld    a,(RunningTablePointerWhenHit)
+  sub   25
+  ld    hl,.MoveTabl1
+  jr    c,.TableFound
+  sub   09
+  ld    hl,.MoveTabl2
+  jr    c,.TableFound
+  ld    hl,.MoveTabl3
+  .TableFound:
+  
+  ld    a,(framecounter)
+  and   3
+  ld    d,0
+  ld    e,a
+  add   hl,de
+  
+  ld    a,(hl)
+  or    a
+  ret
+  .MoveTabl1:   db 0,0,0,1 ;00-24
+  .MoveTabl2:   db 0,1,0,1 ;25-36
+  .MoveTabl3:   db 1,1,1,1 ;36->
+
+LBeingHit:
+  call  CheckMoveHorizontallyWhenHitFaceLeft                         ;out: z-> don't move
+  call  nz,MovePlayerRight.skipFacingDirection
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;    
+	ld		a,(Controls)
+  set   0,a
+	ld		(Controls),a                                ;force up pressed, to enable/simulate maximum jump height
+  call  Jump.VerticalMovement
+  
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
@@ -2845,11 +2908,45 @@ LBeingHit:
   .SetCharacter:
 	ld		(standchar),hl
 
-  ld    a,100                ;50 frames invulnerable after being hit
+  ld    a,075                                       ;75 frames invulnerable after being hit
+  ld    (PlayerInvulnerable?),a
+  ret
+
+RBeingHit:
+  call  CheckMoveHorizontallyWhenHitFaceRight                         ;out: z-> don't move
+  call  nz,MovePlayerLeft.skipFacingDirection
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;    
+	ld		a,(Controls)
+  set   0,a
+	ld		(Controls),a                                ;force up pressed, to enable/simulate maximum jump height
+  call  Jump.VerticalMovement
+  
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  cp    24
+  jp    z,Set_R_Stand  
+
+  ld    hl,PlayerSpriteData_Char_RightBeingHit1
+  cp    08
+  jp    c,.SetCharacter
+  cp    16
+  jp    nc,.SetCharacter
+  ld    hl,PlayerSpriteData_Char_RightBeingHit2
+  .SetCharacter:
+	ld		(standchar),hl
+
+  ld    a,075                                       ;75 frames invulnerable after being hit
   ld    (PlayerInvulnerable?),a
   ret
 
 RRolling:
+  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
+
   ld    a,(PlayerAniCount+1)
   inc   a
   cp    100
@@ -2936,7 +3033,25 @@ RRolling:
   ld    (clesx),hl  
   jp    Set_Fall
 
+.SetAttackHitBox:
+  ld    a,1
+  ld    (EnableHitbox?),a
+  ld    hl,(ClesX)
+  ld    de,+04  + 19
+  add   hl,de
+  ld    (HitBoxSX),hl
+;  ld    a,16
+;  ld    (HitBoxNX),a
+;  ld    a,12
+;  ld    (HitBoxNY),a
+  ld    a,(ClesY)
+  add   a,17 - 8
+  ld    (HitBoxSY),a
+  ret  
+
 LRolling:
+  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
+
   ld    a,(PlayerAniCount+1)
   inc   a
   cp    100
@@ -2996,7 +3111,6 @@ LRolling:
   ret   z
 	jp    Set_jump
 
-
   .sit:
   ld    de,PlayerSpriteData_Char_LeftSitting  
 	ld		(standchar),de
@@ -3025,7 +3139,23 @@ LRolling:
   dec   hl    
   ld    (clesx),hl  
   jp    Set_Fall
-    
+
+.SetAttackHitBox:
+  ld    a,1
+  ld    (EnableHitbox?),a
+  ld    hl,(ClesX)
+  ld    de,-04  + 19
+  add   hl,de
+  ld    (HitBoxSX),hl
+;  ld    a,16
+;  ld    (HitBoxNX),a
+;  ld    a,12
+;  ld    (HitBoxNY),a
+  ld    a,(ClesY)
+  add   a,17 - 8
+  ld    (HitBoxSY),a
+  ret  
+      
 LeftRollingAnimation:          ;xoffset sprite top, xoffset sprite bottom
   dw  PlayerSpriteData_Char_LeftRolling1 
   dw  PlayerSpriteData_Char_LeftRolling2 
@@ -3451,7 +3581,7 @@ ClimbStairsLeftUp:
 AttackRotator:  db 0
 LAttack:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
-
+  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -3477,6 +3607,22 @@ LAttack:
   dec   a
   jp    z,LAttack2
   jp    LAttack3
+
+.SetAttackHitBox:
+  ld    a,1
+  ld    (EnableHitbox?),a
+  ld    hl,(ClesX)
+  ld    de,-14  + 19
+  add   hl,de
+  ld    (HitBoxSX),hl
+;  ld    a,16
+;  ld    (HitBoxNX),a
+;  ld    a,12
+;  ld    (HitBoxNY),a
+  ld    a,(ClesY)
+  add   a,17 - 8
+  ld    (HitBoxSY),a
+  ret
 
 LAttack4:
   ld    a,(PlayerAniCount)
@@ -3599,9 +3745,17 @@ LAttack0:
 	ret   nz
   jp    Set_L_Stand
 
+;For now all hitboxes are 16x16, so we only need SX and SY
+EnableHitbox?:  db  0
+HitBoxSX:       dw  0
+HitBoxSY:       db  0
+;HitBoxNX:       db  0
+;HitBoxNY:       db  0
+
 InitiateNewAttack?:  db  0
 RAttack:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -3629,6 +3783,22 @@ RAttack:
   dec   a
   jp    z,RAttack2
   jp    RAttack3
+
+.SetAttackHitBox:
+  ld    a,1
+  ld    (EnableHitbox?),a
+  ld    hl,(ClesX)
+  ld    de,14  + 19
+  add   hl,de
+  ld    (HitBoxSX),hl
+;  ld    a,16
+;  ld    (HitBoxNX),a
+;  ld    a,12
+;  ld    (HitBoxNY),a
+  ld    a,(ClesY)
+  add   a,17 - 8
+  ld    (HitBoxSY),a
+  ret
 
 RAttack4:
   ld    a,(PlayerAniCount)
@@ -3976,7 +4146,7 @@ AnimateWhileJump:
   ret
 
 .KickWhileJumpRight:
-  sub   KickWhileJumpDuration-2                 ;only change kicking pose 1, so it doesn't change from highkick to lowkick mid air
+  sub   KickWhileJumpDuration-2                 ;only change kicking pose once, so it doesn't change from highkick to lowkick mid air
   ret   nz
 
   ld    a,(JumpSpeed)
@@ -4124,7 +4294,35 @@ Jump:
   ld    a,(KickWhileJump?)
   dec   a
   jr    z,.EndDecreaseKickWhileJumpCounter
-  ld    (KickWhileJump?),a  
+  ld    (KickWhileJump?),a
+
+  ;.SetAttackHitBox:
+  ld    a,1
+  ld    (EnableHitbox?),a
+  ld    hl,(ClesX)
+  ld    a,(PlayerFacingRight?)
+  or    a
+  ld    de,-12  + 19        ;12 + 19 when kicking right, -12 + 19 when kicking left
+  jp    z,.setSX
+  ld    de,+12  + 19        ;12 + 19 when kicking right, -12 + 19 when kicking left
+  .setSX:
+  add   hl,de
+  ld    (HitBoxSX),hl
+;  ld    a,16
+;  ld    (HitBoxNX),a
+;  ld    a,12
+;  ld    (HitBoxNY),a
+  ld    a,(JumpSpeed)
+  or    a
+  ld    b,26 - 8
+	jp    m,.setSY
+  cp    3
+  jr    c,.setSY
+  ld    b,46 - 8
+  .setSY:
+  ld    a,(ClesY)
+  add   a,b                 ;36 - 8 when kicking up, 46 - 8 when kicking down
+  ld    (HitBoxSY),a    
   .EndDecreaseKickWhileJumpCounter:
 
 ;
@@ -4151,7 +4349,7 @@ Jump:
 
   .SetKickWhileJump:
   ld    a,KickWhileJumpDuration
-  ld    (KickWhileJump?),a
+  ld    (KickWhileJump?),a  
   ret
 
   .VerticalMovement:
@@ -4263,6 +4461,11 @@ Jump:
   and   %1111 1000
   dec   a
   ld    (Clesy),a
+
+  ld    a,1                 ;reset kicking while jumping
+  ld    (KickWhileJump?),a  
+  xor   a
+  ld    (EnableHitbox?),a 
  
   ld    a,(PlayerFacingRight?)
   or    a
@@ -4539,6 +4742,7 @@ RightRunAnimation:
   dw  PlayerSpriteData_Char_RightRun5 
   dw  PlayerSpriteData_Char_RightRun6 
 
+RunningTablePointerWhenHit:           ds  1       ;this variable is used to decide how player moves when hit
 RunningTablePointer:                  db  18 ;12
 RunningTablePointerCenter:            equ 18 ;12
 RunningTablePointerRightEnd:          equ 38 ;26
@@ -5345,6 +5549,7 @@ Set_Stairs_Climb_RightUp:
   xor   a
 	ld		(PlayerAniCount),a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
+  ld    (EnableHitbox?),a
   ret
 
 Set_Stairs_Climb_LeftUp:
@@ -5354,6 +5559,7 @@ Set_Stairs_Climb_LeftUp:
   xor   a
 	ld		(PlayerAniCount),a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
+  ld    (EnableHitbox?),a
   ret
 
 
@@ -5363,7 +5569,8 @@ Set_ClimbDown:
 
   xor   a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
-
+  ld    (EnableHitbox?),a
+  
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ret
@@ -5374,6 +5581,7 @@ Set_ClimbUp:
 
   xor   a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
+  ld    (EnableHitbox?),a
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
@@ -5388,6 +5596,7 @@ Set_Climb_AndResetAniCount:
 
   xor   a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
+  ld    (EnableHitbox?),a
 
 	ld		hl,PlayerSpriteData_Char_Climbing1
 	ld		(standchar),hl	
@@ -5397,6 +5606,9 @@ Set_Climb_AndResetAniCount:
   ret
 
 Set_jump:
+  xor   a
+  ld    (EnableHitbox?),a
+  
   ld    a,1
   ld    (DoubleJumpAvailable?),a
 
@@ -5410,7 +5622,10 @@ Set_jump:
 	ld		(JumpSpeed),a
   ret
 
-Set_Fall:    
+Set_Fall:
+  xor   a
+  ld    (EnableHitbox?),a
+      
   ld    a,1
   ld    (DoubleJumpAvailable?),a
 
@@ -5438,16 +5653,22 @@ Set_L_run:
   ret
 
 Set_R_sit:	
+  xor   a
+  ld    (EnableHitbox?),a
 	ld		hl,RSitting
 	ld		(PlayerSpriteStand),hl
   ret
 
 Set_L_sit:	
+  xor   a
+  ld    (EnableHitbox?),a
 	ld		hl,LSitting
 	ld		(PlayerSpriteStand),hl
   ret
 
 Set_R_stand:
+  xor   a
+  ld    (EnableHitbox?),a
   ld    a,1
   ld    (PlayerFacingRight?),a	
 	ld		hl,RStanding
@@ -5458,6 +5679,7 @@ Set_R_stand:
 
 Set_L_stand:
   xor   a
+  ld    (EnableHitbox?),a
   ld    (PlayerFacingRight?),a	
 	ld		hl,LStanding
 	ld		(PlayerSpriteStand),hl
@@ -5480,21 +5702,37 @@ Set_R_Push:
   ret
 
 Set_L_BeingHit:
+  xor   a
+  ld    (EnableHitbox?),a
 	ld		hl,LBeingHit
 	ld		(PlayerSpriteStand),hl
   xor   a
 	ld		(PlayerAniCount),a
+;  ld    a,1
+;  ld    (PlayerFacingRight?),a                    ;since we move right, but face left, let's pretend we actually face right. This way the camera moves accordingly
+  ld    a,(RunningTablePointer)
+  ld    (RunningTablePointerWhenHit),a
 
-  ld    a,1
-  ld    (PlayerFacingRight?),a                    ;since we move right, but face left, let's pretend we actually face right. This way the camera moves accordingly
+  ld    hl,0
+	ld		(PlayerAniCount),hl
+	ld    a,StartingJumpSpeed+1
+	ld		(JumpSpeed),a
   ret
 
 Set_R_BeingHit:
 	ld		hl,RBeingHit
 	ld		(PlayerSpriteStand),hl
   xor   a
+  ld    (EnableHitbox?),a
 	ld		(PlayerAniCount),a
-  ld    (PlayerFacingRight?),a                    ;since we move left, but face right, let's pretend we actually face left. This way the camera moves accordingly
+;  ld    (PlayerFacingRight?),a                    ;since we move left, but face right, let's pretend we actually face left. This way the camera moves accordingly
+  ld    a,(RunningTablePointer)
+  ld    (RunningTablePointerWhenHit),a
+
+  ld    hl,0
+	ld		(PlayerAniCount),hl
+	ld    a,StartingJumpSpeed+1
+	ld		(JumpSpeed),a
   ret
 
 Set_L_SitPunch:

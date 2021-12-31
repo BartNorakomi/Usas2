@@ -13,7 +13,7 @@ MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | Map
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_011Data
+WorldMapPointer:  dw  MapB01_007Data
 
 loadGraphics:
   call  screenoff
@@ -669,6 +669,9 @@ copyScoreBoard:
   ld    a,(slot.page12rom)            ;all RAM except page 12
   out   ($a8),a          
 
+  ld    hl,.FillBottomPartScoreBoard
+  call  docopy  
+
   ld    hl,$6C00            ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
   ld    a,Graphicsblock5    ;block to copy from
   call  block12
@@ -680,6 +683,12 @@ copyScoreBoard:
   ld    a,32/2              ;copy 32 lines..
   ld    b,0
   jp    copyGraphicsToScreen.loop1    
+
+.FillBottomPartScoreBoard:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,248,000   ;dx,--,dy,dpage
+  db    000,001,008,000   ;nx,--,ny,--
+  db    %1111 1111,000,$C0       ;fill 
 
 CopyItemsKarniMata:
   ld    a,(slot.page12rom)            ;all RAM except page 12

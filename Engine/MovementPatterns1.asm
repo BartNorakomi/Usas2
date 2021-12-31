@@ -183,8 +183,8 @@ ld c,a
   ret   nc
 
 ;check if player collides with top side of enemy/object
-  ld    a,(Clesy)
-  add   a,11-4                              ;reduce this value to reduce the hitbox size (on the left side)
+  ld    a,(Clesy)                           ;a = y player
+  add   a,11-4                              ;reduce this value to reduce the hitbox size (on the yop side)
   sub   (ix+enemies_and_objects.y)
   ret   c
 
@@ -199,9 +199,7 @@ ld a,e
 
   sub   a,c
   ret   nc
-
-
-
+  
   ld    a,(PlayerInvulnerable?)
   or    a
   ret   nz
@@ -211,21 +209,51 @@ ld a,e
   jp    z,Set_L_BeingHit
   jp    Set_R_BeingHit
 
-  ld    a,(Clesy)
-  dec   a
-  ld    (Clesy),a
-  ret
+;  ld    a,(Clesy)
+;  dec   a
+;  ld    (Clesy),a
+;  ret
   
   CheckPlayerPunchesEnemy:
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-  ld    a,(NewPrContr)	
-	bit		4,a                                 ;space pressed ?
+  ld    a,(EnableHitbox?)
+  or    a
   ret   z
-  
+
+;check if enemy/object collides with hitbox left side
+  ld    hl,(HitBoxSX)                       ;hl = x hitbox
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  sbc   hl,de
+  ret   c
+
+;check if enemy/object collides with hitbox right side
+  ld    c,(ix+enemies_and_objects.nx)       ;width object
+
+ld a,09-4 ;nx + 10                          ;reduce this value to reduce the hitbox size (on the right side)
+add a,c
+ld c,a
+ld b,0
+
+  sbc   hl,bc  
+  ret   nc
+
+;check if enemy/object collides with hitbox top side
+  ld    a,(HitBoxSY)                        ;a = y hitbox
+  sub   (ix+enemies_and_objects.y)
+  ret   c
+
+;check if enemy/object collides with hitbox bottom side
+  ld    c,(ix+enemies_and_objects.ny)       ;width object
+
+ld e,a ;store a
+ld a,20-4 ;ny + 20   ;if this is 20-8 it would be same reduction top as bottom, but at the bottom its better if there is less reduction                         ;reduce this value to reduce the hitbox size (on the left side)
+add a,c
+ld c,a
+ld a,e
+
+  sub   a,c
+  ret   nc
+
 ;Enemy dies
   ld    hl,ExplosionSmall
   ld    (ix+enemies_and_objects.movementpattern),l
@@ -247,10 +275,10 @@ ld a,e
   ld    a,(ix+enemies_and_objects.y)
   add   a,(ix+enemies_and_objects.ny)
   sub   a,16
-  ld    (ix+enemies_and_objects.y),a
+;  ld    (ix+enemies_and_objects.y),a
 
   ;backup y and move sprite out of screen
-  ld    a,(ix+enemies_and_objects.y)        ;y  
+;  ld    a,(ix+enemies_and_objects.y)        ;y  
   ld    (ix+enemies_and_objects.v2),a       ;y backup
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ld    (ix+enemies_and_objects.y),217      ;y
@@ -300,10 +328,10 @@ GreenSpider:
 ;v4=Horizontal Movement
 ;v5=Grey Spider Slow Down Timer
 ;v6=Green Spider(0) / Grey Spider(1)
-  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
   call  .HandlePhase                        ;(0=walking slow, 1=fast) ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
   call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
   ld    a,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
   or    a
 	ld		a,GreenSpiderSpriteblock            ;set block at $a000, page 2 - block containing sprite data
