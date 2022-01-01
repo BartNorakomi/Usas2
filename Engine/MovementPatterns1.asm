@@ -299,7 +299,7 @@ ExplosionSmall:
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
 
-  ld    (ix+enemies_and_objects.nrsprites),18-(02*3)
+  ld    (ix+enemies_and_objects.nrsprites),24-(02*3)
   ld    (ix+enemies_and_objects.nrspritesSimple),2
   ret
 
@@ -320,6 +320,62 @@ ExplosionSmallAnimation:
   dw  RedExplosionSmall3_Char 
   dw  RedExplosionSmall4_Char
   dw  RedExplosionSmall4_Char
+
+Grinder:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=fast)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,GrinderSpriteblock                ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+
+  .HandlePhase:                             ;out hl -> sprite character data to out to Vram
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  or    a
+  jp    z,Grinderwalking
+
+  GrinderAttacking:
+  ret
+
+
+  Grinderwalking:
+  ld    a,(framecounter)
+  and   3
+  call  nz,MoveSpriteHorizontally
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+;  call  GreenSpiderWalkSlow.CheckFloor      ;checks for collision wall and if found invert direction
+;  call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
+  
+  .Animate:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    hl,GrinderRightWalkAnimation
+  jp    p,.GoAnimate
+  ld    hl,GrinderLeftWalkAnimation
+  .GoAnimate:
+  ld    b,7                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 05                            ;07 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+GrinderLeftWalkAnimation:
+  dw  LeftGrinderWalk1_Char
+  dw  LeftGrinderWalk2_Char
+  dw  LeftGrinderWalk3_Char
+  dw  LeftGrinderWalk4_Char
+  dw  LeftGrinderWalk5_Char
+  
+GrinderRightWalkAnimation:
+  dw  RightGrinderWalk1_Char
+  dw  RightGrinderWalk2_Char
+  dw  RightGrinderWalk3_Char
+  dw  RightGrinderWalk4_Char
+  dw  RightGrinderWalk5_Char
 
 GreenSpider:
 ;v1=Animation Counter

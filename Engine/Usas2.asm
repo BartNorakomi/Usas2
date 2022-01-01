@@ -653,7 +653,7 @@ MapB01_003:
   incbin "..\maps\b01-003.map.pck"  | .amountofobjects: db  1
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 26*16|db 18-(04*3),04  ,+00,+00,+00,+01,+00,+01,+00|dw spat+(26*4)| ds fill
+.object2:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,+01,+00,+01,+00|dw spat+(26*4)| ds fill
 
 MapB01_004:
   incbin "..\maps\b01-004.map.pck"  | .amountofobjects: db  3
@@ -679,7 +679,7 @@ MapB01_007:
 .object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*06|db 16,32|dw CleanOb1| db 00,00,     +32,+00,+00,+01,+00,+16,+00,+16,00         | ds fill   
 ;Spider Green
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*23|db 16,30|dw 26*16|db 18-(04*3),04  ,+00,+00,+00,-01,+00,+00,+00|dw spat+(26*4)| ds fill
+.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*23|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,-01,+00,+00,+00|dw spat+(26*4)| ds fill
 
 MapB01_008:
   incbin "..\maps\b01-008.map.pck"  | .amountofobjects: db  2
@@ -688,7 +688,7 @@ MapB01_008:
 .object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1| db 00,00,     +64,+01,+00,+01,+00,+16,+00,+16,00         | ds fill   
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 26*16|db 18-(04*3),04  ,+00,+00,+00,+01,+00,+01,+00|dw spat+(26*4)| ds fill
+.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,+01,+00,+01,+00|dw spat+(26*4)| ds fill
 
 MapB01_009:
   incbin "..\maps\b01-009.map.pck"  | .amountofobjects: db  3
@@ -698,21 +698,16 @@ MapB01_009:
 .object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2| db 00,00,     +64,+01,+00,+01,+00,+16,+00,+16,00         | ds fill   
 ;Spider Green
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object3:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 26*16|db 18-(04*3),04  ,+00,+00,+00,-01,+00,+00,+00|dw spat+(26*4)| ds fill
+.object3:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,-01,+00,+00,+00|dw spat+(26*4)| ds fill
 
 MapB01_010:
-  incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  1
+  incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  2
 ;Retarded Zombie
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 26*16|db 18-(04*3),04  ,+00,+00,+01,+01,+00,+00,+00|dw spat+(26*4)| ds fill
-;.object2:db -1,        1|dw ExplosionSmall      |db 8*03|dw 8*19|db 32,16|dw 26*16|db 18-(04*3),04  ,+00,+00,+01,+01,+00,+00,+00|dw spat+(26*4)| ds fill
-
-
-
-
-
-
-
+.object1:db -1,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 26*16|db 24-(04*3),04  ,+00,+00,+01,+01,+00,+00,+00|dw spat+(26*4)| ds fill
+;Grinder
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
+.object2:db -1,        1|dw Grinder             |db 8*11|dw 8*19|db 32,32|dw 00*16|db 24-(08*3),08  ,+00,+00,+00,+01,+00,+00,+00|dw spat+(00*4)| ds fill
 
 
 
@@ -724,7 +719,7 @@ MapB01_011:
 .object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 20,32|dw CleanOb1| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,0         | ds fill
 ;Spider Green
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw GreenSpider         |db 8*21|dw 8*19|db 16,30|dw 26*16|db 18-(04*3),04  ,+00,+00,+00,-01,+00,+00,+00|dw spat+(26*4)| ds fill
+.object2:db -1,        1|dw GreenSpider         |db 8*21|dw 8*19|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,-01,+00,+00,+00|dw spat+(26*4)| ds fill
 
 MapB01_012:
   incbin "..\maps\b01-012.map.pck"  | .amountofobjects: db  2
@@ -733,7 +728,7 @@ MapB01_012:
 .object1: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*18|db 20,32|dw CleanOb1| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,0         | ds fill
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*15|db 16,30|dw 26*16|db 18-(04*3),04  ,+00,+00,+00,+01,+00,+01,+00|dw spat+(26*4)| ds fill
+.object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*15|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,+01,+00,+01,+00|dw spat+(26*4)| ds fill
 
 	ds		$c000-$,$ff
 dephase
@@ -1381,6 +1376,46 @@ GreyExplosionBig4_Char:                     include "..\sprites\explosions\GreyE
 GreyExplosionBig4_col:                      include "..\sprites\explosions\GreyExplosionBig4.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
 GreyExplosionBig5_Char:                     include "..\sprites\explosions\GreyExplosionBig5.tgs.gen"	  
 GreyExplosionBig5_col:                      include "..\sprites\explosions\GreyExplosionBig5.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $4b + $4c
+;
+GrinderSpriteblock:  equ   $4b
+phase	$8000
+LeftGrinderWalk1_Char:                      include "..\sprites\enemies\Grinder\LeftGrinderWalk1.tgs.gen"	  
+LeftGrinderWalk1_Col:                       include "..\sprites\enemies\Grinder\LeftGrinderWalk1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftGrinderWalk2_Char:                      include "..\sprites\enemies\Grinder\LeftGrinderWalk2.tgs.gen"	  
+LeftGrinderWalk2_Col:                       include "..\sprites\enemies\Grinder\LeftGrinderWalk2.tcs.gen"  | db 00,-02,00,-02, 00,14,00,14, 16,-02,16,-02, 16,14,16,14
+LeftGrinderWalk3_Char:                      include "..\sprites\enemies\Grinder\LeftGrinderWalk3.tgs.gen"	  
+LeftGrinderWalk3_Col:                       include "..\sprites\enemies\Grinder\LeftGrinderWalk3.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftGrinderWalk4_Char:                      include "..\sprites\enemies\Grinder\LeftGrinderWalk4.tgs.gen"	  
+LeftGrinderWalk4_Col:                       include "..\sprites\enemies\Grinder\LeftGrinderWalk4.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftGrinderWalk5_Char:                      include "..\sprites\enemies\Grinder\LeftGrinderWalk5.tgs.gen"	  
+LeftGrinderWalk5_Col:                       include "..\sprites\enemies\Grinder\LeftGrinderWalk5.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+
+RightGrinderWalk1_Char:                     include "..\sprites\enemies\Grinder\RightGrinderWalk1.tgs.gen"	  
+RightGrinderWalk1_Col:                      include "..\sprites\enemies\Grinder\RightGrinderWalk1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+RightGrinderWalk2_Char:                     include "..\sprites\enemies\Grinder\RightGrinderWalk2.tgs.gen"	  
+RightGrinderWalk2_Col:                      include "..\sprites\enemies\Grinder\RightGrinderWalk2.tcs.gen"  | db 00,02,00,02, 00,18,00,18, 16,02,16,02, 16,18,16,18
+RightGrinderWalk3_Char:                     include "..\sprites\enemies\Grinder\RightGrinderWalk3.tgs.gen"	  
+RightGrinderWalk3_Col:                      include "..\sprites\enemies\Grinder\RightGrinderWalk3.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+RightGrinderWalk4_Char:                     include "..\sprites\enemies\Grinder\RightGrinderWalk4.tgs.gen"	  
+RightGrinderWalk4_Col:                      include "..\sprites\enemies\Grinder\RightGrinderWalk4.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+RightGrinderWalk5_Char:                     include "..\sprites\enemies\Grinder\RightGrinderWalk5.tgs.gen"	  
+RightGrinderWalk5_Col:                      include "..\sprites\enemies\Grinder\RightGrinderWalk5.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+
+LeftGrinderAttack1_Char:                    include "..\sprites\enemies\Grinder\LeftGrinderAttack1.tgs.gen"	  
+LeftGrinderAttack1_Col:                     include "..\sprites\enemies\Grinder\LeftGrinderAttack1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftGrinderAttack2_Char:                    include "..\sprites\enemies\Grinder\LeftGrinderAttack2.tgs.gen"	  
+LeftGrinderAttack2_Col:                     include "..\sprites\enemies\Grinder\LeftGrinderAttack2.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+
+RightGrinderAttack1_Char:                   include "..\sprites\enemies\Grinder\RightGrinderAttack1.tgs.gen"	  
+RightGrinderAttack1_Col:                    include "..\sprites\enemies\Grinder\RightGrinderAttack1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+RightGrinderAttack2_Char:                   include "..\sprites\enemies\Grinder\RightGrinderAttack2.tgs.gen"	  
+RightGrinderAttack2_Col:                    include "..\sprites\enemies\Grinder\RightGrinderAttack2.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+
 	ds		$c000-$,$ff
 dephase
 

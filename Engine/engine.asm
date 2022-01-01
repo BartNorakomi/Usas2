@@ -5,7 +5,7 @@ LevelEngine:
   call  PopulateControls
   call  Sf2EngineObjects          ;di, restore background object, handle action object, put object in screen, handle interaction object and player, prepare page to be set on Vblank, ei 
   call  Handle_HardWareSprite_Enemies_And_objects
-  call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
+;  call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
   call  PutPlayersprite           ;outs char data to Vram, col data to Vram and sets spat data for player (coordinates depend on camera x+y)
   call  PutSpatToVram             ;outs all spat data to Vram
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
@@ -144,12 +144,12 @@ Handle_HardWareSprite_Enemies_And_objects:
   ;out character data
   exx                                           ;recall hl. hl now points to character data
 	ld		c,$98
-  ld    a,(ix+enemies_and_objects.nrsprites)    ;amount of sprites (1 sprite=15    2 sprites=12    3 sprites=9    4 sprites=6    5 sprites=3        6 sprites=0     (18 - (amount of sprites*3)))  
+  ld    a,(ix+enemies_and_objects.nrsprites)    ;amount of sprites (1 sprite=21    2 sprites=18    3 sprites=15    4 sprites=12    5 sprites=9     6 sprites=6     7 sprites=3     8 sprites=0     (24 - (amount of sprites*3)))  
   ld    (.SelfModifyinJRCharacterData),a
   ld    (.SelfModifyinJRColorData),a  
   .SelfModifyinJRCharacterData:  equ $+1
   jr    .Charloop
-  call  outix32 | call  outix32 | call  outix32 | call  outix32 | call  outix32
+  call  outix32 | call  outix32 | call  outix32 | call  outix32 | call  outix32 | call  outix32 | call  outix32
   .CharLoop:  
   call  outix32
   .endOutChar:
@@ -173,7 +173,7 @@ Handle_HardWareSprite_Enemies_And_objects:
   exx                                           ;recall hl. hl now points to color data
   .SelfModifyinJRColorData:  equ $+1
   jr    .ColLoop
-  call  outix16 | call  outix16 | call  outix16 | call  outix16 | call  outix16
+  call  outix16 | call  outix16 | call  outix16 | call  outix16 | call  outix16 | call  outix16 | call  outix16
   .ColLoop:  
   call  outix16
 
@@ -213,9 +213,6 @@ Handle_HardWareSprite_Enemies_And_objects:
   
   exx
   djnz  .LoopRightSideOfScreen
-
-	ld		a,(slot.ram)	;back to full RAM
-	out		($a8),a	
   ret
 
 .LeftSideOfMap:
@@ -271,9 +268,6 @@ Handle_HardWareSprite_Enemies_And_objects:
   
   exx
   djnz  .LoopLeftSideOfScreen
-
-	ld		a,(slot.ram)	;back to full RAM
-	out		($a8),a		
   ret
 
 handle_enemies_and_objects:
@@ -2845,10 +2839,10 @@ CheckMoveHorizontallyWhenHitFaceLeft:
   ld    a,RunningTablePointerRunRightEndValue-2
   ld    (RunningTablePointer),a      
   ld    a,(RunningTablePointerWhenHit)
-  sub   3
+  sub   5
   ld    hl,CheckMoveHorizontallyWhenHitFaceRight.MoveTabl3
   jr    c,CheckMoveHorizontallyWhenHitFaceRight.TableFound
-  sub   13
+  sub   11
   ld    hl,CheckMoveHorizontallyWhenHitFaceRight.MoveTabl2
   jr    c,CheckMoveHorizontallyWhenHitFaceRight.TableFound
   ld    hl,CheckMoveHorizontallyWhenHitFaceRight.MoveTabl1
@@ -2861,7 +2855,7 @@ CheckMoveHorizontallyWhenHitFaceRight:
   sub   25
   ld    hl,.MoveTabl1
   jr    c,.TableFound
-  sub   09
+  sub   07
   ld    hl,.MoveTabl2
   jr    c,.TableFound
   ld    hl,.MoveTabl3
@@ -3037,7 +3031,7 @@ RRolling:
   ld    a,1
   ld    (EnableHitbox?),a
   ld    hl,(ClesX)
-  ld    de,+04  + 19
+  ld    de,+05  + 19
   add   hl,de
   ld    (HitBoxSX),hl
 ;  ld    a,16
@@ -3144,7 +3138,7 @@ LRolling:
   ld    a,1
   ld    (EnableHitbox?),a
   ld    hl,(ClesX)
-  ld    de,-04  + 19
+  ld    de,-05  + 19
   add   hl,de
   ld    (HitBoxSX),hl
 ;  ld    a,16
