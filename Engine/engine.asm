@@ -42,7 +42,8 @@ LevelEngine:
 
 ClesX:      dw 080 ;150 ;210
 ClesY:      db 050 ; 144-1
-herospritenr:             db  22
+herospritenr:             db  herospritenrTimes4 / 4
+herospritenrTimes4:       equ 28*4
 
 BackdropOrange:
   ld    a,13
@@ -111,6 +112,8 @@ Handle_HardWareSprite_Enemies_And_objects:
   ld    a,(de) | inc a | call z,.docheck            
   ld    de,enemies_and_objects+(4*lenghtenemytable)                                     
   ld    a,(de) | inc a | call z,.docheck             
+  ld    de,enemies_and_objects+(5*lenghtenemytable)                                     
+  ld    a,(de) | inc a | call z,.docheck             
 
 	ld		a,(slot.ram)	      ;back to full RAM
 	out		($a8),a	
@@ -146,7 +149,7 @@ Handle_HardWareSprite_Enemies_And_objects:
 	ld		c,$98
   ld    a,(ix+enemies_and_objects.nrsprites)    ;amount of sprites (1 sprite=21    2 sprites=18    3 sprites=15    4 sprites=12    5 sprites=9     6 sprites=6     7 sprites=3     8 sprites=0     (24 - (amount of sprites*3)))  
   ld    (.SelfModifyinJRCharacterData),a
-  ld    (.SelfModifyinJRColorData),a  
+  ld    (RightSideOfMap.SelfModifyinJRColorData),a  
   .SelfModifyinJRCharacterData:  equ $+1
   jr    .Charloop
   call  outix32 | call  outix32 | call  outix32 | call  outix32 | call  outix32 | call  outix32 | call  outix32
@@ -166,16 +169,20 @@ Handle_HardWareSprite_Enemies_And_objects:
   ld    h,(ix+enemies_and_objects.x+1)      ;x
   ld    de,304/2                            ;half of the map width
   sbc   hl,de
-  jp    c,.LeftSideOfMap
+  jp    c,LeftSideOfMap
 
-.RightSideOfMap:
+RightSideOfMap:
   ;out color data
-  exx                                           ;recall hl. hl now points to color data
+  exx                                           ;recall hl. hl now points to color data 
+  bit   1,(ix+enemies_and_objects.hit?)         ;check if enemy is hit ? If so, out white sprite
+  jr    nz,.OutWhiteSprite
+
   .SelfModifyinJRColorData:  equ $+1
   jr    .ColLoop
   call  outix16 | call  outix16 | call  outix16 | call  outix16 | call  outix16 | call  outix16 | call  outix16
   .ColLoop:  
   call  outix16
+  .EndOutColor:
 
   ;write sprite coordinates to spat (take in account offset values per sprite and camera position)
   ld    e,(ix+enemies_and_objects.spataddress)  
@@ -191,7 +198,7 @@ Handle_HardWareSprite_Enemies_And_objects:
 
   exx
   ld    b,(ix+enemies_and_objects.nrspritesSimple)
-  .LoopRightSideOfScreen:
+  .Loop:
   exx
   
   ld    a,(hl)                                  ;offset y (sprite offsets are in hl and are stored in rom right after the color data)
@@ -212,25 +219,33 @@ Handle_HardWareSprite_Enemies_And_objects:
   inc   hl
   
   exx
-  djnz  .LoopRightSideOfScreen
+  djnz  .Loop
   ret
 
-.LeftSideOfMap:
+  .OutWhiteSprite:                              ;when enemy is hit, it's spritecolor will be white
+  ld    b,(ix+enemies_and_objects.nrspritesTimes16)
+  ld    a,09                                    ;white
+  .loopWhite:
+  out   ($98),a
+  inc   hl
+  djnz  .loopWhite
+  jp    .EndOutColor
+  
+LeftSideOfMap:
   ;out color data
   exx                                           ;recall hl. hl now points to color data
-  ld    a,(ix+enemies_and_objects.nrspritesSimple)
-  add   a,a                                     ;*2
-  add   a,a                                     ;*4
-  add   a,a                                     ;*8
-  add   a,a                                     ;*16
-  ld    b,a                                     ;number of sprites * 16
+  bit   1,(ix+enemies_and_objects.hit?)         ;check if enemy is hit ? If so, out white sprite
+  jr    nz,.OutWhiteSprite
+  
+  ld    b,(ix+enemies_and_objects.nrspritesTimes16)
   ld    c,128
-  .CEbitloop:
+  .CEbitloop:                                   ;out spritecolor with CE bit set (all values get +128)
   ld    a,(hl)
-  add   a,c
+  add   a,c  
   out   ($98),a
   inc   hl
   djnz  .CEbitloop
+  .EndOutColor:
 
   ;write sprite coordinates to spat (take in account offset values per sprite and camera position)
   ld    e,(ix+enemies_and_objects.spataddress)  
@@ -246,7 +261,7 @@ Handle_HardWareSprite_Enemies_And_objects:
 
   exx
   ld    b,(ix+enemies_and_objects.nrspritesSimple)
-  .LoopLeftSideOfScreen:
+  .Loop:
   exx
   
   ld    a,(hl)                                  ;offset y (sprite offsets are in hl and are stored in rom right after the color data)
@@ -267,8 +282,17 @@ Handle_HardWareSprite_Enemies_And_objects:
   inc   hl
   
   exx
-  djnz  .LoopLeftSideOfScreen
+  djnz  .Loop
   ret
+
+  .OutWhiteSprite:                              ;when enemy is hit, it's spritecolor will be white
+  ld    b,(ix+enemies_and_objects.nrspritesTimes16)
+  ld    a,09+128                                ;white + CE bit
+  .CEbitloopWhite:
+  out   ($98),a
+  inc   hl
+  djnz  .CEbitloopWhite
+  jp    .EndOutColor
 
 handle_enemies_and_objects:
   ld    a,(scrollEngine)                              ;1= 304x216 engine  2=256x216 SF2 engine
@@ -733,7 +757,7 @@ PlayerLeftSideOfMap:
   add   a,32                ;32 bit shift added to sprite x
 
   ld    de,3
-  ld    hl,spat+88          
+  ld    hl,spat+herospritenrTimes4          
   ld    (hl),b              ;y sprite 22
   inc   hl                  
   .selfmodifyingcode_x_offset_hero_top_LeftSide: equ $+1
@@ -815,7 +839,7 @@ PlayerRightSideOfMap:
 
   .PutPlayerxY:
   ld    de,3
-  ld    hl,spat+88          
+  ld    hl,spat+herospritenrTimes4          
   ld    (hl),b              ;y sprite 22
   inc   hl                  
   .selfmodifyingcode_x_offset_hero_top_RightSide: equ $+1

@@ -1041,16 +1041,19 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .ObjectNumber:          equ 9
 .nrsprites:             equ 11
 .nrspritesSimple:       equ 12
-.v1:                    equ 13
-.v2:                    equ 14
-.v3:                    equ 15
-.v4:                    equ 16
-.v5:                    equ 17
-.SnapPlayer?:           equ 17
-.v6:                    equ 18
-.v7:                    equ 19
-.coordinates:           equ 20
-.spataddress:           equ 20
+.nrspritesTimes16:      equ 13
+.v1:                    equ 14
+.v2:                    equ 15
+.v3:                    equ 16
+.v4:                    equ 17
+.v5:                    equ 18
+.SnapPlayer?:           equ 18
+.v6:                    equ 19
+.v7:                    equ 20
+.coordinates:           equ 21
+.spataddress:           equ 21
+.hit?:                  equ 23
+.life:                  equ 24
 
 endenginepage3variables:  equ $+enginepage3length
 org variables

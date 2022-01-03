@@ -700,14 +700,27 @@ MapB01_009:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
 .object3:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,-01,+00,+00,+00|dw spat+(26*4)| ds fill
 
+
+
+
 MapB01_010:
-  incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  2
+  incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  6
+;Retarded Zombie Spawnpoint
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, spataddress  ,Hit?,  life,   
+.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 32,16|dw 16*16|db 24-(04*3),04  ,04*16,+01,+00,+01,+01,+00,+00,+00|dw spat+(16*4)|db 0|db 001| ds fill-3
+
 ;Retarded Zombie
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object1:db -1,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 26*16|db 24-(04*3),04  ,+00,+00,+01,+01,+00,+00,+00|dw spat+(26*4)| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, spataddress  ,Hit?,  life,   
+.object2:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 16*16|db 24-(04*3),04  ,04*16,+00,+00,+01,+01,+00,+00,+00|dw spat+(16*4)|db 0|db 001| ds fill-3
+.object3:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 20*16|db 24-(04*3),04  ,04*16,+00,+00,+01,+01,+00,+00,+00|dw spat+(20*4)|db 0|db 001| ds fill-3
+.object4:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 24*16|db 24-(04*3),04  ,04*16,+00,+00,+01,+01,+00,+00,+00|dw spat+(24*4)|db 0|db 001| ds fill-3
 ;Grinder
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw Grinder             |db 8*11|dw 8*19|db 32,32|dw 00*16|db 24-(08*3),08  ,+00,+00,+00,+01,+00,+00,+00|dw spat+(00*4)| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, spataddress  ,Hit?,  
+.object5:db -1,        1|dw Grinder             |db 8*11|dw 8*19|db 32,32|dw 00*16|db 24-(08*3),08  ,08*16,+00,+00,+00,+01,+00,+00,+00|dw spat+(00*4)|db 0|db 005| ds fill-3
+.object6:db -1,        1|dw Grinder             |db 8*21|dw 8*19|db 32,32|dw 08*16|db 24-(08*3),08  ,08*16,+00,+00,+00,+01,+00,+00,+00|dw spat+(08*4)|db 0|db 005| ds fill-3
+
+
+
 
 
 
@@ -733,7 +746,7 @@ MapB01_012:
 	ds		$c000-$,$ff
 dephase
 
-fill: equ 4
+fill: equ 10
 
 ;NrSprites: (18 - (amount of sprites*3))
 
@@ -1415,9 +1428,17 @@ RightGrinderAttack1_Char:                   include "..\sprites\enemies\Grinder\
 RightGrinderAttack1_Col:                    include "..\sprites\enemies\Grinder\RightGrinderAttack1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
 RightGrinderAttack2_Char:                   include "..\sprites\enemies\Grinder\RightGrinderAttack2.tgs.gen"	  
 RightGrinderAttack2_Col:                    include "..\sprites\enemies\Grinder\RightGrinderAttack2.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
-
 	ds		$c000-$,$ff
 dephase
+
+;
+; block $4d + $4e
+;
+WhiteSpritesblock:  equ   $4d
+phase	$8000
+	ds		$c000-$,$09 ; color white
+dephase
+
 
 
 totallenght:	Equ	$-Usas2
