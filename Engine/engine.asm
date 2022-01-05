@@ -1,14 +1,16 @@
 LevelEngine:
-  call  BackdropBlue
+;  call  BackdropBlue
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
-  call  BackdropBlack
+;  call  BackdropBlack
   call  PopulateControls
   call  Sf2EngineObjects          ;di, restore background object, handle action object, put object in screen, handle interaction object and player, prepare page to be set on Vblank, ei 
   call  Handle_HardWareSprite_Enemies_And_objects
-;  call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
+  call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
+;  call  BackdropGreen
   call  PutPlayersprite           ;outs char data to Vram, col data to Vram and sets spat data for player (coordinates depend on camera x+y)
   call  PutSpatToVram             ;outs all spat data to Vram
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
+;  call  BackdropBlack
 
 ;Routines starting at lineint:
   xor   a                         ;wait for lineint flag to be set. It's better (for now) to put the VRAM objects directly after the lineint
@@ -17,11 +19,11 @@ LevelEngine:
   cp    (hl)
   jr    z,.checkflag1
 
-  call  SwapSpatColAndCharTable
+  call  SwapSpatColAndCharTable2
 
-  call  BackdropBlue
+;  call  BackdropBlue
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
-  call  BackdropBlack
+;  call  BackdropBlack
 
   xor   a
   ld    (SnapToPlatForm?),a
@@ -44,13 +46,19 @@ ClesX:      dw 080 ;150 ;210
 ClesY:      db 050 ; 144-1
 herospritenr:             db  herospritenrTimes4 / 4
 herospritenrTimes4:       equ 28*4
+herospritenrTimes16:      equ 28*16
+herospritenrTimes32:      equ 28*32
+
+BackdropRandom:
+  ld    a,r
+  jp    SetBackDrop
 
 BackdropOrange:
   ld    a,13
   jp    SetBackDrop
 
 BackdropGreen:
-  ld    a,08
+  ld    a,10
   jp    SetBackDrop
 
 BackdropRed:
@@ -120,6 +128,8 @@ Handle_HardWareSprite_Enemies_And_objects:
   ret
 
   .docheck:  
+;  call  BackdropRandom
+  
   ld    ixl,e
   ld    ixh,d
   call  movement_enemies_and_objects            ;handle sprite movement and animation
@@ -146,15 +156,16 @@ Handle_HardWareSprite_Enemies_And_objects:
 
   ;out character data
   exx                                           ;recall hl. hl now points to character data
-	ld		c,$98
-  ld    a,(ix+enemies_and_objects.nrsprites)    ;amount of sprites (1 sprite=21    2 sprites=18    3 sprites=15    4 sprites=12    5 sprites=9     6 sprites=6     7 sprites=3     8 sprites=0     (24 - (amount of sprites*3)))  
-  ld    (.SelfModifyinJRCharacterData),a
+  ld    a,(ix+enemies_and_objects.nrsprites)    ;amount of sprites (1 sprite=42    2 sprites=36    3 sprites=30    4 sprites=24    5 sprites=18     6 sprites=12     7 sprites=6     8 sprites=0     (48 - (amount of sprites*6)))  
   ld    (RightSideOfMap.SelfModifyinJRColorData),a  
+  ld    (.SelfModifyinJRCharacterData),a
+	ld		c,$98
+		
   .SelfModifyinJRCharacterData:  equ $+1
   jr    .Charloop
-  call  outix32 | call  outix32 | call  outix32 | call  outix32 | call  outix32 | call  outix32 | call  outix32
+  call  outix256 | jp .endOutChar | call  outix224 | jp .endOutChar | call  outix192 | jp .endOutChar | call  outix160 | jp .endOutChar | call  outix128 | jp .endOutChar | call  outix96 | jp .endOutChar | call  outix64 | jp .endOutChar
   .CharLoop:  
-  call  outix32
+  call  outix32 | jp .endOutChar
   .endOutChar:
   exx                                           ;store hl. hl now points to color data
 
@@ -179,9 +190,9 @@ RightSideOfMap:
 
   .SelfModifyinJRColorData:  equ $+1
   jr    .ColLoop
-  call  outix16 | call  outix16 | call  outix16 | call  outix16 | call  outix16 | call  outix16 | call  outix16
+  call  outix128 | jp .EndOutColor | call  outix112 | jp .EndOutColor | call  outix96 | jp .EndOutColor | call  outix80 | jp .EndOutColor | call  outix64 | jp .EndOutColor | call  outix48 | jp .EndOutColor | call  outix32 | jp .EndOutColor
   .ColLoop:  
-  call  outix16
+  call  outix16 | jp .EndOutColor
   .EndOutColor:
 
   ;write sprite coordinates to spat (take in account offset values per sprite and camera position)
@@ -220,14 +231,18 @@ RightSideOfMap:
   
   exx
   djnz  .Loop
+
+;  call  BackdropBlack
   ret
 
   .OutWhiteSprite:                              ;when enemy is hit, it's spritecolor will be white
   ld    b,(ix+enemies_and_objects.nrspritesTimes16)
+  ld    e,b
+  ld    d,0
+  add   hl,de
   ld    a,09                                    ;white
   .loopWhite:
   out   ($98),a
-  inc   hl
   djnz  .loopWhite
   jp    .EndOutColor
   
@@ -283,14 +298,19 @@ LeftSideOfMap:
   
   exx
   djnz  .Loop
+
+;  call  BackdropBlack
   ret
 
   .OutWhiteSprite:                              ;when enemy is hit, it's spritecolor will be white
   ld    b,(ix+enemies_and_objects.nrspritesTimes16)
+  ld    e,b
+  ld    d,0
+  add   hl,de
   ld    a,09+128                                ;white + CE bit
   .CEbitloopWhite:
   out   ($98),a
-  inc   hl
+;  inc   hl
   djnz  .CEbitloopWhite
   jp    .EndOutColor
 
@@ -354,11 +374,11 @@ handle_enemies_and_objects:
   ret
 
   .docheck:
-  call  BackdropRed  
+;  call  BackdropRed  
   ld    ixl,e
   ld    ixh,d
   call  movement_enemies_and_objects                  ;sprite is in movement area, so let it move !! ^__^
-  call  BackdropBlack
+;  call  BackdropBlack
   ret
   
 movementpatternsblock:  db  movementpatterns1block
@@ -649,41 +669,30 @@ PutPlayersprite:
 	out		($a8),a	
   
 ;put hero sprite character
+  ld    hl,herospritenrTimes32
 	ld		de,(invissprchatableaddress)		;sprite character table in VRAM ($17800)
-  ld    a,(herospritenr)
-  ld    h,0
-  ld    l,a
-  add   hl,hl       ;*2
-  add   hl,hl       ;*4
-  add   hl,hl       ;*8
-  add   hl,hl       ;*16
-  add   hl,hl       ;*32
+;  ld    a,(herospritenr)
+;  ld    h,0
+;  ld    l,a
+;  add   hl,hl       ;*2
+;  add   hl,hl       ;*4
+;  add   hl,hl       ;*8
+;  add   hl,hl       ;*16
+;  add   hl,hl       ;*32
   add   hl,de
 	ld		a,1
 	call	SetVdp_Write
 
-;  ld    a,(standchar+1)
-;  cp    $80
-;  ld    h,0         ;characterspritesblock + 0
-;  ld    de,$0000+$4000
-;  jp    c,.setsprites
-;  ld    h,4         ;characterspritesblock + 4
-;  ld    de,$C000-$40
-;.setsprites:
-;  push  de
-
-;.nakedMod: equ	$+1
 	ld		a,PlayerSpritesBlock
-;  add   a,h
 	call	block1234		;set blocks in page 1/2
 
-standchar:	equ	$+1
-	ld		hl,PlayerSpriteData_Char_LeftStand      ;sprite character in ROM
+  standchar:	equ	$+1
+	ld		hl,PlayerSpriteData_Char_RightStand  ;sprite character in ROM
   
   ;if player invulnerable, display empty sprite even x frames
   ld    a,(PlayerInvulnerable?)
   or    a
-  jp    z,.EndCheckPlayerInvulnerable
+  jr    z,.EndCheckPlayerInvulnerable
   dec   a
   ld    (PlayerInvulnerable?),a
   ld    a,(framecounter)
@@ -699,14 +708,15 @@ standchar:	equ	$+1
   exx               ;store hl. hl now points to color data
 
 ;put hero sprite color
+  ld    hl,herospritenrTimes16
 	ld		de,(invissprcoltableaddress)		;sprite color table in VRAM ($17400)
-  ld    a,(herospritenr)
-  ld    h,0
-  ld    l,a
-  add   hl,hl       ;*2
-  add   hl,hl       ;*4
-  add   hl,hl       ;*8
-  add   hl,hl       ;*16
+;  ld    a,(herospritenr)
+;  ld    h,0
+;  ld    l,a
+;  add   hl,hl       ;*2
+;  add   hl,hl       ;*4
+;  add   hl,hl       ;*8
+;  add   hl,hl       ;*16
   add   hl,de
 	ld		a,1
 	call	SetVdp_Write
@@ -722,13 +732,23 @@ standchar:	equ	$+1
 
 PlayerLeftSideOfMap:
   ld    c,128
-  ld    b,64
-  .Player32bitShifLoop:  
-  ld    a,(hl)
-  add   a,c  
-  out   ($98),a
-  inc   hl
-  djnz  .Player32bitShifLoop
+;  ld    b,64
+;  .Player32bitShifLoop:  
+;  ld    a,(hl)
+;  add   a,c  
+;  out   ($98),a
+;  inc   hl
+;  djnz  .Player32bitShifLoop
+
+  ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | 
+  ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | 
+  ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | 
+  ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | 
+  ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | 
+  ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | 
+  ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | 
+  ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | 
+;even faster would be to mirror all sprites with CE bit in a different block
 
   ;after the color data there are 2 bytes for the top and bottom offset of the sprites
   ld    a,(hl)
@@ -751,7 +771,7 @@ PlayerLeftSideOfMap:
   ld    e,a
   
   ld    hl,(ClesX)
-  sbc   hl,de               ;take x Cles and subtract the x camer
+  sbc   hl,de               ;take x Cles and subtract the x camera
 
   ld    a,l
   add   a,32                ;32 bit shift added to sprite x
@@ -811,7 +831,6 @@ PlayerRightSideOfMap:
 ;  .EndCheckPlayerHit:
 
 	call	outix64     ;4 sprites (4 * 16 bytes = 46 bytes)
-;.end32bitshift:
 
   ;after the color data there are 2 bytes for the top and bottom offset of the sprites
   ld    a,(hl)
@@ -1883,7 +1902,7 @@ CheckMapExit:
   cp    180+8 + 24
   jr    nc,.ExitBottomFound
 
-  ld    a,(ClesY)
+;  ld    a,(ClesY)
   cp    4
   jr    c,.ExitTopFound
 
@@ -2554,6 +2573,7 @@ block1234:
 	ei
 	ret
 
+
 SwapSpatColAndCharTable:
 	ld		a,(vdp_0+6)     ;check current sprite character table
   cp    %0010 1111      ;spr chr table at $17800 now ?
@@ -2597,6 +2617,56 @@ SwapSpatColAndCharTable:
   add   hl,bc
   ld    (invisspratttableaddress),hl
   add   hl,bc
+  ld    (invissprchatableaddress),hl
+  ret
+
+SwapSpatColAndCharTable2:
+	ld		a,(vdp_0+6)     ;check current sprite character table
+  rrca
+	di
+  jr    nc,.setspritetablesBuffer
+
+  .setspritetables:
+	ld		a,%0010 1110    ;spr chr table to $17000
+	ld		(vdp_0+6),a
+	out		($99),a		;spr chr table to $17800
+	ld		a,6+128
+	out		($99),a
+
+	ld		a,%1101 1111    ;spr att table to $16e00    
+	ld		(vdp_0+5),a
+	out		($99),a		;spr att table to $17600
+	ld		a,5+128
+  ei
+	out		($99),a
+
+  ld    hl,$7400              ;spr color table buffer $17400
+  ld    (invissprcoltableaddress),hl
+  ld    hl,$7400+$200         ;spr attr table buffer $17600
+  ld    (invisspratttableaddress),hl
+  ld    hl,$7400+$400        ;spr char table buffer $17800
+  ld    (invissprchatableaddress),hl
+  ret
+
+  .setspritetablesBuffer:
+	ld		a,%0010 1111    ;spr chr table to $17800
+	ld		(vdp_0+6),a
+	out		($99),a		;spr chr table to $17800
+	ld		a,6+128
+	out		($99),a
+
+	ld		a,%1110 1111    ;spr att table to $17600
+	ld		(vdp_0+5),a
+	out		($99),a		;spr att table to $17600
+	ld		a,5+128
+  ei
+	out		($99),a
+
+  ld    hl,$6c00              ;spr color table buffer $17400
+  ld    (invissprcoltableaddress),hl
+  ld    hl,$6c00+$200         ;spr attr table buffer $17600
+  ld    (invisspratttableaddress),hl
+  ld    hl,$6c00+$400        ;spr char table buffer $17800
   ld    (invissprchatableaddress),hl
   ret
 
@@ -5848,6 +5918,23 @@ spat:						;sprite attribute table
 	db		000,000,112,0	,000,000,116,0	,000,000,120,0	,000,000,124,0
 
 
+
+outix256:	
+	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
+outix250:	
+	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
+outix224:
+	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
+outix208:	
+	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
+outix192:	
+	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi
+outix176:	
+	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
+outix160:
+	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
+outix144:	
+	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
 outix128:	
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
 outix112:

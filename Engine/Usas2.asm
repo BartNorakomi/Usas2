@@ -632,36 +632,34 @@ MapB01_001:
 ;SF2 Huge block objects
 ;                                                                 repeat point y   x snap
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#,nrsprites,nrspr,  v1, v2, v3, v4, v5, v6, v7,coordinates  
-.object1: db 2,        0|dw Sf2Hugeobject1      |db 8*06|dw 8*09|db 48,48,      0,0,        0,0,      00,+00,+00,+00,+00,+00,+16,+00,16         | ds fill 
-.object2: db 2,        0|dw Sf2Hugeobject2      |db 8*12|dw 8*12|db 48,48,      0,0,        0,0,      00,+00,+00,+00,+00, 00,+16,+00,16         | ds fill   
-.object3: db 2,        0|dw Sf2Hugeobject3      |db 8*03|dw 8*13|db 48,48,      0,0,        0,0,      00,+00,+00,+00,+00, 00,+16,+00,16         | ds fill     
+;.object1: db 2,        0|dw Sf2Hugeobject1      |db 8*06|dw 8*09|db 48,48,      0,0,        0,0,      00,+00,+00,+00,+00,+00,+16,+00,16         | ds fill 
 
-;ADDED NR sprites, so from v1 everything should be moved 1 byte to the right
-;ADDED Amount sprites, so from v1 everything should be moved 1 more byte to the right
-;ADDED spataddress, so from v7 everything should be moved 2 more bytes to the right
-;ADDED extra byte for x, so from ny everything should be moved 1 more bytes to the right
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object1: db 2,        0|dw Sf2Hugeobject1      |db 8*06|dw 8*09|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16, 0|db 016| ds fill
+.object2: db 2,        0|dw Sf2Hugeobject2      |db 8*12|dw 8*12|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16, 0|db 016| ds fill
+.object3: db 2,        0|dw Sf2Hugeobject3      |db 8*03|dw 8*13|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16, 0|db 016| ds fill
 
 MapB01_002:
   incbin "..\maps\b01-002.map.pck"  | .amountofobjects: db  3
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#,nrsprites,nrspr,  v1, v2, v3, v4, v5, v6, v7,coordinates  
-.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,16         | ds fill   
-.object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,16         | ds fill   
-.object3: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*15|db 16,16|dw CleanOb3| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,16         | ds fill   
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
+.object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
+.object3: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*15|db 16,16|dw CleanOb3,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
  
 MapB01_003:
   incbin "..\maps\b01-003.map.pck"  | .amountofobjects: db  1
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,+01,+00,+01,+00|dw spat+(26*4)| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object1:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00, 0|db 001| ds fill
 
 MapB01_004:
   incbin "..\maps\b01-004.map.pck"  | .amountofobjects: db  3
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#,nrsprites,nrspr,  v1, v2, v3, v4, v5, v6, v7,coordinates  
-.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,16         | ds fill   
-.object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,16         | ds fill   
-.object3: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*15|db 16,16|dw CleanOb3| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,16         | ds fill   
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
+.object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
+.object3: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*15|db 16,16|dw CleanOb3,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
 
 MapB01_005:
   incbin "..\maps\b01-005.map.pck"  | .amountofobjects: db  0
@@ -669,79 +667,72 @@ MapB01_005:
 MapB01_006:
   incbin "..\maps\b01-006.map.pck" | .amountofobjects: db  1
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#,nrsprites,nrspr,  v1, v2, v3, v4, v5, v6, v7,coordinates  
-.object1: db 1,        0|dw PlatformVertically  |db 8*12|dw 8*12|db 16,32|dw CleanOb1| db 00,00,     +32,+00,+01,+00,+00,+16,+00,+16,00         | ds fill   
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object1: db 1,        0|dw PlatformVertically  |db 8*15|dw 8*13|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+01,+00,+00,+16,+00, 0|db 000| ds fill
 
 MapB01_007:
   incbin "..\maps\b01-007.map.pck"  | .amountofobjects: db  2
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#,nrsprites,nrspr,  v1, v2, v3, v4, v5, v6, v7,coordinates  
-.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*06|db 16,32|dw CleanOb1| db 00,00,     +32,+00,+00,+01,+00,+16,+00,+16,00         | ds fill   
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
 ;Spider Green
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*23|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,-01,+00,+00,+00|dw spat+(26*4)| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*23|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00, 0|db 001| ds fill
 
 MapB01_008:
   incbin "..\maps\b01-008.map.pck"  | .amountofobjects: db  2
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#,nrsprites,nrspr,  v1, v2, v3, v4, v5, v6, v7,coordinates  
-.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1| db 00,00,     +64,+01,+00,+01,+00,+16,+00,+16,00         | ds fill   
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,+01,+00,+01,+00|dw spat+(26*4)| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00, 0|db 001| ds fill
 
 MapB01_009:
   incbin "..\maps\b01-009.map.pck"  | .amountofobjects: db  3
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#,nrsprites,nrspr,  v1, v2, v3, v4, v5, v6, v7,coordinates  
-.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1| db 00,00,     +64,+01,+00,+01,+00,+16,+00,+16,00         | ds fill   
-.object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2| db 00,00,     +64,+01,+00,+01,+00,+16,+00,+16,00         | ds fill   
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00, 0|db 000| ds fill
+.object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00, 0|db 000| ds fill
 ;Spider Green
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object3:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,-01,+00,+00,+00|dw spat+(26*4)| ds fill
-
-
-
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object3:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00, 0|db 001| ds fill
 
 MapB01_010:
   incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  6
 ;Retarded Zombie Spawnpoint
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, spataddress  ,Hit?,  life,   
-.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 32,16|dw 16*16|db 24-(04*3),04  ,04*16,+01,+00,+01,+01,+00,+00,+00|dw spat+(16*4)|db 0|db 001| ds fill-3
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 32,16|dw 16*16,spat+(16*4)|db 48-(04*6),04  ,04*16,+01,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
 
 ;Retarded Zombie
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, spataddress  ,Hit?,  life,   
-.object2:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 16*16|db 24-(04*3),04  ,04*16,+00,+00,+01,+01,+00,+00,+00|dw spat+(16*4)|db 0|db 001| ds fill-3
-.object3:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 20*16|db 24-(04*3),04  ,04*16,+00,+00,+01,+01,+00,+00,+00|dw spat+(20*4)|db 0|db 001| ds fill-3
-.object4:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 24*16|db 24-(04*3),04  ,04*16,+00,+00,+01,+01,+00,+00,+00|dw spat+(24*4)|db 0|db 001| ds fill-3
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object2:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 16*16,spat+(16*4)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
+.object3:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 20*16,spat+(20*4)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
+.object4:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 24*16,spat+(24*4)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
 ;Grinder
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, spataddress  ,Hit?,  
-.object5:db -1,        1|dw Grinder             |db 8*11|dw 8*19|db 32,32|dw 00*16|db 24-(08*3),08  ,08*16,+00,+00,+00,+01,+00,+00,+00|dw spat+(00*4)|db 0|db 005| ds fill-3
-.object6:db -1,        1|dw Grinder             |db 8*21|dw 8*19|db 32,32|dw 08*16|db 24-(08*3),08  ,08*16,+00,+00,+00,+01,+00,+00,+00|dw spat+(08*4)|db 0|db 005| ds fill-3
-
-
-
-
-
-
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object5:db -1,        1|dw Grinder             |db 8*11|dw 8*19|db 32,32|dw 00*16,spat+(00*4)|db 48-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00, 0|db 005| ds fill
+.object6:db -1,        1|dw Grinder             |db 8*21|dw 8*19|db 32,32|dw 08*16,spat+(08*4)|db 48-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00, 0|db 005| ds fill
 
 MapB01_011:
   incbin "..\maps\b01-011.map.pck"  | .amountofobjects: db  2
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#,nrsprites,nrspr,  v1, v2, v3, v4, v5, v6, v7,coordinates  
-.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 20,32|dw CleanOb1| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,0         | ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
 ;Spider Green
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw GreenSpider         |db 8*21|dw 8*19|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,-01,+00,+00,+00|dw spat+(26*4)| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object2:db -1,        1|dw GreenSpider         |db 8*21|dw 8*19|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00, 0|db 001| ds fill
 
 MapB01_012:
   incbin "..\maps\b01-012.map.pck"  | .amountofobjects: db  2
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#,nrsprites,nrspr,  v1, v2, v3, v4, v5, v6, v7,coordinates  
-.object1: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*18|db 20,32|dw CleanOb1| db 00,00,     +64,+00,+00,+01,+00,+16,+00,+16,0         | ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +32,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,nrsprites,nrspr, v1, v2, v3, v4, v5, v6, v7, spataddress  
-.object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*15|db 16,30|dw 26*16|db 24-(04*3),04  ,+00,+00,+00,+01,+00,+01,+00|dw spat+(26*4)| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*15|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00, 0|db 001| ds fill
+
+
 
 	ds		$c000-$,$ff
 dephase
@@ -1120,10 +1111,6 @@ PlayerSpriteData_Char_RightSitPunch2:       include "..\sprites\secretsofgrindea
 PlayerSpriteData_Colo_RightSitPunch2:       include "..\sprites\secretsofgrindea\RightSitPunch2.tcs.gen"	  | db +0-8,+0
 PlayerSpriteData_Char_RightSitPunch3:       include "..\sprites\secretsofgrindea\RightSitPunch3.tgs.gen"	  
 PlayerSpriteData_Colo_RightSitPunch3:       include "..\sprites\secretsofgrindea\RightSitPunch3.tcs.gen"	  | db +0-8,+1
-
-
-
-
 EndPlayerSprites1: | ds $c000-$,$ff | dephase ;bf80
 
 ;

@@ -13,7 +13,7 @@ MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | Map
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_010Data
+WorldMapPointer:  dw  MapB01_001Data
 
 loadGraphics:
   call  screenoff
@@ -27,6 +27,15 @@ loadGraphics:
   call  CopyScoreBoard                ;copy scoreboard to page 0 - screen 5 - bottom 40 pixels (scoreboard)
   call  CopyItemsKarniMata            ;copy items to page 1 - screen 5 - bottom 40 pixels (scoreboard)
   call  RemoveSpritesFromScreen
+
+	ld		a,$02     ;%0000 0010
+  di
+	ld		(vdp_8+3),a
+	out		($99),a
+	ld		a,11+128
+	ei
+	out		($99),a
+
   call  SwapSpatColAndCharTable
   call  initiatebordermaskingsprites
 halt
@@ -1018,16 +1027,7 @@ DoubleJumpAvailable?:         rb    1
 
 
 amountofenemies:        equ 22
-;lenghtenemyoffsettable: equ 24+16
-lenghtenemytable:       equ 22 + fill
-;chatabaddenemspr0:      rb  lenghtexplosioncharcoladresses  ;4*16
-;                        rb  4* 64
-
-
-;       ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, offsettable                                                 ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
-;.object1: db 1,        1,     001,100,100,16,32,        00,       00,+00,+00,+00,+00, 00,16,00,16, 16,4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-
-
+lenghtenemytable:       equ 25 + fill
 enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .alive?:                equ 0
 .Sprite?:               equ 1
@@ -1039,19 +1039,19 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .sprnrinspat:           equ 9
 .SprNrTimes16:          equ 9
 .ObjectNumber:          equ 9
-.nrsprites:             equ 11
-.nrspritesSimple:       equ 12
-.nrspritesTimes16:      equ 13
-.v1:                    equ 14
-.v2:                    equ 15
-.v3:                    equ 16
-.v4:                    equ 17
-.v5:                    equ 18
-.SnapPlayer?:           equ 18
-.v6:                    equ 19
-.v7:                    equ 20
-.coordinates:           equ 21
-.spataddress:           equ 21
+.spataddress:           equ 11
+.coordinates:           equ 11
+.nrsprites:             equ 13
+.nrspritesSimple:       equ 14
+.nrspritesTimes16:      equ 15
+.v1:                    equ 16
+.v2:                    equ 17
+.v3:                    equ 18
+.v4:                    equ 19
+.v5:                    equ 20
+.SnapPlayer?:           equ 20
+.v6:                    equ 21
+.v7:                    equ 22
 .hit?:                  equ 23
 .life:                  equ 24
 

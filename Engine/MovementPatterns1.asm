@@ -325,7 +325,7 @@ ld a,e
 ;  ld    a,(ix+enemies_and_objects.y)        ;y  
   ld    (ix+enemies_and_objects.v2),a       ;y backup
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.y),217      ;y
+  ld    (ix+enemies_and_objects.y),218      ;y
   ret
   
 ;/Generic Enemy Routines ##############################################################################
@@ -342,7 +342,7 @@ ExplosionBig:
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
 
-  ld    (ix+enemies_and_objects.nrsprites),24-(08*3)
+  ld    (ix+enemies_and_objects.nrsprites),48-(08*6)
   ld    (ix+enemies_and_objects.nrspritesSimple),8
   ld    (ix+enemies_and_objects.nrspritesTimes16),8*16
   ret
@@ -379,7 +379,7 @@ ExplosionSmall:
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
 
-  ld    (ix+enemies_and_objects.nrsprites),24-(02*3)
+  ld    (ix+enemies_and_objects.nrsprites),48-(02*6)
   ld    (ix+enemies_and_objects.nrspritesSimple),2
   ld    (ix+enemies_and_objects.nrspritesTimes16),2*16
   ret
@@ -439,7 +439,7 @@ ZombieSpawnPoint:
   ld    hl,RetardedZombie
   ld    (ix+enemies_and_objects.movementpattern),l
   ld    (ix+enemies_and_objects.movementpattern+1),h
-  ld    (ix+enemies_and_objects.nrsprites),24-(04*3)
+  ld    (ix+enemies_and_objects.nrsprites),48-(04*6)
   ld    (ix+enemies_and_objects.nrspritesSimple),4
   ld    (ix+enemies_and_objects.nrspritesTimes16),4*16
   ld    (ix+enemies_and_objects.life),1
@@ -458,7 +458,7 @@ Grinder:
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
   ret
-
+  
   .HandlePhase:                             ;out hl -> sprite character data to out to Vram
   ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
   or    a
@@ -590,7 +590,7 @@ GreenSpider:
 ;v5=Grey Spider Slow Down Timer
 ;v6=Green Spider(0) / Grey Spider(1)
   call  .HandlePhase                        ;(0=walking slow, 1=fast) ;out hl -> sprite character data to out to Vram
-  exx                                       ;store hl. hl now points to color data
+  exx                                       ;store hl. hl -> sprite character data to out to Vram
   call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
   call  CollisionEnemyPlayer                ;Check if player is hit by enemy
   ld    a,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
@@ -1968,6 +1968,9 @@ CheckCollisionOtherStonesRight:             ;out: z= collision found
   ret
 
 PlatformHorizontally:
+;v1 = sx
+;v3=Vertical Movement
+;v4=Horizontal Movement
   call  VramObjectsTransparantCopies        ;put object in Vram/screen
   call  MovePlatFormHorizontally            ;move
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
