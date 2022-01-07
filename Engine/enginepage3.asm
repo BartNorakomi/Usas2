@@ -13,7 +13,7 @@ MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | Map
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_001Data
+WorldMapPointer:  dw  MapB01_003Data
 
 loadGraphics:
   call  screenoff
@@ -27,19 +27,14 @@ loadGraphics:
   call  CopyScoreBoard                ;copy scoreboard to page 0 - screen 5 - bottom 40 pixels (scoreboard)
   call  CopyItemsKarniMata            ;copy items to page 1 - screen 5 - bottom 40 pixels (scoreboard)
   call  RemoveSpritesFromScreen
-
-	ld		a,$02     ;%0000 0010
-  di
-	ld		(vdp_8+3),a
-	out		($99),a
-	ld		a,11+128
-	ei
-	out		($99),a
-
   call  SwapSpatColAndCharTable
   call  initiatebordermaskingsprites
-halt
+
+;  xor   a
+;  ld    (SpriteSplitAtY100?),a
+
   call  SetInterruptHandler           ;set Lineint and Vblank  
+
   xor   a
   ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
 ;  xor   a
@@ -569,7 +564,7 @@ SetInterruptHandler:
   out   ($99),a
   ld    a,19+128            ;set lineinterrupt height
   ei
-  out   ($99),a
+  out   ($99),a 
   ret
 
 bordermasksprite_graphics:
@@ -580,59 +575,79 @@ bordermasksprite_color_withCEbit:
 include "../sprites/bordermaskspriteECbit.tcs.gen"
 
 initiatebordermaskingsprites:
+  ld    a,(SpriteSplitFlag)
+  or    a
+  ld    a,11                ;amount of border masking sprites left and right side of screen (without Border Masking Sprites Screensplit)
+  jr    z,.Set
+  ld    a,06                ;amount of border masking sprites left and right side of screen (with Border Masking Sprites Screensplit)
+  .Set:
+  ld    (SetBorderMaskingSprites.selfmodifyingcodeAmountSpritesLeft),a
+  ld    (SetBorderMaskingSprites.selfmodifyingcodeAmountSpritesRight),a
+
 	ld		c,$98                 ;out port
 	ld		de,(sprchatableaddress)		      ;sprite character table in VRAM ($17800)
-  call  .bordermaskspritecharacter
+  call  bordermaskspritecharacter
 	ld		de,(invissprchatableaddress)		;sprite character table in VRAM ($17800)
-  call  .bordermaskspritecharacter
+  call  bordermaskspritecharacter
 	ld		de,(sprcoltableaddress)		      ;sprite color table in VRAM ($17400)
-  call  .bordermaskspritecolor
+  call  bordermaskspritecolor
 	ld		de,(invissprcoltableaddress)		;sprite color table in VRAM ($17400)
-  call  .bordermaskspritecolor
+  call  bordermaskspritecolor
   ret
 
-.bordermaskspritecharacter:
-;put border masking sprites character
+  bordermaskspritecharacter:
+  ld    a,(SpriteSplitFlag)
+  or    a
+  ld    b,22                ;amount of border masking sprites left and right side of screen (without Border Masking Sprites Screensplit)
+  jr    z,.Set
+  ld    b,12                ;amount of border masking sprites left and right side of screen (with Border Masking Sprites Screensplit)
+  .Set:
+
+  ;put border masking sprites character
   ld    hl,0 * 32             ;border mask at sprite position 0
   add   hl,de
 	ld		a,1
 	call	SetVdp_Write
   
-  ld    b,22 ;32 ;22                  ;22 sprites
-
-.loop1:
+  .loop:
   push  bc
   ld    hl,bordermasksprite_graphics
 	call	outix32               ;1 sprites (1 * 32 = 32 bytes)
   pop   bc
-  djnz  .loop1
-;/put border masking sprites character
+  djnz  .loop
+  ;/put border masking sprites character
   ret
   
-  
-.bordermaskspritecolor:
-;put border masking sprites color
+  bordermaskspritecolor:
+  ld    a,(SpriteSplitFlag)
+  or    a
+  ld    b,11                ;amount of border masking sprites left and right side of screen (without Border Masking Sprites Screensplit)
+  jr    z,.Set
+  ld    b,06                ;amount of border masking sprites left and right side of screen (with Border Masking Sprites Screensplit)
+  .Set:
+    
+  ;put border masking sprites color
   ld    hl,0 * 16             ;border mask at sprite position 0
   add   hl,de
 	ld		a,1
 	call	SetVdp_Write
 
-  ld    b,11 ;16                  ;first 16 sprites
-.loop2:
+  ld    e,b                   ;sprites on the life side
+  .loop1:
   push  bc
   ld    hl,bordermasksprite_color_withCEbit
 	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
   pop   bc
-  djnz  .loop2
+  djnz  .loop1
 
-  ld    b,11 ;16                  ;next 16 sprites
-.loop3:
+  ld    b,e                   ;sprites on the right side
+  .loop2:
   push  bc
   ld    hl,bordermasksprite_color
 	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
   pop   bc
-  djnz  .loop3
-;/put border masking sprites color
+  djnz  .loop2
+  ;/put border masking sprites color
   ret
 
 copyGraphicsToScreen:

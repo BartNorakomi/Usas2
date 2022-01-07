@@ -4,15 +4,13 @@ LevelEngine:
 ;  call  BackdropBlack
   call  PopulateControls
   call  Sf2EngineObjects          ;di, restore background object, handle action object, put object in screen, handle interaction object and player, prepare page to be set on Vblank, ei 
-;  call  BackdropRed
   call  Handle_HardWareSprite_Enemies_And_objects
-;  call  BackdropBlack
   call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
 ;  call  BackdropGreen
   call  PutPlayersprite           ;outs char data to Vram, col data to Vram and sets spat data for player (coordinates depend on camera x+y)
-;  call  BackdropBlack
   call  PutSpatToVram             ;outs all spat data to Vram
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
+;  call  BackdropBlack
 
 ;Routines starting at lineint:
   xor   a                         ;wait for lineint flag to be set. It's better (for now) to put the VRAM objects directly after the lineint
@@ -75,7 +73,7 @@ BackdropBlack:
 BackdropBlue:
   xor   a
   SetBackDrop:
-
+ret
   di
   out   ($99),a
   ld    a,7+128
@@ -695,7 +693,7 @@ PutPlayersprite:
 	ld    a,$80
 	out   ($99),a       ;set bits 0-7
   SelfmodifyingCodePlayerCharAddress: equ $+1
-	ld    a,$73         ;$73 / $7b
+	ld    a,00          ;$73 / $7b
 	ei
 	out   ($99),a       ;set bits 8-14 + write access
 
@@ -746,7 +744,7 @@ PutPlayersprite:
 	ld    a,$c0
 	out   ($99),a       ;set bits 0-7
   SelfmodifyingCodePlayerColorAddress: equ $+1
-	ld    a,$6d         ;$6d / $75
+	ld    a,00          ;$6d / $75
 	ei
 	out   ($99),a       ;set bits 8-14 + write access
 	
@@ -1991,11 +1989,6 @@ DisableLineint:
 	ld		bc,6
 	ldir
 
-  xor   a                 ;set s#0
-  out   ($99),a
-  ld    a,15+128
-  out   ($99),a
-  
   ld    a,(vdp_0)           ;set ei1
   and   %1110 1111          ;ei1 checks for lineint and vblankint
   ld    (vdp_0),a           ;ei0 (which is default at boot) only checks vblankint
@@ -2046,9 +2039,8 @@ InterruptHandler:
   out   ($99),a
   in    a,($99)           ;check and acknowledge line interrupt
   rrca
-;  SelfmodifyingCodeLineInt: equ $+1
-  jp    c,lineint ;BorderMaskingSplit
-  
+  jp    c,lineint ;lineint detected, so jp to that routine
+
   xor   a                 ;set s#0
   out   ($99),a
   ld    a,15+128
@@ -2071,6 +2063,7 @@ InterruptHandler:
   ei
   ret
 
+;on vblank we set page 2
 ;we set horizontal and vertical screen adjust
 ;we set status register 0
 vblank:
@@ -2091,17 +2084,7 @@ vblank:
   ld    a,23+128
   out   ($99),a
   
-  ld    a,(SpriteSplitFlag)                ;1= 304x216 engine  2=256x216 SF2 engine
-  or    a
-  ld    b,0
-  jp    z,.SetSplitLine
-  ld    a,1
-  ld    b,100
-  .SetSplitLine:
-  ld    (SpriteSplitAtY100?),a
-  
   ld    a,(R19onVblank)       ;splitline height
-  sub   a,b
   out   ($99),a
   ld    a,19+128
   out   ($99),a
@@ -2110,15 +2093,9 @@ vblank:
   out   ($99),a
   ld    a,2+128
   out   ($99),a
-
-;  xor   a                  ;set s#15 to 0 / Warning. Interrupts should end in Status Register 15=0 (normally)
-;  out   ($99),a            ;we don't do this to save time, but it's not a good practise
-;  ld    a,15+128           ;we do set to s#15 to 0 when mapExit is found and a new map is loaded
-;  out   ($99),a
-       
+     
   ld    a,1                   ;vblank flag gets set
   ld    (vblankintflag),a  
-;  ld    (SpriteSplitFlag),a  
 
   pop   ix
   pop   hl
@@ -2134,105 +2111,58 @@ vblank:
   ei
   ret
 
-lineintBorderMaskingSplit:
-;  call  BackdropOrange
-
-  xor   a                     ;next splitline will be at scoreboard
-  ld    (SpriteSplitAtY100?),a
-
-  ld    a,(R19onVblank)       ;splitline height
-  out   ($99),a
-  ld    a,19+128
-  out   ($99),a
-
-;Set address to Write to Spat
-; ld    a,$05
-;	out   ($99),a       ;set bits 15-17
-;	ld    a,14+128
-;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
-;	ld    a,$00
-  xor   a
-	out   ($99),a       ;set bits 0-7
-  .SelfmodifyingCodePlayerSpatAddress: equ $+1
-	ld    a,$6e         ;$6e /$76 
-	out   ($99),a       ;set bits 8-14 + write access
-
-;Out bordermasking sprites all 96 pixels lower
-;	ld		hl,spat			  ;sprite attribute table
-;  ld    c,$98
-;	call	outix32
-
-  ld    c,$98
-  ld    hl,BorderMaskingSpat
-  outi
-  in    a,($98)
-  in    a,($98)
-  in    a,($98)
-
-  outi
-  in    a,($98)
-  in    a,($98)
-  in    a,($98)
-
-  outi
-  in    a,($98)
-  in    a,($98)
-  in    a,($98)
-
-
-  ld    a,(CameraY)
-  add   a,96
-  ld    b,3
-
-  ld    hl,BorderMaskingSpat
-  .loop:
-  ld    (hl),a
-  inc   hl
-  add   a,16
-  djnz  .loop
-
-;  ld    hl,LineIntAtScoreboard
-;  ld    (SelfmodifyingCodeLineInt),hl
-
-;  xor   a                  ;set s#15 to 0 / Warning. Interrupts should end in Status Register 15=0 (normally)
-;  out   ($99),a            ;we don't do this to save time, but it's not a good practise
-;  ld    a,15+128           ;we do set to s#15 to 0 when mapExit is found and a new map is loaded
-;  out   ($99),a
-  
-  pop   ix
-  pop   hl
-  pop   de
-  pop   bc
-  pop   af
-  ex    af,af'
-  exx
-  pop   hl
-  pop   de
-  pop   bc
-  pop   af 
-  ei
-  ret  
-
-BorderMaskingSpat:  db  0,0,0,0,0,0,0,0,0
-
-
-LineInt:
-  ld    a,(SpriteSplitAtY100?)
-  or    a
-  jp    nz,lineintBorderMaskingSplit
-
 ;on the lineint we turn the screen off at the end of the line using polling for HR
 ;then we switch between page 0+1
 ;we set horizontal and vertical adjust
 ;and we turn screen on again at the end of the line
 ;we play music and set s#0 again
-LineIntAtScoreboard:
-;  call  BackdropBlack
+lineint:  
+;  ld    hl,linesplitvariables
 
-;  ld    hl,lineintBorderMaskingSplit
-;  ld    (SelfmodifyingCodeLineInt),hl
+;PREPARE ALL THESE INSTRUCTION TO BE EXECUTED WITH OUTI'S AFTER THE POLLING
+;  ld    a,(newlineintpage)
+;  ld    (hl),a
+;  ld    a,2+128
+;  inc   hl  
+;  ld    (hl),a
+;  inc   hl  
 
-  .SkipBorderMaskingSplit:
+;  ld    a,(newlineinthoroff)              ;prepare horizontal screen adjust for next frame
+;  ld    (hl),a
+;  ld    a,18+128
+;  inc   hl  
+;  ld    (hl),a
+;  inc   hl  
+
+;  ld    a,(newlineintveroff)               ;set vertical screen adjust
+;  ld    d,a
+;  ld    (hl),a
+;  ld    a,23+128
+;  inc   hl  
+;  ld    (hl),a
+;  inc   hl  
+
+;  ld    a,d
+;  add   a,worldmaplineintheight
+;  ld    (hl),a
+;  ld    a,19+128            ;set lineinterrupt height  
+;  inc   hl  
+;  ld    (hl),a
+;  inc   hl  
+
+;  ld    a,(VDP_0+1)       ;screen on
+;  or    %0100'0000
+;  ld    (hl),a
+;  ld    a,1+128
+;  inc   hl  
+;  ld    (hl),a
+;  inc   hl
+;/PREPARE ALL THESE INSTRUCTION TO BE EXECUTED WITH OUTI'S AFTER THE POLLING
+
+;  ld    hl,linesplitvariables
+;  ld    c,$99
+
+
   ;screen always gets turned on/off at the END of the line
   ld    a,(VDP_0+1)       ;screen off
   and   %1011 1111
@@ -2306,6 +2236,20 @@ LineIntAtScoreboard:
   pop   af 
   ei
   ret  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 CameraX:          db  0
 CameraY:          db  44
@@ -2714,8 +2658,6 @@ SwapSpatColAndCharTable2:
   ld    (SelfmodifyingCodePlayerColorAddress),a
   ld    a,$76
   ld    (SelfmodifyingCodePlayerSpatAddress),a
-  ld    a,$6e
-  ld    (lineintBorderMaskingSplit.SelfmodifyingCodePlayerSpatAddress),a
 
   ld    hl,$7400              ;spr color table buffer $17400
   ld    (invissprcoltableaddress),hl
@@ -2745,8 +2687,6 @@ SwapSpatColAndCharTable2:
   ld    (SelfmodifyingCodePlayerColorAddress),a
   ld    a,$6e
   ld    (SelfmodifyingCodePlayerSpatAddress),a
-  ld    a,$76
-  ld    (lineintBorderMaskingSplit.SelfmodifyingCodePlayerSpatAddress),a
 
   ld    hl,$6c00              ;spr color table buffer $17400
   ld    (invissprcoltableaddress),hl
@@ -5929,68 +5869,38 @@ Set_R_SitPunch:
 	ld		(PlayerAniCount),a
   ret
 
-SpriteSplitFlag:      db  1
-SpriteSplitAtY100?:   db  0
-
 SetBorderMaskingSprites:
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-	ld		a,(NewPrContr)
-	bit		4,a           ;space pressed
-	jp		z,.endCheckSpacePressed
-
-  ld    a,(SpriteSplitFlag)
-  xor   1
-  ld    (SpriteSplitFlag),a
-  call  RemoveSpritesFromScreen
-  call  SwapSpatColAndCharTable
-  call  SwapSpatColAndCharTable
-  call  initiatebordermaskingsprites
-  .endCheckSpacePressed:
-
   ld    hl,spat+0           ;y sprite 1
   ld    de,3
+  ld    b,11                ;amount of sprites left side screen
   
   ld    a,(CameraX)
+;  dec a
   and   %0000 1111
   add   a,15
-  ld    c,a                 ;x bordermasking sprite left side of screen
+  ld    (.selfmodifyingcode+1),a
   
   ld    a,(CameraY)
   dec   a
   
-  ;Sprites left side of screen
-  .selfmodifyingcodeAmountSpritesLeft:  equ $+1
-  ld    b,11                ;amount of sprites left side screen
-
+  ld    c,2                 ;2 columns of sprites
   .loop:
-  ld    (hl),a              ;y
+  ld    (hl),a
   add   a,16                ;next sprite will be 16 pixels lower
   inc   hl                  ;x sprite
-  ld    (hl),c              ;x bordermasking sprite left side of screen
+  .selfmodifyingcode:
+  ld    (hl),000
   add   hl,de
   djnz  .loop
 
-  ld    a,c
+  ld    a,(.selfmodifyingcode+1)
   add   a,225
-  ld    c,a                 ;x bordermasking sprite right side of screen
-
+  ld    (.selfmodifyingcode+1),a  
+  ld    b,11                ;amount of sprites right side screen
   ld    a,(CameraY)
   dec   a
-
-  ;Sprites right side of screen
-  .selfmodifyingcodeAmountSpritesRight:  equ $+1
-  ld    b,11                ;amount of sprites left side screen
-  .loop2:
-  ld    (hl),a              ;y
-  add   a,16                ;next sprite will be 16 pixels lower
-  inc   hl                  ;x sprite
-  ld    (hl),c              ;x bordermasking sprite right side of screen
-  add   hl,de
-  djnz  .loop2
+  dec   c
+  jr    nz,.loop
   ret
 
 ScreenOff:
@@ -6028,7 +5938,7 @@ PutSpatToVram:
   xor   a
 	out   ($99),a       ;set bits 0-7
   SelfmodifyingCodePlayerSpatAddress: equ $+1
-	ld    a,$6e         ;$6e /$76 
+	ld    a,00          ;$6e /$76 
 	ei
 	out   ($99),a       ;set bits 8-14 + write access
 

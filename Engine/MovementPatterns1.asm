@@ -943,11 +943,11 @@ Sf2Hugeobject1:                             ;movement pattern 3
 
   call  MoveSF2Object1
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-  call  BackdropOrange  
+;  call  BackdropOrange  
   call  restoreBackgroundObject1
   call  ObjectAnimation
   call  PutSF2Object
-  call  BackdropBlack
+;  call  BackdropBlack
   ret
 
 Sf2Hugeobject2:                             ;movement pattern 4
@@ -2032,7 +2032,7 @@ MovePlatFormHorizontally:
 
 VramObjects:
 ;first clean the object
-  call  BackdropRed
+;  call  BackdropRed
 
 ;which Clean Object (DoCopy) table do we use ?
   ld    l,(ix+enemies_and_objects.ObjectNumber)
@@ -2196,7 +2196,7 @@ VramObjects:
 ;put object
   ld    hl,CopyObject
   call  docopy
-  call  BackdropGreen
+;  call  BackdropGreen
 ;  ld    hl,CopyObject
 ;  call  docopy
 ;  call  BackdropBlack
@@ -2204,7 +2204,7 @@ VramObjects:
 
 VramObjectsTransparantCopies:
 ;first clean the object
-  call  BackdropRed
+;  call  BackdropRed
 
 ;which Clean Object (DoCopy) table do we use ?
   ld    l,(ix+enemies_and_objects.ObjectNumber)
@@ -2338,7 +2338,7 @@ VramObjectsTransparantCopies:
 ;put object
   ld    hl,CopyObject
   call  docopy
-  call  BackdropGreen
+;  call  BackdropGreen
 ;  ld    hl,CopyObject
 ;  call  docopy
 ;  call  BackdropBlack
