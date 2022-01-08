@@ -7,15 +7,13 @@ LevelEngine:
 ;  call  BackdropRed
   call  Handle_HardWareSprite_Enemies_And_objects
 ;  call  BackdropBlack
-;  call  BackdropGreen
   call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
-;  call  BackdropBlack
 ;  call  BackdropGreen
   call  PutPlayersprite           ;outs char data to Vram, col data to Vram and sets spat data for player (coordinates depend on camera x+y)
 ;  call  BackdropBlack
-;  call  BackdropGreen
+  call  BackdropGreen
   call  PutSpatToVram             ;outs all spat data to Vram
-;  call  BackdropBlack
+  call  BackdropBlack
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
 
 ;Routines starting at lineint:
@@ -52,7 +50,6 @@ LevelEngine:
 ClesX:      dw 080 ;150 ;210
 ClesY:      db 050 ; 144-1
 herospritenr:             db  herospritenrTimes4 / 4
-herospritenrTimes2:       equ 28*2
 herospritenrTimes4:       equ 28*4
 herospritenrTimes16:      equ 28*16
 herospritenrTimes32:      equ 28*32
@@ -130,8 +127,6 @@ Handle_HardWareSprite_Enemies_And_objects:
   ld    a,(de) | inc a | call z,.docheck             
   ld    de,enemies_and_objects+(5*lenghtenemytable)                                     
   ld    a,(de) | inc a | call z,.docheck             
-  ld    de,enemies_and_objects+(6*lenghtenemytable)
-  ld    a,(de) | inc a | call z,.docheck             
 
 	ld		a,(slot.ram)	      ;back to full RAM
 	out		($a8),a	
@@ -162,7 +157,7 @@ Handle_HardWareSprite_Enemies_And_objects:
   add   hl,de
   add   hl,de  
 	ld		a,1
-	call	SetVdp_WriteRemainDI
+	call	SetVdp_Write
 
   ;out character data
   exx                                           ;recall hl. hl now points to character data
@@ -177,14 +172,13 @@ Handle_HardWareSprite_Enemies_And_objects:
   .CharLoop:  
   call  outix32 | jp .endOutChar
   .endOutChar:
-  ei
   exx                                           ;store hl. hl now points to color data
 
   ;set address to write sprite color data to
 	ld		hl,(invissprcoltableaddress)		        ;sprite color table in VRAM ($17400)
   add   hl,de
 	ld		a,1
-	call	SetVdp_WriteRemainDI
+	call	SetVdp_Write
 
   ;check if sprite is left or right part of map
   ld    l,(ix+enemies_and_objects.x)  
@@ -205,7 +199,6 @@ RightSideOfMap:
   .ColLoop:  
   call  outix16 | jp .EndOutColor
   .EndOutColor:
-  ei
 
   ;write sprite coordinates to spat (take in account offset values per sprite and camera position)
   ld    e,(ix+enemies_and_objects.spataddress)  
@@ -236,8 +229,8 @@ RightSideOfMap:
   ld    a,255
   .RightSideChecked:
   ld    (de),a                                  ;x sprite
-;  inc   de
-;  inc   de
+  inc   de
+  inc   de
   inc   de                                      ;y next sprite
   inc   hl
   
@@ -273,8 +266,7 @@ LeftSideOfMap:
   inc   hl
   djnz  .CEbitloop
   .EndOutColor:
-  ei
-  
+
   ;write sprite coordinates to spat (take in account offset values per sprite and camera position)
   ld    e,(ix+enemies_and_objects.spataddress)  
   ld    d,(ix+enemies_and_objects.spataddress+1);de points to spat  
@@ -304,8 +296,8 @@ LeftSideOfMap:
   xor   a
   .LeftSideChecked:
   ld    (de),a                                  ;x sprite
-;  inc   de
-;  inc   de
+  inc   de
+  inc   de
   inc   de                                      ;y next sprite
   inc   hl
   
@@ -696,6 +688,19 @@ PutPlayersprite:
 ;	ld		a,1
 ;	call	SetVdp_Write
 
+  ;SetVdp_Write address for Sprite Character
+	di
+  ld    a,$05
+	out   ($99),a       ;set bits 15-17
+	ld    a,14+128
+	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
+	ld    a,$80
+	out   ($99),a       ;set bits 0-7
+  SelfmodifyingCodePlayerCharAddress: equ $+1
+	ld    a,$73         ;$73 / $7b
+	ei
+	out   ($99),a       ;set bits 8-14 + write access
+
 	ld		a,PlayerSpritesBlock
 	call	block1234		;set blocks in page 1/2
 
@@ -713,22 +718,9 @@ PutPlayersprite:
   jr    nz,.EndCheckPlayerInvulnerable
   ld    hl,PlayerSpriteData_Char_Empty
   .EndCheckPlayerInvulnerable:    
-
-  ;SetVdp_Write address for Sprite Character
-	di
-  ld    a,$05
-	out   ($99),a       ;set bits 15-17
-	ld    a,14+128
-	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
-	ld    a,$80
-	out   ($99),a       ;set bits 0-7
-  SelfmodifyingCodePlayerCharAddress: equ $+1
-	ld    a,$73         ;$73 / $7b
-	out   ($99),a       ;set bits 8-14 + write access
       
 	ld		c,$98
 	call	outix128    ;4 sprites (4 * 32 = 128 bytes)
-	ei
 ;/put hero sprite character
 
 ;  exx               ;store hl. hl now points to color data
@@ -746,6 +738,19 @@ PutPlayersprite:
 ;  add   hl,de
 ;	ld		a,1
 ;	call	SetVdp_Write
+
+  ;SetVdp_Write address for Sprite Color
+	di
+;  ld    a,$05
+;	out   ($99),a       ;set bits 15-17
+;	ld    a,14+128
+;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
+	ld    a,$c0
+	out   ($99),a       ;set bits 0-7
+  SelfmodifyingCodePlayerColorAddress: equ $+1
+	ld    a,$6d         ;$6d / $75
+	ei
+	out   ($99),a       ;set bits 8-14 + write access
 	
 ;  exx               ;recall hl. hl now points to color data
 
@@ -763,19 +768,6 @@ PutPlayersprite:
   push  af
 
   exx               ;recall hl. hl now points to color data
-
-  ;SetVdp_Write address for Sprite Color
-	di
-;  ld    a,$05
-;	out   ($99),a       ;set bits 15-17
-;	ld    a,14+128
-;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
-	ld    a,$c0
-	out   ($99),a       ;set bits 0-7
-  SelfmodifyingCodePlayerColorAddress: equ $+1
-	ld    a,$6d         ;$6d / $75
-	out   ($99),a       ;set bits 8-14 + write access
-	
 	jp    nc,PlayerRightSideOfMap
 
 PlayerLeftSideOfMap:
@@ -797,8 +789,7 @@ PlayerLeftSideOfMap:
   ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | 
   ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | ld a,(hl)|add a,c|out ($98),a|inc hl | 
 ;even faster would be to mirror all sprites with CE bit in a different block
-	ei
-	
+
   ;after the color data there are 2 bytes for the top and bottom offset of the sprites
   ld    a,(hl)
   ld    (.selfmodifyingcode_x_offset_hero_top_LeftSide),a  
@@ -817,31 +808,27 @@ PlayerLeftSideOfMap:
   add   a,40+32             ;adjust for the correction made earlier and add 32 bit shift added to sprite x
 
   ld    de,3
-  ld    hl,spat+herospritenrTimes2 ;4          
+  ld    hl,spat+herospritenrTimes4          
   ld    (hl),b              ;y sprite 22
   inc   hl                  
   .selfmodifyingcode_x_offset_hero_top_LeftSide: equ $+1
   add   a,0
   ld    (hl),a              ;x sprite 22
-;  add   hl,de
-  inc   hl
+  add   hl,de
   ld    (hl),b              ;y sprite 23      
   inc   hl 
   ld    (hl),a              ;x sprite 23
-;  add   hl,de
-  inc   hl
+  add   hl,de  
   ld    (hl),c              ;y sprite 24  
   inc   hl      
   .selfmodifyingcode_x_offset_hero_bottom_LeftSide: equ $+1
   add   a,0
   ld    (hl),a              ;x sprite 24
-;  add   hl,de
-  inc   hl
+  add   hl,de
   ld    (hl),c              ;y sprite 25
   inc   hl               
   ld    (hl),a              ;x sprite 25
-;  add   hl,de
-  inc   hl
+  add   hl,de
 
 	ld		a,(slot.ram)	;back to full RAM
 	out		($a8),a	
@@ -867,8 +854,7 @@ PlayerRightSideOfMap:
 ;  .EndCheckPlayerHit:
 
 	call	outix64     ;4 sprites (4 * 16 bytes = 46 bytes)
-	ei
-	
+
   ;after the color data there are 2 bytes for the top and bottom offset of the sprites
   ld    a,(hl)
   ld    (.selfmodifyingcode_x_offset_hero_top_RightSide),a  
@@ -888,7 +874,7 @@ PlayerRightSideOfMap:
 
   .PutPlayerxY:
   ld    de,3
-  ld    hl,spat+herospritenrTimes2 ;4
+  ld    hl,spat+herospritenrTimes4          
   ld    (hl),b              ;y sprite 22
   inc   hl                  
   .selfmodifyingcode_x_offset_hero_top_RightSide: equ $+1
@@ -898,13 +884,11 @@ PlayerRightSideOfMap:
   ld    a,255
   .RightSideChecked1:
   ld    (hl),a              ;x sprite 22
-;  add   hl,de
-  inc   hl
+  add   hl,de
   ld    (hl),b              ;y sprite 23      
   inc   hl 
   ld    (hl),a              ;x sprite 23
-;  add   hl,de
-  inc   hl
+  add   hl,de
   ld    (hl),c              ;y sprite 24  
   inc   hl      
   .selfmodifyingcode_x_offset_hero_bottom_RightSide: equ $+1
@@ -914,13 +898,11 @@ PlayerRightSideOfMap:
   ld    a,255
   .RightSideChecked2:
   ld    (hl),a              ;x sprite 24
-;  add   hl,de
-  inc   hl
+  add   hl,de
   ld    (hl),c              ;y sprite 25
   inc   hl               
   ld    (hl),a              ;x sprite 25
-;  add   hl,de
-  inc   hl
+  add   hl,de
 	ld		a,(slot.ram)	;back to full RAM
 	out		($a8),a	
   ret
@@ -2066,7 +2048,8 @@ InterruptHandler:
   out   ($99),a
   in    a,($99)           ;check and acknowledge line interrupt
   rrca
-  jp    c,lineint         ;ScoreboardSplit/BorderMaskingSplit
+;  SelfmodifyingCodeLineInt: equ $+1
+  jp    c,lineint ;BorderMaskingSplit
   
   xor   a                 ;set s#0
   out   ($99),a
@@ -2115,7 +2098,7 @@ vblank:
   ld    b,0
   jp    z,.SetSplitLine
   ld    a,1
-  ld    b,094
+  ld    b,100
   .SetSplitLine:
   ld    (SpriteSplitAtY100?),a
   
@@ -2156,7 +2139,15 @@ vblank:
 lineintBorderMaskingSplit:
 ;  call  BackdropOrange
 
-  ;Set address to Write to Spat
+  xor   a                     ;next splitline will be at scoreboard
+  ld    (SpriteSplitAtY100?),a
+
+  ld    a,(R19onVblank)       ;splitline height
+  out   ($99),a
+  ld    a,19+128
+  out   ($99),a
+
+;Set address to Write to Spat
 ; ld    a,$05
 ;	out   ($99),a       ;set bits 15-17
 ;	ld    a,14+128
@@ -2168,42 +2159,47 @@ lineintBorderMaskingSplit:
 	ld    a,$6e         ;$6e /$76 
 	out   ($99),a       ;set bits 8-14 + write access
 
-  ;Out bordermasking sprites all 96 pixels lower
+;Out bordermasking sprites all 96 pixels lower
+;	ld		hl,spat			  ;sprite attribute table
+;  ld    c,$98
+;	call	outix32
+
   ld    c,$98
   ld    hl,BorderMaskingSpat
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
+  outi
+  in    a,($98)
+  in    a,($98)
+  in    a,($98)
 
-  ;prepare y for next frame
+  outi
+  in    a,($98)
+  in    a,($98)
+  in    a,($98)
+
+  outi
+  in    a,($98)
+  in    a,($98)
+  in    a,($98)
+
+
   ld    a,(CameraY)
-  add   a,95
+  add   a,96
+  ld    b,3
+
   ld    hl,BorderMaskingSpat
-  ld    (hl),a|inc hl|ld (hl),a|inc hl|add a,16
-  ld    (hl),a|inc hl|ld (hl),a|inc hl|add a,16
-  ld    (hl),a|inc hl|ld (hl),a|inc hl|add a,16
-  ld    (hl),a|inc hl|ld (hl),a|inc hl|add a,16
-  ld    (hl),a|inc hl|ld (hl),a;|inc hl|add a,16
+  .loop:
+  ld    (hl),a
+  inc   hl
+  add   a,16
+  djnz  .loop
+
+;  ld    hl,LineIntAtScoreboard
+;  ld    (SelfmodifyingCodeLineInt),hl
 
 ;  xor   a                  ;set s#15 to 0 / Warning. Interrupts should end in Status Register 15=0 (normally)
 ;  out   ($99),a            ;we don't do this to save time, but it's not a good practise
 ;  ld    a,15+128           ;we do set to s#15 to 0 when mapExit is found and a new map is loaded
 ;  out   ($99),a
-
-  xor   a                     ;next splitline will be at scoreboard
-  ld    (SpriteSplitAtY100?),a
-
-  ld    a,(R19onVblank)       ;splitline height
-  out   ($99),a
-  ld    a,19+128
-  out   ($99),a
   
   pop   ix
   pop   hl
@@ -2219,7 +2215,7 @@ lineintBorderMaskingSplit:
   ei
   ret  
 
-BorderMaskingSpat:  db  0,0,0,0,0,0,0,0,0,0
+BorderMaskingSpat:  db  0,0,0,0,0,0,0,0,0
 
 
 LineInt:
@@ -2233,7 +2229,7 @@ LineInt:
 ;and we turn screen on again at the end of the line
 ;we play music and set s#0 again
 LineIntAtScoreboard:
-  call  BackdropBlack
+;  call  BackdropBlack
 
 ;  ld    hl,lineintBorderMaskingSplit
 ;  ld    (SelfmodifyingCodeLineInt),hl
@@ -5935,6 +5931,8 @@ Set_R_SitPunch:
 	ld		(PlayerAniCount),a
   ret
 
+SpriteSplitFlag:      db  1
+SpriteSplitAtY100?:   db  0
 
 SetBorderMaskingSprites:
 ;
@@ -5942,44 +5940,59 @@ SetBorderMaskingSprites:
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
-;	ld		a,(NewPrContr)
-;	bit		4,a           ;space pressed
-;	jp		z,.endCheckSpacePressed
+	ld		a,(NewPrContr)
+	bit		4,a           ;space pressed
+	jp		z,.endCheckSpacePressed
 
-;  ld    a,(SpriteSplitFlag)
-;  xor   1
-;  ld    (SpriteSplitFlag),a
-;  call  RemoveSpritesFromScreen
-;  call  SwapSpatColAndCharTable
-;  call  SwapSpatColAndCharTable
-;  call  initiatebordermaskingsprites
-;  .endCheckSpacePressed:
+  ld    a,(SpriteSplitFlag)
+  xor   1
+  ld    (SpriteSplitFlag),a
+  call  RemoveSpritesFromScreen
+  call  SwapSpatColAndCharTable
+  call  SwapSpatColAndCharTable
+  call  initiatebordermaskingsprites
+  .endCheckSpacePressed:
 
   ld    hl,spat+0           ;y sprite 1
+  ld    de,3
   
   ld    a,(CameraX)
   and   %0000 1111
   add   a,15
   ld    c,a                 ;x bordermasking sprite left side of screen
-  add   a,225
-  ld    d,a                 ;x bordermasking sprite right side of screen
   
   ld    a,(CameraY)
-  dec   a                   ;y top sprite
-  .selfmodifyingcodeAmountSpritesOneSide:  equ $+1
+  dec   a
+  
+  ;Sprites left side of screen
+  .selfmodifyingcodeAmountSpritesLeft:  equ $+1
   ld    b,11                ;amount of sprites left side screen
 
   .loop:
   ld    (hl),a              ;y
+  add   a,16                ;next sprite will be 16 pixels lower
   inc   hl                  ;x sprite
   ld    (hl),c              ;x bordermasking sprite left side of screen
-  inc   hl                  ;next sprite
-  ld    (hl),a              ;y
-  inc   hl                  ;x sprite
-  ld    (hl),d              ;x bordermasking sprite right  side of screen
-  inc   hl                  ;next sprite
-  add   a,16                ;next sprite will be 16 pixels lower
+  add   hl,de
   djnz  .loop
+
+  ld    a,c
+  add   a,225
+  ld    c,a                 ;x bordermasking sprite right side of screen
+
+  ld    a,(CameraY)
+  dec   a
+
+  ;Sprites right side of screen
+  .selfmodifyingcodeAmountSpritesRight:  equ $+1
+  ld    b,11                ;amount of sprites left side screen
+  .loop2:
+  ld    (hl),a              ;y
+  add   a,16                ;next sprite will be 16 pixels lower
+  inc   hl                  ;x sprite
+  ld    (hl),c              ;x bordermasking sprite right side of screen
+  add   hl,de
+  djnz  .loop2
   ret
 
 ScreenOff:
@@ -5992,7 +6005,7 @@ ScreenOff:
   out   ($99),a
   ret
 
-;ScreenOn:
+ScreenOn:
   ld    a,(VDP_0+1)       ;screen on
   or    %0100 0000
   di
@@ -6001,9 +6014,6 @@ ScreenOff:
   ei
   out   ($99),a
   ret
-
-spat:						;sprite attribute table (y,x 32 sprites)
-	ds    32*2,0
 
 PutSpatToVram:
 ;	ld		hl,(invisspratttableaddress)		;sprite attribute table in VRAM ($17600)
@@ -6021,19 +6031,31 @@ PutSpatToVram:
 	out   ($99),a       ;set bits 0-7
   SelfmodifyingCodePlayerSpatAddress: equ $+1
 	ld    a,$6e         ;$6e /$76 
+	ei
 	out   ($99),a       ;set bits 8-14 + write access
 
 	ld		hl,spat			;sprite attribute table
   ld    c,$98
 ;	call	outix128
+  
+  outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|
+  outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|
+  outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|
+  outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|outi|outi|in a,($98)|in a,($98)|inc hl|inc hl|
 
-  outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|
-  outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|
-  outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|
-  outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|
-	ei
   ret
+
+spat:						;sprite attribute table
+	db		000,000,000,0	,016,000,004,0	,032,000,008,0	,048,000,012,0
+	db		064,000,016,0	,080,000,020,0	,096,000,024,0	,112,000,028,0
+	db		128,000,032,0	,144,000,036,0	,160,000,040,0	,000,000,044,0
+	db		016,000,048,0	,032,000,052,0	,048,000,056,0	,064,000,060,0
 	
+	db		080,000,064,0	,096,000,068,0	,112,000,072,0	,128,000,076,0
+	db		144,000,080,0	,160,000,084,0	,100,100,088,0	,100,100,092,0
+	db		116,100,096,0	,116,100,100,0	,000,000,104,0	,000,000,108,0
+	db		000,000,112,0	,000,000,116,0	,000,000,120,0	,000,000,124,0
+
 outix256:	
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
 outix250:	
@@ -6068,4 +6090,4 @@ outix16:
 	outi	outi	outi	outi	outi	outi	outi	outi
 outix8:	
 	outi	outi	outi	outi	outi	outi	outi	outi	
-	ret	
+	ret

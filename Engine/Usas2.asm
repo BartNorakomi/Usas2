@@ -646,12 +646,17 @@ MapB01_002:
 .object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
 .object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
 .object3: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*15|db 16,16|dw CleanOb3,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
+
+
  
 MapB01_003:
   incbin "..\maps\b01-003.map.pck"  | .amountofobjects: db  1
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
-.object1:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00, 0|db 001| ds fill
+.object1:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00, 0|db 001| ds fill
+
+
+
 
 MapB01_004:
   incbin "..\maps\b01-004.map.pck"  | .amountofobjects: db  3
@@ -677,7 +682,7 @@ MapB01_007:
 .object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
 ;Spider Green
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
-.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*23|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00, 0|db 001| ds fill
+.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*23|db 16,30|dw 24*16,spat+(24*2)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00, 0|db 001| ds fill
 
 MapB01_008:
   incbin "..\maps\b01-008.map.pck"  | .amountofobjects: db  2
@@ -686,7 +691,7 @@ MapB01_008:
 .object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
-.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00, 0|db 001| ds fill
+.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 24*16,spat+(24*2)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00, 0|db 001| ds fill
 
 MapB01_009:
   incbin "..\maps\b01-009.map.pck"  | .amountofobjects: db  3
@@ -696,32 +701,46 @@ MapB01_009:
 .object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00, 0|db 000| ds fill
 ;Spider Green
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
-.object3:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00, 0|db 001| ds fill
+.object3:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00, 0|db 001| ds fill
+
+
+
+
+
+
 
 MapB01_010:
-  incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  6
+  incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  5
 ;Retarded Zombie Spawnpoint
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
-.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 32,16|dw 16*16,spat+(16*4)|db 48-(04*6),04  ,04*16,+01,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
+.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+01,+00,+01,+01,+00,+00,+00, 0|db 000| ds fill
 
 ;Retarded Zombie
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
-.object2:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 16*16,spat+(16*4)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
-.object3:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 20*16,spat+(20*4)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
-.object4:db -0,        1|dw RetardedZombie      |db 8*03|dw 8*19|db 32,16|dw 24*16,spat+(24*4)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
+.object2:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 12*16,spat+(12*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
+.object3:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 16*16,spat+(16*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
+.object4:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 20*16,spat+(20*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
+.object5:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 24*16,spat+(24*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
 ;Grinder
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
-.object5:db -1,        1|dw Grinder             |db 8*11|dw 8*19|db 32,32|dw 00*16,spat+(00*4)|db 48-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00, 0|db 005| ds fill
-.object6:db -1,        1|dw Grinder             |db 8*21|dw 8*19|db 32,32|dw 08*16,spat+(08*4)|db 48-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00, 0|db 005| ds fill
+.object6:db -1,        1|dw Grinder             |db 8*11|dw 8*19|db 32,32|dw 12*16,spat+(12*2)|db 48-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00, 0|db 005| ds fill
+.object7:db -1,        1|dw Grinder             |db 8*21|dw 8*19|db 32,32|dw 20*16,spat+(20*2)|db 48-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00, 0|db 005| ds fill
+
+
+
+
+
+
 
 MapB01_011:
-  incbin "..\maps\b01-011.map.pck"  | .amountofobjects: db  2
+  incbin "..\maps\b01-011.map.pck"  | .amountofobjects: db  3
 ;platform (moving horizontally)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7,Hit?,life,   
 .object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
-;Spider Green
+;Grinder
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
-.object2:db -1,        1|dw GreenSpider         |db 8*21|dw 8*19|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00, 0|db 001| ds fill
+.object2:db -1,        1|dw Grinder             |db 8*11|dw 8*30|db 32,32|dw 12*16,spat+(12*2)|db 48-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00, 0|db 005| ds fill
+.object3:db -1,        1|dw Grinder             |db 8*19|dw 8*16|db 32,32|dw 20*16,spat+(20*2)|db 48-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00, 0|db 005| ds fill
 
 MapB01_012:
   incbin "..\maps\b01-012.map.pck"  | .amountofobjects: db  2
@@ -730,7 +749,7 @@ MapB01_012:
 .object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +32,+00,+00,+01,+00,+16,+00, 0|db 000| ds fill
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
-.object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*15|db 16,30|dw 24*16,spat+(24*4)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00, 0|db 001| ds fill
+.object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*15|db 16,30|dw 24*16,spat+(24*2)|db 48-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00, 0|db 001| ds fill
 
 
 

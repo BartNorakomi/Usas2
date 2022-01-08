@@ -13,7 +13,7 @@ MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | Map
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_003Data
+WorldMapPointer:  dw  MapB01_010Data
 
 loadGraphics:
   call  screenoff
@@ -28,12 +28,25 @@ loadGraphics:
   call  CopyItemsKarniMata            ;copy items to page 1 - screen 5 - bottom 40 pixels (scoreboard)
   call  RemoveSpritesFromScreen
   call  SwapSpatColAndCharTable
+  call  PutSpatToVramSlow
+  call  SwapSpatColAndCharTable
+  call  PutSpatToVramSlow
   call  initiatebordermaskingsprites
 
-;  xor   a
-;  ld    (SpriteSplitAtY100?),a
-
   call  SetInterruptHandler           ;set Lineint and Vblank  
+
+  ld    a,(CameraY)
+  xor   a
+  ld    (R23onVblank),a
+  add   a,lineintheight
+  ld    (R19onVblank),a
+
+  xor   a
+  ld    hl,lineintflag
+  ld    (hl),a  
+.checkflag:
+  cp    (hl)
+  jr    z,.checkflag
 
   xor   a
   ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
@@ -45,9 +58,33 @@ loadGraphics:
 ;  call  WaitVblank
   jp    LevelEngine
 
+SpriteSplitFlag:      db  1
+SpriteSplitAtY100?:   db  1
+
+PutSpatToVramSlow:
+	ld		hl,(invisspratttableaddress)		;sprite attribute table in VRAM ($17600)
+	ld		a,1
+	call	SetVdp_Write	
+
+	ld		hl,spatSlow			                ;sprite attribute table
+  ld    c,$98
+	call	outix128
+  ret
+
+spatSlow:						;sprite attribute table
+	db		000,000,000,0	,000,000,004,0	,000,000,008,0	,000,000,012,0
+	db		000,000,016,0	,000,000,020,0	,000,000,024,0	,000,000,028,0
+	db		000,000,032,0	,000,000,036,0	,000,000,040,0	,000,000,044,0
+	db		000,000,048,0	,000,000,052,0	,000,000,056,0	,000,000,060,0
+	
+	db		000,000,064,0	,000,000,068,0	,000,000,072,0	,000,000,076,0
+	db		000,000,080,0	,000,000,084,0	,000,100,088,0	,000,100,092,0
+	db		000,100,096,0	,000,100,100,0	,000,000,104,0	,000,000,108,0
+	db		000,000,112,0	,000,000,116,0	,000,000,120,0	,000,000,124,0
+
 RemoveSpritesFromScreen:
   ld    hl,spat
-  ld    de,4
+  ld    de,2
   ld    b,32
   .loop:
   ld    (hl),217
@@ -178,6 +215,9 @@ SetEngineType:                    ;sets engine type (1= 304x216 engine  2=256x21
   ld    (ClesX),hl
   ld    a,15
   ld    (CameraX),a
+
+  xor   a
+  ld    (SpriteSplitFlag),a
   ret
 
 .Engine304x216:                        ;
@@ -189,6 +229,9 @@ SetEngineType:                    ;sets engine type (1= 304x216 engine  2=256x21
   ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
   ld    de,MapData- 80
   ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
+
+  ld    a,1
+  ld    (SpriteSplitFlag),a
   ret
   
 buildupMap32x27:
@@ -581,8 +624,7 @@ initiatebordermaskingsprites:
   jr    z,.Set
   ld    a,06                ;amount of border masking sprites left and right side of screen (with Border Masking Sprites Screensplit)
   .Set:
-  ld    (SetBorderMaskingSprites.selfmodifyingcodeAmountSpritesLeft),a
-  ld    (SetBorderMaskingSprites.selfmodifyingcodeAmountSpritesRight),a
+  ld    (SetBorderMaskingSprites.selfmodifyingcodeAmountSpritesOneSide),a
 
 	ld		c,$98                 ;out port
 	ld		de,(sprchatableaddress)		      ;sprite character table in VRAM ($17800)
@@ -632,21 +674,14 @@ initiatebordermaskingsprites:
 	ld		a,1
 	call	SetVdp_Write
 
-  ld    e,b                   ;sprites on the life side
-  .loop1:
+  .loop:                      ;alternate writing Color data between left and right sprites
   push  bc
   ld    hl,bordermasksprite_color_withCEbit
-	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
-  pop   bc
-  djnz  .loop1
-
-  ld    b,e                   ;sprites on the right side
-  .loop2:
-  push  bc
+	call	outix16               ;1 sprites left side of screen (1 * 16 = 16 bytes)
   ld    hl,bordermasksprite_color
-	call	outix16               ;1 sprites (1 * 16 = 16 bytes)
+	call	outix16               ;1 sprites right side of screen (1 * 16 = 16 bytes)
   pop   bc
-  djnz  .loop2
+  djnz  .loop
   ;/put border masking sprites color
   ret
 
@@ -789,6 +824,28 @@ SetVdp_Write:
 	ld      a,h           ;set bits 8-14
 	or      64            ; + write access
 	ei
+	out     ($99),a       
+	ret
+
+SetVdp_WriteRemainDI: 
+;first set register 14 (actually this only needs to be done once
+	rlc     h
+	rla
+	rlc     h
+	rla
+	srl     h
+	srl     h
+	di
+	out     ($99),a       ;set bits 15-17
+	ld      a,14+128
+	out     ($99),a
+;/first set register 14 (actually this only needs to be done once
+
+	ld      a,l           ;set bits 0-7
+	nop
+	out     ($99),a
+	ld      a,h           ;set bits 8-14
+	or      64            ; + write access
 	out     ($99),a       
 	ret
 

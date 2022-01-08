@@ -406,7 +406,7 @@ ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer
   ld    a,(framecounter)
   and   1
-  ret   nz
+;  ret   nz
   dec   (ix+enemies_and_objects.v1)       ;v1=Zombie Spawn Timer
   ret   nz
 
@@ -418,6 +418,9 @@ ZombieSpawnPoint:
   .SearchEmptySlot:
   ld    de,lenghtenemytable
   
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
   add   ix,de
   bit   0,(ix+enemies_and_objects.Alive?)
   jr    z,.EmptySlotFound
