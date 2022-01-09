@@ -41,12 +41,13 @@ loadGraphics:
   add   a,lineintheight
   ld    (R19onVblank),a
 
-  xor   a
-  ld    hl,lineintflag
-  ld    (hl),a  
-.checkflag:
-  cp    (hl)
-  jr    z,.checkflag
+  call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank | if normal engine: wait for lineint
+	di
+  ld    a,$05
+	out   ($99),a       ;set bits 15-17
+	ld    a,14+128
+  ei
+	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
 
   xor   a
   ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
@@ -57,6 +58,23 @@ loadGraphics:
 ;  call  WaitVblank
 ;  call  WaitVblank
   jp    LevelEngine
+
+WaitForInterrupt:
+  ld    a,(scrollEngine)          ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a                         
+  ld    hl,lineintflag  
+  jr    z,.EngineFound
+  ld    hl,vblankintflag    
+  .EngineFound:  
+  xor   a
+  ld    (hl),a  
+.checkflag:
+  cp    (hl)
+  jr    z,.checkflag
+;  xor   a
+;  ld    (vblankintflag),a
+;  ld    (lineintflag),a  
+  ret
 
 SpriteSplitFlag:      db  1
 SpriteSplitAtY100?:   db  1
@@ -204,6 +222,8 @@ SetEngineType:                    ;sets engine type (1= 304x216 engine  2=256x21
   ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
   ld    de,MapData- 68
   ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
+  xor   a
+  ld    (SpriteSplitFlag),a
   
   ;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
   ld    hl,(ClesX)
@@ -215,9 +235,6 @@ SetEngineType:                    ;sets engine type (1= 304x216 engine  2=256x21
   ld    (ClesX),hl
   ld    a,15
   ld    (CameraX),a
-
-  xor   a
-  ld    (SpriteSplitFlag),a
   ret
 
 .Engine304x216:                        ;

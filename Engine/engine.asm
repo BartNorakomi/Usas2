@@ -10,9 +10,10 @@ LevelEngine:
 ;  call  BackdropGreen
   call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
 ;  call  BackdropBlack
-;  call  BackdropGreen
+  call  BackdropGreen
   call  PutPlayersprite           ;outs char data to Vram, col data to Vram and sets spat data for player (coordinates depend on camera x+y)
-;  call  BackdropBlack
+;  call  PutPlayerspriteSF2Engine
+  call  BackdropBlack
 ;  call  BackdropGreen
   call  PutSpatToVram             ;outs all spat data to Vram
 ;  call  BackdropBlack
@@ -28,9 +29,9 @@ LevelEngine:
 
   call  SwapSpatColAndCharTable2
 
-;  call  BackdropBlue
+  call  BackdropBlue
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
-;  call  BackdropBlack
+  call  BackdropBlack
 
   xor   a
   ld    (SnapToPlatForm?),a
@@ -137,9 +138,7 @@ Handle_HardWareSprite_Enemies_And_objects:
 	out		($a8),a	
   ret
 
-  .docheck:  
-;  call  BackdropRandom
-  
+  .docheck:    
   ld    ixl,e
   ld    ixh,d
   call  movement_enemies_and_objects            ;handle sprite movement and animation
@@ -160,7 +159,11 @@ Handle_HardWareSprite_Enemies_And_objects:
   ;set address to write sprite character data to
 	ld		hl,(invissprchatableaddress)		        ;sprite character table in VRAM ($17800)   
   add   hl,de
-  add   hl,de  
+  add   hl,de
+  
+
+  call  Backdropred
+    
 	ld		a,1
 	call	SetVdp_WriteRemainDI
 
@@ -244,7 +247,7 @@ RightSideOfMap:
   exx
   djnz  .Loop
 
-;  call  BackdropBlack
+  call  BackdropBlack
   ret
 
   .OutWhiteSprite:                              ;when enemy is hit, it's spritecolor will be white
@@ -312,7 +315,7 @@ LeftSideOfMap:
   exx
   djnz  .Loop
 
-;  call  BackdropBlack
+  call  BackdropBlack
   ret
 
   .OutWhiteSprite:                              ;when enemy is hit, it's spritecolor will be white
@@ -677,6 +680,14 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   ld    (ClesY),a
   ret
 
+PutPlayerspriteSF2Engine:
+  ld    a,$05
+  di
+	out   ($99),a       ;set bits 15-17
+	ld    a,14+128
+	ei
+	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
+
 PutPlayersprite:
 	ld		a,(slot.page12rom)	;all RAM except page 1+2
 	out		($a8),a	
@@ -714,19 +725,27 @@ PutPlayersprite:
   ld    hl,PlayerSpriteData_Char_Empty
   .EndCheckPlayerInvulnerable:    
 
+;ALERT, THIS WRITE TO R#14 IS REQUIRED IN THE SF2 ENGINE !!! 
+
   ;SetVdp_Write address for Sprite Character
 	di
+
+;THIS CAN BE REMOVED IF WE ADD THE SELFMODIFYING CALL TO PutPlayerspriteSF2Engine
   ld    a,$05
 	out   ($99),a       ;set bits 15-17
 	ld    a,14+128
 	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
 	ld    a,$80
+  nop
+;THIS CAN BE REMOVED IF WE ADD THE SELFMODIFYING CALL TO PutPlayerspriteSF2Engine
+
 	out   ($99),a       ;set bits 0-7
   SelfmodifyingCodePlayerCharAddress: equ $+1
 	ld    a,$73         ;$73 / $7b
+;  nop
+	ld		c,$98         ;port to write to, and replace the nop wait time instruction required
 	out   ($99),a       ;set bits 8-14 + write access
       
-	ld		c,$98
 	call	outix128    ;4 sprites (4 * 32 = 128 bytes)
 	ei
 ;/put hero sprite character
@@ -762,8 +781,6 @@ PutPlayersprite:
   ld    a,l
   push  af
 
-  exx               ;recall hl. hl now points to color data
-
   ;SetVdp_Write address for Sprite Color
 	di
 ;  ld    a,$05
@@ -771,9 +788,12 @@ PutPlayersprite:
 ;	ld    a,14+128
 ;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
 	ld    a,$c0
+;  nop
 	out   ($99),a       ;set bits 0-7
   SelfmodifyingCodePlayerColorAddress: equ $+1
 	ld    a,$6d         ;$6d / $75
+;  nop
+  exx               ;recall hl. hl now points to color data (also replaces the nop wait time instruction required between reads and writes to vram)
 	out   ($99),a       ;set bits 8-14 + write access
 	
 	jp    nc,PlayerRightSideOfMap
@@ -2166,21 +2186,24 @@ lineintBorderMaskingSplit:
 	out   ($99),a       ;set bits 0-7
   .SelfmodifyingCodePlayerSpatAddress: equ $+1
 	ld    a,$6e         ;$6e /$76 
+;  nop
+  ld    c,$98         ;port to write to and deal with the nop required wait time 
 	out   ($99),a       ;set bits 8-14 + write access
 
   ;Out bordermasking sprites all 96 pixels lower
-  ld    c,$98
   ld    hl,BorderMaskingSpat
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
-  outi | in a,($98) | in a,($98) | in a,($98)
+  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
+  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
+  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
+  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
+  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
+  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
+  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
+  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
+  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
+  outi ;| nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
+
+;  outi | in a,($98) | in a,($98) | in a,($98)
 
   ;prepare y for next frame
   ld    a,(CameraY)
@@ -2233,7 +2256,7 @@ LineInt:
 ;and we turn screen on again at the end of the line
 ;we play music and set s#0 again
 LineIntAtScoreboard:
-  call  BackdropBlack
+;  call  BackdropBlack
 
 ;  ld    hl,lineintBorderMaskingSplit
 ;  ld    (SelfmodifyingCodeLineInt),hl
@@ -6016,23 +6039,58 @@ PutSpatToVram:
 ;	out   ($99),a       ;set bits 15-17
 ;	ld    a,14+128
 ;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
-;	ld    a,$00
   xor   a
+;  nop
 	out   ($99),a       ;set bits 0-7
   SelfmodifyingCodePlayerSpatAddress: equ $+1
 	ld    a,$6e         ;$6e /$76 
+;  nop
+	ld		hl,spat			;sprite attribute table, and replace the nop required wait time
 	out   ($99),a       ;set bits 8-14 + write access
 
-	ld		hl,spat			;sprite attribute table
   ld    c,$98
 ;	call	outix128
 
-  outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|
-  outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|
-  outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|
-  outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|outi|outi|in a,($98)|in a,($98)|
+;outi = 16 (4 cycles) (4,5,3,4)
+;nop = 4 (1 cycle)
+;in a,($98) = 11 (3 cycles)
+  outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|
+  outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|
+  outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|
+  outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi;|nop|in a,($98)|nop|in a,($98)|
 	ei
   ret
+
+
+
+
+;SetVdp_Write:
+;    rlc h
+;    rla
+;    rlc h
+;    rla
+;    srl h
+;    srl h
+;    di
+;    out (#99),a
+;    ld a,14 + 128
+;    out (#99),a            3 cycles  11 Tstates(4,3,4)
+;    ld a,l                 1 cycle   4 Tstates(4)
+;    nop                    1 cycle   4 Tstates(4)
+;    out (#99),a            3 cycles  11 Tstates(4,3,4)
+;    ld a,h                 2 cycles
+;    or 64                  2 cycles
+;    ei                     1 cycle
+;    out (#99),a            3 cycles
+;    ret
+
+
+
+
+
+
+
+
 	
 outix256:	
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
