@@ -10,6 +10,7 @@
 ;RetardedZombie   
 ;GreenSpider                
 ;GreySpider
+;Grinder
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -497,7 +498,9 @@ Grinder:
   jr    z,.EndPhase
   call  MoveSpriteHorizontally              ;easiest way to move twice as fast as walking
   jp    MoveSpriteHorizontally              ;easiest way to move twice as fast as walking
+
   .EndPhase:
+  call  .Animate                            ;out hl -> sprite character data to out to Vram
   ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ret

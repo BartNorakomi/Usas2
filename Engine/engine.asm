@@ -2,7 +2,6 @@ LevelEngine:
 ;  call  BackdropBlue
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
 ;  call  BackdropBlack
-  call  PopulateControls
   call  Sf2EngineObjects          ;di, restore background object, handle action object, put object in screen, handle interaction object and player, prepare page to be set on Vblank, ei 
 ;  call  BackdropRed
   call  Handle_HardWareSprite_Enemies_And_objects
@@ -36,6 +35,8 @@ LevelEngine:
   xor   a
   ld    (SnapToPlatForm?),a
 	call	handle_enemies_and_objects
+
+  call  PopulateControls
 
   ld    a,(framecounter)
   inc   a
@@ -2069,16 +2070,6 @@ vblankintflag:  db  0
 lineintflag:  db  0
 InterruptHandler:
   push  af
-  push  bc
-  push  de
-  push  hl
-  exx
-  ex    af,af'
-  push  af
-  push  bc
-  push  de
-  push  hl
-  push  ix
   
   ld    a,1               ;set s#1
   out   ($99),a
@@ -2096,16 +2087,6 @@ InterruptHandler:
   rlca
   jp    c,vblank  ;vblank detected, so jp to that routine
  
-  pop   ix
-  pop   hl
-  pop   de
-  pop   bc
-  pop   af
-  ex    af,af'
-  exx
-  pop   hl
-  pop   de
-  pop   bc
   pop   af 
   ei
   ret
@@ -2130,17 +2111,16 @@ vblank:
   ld    a,23+128
   out   ($99),a
   
-  ld    a,(SpriteSplitFlag)                ;1= 304x216 engine  2=256x216 SF2 engine
-  or    a
-  ld    b,0
-  jp    z,.SetSplitLine
-  ld    a,1
-  ld    b,094
-  .SetSplitLine:
+  ld    a,(SpriteSplitFlag)   ;1= 304x216 engine  0=256x216 SF2 engine
   ld    (SpriteSplitAtY100?),a
-  
+  or    a
   ld    a,(R19onVblank)       ;splitline height
-  sub   a,b
+  jp    z,.SetSplitLine
+  sub   a,94
+  .SetSplitLine:
+  
+;  ld    a,(R19onVblank)       ;splitline height
+;  sub   a,b
   out   ($99),a
   ld    a,19+128
   out   ($99),a
@@ -2155,25 +2135,17 @@ vblank:
 ;  ld    a,15+128           ;we do set to s#15 to 0 when mapExit is found and a new map is loaded
 ;  out   ($99),a
        
-  ld    a,1                   ;vblank flag gets set
+;  ld    a,1                   ;vblank flag gets set
   ld    (vblankintflag),a  
-;  ld    (SpriteSplitFlag),a  
 
-  pop   ix
-  pop   hl
-  pop   de
-  pop   bc
-  pop   af
-  ex    af,af'
-  exx
-  pop   hl
-  pop   de
-  pop   bc
   pop   af 
   ei
   ret
 
 lineintBorderMaskingSplit:
+  push  bc
+  push  hl
+  
 ;  call  BackdropOrange
 
   ;Set address to Write to Spat
@@ -2192,28 +2164,25 @@ lineintBorderMaskingSplit:
 
   ;Out bordermasking sprites all 96 pixels lower
   ld    hl,BorderMaskingSpat
-  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
-  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
-  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
-  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
-  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
-  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
-  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
-  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
-  outi | nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
-  outi ;| nop | in a,($98) | nop | nop | in a,($98) | nop| nop | in a,($98) | nop
+  outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)  ;18 + 7 + 12 + 5 + 12 + 5 + 12 = 69
+  outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
+  outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
+  outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
+  outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
+  outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
+  outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
+  outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
+  outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
+  outi  
 
-;  outi | in a,($98) | in a,($98) | in a,($98)
-
-  ;prepare y for next frame
+  ;prepare y bordermasking splitsprites for next frame
   ld    a,(CameraY)
   add   a,95
-  ld    hl,BorderMaskingSpat
-  ld    (hl),a|inc hl|ld (hl),a|inc hl|add a,16
-  ld    (hl),a|inc hl|ld (hl),a|inc hl|add a,16
-  ld    (hl),a|inc hl|ld (hl),a|inc hl|add a,16
-  ld    (hl),a|inc hl|ld (hl),a|inc hl|add a,16
-  ld    (hl),a|inc hl|ld (hl),a;|inc hl|add a,16
+  ld    (BorderMaskingSpat+00),a | add   a,16
+  ld    (BorderMaskingSpat+01),a | add   a,16
+  ld    (BorderMaskingSpat+02),a | add   a,16
+  ld    (BorderMaskingSpat+03),a | add   a,16
+  ld    (BorderMaskingSpat+04),a
 
 ;  xor   a                  ;set s#15 to 0 / Warning. Interrupts should end in Status Register 15=0 (normally)
 ;  out   ($99),a            ;we don't do this to save time, but it's not a good practise
@@ -2228,21 +2197,12 @@ lineintBorderMaskingSplit:
   ld    a,19+128
   out   ($99),a
   
-  pop   ix
   pop   hl
-  pop   de
-  pop   bc
-  pop   af
-  ex    af,af'
-  exx
-  pop   hl
-  pop   de
   pop   bc
   pop   af 
   ei
   ret  
-
-BorderMaskingSpat:  db  0,0,0,0,0,0,0,0,0,0
+BorderMaskingSpat:  db  0,0,0,0,0
 
 
 LineInt:
@@ -2251,17 +2211,13 @@ LineInt:
   jp    nz,lineintBorderMaskingSplit
 
 ;on the lineint we turn the screen off at the end of the line using polling for HR
-;then we switch between page 0+1
+;then we switch page
 ;we set horizontal and vertical adjust
 ;and we turn screen on again at the end of the line
-;we play music and set s#0 again
+;and set s#0 again
 LineIntAtScoreboard:
 ;  call  BackdropBlack
 
-;  ld    hl,lineintBorderMaskingSplit
-;  ld    (SelfmodifyingCodeLineInt),hl
-
-  .SkipBorderMaskingSplit:
   ;screen always gets turned on/off at the END of the line
   ld    a,(VDP_0+1)       ;screen off
   and   %1011 1111
@@ -2275,23 +2231,17 @@ LineIntAtScoreboard:
   ld    a,15+128          ;we are about to check for HR
   out   ($99),a
  
-  ld    b,%0010 0000      ;bit to check for HBlank detection
-.Waitline1:
-;  in    a,($99)           ;Read Status register #2
-;  and   b                 ;wait until start of HBLANK
-;  jr    nz,.Waitline1
-
-.Waitline2:
+.Waitline:                ;wait until end of HBLANK
   in    a,($99)           ;Read Status register #2
-  and   b                 ;wait until end of HBLANK
-  jr    z,.Waitline2 
-
+  and   %0010 0000        ;bit to check for HBlank detection
+  jr    z,.Waitline
+  
   ld    a,0*32+31         ;set page 0
   out   ($99),a
   ld    a,2+128
   out   ($99),a
 
-  ld    a,0               ;set horizontal screen adjust
+  xor   a                  ;set horizontal screen adjust
   out   ($99),a
   ld    a,18+128
   out   ($99),a
@@ -2319,19 +2269,8 @@ LineIntAtScoreboard:
   ld    a,15+128
   out   ($99),a
 
-  ld    a,1                   ;vblank flag gets set
-  ld    (lineintflag),a  
+  ld    (lineintflag),a   ;lineine flag gets set
 
-  pop   ix
-  pop   hl
-  pop   de
-  pop   bc
-  pop   af
-  ex    af,af'
-  exx
-  pop   hl
-  pop   de
-  pop   bc
   pop   af 
   ei
   ret  
@@ -2846,8 +2785,22 @@ checktile:
 .selfmodifyingcodeMapLenght:
 	ld		de,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
   jr    z,.yset
+
+;Input: A = Multiplier, DE = Multiplicand, HL = 0, C = 0
+;Output: A:HL = Product
+
+;	add	a,a		; optimised 1st iteration
+;	jr	nc,$+4
+;	ld	h,d
+;	ld	l,e
+
+;	add	hl,hl		; unroll 7 times
+;	rla			; ...
+;	jr	nc,$+4		; ...
+;	add	hl,de		; ...
+;	adc	a,c		; ...
   
-  ld    b,a
+  ld    b,a                 ;b * de
 .setmapwidthy:
 	add		hl,de
   djnz  .setmapwidthy
@@ -5960,24 +5913,6 @@ Set_R_SitPunch:
 
 
 SetBorderMaskingSprites:
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-;	ld		a,(NewPrContr)
-;	bit		4,a           ;space pressed
-;	jp		z,.endCheckSpacePressed
-
-;  ld    a,(SpriteSplitFlag)
-;  xor   1
-;  ld    (SpriteSplitFlag),a
-;  call  RemoveSpritesFromScreen
-;  call  SwapSpatColAndCharTable
-;  call  SwapSpatColAndCharTable
-;  call  initiatebordermaskingsprites
-;  .endCheckSpacePressed:
-
   ld    hl,spat+0           ;y sprite 1
   
   ld    a,(CameraX)
@@ -5990,7 +5925,7 @@ SetBorderMaskingSprites:
   ld    a,(CameraY)
   dec   a                   ;y top sprite
   .selfmodifyingcodeAmountSpritesOneSide:  equ $+1
-  ld    b,11                ;amount of sprites left side screen
+  ld    b,11                ;amount of sprites each side of the screen
 
   .loop:
   ld    (hl),a              ;y

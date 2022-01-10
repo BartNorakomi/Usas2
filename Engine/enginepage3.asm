@@ -13,7 +13,7 @@ MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | Map
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_010Data
+WorldMapPointer:  dw  MapB01_011Data
 
 loadGraphics:
   call  screenoff
@@ -77,7 +77,7 @@ WaitForInterrupt:
   ret
 
 SpriteSplitFlag:      db  1
-SpriteSplitAtY100?:   db  1
+SpriteSplitAtY100?:   db  0
 
 PutSpatToVramSlow:
 	ld		hl,(invisspratttableaddress)		;sprite attribute table in VRAM ($17600)
@@ -836,7 +836,7 @@ SetVdp_Write:
 ;/first set register 14 (actually this only needs to be done once
 
 	ld      a,l           ;set bits 0-7
-	nop
+;	nop
 	out     ($99),a
 	ld      a,h           ;set bits 8-14
 	or      64            ; + write access
@@ -859,7 +859,7 @@ SetVdp_WriteRemainDI:
 ;/first set register 14 (actually this only needs to be done once
 
 	ld      a,l           ;set bits 0-7
-	nop
+;	nop
 	out     ($99),a
 	ld      a,h           ;set bits 8-14
 	or      64            ; + write access
