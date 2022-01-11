@@ -13,7 +13,7 @@ MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | Map
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_011Data
+WorldMapPointer:  dw  MapB01_009Data
 
 loadGraphics:
   call  screenoff
@@ -33,37 +33,31 @@ loadGraphics:
   call  PutSpatToVramSlow
   call  initiatebordermaskingsprites
 
-  call  SetInterruptHandler           ;set Lineint and Vblank  
+;	di
+;  ld    a,$05
+;	out   ($99),a       ;set bits 15-17
+;	ld    a,14+128
+;  ei
+;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
 
+  call  SetInterruptHandler           ;set Lineint and Vblank  
+  call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank | if normal engine: wait for lineint
+
+  xor   a
+  ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
+  jp    LevelEngine
+
+WaitForInterrupt:
   ld    a,(CameraY)
   xor   a
   ld    (R23onVblank),a
   add   a,lineintheight
   ld    (R19onVblank),a
 
-  call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank | if normal engine: wait for lineint
-	di
-  ld    a,$05
-	out   ($99),a       ;set bits 15-17
-	ld    a,14+128
-  ei
-	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
-
-  xor   a
-  ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
-;  xor   a
-;  ld    (R23onVblank),a               ;vertical screen adjust
-;  ld    (R19onVblank),a               ;vertical screen adjust
-;  call  WaitVblank
-;  call  WaitVblank
-;  call  WaitVblank
-  jp    LevelEngine
-
-WaitForInterrupt:
   ld    a,(scrollEngine)          ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a                         
   ld    hl,lineintflag  
-  jr    z,.EngineFound
+;  jr    z,.EngineFound
   ld    hl,vblankintflag    
   .EngineFound:  
   xor   a
@@ -71,9 +65,11 @@ WaitForInterrupt:
 .checkflag:
   cp    (hl)
   jr    z,.checkflag
-;  xor   a
-;  ld    (vblankintflag),a
-;  ld    (lineintflag),a  
+
+  xor   a
+  ld    (vblankintflag),a
+  ld    (lineintflag),a
+  ld    (SpriteSplitAtY100?),a
   ret
 
 SpriteSplitFlag:      db  1

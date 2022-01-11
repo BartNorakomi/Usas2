@@ -2,7 +2,9 @@ LevelEngine:
 ;  call  BackdropBlue
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
 ;  call  BackdropBlack
+  call  BackdropRed
   call  Sf2EngineObjects          ;di, restore background object, handle action object, put object in screen, handle interaction object and player, prepare page to be set on Vblank, ei 
+  call  BackdropBlack
 ;  call  BackdropRed
   call  Handle_HardWareSprite_Enemies_And_objects
 ;  call  BackdropBlack
@@ -2108,6 +2110,8 @@ vblank:
 
   ld    a,(R23onVblank)       ;vertical screen adjust
   out   ($99),a
+  add   a,lineintheight
+  ld    (R19onVblank),a
   ld    a,23+128
   out   ($99),a
   
@@ -2119,8 +2123,6 @@ vblank:
   sub   a,94
   .SetSplitLine:
   
-;  ld    a,(R19onVblank)       ;splitline height
-;  sub   a,b
   out   ($99),a
   ld    a,19+128
   out   ($99),a
@@ -2367,8 +2369,8 @@ CameraEngine256x216:
   ld    a,(CameraY)
   ld    (R23onVblank),a
 
-  add   a,lineintheight
-  ld    (R19onVblank),a
+;  add   a,lineintheight
+;  ld    (R19onVblank),a
   ret
 
 VerticalMovementCamera:
@@ -2466,8 +2468,8 @@ CameraEngine304x216:
   ld    a,(CameraY)
   ld    (R23onVblank),a
 
-  add   a,lineintheight
-  ld    (R19onVblank),a
+;  add   a,lineintheight
+;  ld    (R19onVblank),a
 
   ;set page. page 0=camerax 0-15 page 1=camerax 16-31 page 2=camerax 32-47 page 3=camerax 48-63
   ld    a,(CameraX)
@@ -2754,14 +2756,17 @@ CheckTileEnemy:
   ld    a,(ix+enemies_and_objects.y)  
   jp    checktile.XandYset
   
-checktile:  
+checktile:                  ;in b->add y to check, de->add x to check
 ;get player X in tiles
   ld    hl,(ClesX)
   add   hl,de
 
-  ld    a,h
-  or    a
-  jp    m,.CheckTileIsOutOfScreenLeft
+;  ld    a,h
+;  or    a
+;  jp    m,.CheckTileIsOutOfScreenLeft
+
+  bit   7,h
+  jr    nz,.CheckTileIsOutOfScreenLeft
 
   ld    a,(Clesy)
   .XandYset:
@@ -2774,45 +2779,87 @@ checktile:
 ;get player Y in tiles
   add   a,b
 
-  srl   a
-  srl   a
-  srl   a                   ;/8
+  and   %11111000           ;Clear bits 0-2 (equals 256 - 8)
+  rrca                      ;/2
+  rrca                      ;/4
+  rrca                      ;/8
 
 .selfmodifyingcodeStartingPosMapForCheckTile:
 	ld		de,MapData- 000000  ;start 2 rows higher (MapData-80 for normal engine, MapData-68 for SF2 engine)
 	add   hl,de
 	
 .selfmodifyingcodeMapLenght:
-	ld		de,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
-  jr    z,.yset
+	ld		bc,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
+;  jr    z,.yset
 
-;Input: A = Multiplier, DE = Multiplicand, HL = 0, C = 0
-;Output: A:HL = Product
+  ex    de,hl               ;de->x in tiles
 
-;	add	a,a		; optimised 1st iteration
-;	jr	nc,$+4
-;	ld	h,d
-;	ld	l,e
+;
+; Multiply 8-bit value with a 16-bit value (amount of Y tiles * map lenght)
+; In: Multiply A with BC
+; Out: HL = result
+;
+.Mult12:
+  ld    hl,0
+.Mult12_Loop:
+;  add   hl,hl
+  add   a,a
+  jr    nc,.Mult12_NoAdd
+  add   hl,bc
+.Mult12_NoAdd:
+  add   hl,hl
+  add   a,a
+  jr    nc,.Mult12_NoAdd2
+  add   hl,bc
+.Mult12_NoAdd2:
+  add   hl,hl
+  add   a,a
+  jr    nc,.Mult12_NoAdd3
+  add   hl,bc
+.Mult12_NoAdd3:
+  add   hl,hl
+  add   a,a
+  jr    nc,.Mult12_NoAdd4
+  add   hl,bc
+.Mult12_NoAdd4:
+  add   hl,hl
+  add   a,a
+  jr    nc,.Mult12_NoAdd5
+  add   hl,bc
+.Mult12_NoAdd5:
+  add   hl,hl
+  add   a,a
+  jr    nc,.Mult12_NoAdd6
+  add   hl,bc
+.Mult12_NoAdd6:
+  add   hl,hl
+  add   a,a
+  jr    nc,.Mult12_NoAdd7
+  add   hl,bc
+.Mult12_NoAdd7:
+  add   hl,hl
+  add   a,a
+  jr    nc,.Mult12_NoAdd8
+  add   hl,bc
+.Mult12_NoAdd8:
 
-;	add	hl,hl		; unroll 7 times
-;	rla			; ...
-;	jr	nc,$+4		; ...
-;	add	hl,de		; ...
-;	adc	a,c		; ...
+;  pop   bc                  ;x in tiles
+  add   hl,de               ;(amount of Y tiles * map lenght ) + x in tiles
+;  jp    .yset
   
-  ld    b,a                 ;b * de
-.setmapwidthy:
-	add		hl,de
-  djnz  .setmapwidthy
-.yset:
+;  ld    b,a                 ;b * de
+;.setmapwidthy:
+;	add		hl,de
+;  djnz  .setmapwidthy
+;.yset:
 
   ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
   dec   a                   ;1 = wall
 	ret
 
 .CheckTileIsOutOfScreenLeft:
-  xor   a
-  dec   a
+  xor   a                   ;reset carry
+  dec   a                   ;1 = wall
   ret
 
 playermovementspeed:    db  2
@@ -4256,10 +4303,6 @@ MoveHorizontallyWhileJump:
   ld    b,0                 ;horizontal movement
 
 	ld		a,(Controls)
-;	bit		1,a           ;cursor down pressed ?
-;	jp		nz,.Maybe_Set_R_sit
-;	bit		0,a           ;cursor up pressed ?
-;	jp		nz,.R_jump_andcheckpunch
 	bit		2,a                 ;cursor left pressed ?
   jp    z,.EndCheckLeftPressed
   dec   b
@@ -4366,53 +4409,26 @@ AnimateWhileJump:
 	ld		(standchar),hl
   ret
 
-
 CheckSnapToStairsWhileJump:
 ;check if there are stairs when pressing up, if so climb the stairs.
 ;[Check ladder going Right UP]
   ld    b,YaddFeetPlayer-00    ;add y to check (y is expressed in pixels)
-  ld    de,XaddLeftPlayer+08   ;add x to check (x is expressed in pixels)
-  call  checktile           ;out z=collision found with wall
-  sub   3                   ;check for tilenr 4=stairsleftup
-  jp    z,.stairsfoundleftup
-
-  ld    b,YaddFeetPlayer-00    ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer+08-08   ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
   sub   4                   ;check for tilenr 5=stairssrightup
+  jp    z,.stairsfoundrightup
+
+;  ld    b,YaddFeetPlayer-00    ;add y to check (y is expressed in pixels)
+;  ld    de,XaddLeftPlayer+08   ;add x to check (x is expressed in pixels)
+;  call  checktile           ;out z=collision found with wall
+;  sub   3                   ;check for tilenr 4=stairsleftup
+;  ret   nz
+
+  ;now do the same check, but 1 tile to the right
+  inc   hl                  ;1 tile to the right
+  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+  sub   4                   ;check for tilenr 4=stairsleftup
   ret   nz
-
-.stairsfoundrightup:
-  pop   af                    ;pop the call  
-
-	call  Set_Stairs_Climb_RightUp
-
-  ld    a,1
-  ld    (PlayerFacingRight?),a          ;is player facing right ?
-
-  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
-  ld    a,l
-  and   %1111 1000
-  ld    l,a
-  ld    (ClesX),hl
-
-  ld    a,(ClesY)
-  and   %1111 1000
-  dec   a
-  ld    (ClesY),a
-
-  ld    b,YaddFeetPlayer-00    ;add y to check (y is expressed in pixels)
-  ld    de,XaddLeftPlayer+08-08   ;add x to check (x is expressed in pixels)
-  call  checktile           ;out z=collision found with wall
-  sub   4                   ;check for tilenr 5=stairssrightup
-  ret   z
-  
-  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
-  ld    de,8
-  add   hl,de
-  ld    (ClesX),hl
-  ret  
-
 
 .stairsfoundleftup:  
   pop   af                    ;pop the call  
@@ -4445,13 +4461,67 @@ CheckSnapToStairsWhileJump:
   ld    (ClesX),hl
   ret  
 
+.stairsfoundrightup:
+  pop   af                    ;pop the call  
+
+	call  Set_Stairs_Climb_RightUp
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a          ;is player facing right ?
+
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    a,l
+  and   %1111 1000
+  ld    l,a
+  ld    (ClesX),hl
+
+  ld    a,(ClesY)
+  and   %1111 1000
+  dec   a
+  ld    (ClesY),a
+
+  ld    b,YaddFeetPlayer-00    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+08-08   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  sub   4                   ;check for tilenr 5=stairssrightup
+  ret   z
+  
+  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+  ld    de,8
+  add   hl,de
+  ld    (ClesX),hl
+  ret  
+
 KickWhileJump?:  db  1
 Jump:
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  call  .HandleKickWhileJump        ;if player kicks in the air, enable hitbox and set hixbox coordinates
+  call  MoveHorizontallyWhileJump
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+  call  nz,CheckSnapToStairsWhileJump
+  call  AnimateWhileJump
+  call  .VerticalMovement
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+  call  nz,CheckSnapToStairsWhileJump
+
+  ld    a,(NewPrContr)
+	bit		4,a           ;trig a pressed ?
+	jp    nz,.SetKickWhileJump
+	bit		0,a           ;cursor up pressed ?
+	jp    nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
+  ret
+
+.HandleKickWhileJump:
   ld    a,(KickWhileJump?)
   dec   a
-  jr    z,.EndDecreaseKickWhileJumpCounter
+  ret   z
   ld    (KickWhileJump?),a
-
   ;.SetAttackHitBox:
   ld    a,1
   ld    (EnableHitbox?),a
@@ -4479,28 +4549,6 @@ Jump:
   ld    a,(ClesY)
   add   a,b                 ;36 - 8 when kicking up, 46 - 8 when kicking down
   ld    (HitBoxSY),a    
-  .EndDecreaseKickWhileJumpCounter:
-
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-  call  MoveHorizontallyWhileJump
-	ld		a,(Controls)
-	bit		0,a           ;cursor up pressed ?
-  call  nz,CheckSnapToStairsWhileJump
-  call  AnimateWhileJump
-  call  .VerticalMovement
-	ld		a,(Controls)
-	bit		0,a           ;cursor up pressed ?
-  call  nz,CheckSnapToStairsWhileJump
-
-  ld    a,(NewPrContr)
-	bit		4,a           ;trig a pressed ?
-	jp    nz,.SetKickWhileJump
-	bit		0,a           ;cursor up pressed ?
-	jp    nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
   ret
 
   .SetKickWhileJump:
@@ -4958,7 +5006,6 @@ MovePlayerLeft:
 
 DoMovePlayer:               ;carry: collision detected
   ld    (RunningTablePointer),a
-  
   ld    d,0
   ld    e,a
   
@@ -4978,14 +5025,26 @@ DoMovePlayer:               ;carry: collision detected
   ret   z
 
 .PlayerMovedRight:
-  ld    b,YaddFeetPlayer-1  ;add y to check (y is expressed in pixels)
+;  ld    b,YaddmiddlePLayer  ;add y to check (y is expressed in pixels)
+;  ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
+;  call  checktile           ;out z=collision found with wall
+;  jr    z,.SnapToWallRight
+
+;  ld    b,YaddFeetPlayer-1  ;add y to check (y is expressed in pixels)
+;  ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
+;  call  checktile           ;out z=collision found with wall
+;  jr    z,.SnapToWallRight
+
+  ;check at height of waiste if player runs into a wall on the right side
+  ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
   ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
   call  checktile           ;out z=collision found with wall
   jr    z,.SnapToWallRight
-
-  ld    b,YaddmiddlePLayer  ;add y to check (y is expressed in pixels)
-  ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
-  call  checktile           ;out z=collision found with wall
+  ;now do the same check, but 2 tiles lower 
+	add		hl,bc               ;1 tile lower
+	add		hl,bc               ;1 tile lower
+  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+  dec   a                   ;1 = wall
   jr    z,.SnapToWallRight
 
   ;when player is rolling we don't have to check for collision on eye height
@@ -5011,14 +5070,25 @@ DoMovePlayer:               ;carry: collision detected
   ret
 
 .PlayerMovedLeft:
-  ld    b,YaddFeetPlayer-1  ;add y to check (y is expressed in pixels)
+;  ld    b,YaddmiddlePLayer  ;add y to check (y is expressed in pixels)
+;  ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
+;  call  checktile           ;out z=collision found with wall
+;  jr    z,.SnapToWallLeft
+
+;  ld    b,YaddFeetPlayer-1  ;add y to check (y is expressed in pixels)
+;  ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
+;  call  checktile           ;out z=collision found with wall
+;  jr    z,.SnapToWallLeft
+  ;check at height of waiste if player runs into a wall on the left side
+  ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
   call  checktile           ;out z=collision found with wall
   jr    z,.SnapToWallLeft
-
-  ld    b,YaddmiddlePLayer  ;add y to check (y is expressed in pixels)
-  ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
-  call  checktile           ;out z=collision found with wall
+  ;now do the same check, but 2 tiles lower
+	add		hl,bc               ;1 tile lower
+	add		hl,bc               ;1 tile lower
+  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+  dec   a                   ;1 = wall
   jr    z,.SnapToWallLeft
 
   ;when player is rolling we don't have to check for collision on eye height
