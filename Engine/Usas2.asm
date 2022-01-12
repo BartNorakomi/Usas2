@@ -710,7 +710,7 @@ MapB01_009:
 
 
 MapB01_010:
-  incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  5
+  incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  6
 ;Retarded Zombie Spawnpoint
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
 .object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+01,+00,+01,+01,+00,+00,+00, 0|db 000| ds fill
@@ -721,10 +721,9 @@ MapB01_010:
 .object3:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 16*16,spat+(16*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
 .object4:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 20*16,spat+(20*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
 .object5:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 24*16,spat+(24*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00, 0|db 001| ds fill
-;Grinder
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7,Hit?,life,   
-.object6:db -1,        1|dw Grinder             |db 8*11|dw 8*19|db 32,32|dw 12*16,spat+(12*2)|db 48-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00, 0|db 005| ds fill
-.object7:db -1,        1|dw Grinder             |db 8*21|dw 8*19|db 32,32|dw 20*16,spat+(20*2)|db 48-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00, 0|db 005| ds fill
+;platform (moving horizontally)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7,Hit?,life,   
+.object6: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00, 0|db 000| ds fill
 
 
 
