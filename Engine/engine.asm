@@ -84,7 +84,7 @@ BackdropBlack:
 BackdropBlue:
   xor   a
   SetBackDrop:
-;ret
+ret
   di
   out   ($99),a
   ld    a,7+128
@@ -136,6 +136,8 @@ Handle_HardWareSprite_Enemies_And_objects:
   ld    a,(de) | inc a | call z,.docheck             
   ld    de,enemies_and_objects+(6*lenghtenemytable)
   ld    a,(de) | inc a | call z,.docheck             
+  ld    de,enemies_and_objects+(7*lenghtenemytable)                                     
+  ld    a,(de) | inc a | call z,.docheck             
 
 	ld		a,(slot.ram)	      ;back to full RAM
 	out		($a8),a	
@@ -164,7 +166,6 @@ Handle_HardWareSprite_Enemies_And_objects:
   add   hl,de
   add   hl,de
   
-
   call  Backdropred
     
 	ld		a,1
@@ -4947,7 +4948,7 @@ AnimateSprite:
   jP    nz,.SetAnimationCounter
   xor   a
   .SetAnimationCounter:
-  ld    (ix+enemies_and_objects.v1),a     ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v1),a       ;v1=Animation Counter
   
   ld    d,0
   ld    e,a

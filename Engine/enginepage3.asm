@@ -13,7 +13,7 @@ MapB01_007Data: db MapsBlock01 | dw MapB01_007 | db 1,3,3                  | Map
 MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock01 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock01 | dw MapB01_012 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_010Data
+WorldMapPointer:  dw  MapB01_002Data
 
 loadGraphics:
   call  screenoff
@@ -1112,7 +1112,7 @@ DoubleJumpAvailable?:         rb    1
 
 
 amountofenemies:        equ 22
-lenghtenemytable:       equ 25 + fill
+lenghtenemytable:       equ 27 + fill
 enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .alive?:                equ 0
 .Sprite?:               equ 1
@@ -1137,8 +1137,10 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .SnapPlayer?:           equ 20
 .v6:                    equ 21
 .v7:                    equ 22
-.hit?:                  equ 23
-.life:                  equ 24
+.v8:                    equ 23
+.v9:                    equ 24
+.hit?:                  equ 25
+.life:                  equ 26
 
 endenginepage3variables:  equ $+enginepage3length
 org variables
