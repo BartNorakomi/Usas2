@@ -61,12 +61,10 @@ MoveSpriteVertically:                       ;Add v3 to y. Add v4 to x (16 bit)
   ret
 
 CheckCollisionWallEnemy:                    ;checks for collision wall and if found invert horizontal movement
-  ld    b,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
+  ld    a,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
   ld    hl,-16                              ;add to x to check right side of sprite for collision
-
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   jr    z,.MovingRight
-
   .MovingLeft:
   call  CheckTileEnemyInHL                  ;out z=collision found with wall  
   ret   nz
@@ -74,7 +72,6 @@ CheckCollisionWallEnemy:                    ;checks for collision wall and if fo
   neg
   ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
   ret
-
   .MovingRight:
   ld    d,0
   ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
@@ -85,29 +82,34 @@ CheckCollisionWallEnemy:                    ;checks for collision wall and if fo
   neg
   ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
   ret
-  
-CheckFloorEnemy:
+
+CheckFloorUnderBothFeetEnemy:               ;Used for Zombie, to check if he is completely without floor under him
+  ld    hl,-16
   ld    a,(ix+enemies_and_objects.ny)       
   add   a,16
-  ld    b,a                                 ;add to y (y is expressed in pixels)
-
-  ld    e,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  bit   7,e
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   jr    z,.MovingRight
-
   .MovingLeft:
   ld    d,0
   ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  ld    hl,16
-  sbc   hl,de                               ;hl = 16 - width
+  add   hl,de
+  add   hl,hl                               ;0 if nx=16, 32 if nx=32, 64 if nx=48 formula=(nx-16) *2
   jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
-
+  .MovingRight:
+  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+  
+CheckFloorEnemy:  
+  ld    hl,-16
+  ld    a,(ix+enemies_and_objects.ny)       
+  add   a,16
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  jr    z,.MovingRight
+  .MovingLeft:
+  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
   .MovingRight:
   ld    d,0
   ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  sla   e                                   ;*2
-  ld    hl,-48
-  add   hl,de                               ;hl = -48 + width + width
+  add   hl,de
   jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
 
 distancecheckSlightlyMoreToRight:           ;in: b,c->x,y distance between player and object,  out: carry->object within distance
@@ -475,6 +477,8 @@ Landstrider:
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=unable to hit timer
+;v6=Grow Timer
+;v7=move up once when growing flag
   call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
   ld    a,(ix+enemies_and_objects.v5)       ;v5=unable to hit timer
@@ -487,14 +491,101 @@ Landstrider:
   ret
   
   .HandlePhase:
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck) ;out hl -> sprite character data to out to Vram
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking) ;out hl -> sprite character data to out to Vram
   or    a
   jp    z,LandstriderWalking
   dec   a
   jp    z,LandstriderDucking
   dec   a
   jp    z,LandstriderDucked
+  dec   a
+  jp    z,LandstriderUnDucking
+  dec   a
+  jp    z,LandstriderGrowing
+  dec   a
+  jp    z,LandstriderGrowingTall
 
+  LandstriderBigWalking:
+  ld    (ix+enemies_and_objects.life),1
+  ld    (ix+enemies_and_objects.v5),0       ;v5=unable to hit timer
+  ld    a,(framecounter)
+  and   07
+  cp    1
+  jr    z,.skipThisFrame
+  ld    a,(framecounter)
+  rrca
+  call  c,MoveSpriteHorizontally            ;move once every 2 frames  
+  .skipThisFrame:
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  LandstriderWalking.CheckFloor       ;checks for floor. if not found invert direction
+  
+  .Animate:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    hl,LandstriderBigRightWalkAnimation
+  jp    p,.GoAnimate
+  ld    hl,LandstriderBigLeftWalkAnimation
+  .GoAnimate:
+  ld    b,15                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;04 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  LandstriderGrowingTall:                   ;we now switch to 4 sprite mode, Landstrider is now a young adult, ready to take on the world
+  call  LandstriderDucked.ShortWhiteBlinkWhenHit
+  ld    (ix+enemies_and_objects.nrsprites),48-(04*6)
+  ld    (ix+enemies_and_objects.nrspritesSimple),4
+  ld    (ix+enemies_and_objects.nrspritesTimes16),4*16  
+  call  .MoveUpWhenGrowing
+
+  .Animate:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    hl,LandstriderRightGrowingTallAnimation
+  jp    p,.GoAnimate
+  ld    hl,LandstriderLeftGrowingTallAnimation
+  .GoAnimate:
+  ld    b,7                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 05                            ;04 animation frame addresses
+  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 04
+  ret   nz
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v2),6       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking)  
+  ld    a,(ix+enemies_and_objects.y)
+  add   a,4
+  ld    (ix+enemies_and_objects.y),a
+  ld    (ix+enemies_and_objects.ny),32
+  ret
+
+  .MoveUpWhenGrowing:
+  ld    a,(ix+enemies_and_objects.v7)       ;move up once when growing flag
+  or    a
+  ld    (ix+enemies_and_objects.v7),1       ;move up once when growing flag
+  call  z,.MoveUp
+  
+  ld    a,(framecounter)
+  and   7
+  ret   nz
+  .MoveUp:
+  ld    a,(ix+enemies_and_objects.y)
+  sub   a,4
+  ld    (ix+enemies_and_objects.y),a
+  ret
+
+  LandstriderGrowing:
+  call  LandstriderDucked.ShortWhiteBlinkWhenHit
+  call  LandstriderUnDucking
+  ld    (ix+enemies_and_objects.life),20
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking)  
+  or    a
+  ret   nz
+  ld    (ix+enemies_and_objects.v2),5       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking)  
+  ld    (ix+enemies_and_objects.v5),0       ;v5=repeating steps
+  ld    (ix+enemies_and_objects.v6),0       ;v6=pointer to movement table
+  ret
+  
   LandstriderUnDucking:
   ld    (ix+enemies_and_objects.life),1
   
@@ -506,19 +597,20 @@ Landstrider:
   ld    hl,LandstriderLeftUnDuckAnimation
   .GoAnimate:
   ld    b,7                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 04                            ;04 animation frame addresses
+  ld    c,2 * 05                            ;04 animation frame addresses
   call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
   ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
-  cp    2 * 03
+  cp    2 * 04
   ret   nz
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck)  
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking)  
   ret
 
   LandstriderDucked:
   call  .ShortWhiteBlinkWhenHit
   call  .DistanceCheck                      ;if player moves away, Landstriker will UnDuck
+  call  .ReduceGrowTime                     ;after a while go to Grow phase
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   or    a
   ld    hl,RightLandstriderDuck4_Char
@@ -526,6 +618,14 @@ Landstrider:
   ld    hl,LeftLandstriderDuck4_Char
   ret
 
+  .ReduceGrowTime:
+  dec   (ix+enemies_and_objects.v6)         ;v6=Grow Timer
+  ret   nz
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v2),4       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking) ;out hl -> sprite character data to out to Vram
+  ld    (ix+enemies_and_objects.v5),0       ;v5=unable to hit timer
+  ret  
+  
   .ShortWhiteBlinkWhenHit:
   ld    a,(ix+enemies_and_objects.v5)       ;v5=unable to hit timer
   dec   a
@@ -541,12 +641,12 @@ Landstrider:
   ret
   
   .DistanceCheck:
-  ld    b,66                                ;b-> x distance
-  ld    c,60                                ;c-> y distance
+  ld    b,40                                ;b-> x distance
+  ld    c,20                                ;c-> y distance
   call  distancecheckSlightlyMoreToRight    ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   c
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck) ;out hl -> sprite character data to out to Vram
+  ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking) ;out hl -> sprite character data to out to Vram
   ld    (ix+enemies_and_objects.v5),0       ;v5=unable to hit timer
   ret  
 
@@ -569,13 +669,14 @@ Landstrider:
   cp    2 * 03
   ret   nz
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck)  
+  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking)  
+  ld    (ix+enemies_and_objects.v6),250     ;v6=Grow Timer
   ret
 
   LandstriderWalking:
   ld    a,(framecounter)
-  and   01
-  call  z,MoveSpriteHorizontally            ;if hit, move once every 8 frames  
+  rrca
+  call  c,MoveSpriteHorizontally            ;move once every 2 frames  
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
   call  .CheckFloor                         ;checks for floor. if not found invert direction
   call  .DistanceCheck                      ;check if near player. if so Duck
@@ -592,12 +693,16 @@ Landstrider:
   jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
   .DistanceCheck:
-  ld    b,26                                ;b-> x distance
-  ld    c,30                                ;c-> y distance
+  ld    b,40                                ;b-> x distance
+  ld    c,20                                ;c-> y distance
   call  distancecheckSlightlyMoreToRight    ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   nc
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  or    a
+  ret   z
+  
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck) ;out hl -> sprite character data to out to Vram
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking) ;out hl -> sprite character data to out to Vram
   ret  
 
   .CheckFloor:                              ;checks for floor. if not found invert direction
@@ -608,6 +713,20 @@ Landstrider:
   neg
   ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
   ret
+
+LandstriderLeftGrowingTallAnimation:
+  dw  LeftLandstriderGrow1_Char
+  dw  LeftLandstriderGrow2_Char
+  dw  LeftLandstriderGrow3_Char
+  dw  LeftBigLandstrider3_Char
+  dw  LeftBigLandstrider3_Char
+
+LandstriderRightGrowingTallAnimation:
+  dw  RightLandstriderGrow1_Char
+  dw  RightLandstriderGrow2_Char
+  dw  RightLandstriderGrow3_Char
+  dw  RightBigLandstrider3_Char
+  dw  RightBigLandstrider3_Char
 
 LandstriderLeftUnDuckAnimation:
   dw  LeftLandstriderDuck4_Char
@@ -648,6 +767,18 @@ LandstriderRightWalkAnimation:
   dw  RightLandstrider2_Char
   dw  RightLandstrider3_Char
   dw  RightLandstrider4_Char
+
+LandstriderBigLeftWalkAnimation:
+  dw  LeftBigLandstrider1_Char
+  dw  LeftBigLandstrider2_Char
+  dw  LeftBigLandstrider3_Char
+  dw  LeftBigLandstrider4_Char
+
+LandstriderBigRightWalkAnimation:
+  dw  RightBigLandstrider1_Char
+  dw  RightBigLandstrider2_Char
+  dw  RightBigLandstrider3_Char
+  dw  RightBigLandstrider4_Char
   
 Wasp:
 ;v1=Animation Counter
@@ -683,7 +814,7 @@ Wasp:
   WaspFlyingInPlace:
   call  .faceplayer
   ld    de,WaspMovementTable
-  call  MoveObjectWithStepTableNew
+  call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
 
   .Animate:                                 ;out hl -> sprite character data to out to Vram
   ld    a,(ix+enemies_and_objects.v8)       ;face left (0) or face right (1)
@@ -709,7 +840,7 @@ Wasp:
   ld    (ix+enemies_and_objects.v8),+1      ;face left (0) or face right (1)
   ret
 
-MoveObjectWithStepTableNew:
+MoveObjectWithStepTableNew:                 ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
   dec   (ix+enemies_and_objects.v5)         ;repeating steps
   jp    p,.moveObject
   
@@ -1183,7 +1314,7 @@ RetardedZombie:
   ret
 
   .CheckFloor:
-  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  call  CheckFloorUnderBothFeetEnemy        ;checks for floor, out z=collision found with floor
   ret   z
   ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter

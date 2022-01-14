@@ -2741,7 +2741,7 @@ CheckTileEnemyInHL:
 ;  or    a
 ;  jp    m,checktile.CheckTileIsOutOfScreenLeft
 
-  ld    a,(ix+enemies_and_objects.y)  
+  add   a,(ix+enemies_and_objects.y)
   jp    checktile.XandYset
 
 CheckTileEnemy:  
@@ -2754,7 +2754,7 @@ CheckTileEnemy:
 ;  or    a
 ;  jp    m,checktile.CheckTileIsOutOfScreenLeft
 
-  ld    a,(ix+enemies_and_objects.y)  
+  add   a,(ix+enemies_and_objects.y)  
   jp    checktile.XandYset
   
 checktile:                  ;in b->add y to check, de->add x to check
@@ -2770,15 +2770,14 @@ checktile:                  ;in b->add y to check, de->add x to check
   jr    nz,.CheckTileIsOutOfScreenLeft
 
   ld    a,(Clesy)
+;get player Y in pixels and convert it to tiles
+  add   a,b
   .XandYset:
 
   srl   h
   rr    l                   ;/2
   srl   l                   ;/4
   srl   l                   ;/8
-
-;get player Y in tiles
-  add   a,b
 
   and   %11111000           ;Clear bits 0-2 (equals 256 - 8)
   rrca                      ;/2
