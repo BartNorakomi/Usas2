@@ -13,6 +13,7 @@
 ;Grinder
 ;Wasp
 ;Landstrider
+;FireEyeGrey
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -347,7 +348,7 @@ ExplosionBig:
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
 
-  ld    (ix+enemies_and_objects.nrsprites),48-(08*6)
+  ld    (ix+enemies_and_objects.nrsprites),72-(08*6)
   ld    (ix+enemies_and_objects.nrspritesSimple),8
   ld    (ix+enemies_and_objects.nrspritesTimes16),8*16
   ret
@@ -384,7 +385,7 @@ ExplosionSmall:
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
 
-  ld    (ix+enemies_and_objects.nrsprites),48-(02*6)
+  ld    (ix+enemies_and_objects.nrsprites),72-(02*6)
   ld    (ix+enemies_and_objects.nrspritesSimple),2
   ld    (ix+enemies_and_objects.nrspritesTimes16),2*16
   ret
@@ -447,7 +448,7 @@ ZombieSpawnPoint:
   ld    hl,RetardedZombie
   ld    (ix+enemies_and_objects.movementpattern),l
   ld    (ix+enemies_and_objects.movementpattern+1),h
-  ld    (ix+enemies_and_objects.nrsprites),48-(04*6)
+  ld    (ix+enemies_and_objects.nrsprites),72-(04*6)
   ld    (ix+enemies_and_objects.nrspritesSimple),4
   ld    (ix+enemies_and_objects.nrspritesTimes16),4*16
   ld    (ix+enemies_and_objects.life),1
@@ -471,6 +472,36 @@ Template:
   ld    hl,LeftLandstrider1_Char
   ret
 
+FireEyeGrey:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,FireEyeGreenSpriteblock            ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+
+  .Animate:
+  ld    hl,FireEyeAnimation
+  ld    b,03                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 06                            ;06 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram  ret
+
+FireEyeAnimation:
+  dw  FireEyeGrey1_Char
+  dw  FireEyeGrey2_Char
+  dw  FireEyeGrey3_Char
+  dw  FireEyeGrey4_Char
+  dw  FireEyeGrey5_Char
+  dw  FireEyeGrey6_Char
+  
 Landstrider:
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
@@ -506,16 +537,8 @@ Landstrider:
   jp    z,LandstriderGrowingTall
 
   LandstriderBigWalking:
-  ld    (ix+enemies_and_objects.life),1
   ld    (ix+enemies_and_objects.v5),0       ;v5=unable to hit timer
-  ld    a,(framecounter)
-  and   07
-  cp    1
-  jr    z,.skipThisFrame
-  ld    a,(framecounter)
-  rrca
-  call  c,MoveSpriteHorizontally            ;move once every 2 frames  
-  .skipThisFrame:
+  call  .walking
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
   call  LandstriderWalking.CheckFloor       ;checks for floor. if not found invert direction
   
@@ -530,9 +553,29 @@ Landstrider:
   ld    c,2 * 04                            ;04 animation frame addresses
   jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
+  .walking:
+  ld    a,(ix+enemies_and_objects.hit?)     ;check if hit
+  or    a
+  jr    z,.EndCheckHit
+  ld    a,(framecounter)
+  and   07
+  jp    z,MoveSpriteHorizontally            ;move once every 8 frames when hit
+  ret
+  
+  .EndCheckHit:
+  ld    a,(framecounter)
+  and   07
+  cp    1
+  ret   z
+  ld    a,(framecounter)
+  rrca
+  ret   nc
+  jp    MoveSpriteHorizontally            ;move once every 2 frames  
+
+
   LandstriderGrowingTall:                   ;we now switch to 4 sprite mode, Landstrider is now a young adult, ready to take on the world
   call  LandstriderDucked.ShortWhiteBlinkWhenHit
-  ld    (ix+enemies_and_objects.nrsprites),48-(04*6)
+  ld    (ix+enemies_and_objects.nrsprites),72-(04*6)
   ld    (ix+enemies_and_objects.nrspritesSimple),4
   ld    (ix+enemies_and_objects.nrspritesTimes16),4*16  
   call  .MoveUpWhenGrowing
@@ -553,6 +596,7 @@ Landstrider:
   ret   nz
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ld    (ix+enemies_and_objects.v2),6       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking)  
+  ld    (ix+enemies_and_objects.life),2
   ld    a,(ix+enemies_and_objects.y)
   add   a,4
   ld    (ix+enemies_and_objects.y),a
@@ -577,7 +621,7 @@ Landstrider:
   LandstriderGrowing:
   call  LandstriderDucked.ShortWhiteBlinkWhenHit
   call  LandstriderUnDucking
-  ld    (ix+enemies_and_objects.life),20
+  ld    (ix+enemies_and_objects.life),10
   ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking)  
   or    a
   ret   nz
@@ -642,7 +686,7 @@ Landstrider:
   
   .DistanceCheck:
   ld    b,40                                ;b-> x distance
-  ld    c,20                                ;c-> y distance
+  ld    c,60                                ;c-> y distance
   call  distancecheckSlightlyMoreToRight    ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   c
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
@@ -652,7 +696,7 @@ Landstrider:
 
   LandstriderDucking:
   call  LandstriderDucked.ShortWhiteBlinkWhenHit  
-  ld    (ix+enemies_and_objects.life),20
+  ld    (ix+enemies_and_objects.life),11
   
   .Animate:
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
@@ -694,13 +738,15 @@ Landstrider:
 
   .DistanceCheck:
   ld    b,40                                ;b-> x distance
-  ld    c,20                                ;c-> y distance
+  ld    c,60                                ;c-> y distance
   call  distancecheckSlightlyMoreToRight    ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   nc
+
   ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
   or    a
   ret   z
-  
+  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
+  ret   nc
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking) ;out hl -> sprite character data to out to Vram
   ret  

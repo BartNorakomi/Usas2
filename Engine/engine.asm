@@ -173,16 +173,16 @@ Handle_HardWareSprite_Enemies_And_objects:
 
   ;out character data
   exx                                           ;recall hl. hl now points to character data
-  ld    a,(ix+enemies_and_objects.nrsprites)    ;amount of sprites (1 sprite=42    2 sprites=36    3 sprites=30    4 sprites=24    5 sprites=18     6 sprites=12     7 sprites=6     8 sprites=0     (48 - (amount of sprites*6)))  
+  ld    a,(ix+enemies_and_objects.nrsprites)    ;amount of sprites (1 spr=64, 2 spr=60, 3 spr=54, 4 spr=48, 5 spr=42, 6 spr=36, 7 spr=30, 8 spr=24, 9 spr=18, 10 spr=12, 11 spr=6, 12 spr=0   (72 - (amount of sprites*6)))  
   ld    (RightSideOfMap.SelfModifyinJRColorData),a  
   ld    (.SelfModifyinJRCharacterData),a
 	ld		c,$98
 		
   .SelfModifyinJRCharacterData:  equ $+1
   jr    .Charloop
-  call  outix256 | jp .endOutChar | call  outix224 | jp .endOutChar | call  outix192 | jp .endOutChar | call  outix160 | jp .endOutChar | call  outix128 | jp .endOutChar | call  outix96 | jp .endOutChar | call  outix64 | jp .endOutChar
+  call  outix384 | jp .endOutChar |call  outix352 | jp .endOutChar |call  outix320 | jp .endOutChar |call  outix288 | jp .endOutChar |call  outix256 | jp .endOutChar | call  outix224 | jp .endOutChar | call  outix192 | jp .endOutChar | call  outix160 | jp .endOutChar | call  outix128 | jp .endOutChar | call  outix96 | jp .endOutChar | call  outix64 | jp .endOutChar
   .CharLoop:  
-  call  outix32 | jp .endOutChar
+  call  outix32 ; | jp .endOutChar
   .endOutChar:
   ei
   exx                                           ;store hl. hl now points to color data
@@ -208,9 +208,9 @@ RightSideOfMap:
 
   .SelfModifyinJRColorData:  equ $+1
   jr    .ColLoop
-  call  outix128 | jp .EndOutColor | call  outix112 | jp .EndOutColor | call  outix96 | jp .EndOutColor | call  outix80 | jp .EndOutColor | call  outix64 | jp .EndOutColor | call  outix48 | jp .EndOutColor | call  outix32 | jp .EndOutColor
+  call  outix192 | jp .EndOutColor |call  outix176 | jp .EndOutColor |call  outix160 | jp .EndOutColor |call  outix144 | jp .EndOutColor |call  outix128 | jp .EndOutColor | call  outix112 | jp .EndOutColor | call  outix96 | jp .EndOutColor | call  outix80 | jp .EndOutColor | call  outix64 | jp .EndOutColor | call  outix48 | jp .EndOutColor | call  outix32 | jp .EndOutColor
   .ColLoop:  
-  call  outix16 | jp .EndOutColor
+  call  outix16 ; | jp .EndOutColor
   .EndOutColor:
   ei
 
@@ -6142,9 +6142,18 @@ PutSpatToVram:
 
 
 
-
-
-	
+outix384:
+  call  outix256
+  jp    outix128
+outix352:
+  call  outix256
+  jp    outix96
+outix320:
+  call  outix256
+  jp    outix64
+outix288:
+  call  outix256
+  jp    outix32
 outix256:	
 	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	outi	
 outix250:	
