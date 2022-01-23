@@ -435,6 +435,19 @@ CleanOb3:
   db    000,000,000,000   ;nx,--,ny,--
   db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
+CleanOb4:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+
+CleanOb5:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+
+
 PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
 PuzzleSwitchTable2: db  0,1,2,3,1,3,0, 0,0,0
 PuzzleSwitchTable3: db  0,1,2,3 ,0,0,0,0,0,0
@@ -2957,7 +2970,7 @@ LSitPunch:
 ;  ld    a,12
 ;  ld    (HitBoxNY),a
   ld    a,(ClesY)
-  add   a,17 - 8
+  add   a,17 - 6
   ld    (HitBoxSY),a
   ret
   
@@ -3035,7 +3048,7 @@ RSitPunch:
 ;  ld    a,12
 ;  ld    (HitBoxNY),a
   ld    a,(ClesY)
-  add   a,17 - 8
+  add   a,17 - 6
   ld    (HitBoxSY),a    
   ret
 
@@ -3276,7 +3289,7 @@ RRolling:
 ;  ld    a,12
 ;  ld    (HitBoxNY),a
   ld    a,(ClesY)
-  add   a,17 - 8
+  add   a,17 - 7
   ld    (HitBoxSY),a
   ret  
 
@@ -3409,7 +3422,7 @@ LRolling:
 ;  ld    a,12
 ;  ld    (HitBoxNY),a
   ld    a,(ClesY)
-  add   a,17 - 8
+  add   a,17 - 7
   ld    (HitBoxSY),a
   ret  
       

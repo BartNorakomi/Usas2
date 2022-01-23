@@ -7,6 +7,7 @@
 ;PushingStone                       
 ;PushingPuzzleSwitch                
 ;PushingPuzzlOverview              
+;ZombieSpawnPoint
 ;RetardedZombie   
 ;GreenSpider                
 ;GreySpider
@@ -14,6 +15,8 @@
 ;Wasp
 ;Landstrider
 ;FireEyeGrey
+;FireEyeGreen
+;Slime
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -38,9 +41,9 @@ MoveSpriteHorizontallyAndVertically:        ;Add v3 to y. Add v4 to x (16 bit)
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
-	ld		a,(Controls)
-	bit		6,a                                 ;F1 pressed ?
-	ret   nz
+;	ld		a,(Controls)
+;	bit		6,a                                 ;F1 pressed ?
+;	ret   nz
 	
   ld    l,(ix+enemies_and_objects.x)  
   ld    h,(ix+enemies_and_objects.x+1)      ;x
@@ -163,11 +166,17 @@ checkFacingPlayer:                          ;out: c = object/enemy is facing pla
   scf
   ret
   
-CollisionEnemyPlayer:
+CollisionObjectPlayer:  
+  ld    hl,(Clesx)                          ;hl = x player
+  ld    bc,20-2-16                          ;reduce this value to reduce the hitbox size (on the left side)
+  jp    CollisionEnemyPlayer.ObjectEntry
+  
+  CollisionEnemyPlayer:
 ;check if player collides with left side of enemy/object
   ld    hl,(Clesx)                          ;hl = x player
-
   ld    bc,20-2                             ;reduce this value to reduce the hitbox size (on the left side)
+
+  .ObjectEntry:
   add   hl,bc
 
   ld    e,(ix+enemies_and_objects.x)  
@@ -213,6 +222,16 @@ ld a,e
   or    a
   jp    z,Set_L_BeingHit
   jp    Set_R_BeingHit
+
+CheckPlayerPunchesEnemyOnlySitting:
+  ld    a,(HitBoxSY)                        ;a = y hitbox
+  push  af
+  sub   a,9
+  ld    (HitBoxSY),a                        ;a = y hitbox
+  call  CheckPlayerPunchesEnemy
+  pop   af
+  ld    (HitBoxSY),a                        ;a = y hitbox
+  ret
 
 BlinkDurationWhenHit: equ 31  
 CheckPlayerPunchesEnemy:
@@ -472,11 +491,256 @@ Template:
   ld    hl,LeftLandstrider1_Char
   ret
 
+Slime:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Wait timer
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemyOnlySitting  ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,SlimeSpriteblock                  ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=moving, 1=static on floor, 3=duck)
+  or    a
+  jp    z,SlimeMoving
+  dec   a
+  jp    z,SlimeWaiting
+  dec   a
+  jp    z,SlimeDucking
+
+  SlimeUnDucking:
+  .Animate:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    hl,SlimeRightUnDuckAnimation
+  jp    p,.GoAnimate
+  ld    hl,SlimeLeftUnDuckAnimation
+  .GoAnimate:
+  ld    b,03                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;07 animation frame addresses
+  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 03
+  ret   nz
+
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=moving, 1=static on floor, 2=duck, 3=unduck)
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ret
+
+  SlimeDucking:
+  .Animate:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    hl,SlimeRightDuckAnimation
+  jp    p,.GoAnimate
+  ld    hl,SlimeLeftDuckAnimation
+  .GoAnimate:
+  ld    b,03                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;07 animation frame addresses
+  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 03
+  ret   nz
+  ld    (ix+enemies_and_objects.v1),2 * 02  ;v1=Animation Counter
+  ld    a,(EnableHitbox?)
+  or    a
+  ret   nz                                  ;check if player is still attacking
+  ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=moving, 1=static on floor, 2=duck, 3=unduck)
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ret
+
+  SlimeWaiting:
+  call  SlimeMoving.DistanceToPlayerCheck   ;check if player is near and attacks, DUCK !
+
+  call  .Animate  
+  dec   (ix+enemies_and_objects.v5)         ;v5=Wait timer
+  ret   nz
+  
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=moving, 1=static on floor, 2=duck, 3=unduck)
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ret
+
+  .Animate:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    hl,SlimeLeftWalkAnimation
+  jp    p,.GoAnimate
+  ld    hl,SlimeRightWalkAnimation
+  .GoAnimate:
+  ld    b,15                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 03                            ;07 animation frame addresses
+  jp     AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  SlimeMoving:
+  call  .DistanceToPlayerCheck              ;check if player is near and attacks, DUCK !
+  ld    a,(framecounter)
+  and   3
+  call  z,MoveSpriteHorizontally
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  push  af                                  ;store movement direction
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  GreenSpiderWalkSlow.CheckFloor      ;checks for floor. if not found invert direction
+  ld    b,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  pop   af                                  ;check if slime changed direction. If so change to Phase 1
+  cp    b
+  jr    z,.Animate
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=moving, 1=static on floor, 2=duck, 3=unduck)
+  ld    (ix+enemies_and_objects.v5),50      ;v5=Wait timer
+  jp    SlimeWaiting.Animate
+
+  .DistanceToPlayerCheck:
+  ld    b,26                                ;b-> x distance
+  ld    c,08                                ;c-> y distance
+  call  distancecheckSlightlyMoreToRight    ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   nc
+
+  ld    a,(EnableHitbox?)
+  or    a
+  ret   z                                   ;check if player is attacking
+  
+  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=moving, 1=static on floor, 2=duck, 3=unduck)
+  ret
+
+  .Animate:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    hl,SlimeRightWalkAnimation
+  jp    p,.GoAnimate
+  ld    hl,SlimeLeftWalkAnimation
+  .GoAnimate:
+  ld    b,15                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 03                            ;07 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+SlimeLeftUnDuckAnimation:
+  dw  LeftSlime1_Char
+  dw  LeftSlime2_Char
+  dw  LeftSlime3_Char
+  dw  LeftSlime3_Char
+
+SlimeRightUnDuckAnimation:
+  dw  RightSlime1_Char
+  dw  RightSlime2_Char
+  dw  RightSlime3_Char
+  dw  RightSlime3_Char
+
+SlimeLeftDuckAnimation:
+  dw  LeftSlime3_Char
+  dw  LeftSlime2_Char
+  dw  LeftSlime1_Char
+  dw  LeftSlime1_Char
+
+SlimeRightDuckAnimation:
+  dw  RightSlime3_Char
+  dw  RightSlime2_Char
+  dw  RightSlime1_Char
+  dw  RightSlime1_Char
+
+SlimeLeftWalkAnimation:
+  dw  LeftSlime4_Char
+  dw  LeftSlime5_Char
+  dw  LeftSlime6_Char
+   
+SlimeRightWalkAnimation:
+  dw  RightSlime4_Char
+  dw  RightSlime5_Char
+  dw  RightSlime6_Char
+
+SxFlame1: equ 128
+SxFlame2: equ 128+6
+SxFlame3: equ 128+6+6
+FireEyeFireBullet:
+;v1 = sx
+;v2=Phase (0=moving, 1=static on floor, 3=fading out)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Static Timer
+  call  .Animate
+  ld    (ix+enemies_and_objects.v1),b       ;sx
+  call  .HandlePhase                        ;(0=moving, 1=static on floor, 3=fading out)
+  ret
+
+  .Animate:
+  ld    a,(framecounter)
+  and   15
+  sub   4
+  ld    b,SxFlame1
+  ret   c
+  sub   4
+  ld    b,SxFlame3
+  ret   c
+  sub   4
+  ld    b,SxFlame2
+  ret   c
+  ld    b,SxFlame3
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)
+  or    a
+  jp    z,FireEyeFireBulletMoving
+  dec   a
+  jp    z,FireEyeFireBulletStatic
+
+  FireEyeFireBulletFadingOut:
+  ld    a,(framecounter)
+  and   3
+  jp    z,VramObjectsTransparantCopies
+  call  VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+  dec   (ix+enemies_and_objects.v5)         ;v5=Static Timer
+  ret   nz
+  ld    (ix+enemies_and_objects.alive?),0  
+  ret
+  
+  FireEyeFireBulletStatic:
+  call  CollisionObjectPlayer               ;Check if player is hit by Vram object
+  call  VramObjectsTransparantCopies        ;put object in Vram/screen  
+  dec   (ix+enemies_and_objects.v5)         ;v5=Static Timer
+  ret   nz
+  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)  
+  ld    (ix+enemies_and_objects.v5),040     ;v5=Static Timer
+  ret
+
+  FireEyeFireBulletMoving:
+  call  CollisionObjectPlayer               ;Check if player is hit by Vram object
+  call  VramObjectsTransparantCopies        ;put object in Vram/screen
+  call  .Gravity
+  call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
+
+  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  ret   nz                                  ;return if background tile is NOT found
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)  
+  ld    (ix+enemies_and_objects.v5),050     ;v5=Static Timer
+  ret
+  
+  .Gravity:
+  ld    a,(framecounter)
+  and   7
+  ret   nz
+  
+  ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
+  inc   a
+  cp    5
+  ret   z
+  ld    (ix+enemies_and_objects.v3),a       ;v3=Vertical Movement
+  ret
+
+FireEyeGreen:
 FireEyeGrey:
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
+;v5=v3v4tablerotator
   call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
   call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
@@ -487,12 +751,73 @@ FireEyeGrey:
   ret
   
   .HandlePhase:
+  call  .CheckShootFire                     ;every x frames fire will be shot from eye
 
   .Animate:
   ld    hl,FireEyeAnimation
   ld    b,03                                ;animate every x frames (based on framecounter)
   ld    c,2 * 06                            ;06 animation frame addresses
   jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram  ret
+
+  .CheckShootFire:
+  ld    a,(framecounter)
+  and   63
+  ret   nz
+  
+  push  ix
+  call  .SearchEmptySlot
+  pop   ix
+  ret
+
+  .SearchEmptySlot:
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=v3v4tablerotator
+  inc   a
+  and   15
+  ld    (ix+enemies_and_objects.v5),a       ;v5=v3v4tablerotator
+  ld    b,(ix+enemies_and_objects.x)        ;x
+  ld    c,(ix+enemies_and_objects.y)        ;y
+  
+  ld    de,lenghtenemytable
+  
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  ret   nz
+  
+  .EmptySlotFound:
+  ld    (ix+enemies_and_objects.alive?),1 
+  ld    (ix+enemies_and_objects.y),c ;8*18
+  dec   b | dec   b | dec   b
+  ld    (ix+enemies_and_objects.x),b ;8*21
+  ld    (ix+enemies_and_objects.x+1),0
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)
+
+  ;set v3 + v4 at random
+  add   a,a                                 ;v5=v3v4tablerotator a=0,2,4,6,8,10,12,14 ,16,18,20,22,24,26,28,30
+  ld    hl,.v3v4Table
+  ld    d,0
+  ld    e,a
+  add   hl,de
+  ld    a,(hl)
+  ld    (ix+enemies_and_objects.v3),a       ;v3=Vertical Movement
+  inc   hl
+  ld    a,(hl)
+  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
+  ret
+
+.v3v4Table: ;v3, v4
+  db    -1,+1, -2,-1, -5,+1, -4,-1 
+  db    -1,+1, -1,-1, -4,+1, -3,-1 
+  db    -2,+1, -1,-1, -5,+1, -4,-1 
+  db    -3,+1, -2,-1, -5,+1, -5,-1 
 
 FireEyeAnimation:
   dw  FireEyeGrey1_Char
@@ -696,7 +1021,7 @@ Landstrider:
 
   LandstriderDucking:
   call  LandstriderDucked.ShortWhiteBlinkWhenHit  
-  ld    (ix+enemies_and_objects.life),11
+  ld    (ix+enemies_and_objects.life),15
   
   .Animate:
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
@@ -2701,6 +3026,12 @@ VramObjects:
 ;  ld    hl,CopyObject
 ;  call  docopy
 ;  call  BackdropBlack
+  ret
+
+VramObjectsTransparantCopiesRemove:
+  ld    l,(ix+enemies_and_objects.ObjectNumber)
+  ld    h,(ix+enemies_and_objects.ObjectNumber+1)
+  call  docopy
   ret
 
 VramObjectsTransparantCopies:
