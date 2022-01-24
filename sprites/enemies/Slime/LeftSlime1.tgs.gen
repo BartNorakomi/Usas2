@@ -9,7 +9,7 @@
   db 0
   db 0
   db 0
-  db 31
+  db 15
   db 63
   db 65
   db 190
@@ -25,8 +25,8 @@
   db 0
   db 0
   db 0
-  db 240
-  db 252
+  db 224
+  db 248
   db 128
   db 127
   db 255
@@ -43,7 +43,7 @@
   db 0
   db 0
   db 0
-  db 62
+  db 190
   db 65
   db 162
   db 93
