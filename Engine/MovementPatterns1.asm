@@ -17,6 +17,7 @@
 ;FireEyeGrey
 ;FireEyeGreen
 ;Slime
+;Beetle
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -29,7 +30,7 @@ CheckOutOfMap:
   ;out of map
   RemoveSprite:
   ld    (ix+enemies_and_objects.alive?),0  
-  ld    (ix+enemies_and_objects.y),217      ;y  
+  ld    (ix+enemies_and_objects.y),217+2    ;y  
   ret
 
 MoveSpriteHorizontallyAndVertically:        ;Add v3 to y. Add v4 to x (16 bit)
@@ -482,15 +483,269 @@ Template:
   exx                                       ;store hl. hl now points to color data
   call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
   call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-	ld		a,LandstriderSpriteblock            ;set block at $a000, page 2 - block containing sprite data
+	ld		a,BeetleSpriteblock                 ;set block at $a000, page 2 - block containing sprite data
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
   ret
   
   .HandlePhase:
-  ld    hl,LeftLandstrider1_Char
+  ld    hl,RightBeetleWalk1_Char
   ret
 
+
+
+
+
+
+RemoveWhenOutOfScreen:
+  or    a                                   ;reset carry
+  ld    e,(ix+enemies_and_objects.x)
+  ld    d,(ix+enemies_and_objects.x+1)
+  ld    hl,300
+  sbc   hl,de
+  jr    c,.TurnLeft
+
+  ld    hl,14
+  sbc   hl,de
+  ret   c
+
+  .TurnRight:
+  ld    (ix+enemies_and_objects.v4),+1       ;v4=Horizontal Movement
+  ret
+  
+  .TurnLeft:
+  ld    (ix+enemies_and_objects.v4),-1       ;v4=Horizontal Movement
+  ret
+  
+TurnWhenOutOfScreen:
+  or    a                                   ;reset carry
+  ld    e,(ix+enemies_and_objects.x)
+  ld    d,(ix+enemies_and_objects.x+1)
+  ld    hl,300
+  sbc   hl,de
+  jr    c,.TurnLeft
+
+  ld    hl,14
+  sbc   hl,de
+  ret   c
+
+  .TurnRight:
+  ld    (ix+enemies_and_objects.v4),+1       ;v4=Horizontal Movement
+  ret
+  
+  .TurnLeft:
+  ld    (ix+enemies_and_objects.v4),-1       ;v4=Horizontal Movement
+  ret
+
+
+
+
+Beetle:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=repeating steps
+;v6=pointer to movement table
+;v7=movement table. 0=Table 1 (Circling ClockWise) 1=Table 1 (Circling CounterClockwise)      
+;v8=face left (-0) or face right (1)
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,BeetleSpriteblock                 ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking, 1=flying, )
+  or    a
+  jp    z,BeetleWalking
+  dec   a
+  jp    z,BeetleFlying
+  dec   a
+
+  BeetleFlying:
+  call  .Movement
+  call  CheckOutOfMap
+  ld    a,(ix+enemies_and_objects.v3)       ;v3=y movement
+  or    a
+  jr    z,.EndFloorCheck                   ;don't perform floor check when y movement is negative
+  jp    m,.EndFloorCheck                   ;don't perform floor check when y movement is negative
+  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  call  z,.FloorFoundGoWalk
+  .EndFloorCheck:
+    
+  .Animate:
+  bit   0,(ix+enemies_and_objects.v8)       ;face left (0) or face right (1)
+  ld    hl,BeetleRightFlyAnimation
+  jr    z,.GoAnimate
+  ld    hl,BeetleLeftFlyAnimation
+  .GoAnimate:
+  ld    b,01                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 02                            ;02 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+  ret
+
+  .FloorFoundGoWalk:
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking, 1=flying, )
+  ld    (ix+enemies_and_objects.v3),0       ;v3=Vertical Movement
+  ld    (ix+enemies_and_objects.v5),0       ;v5=repeating steps
+  ld    (ix+enemies_and_objects.v6),0       ;v6=pointer to movement table
+
+  bit   0,(ix+enemies_and_objects.v8)       ;face left (0) or face right (1)
+  ld    (ix+enemies_and_objects.v4),+1      ;v4=Horizontal Movement
+  ret   z
+  ld    (ix+enemies_and_objects.v4),-1      ;v4=Horizontal Movement
+  ret    
+
+  .Movement:
+  ld    a,(ix+enemies_and_objects.hit?)     ;check if enemy is hit ? If so, out white sprite
+  or    a
+  jr    z,.EndCheckHit
+  ld    a,(framecounter)
+  and   03
+  ret   nz
+  .EndCheckHit:
+  
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=movement table. 0=Table 1 (Circling CounterClockwise) 1=Table 1 (Circling ClockWise)      
+  or    a
+  jr    z,.Movement0
+  dec   a
+  jr    z,.Movement1
+  dec   a
+  jr    z,.Movement2
+
+  .Movement3:
+  ld    de,BeetleMovementTable2             ;Flying away from player, then diving towards
+  call  MoveObjectWithStepTableNewMirrorX   ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+  ret
+  
+  .Movement2:
+  ld    de,BeetleMovementTable2             ;Flying away from player, then diving towards
+  call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+  ret
+  
+  .Movement1:
+  call  WaspFlyingInPlace.faceplayerSkipRandomness
+  ld    de,BeetleMovementTable1             ;Circling 1 or 2 times then stop
+  call  MoveObjectWithStepTableNewMirrorX   ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+  ret
+  
+  .Movement0:
+  call  WaspFlyingInPlace.faceplayerSkipRandomness
+  ld    de,BeetleMovementTable1             ;Circling 1 or 2 times then stop
+  call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+  ret
+
+  BeetleWalking:
+  ld    a,(ix+enemies_and_objects.hit?)     ;check if enemy is hit ? If so, out white sprite
+  or    a
+  jr    z,.EndCheckHit
+  ld    a,(framecounter)
+  and   03
+  call  z,MoveSpriteHorizontally
+  jp    .endMove
+  .EndCheckHit:
+
+  ld    a,(framecounter)
+  rrca
+  call  c,MoveSpriteHorizontally
+  .endMove:
+  call  TurnWhenOutOfScreen
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  GreenSpiderWalkSlow.CheckFloor      ;checks for floor. if not found invert direction
+  call  .DistanceCheck
+
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,BeetleRightWalkAnimation
+  jp    z,.GoAnimate
+  ld    hl,BeetleLeftWalkAnimation
+  .GoAnimate:
+  ld    b,07                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;04 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  .DistanceCheck:
+  ld    b,70                                ;b-> x distance
+  ld    c,60                                ;c-> y distance
+  call  distancecheck ;SlightlyMoreToRight    ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   nc
+  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
+  ret   nc  
+  ld    a,r
+  and   63
+  ret   nz
+
+  call  WaspFlyingInPlace.faceplayerSkipRandomness
+
+  ld    a,(framecounter)
+  rrca
+  jr    c,.SetAttack1
+
+  .SetAttack0:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    a,2
+  jr    z,.GoSetAttack0
+  inc   a
+  .GoSetAttack0:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=movement table. 0=Table 1 (Circling ClockWise) 1=Table 1 (Circling CounterClockwise)      
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=walking, 1=flying, )
+  ret  
+
+  .SetAttack1:
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  sub   a,3
+  ld    (ix+enemies_and_objects.y),a        ;y
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    a,0
+  jr    z,.GoSetAttack1
+  inc   a
+  .GoSetAttack1:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=movement table. 0=Table 1 (Circling ClockWise) 1=Table 1 (Circling CounterClockwise)      
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=walking, 1=flying, )
+  ret  
+
+BeetleMovementTable2:  ;repeating steps(128 = end table/repeat), move y, move x  (Flying away from player, then diving towards)
+  db  03,-1,-0,  03,-1,-1,  03,-2,-0,  03,-2,-1,  03,-2,-0
+  db  03,-3,-1,  03,-3,-0,  03,-3,-1,  03,-2,-0,  03,-1,-1,  100,+0,-0
+
+  db  03,+1,-1,  03,+1,-2,  03,+2,-3,  03,+2,-2,  03,+3,-1
+  db  03,+3,+0,  03,+2,+1,  06,+1,+2,  40,+1,+4
+  db  128
+
+BeetleMovementTable1:  ;repeating steps(128 = end table/repeat), move y, move x  (Circling 1 or 2 times then stop)
+  db  03,+0,-2,  03,-1,-2,  03,-1,-1,  03,-2,-1,  03,-2,-0
+  db  03,-2,-0,  03,-2,+1,  03,-1,+1,  03,-1,+2,  03,-0,+2
+  db  03,+0,+2,  03,+1,+2,  03,+1,+1,  03,+2,+1,  03,+2,+0
+  db  03,+2,+0,  03,+2,-1,  03,+1,-1,  03,+1,-2,  03,+0,-2,  01,+1,-2
+  db  128
+
+BeetleLeftFlyAnimation:
+  dw  LeftBeetleFly1_Char
+  dw  LeftBeetleFly2_Char
+
+BeetleRightFlyAnimation:
+  dw  RightBeetleFly1_Char
+  dw  RightBeetleFly2_Char
+
+BeetleLeftWalkAnimation:
+  dw  LeftBeetleWalk1_Char
+  dw  LeftBeetleWalk2_Char
+  dw  LeftBeetleWalk3_Char
+  dw  LeftBeetleWalk4_Char
+
+BeetleRightWalkAnimation:
+  dw  RightBeetleWalk1_Char
+  dw  RightBeetleWalk2_Char
+  dw  RightBeetleWalk3_Char
+  dw  RightBeetleWalk4_Char
+  
 Slime:
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
@@ -1202,6 +1457,7 @@ Wasp:
   ld    a,r
   and   31
   ret   nz
+  .faceplayerSkipRandomness:
   ld    hl,(Clesx)                          ;hl = x player  
   ld    e,(ix+enemies_and_objects.x)  
   ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
@@ -1211,6 +1467,60 @@ Wasp:
   ld    (ix+enemies_and_objects.v8),+1      ;face left (0) or face right (1)
   ret
 
+MoveObjectWithStepTableNewMirrorX:
+  dec   (ix+enemies_and_objects.v5)         ;repeating steps
+  jp    p,.moveObject
+  
+  .NextStep:
+  ld    a,(ix+enemies_and_objects.v6)         ;pointer to movement table
+  ld    h,0
+  ld    l,a
+  add   hl,de
+  add   a,3
+  ld    (ix+enemies_and_objects.v6),a         ;pointer to movement table
+  
+  ld    a,(hl)                                ;repeating steps(128 = end table/repeat)
+  cp    128
+  jr    nz,.EndCheckEndTable
+  ld    (ix+enemies_and_objects.v6),+3        ;pointer to movement table
+  ex    de,hl
+  ld    a,(hl)
+
+  .EndCheckEndTable:
+  ld    (ix+enemies_and_objects.v5),a         ;repeating steps
+  inc   hl
+  ld    a,(hl)                                ;y movement
+  ld    (ix+enemies_and_objects.v3),a         ;v3=y movement
+  inc   hl
+  ld    a,(hl)                                ;x movement
+  neg
+  ld    (ix+enemies_and_objects.v4),a         ;v4=x movement
+
+  .moveObject:
+  ld    a,(ix+enemies_and_objects.y)          ;y object
+  add   a,(ix+enemies_and_objects.v3)         ;add y movement to y
+  ld    (ix+enemies_and_objects.y),a          ;y object
+
+  ;8 bit
+;  ld    a,(ix+enemies_and_objects.x)          ;x object
+;  add   a,(ix+enemies_and_objects.v4)         ;add x movement to x
+;  ld    (ix+enemies_and_objects.x),a          ;x object
+
+  ;16 bit
+  ld    a,(ix+enemies_and_objects.v4)         ;x movement
+  or    a
+  ld    d,0
+  jp    p,.positive
+  dec   d
+  .positive:
+  ld    e,a
+  ld    l,(ix+enemies_and_objects.x)          ;x object
+  ld    h,(ix+enemies_and_objects.x+1)        ;x object
+  add   hl,de
+  ld    (ix+enemies_and_objects.x),l          ;x object
+  ld    (ix+enemies_and_objects.x+1),h        ;x object
+  ret  
+  
 MoveObjectWithStepTableNew:                 ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
   dec   (ix+enemies_and_objects.v5)         ;repeating steps
   jp    p,.moveObject
@@ -1244,10 +1554,25 @@ MoveObjectWithStepTableNew:                 ;v3=y movement, v4=x movement, v5=re
   add   a,(ix+enemies_and_objects.v3)         ;add y movement to y
   ld    (ix+enemies_and_objects.y),a          ;y object
 
-  ld    a,(ix+enemies_and_objects.x)          ;x object
-  add   a,(ix+enemies_and_objects.v4)         ;add x movement to x
-  ld    (ix+enemies_and_objects.x),a          ;x object
-  ret
+  ;8 bit
+;  ld    a,(ix+enemies_and_objects.x)          ;x object
+;  add   a,(ix+enemies_and_objects.v4)         ;add x movement to x
+;  ld    (ix+enemies_and_objects.x),a          ;x object
+
+  ;16 bit
+  ld    a,(ix+enemies_and_objects.v4)         ;x movement
+  or    a
+  ld    d,0
+  jp    p,.positive
+  dec   d
+  .positive:
+  ld    e,a
+  ld    l,(ix+enemies_and_objects.x)          ;x object
+  ld    h,(ix+enemies_and_objects.x+1)        ;x object
+  add   hl,de
+  ld    (ix+enemies_and_objects.x),l          ;x object
+  ld    (ix+enemies_and_objects.x+1),h        ;x object
+  ret  
 
 WaspMovementTable:  ;repeating steps(128 = end table/repeat), move y, move x
   db  03,+0,+2,  03,+1,+2,  03,+1,+1,  03,+2,+1,  03,+2,+0
@@ -1893,7 +2218,7 @@ MoveObjectWithStepTable:
   or    a
   ld    d,0
   jp    p,.positive
-  ld    d,255  
+  dec   d  
   .positive:
   ld    e,a
 
