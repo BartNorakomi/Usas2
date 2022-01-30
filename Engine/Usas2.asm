@@ -631,12 +631,6 @@ MapB01_001:
 .object2: db 2,        0|dw Sf2Hugeobject2      |db 8*12|dw 8*12|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
 .object3: db 2,        0|dw Sf2Hugeobject3      |db 8*03|dw 8*13|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
 
-
-
-
-
-
-
 MapB01_002:
   incbin "..\maps\b01-002.map.pck"  | .amountofobjects: db  4
 ;platform (moving horizontally)
@@ -648,25 +642,39 @@ MapB01_002:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object4:db -1,        1|dw Beetle           |db 8*14+10|dw 8*19|db 22,28|dw 12*16,spat+(12*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 003| ds fill
  
- 
- 
- 
- 
- 
- 
- 
- 
-MapB01_003:
-  incbin "..\maps\b01-003.map.pck"  | .amountofobjects: db  3
-;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-;.object1:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
 
+
+
+
+
+MapB01_003:
+  incbin "..\maps\b01-003.map.pck"  | .amountofobjects: db  7
+;Demontje Bullet
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1: db 0,        0|dw DemontjeBullet      |db 8*10|dw 8*15|db 11,11|dw CleanOb1,0 db 0,0,0,                     +146,+00,-01,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
+;Demontje v7=Green (0) / Red(1) / Brown(2) / Grey(3)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object2:db -1,        1|dw Demontje            |db 8*08|dw 8*31|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object3:db -1,        1|dw Demontje            |db 8*11|dw 8*34|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-02,+00,+00,+01,+00,+00, 0|db 001| ds fill
+.object4:db -1,        1|dw Demontje            |db 8*07|dw 8*10|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 001| ds fill
+.object5:db -1,        1|dw Demontje            |db 8*10|dw 8*03|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+02,+00,+00,+03,+00,+00, 0|db 001| ds fill
 ;Landstrider
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw Landstrider         |db 8*12|dw 8*12|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object2:db -1,        1|dw Landstrider         |db 8*14|dw 8*25|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object3:db -1,        1|dw Landstrider         |db 8*24|dw 8*29|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object6:db -1,        1|dw Landstrider         |db 8*14|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object7:db -1,        1|dw Landstrider         |db 8*24|dw 8*29|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 MapB01_004:
   incbin "..\maps\b01-004.map.pck"  | .amountofobjects: db  3
@@ -717,7 +725,7 @@ MapB01_007:
 .object5: db 0,        0|dw FireEyeFireBullet   |db 8*18|dw 8*21|db 13,06|dw CleanOb4,0 db 0,0,0,                     +128,+00,-03,+01,+00,+00,+00,+00,+00, 0|db 000| ds fill
 
 MapB01_008:
-  incbin "..\maps\b01-008.map.pck"  | .amountofobjects: db  2
+  incbin "..\maps\b01-008.map.pck"  | .amountofobjects: db  5
 ;platform (moving horizontally)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
 .object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
@@ -725,15 +733,31 @@ MapB01_008:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
 
+;Boring Eye Green;v6=Green (0) / Red (1)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object3:db -1,        1|dw BoringEye           |db 8*18|dw 8*09|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;Boring Eye Red;v6=Green (0) / Red (1)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object4:db -1,        1|dw BoringEye           |db 8*18|dw 8*31|db 32,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
+.object5:db -1,        1|dw BoringEye           |db 8*04|dw 8*22|db 32,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
+
 MapB01_009:
-  incbin "..\maps\b01-009.map.pck"  | .amountofobjects: db  3
+  incbin "..\maps\b01-009.map.pck"  | .amountofobjects: db  6
 ;platform (moving horizontally)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
-.object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+.object1: db 0,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+.object2: db 0,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
 ;Spider Green
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3:db -1,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object3:db -0,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+
+;Bat Spawner
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object4:db +1,        1|dw BatSpawner          |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+00,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 000| ds fill
+;Bat
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object5:db -0,        1|dw Bat                 |db 8*10|dw 8*19|db 26,22|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object6:db -0,        1|dw Bat                 |db 8*06|dw 8*19|db 26,22|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
 MapB01_010:
   incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  6
@@ -758,8 +782,8 @@ MapB01_011:
 .object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
 ;Grinder
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw Grinder             |db 8*11|dw 8*30|db 32,32|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
-.object3:db -1,        1|dw Grinder             |db 8*19|dw 8*16|db 32,32|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
+.object2:db -1,        1|dw Treeman             |db 8*11|dw 8*30|db 32,26|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
+.object3:db -1,        1|dw Grinder             |db 8*19|dw 8*16|db 32,32|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
 
 MapB01_012:
   incbin "..\maps\b01-012.map.pck"  | .amountofobjects: db  2
@@ -1334,6 +1358,8 @@ dephase
 ; block $43 + $44
 ;
 GreenSpiderSpriteblock:  equ   $43
+BoringEyeRedSpriteblock:  equ   $43
+BatSpriteblock:  equ   $43
 phase	$8000
 LeftGreenSpiderWalk1_Char:                  include "..\sprites\enemies\Spider\LeftGreenSpiderWalk1.tgs.gen"	;y offset, x offset  
 LeftGreenSpiderWalk1_Col:                   include "..\sprites\enemies\Spider\LeftGreenSpiderWalk1.tcs.gen"  | db -1,00,-1,00, -1,16,-1,16
@@ -1370,6 +1396,33 @@ RightGreenSpiderOrangeEyesWalk3_Char:       include "..\sprites\enemies\Spider\R
 RightGreenSpiderOrangeEyesWalk3_Col:        include "..\sprites\enemies\Spider\RightGreenSpiderOrangeEyesWalk3.tcs.gen"  | db 00,00,00,00, 00,16,00,16
 RightGreenSpiderOrangeEyesWalk4_Char:       include "..\sprites\enemies\Spider\RightGreenSpiderOrangeEyesWalk4.tgs.gen"	  
 RightGreenSpiderOrangeEyesWalk4_Col:        include "..\sprites\enemies\Spider\RightGreenSpiderOrangeEyesWalk4.tcs.gen"  | db -1,00,-1,00, -1,16,-1,16
+
+BoringEyeRed1_Char:                         include "..\sprites\enemies\BoringEye\BoringEyeRed1.tgs.gen"	;y offset, x offset  
+BoringEyeRed1_Col:                          include "..\sprites\enemies\BoringEye\BoringEyeRed1.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+BoringEyeRed2_Char:                         include "..\sprites\enemies\BoringEye\BoringEyeRed2.tgs.gen"	  
+BoringEyeRed2_Col:                          include "..\sprites\enemies\BoringEye\BoringEyeRed2.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+BoringEyeRed3_Char:                         include "..\sprites\enemies\BoringEye\BoringEyeRed3.tgs.gen"	  
+BoringEyeRed3_Col:                          include "..\sprites\enemies\BoringEye\BoringEyeRed3.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+BoringEyeRed4_Char:                         include "..\sprites\enemies\BoringEye\BoringEyeRed4.tgs.gen"	  
+BoringEyeRed4_Col:                          include "..\sprites\enemies\BoringEye\BoringEyeRed4.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+
+LeftBat1_Char:                              include "..\sprites\enemies\Bat\LeftBat1.tgs.gen"	;y offset, x offset  
+LeftBat1_Col:                               include "..\sprites\enemies\Bat\LeftBat1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftBat2_Char:                              include "..\sprites\enemies\Bat\LeftBat2.tgs.gen"	  
+LeftBat2_Col:                               include "..\sprites\enemies\Bat\LeftBat2.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftBat3_Char:                              include "..\sprites\enemies\Bat\LeftBat3.tgs.gen"	  
+LeftBat3_Col:                               include "..\sprites\enemies\Bat\LeftBat3.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftBat4_Char:                              include "..\sprites\enemies\Bat\LeftBat4.tgs.gen"	  
+LeftBat4_Col:                               include "..\sprites\enemies\Bat\LeftBat4.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+
+RightBat1_Char:                             include "..\sprites\enemies\Bat\RightBat1.tgs.gen"	  
+RightBat1_Col:                              include "..\sprites\enemies\Bat\RightBat1.tcs.gen"  | db 00,-10,00,-10, 00,06,00,06, 16,-10,16,-10, 16,06,16,06
+RightBat2_Char:                             include "..\sprites\enemies\Bat\RightBat2.tgs.gen"	  
+RightBat2_Col:                              include "..\sprites\enemies\Bat\RightBat2.tcs.gen"  | db 00,-10,00,-10, 00,06,00,06, 16,-10,16,-10, 16,06,16,06
+RightBat3_Char:                             include "..\sprites\enemies\Bat\RightBat3.tgs.gen"	  
+RightBat3_Col:                              include "..\sprites\enemies\Bat\RightBat3.tcs.gen"  | db 00,-10,00,-10, 00,06,00,06, 16,-10,16,-10, 16,06,16,06
+RightBat4_Char:                             include "..\sprites\enemies\Bat\RightBat4.tgs.gen"	  
+RightBat4_Col:                              include "..\sprites\enemies\Bat\RightBat4.tcs.gen"  | db 00,-10,00,-10, 00,06,00,06, 16,-10,16,-10, 16,06,16,06
 	ds		$c000-$,$ff
 dephase
 
@@ -1377,6 +1430,7 @@ dephase
 ; block $45 + $46
 ;
 GreySpiderSpriteblock:  equ   $45
+BoringEyeGreenSpriteblock:  equ   $45
 phase	$8000
 LeftGreySpiderWalk1_Char:                   include "..\sprites\enemies\Spider\LeftGreySpiderWalk1.tgs.gen"	 ;y offset, x offset 
 LeftGreySpiderWalk1_Col:                    include "..\sprites\enemies\Spider\LeftGreySpiderWalk1.tcs.gen"  | db -1,00,-1,00, -1,16,-1,16
@@ -1413,6 +1467,15 @@ RightGreySpiderOrangeEyesWalk3_Char:        include "..\sprites\enemies\Spider\R
 RightGreySpiderOrangeEyesWalk3_Col:         include "..\sprites\enemies\Spider\RightGreySpiderOrangeEyesWalk3.tcs.gen"  | db 00,00,00,00, 00,16,00,16
 RightGreySpiderOrangeEyesWalk4_Char:        include "..\sprites\enemies\Spider\RightGreySpiderOrangeEyesWalk4.tgs.gen"	  
 RightGreySpiderOrangeEyesWalk4_Col:         include "..\sprites\enemies\Spider\RightGreySpiderOrangeEyesWalk4.tcs.gen"  | db -1,00,-1,00, -1,16,-1,16
+
+BoringEyeGreen1_Char:                     include "..\sprites\enemies\BoringEye\BoringEyeGreen1.tgs.gen"	;y offset, x offset  
+BoringEyeGreen1_Col:                      include "..\sprites\enemies\BoringEye\BoringEyeGreen1.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+BoringEyeGreen2_Char:                     include "..\sprites\enemies\BoringEye\BoringEyeGreen2.tgs.gen"	  
+BoringEyeGreen2_Col:                      include "..\sprites\enemies\BoringEye\BoringEyeGreen2.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+BoringEyeGreen3_Char:                     include "..\sprites\enemies\BoringEye\BoringEyeGreen3.tgs.gen"	  
+BoringEyeGreen3_Col:                      include "..\sprites\enemies\BoringEye\BoringEyeGreen3.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+BoringEyeGreen4_Char:                     include "..\sprites\enemies\BoringEye\BoringEyeGreen4.tgs.gen"	  
+BoringEyeGreen4_Col:                      include "..\sprites\enemies\BoringEye\BoringEyeGreen4.tcs.gen"  | db 00,00,00,00, 16,00,16,00
 	ds		$c000-$,$ff
 dephase
 
@@ -1474,6 +1537,7 @@ dephase
 ; block $4b + $4c
 ;
 GrinderSpriteblock:  equ   $4b
+TreemanSpriteblock:  equ   $4b
 phase	$8000
 LeftGrinderWalk1_Char:                      include "..\sprites\enemies\Grinder\LeftGrinderWalk1.tgs.gen"	 ;y offset, x offset 
 LeftGrinderWalk1_Col:                       include "..\sprites\enemies\Grinder\LeftGrinderWalk1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
@@ -1506,6 +1570,40 @@ RightGrinderAttack1_Char:                   include "..\sprites\enemies\Grinder\
 RightGrinderAttack1_Col:                    include "..\sprites\enemies\Grinder\RightGrinderAttack1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
 RightGrinderAttack2_Char:                   include "..\sprites\enemies\Grinder\RightGrinderAttack2.tgs.gen"	  
 RightGrinderAttack2_Col:                    include "..\sprites\enemies\Grinder\RightGrinderAttack2.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+
+LeftTreemanWalk1_Char:                      include "..\sprites\enemies\Treeman\LeftTreemanWalk1.tgs.gen"	 ;y offset, x offset 
+LeftTreemanWalk1_Col:                       include "..\sprites\enemies\Treeman\LeftTreemanWalk1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftTreemanWalk2_Char:                      include "..\sprites\enemies\Treeman\LeftTreemanWalk2.tgs.gen"	  
+LeftTreemanWalk2_Col:                       include "..\sprites\enemies\Treeman\LeftTreemanWalk2.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftTreemanWalk3_Char:                      include "..\sprites\enemies\Treeman\LeftTreemanWalk3.tgs.gen"	  
+LeftTreemanWalk3_Col:                       include "..\sprites\enemies\Treeman\LeftTreemanWalk3.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftTreemanWalk4_Char:                      include "..\sprites\enemies\Treeman\LeftTreemanWalk4.tgs.gen"	  
+LeftTreemanWalk4_Col:                       include "..\sprites\enemies\Treeman\LeftTreemanWalk4.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+
+RightTreemanWalk1_Char:                     include "..\sprites\enemies\Treeman\RightTreemanWalk1.tgs.gen"	  
+RightTreemanWalk1_Col:                      include "..\sprites\enemies\Treeman\RightTreemanWalk1.tcs.gen"  | db 00,-4,00,-4, 00,12,00,12, 16,-4,16,-4, 16,12,16,12
+RightTreemanWalk2_Char:                     include "..\sprites\enemies\Treeman\RightTreemanWalk2.tgs.gen"	  
+RightTreemanWalk2_Col:                      include "..\sprites\enemies\Treeman\RightTreemanWalk2.tcs.gen"  | db 00,-4,00,-4, 00,12,00,12, 16,-4,16,-4, 16,12,16,12
+RightTreemanWalk3_Char:                     include "..\sprites\enemies\Treeman\RightTreemanWalk3.tgs.gen"	  
+RightTreemanWalk3_Col:                      include "..\sprites\enemies\Treeman\RightTreemanWalk3.tcs.gen"  | db 00,-4,00,-4, 00,12,00,12, 16,-4,16,-4, 16,12,16,12
+RightTreemanWalk4_Char:                     include "..\sprites\enemies\Treeman\RightTreemanWalk4.tgs.gen"	  
+RightTreemanWalk4_Col:                      include "..\sprites\enemies\Treeman\RightTreemanWalk4.tcs.gen"  | db 00,-4,00,-4, 00,12,00,12, 16,-4,16,-4, 16,12,16,12
+
+LeftTreemanAttack1_Char:                    include "..\sprites\enemies\Treeman\LeftTreemanAttack1.tgs.gen"	  
+LeftTreemanAttack1_Col:                     include "..\sprites\enemies\Treeman\LeftTreemanAttack1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftTreemanAttack2_Char:                    include "..\sprites\enemies\Treeman\LeftTreemanAttack2.tgs.gen"	  
+LeftTreemanAttack2_Col:                     include "..\sprites\enemies\Treeman\LeftTreemanAttack2.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+
+RightTreemanAttack1_Char:                   include "..\sprites\enemies\Treeman\RightTreemanAttack1.tgs.gen"	  
+RightTreemanAttack1_Col:                    include "..\sprites\enemies\Treeman\RightTreemanAttack1.tcs.gen"  | db 00,-4,00,-4, 00,12,00,12, 16,-4,16,-4, 16,12,16,12
+RightTreemanAttack2_Char:                   include "..\sprites\enemies\Treeman\RightTreemanAttack2.tgs.gen"	  
+RightTreemanAttack2_Col:                    include "..\sprites\enemies\Treeman\RightTreemanAttack2.tcs.gen"  | db 00,-4,00,-4, 00,12,00,12, 16,-4,16,-4, 16,12,16,12
+
+LeftTreemanHit_Char:                        include "..\sprites\enemies\Treeman\LeftTreemanHit.tgs.gen"	  
+LeftTreemanHit_Col:                         include "..\sprites\enemies\Treeman\LeftTreemanHit.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+
+RightTreemanHit_Char:                       include "..\sprites\enemies\Treeman\RightTreemanHit.tgs.gen"	  
+RightTreemanHit_Col:                        include "..\sprites\enemies\Treeman\RightTreemanHit.tcs.gen"  | db 00,-4,00,-4, 00,12,00,12, 16,-4,16,-4, 16,12,16,12
 	ds		$c000-$,$ff
 dephase
 
@@ -1641,7 +1739,26 @@ dephase
 ; block $51 + $52
 ;
 FireEyeGreySpriteblock:  equ   $51
+DemontjeBrownSpriteblock:  equ   $51
 phase	$8000
+LeftDemontjeBrown1_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeBrown1.tgs.gen"	;y offset, x offset  
+LeftDemontjeBrown1_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeBrown1.tcs.gen"  | db 00,01,00,01
+LeftDemontjeBrown2_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeBrown2.tgs.gen"	  
+LeftDemontjeBrown2_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeBrown2.tcs.gen"  | db 00,00,00,00
+LeftDemontjeBrown3_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeBrown3.tgs.gen"	  
+LeftDemontjeBrown3_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeBrown3.tcs.gen"  | db 00,00,00,00
+LeftDemontjeBrown4_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeBrown4.tgs.gen"	  
+LeftDemontjeBrown4_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeBrown4.tcs.gen"  | db 00,00,00,00
+
+RightDemontjeBrown1_Char:                   include "..\sprites\enemies\Demontje\RightDemontjeBrown1.tgs.gen"	  
+RightDemontjeBrown1_Col:                    include "..\sprites\enemies\Demontje\RightDemontjeBrown1.tcs.gen"  | db 00,-1,00,-1
+RightDemontjeBrown2_Char:                   include "..\sprites\enemies\Demontje\RightDemontjeBrown2.tgs.gen"	  
+RightDemontjeBrown2_Col:                    include "..\sprites\enemies\Demontje\RightDemontjeBrown2.tcs.gen"  | db 00,00,00,00
+RightDemontjeBrown3_Char:                   include "..\sprites\enemies\Demontje\RightDemontjeBrown3.tgs.gen"	  
+RightDemontjeBrown3_Col:                    include "..\sprites\enemies\Demontje\RightDemontjeBrown3.tcs.gen"  | db 00,00,00,00
+RightDemontjeBrown4_Char:                   include "..\sprites\enemies\Demontje\RightDemontjeBrown4.tgs.gen"	  
+RightDemontjeBrown4_Col:                    include "..\sprites\enemies\Demontje\RightDemontjeBrown4.tcs.gen"  | db 00,00,00,00
+
 FireEyeGrey1_Char:                          include "..\sprites\enemies\FireEye\FireEyeGrey1.tgs.gen"	 ;y offset, x offset 
 FireEyeGrey1_Col:                           include "..\sprites\enemies\FireEye\FireEyeGrey1.tcs.gen"  | db 00,08,00,08,00,08, 16,00,16,00, 16,16,16,16, 32,00,32,00, 32,16,32,16
 FireEyeGrey2_Char:                          include "..\sprites\enemies\FireEye\FireEyeGrey2.tgs.gen"	  
@@ -1661,7 +1778,26 @@ dephase
 ; block $53 + $54
 ;
 FireEyeGreenSpriteblock:  equ   $53
+DemontjeGreenSpriteblock:  equ   $53
 phase	$8000
+LeftDemontjeGreen1_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tgs.gen"	;y offset, x offset  
+LeftDemontjeGreen1_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tcs.gen"  | db 00,01,00,01
+LeftDemontjeGreen2_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeGreen2.tgs.gen"	  
+LeftDemontjeGreen2_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeGreen2.tcs.gen"  | db 00,00,00,00
+LeftDemontjeGreen3_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeGreen3.tgs.gen"	  
+LeftDemontjeGreen3_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeGreen3.tcs.gen"  | db 00,00,00,00
+LeftDemontjeGreen4_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeGreen4.tgs.gen"	  
+LeftDemontjeGreen4_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeGreen4.tcs.gen"  | db 00,00,00,00
+
+RightDemontjeGreen1_Char:                   include "..\sprites\enemies\Demontje\RightDemontjeGreen1.tgs.gen"	  
+RightDemontjeGreen1_Col:                    include "..\sprites\enemies\Demontje\RightDemontjeGreen1.tcs.gen"  | db 00,-1,00,-1
+RightDemontjeGreen2_Char:                   include "..\sprites\enemies\Demontje\RightDemontjeGreen2.tgs.gen"	  
+RightDemontjeGreen2_Col:                    include "..\sprites\enemies\Demontje\RightDemontjeGreen2.tcs.gen"  | db 00,00,00,00
+RightDemontjeGreen3_Char:                   include "..\sprites\enemies\Demontje\RightDemontjeGreen3.tgs.gen"	  
+RightDemontjeGreen3_Col:                    include "..\sprites\enemies\Demontje\RightDemontjeGreen3.tcs.gen"  | db 00,00,00,00
+RightDemontjeGreen4_Char:                   include "..\sprites\enemies\Demontje\RightDemontjeGreen4.tgs.gen"	  
+RightDemontjeGreen4_Col:                    include "..\sprites\enemies\Demontje\RightDemontjeGreen4.tcs.gen"  | db 00,00,00,00
+
 FireEyeGreen1_Char:                         include "..\sprites\enemies\FireEye\FireEyeGreen1.tgs.gen"	 ;y offset, x offset 
 FireEyeGreen1_Col:                          include "..\sprites\enemies\FireEye\FireEyeGreen1.tcs.gen"  | db 00,08,00,08,00,08, 16,00,16,00, 16,16,16,16, 32,00,32,00, 32,16,32,16
 FireEyeGreen2_Char:                         include "..\sprites\enemies\FireEye\FireEyeGreen2.tgs.gen"	  
@@ -1677,8 +1813,55 @@ FireEyeGreen6_Col:                          include "..\sprites\enemies\FireEye\
 	ds		$c000-$,$ff
 dephase
 
+;
+; block $55 + $56
+;
+DemontjeGreySpriteblock:  equ   $55
+phase	$8000
+LeftDemontjeGrey1_Char:                     include "..\sprites\enemies\Demontje\LeftDemontjeGrey1.tgs.gen"	;y offset, x offset  
+LeftDemontjeGrey1_Col:                      include "..\sprites\enemies\Demontje\LeftDemontjeGrey1.tcs.gen"  | db 00,01,00,01
+LeftDemontjeGrey2_Char:                     include "..\sprites\enemies\Demontje\LeftDemontjeGrey2.tgs.gen"	  
+LeftDemontjeGrey2_Col:                      include "..\sprites\enemies\Demontje\LeftDemontjeGrey2.tcs.gen"  | db 00,00,00,00
+LeftDemontjeGrey3_Char:                     include "..\sprites\enemies\Demontje\LeftDemontjeGrey3.tgs.gen"	  
+LeftDemontjeGrey3_Col:                      include "..\sprites\enemies\Demontje\LeftDemontjeGrey3.tcs.gen"  | db 00,00,00,00
+LeftDemontjeGrey4_Char:                     include "..\sprites\enemies\Demontje\LeftDemontjeGrey4.tgs.gen"	  
+LeftDemontjeGrey4_Col:                      include "..\sprites\enemies\Demontje\LeftDemontjeGrey4.tcs.gen"  | db 00,00,00,00
 
+RightDemontjeGrey1_Char:                    include "..\sprites\enemies\Demontje\RightDemontjeGrey1.tgs.gen"	  
+RightDemontjeGrey1_Col:                     include "..\sprites\enemies\Demontje\RightDemontjeGrey1.tcs.gen"  | db 00,-1,00,-1
+RightDemontjeGrey2_Char:                    include "..\sprites\enemies\Demontje\RightDemontjeGrey2.tgs.gen"	  
+RightDemontjeGrey2_Col:                     include "..\sprites\enemies\Demontje\RightDemontjeGrey2.tcs.gen"  | db 00,00,00,00
+RightDemontjeGrey3_Char:                    include "..\sprites\enemies\Demontje\RightDemontjeGrey3.tgs.gen"	  
+RightDemontjeGrey3_Col:                     include "..\sprites\enemies\Demontje\RightDemontjeGrey3.tcs.gen"  | db 00,00,00,00
+RightDemontjeGrey4_Char:                    include "..\sprites\enemies\Demontje\RightDemontjeGrey4.tgs.gen"	  
+RightDemontjeGrey4_Col:                     include "..\sprites\enemies\Demontje\RightDemontjeGrey4.tcs.gen"  | db 00,00,00,00
+	ds		$c000-$,$ff
+dephase
 
+;
+; block $57 + $58
+;
+DemontjeRedSpriteblock:  equ   $57
+phase	$8000
+LeftDemontjeRed1_Char:                      include "..\sprites\enemies\Demontje\LeftDemontjeRed1.tgs.gen"	;y offset, x offset  
+LeftDemontjeRed1_Col:                       include "..\sprites\enemies\Demontje\LeftDemontjeRed1.tcs.gen"  | db 00,01,00,01
+LeftDemontjeRed2_Char:                      include "..\sprites\enemies\Demontje\LeftDemontjeRed2.tgs.gen"	  
+LeftDemontjeRed2_Col:                       include "..\sprites\enemies\Demontje\LeftDemontjeRed2.tcs.gen"  | db 00,00,00,00
+LeftDemontjeRed3_Char:                      include "..\sprites\enemies\Demontje\LeftDemontjeRed3.tgs.gen"	  
+LeftDemontjeRed3_Col:                       include "..\sprites\enemies\Demontje\LeftDemontjeRed3.tcs.gen"  | db 00,00,00,00
+LeftDemontjeRed4_Char:                      include "..\sprites\enemies\Demontje\LeftDemontjeRed4.tgs.gen"	  
+LeftDemontjeRed4_Col:                       include "..\sprites\enemies\Demontje\LeftDemontjeRed4.tcs.gen"  | db 00,00,00,00
+
+RightDemontjeRed1_Char:                     include "..\sprites\enemies\Demontje\RightDemontjeRed1.tgs.gen"	  
+RightDemontjeRed1_Col:                      include "..\sprites\enemies\Demontje\RightDemontjeRed1.tcs.gen"  | db 00,-1,00,-1
+RightDemontjeRed2_Char:                     include "..\sprites\enemies\Demontje\RightDemontjeRed2.tgs.gen"	  
+RightDemontjeRed2_Col:                      include "..\sprites\enemies\Demontje\RightDemontjeRed2.tcs.gen"  | db 00,00,00,00
+RightDemontjeRed3_Char:                     include "..\sprites\enemies\Demontje\RightDemontjeRed3.tgs.gen"	  
+RightDemontjeRed3_Col:                      include "..\sprites\enemies\Demontje\RightDemontjeRed3.tcs.gen"  | db 00,00,00,00
+RightDemontjeRed4_Char:                     include "..\sprites\enemies\Demontje\RightDemontjeRed4.tgs.gen"	  
+RightDemontjeRed4_Col:                      include "..\sprites\enemies\Demontje\RightDemontjeRed4.tcs.gen"  | db 00,00,00,00
+	ds		$c000-$,$ff
+dephase
 
 
 totallenght:	Equ	$-Usas2
