@@ -793,10 +793,38 @@ MapB01_012:
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*15|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
+
+
+
+MapB01_013:
+  incbin "..\maps\b01-013.map.pck"  | .amountofobjects: db  1
+;Hunchback
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw Hunchback           |db 8*21|dw 8*34|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 003| ds fill
+
+
+
+
+
+
+
+
+
+
+
+
+MapB01_014:
+  incbin "..\maps\b01-014.map.pck"  | .amountofobjects: db  0
+
+MapB01_015:
+  incbin "..\maps\b01-015.map.pck"  | .amountofobjects: db  0
+
+
 	ds		$c000-$,$ff
 dephase
 
-fill: equ 10
+
+fill: equ 0
 
 ;NrSprites: (18 - (amount of sprites*3))
 
@@ -1431,6 +1459,7 @@ dephase
 ;
 GreySpiderSpriteblock:  equ   $45
 BoringEyeGreenSpriteblock:  equ   $45
+HunchbackSpriteblock:  equ   $45
 phase	$8000
 LeftGreySpiderWalk1_Char:                   include "..\sprites\enemies\Spider\LeftGreySpiderWalk1.tgs.gen"	 ;y offset, x offset 
 LeftGreySpiderWalk1_Col:                    include "..\sprites\enemies\Spider\LeftGreySpiderWalk1.tcs.gen"  | db -1,00,-1,00, -1,16,-1,16
@@ -1468,14 +1497,48 @@ RightGreySpiderOrangeEyesWalk3_Col:         include "..\sprites\enemies\Spider\R
 RightGreySpiderOrangeEyesWalk4_Char:        include "..\sprites\enemies\Spider\RightGreySpiderOrangeEyesWalk4.tgs.gen"	  
 RightGreySpiderOrangeEyesWalk4_Col:         include "..\sprites\enemies\Spider\RightGreySpiderOrangeEyesWalk4.tcs.gen"  | db -1,00,-1,00, -1,16,-1,16
 
-BoringEyeGreen1_Char:                     include "..\sprites\enemies\BoringEye\BoringEyeGreen1.tgs.gen"	;y offset, x offset  
-BoringEyeGreen1_Col:                      include "..\sprites\enemies\BoringEye\BoringEyeGreen1.tcs.gen"  | db 00,00,00,00, 16,00,16,00
-BoringEyeGreen2_Char:                     include "..\sprites\enemies\BoringEye\BoringEyeGreen2.tgs.gen"	  
-BoringEyeGreen2_Col:                      include "..\sprites\enemies\BoringEye\BoringEyeGreen2.tcs.gen"  | db 00,00,00,00, 16,00,16,00
-BoringEyeGreen3_Char:                     include "..\sprites\enemies\BoringEye\BoringEyeGreen3.tgs.gen"	  
-BoringEyeGreen3_Col:                      include "..\sprites\enemies\BoringEye\BoringEyeGreen3.tcs.gen"  | db 00,00,00,00, 16,00,16,00
-BoringEyeGreen4_Char:                     include "..\sprites\enemies\BoringEye\BoringEyeGreen4.tgs.gen"	  
-BoringEyeGreen4_Col:                      include "..\sprites\enemies\BoringEye\BoringEyeGreen4.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+BoringEyeGreen1_Char:                       include "..\sprites\enemies\BoringEye\BoringEyeGreen1.tgs.gen"	;y offset, x offset  
+BoringEyeGreen1_Col:                        include "..\sprites\enemies\BoringEye\BoringEyeGreen1.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+BoringEyeGreen2_Char:                       include "..\sprites\enemies\BoringEye\BoringEyeGreen2.tgs.gen"	  
+BoringEyeGreen2_Col:                        include "..\sprites\enemies\BoringEye\BoringEyeGreen2.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+BoringEyeGreen3_Char:                       include "..\sprites\enemies\BoringEye\BoringEyeGreen3.tgs.gen"	  
+BoringEyeGreen3_Col:                        include "..\sprites\enemies\BoringEye\BoringEyeGreen3.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+BoringEyeGreen4_Char:                       include "..\sprites\enemies\BoringEye\BoringEyeGreen4.tgs.gen"	  
+BoringEyeGreen4_Col:                        include "..\sprites\enemies\BoringEye\BoringEyeGreen4.tcs.gen"  | db 00,00,00,00, 16,00,16,00
+
+LeftHunchback1_Char:                        include "..\sprites\enemies\Hunchback\LeftHunchback1.tgs.gen"	 ;y offset, x offset   
+LeftHunchback1_Col:                         include "..\sprites\enemies\Hunchback\LeftHunchback1.tcs.gen"  | db 00,00+7-6,00,00+7-6, 00,16+7-6,00,16+7-6, 16,00+7-6,16,00+7-6, 16,16+7-6,16,16+7-6
+LeftHunchback2_Char:                        include "..\sprites\enemies\Hunchback\LeftHunchback2.tgs.gen"	  
+LeftHunchback2_Col:                         include "..\sprites\enemies\Hunchback\LeftHunchback2.tcs.gen"  | db 00,00+6-6,00,00+6-6, 00,16+6-6,00,16+6-6, 16,00+6-6,16,00+6-6, 16,16+6-6,16,16+6-6
+LeftHunchback3_Char:                        include "..\sprites\enemies\Hunchback\LeftHunchback3.tgs.gen"	  
+LeftHunchback3_Col:                         include "..\sprites\enemies\Hunchback\LeftHunchback3.tcs.gen"  | db 00,00+6-6,00,00+6-6, 00,16+6-6,00,16+6-6, 16,00+6-6,16,00+6-6, 16,16+6-6,16,16+6-6
+LeftHunchback4_Char:                        include "..\sprites\enemies\Hunchback\LeftHunchback4.tgs.gen"	  
+LeftHunchback4_Col:                         include "..\sprites\enemies\Hunchback\LeftHunchback4.tcs.gen"  | db 00,00+5-6,00,00+5-6, 00,16+5-6,00,16+5-6, 16,00+5-6,16,00+5-6, 16,16+5-6,16,16+5-6
+LeftHunchback5_Char:                        include "..\sprites\enemies\Hunchback\LeftHunchback5.tgs.gen"	  
+LeftHunchback5_Col:                         include "..\sprites\enemies\Hunchback\LeftHunchback5.tcs.gen"  | db 00,00+5-6,00,00+5-6, 00,16+5-6,00,16+5-6, 16,00+5-6,16,00+5-6, 16,16+5-6,16,16+5-6
+LeftHunchback6_Char:                        include "..\sprites\enemies\Hunchback\LeftHunchback6.tgs.gen"	  
+LeftHunchback6_Col:                         include "..\sprites\enemies\Hunchback\LeftHunchback6.tcs.gen"  | db 00,00+2-6,00,00+2-6, 00,16+2-6,00,16+2-6, 16,00+2-6,16,00+2-6, 16,16+2-6,16,16+2-6
+LeftHunchback7_Char:                        include "..\sprites\enemies\Hunchback\LeftHunchback7.tgs.gen"	  
+LeftHunchback7_Col:                         include "..\sprites\enemies\Hunchback\LeftHunchback7.tcs.gen"  | db 00,00+3-6,00,00+3-6, 00,16+3-6,00,16+3-6, 16,00+3-6,16,00+3-6, 16,16+3-6,16,16+3-6
+LeftHunchback8_Char:                        include "..\sprites\enemies\Hunchback\LeftHunchback8.tgs.gen"	  
+LeftHunchback8_Col:                         include "..\sprites\enemies\Hunchback\LeftHunchback8.tcs.gen"  | db 00,00+0-6,00,00+0-6, 00,16+0-6,00,16+0-6, 16,00+0-6,16,00+0-6, 16,16+0-6,16,16+0-6
+
+RightHunchback1_Char:                       include "..\sprites\enemies\Hunchback\RightHunchback1.tgs.gen"	  
+RightHunchback1_Col:                        include "..\sprites\enemies\Hunchback\RightHunchback1.tcs.gen"  | db 00,00-2+0,00,00-2+0, 00,16-2+0,00,16-2+0, 16,00-2+0,16,00-2+0, 16,16-2+0,16,16-2+0
+RightHunchback2_Char:                       include "..\sprites\enemies\Hunchback\RightHunchback2.tgs.gen"	  
+RightHunchback2_Col:                        include "..\sprites\enemies\Hunchback\RightHunchback2.tcs.gen"  | db 00,00-2+1,00,00-2+1, 00,16-2+1,00,16-2+1, 16,00-2+1,16,00-2+1, 16,16-2+1,16,16-2+1
+RightHunchback3_Char:                       include "..\sprites\enemies\Hunchback\RightHunchback3.tgs.gen"	  
+RightHunchback3_Col:                        include "..\sprites\enemies\Hunchback\RightHunchback3.tcs.gen"  | db 00,00-2+1,00,00-2+1, 00,16-2+1,00,16-2+1, 16,00-2+1,16,00-2+1, 16,16-2+1,16,16-2+1
+RightHunchback4_Char:                       include "..\sprites\enemies\Hunchback\RightHunchback4.tgs.gen"	  
+RightHunchback4_Col:                        include "..\sprites\enemies\Hunchback\RightHunchback4.tcs.gen"  | db 00,00-2+2,00,00-2+2, 00,16-2+2,00,16-2+2, 16,00-2+2,16,00-2+2, 16,16-2+2,16,16-2+2
+RightHunchback5_Char:                       include "..\sprites\enemies\Hunchback\RightHunchback5.tgs.gen"	  
+RightHunchback5_Col:                        include "..\sprites\enemies\Hunchback\RightHunchback5.tcs.gen"  | db 00,00-2+2,00,00-2+2, 00,16-2+2,00,16-2+2, 16,00-2+2,16,00-2+2, 16,16-2+2,16,16-2+2
+RightHunchback6_Char:                       include "..\sprites\enemies\Hunchback\RightHunchback6.tgs.gen"	  
+RightHunchback6_Col:                        include "..\sprites\enemies\Hunchback\RightHunchback6.tcs.gen"  | db 00,00-2+5,00,00-2+5, 00,16-2+5,00,16-2+5, 16,00-2+5,16,00-2+5, 16,16-2+5,16,16-2+5
+RightHunchback7_Char:                       include "..\sprites\enemies\Hunchback\RightHunchback7.tgs.gen"	  
+RightHunchback7_Col:                        include "..\sprites\enemies\Hunchback\RightHunchback7.tcs.gen"  | db 00,00-2+4,00,00-2+4, 00,16-2+4,00,16-2+4, 16,00-2+4,16,00-2+4, 16,16-2+4,16,16-2+4
+RightHunchback8_Char:                       include "..\sprites\enemies\Hunchback\RightHunchback8.tgs.gen"	  
+RightHunchback8_Col:                        include "..\sprites\enemies\Hunchback\RightHunchback8.tcs.gen"  | db 00,00-2+7,00,00-2+7, 00,16-2+7,00,16-2+7, 16,00-2+7,16,00-2+7, 16,16-2+7,16,16-2+7
 	ds		$c000-$,$ff
 dephase
 
@@ -1604,6 +1667,10 @@ LeftTreemanHit_Col:                         include "..\sprites\enemies\Treeman\
 
 RightTreemanHit_Char:                       include "..\sprites\enemies\Treeman\RightTreemanHit.tgs.gen"	  
 RightTreemanHit_Col:                        include "..\sprites\enemies\Treeman\RightTreemanHit.tcs.gen"  | db 00,-4,00,-4, 00,12,00,12, 16,-4,16,-4, 16,12,16,12
+
+
+
+
 	ds		$c000-$,$ff
 dephase
 

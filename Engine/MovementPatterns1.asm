@@ -25,6 +25,7 @@
 ;Bat
 ;Demontje
 ;DemontjeBullet
+;Hunchback
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -499,6 +500,167 @@ Template:
   ld    hl,RightBeetleWalk1_Char
   ret
 
+
+
+
+
+
+
+Hunchback:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Wait timer
+;v6=Gravity timer
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,HunchbackSpriteblock              ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=standing still, 1=waiting, 2=initiate jump, 3=jumping) 
+  or    a
+  jp    z,HunchbackStandingStill
+  dec   a
+  jp    z,HunchbackWaiting
+  dec   a
+  jp    z,HunchbackInitiateJump
+
+  HunchbackJumping:
+  call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
+  call  .Gravity
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction / out z=collision found with wall  
+  call  .CheckFloor                         ;checks for collision Floor and if found fall
+  
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    de,RightHunchback7_Char
+  ld    hl,RightHunchback8_Char
+  jp    z,.DirectionFound
+  ld    de,LeftHunchback7_Char
+  ld    hl,LeftHunchback8_Char
+  .DirectionFound:
+  bit   7,(ix+enemies_and_objects.v3)       ;v3=Vertical movement
+  ret   z
+  ex    de,hl
+  ret
+
+  .Gravity:
+  ld    a,(ix+enemies_and_objects.v6)       ;v6=Gravity timer
+  inc   a
+  and   7
+  ld    (ix+enemies_and_objects.v6),a       ;v6=Gravity timer
+  ret   nz
+  
+  ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
+  inc   a
+  cp    5
+  ret   z
+  ld    (ix+enemies_and_objects.v3),a       ;v3=Vertical Movement
+  ret
+
+  .CheckFloor:                              ;checks for floor. if not found invert direction
+  bit   7,(ix+enemies_and_objects.v3)       ;v3=Vertical movement
+  ret   nz
+  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  inc   a                                   ;check for background tile (0=background, 1=hard foreground, 2=ladder, 3=lava.)
+  ret   z                                   ;return if background tile is found
+
+  ld    (ix+enemies_and_objects.v6),0       ;v6=Gravity timer / reset every time you snap to floor
+
+  ;snap to platform
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  and   %1111 1000
+  ld    (ix+enemies_and_objects.y),a        ;y
+
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=standing still, 1=waiting, 2=initiate jump, 3=jumping)  
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  
+  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
+  ret   c
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  neg
+  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
+  ret
+
+  HunchbackInitiateJump:
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 05
+  jp    nz,.Animate
+  ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=standing still, 1=waiting, 2=initiate jump, 3=jumping)  
+  ld    (ix+enemies_and_objects.v3),-3      ;v3=Vertical Movement
+
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,RightHunchbackJumpingAnimation
+  jp    z,.GoAnimate
+  ld    hl,LeftHunchbackJumpingAnimation
+  .GoAnimate:
+  ld    b,03                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 06                            ;06 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  HunchbackWaiting:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,RightHunchback3_Char
+  jp    z,.DirectionFound
+  ld    hl,LeftHunchback3_Char
+  .DirectionFound:
+
+  dec   (ix+enemies_and_objects.v5)         ;v5=Wait timer
+  ret   nz
+  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=standing still, 1=waiting, 2=initiate jump, 3=jumping)  
+  ret
+
+  HunchbackStandingStill:
+  ld    a,r
+  and   63
+  jp    nz,.Animate
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=standing still, 1=waiting, 2=initiate jump, 3=jumping) 
+  ld    (ix+enemies_and_objects.v5),20      ;v5=Wait timer
+    
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,RightHunchbackStandingAnimation
+  jp    z,.GoAnimate
+  ld    hl,LeftHunchbackStandingAnimation
+  .GoAnimate:
+  ld    b,07                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;03 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+LeftHunchbackJumpingAnimation:
+  dw  LeftHunchback1_Char
+  dw  LeftHunchback2_Char
+  dw  LeftHunchback3_Char  
+  dw  LeftHunchback4_Char
+  dw  LeftHunchback5_Char
+  dw  LeftHunchback6_Char
+
+RightHunchbackJumpingAnimation:
+  dw  RightHunchback1_Char
+  dw  RightHunchback2_Char
+  dw  RightHunchback3_Char
+  dw  RightHunchback4_Char
+  dw  RightHunchback5_Char
+  dw  RightHunchback6_Char
+
+LeftHunchbackStandingAnimation:
+  dw  LeftHunchback1_Char
+  dw  LeftHunchback2_Char
+  dw  LeftHunchback3_Char
+  dw  LeftHunchback2_Char
+  
+RightHunchbackStandingAnimation:
+  dw  RightHunchback1_Char
+  dw  RightHunchback2_Char
+  dw  RightHunchback3_Char
+  dw  RightHunchback2_Char
+
 SxDemontjeBullet1: equ 146
 SxDemontjeBullet2: equ 146+11
 SxDemontjeBullet3: equ 146+11+11
@@ -939,7 +1101,6 @@ Beetle:
   ld    b,01                                ;animate every x frames (based on framecounter)
   ld    c,2 * 02                            ;02 animation frame addresses
   jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
-  ret
 
   .FloorFoundGoWalk:
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
