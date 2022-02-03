@@ -14,7 +14,7 @@ MapB01_010Data: db MapsBlock01 | dw MapB01_010 | db 1,3,3                  | Map
 MapB01_013Data: db MapsBlock01 | dw MapB01_013 | db 1,3,3                  | MapB01_014Data: db MapsBlock01 | dw MapB01_014 | db 1,3,3                  | MapB01_015Data: db MapsBlock01 | dw MapB01_015 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_013Data
+WorldMapPointer:  dw  MapB01_014Data
 
 loadGraphics:
   call  screenoff

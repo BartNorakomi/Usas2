@@ -794,27 +794,22 @@ MapB01_012:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*15|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
 
-
-
 MapB01_013:
   incbin "..\maps\b01-013.map.pck"  | .amountofobjects: db  1
 ;Hunchback
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object1:db -1,        1|dw Hunchback           |db 8*21|dw 8*34|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 003| ds fill
 
-
-
-
-
-
-
-
-
-
-
-
 MapB01_014:
-  incbin "..\maps\b01-014.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\b01-014.map.pck"  | .amountofobjects: db  3
+;Scorpion
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw Scorpion            |db 8*03|dw 8*20|db 32,22|dw 12*16,spat+(12*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,-01,+01,+00,+00,+00,+00, 0|db 001| ds fill
+.object2:db -1,        1|dw Scorpion            |db 8*12|dw 8*20|db 32,22|dw 18*16,spat+(18*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,-01,+01,+00,+00,+00,+00, 0|db 001| ds fill
+;Spider Green
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object3:db -1,        1|dw GreenSpider         |db 8*23|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+
 
 MapB01_015:
   incbin "..\maps\b01-015.map.pck"  | .amountofobjects: db  0
@@ -1546,6 +1541,7 @@ dephase
 ; block $47 + $48
 ;
 RedExplosionSpriteblock:  equ   $47
+ScorpionSpriteblock:  equ   $47
 phase	$8000
 RedExplosionSmall1_Char:                    include "..\sprites\explosions\RedExplosionSmall1.tgs.gen"	;y offset, x offset  
 RedExplosionSmall1_col:                     include "..\sprites\explosions\RedExplosionSmall1.tcs.gen"  | db 00,00,00,00
@@ -1566,6 +1562,45 @@ RedExplosionBig4_Char:                      include "..\sprites\explosions\RedEx
 RedExplosionBig4_col:                       include "..\sprites\explosions\RedExplosionBig4.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
 RedExplosionBig5_Char:                      include "..\sprites\explosions\RedExplosionBig5.tgs.gen"	  
 RedExplosionBig5_col:                       include "..\sprites\explosions\RedExplosionBig5.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+
+LeftScorpionWalk1_Char:                     include "..\sprites\enemies\Scorpion\LeftScorpionWalk1.tgs.gen"	 ;y offset, x offset 
+LeftScorpionWalk1_Col:                      include "..\sprites\enemies\Scorpion\LeftScorpionWalk1.tcs.gen"  | db 00,16-10,00,16-10, 16,00-10,16,00-10, 16,16-10,16,16-10
+LeftScorpionWalk2_Char:                     include "..\sprites\enemies\Scorpion\LeftScorpionWalk2.tgs.gen"	  
+LeftScorpionWalk2_Col:                      include "..\sprites\enemies\Scorpion\LeftScorpionWalk2.tcs.gen"  | db 00,16-10,00,16-10, 16,00-10,16,00-10, 16,16-10,16,16-10
+LeftScorpionWalk3_Char:                     include "..\sprites\enemies\Scorpion\LeftScorpionWalk3.tgs.gen"	  
+LeftScorpionWalk3_Col:                      include "..\sprites\enemies\Scorpion\LeftScorpionWalk3.tcs.gen"  | db 00,16-10,00,16-10, 16,00-10,16,00-10, 16,16-10,16,16-10
+LeftScorpionWalk4_Char:                     include "..\sprites\enemies\Scorpion\LeftScorpionWalk4.tgs.gen"	  
+LeftScorpionWalk4_Col:                      include "..\sprites\enemies\Scorpion\LeftScorpionWalk4.tcs.gen"  | db 00,16-10,00,16-10, 16,00-10,16,00-10, 16,16-10,16,16-10
+
+RightScorpionWalk1_Char:                    include "..\sprites\enemies\Scorpion\RightScorpionWalk1.tgs.gen"	  
+RightScorpionWalk1_Col:                     include "..\sprites\enemies\Scorpion\RightScorpionWalk1.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
+RightScorpionWalk2_Char:                    include "..\sprites\enemies\Scorpion\RightScorpionWalk2.tgs.gen"	  
+RightScorpionWalk2_Col:                     include "..\sprites\enemies\Scorpion\RightScorpionWalk2.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
+RightScorpionWalk3_Char:                    include "..\sprites\enemies\Scorpion\RightScorpionWalk3.tgs.gen"	  
+RightScorpionWalk3_Col:                     include "..\sprites\enemies\Scorpion\RightScorpionWalk3.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
+RightScorpionWalk4_Char:                    include "..\sprites\enemies\Scorpion\RightScorpionWalk4.tgs.gen"	  
+RightScorpionWalk4_Col:                     include "..\sprites\enemies\Scorpion\RightScorpionWalk4.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
+
+LeftScorpionAttack1_Char:                   include "..\sprites\enemies\Scorpion\LeftScorpionAttack1.tgs.gen"	 ;y offset, x offset 
+LeftScorpionAttack1_Col:                    include "..\sprites\enemies\Scorpion\LeftScorpionAttack1.tcs.gen"  | db 00,16-10,00,16-10, 16,00-10,16,00-10, 16,16-10,16,16-10
+LeftScorpionAttack2_Char:                   include "..\sprites\enemies\Scorpion\LeftScorpionAttack2.tgs.gen"	  
+LeftScorpionAttack2_Col:                    include "..\sprites\enemies\Scorpion\LeftScorpionAttack2.tcs.gen"  | db 00,16-00,00,16-00, 16,00-00,16,00-00, 16,16-00,16,16-00
+
+RightScorpionAttack1_Char:                  include "..\sprites\enemies\Scorpion\RightScorpionAttack1.tgs.gen"	  
+RightScorpionAttack1_Col:                   include "..\sprites\enemies\Scorpion\RightScorpionAttack1.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
+RightScorpionAttack2_Char:                  include "..\sprites\enemies\Scorpion\RightScorpionAttack2.tgs.gen"	  
+RightScorpionAttack2_Col:                   include "..\sprites\enemies\Scorpion\RightScorpionAttack2.tcs.gen"  | db 00,00-10,00,00-10, 16,00-10,16,00-10, 16,16-10,16,16-10
+
+LeftScorpionRattle2_Char:                   include "..\sprites\enemies\Scorpion\LeftScorpionRattle2.tgs.gen"	 ;y offset, x offset 
+LeftScorpionRattle2_Col:                    include "..\sprites\enemies\Scorpion\LeftScorpionRattle2.tcs.gen"  | db 00,16-10,00,16-10, 16,00-10,16,00-10, 16,16-10,16,16-10
+LeftScorpionRattle3_Char:                   include "..\sprites\enemies\Scorpion\LeftScorpionRattle3.tgs.gen"	  
+LeftScorpionRattle3_Col:                    include "..\sprites\enemies\Scorpion\LeftScorpionRattle3.tcs.gen"  | db 00,16-10,00,16-10, 16,00-10,16,00-10, 16,16-10,16,16-10
+
+RightScorpionRattle2_Char:                  include "..\sprites\enemies\Scorpion\RightScorpionRattle2.tgs.gen"	  
+RightScorpionRattle2_Col:                   include "..\sprites\enemies\Scorpion\RightScorpionRattle2.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
+RightScorpionRattle3_Char:                  include "..\sprites\enemies\Scorpion\RightScorpionRattle3.tgs.gen"	  
+RightScorpionRattle3_Col:                   include "..\sprites\enemies\Scorpion\RightScorpionRattle3.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
+
 	ds		$c000-$,$ff
 dephase
 

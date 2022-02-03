@@ -26,6 +26,7 @@
 ;Demontje
 ;DemontjeBullet
 ;Hunchback
+;Scorpion
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -125,7 +126,13 @@ CheckFloorEnemy:
   add   hl,de
   jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
 
-distancecheckSlightlyMoreToRight:           ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+distancecheck24wide:                        ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ld    hl,(Clesx)                          ;hl = x player
+  ld    de,09-4
+  add   hl,de
+  jp    distancecheck.go
+
+distancecheck16wide:           ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ld    hl,(Clesx)                          ;hl = x player
   ld    de,09
   add   hl,de
@@ -504,8 +511,182 @@ Template:
 
 
 
+Scorpion:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Rattle timer / Wait before Rattle again Timer
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,ScorpionSpriteblock               ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking, 1=rattletail, 2=attacking) 
+  or    a
+  jp    z,ScorpionWalking
+  dec   a
+  jp    z,ScorpionRattlingTail
+  dec   a
+  jp    z,ScorpionAttacking
 
+  ScorpionAttackingPart2:
+  dec   (ix+enemies_and_objects.v5)
+  jr    nz,.Animate
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking, 1=rattletail, 2=attacking, 3=attacking part 2) 
+  ld    (ix+enemies_and_objects.v5),80      ;v5=Rattle timer
 
+  ld    hl,LeftScorpionWalk1_Char
+  ld    a,(ix+enemies_and_objects.x)
+  add   a,15
+  ld    (ix+enemies_and_objects.x),a
+
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+
+  ret   nz
+  ld    hl,RightScorpionWalk1_Char
+  ld    a,(ix+enemies_and_objects.x)
+  sub   a,15+15
+  ld    (ix+enemies_and_objects.x),a
+  ret
+
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,LeftScorpionAttack2_Char
+  ret   nz
+  ld    hl,RightScorpionAttack2_Char
+  ret
+
+  ScorpionAttacking:
+  dec   (ix+enemies_and_objects.v5)
+  jr    nz,.Animate
+  ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=walking, 1=rattletail, 2=attacking, 3=attacking part 2) 
+  ld    (ix+enemies_and_objects.v5),10      ;v5=Rattle timer
+
+  ld    hl,LeftScorpionAttack2_Char
+  ld    a,(ix+enemies_and_objects.x)
+  sub   a,15
+  ld    (ix+enemies_and_objects.x),a
+
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+
+  ret   nz
+  ld    hl,RightScorpionAttack2_Char
+  ld    a,(ix+enemies_and_objects.x)
+  add   a,15+15
+  ld    (ix+enemies_and_objects.x),a
+  ret
+
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,LeftScorpionAttack1_Char
+  ret   nz
+  ld    hl,RightScorpionAttack1_Char
+  ret
+  
+  ScorpionRattlingTail:
+  dec   (ix+enemies_and_objects.v5)
+  jr    nz,.Animate
+  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=walking, 1=rattletail, 2=attacking) 
+  ld    (ix+enemies_and_objects.v5),02      ;v5=Rattle timer
+
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,ScorpionRightRattleAnimation
+  jp    z,.GoAnimate
+  ld    hl,ScorpionLeftRattleAnimation
+  .GoAnimate:
+  ld    b,1                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;04 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  ScorpionWalking:
+  ld    a,(framecounter)
+  and   1
+  call  nz,MoveSpriteHorizontally           ;if not hit, move 3 out of 4 frames
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  .CheckFloor                         ;checks for floor. if not found invert direction
+  call  .CheckAttack
+  
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,ScorpionRightWalkAnimation
+  jp    z,.GoAnimate
+  ld    hl,ScorpionLeftWalkAnimation
+  .GoAnimate:
+  ld    b,7                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;04 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  .CheckAttack:
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=Rattle timer
+  dec   a
+  jr    z,.go
+  ld    (ix+enemies_and_objects.v5),a       ;v5=Rattle timer
+  ret
+  
+  .go:
+  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
+  ret   nc
+
+  ld    b,28                                ;b-> x distance
+  ld    c,40                                ;c-> y distance
+  call  distancecheck24wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   nc
+;
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=walking, 1=rattletail, 2=attacking) 
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v5),40      ;v5=Rattle timer
+  ret
+
+  .CheckFloor:                              ;checks for floor. if not found invert direction
+  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  inc   a                                   ;check for background tile (0=background, 1=hard foreground, 2=ladder, 3=lava.)
+  ret   nz                                  ;return if background tile is NOT found
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  neg
+  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
+  ret  
+
+ScorpionLeftAttackAnimation:
+  dw  LeftScorpionAttack1_Char
+  dw  LeftScorpionAttack2_Char
+  dw  LeftScorpionAttack2_Char
+  
+ScorpionRightAttackAnimation:
+  dw  RightScorpionAttack1_Char
+  dw  RightScorpionAttack2_Char
+  dw  RightScorpionAttack2_Char
+
+ScorpionLeftRattleAnimation:
+  dw  LeftScorpionWalk1_Char
+  dw  LeftScorpionRattle2_Char
+  dw  LeftScorpionRattle3_Char
+  dw  LeftScorpionRattle2_Char
+  
+ScorpionRightRattleAnimation:
+  dw  RightScorpionWalk1_Char
+  dw  RightScorpionRattle2_Char
+  dw  RightScorpionRattle3_Char
+  dw  RightScorpionRattle2_Char
+
+ScorpionLeftWalkAnimation:
+  dw  LeftScorpionWalk1_Char
+  dw  LeftScorpionWalk2_Char
+  dw  LeftScorpionWalk3_Char
+  dw  LeftScorpionWalk4_Char
+  
+ScorpionRightWalkAnimation:
+  dw  RightScorpionWalk1_Char
+  dw  RightScorpionWalk2_Char
+  dw  RightScorpionWalk3_Char
+  dw  RightScorpionWalk4_Char
+  
 Hunchback:
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
@@ -787,7 +968,7 @@ Demontje:
   
   ld    b,80                                ;b-> x distance
   ld    c,80                                ;c-> y distance
-  call  distancecheckSlightlyMoreToRight    ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   nc
 
   call  checkFacingPlayer                   ;out: c = object/enemy is facing player
@@ -1000,7 +1181,6 @@ BoringEye:
   ld    b,07                                ;animate every x frames (based on framecounter)
   ld    c,2 * 04                            ;04 animation frame addresses
   jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
-  ret
 
 BoringEyeMovementTable:  ;repeating steps(128 = end table/repeat), move y, move x  (Hovering up and down)
   db  03,-1,-0,  01,-0,-0,  02,-1,-0,  01,-0,-0,  01,-1,-0,  02,-0,-0
@@ -1366,7 +1546,7 @@ Slime:
   .DistanceToPlayerCheck:
   ld    b,26                                ;b-> x distance
   ld    c,08                                ;c-> y distance
-  call  distancecheckSlightlyMoreToRight    ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   nc
 
   ld    a,(EnableHitbox?)
@@ -1774,7 +1954,7 @@ Landstrider:
   .DistanceCheck:
   ld    b,40                                ;b-> x distance
   ld    c,60                                ;c-> y distance
-  call  distancecheckSlightlyMoreToRight    ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   c
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=walking, 1=ducking, 2=ducked, 3=unduck, 4=growing, 5=growing tall, 6=Big walking) ;out hl -> sprite character data to out to Vram
@@ -1824,7 +2004,7 @@ Landstrider:
   .DistanceCheck:
   ld    b,40                                ;b-> x distance
   ld    c,60                                ;c-> y distance
-  call  distancecheckSlightlyMoreToRight    ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   nc
 
   ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
