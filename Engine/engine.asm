@@ -420,31 +420,31 @@ CopyObject:                                           ;copy any object into scre
 CleanOb1:                                             ;these 3 objects are used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)
   db    000,000,000,000   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
-  db    000,000,000,000   ;nx,--,ny,--
+  db    002,000,001,000   ;nx,--,ny,--
   db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 CleanOb2:
   db    000,000,000,000   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
-  db    000,000,000,000   ;nx,--,ny,--
+  db    002,000,001,000   ;nx,--,ny,--
   db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 CleanOb3:
   db    000,000,000,000   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
-  db    000,000,000,000   ;nx,--,ny,--
+  db    002,000,001,000   ;nx,--,ny,--
   db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 CleanOb4:
   db    000,000,000,000   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
-  db    000,000,000,000   ;nx,--,ny,--
+  db    002,000,001,000   ;nx,--,ny,--
   db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 CleanOb5:
   db    000,000,000,000   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
-  db    000,000,000,000   ;nx,--,ny,--
+  db    002,000,001,000   ;nx,--,ny,--
   db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 

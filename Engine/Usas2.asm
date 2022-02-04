@@ -480,27 +480,22 @@ dephase
 ;
 ; block $18 - $1b
 ;
-B01TilesBlock:  equ   $18
 phase	$4000
-  incbin "..\grapx\B01.SC5",7,$6A00  ;skip header
 	ds		$c000-$,$ff
 dephase
 
 ;
-; block $1c - $1f
+; block $1c - $1d
 ;
-A01TilesBlock:  equ   $1c
 phase	$4000
-  incbin "..\grapx\A01.SC5",7,$6A00  ;skip header
-	ds		$c000-$,$ff
+	ds		$8000-$,$ff
 dephase
 
 
-
 ;
-; block $20 - &21
+; block $1e - &1f
 ;
-MapsBlock01:  equ   $20
+MapsBlock01:  equ   $1e
 phase	$8000
 MapA01_001:   ;EngineType, graphics, palette,
   incbin "..\maps\A01-001.map.pck"  | .amountofobjects: db  14
@@ -624,6 +619,15 @@ MapA01_009:
 ;Pushing stone Puzzle Pieces overview       x backup                                   total,setnr?
 .object1: db 1,        0|dw PushingPuzzlOverview|db 10*8,12*8,12*8,0,     00,       00,+00,+00,+00,+00,+00,+05,+00|dw PuzzleSwitchTable4|db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $20 - &21
+;
+
+MapsBlock02:  equ   $20
+phase	$8000
 MapB01_001:
   incbin "..\maps\b01-001.map.pck"  | .amountofobjects: db  3
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
@@ -642,11 +646,6 @@ MapB01_002:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object4:db -1,        1|dw Beetle           |db 8*14+10|dw 8*19|db 22,28|dw 12*16,spat+(12*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 003| ds fill
  
-
-
-
-
-
 MapB01_003:
   incbin "..\maps\b01-003.map.pck"  | .amountofobjects: db  7
 ;Demontje Bullet
@@ -662,19 +661,6 @@ MapB01_003:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object6:db -1,        1|dw Landstrider         |db 8*14|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
 .object7:db -1,        1|dw Landstrider         |db 8*24|dw 8*29|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 MapB01_004:
   incbin "..\maps\b01-004.map.pck"  | .amountofobjects: db  3
@@ -810,10 +796,18 @@ MapB01_014:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object3:db -1,        1|dw GreenSpider         |db 8*23|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
-
 MapB01_015:
-  incbin "..\maps\b01-015.map.pck"  | .amountofobjects: db  0
-
+  incbin "..\maps\b01-015.map.pck"  | .amountofobjects: db  6
+;Octopussy
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object1: db 0,        0|dw OctopussyBullet     |db 8*12|dw 8*16|db 06,07|dw CleanOb1,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object2: db 0,        0|dw OctopussyBullet     |db 8*13|dw 8*18|db 06,07|dw CleanOb2,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object3: db 0,        0|dw OctopussyBullet     |db 8*14|dw 8*20|db 06,07|dw CleanOb3,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object4: db 0,        0|dw OctopussyBullet     |db 8*15|dw 8*22|db 06,07|dw CleanOb4,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+;Octopussy
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object5:db -1,        1|dw Octopussy           |db 8*15|dw 8*22|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object6:db -0,        1|dw Octopussy           |db 8*15|dw 8*16|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
 	ds		$c000-$,$ff
 dephase
@@ -890,7 +884,6 @@ dephase
 ;
 ; block $33 - $34
 ;
-MapsBlock02:  equ   $33
 phase	$8000
 	ds		$c000-$,$ff
 dephase
@@ -1383,6 +1376,7 @@ dephase
 GreenSpiderSpriteblock:  equ   $43
 BoringEyeRedSpriteblock:  equ   $43
 BatSpriteblock:  equ   $43
+OctopussySpriteblock:  equ   $43
 phase	$8000
 LeftGreenSpiderWalk1_Char:                  include "..\sprites\enemies\Spider\LeftGreenSpiderWalk1.tgs.gen"	;y offset, x offset  
 LeftGreenSpiderWalk1_Col:                   include "..\sprites\enemies\Spider\LeftGreenSpiderWalk1.tcs.gen"  | db -1,00,-1,00, -1,16,-1,16
@@ -1446,6 +1440,65 @@ RightBat3_Char:                             include "..\sprites\enemies\Bat\Righ
 RightBat3_Col:                              include "..\sprites\enemies\Bat\RightBat3.tcs.gen"  | db 00,-10,00,-10, 00,06,00,06, 16,-10,16,-10, 16,06,16,06
 RightBat4_Char:                             include "..\sprites\enemies\Bat\RightBat4.tgs.gen"	  
 RightBat4_Col:                              include "..\sprites\enemies\Bat\RightBat4.tcs.gen"  | db 00,-10,00,-10, 00,06,00,06, 16,-10,16,-10, 16,06,16,06
+
+LeftOctopussy1_Char:                        include "..\sprites\enemies\Octopussy\LeftOctopussy1.tgs.gen"	 ;y offset, x offset   
+LeftOctopussy1_Col:                         include "..\sprites\enemies\Octopussy\LeftOctopussy1.tcs.gen"  | db -1,00,-1,00
+LeftOctopussy2_Char:                        include "..\sprites\enemies\Octopussy\LeftOctopussy2.tgs.gen"	  
+LeftOctopussy2_Col:                         include "..\sprites\enemies\Octopussy\LeftOctopussy2.tcs.gen"  | db -2,00,-2,00
+LeftOctopussy3_Char:                        include "..\sprites\enemies\Octopussy\LeftOctopussy3.tgs.gen"	  
+LeftOctopussy3_Col:                         include "..\sprites\enemies\Octopussy\LeftOctopussy3.tcs.gen"  | db -1,00,-1,00
+LeftOctopussy4_Char:                        include "..\sprites\enemies\Octopussy\LeftOctopussy4.tgs.gen"	  
+LeftOctopussy4_Col:                         include "..\sprites\enemies\Octopussy\LeftOctopussy4.tcs.gen"  | db 00,00,00,00
+LeftOctopussy5_Char:                        include "..\sprites\enemies\Octopussy\LeftOctopussy5.tgs.gen"	  
+LeftOctopussy5_Col:                         include "..\sprites\enemies\Octopussy\LeftOctopussy5.tcs.gen"  | db 01,00,01,00
+LeftOctopussy6_Char:                        include "..\sprites\enemies\Octopussy\LeftOctopussy6.tgs.gen"	  
+LeftOctopussy6_Col:                         include "..\sprites\enemies\Octopussy\LeftOctopussy6.tcs.gen"  | db 00,00,00,00
+
+RightOctopussy1_Char:                       include "..\sprites\enemies\Octopussy\RightOctopussy1.tgs.gen"	  
+RightOctopussy1_Col:                        include "..\sprites\enemies\Octopussy\RightOctopussy1.tcs.gen"  | db -1,00,-1,00
+RightOctopussy2_Char:                       include "..\sprites\enemies\Octopussy\RightOctopussy2.tgs.gen"	  
+RightOctopussy2_Col:                        include "..\sprites\enemies\Octopussy\RightOctopussy2.tcs.gen"  | db -2,00,-2,00
+RightOctopussy3_Char:                       include "..\sprites\enemies\Octopussy\RightOctopussy3.tgs.gen"	  
+RightOctopussy3_Col:                        include "..\sprites\enemies\Octopussy\RightOctopussy3.tcs.gen"  | db -1,00,-1,00
+RightOctopussy4_Char:                       include "..\sprites\enemies\Octopussy\RightOctopussy4.tgs.gen"	  
+RightOctopussy4_Col:                        include "..\sprites\enemies\Octopussy\RightOctopussy4.tcs.gen"  | db 00,00,00,00
+RightOctopussy5_Char:                       include "..\sprites\enemies\Octopussy\RightOctopussy5.tgs.gen"	  
+RightOctopussy5_Col:                        include "..\sprites\enemies\Octopussy\RightOctopussy5.tcs.gen"  | db 01,00,01,00
+RightOctopussy6_Char:                       include "..\sprites\enemies\Octopussy\RightOctopussy6.tgs.gen"	  
+RightOctopussy6_Col:                        include "..\sprites\enemies\Octopussy\RightOctopussy6.tcs.gen"  | db 00,00,00,00
+
+LeftOctopussyEyesOpen1_Char:                include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen1.tgs.gen"	 ;y offset, x offset   
+LeftOctopussyEyesOpen1_Col:                 include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen1.tcs.gen"  | db -1,00,-1,00
+LeftOctopussyEyesOpen2_Char:                include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen2.tgs.gen"	  
+LeftOctopussyEyesOpen2_Col:                 include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen2.tcs.gen"  | db -2,00,-2,00
+LeftOctopussyEyesOpen3_Char:                include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen3.tgs.gen"	  
+LeftOctopussyEyesOpen3_Col:                 include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen3.tcs.gen"  | db -1,00,-1,00
+LeftOctopussyEyesOpen4_Char:                include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen4.tgs.gen"	  
+LeftOctopussyEyesOpen4_Col:                 include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen4.tcs.gen"  | db 00,00,00,00
+LeftOctopussyEyesOpen5_Char:                include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen5.tgs.gen"	  
+LeftOctopussyEyesOpen5_Col:                 include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen5.tcs.gen"  | db 01,00,01,00
+LeftOctopussyEyesOpen6_Char:                include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen6.tgs.gen"	  
+LeftOctopussyEyesOpen6_Col:                 include "..\sprites\enemies\Octopussy\LeftOctopussyEyesOpen6.tcs.gen"  | db 00,00,00,00
+
+RightOctopussyEyesOpen1_Char:               include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen1.tgs.gen"	  
+RightOctopussyEyesOpen1_Col:                include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen1.tcs.gen"  | db -1,00,-1,00
+RightOctopussyEyesOpen2_Char:               include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen2.tgs.gen"	  
+RightOctopussyEyesOpen2_Col:                include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen2.tcs.gen"  | db -2,00,-2,00
+RightOctopussyEyesOpen3_Char:               include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen3.tgs.gen"	  
+RightOctopussyEyesOpen3_Col:                include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen3.tcs.gen"  | db -1,00,-1,00
+RightOctopussyEyesOpen4_Char:               include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen4.tgs.gen"	  
+RightOctopussyEyesOpen4_Col:                include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen4.tcs.gen"  | db 00,00,00,00
+RightOctopussyEyesOpen5_Char:               include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen5.tgs.gen"	  
+RightOctopussyEyesOpen5_Col:                include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen5.tcs.gen"  | db 01,00,01,00
+RightOctopussyEyesOpen6_Char:               include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen6.tgs.gen"	  
+RightOctopussyEyesOpen6_Col:                include "..\sprites\enemies\Octopussy\RightOctopussyEyesOpen6.tcs.gen"  | db 00,00,00,00
+
+LeftOctopussyAttack_Char:                   include "..\sprites\enemies\Octopussy\LeftOctopussyAttack.tgs.gen"	 ;y offset, x offset   
+LeftOctopussyAttack_Col:                    include "..\sprites\enemies\Octopussy\LeftOctopussyAttack.tcs.gen"  | db 00,00,00,00
+
+RightOctopussyAttack_Char:                  include "..\sprites\enemies\Octopussy\RightOctopussyAttack.tgs.gen"	  
+RightOctopussyAttack_Col:                   include "..\sprites\enemies\Octopussy\RightOctopussyAttack.tcs.gen"  | db 00,00,00,00
+
 	ds		$c000-$,$ff
 dephase
 
@@ -1962,6 +2015,24 @@ RightDemontjeRed3_Char:                     include "..\sprites\enemies\Demontje
 RightDemontjeRed3_Col:                      include "..\sprites\enemies\Demontje\RightDemontjeRed3.tcs.gen"  | db 00,00,00,00
 RightDemontjeRed4_Char:                     include "..\sprites\enemies\Demontje\RightDemontjeRed4.tgs.gen"	  
 RightDemontjeRed4_Col:                      include "..\sprites\enemies\Demontje\RightDemontjeRed4.tcs.gen"  | db 00,00,00,00
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $59 - $5c
+;
+B01TilesBlock:  equ   $59
+phase	$4000
+  incbin "..\grapx\B01.SC5",7,$6A00  ;skip header
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $5d - $60
+;
+A01TilesBlock:  equ   $5f
+phase	$4000
+  incbin "..\grapx\A01.SC5",7,$6A00  ;skip header
 	ds		$c000-$,$ff
 dephase
 

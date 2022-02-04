@@ -27,6 +27,7 @@
 ;DemontjeBullet
 ;Hunchback
 ;Scorpion
+;Octopussy
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -509,6 +510,246 @@ Template:
 
 
 
+
+
+
+
+
+
+OctopussyBullet:
+;v1 = sx
+;v2=Phase (0=moving, 1=static on floor, 3=fading out)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=repeating steps
+;v6=pointer to movement table
+;v7=reference to movement table (0, 8, 16, 24, 32, 40, 48, 56)
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)
+  or    a
+  jp    z,OctopussyBulletMoving
+
+  OctopussyBulletSplashingOnFloor:
+  call  VramObjectsTransparantCopiesRemoveAndClearBuffer  ;Clear buffer, so that next time the CleanOb is called buffer is empty
+  ld    (ix+enemies_and_objects.Alive?),0
+  ret
+
+;  FireEyeFireBulletFadingOut:
+;  ld    a,(framecounter)
+;  and   3
+;  jp    z,VramObjectsTransparantCopies
+;  call  VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+;  dec   (ix+enemies_and_objects.v5)         ;v5=Static Timer
+;  ret   nz
+;  ld    (ix+enemies_and_objects.alive?),0  
+;  ret
+  
+;  FireEyeFireBulletStatic:
+;  call  CollisionObjectPlayer               ;Check if player is hit by Vram object
+;  call  VramObjectsTransparantCopies        ;put object in Vram/screen  
+;  dec   (ix+enemies_and_objects.v5)         ;v5=Static Timer
+;  ret   nz
+;  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)  
+;  ld    (ix+enemies_and_objects.v5),040     ;v5=Static Timer
+;  ret
+
+  OctopussyBulletMoving:
+  call  CollisionObjectPlayer               ;Check if player is hit by Vram object
+
+  ld    h,0
+  ld    l,(ix+enemies_and_objects.v7)       ;v7=reference to movement table (0, 8, 16, 24, 32, 40, 48, 56)
+  ld    de,OctopussyBulletMovementTable1
+  add   hl,de
+  ex    de,hl
+  call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+
+  call  VramObjectsTransparantCopies     ;put object in Vram/screen
+  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  ret   nz
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)  
+  ret
+
+OctopussyBulletMovementTable1:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  03,+1,-1,  03,+1,-1 
+  db  128 ,255
+OctopussyBulletMovementTable2:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  02,+1,-1,  01,+1,-0
+  db  128 ,255
+OctopussyBulletMovementTable3:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  01,+1,-1,  02,+1,-0
+  db  128 ,255
+OctopussyBulletMovementTable4:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  01,+1,-1,  03,+1,-0
+  db  128 ,255
+OctopussyBulletMovementTable5:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  01,+1,+1,  03,+1,+0
+  db  128 ,255
+OctopussyBulletMovementTable6:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  01,+1,+1,  02,+1,+0
+  db  128 ,255
+OctopussyBulletMovementTable7:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  02,+1,+1,  01,+1,+0
+  db  128 ,255
+OctopussyBulletMovementTable8:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  03,+1,+1
+  db  128 ,255
+
+
+
+Octopussy:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Attack phase duration
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,OctopussySpriteblock              ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=Floating in air, 1=Shooting)  
+  or    a
+  jp    z,OctopussyFloatingInAir
+  
+  OctopussyShooting:
+  dec   (ix+enemies_and_objects.v5)         ;v5=Attack phase duration
+  jr    nz,.Animate
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=Floating in air, 1=Shooting)  
+  
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,RightOctopussyAttack_Char
+  ret   z
+  ld    hl,LeftOctopussyAttack_Char
+  ret
+  
+  
+  OctopussyFloatingInAir:
+  call  .Faceplayer
+  call  .DistanceCheck                      ;out: carry->object within distance
+  jr    c,.Near
+
+  .AnimateFar:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,RightOctopussyAnimation
+  jp    z,.GoAnimate
+  ld    hl,LeftOctopussyAnimation
+  jp    .GoAnimate
+
+  .Near:                                    ;Player is near, so shoot bullets every x frames
+  ld    a,(framecounter)
+  and   15
+  push  ix
+  call  z,.CreateBullet
+  pop   ix
+  jr    nz,.Animate
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Floating in air, 1=Shooting)  
+  ld    (ix+enemies_and_objects.v5),06      ;v5=Attack phase duration
+  
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,RightOctopussyEyesOpenAnimation
+  jp    z,.GoAnimate
+  ld    hl,LeftOctopussyEyesOpenAnimation
+  .GoAnimate:
+  ld    b,7                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 06                            ;06 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  .CreateBullet:
+  ld    a,(ix+enemies_and_objects.y)
+  ld    l,(ix+enemies_and_objects.x)
+  ld    h,(ix+enemies_and_objects.x+1)
+  ld    de,-16
+  add   hl,de
+
+  ld    ix,enemies_and_objects
+  ld    de,lenghtenemytable
+  
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  ret   nz
+  
+  .EmptySlotFound:
+  ld    (ix+enemies_and_objects.Alive?),1
+
+  ld    (ix+enemies_and_objects.x),l
+  ld    (ix+enemies_and_objects.x+1),h
+
+  add   a,6
+  ld    (ix+enemies_and_objects.y),a
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=moving, 1=splashing on floor)  
+  ld    (ix+enemies_and_objects.v5),0       ;v5=repeating steps 
+  ld    (ix+enemies_and_objects.v6),0       ;v6=pointer to movement table
+
+  ld    a,r
+  and   %0011 1000                          ;8 fold 
+  ld    (ix+enemies_and_objects.v7),a       ;v7=reference to movement table (0, 8, 16, 24, 32, 40, 48, 56)
+  xor   a                                   ;set zero flag
+  ret  
+
+  .DistanceCheck:
+  ld    b,60                                ;b-> x distance
+  ld    c,70                                ;c-> y distance
+  jp    distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  
+  .Faceplayer:
+  ld    a,r
+  and   31
+  ret   nz
+  ld    hl,(Clesx)                          ;hl = x player  
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  sbc   hl,de                               ;make sure wasp always faces player
+  ld    (ix+enemies_and_objects.v4),+1      ;v4=Horizontal Movement
+  ret   nc
+  ld    (ix+enemies_and_objects.v4),-1      ;v4=Horizontal Movement
+  ret
+
+LeftOctopussyAnimation:
+  dw  LeftOctopussy1_Char
+  dw  LeftOctopussy2_Char
+  dw  LeftOctopussy3_Char
+  dw  LeftOctopussy4_Char
+  dw  LeftOctopussy5_Char
+  dw  LeftOctopussy6_Char
+  
+RightOctopussyAnimation:
+  dw  RightOctopussy1_Char
+  dw  RightOctopussy2_Char
+  dw  RightOctopussy3_Char
+  dw  RightOctopussy4_Char
+  dw  RightOctopussy5_Char
+  dw  RightOctopussy6_Char
+  
+LeftOctopussyEyesOpenAnimation:
+  dw  LeftOctopussyEyesOpen1_Char
+  dw  LeftOctopussyEyesOpen2_Char
+  dw  LeftOctopussyEyesOpen3_Char
+  dw  LeftOctopussyEyesOpen4_Char
+  dw  LeftOctopussyEyesOpen5_Char
+  dw  LeftOctopussyEyesOpen6_Char
+  
+RightOctopussyEyesOpenAnimation:
+  dw  RightOctopussyEyesOpen1_Char
+  dw  RightOctopussyEyesOpen2_Char
+  dw  RightOctopussyEyesOpen3_Char
+  dw  RightOctopussyEyesOpen4_Char
+  dw  RightOctopussyEyesOpen5_Char
+  dw  RightOctopussyEyesOpen6_Char
 
 
 Scorpion:
@@ -4192,11 +4433,26 @@ VramObjects:
 ;  call  BackdropBlack
   ret
 
+VramObjectsTransparantCopiesRemoveAndClearBuffer:
+  ld    l,(ix+enemies_and_objects.ObjectNumber)
+  ld    h,(ix+enemies_and_objects.ObjectNumber+1)
+  push  hl
+  call  docopy
+  pop   iy
+
+  xor   a
+  ld    (iy+sPage),a
+  ld    (iy+dPage),a
+  ld    (iy+sx),a
+  ld    (iy+dx),a
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+  ret
+
 VramObjectsTransparantCopiesRemove:
   ld    l,(ix+enemies_and_objects.ObjectNumber)
   ld    h,(ix+enemies_and_objects.ObjectNumber+1)
-  call  docopy
-  ret
+  jp    docopy
 
 VramObjectsTransparantCopies:
 ;first clean the object
