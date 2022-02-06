@@ -12,9 +12,10 @@ MapB01_004Data: db MapsBlock02 | dw MapB01_004 | db 1,3,3                  | Map
 MapB01_007Data: db MapsBlock02 | dw MapB01_007 | db 1,3,3                  | MapB01_008Data: db MapsBlock02 | dw MapB01_008 | db 1,3,3                  | MapB01_009Data: db MapsBlock02 | dw MapB01_009 | db 1,3,3
 MapB01_010Data: db MapsBlock02 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock02 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock02 | dw MapB01_012 | db 1,3,3
 MapB01_013Data: db MapsBlock02 | dw MapB01_013 | db 1,3,3                  | MapB01_014Data: db MapsBlock02 | dw MapB01_014 | db 1,3,3                  | MapB01_015Data: db MapsBlock02 | dw MapB01_015 | db 1,3,3
+MapB01_016Data: db MapsBlock02 | dw MapB01_016 | db 1,3,3                  | MapB01_017Data: db MapsBlock02 | dw MapB01_017 | db 1,3,3                  | MapB01_018Data: db MapsBlock02 | dw MapB01_018 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_015Data
+WorldMapPointer:  dw  MapB01_017Data
 
 loadGraphics:
   call  screenoff
@@ -41,12 +42,44 @@ loadGraphics:
 ;  ei
 ;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
 
+
+
+  call  SetVariables
+
+  ld    a,1
+  ld    (CopyObject+spage),a
+
+
+
+
+
+
   call  SetInterruptHandler           ;set Lineint and Vblank  
   call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank | if normal engine: wait for lineint
 
   xor   a
   ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
   jp    LevelEngine
+
+SetVariables:  
+  ld    a,StartingJumpSpeedEqu        ;reset Starting Jump Speed
+  ld    (StartingJumpSpeed),a
+  inc   a
+  ld    (StartingJumpSpeedWhenHit),a
+  
+  ld    hl,.NormalRunningTable        ;Reset Normal Running Table
+  ld    de,RunningTable1
+  ld    bc,RunningTableLenght
+  ldir
+  ret  
+
+.NormalRunningTable:
+  dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
+;  dw    -1,-2,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+2,+1
+;  dw    -1,-1,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+1,+1
+;  dw    -1,-0,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+0,+1
+;  dw    -1,-0,-0,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+0,+0,+1
+
 
 WaitForInterrupt:
   ld    a,(CameraY)
@@ -764,21 +797,38 @@ copyScoreBoard:
   db    %1111 1111,000,$C0       ;fill 
 
 CopyItemsKarniMata:
+  .Page3:
   ld    a,(slot.page12rom)            ;all RAM except page 12
   out   ($a8),a          
 
-  ld    hl,$6C00+$8000            ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
-  ld    a,Graphicsblock5    ;block to copy from
+  ld    hl,$6C00+$8000            ;page 3 - screen 5 - bottom 40 pixels (scoreboard)
+  ld    a,Graphicsblock4          ;block to copy from
+  call  block12
+  
+	ld    a,1
+	call	SetVdp_Write	
+	ld		hl,itemsKarniMataPage3
+  ld    c,$98
+  ld    a,32/2              ;copy 32 lines..
+  ld    b,0
+  call  copyGraphicsToScreen.loop1    
+
+
+  .Page1:
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a          
+
+  ld    hl,$6C00+$8000            ;page 1 - screen 5 - bottom 40 pixels (scoreboard)
+  ld    a,Graphicsblock5          ;block to copy from
   call  block12
   
 	xor   a
 	call	SetVdp_Write	
 	ld		hl,itemsKarniMata
   ld    c,$98
-  ld    a,32/2              ;copy 16 lines..
+  ld    a,32/2              ;copy 32 lines..
   ld    b,0
   jp    copyGraphicsToScreen.loop1    
-
 
 A01Palette:
   incbin "..\grapx\A01palette.PL" ;file palette 

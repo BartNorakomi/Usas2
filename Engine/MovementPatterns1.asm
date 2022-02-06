@@ -28,6 +28,9 @@
 ;Hunchback
 ;Scorpion
 ;Octopussy
+;HugeBlob
+;HugeBlobSWsprite
+;OP_SlowDownHandler
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -314,14 +317,15 @@ ld a,e
   ld    (ix+enemies_and_objects.movementpattern),l
   ld    (ix+enemies_and_objects.movementpattern+1),h
   
-  ;x position of explosion is x - 8 + (nx/2)
+  ;x position of explosion is x - 16 + (nx/2)
   ld    a,(ix+enemies_and_objects.nx)
 	srl		a                                   ;/2
-  sub   16
   ld    d,0
   ld    e,a
   ld    l,(ix+enemies_and_objects.x)  
   ld    h,(ix+enemies_and_objects.x+1)      ;x
+  add   hl,de
+  ld    de,-16
   add   hl,de
   ld    (ix+enemies_and_objects.x),l  
   ld    (ix+enemies_and_objects.x+1),h      ;x
@@ -348,11 +352,12 @@ ld a,e
   ;x position of explosion is x - 8 + (nx/2)
   ld    a,(ix+enemies_and_objects.nx)
 	srl		a                                   ;/2
-  sub   8
   ld    d,0
   ld    e,a
   ld    l,(ix+enemies_and_objects.x)  
   ld    h,(ix+enemies_and_objects.x+1)      ;x
+  add   hl,de
+  ld    de,-8
   add   hl,de
   ld    (ix+enemies_and_objects.x),l  
   ld    (ix+enemies_and_objects.x+1),h      ;x
@@ -510,13 +515,108 @@ Template:
 
 
 
+HugeBlobSWsprite:
+  ld    a,3
+  ld    (CopyObject+spage),a
+
+  ld    a,(enemies_and_objects+enemies_and_objects.v1)  ;v1=Animation Counter
+  or    a
+  ld    hl,HugeBlobSwSprite1
+  jr    z,.SetCoordinates
+  sub   2
+  ld    hl,HugeBlobSwSprite2
+  jr    z,.SetCoordinates
+  sub   2
+  ld    hl,HugeBlobSwSprite3
+  jr    z,.SetCoordinates
+  sub   2
+  ld    hl,HugeBlobSwSprite4
+  jr    z,.SetCoordinates
+  sub   2
+  ld    hl,HugeBlobSwSprite5
+  jr    z,.SetCoordinates
+  sub   2
+  ld    hl,HugeBlobSwSprite6
+  jr    z,.SetCoordinates
+  sub   2
+  ld    hl,HugeBlobSwSprite7
+  .SetCoordinates:
+  ld    a,(hl)                              ;sx
+  ld    (ix+enemies_and_objects.v1),a
+  inc   hl
+  ld    a,(hl)                              ;nx
+  ld    (ix+enemies_and_objects.nx),a
+  inc   hl
+  ld    a,(hl)                              ;ny
+  ld    (ix+enemies_and_objects.ny),a
+
+  ld    a,(enemies_and_objects+enemies_and_objects.y)
+
+  inc   hl
+  add   a,(hl)                              ;add to y
+  ld    (ix+enemies_and_objects.y),a
+
+  inc   hl
+  ld    d,0
+  ld    e,(hl)                              ;add to x
+
+  ld    a,(enemies_and_objects+enemies_and_objects.x)
+  ld    l,a
+  ld    a,(enemies_and_objects+enemies_and_objects.x+1)
+  ld    h,a
+  add   hl,de
+
+  ld    (ix+enemies_and_objects.x),l
+  ld    (ix+enemies_and_objects.x+1),h
+  
+  ld    a,(enemies_and_objects+enemies_and_objects.life)
+  or    a
+  jp    nz,VramObjectsTransparantCopies
+  ld    (ix+enemies_and_objects.Alive?),0
+  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+
+                        ;sx,nx,ny,  add to y, add to x
+HugeBlobSwSprite1:  db  000,14,21,    33-5  ,   15
+HugeBlobSwSprite2:  db  014,16,19,    33-3  ,   15
+HugeBlobSwSprite3:  db  030,16,16,    33    ,   15
+HugeBlobSwSprite4:  db  046,08,32,    33-16 ,   15+6
+HugeBlobSwSprite5:  db  054,06,32,    33-16 ,   15+8
+HugeBlobSwSprite6:  db  060,05,32,    33-16 ,   15+6
+HugeBlobSwSprite7:  db  065,08,32,    33-16 ,   15+2
 
 
+HugeBlob:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,HugeBlobSpriteblock               ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
 
+  .Animate:
+  ld    hl,HugeBlobAnimation
+  ld    b,07                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 07                            ;07 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+  
+HugeBlobAnimation:
+  dw  HugeBlob1_Char
+  dw  HugeBlob2_Char
+  dw  HugeBlob3_Char
+  dw  HugeBlob4_Char
+  dw  HugeBlob5_Char
+  dw  HugeBlob6_Char
+  dw  HugeBlob7_Char
 
-
-
-OctopussyBullet:
+OctopussyBullet:                            ;forced on object positions 1-4
 ;v1 = sx
 ;v2=Phase (0=moving, 1=static on floor, 3=fading out)
 ;v3=Vertical Movement
@@ -525,36 +625,10 @@ OctopussyBullet:
 ;v6=pointer to movement table
 ;v7=reference to movement table (0, 8, 16, 24, 32, 40, 48, 56)
   .HandlePhase:
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)
-  or    a
-  jp    z,OctopussyBulletMoving
-
-  OctopussyBulletSplashingOnFloor:
-  call  VramObjectsTransparantCopiesRemoveAndClearBuffer  ;Clear buffer, so that next time the CleanOb is called buffer is empty
-  ld    (ix+enemies_and_objects.Alive?),0
-  ret
-
-;  FireEyeFireBulletFadingOut:
-;  ld    a,(framecounter)
-;  and   3
-;  jp    z,VramObjectsTransparantCopies
-;  call  VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
-;  dec   (ix+enemies_and_objects.v5)         ;v5=Static Timer
-;  ret   nz
-;  ld    (ix+enemies_and_objects.alive?),0  
-;  ret
-  
-;  FireEyeFireBulletStatic:
-;  call  CollisionObjectPlayer               ;Check if player is hit by Vram object
-;  call  VramObjectsTransparantCopies        ;put object in Vram/screen  
-;  dec   (ix+enemies_and_objects.v5)         ;v5=Static Timer
-;  ret   nz
-;  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)  
-;  ld    (ix+enemies_and_objects.v5),040     ;v5=Static Timer
-;  ret
-
-  OctopussyBulletMoving:
-  call  CollisionObjectPlayer               ;Check if player is hit by Vram object
+  call  CollisionObjectPlayer               ;Check if player is hit by Vram object / out h=128 if hit
+  ld    a,h
+  cp    128
+  jp    z,.Playerwashit
 
   ld    h,0
   ld    l,(ix+enemies_and_objects.v7)       ;v7=reference to movement table (0, 8, 16, 24, 32, 40, 48, 56)
@@ -563,11 +637,90 @@ OctopussyBullet:
   ex    de,hl
   call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
 
-  call  VramObjectsTransparantCopies     ;put object in Vram/screen
   call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
-  ret   nz
-  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)  
+  jp    nz,VramObjectsTransparantCopies     ;put object in Vram/screen
+  call  VramObjectsTransparantCopiesRemoveAndClearBuffer  ;Clear buffer, so that next time the CleanOb is called buffer is empty
+  ld    (ix+enemies_and_objects.Alive?),0  
   ret
+
+.Playerwashit:
+  call  VramObjectsTransparantCopiesRemoveAndClearBuffer  ;Clear buffer, so that next time the CleanOb is called buffer is empty
+  ld    (ix+enemies_and_objects.Alive?),0
+  ld    a,1
+  ld    (lenghtenemytable*4+enemies_and_objects+enemies_and_objects.v1),a
+  ret
+
+NormalRunningTable:
+  dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
+;SlowRunningTable1:
+;  dw    -1,-2,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+2,+1
+SlowRunningTable1:
+  dw    -1,-1,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+1,+1
+SlowRunningTable2:
+  dw    -1,-0,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+0,+1
+SlowRunningTable3:
+  dw    -1,-0,-0,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+0,+0,+1
+
+;RunningTable1
+;StartingJumpSpeed:        db -5 ;equ -5    ;initial starting jump take off speed
+;StartingJumpSpeedWhenHit: db -4 ;equ -5    ;initial starting jump take off speed
+OP_SlowDownHandler:                         ;forced on object position 5
+;v1 = player got hit by bullet
+;v2 = reference to running table
+;v3 = timer to go back to normal running speed again
+  ld    a,(ix+enemies_and_objects.v2)
+  or    a
+  call  nz,.PlayerIsAffectedBySlowdown
+
+  bit   0,(ix+enemies_and_objects.v1)       ;v1 = player got hit by bullet
+  ret   z
+;at this point player got hit by a bullet. We change to a slower movement table for player and lower player's starting jump speed
+  res   0,(ix+enemies_and_objects.v1)       ;reset v1 = player got hit by bullet
+  ld    (ix+enemies_and_objects.v3),180     ;reset v3 = timer to enable stacking
+
+  ld    a,(ix+enemies_and_objects.v2)
+  inc   a
+  cp    4
+  jr    nc,.SetRunningTable
+  ld    (ix+enemies_and_objects.v2),a
+  .SetRunningTable:
+  ld    a,(ix+enemies_and_objects.v2)
+  or    a
+  ld    hl,NormalRunningTable
+  ld    b,-5                                ;starting jump speed
+  jr    z,.TableFound
+  dec   a
+  ld    hl,SlowRunningTable1
+  ld    b,-4                                ;starting jump speed
+  jr    z,.TableFound
+  dec   a
+  ld    hl,SlowRunningTable2
+  ld    b,-3                                ;starting jump speed
+  jr    z,.TableFound
+  dec   a
+  ld    hl,SlowRunningTable3
+  ld    b,-3                                ;starting jump speed
+;  jr    z,.TableFound
+;  ld    hl,SlowRunningTable4
+  .TableFound:
+  
+  ld    a,b
+  ld    (StartingJumpSpeed),a
+  inc   a
+  ld    (StartingJumpSpeedWhenHit),a
+  
+  ld    de,RunningTable1
+  ld    bc,RunningTableLenght
+  ldir
+  ret
+
+.PlayerIsAffectedBySlowdown:
+  dec   (ix+enemies_and_objects.v3)         ;v3 = timer to go back to normal running speed again
+  ret   nz
+  ld    (ix+enemies_and_objects.v3),180     ;reset v3 = timer
+  dec   (ix+enemies_and_objects.v2)         ;v2 = reference to running table
+  jp    .SetRunningTable
+
 
 OctopussyBulletMovementTable1:  ;repeating steps(128 = end table/repeat), move y, move x
   db  03,+1,-1,  03,+1,-1 
@@ -593,8 +746,6 @@ OctopussyBulletMovementTable7:  ;repeating steps(128 = end table/repeat), move y
 OctopussyBulletMovementTable8:  ;repeating steps(128 = end table/repeat), move y, move x
   db  03,+1,+1
   db  128 ,255
-
-
 
 Octopussy:
 ;v1=Animation Counter
@@ -644,12 +795,19 @@ Octopussy:
   .Near:                                    ;Player is near, so shoot bullets every x frames
   ld    a,(framecounter)
   and   15
+  jp    nz,.Animate
+  
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 04
+  jr    nz,.Animate
+;  cp    2 * 06
+  
   push  ix
-  call  z,.CreateBullet
+  call  .CreateBullet                       ;out zero=bullet is shot
   pop   ix
   jr    nz,.Animate
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Floating in air, 1=Shooting)  
-  ld    (ix+enemies_and_objects.v5),06      ;v5=Attack phase duration
+  ld    (ix+enemies_and_objects.v5),16      ;v5=Attack phase duration
   
   .Animate:
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
@@ -662,10 +820,21 @@ Octopussy:
   jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
   .CreateBullet:
+;  ld    a,r
+;  and   1
+;  ret   nz
+
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    de,-10                              ;x spwanpoint of bullet depends on which direction Octopussy is facing
+  jp    p,.Set
+  ld    de,-16                              ;x spwanpoint of bullet depends on which direction Octopussy is facing
+  .Set:
+  
   ld    a,(ix+enemies_and_objects.y)
   ld    l,(ix+enemies_and_objects.x)
   ld    h,(ix+enemies_and_objects.x+1)
-  ld    de,-16
+
   add   hl,de
 
   ld    ix,enemies_and_objects
@@ -689,7 +858,7 @@ Octopussy:
   ld    (ix+enemies_and_objects.x),l
   ld    (ix+enemies_and_objects.x+1),h
 
-  add   a,6
+  add   a,8
   ld    (ix+enemies_and_objects.y),a
   ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=moving, 1=splashing on floor)  
   ld    (ix+enemies_and_objects.v5),0       ;v5=repeating steps 
@@ -703,7 +872,7 @@ Octopussy:
 
   .DistanceCheck:
   ld    b,60                                ;b-> x distance
-  ld    c,70                                ;c-> y distance
+  ld    c,110                               ;c-> y distance
   jp    distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   
   .Faceplayer:

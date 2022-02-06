@@ -441,8 +441,11 @@ dephase
 ;
 ; block $11 - $14
 ;
-;Graphicsblock4:  equ   $11
+Graphicsblock4:  equ   $11
 phase	$4000
+itemsKarniMataPage3:
+  incbin "..\grapx\itemsKarniMataPage3.SC5",7,$1000  ;skip header
+
 ;  incbin "..\grapx\usasWorld2d.SC5",7,$6A00  ;skip header
 ;  incbin "..\grapx\usasWorld1d.SC5",7,$6A00  ;skip header
 ;  incbin "..\grapx\usas4.SC5",7,$6A00  ;skip header
@@ -766,10 +769,11 @@ MapB01_011:
 ;platform (moving horizontally)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
 .object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
-;Grinder
+;Treeman
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw Treeman             |db 8*11|dw 8*30|db 32,26|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
-.object3:db -1,        1|dw Grinder             |db 8*19|dw 8*16|db 32,32|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
+.object2:db -0,        1|dw Treeman             |db 8*11|dw 8*30|db 32,26|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
+;Grinder
+.object3:db -0,        1|dw Grinder             |db 8*19|dw 8*16|db 32,32|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
 
 MapB01_012:
   incbin "..\maps\b01-012.map.pck"  | .amountofobjects: db  2
@@ -786,6 +790,13 @@ MapB01_013:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object1:db -1,        1|dw Hunchback           |db 8*21|dw 8*34|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 003| ds fill
 
+
+
+
+
+
+
+
 MapB01_014:
   incbin "..\maps\b01-014.map.pck"  | .amountofobjects: db  3
 ;Scorpion
@@ -796,18 +807,62 @@ MapB01_014:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object3:db -1,        1|dw GreenSpider         |db 8*23|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
+
+
+
+
 MapB01_015:
-  incbin "..\maps\b01-015.map.pck"  | .amountofobjects: db  6
-;Octopussy
+  incbin "..\maps\b01-015.map.pck"  | .amountofobjects: db  7
+;Octopussy Bullet
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
 .object1: db 0,        0|dw OctopussyBullet     |db 8*12|dw 8*16|db 06,07|dw CleanOb1,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 .object2: db 0,        0|dw OctopussyBullet     |db 8*13|dw 8*18|db 06,07|dw CleanOb2,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 .object3: db 0,        0|dw OctopussyBullet     |db 8*14|dw 8*20|db 06,07|dw CleanOb3,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 .object4: db 0,        0|dw OctopussyBullet     |db 8*15|dw 8*22|db 06,07|dw CleanOb4,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+;Octopussy Bullet Slow Down Handler
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object5: db 1,        0|dw OP_SlowDownHandler  |db 8*12|dw 8*16|db 00,00|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 ;Octopussy
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object5:db -1,        1|dw Octopussy           |db 8*15|dw 8*22|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object6:db -0,        1|dw Octopussy           |db 8*15|dw 8*16|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object6:db -1,        1|dw Octopussy           |db 8*15|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object7:db -1,        1|dw Octopussy           |db 8*14|dw 8*23|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+
+
+
+MapB01_016:
+  incbin "..\maps\b01-016.map.pck"  | .amountofobjects: db  1
+;Hunchback
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -0,        1|dw Hunchback           |db 8*21|dw 8*34|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 003| ds fill
+
+
+
+
+
+
+MapB01_017:
+  incbin "..\maps\b01-017.map.pck"  | .amountofobjects: db  2
+;Huge Blob
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw HugeBlob            |db 8*19|dw 8*20|db 48,46|dw 12*16,spat+(12*2)|db 72-(12*6),12  ,12*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;Huge Blob software sprite part
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object2: db 1,        0|dw HugeBlobSWsprite    |db 0*00|dw 0*00|db 21,14|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+
+
+
+
+
+
+
+
+MapB01_018:
+  incbin "..\maps\b01-018.map.pck"  | .amountofobjects: db  0
+
+
+
+
+
 
 	ds		$c000-$,$ff
 dephase
@@ -1895,6 +1950,7 @@ dephase
 ;
 FireEyeGreySpriteblock:  equ   $51
 DemontjeBrownSpriteblock:  equ   $51
+HugeBlobSpriteblock:  equ   $51
 phase	$8000
 LeftDemontjeBrown1_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeBrown1.tgs.gen"	;y offset, x offset  
 LeftDemontjeBrown1_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeBrown1.tcs.gen"  | db 00,01,00,01
@@ -1926,6 +1982,21 @@ FireEyeGrey5_Char:                          include "..\sprites\enemies\FireEye\
 FireEyeGrey5_Col:                           include "..\sprites\enemies\FireEye\FireEyeGrey5.tcs.gen"  | db 00,08,00,08,00,08, 16,00,16,00, 16,16,16,16, 32,00,32,00, 32,16,32,16
 FireEyeGrey6_Char:                          include "..\sprites\enemies\FireEye\FireEyeGrey6.tgs.gen"	  
 FireEyeGrey6_Col:                           include "..\sprites\enemies\FireEye\FireEyeGrey6.tcs.gen"  | db 00,08,00,08,00,08, 16,00,16,00, 16,16,16,16, 32,00,32,00, 32,16,32,16
+
+HugeBlob1_Char:                             include "..\sprites\enemies\HugeBlob\HugeBlob1.tgs.gen"	 ;y offset, x offset 
+HugeBlob1_Col:                              include "..\sprites\enemies\HugeBlob\HugeBlob1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16, 32,00,32,00, 32,16,32,16
+HugeBlob2_Char:                             include "..\sprites\enemies\HugeBlob\HugeBlob2.tgs.gen"	  
+HugeBlob2_Col:                              include "..\sprites\enemies\HugeBlob\HugeBlob2.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16, 32,00,32,00, 32,16,32,16
+HugeBlob3_Char:                             include "..\sprites\enemies\HugeBlob\HugeBlob3.tgs.gen"	  
+HugeBlob3_Col:                              include "..\sprites\enemies\HugeBlob\HugeBlob3.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,12,16,12, 16,28,16,28, 32,00,32,00, 32,16,32,16
+HugeBlob4_Char:                             include "..\sprites\enemies\HugeBlob\HugeBlob4.tgs.gen"	  
+HugeBlob4_Col:                              include "..\sprites\enemies\HugeBlob\HugeBlob4.tcs.gen"  | db 00,14,00,14, 00,30,00,30, 16,06,16,06, 16,22,16,22, 32,06,32,06, 32,22,32,22
+HugeBlob5_Char:                             include "..\sprites\enemies\HugeBlob\HugeBlob5.tgs.gen"	  
+HugeBlob5_Col:                              include "..\sprites\enemies\HugeBlob\HugeBlob5.tcs.gen"  | db 00,10,00,10, 00,26,00,26, 16,08,16,08, 16,24,16,24, 32,08,32,08, 32,24,32,24
+HugeBlob6_Char:                             include "..\sprites\enemies\HugeBlob\HugeBlob6.tgs.gen"	  
+HugeBlob6_Col:                              include "..\sprites\enemies\HugeBlob\HugeBlob6.tcs.gen"  | db 00,00,00,00, 00,17,00,17, 16,06,16,06, 16,22,16,22, 32,06,32,06, 32,22,32,22
+HugeBlob7_Char:                             include "..\sprites\enemies\HugeBlob\HugeBlob7.tgs.gen"	  
+HugeBlob7_Col:                              include "..\sprites\enemies\HugeBlob\HugeBlob7.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,02,16,02, 16,18,16,18, 32,02,32,02, 32,18,32,18
 	ds		$c000-$,$ff
 dephase
 

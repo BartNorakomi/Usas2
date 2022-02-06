@@ -785,12 +785,13 @@ PutPlayersprite:
 	
 ;  exx               ;recall hl. hl now points to color data
 
+
 ;check if player is left side of screen, if so add 32 bit shift
   exx               ;store hl. hl now points to color data
 
   ld    a,(CameraX)         ;camera jumps 16 pixels every page, subtract this value from x Cles
   and   %1111 0000  
-  add   a,40                ;Check if player is between x=0 and x=40 in the current screen
+  add   a,ECbytes                ;Check if player is between x=0 and x=.. in the current screen
   ld    d,0
   ld    e,a
   ld    hl,(ClesX)
@@ -813,9 +814,11 @@ PutPlayersprite:
   exx               ;recall hl. hl now points to color data (also replaces the nop wait time instruction required between reads and writes to vram)
 	out   ($99),a       ;set bits 8-14 + write access
 	
-	jp    nc,PlayerRightSideOfMap
+	jp    nc,DontApply32bitShift
 
-PlayerLeftSideOfMap:
+ECbytes:  equ 16
+
+Apply32bitShift:      ;if x player - x camera < 16 then apply EC bit shift
   ld    c,128
 ;  ld    b,64
 ;  .Player32bitShifLoop:  
@@ -851,7 +854,7 @@ PlayerLeftSideOfMap:
   ld    c,a
 
   pop   af                  ;Cles x and subtract the x camera
-  add   a,40+32             ;adjust for the correction made earlier and add 32 bit shift added to sprite x
+  add   a,ECbytes+32             ;adjust for the correction made earlier and add 32 bit shift added to sprite x
 
   ld    de,3
   ld    hl,spat+herospritenrTimes2 ;4          
@@ -860,31 +863,26 @@ PlayerLeftSideOfMap:
   .selfmodifyingcode_x_offset_hero_top_LeftSide: equ $+1
   add   a,0
   ld    (hl),a              ;x sprite 22
-;  add   hl,de
   inc   hl
   ld    (hl),b              ;y sprite 23      
   inc   hl 
   ld    (hl),a              ;x sprite 23
-;  add   hl,de
   inc   hl
   ld    (hl),c              ;y sprite 24  
   inc   hl      
   .selfmodifyingcode_x_offset_hero_bottom_LeftSide: equ $+1
   add   a,0
   ld    (hl),a              ;x sprite 24
-;  add   hl,de
   inc   hl
   ld    (hl),c              ;y sprite 25
   inc   hl               
   ld    (hl),a              ;x sprite 25
-;  add   hl,de
-  inc   hl
 
-	ld		a,(slot.ram)	;back to full RAM
+	ld		a,(slot.ram)	      ;back to full RAM
 	out		($a8),a	
   ret
 
-PlayerRightSideOfMap:
+DontApply32bitShift:        ;if x player - x camera > 16 then don't apply EC bit shift
   ;Check Player Hit. If player is hit then show player alternating colors red + white
 ;  ld    a,(PlayerInvulnerable?)
 ;  or    a
@@ -905,59 +903,95 @@ PlayerRightSideOfMap:
 
 	call	outix64     ;4 sprites (4 * 16 bytes = 46 bytes)
 	ei
-	
-  ;after the color data there are 2 bytes for the top and bottom offset of the sprites
-  ld    a,(hl)
-  ld    (.selfmodifyingcode_x_offset_hero_top_RightSide),a  
-  inc   hl
-  ld    a,(hl)
-  ld    (.selfmodifyingcode_x_offset_hero_bottom_RightSide),a  
 
-  .spriteattributetable:
+  ;after the color data there are 2 bytes for the top and bottom offset of the sprites
+  ld    d,(hl)                ;add x to top sprites
+  inc   hl                    ;add x to bottom sprites
+  ld    e,(hl)                ;add x to bottom sprites
+	;Prepare Y player in c (top part of sprite) and b (bottom part of sprite)
   ld    a,(ClesY)
+  ld    c,a
   sub   a,16
   ld    b,a
-  add   a,16
-  ld    c,a
-
+  ;check if player is left side or right side of screen
+  ld    a,(ClesX)             
+  and   %1000 0000            
+  ld    hl,ClesX+1          
+  or    (hl)                
+  jr    nz,PlayerRightSideOfScreen ;13/8
+  
+PlayerLeftSideOfScreen:
   pop   af                  ;Cles x and subtract the x camera
-  add   a,40                ;adjust for the correction made earlier
+  add   a,ECbytes                ;adjust for the correction made earlier
 
-  .PutPlayerxY:
-  ld    de,3
   ld    hl,spat+herospritenrTimes2 ;4
   ld    (hl),b              ;y sprite 22
   inc   hl                  
-  .selfmodifyingcode_x_offset_hero_top_RightSide: equ $+1
-  add   a,0
-  cp    32                                      ;check if x<32. If so sprite is out of camera range
-  jr    nc,.RightSideChecked1
-  ld    a,255
-  .RightSideChecked1:
+  add   a,d
+;  cp    30                                      ;check if x<32. If so sprite is out of camera range
+;  jr    nc,.RightSideChecked1
+;  ld    a,255
+;  .RightSideChecked1:
   ld    (hl),a              ;x sprite 22
-;  add   hl,de
   inc   hl
   ld    (hl),b              ;y sprite 23      
   inc   hl 
   ld    (hl),a              ;x sprite 23
-;  add   hl,de
   inc   hl
   ld    (hl),c              ;y sprite 24  
   inc   hl      
-  .selfmodifyingcode_x_offset_hero_bottom_RightSide: equ $+1
-  add   a,0
-  cp    32                                      ;check if x<32. If so sprite is out of camera range
-  jr    nc,.RightSideChecked2
-  ld    a,255
-  .RightSideChecked2:
+  add   a,e
+;  cp    30                                      ;check if x<32. If so sprite is out of camera range
+;  jr    nc,.RightSideChecked2
+;  ld    a,255
+;  .RightSideChecked2:
   ld    (hl),a              ;x sprite 24
-;  add   hl,de
   inc   hl
   ld    (hl),c              ;y sprite 25
   inc   hl               
+
+;add a,32
+
   ld    (hl),a              ;x sprite 25
-;  add   hl,de
+	ld		a,(slot.ram)	;back to full RAM
+	out		($a8),a	
+  ret
+
+
+
+PlayerRightSideOfScreen:
+  pop   af                  ;Cles x and subtract the x camera
+  add   a,ECbytes                ;adjust for the correction made earlier
+
+  ld    hl,spat+herospritenrTimes2 ;4
+  ld    (hl),b              ;y sprite 22
+  inc   hl                  
+  add   a,d
+  cp    40                                      ;check if x<32. If so sprite is out of camera range
+  jp    nc,.RightSideChecked1
+  ld    a,255               ;remove sprite / put sprite out of visible range
+  .RightSideChecked1:
+  ld    (hl),a              ;x sprite 22
   inc   hl
+  ld    (hl),b              ;y sprite 23      
+  inc   hl 
+  ld    (hl),a              ;x sprite 23
+  inc   hl
+  ld    (hl),c              ;y sprite 24  
+  inc   hl      
+  add   a,e
+  cp    40                                      ;check if x<32. If so sprite is out of camera range
+  jp    nc,.RightSideChecked2
+  ld    a,255               ;remove sprite / put sprite out of visible range
+  .RightSideChecked2:
+  ld    (hl),a              ;x sprite 24
+  inc   hl
+  ld    (hl),c              ;y sprite 25
+  inc   hl               
+
+;sub a,32
+
+  ld    (hl),a              ;x sprite 25
 	ld		a,(slot.ram)	;back to full RAM
 	out		($a8),a	
   ret
@@ -1955,19 +1989,8 @@ AnimatePlayer:                ;animates, forces writing spriteframe, out: z=anim
   or    (ix+2)
   ret
 
-
-
-
-
-
-
-
-  
-
-
 ExitRight256x216: equ 252 ; 29*8
 ExitRight304x216: equ 38*8-3
-
 CheckMapExit:
   ld    a,(ClesY)
   cp    180+8 + 24
@@ -4360,7 +4383,9 @@ ClimbAnimation:          ;xoffset sprite top, xoffset sprite bottom
   dw  PlayerSpriteData_Char_Climbing7 
   dw  PlayerSpriteData_Char_Climbing8 
 
-StartingJumpSpeed:        equ -5    ;initial starting jump take off speed
+StartingJumpSpeedEqu:     equ -5    ;initial starting jump take off speed
+StartingJumpSpeed:        db -5 ;equ -5    ;initial starting jump take off speed
+StartingJumpSpeedWhenHit: db -4 ;equ -5    ;initial starting jump take off speed
 FallingJumpSpeed:         equ 1
 JumpSpeed:                db  0
 MaxDownwardFallSpeed:     equ 5
@@ -5050,11 +5075,15 @@ RunningTablePointerWhenHit:           ds  1       ;this variable is used to deci
 RunningTablePointer:                  db  18 ;12
 RunningTablePointerCenter:            equ 18 ;12
 RunningTablePointerRightEnd:          equ 38 ;26
+RunningTableLenght:                   equ 38 ;26
 RunningTablePointerRunLeftEndValue:   equ 6
 RunningTablePointerRunRightEndValue:  equ 32 ;20
 RunningTable1:
 ;       [run  L]                   C                   [run  R]
-;  dw    -1,-1,-1,-1,-1,-1,-1,-1,-1,0,+1,+1,+1,+1,+1,+1,+1,+1,+1
+;  dw    -1,-0,-0,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+0,+0,+1
+;  dw    -1,-0,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+0,+1
+;  dw    -1,-1,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+1,+1
+;  dw    -1,-2,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+2,+1
   dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
 
 EndMovePlayerHorizontally:              ;slowly come to a full stop after running
@@ -5179,9 +5208,15 @@ DoMovePlayer:               ;carry: collision detected
 ;  ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
 ;  call  checktile           ;out z=collision found with wall
 ;  jr    z,.SnapToWallLeft
+
   ;check at height of waiste if player runs into a wall on the left side
   ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
+
+  ld    a,(ClesX+1)
+  bit   7,a
+  ret   nz                  ;no need to perform tilecheck when player is out of screen on the left side
+
   call  checktile           ;out z=collision found with wall
   jr    z,.SnapToWallLeft
   ;now do the same check, but 2 tiles lower
@@ -5905,7 +5940,8 @@ Set_jump:
 
   ld    hl,0
 	ld		(PlayerAniCount),hl
-	ld    a,StartingJumpSpeed
+;	ld    a,StartingJumpSpeed
+	ld    a,(StartingJumpSpeed)
 	ld		(JumpSpeed),a
   ret
 
@@ -6002,8 +6038,11 @@ Set_L_BeingHit:
 
   ld    hl,0
 	ld		(PlayerAniCount),hl
-	ld    a,StartingJumpSpeed+1
+;	ld    a,StartingJumpSpeed+1
+  ld    a,(StartingJumpSpeedWhenHit)
 	ld		(JumpSpeed),a
+	
+	ld    h,128                                     ;variable to determine if player was hit this frame (for now used by octopussy bullet)
   ret
 
 Set_R_BeingHit:
@@ -6018,8 +6057,11 @@ Set_R_BeingHit:
 
   ld    hl,0
 	ld		(PlayerAniCount),hl
-	ld    a,StartingJumpSpeed+1
+;	ld    a,StartingJumpSpeed+1
+  ld    a,(StartingJumpSpeedWhenHit)
 	ld		(JumpSpeed),a
+
+	ld    h,128                                     ;variable to determine if player was hit this frame (for now used by octopussy bullet)
   ret
 
 Set_L_SitPunch:
