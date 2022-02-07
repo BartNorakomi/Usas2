@@ -824,8 +824,8 @@ MapB01_015:
 .object5: db 1,        0|dw OP_SlowDownHandler  |db 8*12|dw 8*16|db 00,00|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 ;Octopussy
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object6:db -1,        1|dw Octopussy           |db 8*15|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object7:db -1,        1|dw Octopussy           |db 8*14|dw 8*23|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object6:db -1,        1|dw Octopussy           |db 8*15|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
+.object7:db -1,        1|dw Octopussy           |db 8*14|dw 8*23|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
 
 
 
@@ -844,7 +844,7 @@ MapB01_017:
   incbin "..\maps\b01-017.map.pck"  | .amountofobjects: db  2
 ;Huge Blob
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw HugeBlob            |db 8*19|dw 8*20|db 48,46|dw 12*16,spat+(12*2)|db 72-(12*6),12  ,12*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object1:db -1,        1|dw HugeBlob            |db 8*19|dw 8*20|db 48,46|dw 16*16,spat+(16*2)|db 72-(12*6),12  ,12*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
 ;Huge Blob software sprite part
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
 .object2: db 1,        0|dw HugeBlobSWsprite    |db 0*00|dw 0*00|db 21,14|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
@@ -1690,14 +1690,14 @@ RightScorpionWalk4_Char:                    include "..\sprites\enemies\Scorpion
 RightScorpionWalk4_Col:                     include "..\sprites\enemies\Scorpion\RightScorpionWalk4.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
 
 LeftScorpionAttack1_Char:                   include "..\sprites\enemies\Scorpion\LeftScorpionAttack1.tgs.gen"	 ;y offset, x offset 
-LeftScorpionAttack1_Col:                    include "..\sprites\enemies\Scorpion\LeftScorpionAttack1.tcs.gen"  | db 00,16-10,00,16-10, 16,00-10,16,00-10, 16,16-10,16,16-10
+LeftScorpionAttack1_Col:                    include "..\sprites\enemies\Scorpion\LeftScorpionAttack1.tcs.gen"  | db 00,12-10,00,12-10, 16,00-10,16,00-10, 16,16-10,16,16-10
 LeftScorpionAttack2_Char:                   include "..\sprites\enemies\Scorpion\LeftScorpionAttack2.tgs.gen"	  
-LeftScorpionAttack2_Col:                    include "..\sprites\enemies\Scorpion\LeftScorpionAttack2.tcs.gen"  | db 00,16-00,00,16-00, 16,00-00,16,00-00, 16,16-00,16,16-00
+LeftScorpionAttack2_Col:                    include "..\sprites\enemies\Scorpion\LeftScorpionAttack2.tcs.gen"  | db 00,09-00,00,09-00, 16,00-00,16,00-00, 16,16-00,16,16-00
 
 RightScorpionAttack1_Char:                  include "..\sprites\enemies\Scorpion\RightScorpionAttack1.tgs.gen"	  
-RightScorpionAttack1_Col:                   include "..\sprites\enemies\Scorpion\RightScorpionAttack1.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
+RightScorpionAttack1_Col:                   include "..\sprites\enemies\Scorpion\RightScorpionAttack1.tcs.gen"  | db 00,04,00,04, 16,00,16,00, 16,16,16,16
 RightScorpionAttack2_Char:                  include "..\sprites\enemies\Scorpion\RightScorpionAttack2.tgs.gen"	  
-RightScorpionAttack2_Col:                   include "..\sprites\enemies\Scorpion\RightScorpionAttack2.tcs.gen"  | db 00,00-10,00,00-10, 16,00-10,16,00-10, 16,16-10,16,16-10
+RightScorpionAttack2_Col:                   include "..\sprites\enemies\Scorpion\RightScorpionAttack2.tcs.gen"  | db 00,07-10,00,07-10, 16,00-10,16,00-10, 16,16-10,16,16-10
 
 LeftScorpionRattle2_Char:                   include "..\sprites\enemies\Scorpion\LeftScorpionRattle2.tgs.gen"	 ;y offset, x offset 
 LeftScorpionRattle2_Col:                    include "..\sprites\enemies\Scorpion\LeftScorpionRattle2.tcs.gen"  | db 00,16-10,00,16-10, 16,00-10,16,00-10, 16,16-10,16,16-10
@@ -2005,6 +2005,7 @@ dephase
 ;
 FireEyeGreenSpriteblock:  equ   $53
 DemontjeGreenSpriteblock:  equ   $53
+HugeBlobWhiteSpriteblock:  equ   $53
 phase	$8000
 LeftDemontjeGreen1_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tgs.gen"	;y offset, x offset  
 LeftDemontjeGreen1_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tcs.gen"  | db 00,01,00,01
@@ -2036,6 +2037,14 @@ FireEyeGreen5_Char:                         include "..\sprites\enemies\FireEye\
 FireEyeGreen5_Col:                          include "..\sprites\enemies\FireEye\FireEyeGreen5.tcs.gen"  | db 00,08,00,08,00,08, 16,00,16,00, 16,16,16,16, 32,00,32,00, 32,16,32,16
 FireEyeGreen6_Char:                         include "..\sprites\enemies\FireEye\FireEyeGreen6.tgs.gen"	  
 FireEyeGreen6_Col:                          include "..\sprites\enemies\FireEye\FireEyeGreen6.tcs.gen"  | db 00,08,00,08,00,08, 16,00,16,00, 16,16,16,16, 32,00,32,00, 32,16,32,16
+
+HugeBlobWhite1_Char:                        incbin "..\sprites\enemies\HugeBlob\HugeBlobWhite\1.spr",0,384 | ds 192,9 | db 00,00+00, 00,16+00, 00,32+00, 00,48+00, 16,00+00, 16,16+00, 16,32+00, 16,48+00, 32,00+00, 32,16+00, 32,32+00, 32,48+00
+HugeBlobWhite2_Char:                        incbin "..\sprites\enemies\HugeBlob\HugeBlobWhite\2.spr",0,384 | ds 192,9 | db 00,00+00, 00,16+00, 00,32+00, 00,48+00, 16,00+00, 16,16+00, 16,32+00, 16,48+00, 32,00+00, 32,16+00, 32,32+00, 32,48+00
+HugeBlobWhite3_Char:                        incbin "..\sprites\enemies\HugeBlob\HugeBlobWhite\3.spr",0,384 | ds 192,9 | db 00,00+00, 00,16+00, 00,32+00, 00,48+00, 16,00+00, 16,16+00, 16,32+00, 16,48+00, 32,00+00, 32,16+00, 32,32+00, 32,48+00
+HugeBlobWhite4_Char:                        incbin "..\sprites\enemies\HugeBlob\HugeBlobWhite\4.spr",0,384 | ds 192,9 | db 00,00+06, 00,16+06, 00,32+06, 00,48+06, 16,00+06, 16,16+06, 16,32+06, 16,48+06, 32,00+06, 32,16+06, 32,32+06, 32,48+06
+HugeBlobWhite5_Char:                        incbin "..\sprites\enemies\HugeBlob\HugeBlobWhite\5.spr",0,384 | ds 192,9 | db 00,00+08, 00,16+08, 00,32+08, 00,48+08, 16,00+08, 16,16+08, 16,32+08, 16,48+08, 32,00+08, 32,16+08, 32,32+08, 32,48+08
+HugeBlobWhite6_Char:                        incbin "..\sprites\enemies\HugeBlob\HugeBlobWhite\6.spr",0,384 | ds 192,9 | db 00,00+06, 00,16+06, 00,32+06, 00,48+06, 16,00+06, 16,16+06, 16,32+06, 16,48+06, 32,00+06, 32,16+06, 32,32+06, 32,48+06
+HugeBlobWhite7_Char:                        incbin "..\sprites\enemies\HugeBlob\HugeBlobWhite\7.spr",0,384 | ds 192,9 | db 00,00+02, 00,16+02, 00,32+02, 00,48+02, 16,00+02, 16,16+02, 16,32+02, 16,48+02, 32,00+02, 32,16+02, 32,32+02, 32,48+02
 	ds		$c000-$,$ff
 dephase
 

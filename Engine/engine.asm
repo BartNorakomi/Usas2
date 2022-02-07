@@ -55,11 +55,8 @@ LevelEngine:
 
 ClesX:      dw 080 ;150 ;210
 ClesY:      db 050 ; 144-1
-herospritenr:             db  herospritenrTimes4 / 4
+;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
-herospritenrTimes4:       equ 28*4
-herospritenrTimes16:      equ 28*16
-herospritenrTimes32:      equ 28*32
 
 BackdropRandom:
   ld    a,r
@@ -756,9 +753,13 @@ PutPlayersprite:
   nop
 ;THIS CAN BE REMOVED IF WE ADD THE SELFMODIFYING CALL TO PutPlayerspriteSF2Engine
 
+;Sprite Character table and it's mirror table start at  $17000 and $17800
+;Sprite color table and it's mirror table start at      $16c00 and $17400
+
+
 	out   ($99),a       ;set bits 0-7
   SelfmodifyingCodePlayerCharAddress: equ $+1
-	ld    a,$73         ;$73 / $7b
+	ld    a,$73         ;$73 / $7b (
 ;  nop
 	ld		c,$98         ;port to write to, and replace the nop wait time instruction required
 	out   ($99),a       ;set bits 8-14 + write access
@@ -782,9 +783,7 @@ PutPlayersprite:
 ;  add   hl,de
 ;	ld		a,1
 ;	call	SetVdp_Write
-	
 ;  exx               ;recall hl. hl now points to color data
-
 
 ;check if player is left side of screen, if so add 32 bit shift
   exx               ;store hl. hl now points to color data
@@ -857,6 +856,7 @@ Apply32bitShift:      ;if x player - x camera < 16 then apply EC bit shift
   add   a,ECbytes+32             ;adjust for the correction made earlier and add 32 bit shift added to sprite x
 
   ld    de,3
+  .SelfmodyfyingSpataddressPlayer:  equ $+1
   ld    hl,spat+herospritenrTimes2 ;4          
   ld    (hl),b              ;y sprite 22
   inc   hl                  
@@ -924,6 +924,7 @@ PlayerLeftSideOfScreen:
   pop   af                  ;Cles x and subtract the x camera
   add   a,ECbytes                ;adjust for the correction made earlier
 
+  .SelfmodyfyingSpataddressPlayer:  equ $+1
   ld    hl,spat+herospritenrTimes2 ;4
   ld    (hl),b              ;y sprite 22
   inc   hl                  
@@ -963,6 +964,7 @@ PlayerRightSideOfScreen:
   pop   af                  ;Cles x and subtract the x camera
   add   a,ECbytes                ;adjust for the correction made earlier
 
+  .SelfmodyfyingSpataddressPlayer:  equ $+1
   ld    hl,spat+herospritenrTimes2 ;4
   ld    (hl),b              ;y sprite 22
   inc   hl                  
@@ -2195,7 +2197,7 @@ lineintBorderMaskingSplit:
 ;	ld    a,$00
   xor   a
 	out   ($99),a       ;set bits 0-7
-  .SelfmodifyingCodePlayerSpatAddress: equ $+1
+  .SelfmodifyingCodeSpatAddress: equ $+1
 	ld    a,$6e         ;$6e /$76 
 ;  nop
   ld    c,$98         ;port to write to and deal with the nop required wait time 
@@ -2715,14 +2717,16 @@ SwapSpatColAndCharTable2:
   ei
 	out		($99),a
 
-  ld    a,$7b
+.DoubleSelfmodifyingCodePlayerCharAddress: equ $+1
+  ld    a,$7b ;-2
   ld    (SelfmodifyingCodePlayerCharAddress),a
-  ld    a,$75
+.DoubleSelfmodifyingCodePlayerColAddress: equ $+1
+  ld    a,$75 ;-1
   ld    (SelfmodifyingCodePlayerColorAddress),a
   ld    a,$76
-  ld    (SelfmodifyingCodePlayerSpatAddress),a
+  ld    (SelfmodifyingCodeSpatAddress),a
   ld    a,$6e
-  ld    (lineintBorderMaskingSplit.SelfmodifyingCodePlayerSpatAddress),a
+  ld    (lineintBorderMaskingSplit.SelfmodifyingCodeSpatAddress),a
 
   ld    hl,$7400              ;spr color table buffer $17400
   ld    (invissprcoltableaddress),hl
@@ -2746,14 +2750,16 @@ SwapSpatColAndCharTable2:
   ei
 	out		($99),a
 
-  ld    a,$73
+.DoubleSelfmodifyingCodePlayerCharAddressMirror: equ $+1
+  ld    a,$73 ;-2
   ld    (SelfmodifyingCodePlayerCharAddress),a
-  ld    a,$6d
+.DoubleSelfmodifyingCodePlayerColAddressMirror: equ $+1
+  ld    a,$6d ;-1
   ld    (SelfmodifyingCodePlayerColorAddress),a
   ld    a,$6e
-  ld    (SelfmodifyingCodePlayerSpatAddress),a
+  ld    (SelfmodifyingCodeSpatAddress),a
   ld    a,$76
-  ld    (lineintBorderMaskingSplit.SelfmodifyingCodePlayerSpatAddress),a
+  ld    (lineintBorderMaskingSplit.SelfmodifyingCodeSpatAddress),a
 
   ld    hl,$6c00              ;spr color table buffer $17400
   ld    (invissprcoltableaddress),hl
@@ -6150,7 +6156,7 @@ PutSpatToVram:
   xor   a
 ;  nop
 	out   ($99),a       ;set bits 0-7
-  SelfmodifyingCodePlayerSpatAddress: equ $+1
+  SelfmodifyingCodeSpatAddress: equ $+1
 	ld    a,$6e         ;$6e /$76 
 ;  nop
 	ld		hl,spat			;sprite attribute table, and replace the nop required wait time
@@ -6168,34 +6174,6 @@ PutSpatToVram:
   outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi|nop|in a,($98)|nop|in a,($98)|outi|outi;|nop|in a,($98)|nop|in a,($98)|
 	ei
   ret
-
-
-
-
-;SetVdp_Write:
-;    rlc h
-;    rla
-;    rlc h
-;    rla
-;    srl h
-;    srl h
-;    di
-;    out (#99),a
-;    ld a,14 + 128
-;    out (#99),a            3 cycles  11 Tstates(4,3,4)
-;    ld a,l                 1 cycle   4 Tstates(4)
-;    nop                    1 cycle   4 Tstates(4)
-;    out (#99),a            3 cycles  11 Tstates(4,3,4)
-;    ld a,h                 2 cycles
-;    or 64                  2 cycles
-;    ei                     1 cycle
-;    out (#99),a            3 cycles
-;    ret
-
-
-
-
-
 
 outix384:
   call  outix256

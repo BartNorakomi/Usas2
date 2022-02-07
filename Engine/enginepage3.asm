@@ -61,7 +61,22 @@ loadGraphics:
   ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
   jp    LevelEngine
 
-SetVariables:  
+SetVariables:
+  ;set player sprites to spritenumber 28 for char and color address
+  ld    a,$7b ;-2
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerCharAddress),a
+  ld    a,$75 ;-1
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerColAddress),a
+  ld    a,$73 ;-2
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerCharAddressMirror),a
+  ld    a,$6d ;-1
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerColAddressMirror),a
+  ;set player sprites to spritenumber 28 for spatposition
+  ld    hl,spat+(28 * 2)
+  ld    (Apply32bitShift.SelfmodyfyingSpataddressPlayer),hl          
+  ld    (PlayerLeftSideOfScreen.SelfmodyfyingSpataddressPlayer),hl          
+  ld    (PlayerRightSideOfScreen.SelfmodyfyingSpataddressPlayer),hl          
+  
   ld    a,StartingJumpSpeedEqu        ;reset Starting Jump Speed
   ld    (StartingJumpSpeed),a
   inc   a

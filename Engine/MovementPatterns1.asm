@@ -594,12 +594,29 @@ HugeBlob:
   exx                                       ;store hl. hl now points to color data
   call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
   call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-	ld		a,HugeBlobSpriteblock               ;set block at $a000, page 2 - block containing sprite data
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  bit   1,(ix+enemies_and_objects.hit?)         ;check if enemy is hit ? If so, out white sprite
+	ld		a,HugeBlobWhiteSpriteblock          ;set block at $a000, page 2 - block containing sprite data
+  ret   nz
+	ld		a,HugeBlobSpriteblock               ;set block at $a000, page 2 - block containing sprite data
   ret
   
   .HandlePhase:
+  ;set player sprites to spritenumber 12 for char and color address
+  ld    a,$7b-2
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerCharAddress),a
+  ld    a,$75-1
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerColAddress),a
+  ld    a,$73-2
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerCharAddressMirror),a
+  ld    a,$6d-1
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerColAddressMirror),a
+  ;set player sprites to spritenumber 28 for spatposition
+  ld    hl,spat+(12 * 2)
+  ld    (Apply32bitShift.SelfmodyfyingSpataddressPlayer),hl          
+  ld    (PlayerLeftSideOfScreen.SelfmodyfyingSpataddressPlayer),hl          
+  ld    (PlayerRightSideOfScreen.SelfmodyfyingSpataddressPlayer),hl    
 
   .Animate:
   ld    hl,HugeBlobAnimation
@@ -771,6 +788,7 @@ Octopussy:
   dec   (ix+enemies_and_objects.v5)         ;v5=Attack phase duration
   jr    nz,.Animate
   ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=Floating in air, 1=Shooting)  
+  ld    (ix+enemies_and_objects.v6),20      ;v6 wait until shooting again
   
   .Animate:
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
@@ -793,15 +811,23 @@ Octopussy:
   jp    .GoAnimate
 
   .Near:                                    ;Player is near, so shoot bullets every x frames
-  ld    a,(framecounter)
-  and   15
-  jp    nz,.Animate
+  ld    a,(ix+enemies_and_objects.v6)       ;v6 wait until shooting again
+  dec   a
+  jr    z,.OctoMayShoot
+  ld    (ix+enemies_and_objects.v6),a       ;v6 wait until shooting again
+  jp    .Animate
   
+  .OctoMayShoot:
   ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
   cp    2 * 04
   jr    nz,.Animate
-;  cp    2 * 06
-  
+
+;this could be used if we have 2 octo's in screen and one is 1 tile higher than the other. If we have only 1 octo, remove this code so he shoots faster
+  ld    a,(framecounter)
+  and   7
+  jr    nz,.Animate
+;this could be used if we have 2 octo's in screen and one is 1 tile higher than the other. If we have only 1 octo, remove this code so he shoots faster
+
   push  ix
   call  .CreateBullet                       ;out zero=bullet is shot
   pop   ix
@@ -1003,7 +1029,7 @@ Scorpion:
   dec   (ix+enemies_and_objects.v5)
   jr    nz,.Animate
   ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=walking, 1=rattletail, 2=attacking) 
-  ld    (ix+enemies_and_objects.v5),02      ;v5=Rattle timer
+  ld    (ix+enemies_and_objects.v5),06      ;v5=Rattle timer
 
   .Animate:
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement

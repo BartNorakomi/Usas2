@@ -1,77 +1,71 @@
 ; Sprite 0 - Mode : 2 sprites, color OR on 
   db 0
-  db 3
-  db 3
   db 0
   db 0
-  db 0
-  db 112
-  db 8
+  db 124
+  db 191
+  db 119
+  db 11
   db 6
-  db 1
-  db 1
-  db 240
-  db 12
+  db 3
   db 0
-  db 30
-  db 28
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
   db 0
   db 0
   db 0
   db 128
-  db 64
-  db 64
-  db 32
-  db 32
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
+  db 192
+  db 224
   db 112
-  db 8
-  db 6
-  db 1
+  db 184
+  db 184
+  db 24
+  db 44
+  db 46
+  db 4
+  db 22
   db 0
-  db 240
-  db 12
-  db 2
+  db 0
   db 0
   db 0
   db 227
+  db 124
+  db 13
+  db 7
+  db 3
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
   db 0
   db 0
   db 128
   db 64
   db 32
-  db 32
-  db 16
-  db 16
-  db 16
-  db 128
-  db 128
-  db 0
-  db 0
-  db 0
-  db 0
-  db 128
+  db 208
+  db 200
+  db 216
+  db 100
+  db 52
+  db 54
+  db 58
+  db 26
 ; Sprite 1 - Mode : 2 sprites, color OR on 
   db 0
   db 0
-  db 3
-  db 3
-  db 54
-  db 95
-  db 191
-  db 240
   db 0
   db 0
   db 0
@@ -80,13 +74,18 @@
   db 0
   db 0
   db 0
-  db 15
-  db 15
-  db 254
-  db 228
-  db 54
-  db 236
-  db 60
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 6
+  db 4
+  db 22
+  db 44
+  db 44
   db 55
   db 31
   db 49
@@ -95,15 +94,8 @@
   db 110
   db 127
   db 143
-  db 124
-  db 0
-  db 0
-  db 3
-  db 12
-  db 59
-  db 113
-  db 239
-  db 240
+  db 48
+  db 60
   db 0
   db 0
   db 0
@@ -113,12 +105,19 @@
   db 0
   db 0
   db 0
-  db 112
-  db 167
-  db 27
-  db 250
-  db 244
-  db 36
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 10
+  db 26
+  db 52
+  db 52
   db 43
   db 32
   db 46
@@ -127,29 +126,30 @@
   db 63
   db 0
   db 240
+  db 79
   db 0
 ; Sprite 2 - Mode : 2 sprites, color OR on 
-  db 199
-  db 152
-  db 111
   db 1
+  db 1
+  db 0
   db 192
+  db 225
   db 239
-  db 237
-  db 248
+  db 253
   db 252
-  db 255
+  db 252
   db 239
+  db 255
   db 254
-  db 247
+  db 231
   db 243
   db 143
   db 125
-  db 192
-  db 224
-  db 240
   db 112
-  db 120
+  db 112
+  db 176
+  db 240
+  db 24
   db 120
   db 248
   db 24
@@ -161,28 +161,28 @@
   db 222
   db 156
   db 8
-  db 60
-  db 255
-  db 239
   db 1
-  db 192
-  db 174
-  db 171
-  db 31
-  db 7
-  db 4
-  db 150
-  db 135
-  db 158
-  db 62
-  db 115
+  db 1
   db 0
-  db 64
-  db 96
-  db 144
-  db 144
-  db 232
-  db 136
+  db 0
+  db 161
+  db 174
+  db 27
+  db 7
+  db 7
+  db 148
+  db 134
+  db 159
+  db 30
+  db 62
+  db 243
+  db 0
+  db 176
+  db 208
+  db 208
+  db 0
+  db 248
+  db 152
   db 232
   db 248
   db 104

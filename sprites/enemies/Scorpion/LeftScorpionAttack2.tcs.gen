@@ -11,9 +11,9 @@
   db 255
   db 255
   db 255
-  db 255
-  db 255
   db 15
+  db 11
+  db 11
   db 11
   db 255
   db 255
@@ -28,11 +28,11 @@
   db 255
   db 255
   db 255
-  db 255
-  db 255
   db 79
+  db 79
+  db 76
 ; Sprite 1 - Mode : 2 sprites, color OR on 
-  db 15
+  db 11
   db 11
   db 11
   db 11
@@ -48,14 +48,14 @@
   db 15
   db 11
   db 15
-  db 255
+  db 76
   db 79
   db 76
   db 79
+  db 76
   db 76
   db 76
   db 78
-  db 76
   db 79
   db 76
   db 79
@@ -84,7 +84,7 @@
   db 76
   db 76
   db 76
-  db 76
+  db 79
   db 76
   db 76
   db 76
