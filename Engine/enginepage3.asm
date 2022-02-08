@@ -12,13 +12,20 @@ MapB01_004Data: db MapsBlock02 | dw MapB01_004 | db 1,3,3                  | Map
 MapB01_007Data: db MapsBlock02 | dw MapB01_007 | db 1,3,3                  | MapB01_008Data: db MapsBlock02 | dw MapB01_008 | db 1,3,3                  | MapB01_009Data: db MapsBlock02 | dw MapB01_009 | db 1,3,3
 MapB01_010Data: db MapsBlock02 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock02 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock02 | dw MapB01_012 | db 1,3,3
 MapB01_013Data: db MapsBlock02 | dw MapB01_013 | db 1,3,3                  | MapB01_014Data: db MapsBlock02 | dw MapB01_014 | db 1,3,3                  | MapB01_015Data: db MapsBlock02 | dw MapB01_015 | db 1,3,3
-MapB01_016Data: db MapsBlock02 | dw MapB01_016 | db 1,3,3                  | MapB01_017Data: db MapsBlock02 | dw MapB01_017 | db 1,3,3                  | MapB01_018Data: db MapsBlock02 | dw MapB01_018 | db 1,3,3
+MapB01_016Data: db MapsBlock02 | dw MapB01_016 | db 2,3,3                  | MapB01_017Data: db MapsBlock02 | dw MapB01_017 | db 1,3,3                  | MapB01_018Data: db MapsBlock02 | dw MapB01_018 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_017Data
+WorldMapPointer:  dw  MapB01_016Data
 
 loadGraphics:
   call  screenoff
+  call  ReSetVariables
+
+  call  SwapSpatColAndCharTable2
+  call  SwapSpatColAndCharTable
+  call  SwapSpatColAndCharTable2
+  
+  
   ld    ix,(WorldMapPointer)
   call  SetEngineType                 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
   call  SetTilesInVram                ;copies all the tiles to Vram
@@ -44,7 +51,6 @@ loadGraphics:
 
 
 
-  call  SetVariables
 
   ld    a,1
   ld    (CopyObject+spage),a
@@ -61,7 +67,7 @@ loadGraphics:
   ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
   jp    LevelEngine
 
-SetVariables:
+ReSetVariables:
   ;set player sprites to spritenumber 28 for char and color address
   ld    a,$7b ;-2
   ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerCharAddress),a

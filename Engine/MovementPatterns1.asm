@@ -31,6 +31,7 @@
 ;HugeBlob
 ;HugeBlobSWsprite
 ;OP_SlowDownHandler
+;GlassBall
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -537,6 +538,39 @@ Template:
   .HandlePhase:
   ld    hl,RightBeetleWalk1_Char
   ret
+
+
+
+GlassBall:
+;  ld    a,(HugeObjectFrame)
+;  inc   a
+;  ld    (HugeObjectFrame),a
+;  jp    nz,CheckCollisionObjectPlayer
+
+  call  BackdropOrange  
+
+  ld    de,GlassBallMovementTable
+  call  MoveObjectWithStepTable
+
+
+;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  restoreBackgroundObject1
+  call  ObjectAnimation
+  call  PutSF2Object
+
+
+;  ld    a,-1
+;  ld    (HugeObjectFrame),a
+  call  switchpageSF2Engine  
+  
+  
+  call  BackdropBlack  
+  ret
+
+
+GlassBallMovementTable:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  120,-0,+1,  120,+0,-1
+  db  128
 
 HugeBlob:
 ;v1=Animation Counter
