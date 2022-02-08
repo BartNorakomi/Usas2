@@ -1141,26 +1141,12 @@ PutSF2Object:
 	out		($a8),a	
 
   ;set framelist in page 2 in rom ($8000 - $bfff)
-;  ld    a,(Player1FramePage)
-;  add   a,a
-;  ld    hl,Player1Framelistblock
-;	add   a,(hl)
-	
 	ld    a,ryuframelistblock
   call	block34
 
   ;set framedata in page 1 in rom ($4000 - $7fff)
-;  ld    a,(Player1FramePage)
-;  add   a,a
-;  ld    hl,Player1Spritedatablock
-;	add   a,(hl)
-	
 	ld    a,ryuspritedatablock
   call	block12
-
-  ld    bc,Object1x
-  ld    hl,(Player1Frame)     ;points to object width
-  ld    iy,Player1SxB1        ;player collision detection blocks
 
   di
   call  GoPutSF2Object
@@ -1185,26 +1171,15 @@ PutSF2Object2:
 	out		($a8),a	
 
   ;set framelist in page 2 in rom ($8000 - $bfff)
-;  ld    a,(Player1FramePage)
-;  add   a,a
-;  ld    hl,Player1Framelistblock
-;	add   a,(hl)
-	
 	ld    a,ryuframelistblock
   call	block34
 
   ;set framedata in page 1 in rom ($4000 - $7fff)
-;  ld    a,(Player1FramePage)
-;  add   a,a
-;  ld    hl,Player1Spritedatablock
-;	add   a,(hl)
+	ld    a,ryuspritedatablock
+  call	block12
 	
 	ld    a,ryuspritedatablock
   call	block12
-
-  ld    bc,Object1x
-  ld    hl,(Player1Frame)     ;points to object width
-  ld    iy,Player1SxB1        ;player collision detection blocks
 
   di
   call  GoPutSF2Object
@@ -1229,26 +1204,12 @@ PutSF2Object3:
 	out		($a8),a	
 
   ;set framelist in page 2 in rom ($8000 - $bfff)
-;  ld    a,(Player1FramePage)
-;  add   a,a
-;  ld    hl,Player1Framelistblock
-;	add   a,(hl)
-	
 	ld    a,ryuframelistblock
   call	block34
 
   ;set framedata in page 1 in rom ($4000 - $7fff)
-;  ld    a,(Player1FramePage)
-;  add   a,a
-;  ld    hl,Player1Spritedatablock
-;	add   a,(hl)
-	
 	ld    a,ryuspritedatablock
   call	block12
-
-  ld    bc,Object1x
-  ld    hl,(Player1Frame)     ;points to object width
-  ld    iy,Player1SxB1        ;player collision detection blocks
 
   di
   call  GoPutSF2Object
@@ -1281,6 +1242,10 @@ PutSF2Object3:
 ScreenLimitxRight:  equ 256-10
 ScreenLimitxLeft:   equ 10
 GoPutSF2Object:
+  ld    bc,Object1x
+  ld    hl,(Player1Frame)     ;points to object width
+  ld    iy,Player1SxB1        ;player collision detection blocks
+
 ;screen limit right
   ld    a,(bc)                ;object x
   cp    ScreenLimitxRight
@@ -1927,13 +1892,42 @@ RyuActions2:
   dw ryupage0frame002 | db 1 | dw ryupage0frame003 | db 1
   ds  12
 
-ObjectAnimation:
-;  ld    ix,P1RightIdleFrame
-  ld    ix,RyuActions2.LeftIdleFrame
-  ld    iy,Player1Frame
-  jp    AnimatePlayer         ;if left NOR right is pressed, then stay in Idle
+GlassBallAnimationRight:
+.LeftIdleFrame:                ;current spriteframe, total animationsteps
+  db    0,8
+.LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
+  db    0,1,0                 ;animation every 2,5 frames
+.LeftIdleTable:
+  dw ryupage0frame004 | db 1 | dw ryupage0frame005 | db 1
+  dw ryupage0frame006 | db 1 | dw ryupage0frame007 | db 1
+  dw ryupage0frame008 | db 1 | dw ryupage0frame009 | db 1
+  dw ryupage0frame010 | db 1 | dw ryupage0frame011 | db 1
 
-AnimatePlayer:                ;animates, forces writing spriteframe, out: z=animation ended
+GlassBallAnimationLeft:
+.LeftIdleFrame:                ;current spriteframe, total animationsteps
+  db    0,8
+.LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
+  db    0,1,0                 ;animation every 2,5 frames
+.LeftIdleTable:
+  dw ryupage0frame011 | db 1 | dw ryupage0frame010 | db 1
+  dw ryupage0frame009 | db 1 | dw ryupage0frame008 | db 1
+  dw ryupage0frame007 | db 1 | dw ryupage0frame006 | db 1
+  dw ryupage0frame005 | db 1 | dw ryupage0frame004 | db 1
+
+GlassBallAnimationFallingDown:
+.LeftIdleFrame:                ;current spriteframe, total animationsteps
+  db    0,2
+.LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
+  db    0,1,0                 ;animation every 2,5 frames
+.LeftIdleTable:
+  dw ryupage0frame004 | db 1 | dw ryupage0frame008 | db 1
+  ds    18
+  
+ObjectAnimation:              ;animates, forces writing spriteframe, out: z=animation ended
+  ld    ix,RyuActions2.LeftIdleFrame
+ObjectAnimationIXgiven:       ;animates, forces writing spriteframe, out: z=animation ended
+  ld    iy,Player1Frame
+              
 ;check speed of animation
   ld    a,(ix+3)              ;PxLeftIdleAnimationSpeed+1
   ld    b,a

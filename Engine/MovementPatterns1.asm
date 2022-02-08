@@ -542,20 +542,36 @@ Template:
 
 
 GlassBall:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+
+
 ;  ld    a,(HugeObjectFrame)
 ;  inc   a
 ;  ld    (HugeObjectFrame),a
 ;  jp    nz,CheckCollisionObjectPlayer
 
-  call  BackdropOrange  
+;  call  BackdropOrange  
 
+
+
+  ld    a,(framecounter)
+  and   3
   ld    de,GlassBallMovementTable
-  call  MoveObjectWithStepTable
+  call  z,MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
 
 
-;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject1
-  call  ObjectAnimation
+
+  ld    a,(framecounter)
+  and   3
+  call  z,.Animate
+  
   call  PutSF2Object
 
 
@@ -564,12 +580,29 @@ GlassBall:
   call  switchpageSF2Engine  
   
   
-  call  BackdropBlack  
+;  call  BackdropBlack  
   ret
 
+  .Animate:
+  ld    a,(ix+enemies_and_objects.v3)       ;v4=Horizontal Movement
+  or    a
+  ld    ix,GlassBallAnimationFallingDown
+  jp    nz,ObjectAnimationIXgiven
+
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  or    a
+  ld    ix,GlassBallAnimationRight
+  jp    p,ObjectAnimationIXgiven
+  ld    ix,GlassBallAnimationLeft
+  jp    ObjectAnimationIXgiven
 
 GlassBallMovementTable:  ;repeating steps(128 = end table/repeat), move y, move x
-  db  120,-0,+1,  120,+0,-1
+;  db  094,-0,+2, 031,+2,-0, 086,-0,-2, 031,+2,-0, 086,-0,+2
+  db  094,-0,+2, 007,+8,-0, 086,-0,-2, 007,+8,-0, 086,-0,+2
+
+  db  086,-0,-2, 007,-8,-0, 086,-0,+2, 007,-8,-0, 094,-0,-2
+
+
   db  128
 
 HugeBlob:
@@ -3729,6 +3762,7 @@ MoveObjectWithStepTable:
 ;  ld    a,(SnapToPlatform?)
   or    a
   ret   z
+  
   MovePlayerAlongWithObject:
   ld    a,(ix+enemies_and_objects.v4)         ;x movement
   or    a

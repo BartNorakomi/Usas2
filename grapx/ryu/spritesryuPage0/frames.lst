@@ -2,13 +2,21 @@
   dw ryuPage0frame001
   dw ryuPage0frame002
   dw ryuPage0frame003
+  dw ryuPage0frame004
+  dw ryuPage0frame005
+  dw ryuPage0frame006
+  dw ryuPage0frame007
+  dw ryuPage0frame008
+  dw ryuPage0frame009
+  dw ryuPage0frame010
+  dw ryuPage0frame011
 
 ryuPage0frame000:
   db 02Eh,030h,082h,000h
   db 084h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0157Fh,base+01088h
+  dw 0157Fh,base+01C08h
   dw 01780h,base+00000h
   dw 01780h,base+00017h
   dw 01780h,base+0002Eh
@@ -55,14 +63,14 @@ ryuPage0frame000:
   dw 01780h,base+003DDh
   dw 01780h,base+003F4h
   dw 01781h,base+0040Bh
-  dw 01500h,base+01088h
+  dw 01500h,base+01C08h
 
 ryuPage0frame001:
   db 02Eh,030h,082h,000h
   db 084h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0157Fh,base+0109Dh
+  dw 0157Fh,base+01C1Dh
   dw 01780h,base+00422h
   dw 01780h,base+00439h
   dw 01780h,base+00450h
@@ -109,14 +117,14 @@ ryuPage0frame001:
   dw 01780h,base+007FFh
   dw 01780h,base+00816h
   dw 01781h,base+0082Dh
-  dw 01500h,base+010B2h
+  dw 01500h,base+01C32h
 
 ryuPage0frame002:
   db 02Eh,030h,082h,000h
   db 084h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0157Fh,base+010C7h
+  dw 0157Fh,base+01C47h
   dw 01780h,base+00844h
   dw 01780h,base+0085Bh
   dw 01780h,base+00872h
@@ -163,14 +171,14 @@ ryuPage0frame002:
   dw 01780h,base+00C21h
   dw 01780h,base+00C38h
   dw 01781h,base+00C4Fh
-  dw 01500h,base+010DCh
+  dw 01500h,base+01C5Ch
 
 ryuPage0frame003:
   db 02Eh,030h,082h,000h
   db 084h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0157Fh,base+010F1h
+  dw 0157Fh,base+01C71h
   dw 01780h,base+00C66h
   dw 01780h,base+00C7Dh
   dw 01780h,base+00C94h
@@ -217,6 +225,438 @@ ryuPage0frame003:
   dw 01780h,base+01043h
   dw 01780h,base+0105Ah
   dw 01781h,base+01071h
-  dw 01500h,base+01106h
+  dw 01500h,base+01C86h
+
+ryuPage0frame004:
+  db 02Eh,030h,082h,000h
+  db 094h
+  db 000h,000h,000h,000h,000h
+  db 000h,000h
+  dw 0057Fh,base+01C08h
+  dw 0077Eh,base+029E3h
+  dw 00B80h,base+01C05h
+  dw 00B7Fh,base+02A3Bh
+  dw 00D7Fh,base+0296Bh
+  dw 00F80h,base+0278Bh
+  dw 00F7Fh,base+0279Ah
+  dw 01180h,base+0256Bh
+  dw 0117Fh,base+0257Ch
+  dw 01380h,base+021DBh
+  dw 01380h,base+021EEh
+  dw 0137Fh,base+02201h
+  dw 01580h,base+01C9Bh
+  dw 01580h,base+01CB0h
+  dw 01580h,base+01CC5h
+  dw 0157Fh,base+01CDAh
+  dw 01780h,base+01088h
+  dw 01780h,base+0109Fh
+  dw 01780h,base+010B6h
+  dw 01780h,base+010CDh
+  dw 01780h,base+010E4h
+  dw 01780h,base+010FBh
+  dw 01780h,base+01112h
+  dw 01780h,base+01129h
+  dw 01780h,base+01140h
+  dw 01780h,base+01157h
+  dw 01780h,base+0116Eh
+  dw 01780h,base+01185h
+  dw 01780h,base+0119Ch
+  dw 01780h,base+011B3h
+  dw 01780h,base+011CAh
+  dw 01781h,base+011E1h
+  dw 01580h,base+01CEFh
+  dw 01580h,base+01D04h
+  dw 01580h,base+01D19h
+  dw 01581h,base+01D2Eh
+  dw 01380h,base+02214h
+  dw 01380h,base+02227h
+  dw 01381h,base+0223Ah
+  dw 01180h,base+0258Dh
+  dw 01181h,base+0259Eh
+  dw 00F80h,base+027A9h
+  dw 00F81h,base+027B8h
+  dw 00D81h,base+02978h
+  dw 00B80h,base+02A46h
+  dw 00B82h,base+02A51h
+  dw 00781h,base+01C08h
+  dw 00500h,base+01C08h
+
+ryuPage0frame005:
+  db 02Eh,030h,082h,000h
+  db 094h
+  db 000h,000h,000h,000h,000h
+  db 000h,000h
+  dw 0057Fh,base+01C08h
+  dw 0077Eh,base+02B85h
+  dw 00B80h,base+02A5Ch
+  dw 00B7Fh,base+02A67h
+  dw 00D7Fh,base+02985h
+  dw 00F80h,base+027C7h
+  dw 00F7Fh,base+027D6h
+  dw 01180h,base+025AFh
+  dw 0117Fh,base+025C0h
+  dw 01380h,base+0224Dh
+  dw 01380h,base+02260h
+  dw 0137Fh,base+02273h
+  dw 01580h,base+01D43h
+  dw 01580h,base+01D58h
+  dw 01580h,base+01D6Dh
+  dw 0157Fh,base+01D82h
+  dw 01780h,base+011F8h
+  dw 01780h,base+0120Fh
+  dw 01780h,base+01226h
+  dw 01780h,base+0123Dh
+  dw 01780h,base+01254h
+  dw 01780h,base+0126Bh
+  dw 01780h,base+01282h
+  dw 01780h,base+01299h
+  dw 01780h,base+012B0h
+  dw 01780h,base+012C7h
+  dw 01780h,base+012DEh
+  dw 01780h,base+012F5h
+  dw 01780h,base+0130Ch
+  dw 01780h,base+01323h
+  dw 01780h,base+0133Ah
+  dw 01781h,base+01351h
+  dw 01580h,base+01D97h
+  dw 01580h,base+01DACh
+  dw 01580h,base+01DC1h
+  dw 01581h,base+01DD6h
+  dw 01380h,base+02286h
+  dw 01380h,base+02299h
+  dw 01381h,base+022ACh
+  dw 01180h,base+025D1h
+  dw 01181h,base+025E2h
+  dw 00F80h,base+027E5h
+  dw 00F81h,base+027F4h
+  dw 00D81h,base+02992h
+  dw 00B80h,base+02A72h
+  dw 00B82h,base+02A7Dh
+  dw 00781h,base+02677h
+  dw 00500h,base+01C08h
+
+ryuPage0frame006:
+  db 02Eh,030h,082h,000h
+  db 094h
+  db 000h,000h,000h,000h,000h
+  db 000h,000h
+  dw 0057Fh,base+01C08h
+  dw 0077Eh,base+02B8Ch
+  dw 00B80h,base+02A88h
+  dw 00B7Fh,base+02A93h
+  dw 00D7Fh,base+0299Fh
+  dw 00F80h,base+02803h
+  dw 00F7Fh,base+02812h
+  dw 01180h,base+025F3h
+  dw 0117Fh,base+02604h
+  dw 01380h,base+022BFh
+  dw 01380h,base+022D2h
+  dw 0137Fh,base+022E5h
+  dw 01580h,base+01DEBh
+  dw 01580h,base+01E00h
+  dw 01580h,base+01E15h
+  dw 0157Fh,base+01E2Ah
+  dw 01780h,base+01368h
+  dw 01780h,base+0137Fh
+  dw 01780h,base+01396h
+  dw 01780h,base+013ADh
+  dw 01780h,base+013C4h
+  dw 01780h,base+013DBh
+  dw 01780h,base+013F2h
+  dw 01780h,base+01409h
+  dw 01780h,base+01420h
+  dw 01780h,base+01437h
+  dw 01780h,base+0144Eh
+  dw 01780h,base+01465h
+  dw 01780h,base+0147Ch
+  dw 01780h,base+01493h
+  dw 01780h,base+014AAh
+  dw 01781h,base+014C1h
+  dw 01580h,base+01E3Fh
+  dw 01580h,base+01E54h
+  dw 01580h,base+01E69h
+  dw 01581h,base+01E7Eh
+  dw 01380h,base+022F8h
+  dw 01380h,base+0230Bh
+  dw 01381h,base+0231Eh
+  dw 01180h,base+02615h
+  dw 01181h,base+02626h
+  dw 00F80h,base+02821h
+  dw 00F81h,base+02830h
+  dw 00D81h,base+029ACh
+  dw 00B80h,base+02A9Eh
+  dw 00B82h,base+02AA9h
+  dw 00781h,base+02B0Fh
+  dw 00500h,base+01C08h
+
+ryuPage0frame007:
+  db 02Eh,030h,082h,000h
+  db 094h
+  db 000h,000h,000h,000h,000h
+  db 000h,000h
+  dw 0057Fh,base+01C08h
+  dw 0077Eh,base+02B93h
+  dw 00B80h,base+02AB4h
+  dw 00B7Fh,base+02ABFh
+  dw 00D7Fh,base+029B9h
+  dw 00F80h,base+0283Fh
+  dw 00F7Fh,base+0284Eh
+  dw 01180h,base+02637h
+  dw 0117Fh,base+02648h
+  dw 01380h,base+02331h
+  dw 01380h,base+02344h
+  dw 0137Fh,base+02357h
+  dw 01580h,base+01E93h
+  dw 01580h,base+01EA8h
+  dw 01580h,base+01EBDh
+  dw 0157Fh,base+01ED2h
+  dw 01780h,base+014D8h
+  dw 01780h,base+014EFh
+  dw 01780h,base+01506h
+  dw 01780h,base+0151Dh
+  dw 01780h,base+01534h
+  dw 01780h,base+0154Bh
+  dw 01780h,base+01562h
+  dw 01780h,base+01579h
+  dw 01780h,base+01590h
+  dw 01780h,base+015A7h
+  dw 01780h,base+015BEh
+  dw 01780h,base+015D5h
+  dw 01780h,base+015ECh
+  dw 01780h,base+01603h
+  dw 01780h,base+0161Ah
+  dw 01781h,base+01631h
+  dw 01580h,base+01EE7h
+  dw 01580h,base+01EFCh
+  dw 01580h,base+01F11h
+  dw 01581h,base+01F26h
+  dw 01380h,base+0236Ah
+  dw 01380h,base+0237Dh
+  dw 01381h,base+02390h
+  dw 01180h,base+02659h
+  dw 01181h,base+0266Ah
+  dw 00F80h,base+0285Dh
+  dw 00F81h,base+0286Ch
+  dw 00D81h,base+029C6h
+  dw 00B80h,base+02ACAh
+  dw 00B82h,base+02AD5h
+  dw 00781h,base+01C08h
+  dw 00500h,base+01C08h
+
+ryuPage0frame008:
+  db 02Eh,030h,082h,000h
+  db 094h
+  db 000h,000h,000h,000h,000h
+  db 000h,000h
+  dw 0057Fh,base+01C08h
+  dw 0077Eh,base+0297Bh
+  dw 00B80h,base+02AE0h
+  dw 00B7Fh,base+02AEBh
+  dw 00D7Fh,base+029D3h
+  dw 00F80h,base+0287Bh
+  dw 00F7Fh,base+0288Ah
+  dw 01180h,base+0267Bh
+  dw 0117Fh,base+0268Ch
+  dw 01380h,base+023A3h
+  dw 01380h,base+023B6h
+  dw 0137Fh,base+023C9h
+  dw 01580h,base+01F3Bh
+  dw 01580h,base+01F50h
+  dw 01580h,base+01F65h
+  dw 0157Fh,base+01F7Ah
+  dw 01780h,base+01648h
+  dw 01780h,base+0165Fh
+  dw 01780h,base+01676h
+  dw 01780h,base+0168Dh
+  dw 01780h,base+016A4h
+  dw 01780h,base+016BBh
+  dw 01780h,base+016D2h
+  dw 01780h,base+016E9h
+  dw 01780h,base+01700h
+  dw 01780h,base+01717h
+  dw 01780h,base+0172Eh
+  dw 01780h,base+01745h
+  dw 01780h,base+0175Ch
+  dw 01780h,base+01773h
+  dw 01780h,base+0178Ah
+  dw 01781h,base+017A1h
+  dw 01580h,base+01F8Fh
+  dw 01580h,base+01FA4h
+  dw 01580h,base+01FB9h
+  dw 01581h,base+01FCEh
+  dw 01380h,base+023DCh
+  dw 01380h,base+023EFh
+  dw 01381h,base+02402h
+  dw 01180h,base+0269Dh
+  dw 01181h,base+026AEh
+  dw 00F80h,base+02899h
+  dw 00F81h,base+028A8h
+  dw 00D81h,base+029E0h
+  dw 00B80h,base+02AF6h
+  dw 00B82h,base+02B01h
+  dw 00781h,base+01C08h
+  dw 00500h,base+01C08h
+
+ryuPage0frame009:
+  db 02Eh,030h,082h,000h
+  db 094h
+  db 000h,000h,000h,000h,000h
+  db 000h,000h
+  dw 0057Fh,base+01C08h
+  dw 0077Eh,base+02B9Ah
+  dw 00B80h,base+02B0Ch
+  dw 00B7Fh,base+02B17h
+  dw 00D7Fh,base+029EDh
+  dw 00F80h,base+028B7h
+  dw 00F7Fh,base+028C6h
+  dw 01180h,base+026BFh
+  dw 0117Fh,base+026D0h
+  dw 01380h,base+02415h
+  dw 01380h,base+02428h
+  dw 0137Fh,base+0243Bh
+  dw 01580h,base+01FE3h
+  dw 01580h,base+01FF8h
+  dw 01580h,base+0200Dh
+  dw 0157Fh,base+02022h
+  dw 01780h,base+017B8h
+  dw 01780h,base+017CFh
+  dw 01780h,base+017E6h
+  dw 01780h,base+017FDh
+  dw 01780h,base+01814h
+  dw 01780h,base+0182Bh
+  dw 01780h,base+01842h
+  dw 01780h,base+01859h
+  dw 01780h,base+01870h
+  dw 01780h,base+01887h
+  dw 01780h,base+0189Eh
+  dw 01780h,base+018B5h
+  dw 01780h,base+018CCh
+  dw 01780h,base+018E3h
+  dw 01780h,base+018FAh
+  dw 01781h,base+01911h
+  dw 01580h,base+02037h
+  dw 01580h,base+0204Ch
+  dw 01580h,base+02061h
+  dw 01581h,base+02076h
+  dw 01380h,base+0244Eh
+  dw 01380h,base+02461h
+  dw 01381h,base+02474h
+  dw 01180h,base+026E1h
+  dw 01181h,base+026F2h
+  dw 00F80h,base+028D5h
+  dw 00F81h,base+028E4h
+  dw 00D81h,base+029FAh
+  dw 00B80h,base+02B22h
+  dw 00B82h,base+02B2Dh
+  dw 00781h,base+01C08h
+  dw 00500h,base+01C08h
+
+ryuPage0frame010:
+  db 02Eh,030h,082h,000h
+  db 094h
+  db 000h,000h,000h,000h,000h
+  db 000h,000h
+  dw 0057Fh,base+01C08h
+  dw 0077Eh,base+02BA1h
+  dw 00B80h,base+02AE0h
+  dw 00B7Fh,base+02B38h
+  dw 00D7Fh,base+02A07h
+  dw 00F80h,base+028F3h
+  dw 00F7Fh,base+02902h
+  dw 01180h,base+02703h
+  dw 0117Fh,base+02714h
+  dw 01380h,base+02487h
+  dw 01380h,base+0249Ah
+  dw 0137Fh,base+024ADh
+  dw 01580h,base+0208Bh
+  dw 01580h,base+020A0h
+  dw 01580h,base+020B5h
+  dw 0157Fh,base+020CAh
+  dw 01780h,base+01928h
+  dw 01780h,base+0193Fh
+  dw 01780h,base+01956h
+  dw 01780h,base+0196Dh
+  dw 01780h,base+01984h
+  dw 01780h,base+0199Bh
+  dw 01780h,base+019B2h
+  dw 01780h,base+019C9h
+  dw 01780h,base+019E0h
+  dw 01780h,base+019F7h
+  dw 01780h,base+01A0Eh
+  dw 01780h,base+01A25h
+  dw 01780h,base+01A3Ch
+  dw 01780h,base+01A53h
+  dw 01780h,base+01A6Ah
+  dw 01781h,base+01A81h
+  dw 01580h,base+020DFh
+  dw 01580h,base+020F4h
+  dw 01580h,base+02109h
+  dw 01581h,base+0211Eh
+  dw 01380h,base+024C0h
+  dw 01380h,base+024D3h
+  dw 01381h,base+024E6h
+  dw 01180h,base+02725h
+  dw 01181h,base+02736h
+  dw 00F80h,base+02911h
+  dw 00F81h,base+02920h
+  dw 00D81h,base+02A14h
+  dw 00B80h,base+02B43h
+  dw 00B82h,base+02B4Eh
+  dw 00781h,base+01C08h
+  dw 00500h,base+01C08h
+
+ryuPage0frame011:
+  db 02Eh,030h,082h,000h
+  db 094h
+  db 000h,000h,000h,000h,000h
+  db 000h,000h
+  dw 0057Fh,base+01C08h
+  dw 0077Eh,base+02BA8h
+  dw 00B80h,base+02B59h
+  dw 00B7Fh,base+02B64h
+  dw 00D7Fh,base+02A21h
+  dw 00F80h,base+0292Fh
+  dw 00F7Fh,base+0293Eh
+  dw 01180h,base+02747h
+  dw 0117Fh,base+02758h
+  dw 01380h,base+024F9h
+  dw 01380h,base+0250Ch
+  dw 0137Fh,base+0251Fh
+  dw 01580h,base+02133h
+  dw 01580h,base+02148h
+  dw 01580h,base+0215Dh
+  dw 0157Fh,base+02172h
+  dw 01780h,base+01A98h
+  dw 01780h,base+01AAFh
+  dw 01780h,base+01AC6h
+  dw 01780h,base+01ADDh
+  dw 01780h,base+01AF4h
+  dw 01780h,base+01B0Bh
+  dw 01780h,base+01B22h
+  dw 01780h,base+01B39h
+  dw 01780h,base+01B50h
+  dw 01780h,base+01B67h
+  dw 01780h,base+01B7Eh
+  dw 01780h,base+01B95h
+  dw 01780h,base+01BACh
+  dw 01780h,base+01BC3h
+  dw 01780h,base+01BDAh
+  dw 01781h,base+01BF1h
+  dw 01580h,base+02187h
+  dw 01580h,base+0219Ch
+  dw 01580h,base+021B1h
+  dw 01581h,base+021C6h
+  dw 01380h,base+02532h
+  dw 01380h,base+02545h
+  dw 01381h,base+02558h
+  dw 01180h,base+02769h
+  dw 01181h,base+0277Ah
+  dw 00F80h,base+0294Dh
+  dw 00F81h,base+0295Ch
+  dw 00D81h,base+02A2Eh
+  dw 00B80h,base+02B6Fh
+  dw 00B82h,base+02B7Ah
+  dw 00781h,base+01C08h
+  dw 00500h,base+01C08h
 
 
