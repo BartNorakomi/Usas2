@@ -116,8 +116,17 @@ CheckFloorUnderBothFeetEnemy:               ;Used for Zombie, to check if he is 
   .MovingRight:
   jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
   
+CheckFloorEnemyObjectLeftSide:
+  ld    hl,0
+  ld    a,(ix+enemies_and_objects.ny)       
+  add   a,16
+  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+CheckFloorEnemyObject:
+  ld    hl,0
+  jp    CheckFloorEnemy.ObjectEntry
 CheckFloorEnemy:  
-  ld    hl,-16
+  ld    hl,-16  
+  .ObjectEntry:
   ld    a,(ix+enemies_and_objects.ny)       
   add   a,16
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
@@ -129,6 +138,12 @@ CheckFloorEnemy:
   ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
   add   hl,de
   jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+
+distancecheck46wide:                        ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ld    hl,(Clesx)                          ;hl = x player
+  ld    de,09-15
+  add   hl,de
+  jp    distancecheck.go
 
 distancecheck24wide:                        ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ld    hl,(Clesx)                          ;hl = x player
@@ -234,6 +249,7 @@ ld a,e
   sub   a,c
   ret   nc
   
+  .PlayerIsHit:
   ld    a,(PlayerInvulnerable?)
   or    a
   ret   nz
@@ -307,12 +323,12 @@ ld a,e
   ret   nz
   ld    (ix+enemies_and_objects.hit?),00    ;stop blinking white when dead
 
+  ;Enemy dies
   ld    a,(ix+enemies_and_objects.nrspritesSimple)
   cp    8
   jr    c,.ExplosionSmall  
 
   .ExplosionBig:
-  ;Enemy dies
   ld    hl,ExplosionBig
   ld    (ix+enemies_and_objects.movementpattern),l
   ld    (ix+enemies_and_objects.movementpattern+1),h
@@ -341,10 +357,23 @@ ld a,e
   ld    (ix+enemies_and_objects.v2),a       ;y backup
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ld    (ix+enemies_and_objects.y),217      ;y
+
+  ;we remove all sprite y's from spat. This way any remaining sprites from the object before the explosion will get removed properly
+  ld    l,(ix+enemies_and_objects.spataddress)
+  ld    h,(ix+enemies_and_objects.spataddress+1)
+  ld    b,(ix+enemies_and_objects.nrspritesSimple)
+  .loop:
+  ld    (hl),217
+  inc   hl
+  inc   hl
+  djnz  .loop
+  
+  ld    (ix+enemies_and_objects.nrsprites),72-(08*6)
+  ld    (ix+enemies_and_objects.nrspritesSimple),8
+  ld    (ix+enemies_and_objects.nrspritesTimes16),8*16  
   ret
   
   .ExplosionSmall:
-  ;Enemy dies
   ld    hl,ExplosionSmall
   ld    (ix+enemies_and_objects.movementpattern),l
   ld    (ix+enemies_and_objects.movementpattern+1),h
@@ -381,17 +410,13 @@ ExplosionBig:
 ;v2=y backup
   ld    a,(ix+enemies_and_objects.v2)       ;y backup
   ld    (ix+enemies_and_objects.y),a        ;y    
-  
+    
   call  .Animate
   
 	ld		a,RedExplosionSpriteblock           ;set block at $a000, page 2 - block containing sprite data
   exx                                       ;store hl. hl now points to color data
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-
-  ld    (ix+enemies_and_objects.nrsprites),72-(08*6)
-  ld    (ix+enemies_and_objects.nrspritesSimple),8
-  ld    (ix+enemies_and_objects.nrspritesTimes16),8*16
   ret
 
   .Animate: 
@@ -513,7 +538,191 @@ Template:
   ld    hl,RightBeetleWalk1_Char
   ret
 
+HugeBlob:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Jump to Which platform ? (1,2 or 3)
+;v6=Gravity timer
+;v7=Dont Check Land Platform First x Frames
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  bit   1,(ix+enemies_and_objects.hit?)         ;check if enemy is hit ? If so, out white sprite
+	ld		a,HugeBlobWhiteSpriteblock          ;set block at $a000, page 2 - block containing sprite data
+  ret   nz
+	ld		a,HugeBlobSpriteblock               ;set block at $a000, page 2 - block containing sprite data
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking, 1=Jumping)  
+  or    a
+  jp    z,HugeBlobWalking
+  
+  HugeBlobJumping:
+  call  MoveSpriteVertically
+  call  .Gravity
+  call  .CheckLandOnPlatform
 
+  ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
+  or    a
+  ld    (ix+enemies_and_objects.v1),4 * 02  ;v1=Animation Counter
+  ld    hl,HugeBlob5_Char
+  ret   m
+  ld    (ix+enemies_and_objects.v1),5 * 02  ;v1=Animation Counter
+  ld    hl,HugeBlob6_Char
+  ret
+
+  .CheckLandOnPlatform:  
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=Dont Check Land Platform First x Frames
+  dec   a
+  jr    z,.ReadyToCheck
+  ld    (ix+enemies_and_objects.v7),a       ;v7=Dont Check Land Platform First x Frames
+  ret
+  .ReadyToCheck:
+
+  ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
+  or    a
+  ret   m
+  
+  call  .CheckFloor                         ;checks for floor. if found switch to walking phase
+  ret
+  
+  .CheckFloor:                              ;checks for floor. if not found invert direction
+  call  CheckFloorEnemyObjectLeftSide       ;checks for floor, out z=collision found with floor
+  jr    z,.ForegroundFound
+  inc   hl
+  inc   hl
+  ld    a,(hl)                              ;we check a tile, but also 2 tiles to the right of that tile
+  dec   a                                   ;1 = wall  
+  ret   nz
+
+  .ForegroundFound:                         ;both tiles are foreground so lets snap and continue walking
+  ;snap to platform
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  and   %1111 1000
+  ld    (ix+enemies_and_objects.y),a        ;y
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking, 1=Jumping)
+  ld    a,30
+  ld    (ShakeScreen?),a 
+  call  .DamagePlayerIfNotJumping
+  ret    
+
+  .DamagePlayerIfNotJumping:
+	ld		hl,Jump
+	ld		de,(PlayerSpriteStand)
+  xor   a
+  sbc   hl,de
+  ret   z
+  jp    CollisionEnemyPlayer.PlayerIsHit
+
+  .Gravity:
+  ld    a,(ix+enemies_and_objects.v6)       ;v6=Gravity timer
+  inc   a
+  and   3
+  ld    (ix+enemies_and_objects.v6),a       ;v6=Gravity timer
+  ret   nz
+  
+  ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
+  inc   a
+  cp    5
+  ret   z
+  ld    (ix+enemies_and_objects.v3),a       ;v3=Vertical Movement
+  ret
+
+  HugeBlobWalking:
+  ld    a,(ix+enemies_and_objects.hit?)     ;check if enemy is hit ? If so, out white sprite
+  or    a
+  jr    z,.EndCheckHit
+  ld    a,(framecounter)
+  and   03
+  call  z,MoveSpriteHorizontally
+  jp    .endMove
+  .EndCheckHit:
+
+  ld    a,(framecounter)
+  rrca
+  call  c,MoveSpriteHorizontally
+  .endMove:
+
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  .CheckJump
+  call  .SetPlayerSpriteToSpr12
+  
+  .Animate:
+  ld    hl,HugeBlobAnimation
+  ld    b,07                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 07                            ;07 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  .CheckJump:
+  ;distance check: we only check if player is with x range
+;  ld    b,60                                ;b-> x distance
+;  ld    c,100                               ;c-> y distance
+;  call  distancecheck46wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+;  ret   nc 
+  ;we are now within x distance of HugeBlob
+
+  ld    a,(framecounter)                    ;jump every 128 frames
+  and   127
+  ret   nz
+  
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=walking, 1=Jumping)  
+  ld    (ix+enemies_and_objects.v7),28      ;v7=Dont Check Land Platform First x Frames
+
+  ;check which platform HugeBlob is on 
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  cp    8*19
+  jr    z,.HugeBlobIsOnPlatform3
+  cp    8*11
+  jr    z,.HugeBlobIsOnPlatform2
+  cp    8*03
+
+  .HugeBlobIsOnPlatform1:
+  ld    (ix+enemies_and_objects.v3),-2      ;v3=Vertical Movement
+  ret
+  
+  .HugeBlobIsOnPlatform2:
+  ld    a,r
+  rrca
+  ld    (ix+enemies_and_objects.v3),-6      ;v3=Vertical Movement
+  ret   c
+  ld    (ix+enemies_and_objects.v3),-2      ;v3=Vertical Movement
+  ret
+  
+  .HugeBlobIsOnPlatform3:
+  ld    (ix+enemies_and_objects.v3),-6      ;v3=Vertical Movement
+  ret
+  
+  .SetPlayerSpriteToSpr12:
+  ;set player sprites to spritenumber 12 for char and color address
+  ld    a,$7b-2
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerCharAddress),a
+  ld    a,$75-1
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerColAddress),a
+  ld    a,$73-2
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerCharAddressMirror),a
+  ld    a,$6d-1
+  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerColAddressMirror),a
+  ;set player sprites to spritenumber 28 for spatposition
+  ld    hl,spat+(12 * 2)
+  ld    (Apply32bitShift.SelfmodyfyingSpataddressPlayer),hl          
+  ld    (PlayerLeftSideOfScreen.SelfmodyfyingSpataddressPlayer),hl          
+  ld    (PlayerRightSideOfScreen.SelfmodyfyingSpataddressPlayer),hl    
+  ret
+  
+HugeBlobAnimation:
+  dw  HugeBlob1_Char
+  dw  HugeBlob2_Char
+  dw  HugeBlob3_Char
+  dw  HugeBlob4_Char
+  dw  HugeBlob5_Char
+  dw  HugeBlob6_Char
+  dw  HugeBlob7_Char
 
 HugeBlobSWsprite:
   ld    a,3
@@ -574,7 +783,6 @@ HugeBlobSWsprite:
   jp    nz,VramObjectsTransparantCopies
   ld    (ix+enemies_and_objects.Alive?),0
   jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
-
                         ;sx,nx,ny,  add to y, add to x
 HugeBlobSwSprite1:  db  000,14,21,    33-5  ,   15
 HugeBlobSwSprite2:  db  014,16,19,    33-3  ,   15
@@ -583,55 +791,6 @@ HugeBlobSwSprite4:  db  046,08,32,    33-16 ,   15+6
 HugeBlobSwSprite5:  db  054,06,32,    33-16 ,   15+8
 HugeBlobSwSprite6:  db  060,05,32,    33-16 ,   15+6
 HugeBlobSwSprite7:  db  065,08,32,    33-16 ,   15+2
-
-
-HugeBlob:
-;v1=Animation Counter
-;v2=Phase (0=walking slow, 1=attacking)
-;v3=Vertical Movement
-;v4=Horizontal Movement
-  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
-  exx                                       ;store hl. hl now points to color data
-  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
-  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-  bit   1,(ix+enemies_and_objects.hit?)         ;check if enemy is hit ? If so, out white sprite
-	ld		a,HugeBlobWhiteSpriteblock          ;set block at $a000, page 2 - block containing sprite data
-  ret   nz
-	ld		a,HugeBlobSpriteblock               ;set block at $a000, page 2 - block containing sprite data
-  ret
-  
-  .HandlePhase:
-  ;set player sprites to spritenumber 12 for char and color address
-  ld    a,$7b-2
-  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerCharAddress),a
-  ld    a,$75-1
-  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerColAddress),a
-  ld    a,$73-2
-  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerCharAddressMirror),a
-  ld    a,$6d-1
-  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerColAddressMirror),a
-  ;set player sprites to spritenumber 28 for spatposition
-  ld    hl,spat+(12 * 2)
-  ld    (Apply32bitShift.SelfmodyfyingSpataddressPlayer),hl          
-  ld    (PlayerLeftSideOfScreen.SelfmodyfyingSpataddressPlayer),hl          
-  ld    (PlayerRightSideOfScreen.SelfmodyfyingSpataddressPlayer),hl    
-
-  .Animate:
-  ld    hl,HugeBlobAnimation
-  ld    b,07                                ;animate every x frames (based on framecounter)
-  ld    c,2 * 07                            ;07 animation frame addresses
-  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
-  
-HugeBlobAnimation:
-  dw  HugeBlob1_Char
-  dw  HugeBlob2_Char
-  dw  HugeBlob3_Char
-  dw  HugeBlob4_Char
-  dw  HugeBlob5_Char
-  dw  HugeBlob6_Char
-  dw  HugeBlob7_Char
 
 OctopussyBullet:                            ;forced on object positions 1-4
 ;v1 = sx
@@ -654,7 +813,7 @@ OctopussyBullet:                            ;forced on object positions 1-4
   ex    de,hl
   call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
 
-  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
   jp    nz,VramObjectsTransparantCopies     ;put object in Vram/screen
   call  VramObjectsTransparantCopiesRemoveAndClearBuffer  ;Clear buffer, so that next time the CleanOb is called buffer is empty
   ld    (ix+enemies_and_objects.Alive?),0  
@@ -1206,7 +1365,7 @@ Hunchback:
 
   HunchbackInitiateJump:
   ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
-  cp    2 * 05
+  cp    2 * 02
   jp    nz,.Animate
   ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=standing still, 1=waiting, 2=initiate jump, 3=jumping)  
   ld    (ix+enemies_and_objects.v3),-3      ;v3=Vertical Movement
@@ -1218,27 +1377,29 @@ Hunchback:
   ld    hl,LeftHunchbackJumpingAnimation
   .GoAnimate:
   ld    b,03                                ;animate every x frames (based on framecounter)
-  ld    c,2 * 06                            ;06 animation frame addresses
+  ld    c,2 * 03                            ;06 animation frame addresses
   jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
   HunchbackWaiting:
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  ld    hl,RightHunchback3_Char
+  ld    hl,RightHunchback4_Char
   jp    z,.DirectionFound
-  ld    hl,LeftHunchback3_Char
+  ld    hl,LeftHunchback4_Char
   .DirectionFound:
 
   dec   (ix+enemies_and_objects.v5)         ;v5=Wait timer
   ret   nz
   ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=standing still, 1=waiting, 2=initiate jump, 3=jumping)  
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ret
 
   HunchbackStandingStill:
   ld    a,r
   and   63
   jp    nz,.Animate
+
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=standing still, 1=waiting, 2=initiate jump, 3=jumping) 
-  ld    (ix+enemies_and_objects.v5),20      ;v5=Wait timer
+  ld    (ix+enemies_and_objects.v5),40      ;v5=Wait timer
     
   .Animate:
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
@@ -1251,17 +1412,11 @@ Hunchback:
   jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
 LeftHunchbackJumpingAnimation:
-  dw  LeftHunchback1_Char
-  dw  LeftHunchback2_Char
-  dw  LeftHunchback3_Char  
   dw  LeftHunchback4_Char
   dw  LeftHunchback5_Char
   dw  LeftHunchback6_Char
 
 RightHunchbackJumpingAnimation:
-  dw  RightHunchback1_Char
-  dw  RightHunchback2_Char
-  dw  RightHunchback3_Char
   dw  RightHunchback4_Char
   dw  RightHunchback5_Char
   dw  RightHunchback6_Char
@@ -1278,21 +1433,83 @@ RightHunchbackStandingAnimation:
   dw  RightHunchback3_Char
   dw  RightHunchback2_Char
 
-SxDemontjeBullet1: equ 146
-SxDemontjeBullet2: equ 146+11
-SxDemontjeBullet3: equ 146+11+11
+SxDemontjeBullet1: equ 192
+SxDemontjeBullet2: equ 192+11
+SxDemontjeBullet3: equ 192+11+11
+SxDemontjeBullet4: equ 192+11+11+11
+SxDemontjeBullet5: equ 192+11+11+11+7
+SxDemontjeBullet6: equ 192+11+11+11+7+5
+
+                            ;Sx               ,nx + ny
+SxDemontjeBulletTable:  db  SxDemontjeBullet3 ,11
+                        db  SxDemontjeBullet4 ,07
+                        db  SxDemontjeBullet5 ,05
+                        db  SxDemontjeBullet6 ,03
+
 DemontjeBullet:
 ;v1 = sx
 ;v2=Phase (0=moving)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
+;v5=Explosion Animation Counter
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=bullet, 1=explosion) 
+  or    a
+  jp    z,DemontjeBulletMoving
+
+  DemontjeBulletExploding:
+  call  .Animate
+
+  ld    hl,SxDemontjeBulletTable
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.v5)       ;v5=Explosion Animation Counter
+  add   hl,de
+  
+  ld    a,(hl)                              ;sx
+  ld    (ix+enemies_and_objects.v1),a       ;sx
+  inc   hl  
+  ld    a,(hl)                              ;nx + ny
+  ld    (ix+enemies_and_objects.nx),a       ;nx  
+  ld    (ix+enemies_and_objects.ny),a       ;ny  
+  jp    VramObjectsTransparantCopies
+
+  .Animate:
+  ld    a,(framecounter)
+  and   7
+  ret   nz
+  call  .MoveObject1PixelRightAndDown
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=Explosion Animation Counter
+  add   a,2
+  ld    (ix+enemies_and_objects.v5),a       ;v5=Explosion Animation Counter
+  cp    2 * 4
+  ret   nz
+
+  pop   af                                  ;pop the call and remove bullet
+  ld    (ix+enemies_and_objects.alive?),0  
+  ld    (ix+enemies_and_objects.v5),0       ;v5=Explosion Animation Counter
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=bullet, 1=explosion) 
+  ld    (ix+enemies_and_objects.nx),11      ;nx  
+  ld    (ix+enemies_and_objects.ny),11      ;ny  
+  ld    (ix+enemies_and_objects.v1),SxDemontjeBullet1
+  jp    VramObjectsTransparantCopiesRemoveAndClearBuffer
+
+  .MoveObject1PixelRightAndDown:
+  inc   (ix+enemies_and_objects.y)          ;y
+  ld    l,(ix+enemies_and_objects.x)
+  ld    h,(ix+enemies_and_objects.x+1)
+  inc   hl
+  ld    (ix+enemies_and_objects.x),l
+  ld    (ix+enemies_and_objects.x+1),h
+  ret
+  
+  DemontjeBulletMoving:
   call  .Animate
   ld    (ix+enemies_and_objects.v1),a       ;sx
-
   call  CollisionObjectPlayer               ;Check if player is hit by Vram object
   call  .Gravity
   call  .CheckCollisionForeground
   call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
+  jp    VramObjectsTransparantCopies
 
   .Animate:
   ld    a,(framecounter)
@@ -1303,22 +1520,12 @@ DemontjeBullet:
   ld    a,SxDemontjeBullet2
   ret
 
-;  ld    a,(framecounter)
-;  and   31
-;  sub   8
-;  ld    b,SxDemontjeBullet1
-;  ret   c
-;  sub   8
-;  ld    b,SxDemontjeBullet2
-;  ret   c
-;  sub   8
-;  ld    b,SxDemontjeBullet3
-;  ret   c
-;  ld    b,SxDemontjeBullet2
-;  ret
-
   .CheckCollisionForeground:
-  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
+  ret   nz
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=bullet, 1=explosion) 
+  ret
+  
   jp    nz,VramObjectsTransparantCopies
   call  VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
   ld    (ix+enemies_and_objects.alive?),0  
@@ -2097,7 +2304,7 @@ FireEyeFireBullet:
   call  .Gravity
   call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
 
-  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
   ret   nz                                  ;return if background tile is NOT found
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)  
   ld    (ix+enemies_and_objects.v5),050     ;v5=Static Timer

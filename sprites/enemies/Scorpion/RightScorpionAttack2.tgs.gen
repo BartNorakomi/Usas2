@@ -73,29 +73,29 @@
   db 31
   db 24
   db 25
-  db 23
-  db 46
-  db 111
+  db 47
+  db 110
+  db 127
   db 123
-  db 123
-  db 57
-  db 16
+  db 59
+  db 0
+  db 0
   db 207
   db 176
   db 64
   db 0
-  db 131
-  db 247
+  db 128
+  db 243
   db 183
-  db 31
+  db 23
   db 63
   db 255
-  db 247
-  db 127
+  db 255
+  db 119
   db 239
   db 207
-  db 241
-  db 190
+  db 51
+  db 1
   db 2
   db 4
   db 10
@@ -105,91 +105,91 @@
   db 31
   db 31
   db 22
-  db 25
-  db 55
+  db 49
   db 127
+  db 111
   db 107
-  db 107
-  db 57
+  db 59
+  db 17
   db 0
   db 127
   db 112
   db 192
   db 128
-  db 131
-  db 117
+  db 128
+  db 115
   db 213
-  db 248
-  db 224
+  db 245
+  db 232
   db 32
-  db 105
-  db 225
+  db 96
+  db 233
+  db 113
   db 121
-  db 124
-  db 206
-  db 0
+  db 204
+  db 190
 ; Sprite 2 - Mode : 2 sprites, color OR on 
   db 199
   db 3
-  db 100
-  db 32
+  db 4
+  db 99
+  db 112
   db 104
   db 52
   db 52
   db 252
-  db 248
+  db 4
   db 140
-  db 112
+  db 252
   db 136
   db 118
-  db 254
+  db 255
   db 241
-  db 62
   db 128
   db 0
-  db 240
-  db 96
-  db 188
-  db 94
-  db 51
-  db 13
-  db 0
-  db 0
-  db 0
-  db 0
+  db 224
+  db 112
+  db 184
+  db 88
+  db 88
+  db 124
+  db 44
+  db 44
+  db 44
+  db 20
   db 0
   db 0
   db 0
   db 0
   db 251
   db 60
-  db 103
-  db 83
+  db 7
+  db 99
+  db 80
   db 88
   db 44
   db 44
   db 196
-  db 4
+  db 252
   db 116
   db 140
   db 118
   db 252
   db 0
   db 15
-  db 0
   db 128
   db 192
-  db 112
-  db 152
-  db 204
-  db 114
-  db 63
-  db 15
-  db 7
-  db 0
-  db 0
-  db 0
-  db 0
+  db 96
+  db 208
+  db 200
+  db 104
+  db 120
+  db 100
+  db 52
+  db 52
+  db 60
+  db 28
+  db 8
   db 0
   db 0
   db 0

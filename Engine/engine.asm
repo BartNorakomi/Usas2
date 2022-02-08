@@ -2412,7 +2412,13 @@ CameraEngine256x216:
 ;  ld    (R19onVblank),a
   ret
 
+ShakeScreen?: db 0
+
 VerticalMovementCamera:
+  ld    a,(ShakeScreen?)
+  or    a
+  call  nz,.ShakeScreen
+  
 ;follow y position of player with camera
   ld    a,(Clesy)
 
@@ -2432,6 +2438,33 @@ VerticalMovementCamera:
   ld    (CameraY),a
   ret
 
+.ShakeScreen:
+  dec   a
+  ld    (ShakeScreen?),a
+
+  cp    10
+  ld    c,2             ;strenght shake
+  jr    c,.StrenghtSet
+  cp    20
+  ld    c,3             ;strenght shake
+  jr    c,.StrenghtSet
+  ld    c,4             ;strenght shake
+
+  .StrenghtSet:
+  rrca
+  ld    a,c
+  jr    c,.set
+  neg
+  .set:
+  ld    c,a
+  
+  ld    a,(CameraY)
+  add   a,c
+  ret   m
+  cp    45
+  ret   nc
+  ld    (CameraY),a
+  ret
 
 CameraEngine304x216:  
   Call  VerticalMovementCamera
@@ -3148,7 +3181,8 @@ LBeingHit:
   inc   a
   ld    (PlayerAniCount),a
   cp    24
-  jp    z,Set_L_Stand  
+;  jp    z,Set_L_Stand  
+  jp    z,Set_Fall
 
   ld    hl,PlayerSpriteData_Char_LeftBeingHit1
   cp    08
@@ -3180,8 +3214,9 @@ RBeingHit:
   inc   a
   ld    (PlayerAniCount),a
   cp    24
-  jp    z,Set_R_Stand  
-
+;  jp    z,Set_R_Stand  
+  jp    z,Set_Fall
+  
   ld    hl,PlayerSpriteData_Char_RightBeingHit1
   cp    08
   jp    c,.SetCharacter

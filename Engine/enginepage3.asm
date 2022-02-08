@@ -86,6 +86,9 @@ SetVariables:
   ld    de,RunningTable1
   ld    bc,RunningTableLenght
   ldir
+
+  xor   a
+  ld    (ShakeScreen?),a
   ret  
 
 .NormalRunningTable:
