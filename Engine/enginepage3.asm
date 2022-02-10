@@ -13,9 +13,10 @@ MapB01_007Data: db MapsBlock02 | dw MapB01_007 | db 1,3,3                  | Map
 MapB01_010Data: db MapsBlock02 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock02 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock02 | dw MapB01_012 | db 1,3,3
 MapB01_013Data: db MapsBlock02 | dw MapB01_013 | db 1,3,3                  | MapB01_014Data: db MapsBlock02 | dw MapB01_014 | db 1,3,3                  | MapB01_015Data: db MapsBlock02 | dw MapB01_015 | db 1,3,3
 MapB01_016Data: db MapsBlock02 | dw MapB01_016 | db 2,3,3                  | MapB01_017Data: db MapsBlock02 | dw MapB01_017 | db 1,3,3                  | MapB01_018Data: db MapsBlock02 | dw MapB01_018 | db 1,3,3
+MapB01_019Data: db MapsBlock02 | dw MapB01_019 | db 2,3,3                  | MapB01_020Data: db MapsBlock02 | dw MapB01_020 | db 2,3,3                  | MapB01_021Data: db MapsBlock02 | dw MapB01_021 | db 2,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_016Data
+WorldMapPointer:  dw  MapB01_021Data
 
 loadGraphics:
   call  screenoff
@@ -95,6 +96,7 @@ ReSetVariables:
 
   xor   a
   ld    (ShakeScreen?),a
+  ld    (PlayerDead?),a
   ret  
 
 .NormalRunningTable:
@@ -1184,6 +1186,7 @@ R23onVblank:                  rb    1
 R19onVblank:                  rb    1
 
 DoubleJumpAvailable?:         rb    1
+PlayerDead?:                  rb    1
 
 
 amountofenemies:        equ 22

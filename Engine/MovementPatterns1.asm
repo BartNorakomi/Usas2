@@ -31,7 +31,8 @@
 ;HugeBlob
 ;HugeBlobSWsprite
 ;OP_SlowDownHandler
-;GlassBall
+;GlassBall1
+;GlassBall2
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -539,71 +540,236 @@ Template:
   ld    hl,RightBeetleWalk1_Char
   ret
 
-
-
-GlassBall:
+GlassBall1:
 ;v1=repeating steps
 ;v2=pointer to movement table
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
-
-
-;  ld    a,(HugeObjectFrame)
-;  inc   a
-;  ld    (HugeObjectFrame),a
-;  jp    nz,CheckCollisionObjectPlayer
-
-;  call  BackdropOrange  
-
-
-
-  ld    a,(framecounter)
-  and   3
-  ld    de,GlassBallMovementTable
-  call  z,MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
-
+;v6=active on which frame ?  
+  ld    a,(HugeObjectFrame)
+  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
+  jp    nz,CheckCollisionObjectPlayer
+  ld    de,GlassBallMovementTable1
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-
-
   call  restoreBackgroundObject1
-
-  ld    a,(framecounter)
-  and   3
-  call  z,.Animate
+  call  AnimateGlassBall
+  call  RemoveGlassBallWhenOutOfScreen
+  call  PutSF2Object  
+  ret
   
-  call  PutSF2Object
-
-
-;  ld    a,-1
-;  ld    (HugeObjectFrame),a
-  call  switchpageSF2Engine  
-  
-  
-;  call  BackdropBlack  
+GlassBall2:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+  ld    a,(HugeObjectFrame)
+  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
+  jp    nz,CheckCollisionObjectPlayer
+  ld    de,GlassBallMovementTable1
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  restoreBackgroundObject2
+  call  AnimateGlassBall
+  call  RemoveGlassBallWhenOutOfScreen
+  call  PutSF2Object2
   ret
 
-  .Animate:
-  ld    a,(ix+enemies_and_objects.v3)       ;v4=Horizontal Movement
-  or    a
-  ld    ix,GlassBallAnimationFallingDown
-  jp    nz,ObjectAnimationIXgiven
+GlassBall3:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+  ld    a,(HugeObjectFrame)
+  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
+  jp    nz,CheckCollisionObjectPlayer
+  ld    de,GlassBallMovementTable2
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  restoreBackgroundObject1
+  call  AnimateGlassBall
+  call  RemoveGlassBallWhenOutOfScreen
+  call  PutSF2Object  
+  ret
+  
+GlassBall4:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+  ld    a,(HugeObjectFrame)
+  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
+  jp    nz,CheckCollisionObjectPlayer
+  ld    de,GlassBallMovementTable3
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  restoreBackgroundObject2
+  call  AnimateGlassBall
+  call  RemoveGlassBallWhenOutOfScreen
+  call  PutSF2Object2
+  ret
 
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  or    a
-  ld    ix,GlassBallAnimationRight
-  jp    p,ObjectAnimationIXgiven
-  ld    ix,GlassBallAnimationLeft
-  jp    ObjectAnimationIXgiven
+GlassBall5:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+  ld    a,(HugeObjectFrame)
+  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
+  jp    nz,CheckCollisionObjectPlayer
+  ld    de,GlassBallMovementTable4
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  restoreBackgroundObject1
+  call  AnimateGlassBall
+  call  RemoveGlassBallWhenOutOfScreen
+  call  PutSF2Object  
+  ret
+  
+GlassBall6:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+  ld    a,(HugeObjectFrame)
+  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
+  jp    nz,CheckCollisionObjectPlayer
+  ld    de,GlassBallMovementTable2
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  restoreBackgroundObject2
+  call  AnimateGlassBall
+  call  RemoveGlassBallWhenOutOfScreen
+  call  PutSF2Object2
+  ret
 
-GlassBallMovementTable:  ;repeating steps(128 = end table/repeat), move y, move x
-;  db  094,-0,+2, 031,+2,-0, 086,-0,-2, 031,+2,-0, 086,-0,+2
-  db  094,-0,+2, 007,+8,-0, 086,-0,-2, 007,+8,-0, 086,-0,+2
+RemoveGlassBallWhenOutOfScreen:
+  ld    a,(ix+enemies_and_objects.x)
+  cp    250
+  ret   c
+  ld    hl,EmptyFrame
+  call  AnimateGlassBall.GoAnimate
+  ld    a,(ix+enemies_and_objects.x)
+  cp    252
+  ret   c
+  ld    (ix+enemies_and_objects.Alive?),0
 
-  db  086,-0,-2, 007,-8,-0, 086,-0,+2, 007,-8,-0, 094,-0,-2
+  ld    (ix+enemies_and_objects.y),8*03
+  ld    (ix+enemies_and_objects.x),8*31
+  ld    (ix+enemies_and_objects.v1),0
+  ld    (ix+enemies_and_objects.v2),0
+  ld    (ix+enemies_and_objects.v3),0
+  ld    (ix+enemies_and_objects.v4),0
+  ld    (ix+enemies_and_objects.v5),0
+  ret
 
+GlassBallActivator:
+;v1=Activation Timer
+  call  .ActivateGlassBall
 
+  ld    a,(HugeObjectFrame)
+  inc   a
+  and   1
+  ld    (HugeObjectFrame),a
+
+  call  z,switchpageSF2Engine  
+  ret
+
+  .ActivateGlassBall:
+  ld    a,(ix+enemies_and_objects.v1)
+  dec   a
+  ld    (ix+enemies_and_objects.v1),a
+  ret   nz
+;  ld    (ix+enemies_and_objects.v1),255
+  
+  xor   a
+  ld    hl,enemies_and_objects
+  cp    (hl)
+  jr    z,.EmptySlotFound
+  ld    hl,enemies_and_objects+lenghtenemytable
+  cp    (hl)
+  ret   nz
+
+  .EmptySlotFound:
+  ld    (hl),2
+  ret
+
+AnimateGlassBall:
+  ld    hl,GlassBalHorizontalAnimation
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  and   %0000 1110
+  ld    b,a
+  srl   a
+  add   a,b                                 ;animation step * 3
+  ld    d,0
+  ld    e,a
+  add   hl,de
+  
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  and   %0000 1000
+  jr    nz,.GoAnimate
+  ld    de,4 * 3
+  add   hl,de
+  .GoAnimate:
+  
+  ld    a,(hl)
+  ld    (Player1Frame),a
+  inc   hl
+  ld    a,(hl)
+  ld    (Player1Frame+1),a
+  inc   hl
+  ld    a,(hl)
+  ld    (Player1Frame+2),a
+  ret
+
+EmptyFrame:
+  dw ryupage0frame012 | db 1
+
+GlassBalHorizontalAnimation:
+  dw ryupage0frame004 | db 1
+  dw ryupage0frame011 | db 1
+  dw ryupage0frame010 | db 1
+  dw ryupage0frame009 | db 1
+  dw ryupage0frame008 | db 1
+  dw ryupage0frame007 | db 1
+  dw ryupage0frame006 | db 1
+  dw ryupage0frame005 | db 1
+;4 extra for when  y is 16 fold
+  dw ryupage0frame004 | db 1
+  dw ryupage0frame011 | db 1
+  dw ryupage0frame010 | db 1
+  dw ryupage0frame009 | db 1
+  
+NonMovingObjectMovementTable:
+  db    127,0,0, 128
+
+GlassBallMovementTable1:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  115,+0,-2, 015,+8,-0, 124,+0,+2
   db  128
+
+GlassBallMovementTable2:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  32,+0,+2, 032,+0,-2
+  db  128
+
+GlassBallMovementTable3:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  32,+0,-2, 032,+0,+2
+  db  128
+
+GlassBallMovementTable4:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  115,+0,-2, 016,+8,-0, 088,+0,+2, 088,+0,-2, 088,+0,+2, 088,+0,-2, 088,+0,+2, 088,+0,-2, 088,+0,+2, 088,+0,-2, 088,+0,+2, 088,+0,-2, 088,+0,+2, 088,+0,-2, 124,+0,+2
+  db  128
+
 
 HugeBlob:
 ;v1=Animation Counter
@@ -3764,6 +3930,10 @@ MoveObjectWithStepTable:
   ret   z
   
   MovePlayerAlongWithObject:
+  ld    a,(PlayerDead?)
+  or    a
+  ret   nz  
+  
   ld    a,(ix+enemies_and_objects.v4)         ;x movement
   or    a
   ld    d,0

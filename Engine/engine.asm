@@ -53,8 +53,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 240 ;150 ;210
-ClesY:      db 150 ; 144-1
+ClesX:      dw 232 ;150 ;210
+ClesY:      db 170 ; 144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -619,14 +619,24 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   add   4                          ;exact edge at de=7
 ;  ld    d,0
   ld    e,a
-  sbc   hl,de  
+  sbc   hl,de
+  jr    nc,.EndCheckOutOfScreenLeft
+  ld    hl,0
+  .EndCheckOutOfScreenLeft:
+    
   ld    e,(ix+enemies_and_objects.x);de: x object (180)
   sbc   hl,de  
   jp    nc,.CollisionRightOfObject
 
 ;1. check if player hits the bottom part of the object, then snap player to the object on the bottom side
   ld    a,(ClesY)
-  sub   a,06
+;  sub   a,06
+
+;dit was 06, maar we hebben er 1 van gemaakt voor de glass ball als die met 8 pix per frame naar beneden valt
+  sub   a,1                         
+
+
+
   jr    c,.skip                     ;if Cles is in the top of the screen we don't really need to check collision with bottom part of object
   sub   (ix+enemies_and_objects.ny)
   jr    c,.skip                     ;if Cles is in the top of the screen we don't really need to check collision with bottom part of object
@@ -634,8 +644,10 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   jp    nc,.CollisionBottomOfObject
   .skip:
 
-  jp    .CollisionTopOfObject       ;if none of the sides are detected, player is in the middle of object. Snap on top.
-  ret
+  jp    Set_Dying
+
+;  call  Set_Dying
+;  jp    .CollisionTopOfObject       ;if none of the sides are detected, player is in the middle of object. Snap on top.
 
 .CollisionRightOfObject:
   ld    a,(ix+enemies_and_objects.x)
@@ -645,42 +657,93 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   add   hl,de
   ld    e,(ix+enemies_and_objects.nx)
   add   hl,de
-  ld    (ClesX),hl       
   
   ld    b,255                       ;collision right side of object detected (used for the pushing blocks)            
-  ret
+    
+  ld    a,(PlayerDead?)
+  or    a
+  ret   nz
+    
+  ld    (ClesX),hl
   
+  ld    hl,(PlayerSpriteStand)
+  ld    de,Climb
+  sbc   hl,de
+  jp    z,CollisionEnemyPlayer.PlayerIsHit
+
+;	ld		hl,ClimbDown
+;	ld		(PlayerSpriteStand),hl
+;	ld		hl,ClimbUp
+;	ld		(PlayerSpriteStand),hl
+;	ld		hl,Climb
+;	ld		(PlayerSpriteStand),hl
+	
+  ;check at height of waiste if player is pushed into a wall on the right side
+;  ld    b,YaddmiddlePLayer  ;add y to check (y is expressed in pixels)
+  ld    b,YaddFeetPLayer-4   ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer-4  ;add 0 to x to check left side of player for collision (player moved left)
+  call  checktile           ;out z=collision found with wall
+  jp    z,Set_Dying
+  ret
+    
 .CollisionLeftOfObject:
   ld    a,(ix+enemies_and_objects.x)
   sub   7
 
   ld    h,0
   ld    l,a
-  ld    (ClesX),hl                   
 
   ld    b,254                       ;collision leftside of object detected (used for the pushing blocks)            
+
+  ld    a,(PlayerDead?)
+  or    a
+  ret   nz
+
+  ld    (ClesX),hl                   
+
+  ;check at height of waiste if player is pushed into a wall on the left side
+;  ld    b,YaddmiddlePLayer  ;add y to check (y is expressed in pixels)
+  ld    b,YaddFeetPLayer-4   ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+4   ;add 0 to x to check left side of player for collision (player moved left)
+  call  checktile           ;out z=collision found with wall
+  jp    z,Set_Dying
   ret
 
 .CollisionTopOfObject:
   ld    a,(JumpSpeed)               ;if vertical JumpSpeed is negative then return. If it's positive then snap to object
   or    a
   ret   m
-  
+
+  ld    a,(PlayerDead?)
+  or    a
+  jr    nz,.SkipSnapY
+    
   ld    a,(ix+enemies_and_objects.y)
   sub   a,17
   ld    (ClesY),a
+  .SkipSnapY:
+
+;Don't snap to object if it falls with a very high speel, like the Glass Ball
+  ld    a,(ix+enemies_and_objects.v3) ;v3=Vertical Movement
+  cp    8
+  jr    nz,.NotGlassBallFalling
+  ld    a,(ClesY)
+  dec   a
+  ld    (ClesY),a
+  .NotGlassBallFalling:
+;/Don't snap to object if it falls with a very high speel, like the Glass Ball
   
   ld    a,1                         ;snap player to this platform
   ld    (SnapToPlatform?),a  
   ld    (ix+enemies_and_objects.SnapPlayer?),a
   
 ;check if player is jumping. If so, then set standing
-
 	ld		hl,(PlayerSpriteStand)
 	ld		de,Jump
 	xor   a
 	sbc   hl,de
   ret   nz  
+  
   
   ld    a,(PlayerFacingRight?)          ;is player facing right ?
   or    a
@@ -688,10 +751,24 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   jp    Set_R_stand
 
 .CollisionBottomOfObject:
+  ld    a,(PlayerDead?)
+  or    a
+  ret   nz
+
   ld    a,(ix+enemies_and_objects.y)
   add   a,(ix+enemies_and_objects.ny)
-  add   a,14
+  add   a,14d
   ld    (ClesY),a
+  
+  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
+  call  checktile           ;out z=collision found with wall  
+
+  ;check at height of waiste if player runs into a wall on the left side
+  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer+8 ;add 0 to x to check left side of player for collision (player moved left)
+  call  checktile           ;out z=collision found with wall
+  call  z,Set_Dying
   ret
 
 PutPlayerspriteSF2Engine:
@@ -2944,7 +3021,7 @@ LstandingSpriteStand:         equ 6
 LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
-;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit, RSitPunch, LSitPunch
+;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit, RSitPunch, LSitPunch, Dying
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
@@ -2952,10 +3029,34 @@ HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
 
+Dying:
+  ld    a,1
+  ld    (PlayerDead?),a
+  
+  ld    a,(framecounter)
+  and   %0000 1000
+	ld		hl,PlayerSpriteData_Char_Dying1
+  jr    z,.Setchar
+	ld		hl,PlayerSpriteData_Char_Dying2
+  .Setchar:
+	ld		(standchar),hl
+  ret
+
 LSitPunch:
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
   jp    z,Set_L_BeingHit
 
+  ld    a,(SnapToPlatform?)         ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
+  or    a
+  call  nz,CheckWallSides
+
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,..EndCheckSnapToPlatform
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+  ..EndCheckSnapToPlatform:
+    
   call  .SetAttackHitBox
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -3034,6 +3135,17 @@ RSitPunch:
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
   jp    z,Set_R_BeingHit
 
+  ld    a,(SnapToPlatform?)         ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
+  or    a
+  call  nz,CheckWallSides
+
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,..EndCheckSnapToPlatform
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+  ..EndCheckSnapToPlatform:
+  
   call  .SetAttackHitBox
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -3239,13 +3351,17 @@ RRolling:
   ld    hl,RightRollingAnimation
   call   AnimateRolling             ;animate
 
-  ld    a,(SnapToPlatform?)         ;check if we need to snap to a platform or object
+  ld    a,(SnapToPlatform?)         ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
   or    a
-  jr    nz,.EndCheckSnapToPlatform
-  call  CheckFloorInclLadder        ;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
-  jp    c,.Set_Fall  
-  .EndCheckSnapToPlatform:
+  call  nz,CheckWallSides
 
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,..EndCheckSnapToPlatform
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+  ..EndCheckSnapToPlatform:
+  
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
   jp    z,Set_R_BeingHit  
 
@@ -3366,13 +3482,17 @@ LRolling:
   ld    hl,LeftRollingAnimation
   call   AnimateRolling             ;animate
 
-  ld    a,(SnapToPlatform?)         ;check if we need to snap to a platform or object
+  ld    a,(SnapToPlatform?)         ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
   or    a
-  jr    nz,.EndCheckSnapToPlatform
-  call  CheckFloorInclLadder        ;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
-  jp    c,.Set_Fall  
-  .EndCheckSnapToPlatform:
+  call  nz,CheckWallSides
 
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,..EndCheckSnapToPlatform
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+  ..EndCheckSnapToPlatform:
+  
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
   jp    z,Set_L_BeingHit  
 
@@ -3912,6 +4032,17 @@ LAttack:
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
   jp    z,Set_L_BeingHit
 
+  ld    a,(SnapToPlatform?)         ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
+  or    a
+  call  nz,CheckWallSides
+
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,..EndCheckSnapToPlatform
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+  ..EndCheckSnapToPlatform:
+  
   call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -4089,6 +4220,17 @@ RAttack:
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
   jp    z,Set_R_BeingHit
 
+  ld    a,(SnapToPlatform?)         ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
+  or    a
+  call  nz,CheckWallSides
+
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,..EndCheckSnapToPlatform
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+  ..EndCheckSnapToPlatform:
+  
   call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -4887,6 +5029,17 @@ Lsitting:
 
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
+  ld    a,(SnapToPlatform?)         ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
+  or    a
+  call  nz,CheckWallSides
+
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,..EndCheckSnapToPlatform
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+  ..EndCheckSnapToPlatform:
+    
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
   jp    z,Set_L_BeingHit
 
@@ -4928,6 +5081,17 @@ Rsitting:
 
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
+  ld    a,(SnapToPlatform?)         ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
+  or    a
+  call  nz,CheckWallSides
+
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,..EndCheckSnapToPlatform
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+  ..EndCheckSnapToPlatform:
+  
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
   jp    z,Set_R_BeingHit
 
@@ -5504,6 +5668,10 @@ Lrunning:
 	call  CheckClimbStairsUp  
   ret
 
+CheckWallSides:                     ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
+  call  DoMovePlayer.PlayerMovedRight
+  jp    DoMovePlayer.PlayerMovedLeft
+  
 Lstanding:
   ld    a,(NewPrContr)      ;first handle up pressed, since the checks performed are heavy on the cpu
 	bit		0,a           ;cursor up pressed ?
@@ -5511,6 +5679,10 @@ Lstanding:
 
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
+  ld    a,(SnapToPlatform?)         ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
+  or    a
+  call  nz,CheckWallSides
+  
   ld    a,(SnapToPlatform?)
   or    a
   jr    nz,.EndCheckSnapToPlatform
@@ -5555,6 +5727,10 @@ Rstanding:
 
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
+  ld    a,(SnapToPlatform?)         ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
+  or    a
+  call  nz,CheckWallSides
+
   ld    a,(SnapToPlatform?)
   or    a
   jr    nz,..EndCheckSnapToPlatform
@@ -5575,6 +5751,11 @@ Rstanding:
 	bit		5,a           ;'M' pressed ?
 	jp		nz,Set_R_Rolling
 
+
+	bit		6,a           ;'M' pressed ?
+	jp		nz,Set_Dying
+
+
 	ld		a,(Controls)
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,Set_L_run
@@ -5586,7 +5767,7 @@ Rstanding:
 .DownPressed:
 	call	Set_R_sit
   jp    CheckClimbStairsDown  
-  
+    
 CheckClimbStairsDown:
   call  .StairsGoingLeftUp
   
@@ -5843,6 +6024,11 @@ CheckClimbLadderUp:;
   ld    de,8
   add   hl,de
   ld    (ClesX),hl
+  ret
+
+Set_Dying:
+	ld		hl,Dying
+	ld		(PlayerSpriteStand),hl
   ret
 
 Set_R_attack:

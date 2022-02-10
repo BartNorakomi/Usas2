@@ -81,6 +81,16 @@ tmx16 B01-017.tmx B01-017.map
 dos2unix B01-018.tmx
 tmx16 B01-018.tmx B01-018.map
 
+dos2unix B01-019.tmx
+tmx16 B01-019.tmx B01-019.map
+
+dos2unix B01-020.tmx
+tmx16 B01-020.tmx B01-020.map
+
+dos2unix B01-021.tmx
+tmx16 B01-021.tmx B01-021.map
+
+
 pack B01*.map
 
 cd..
