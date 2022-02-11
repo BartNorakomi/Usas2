@@ -33,6 +33,7 @@
 ;OP_SlowDownHandler
 ;GlassBall1
 ;GlassBall2
+;SensorTentacles
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -539,6 +540,107 @@ Template:
   .HandlePhase:
   ld    hl,RightBeetleWalk1_Char
   ret
+
+
+
+
+
+
+SensorTentacles:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=repeating steps
+;v6=pointer to movement table
+;v7=Gravity timer
+;v8=Starting Y
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,SensorTentaclesSpriteblock        ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=Hanging, 1=Attacking)  
+  or    a
+  jp    z,SensorTentaclesHanging
+  
+  SensorTentaclesAttacking:
+  call  MoveSpriteVertically
+  call  .CheckBacktoPhase0
+  call  .Gravity
+  
+  
+  ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
+  or    a
+  ld    hl,SensorTentaclesAttack1_Char
+  ret   p
+  ld    hl,SensorTentaclesAttack2_Char
+  ret
+
+  .CheckBacktoPhase0:
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Starting Y
+  cp    (ix+enemies_and_objects.y)          ;y
+  ret   c
+  ld    (ix+enemies_and_objects.y),a        ;y
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=Hanging, 1=Attacking)  
+  ld    (ix+enemies_and_objects.v5),0       ;v5=repeating steps
+  ld    (ix+enemies_and_objects.v6),0       ;v6=pointer to movement table 
+  ret
+
+  .Gravity:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=Gravity timer
+  inc   a
+  ld    (ix+enemies_and_objects.v7),a       ;v7=Gravity timer
+  cp    11
+  ret   nz
+  ld    (ix+enemies_and_objects.v7),0       ;v7=Gravity timer
+  
+  ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
+  dec   a
+;  cp    5
+;  ret   z
+  ld    (ix+enemies_and_objects.v3),a       ;v3=Vertical Movement
+  ret  
+   
+  SensorTentaclesHanging:
+  ld    de,SensorTentaclesMovementTable
+  ld    a,(framecounter)
+  and   3
+  call  z,MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+  call  .DistanceCheck
+
+  .Animate:
+  ld    hl,SensorTentaclesAnimation
+  ld    b,07                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 06                            ;07 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+.DistanceCheck:
+  ld    b,60                                ;b-> x distance
+  ld    c,100                               ;c-> y distance
+  call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   nc 
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Hanging, 1=Attacking)  
+  ld    (ix+enemies_and_objects.v3),3       ;v3=Vertical Movement
+  ret
+  
+SensorTentaclesMovementTable:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  01,-0,-0,  01,-1,-0,  02,+0,-0,  01,+1,-0,  01,+0,-0 
+  db  01,-0,-0,  01,+1,-0,  02,+0,-0,  01,-1,-0,  01,+0,-0 
+  db  128
+  
+SensorTentaclesAnimation:
+  dw  SensorTentacles1_Char
+  dw  SensorTentacles5_Char
+  dw  SensorTentacles2_Char
+  dw  SensorTentacles3_Char
+  dw  SensorTentacles4_Char
+  dw  SensorTentacles5_Char
 
 GlassBall1:
 ;v1=repeating steps

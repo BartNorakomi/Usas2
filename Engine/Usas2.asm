@@ -458,12 +458,12 @@ dephase
 ;
 ; block $15 
 ;
-Graphicsblock5:  equ   $15
+;Graphicsblock5:  equ   $15
 phase	$4000
-scoreboard:
-  incbin "..\grapx\scoreboard.SC5",7,$1000  ;skip header
-itemsKarniMata:
-  incbin "..\grapx\itemsKarniMata.SC5",7,$1000  ;skip header
+;scoreboard:
+;  incbin "..\grapx\scoreboard.SC5",7,$1000  ;skip header
+;itemsKarniMata:
+;  incbin "..\grapx\itemsKarniMata.SC5",7,$1000  ;skip header
 	ds		$6000-$,$ff
 dephase
 
@@ -824,18 +824,12 @@ MapB01_015:
 
 
 MapB01_016:
-  incbin "..\maps\b01-016.map.pck"  | .amountofobjects: db  4
-;Glass Ball
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 0,        0|dw GlassBall1          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object2: db 0,        0|dw GlassBall2          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
-;Glass Ball Activator
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-
-;Slime
+  incbin "..\maps\b01-016.map.pck"  | .amountofobjects: db  3
+;SensorTentacles
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -1,        1|dw Slime               |db 8*15|dw 8*27|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object1:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*16|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+0, 0|db 001| ds fill
+.object2:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*19|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+0, 0|db 001| ds fill
+.object3:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+0, 0|db 001| ds fill
 
 
 
@@ -850,13 +844,8 @@ MapB01_017:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
 .object2: db 1,        0|dw HugeBlobSWsprite    |db 0*00|dw 0*00|db 21,14|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 
-
-
-
 MapB01_018:
   incbin "..\maps\b01-018.map.pck"  | .amountofobjects: db  0
-
-
 
 MapB01_019:
   incbin "..\maps\b01-019.map.pck"  | .amountofobjects: db  4
@@ -871,16 +860,6 @@ MapB01_019:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object4:db -1,        1|dw Slime               |db 8*06|dw 8*13|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
-
-
-
-
-
-
-
-
-
-
 MapB01_020:
   incbin "..\maps\b01-020.map.pck"  | .amountofobjects: db  4
 ;Glass Ball
@@ -893,11 +872,6 @@ MapB01_020:
 ;Slime
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object4:db -1,        1|dw Slime               |db 8*23|dw 8*13|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-
-
-
-
-
 
 MapB01_021:
   incbin "..\maps\b01-021.map.pck"  | .amountofobjects: db  4
@@ -2060,6 +2034,7 @@ dephase
 FireEyeGreenSpriteblock:  equ   $53
 DemontjeGreenSpriteblock:  equ   $53
 HugeBlobWhiteSpriteblock:  equ   $53
+SensorTentaclesSpriteblock:  equ   $53
 phase	$8000
 LeftDemontjeGreen1_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tgs.gen"	;y offset, x offset  
 LeftDemontjeGreen1_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tcs.gen"  | db 00,01,00,01
@@ -2099,6 +2074,21 @@ HugeBlobWhite4_Char:                        incbin "..\sprites\enemies\HugeBlob\
 HugeBlobWhite5_Char:                        incbin "..\sprites\enemies\HugeBlob\HugeBlobWhite\5.spr",0,384 | ds 192,9 | db 00,00+08, 00,16+08, 00,32+08, 00,48+08, 16,00+08, 16,16+08, 16,32+08, 16,48+08, 32,00+08, 32,16+08, 32,32+08, 32,48+08
 HugeBlobWhite6_Char:                        incbin "..\sprites\enemies\HugeBlob\HugeBlobWhite\6.spr",0,384 | ds 192,9 | db 00,00+06, 00,16+06, 00,32+06, 00,48+06, 16,00+06, 16,16+06, 16,32+06, 16,48+06, 32,00+06, 32,16+06, 32,32+06, 32,48+06
 HugeBlobWhite7_Char:                        incbin "..\sprites\enemies\HugeBlob\HugeBlobWhite\7.spr",0,384 | ds 192,9 | db 00,00+02, 00,16+02, 00,32+02, 00,48+02, 16,00+02, 16,16+02, 16,32+02, 16,48+02, 32,00+02, 32,16+02, 32,32+02, 32,48+02
+
+SensorTentacles1_Char:                      include "..\sprites\enemies\SensorTentacles\SensorTentacles1.tgs.gen"	 ;y offset, x offset 
+SensorTentacles1_Col:                       include "..\sprites\enemies\SensorTentacles\SensorTentacles1.tcs.gen"  | db 00,00, 00,00
+SensorTentacles2_Char:                      include "..\sprites\enemies\SensorTentacles\SensorTentacles2.tgs.gen"	  
+SensorTentacles2_Col:                       include "..\sprites\enemies\SensorTentacles\SensorTentacles2.tcs.gen"  | db 00,00, 00,00
+SensorTentacles3_Char:                      include "..\sprites\enemies\SensorTentacles\SensorTentacles3.tgs.gen"	  
+SensorTentacles3_Col:                       include "..\sprites\enemies\SensorTentacles\SensorTentacles3.tcs.gen"  | db 00,00, 00,00
+SensorTentacles4_Char:                      include "..\sprites\enemies\SensorTentacles\SensorTentacles4.tgs.gen"	  
+SensorTentacles4_Col:                       include "..\sprites\enemies\SensorTentacles\SensorTentacles4.tcs.gen"  | db 00,00, 00,00
+SensorTentacles5_Char:                      include "..\sprites\enemies\SensorTentacles\SensorTentacles5.tgs.gen"	  
+SensorTentacles5_Col:                       include "..\sprites\enemies\SensorTentacles\SensorTentacles5.tcs.gen"  | db 00,00, 00,00
+SensorTentaclesAttack1_Char:                include "..\sprites\enemies\SensorTentacles\SensorTentaclesAttack1.tgs.gen"	  
+SensorTentaclesAttack1_Col:                 include "..\sprites\enemies\SensorTentacles\SensorTentaclesAttack1.tcs.gen"  | db 00,00, 00,00
+SensorTentaclesAttack2_Char:                include "..\sprites\enemies\SensorTentacles\SensorTentaclesAttack2.tgs.gen"	  
+SensorTentaclesAttack2_Col:                 include "..\sprites\enemies\SensorTentacles\SensorTentaclesAttack2.tcs.gen"  | db 00,00, 00,00
 	ds		$c000-$,$ff
 dephase
 
@@ -2168,6 +2158,18 @@ A01TilesBlock:  equ   $5f
 phase	$4000
   incbin "..\grapx\A01.SC5",7,$6A00  ;skip header
 	ds		$c000-$,$ff
+dephase
+
+;
+; block $61
+;
+Graphicsblock5:  equ   $61
+phase	$4000
+scoreboard:
+  incbin "..\grapx\scoreboard.SC5",7,$1000  ;skip header
+itemsKarniMata:
+  incbin "..\grapx\itemsKarniMata.SC5",7,$1000  ;skip header
+	ds		$6000-$,$ff
 dephase
 
 
