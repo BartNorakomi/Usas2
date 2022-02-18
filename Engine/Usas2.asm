@@ -804,36 +804,28 @@ MapB01_015:
   incbin "..\maps\b01-015.map.pck"  | .amountofobjects: db  7
 ;Octopussy Bullet
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 0,        0|dw OctopussyBullet     |db 8*12|dw 8*16|db 06,07|dw CleanOb1,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object2: db 0,        0|dw OctopussyBullet     |db 8*13|dw 8*18|db 06,07|dw CleanOb2,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object3: db 0,        0|dw OctopussyBullet     |db 8*14|dw 8*20|db 06,07|dw CleanOb3,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object4: db 0,        0|dw OctopussyBullet     |db 8*15|dw 8*22|db 06,07|dw CleanOb4,0 db 0,0,0,                     +168,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object1: db 0,        0|dw OctopussyBullet     |db 8*12|dw 8*16|db 08,08|dw CleanOb1,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object2: db 0,        0|dw OctopussyBullet     |db 8*13|dw 8*18|db 08,08|dw CleanOb2,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object3: db 0,        0|dw OctopussyBullet     |db 8*14|dw 8*20|db 08,08|dw CleanOb3,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object4: db 0,        0|dw OctopussyBullet     |db 8*15|dw 8*22|db 08,08|dw CleanOb4,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 ;Octopussy Bullet Slow Down Handler
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object5: db 1,        0|dw OP_SlowDownHandler  |db 8*12|dw 8*16|db 00,00|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 ;Octopussy
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object6:db -1,        1|dw Octopussy           |db 8*15|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
+.object6:db -0,        1|dw Octopussy           |db 8*15|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
 .object7:db -1,        1|dw Octopussy           |db 8*14|dw 8*23|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
-
-
-
-
-
-
-
 
 MapB01_016:
   incbin "..\maps\b01-016.map.pck"  | .amountofobjects: db  3
 ;SensorTentacles
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*16|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+0, 0|db 001| ds fill
-.object2:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*19|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+0, 0|db 001| ds fill
-.object3:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+0, 0|db 001| ds fill
-
-
-
-
+.object1:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*16|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+1, 0|db 001| ds fill
+.object2:db -1,        1|dw SensorTentacles     |db 8*07|dw 8*19|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*07+1,+1, 0|db 1| ds fill
+;.object3:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+1, 0|db 001| ds fill
+;Yellow Wasp
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object3:db -1,        1|dw YellowWasp          |db 8*12|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
 MapB01_017:
   incbin "..\maps\b01-017.map.pck"  | .amountofobjects: db  2
@@ -845,7 +837,20 @@ MapB01_017:
 .object2: db 1,        0|dw HugeBlobSWsprite    |db 0*00|dw 0*00|db 21,14|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 
 MapB01_018:
-  incbin "..\maps\b01-018.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\b01-018.map.pck"  | .amountofobjects: db  6
+;Snowball Thrower
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw SnowballThrower     |db 8*21|dw 8*13|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;Snowball
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object2: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb1,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object3: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb2,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
+
+.object4:db -1,        1|dw SnowballThrower     |db 8*05|dw 8*13|db 32,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;Snowball
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object5: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb3,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object6: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb4,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
 
 MapB01_019:
   incbin "..\maps\b01-019.map.pck"  | .amountofobjects: db  4
@@ -2035,6 +2040,7 @@ FireEyeGreenSpriteblock:  equ   $53
 DemontjeGreenSpriteblock:  equ   $53
 HugeBlobWhiteSpriteblock:  equ   $53
 SensorTentaclesSpriteblock:  equ   $53
+YellowWaspSpriteblock:  equ   $53
 phase	$8000
 LeftDemontjeGreen1_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tgs.gen"	;y offset, x offset  
 LeftDemontjeGreen1_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tcs.gen"  | db 00,01,00,01
@@ -2089,6 +2095,40 @@ SensorTentaclesAttack1_Char:                include "..\sprites\enemies\SensorTe
 SensorTentaclesAttack1_Col:                 include "..\sprites\enemies\SensorTentacles\SensorTentaclesAttack1.tcs.gen"  | db 00,00, 00,00
 SensorTentaclesAttack2_Char:                include "..\sprites\enemies\SensorTentacles\SensorTentaclesAttack2.tgs.gen"	  
 SensorTentaclesAttack2_Col:                 include "..\sprites\enemies\SensorTentacles\SensorTentaclesAttack2.tcs.gen"  | db 00,00, 00,00
+
+LeftYellowWasp1_Char:                       include "..\sprites\enemies\Wasp\LeftYellowWasp1.tgs.gen"	  
+LeftYellowWasp1_Col:                        include "..\sprites\enemies\Wasp\LeftYellowWasp1.tcs.gen"  | db 00,00, 00,00
+LeftYellowWasp2_Char:                       include "..\sprites\enemies\Wasp\LeftYellowWasp2.tgs.gen"	  
+LeftYellowWasp2_Col:                        include "..\sprites\enemies\Wasp\LeftYellowWasp2.tcs.gen"  | db 00,00, 00,00
+LeftYellowWasp3_Char:                       include "..\sprites\enemies\Wasp\LeftYellowWasp3.tgs.gen"	  
+LeftYellowWasp3_Col:                        include "..\sprites\enemies\Wasp\LeftYellowWasp3.tcs.gen"  | db 00,00, 00,00
+LeftYellowWasp4_Char:                       include "..\sprites\enemies\Wasp\LeftYellowWasp4.tgs.gen"	  
+LeftYellowWasp4_Col:                        include "..\sprites\enemies\Wasp\LeftYellowWasp4.tcs.gen"  | db 00,00, 00,00
+;LeftYellowWasp5_Char:                       include "..\sprites\enemies\Wasp\LeftYellowWasp5.tgs.gen"	  
+;LeftYellowWasp5_Col:                        include "..\sprites\enemies\Wasp\LeftYellowWasp5.tcs.gen"  | db 00,00, 00,00
+;LeftYellowWasp6_Char:                       include "..\sprites\enemies\Wasp\LeftYellowWasp6.tgs.gen"	  
+;LeftYellowWasp6_Col:                        include "..\sprites\enemies\Wasp\LeftYellowWasp6.tcs.gen"  | db 00,00, 00,00
+;LeftYellowWasp7_Char:                       include "..\sprites\enemies\Wasp\LeftYellowWasp7.tgs.gen"	  
+;LeftYellowWasp7_Col:                        include "..\sprites\enemies\Wasp\LeftYellowWasp7.tcs.gen"  | db 00,00, 00,00
+;LeftYellowWasp8_Char:                       include "..\sprites\enemies\Wasp\LeftYellowWasp8.tgs.gen"	  
+;LeftYellowWasp8_Col:                        include "..\sprites\enemies\Wasp\LeftYellowWasp8.tcs.gen"  | db 00,00, 00,00
+
+RightYellowWasp1_Char:                      include "..\sprites\enemies\Wasp\RightYellowWasp1.tgs.gen"	  
+RightYellowWasp1_Col:                       include "..\sprites\enemies\Wasp\RightYellowWasp1.tcs.gen"  | db 00,00, 00,00
+RightYellowWasp2_Char:                      include "..\sprites\enemies\Wasp\RightYellowWasp2.tgs.gen"	  
+RightYellowWasp2_Col:                       include "..\sprites\enemies\Wasp\RightYellowWasp2.tcs.gen"  | db 00,00, 00,00
+RightYellowWasp3_Char:                      include "..\sprites\enemies\Wasp\RightYellowWasp3.tgs.gen"	  
+RightYellowWasp3_Col:                       include "..\sprites\enemies\Wasp\RightYellowWasp3.tcs.gen"  | db 00,00, 00,00
+RightYellowWasp4_Char:                      include "..\sprites\enemies\Wasp\RightYellowWasp4.tgs.gen"	  
+RightYellowWasp4_Col:                       include "..\sprites\enemies\Wasp\RightYellowWasp4.tcs.gen"  | db 00,00, 00,00
+;RightYellowWasp5_Char:                      include "..\sprites\enemies\Wasp\RightYellowWasp5.tgs.gen"	  
+;RightYellowWasp5_Col:                       include "..\sprites\enemies\Wasp\RightYellowWasp5.tcs.gen"  | db 00,00, 00,00
+;RightYellowWasp6_Char:                      include "..\sprites\enemies\Wasp\RightYellowWasp6.tgs.gen"	  
+;RightYellowWasp6_Col:                       include "..\sprites\enemies\Wasp\RightYellowWasp6.tcs.gen"  | db 00,00, 00,00
+;RightYellowWasp7_Char:                      include "..\sprites\enemies\Wasp\RightYellowWasp7.tgs.gen"	  
+;RightYellowWasp7_Col:                       include "..\sprites\enemies\Wasp\RightYellowWasp7.tcs.gen"  | db 00,00, 00,00
+;RightYellowWasp8_Char:                      include "..\sprites\enemies\Wasp\RightYellowWasp8.tgs.gen"	  
+;RightYellowWasp8_Col:                       include "..\sprites\enemies\Wasp\RightYellowWasp8.tcs.gen"  | db 00,00, 00,00
 	ds		$c000-$,$ff
 dephase
 
@@ -2096,6 +2136,7 @@ dephase
 ; block $55 + $56
 ;
 DemontjeGreySpriteblock:  equ   $55
+SnowballThrowerSpriteblock:  equ   $55
 phase	$8000
 LeftDemontjeGrey1_Char:                     include "..\sprites\enemies\Demontje\LeftDemontjeGrey1.tgs.gen"	;y offset, x offset  
 LeftDemontjeGrey1_Col:                      include "..\sprites\enemies\Demontje\LeftDemontjeGrey1.tcs.gen"  | db 00,01,00,01
@@ -2114,6 +2155,64 @@ RightDemontjeGrey3_Char:                    include "..\sprites\enemies\Demontje
 RightDemontjeGrey3_Col:                     include "..\sprites\enemies\Demontje\RightDemontjeGrey3.tcs.gen"  | db 00,00,00,00
 RightDemontjeGrey4_Char:                    include "..\sprites\enemies\Demontje\RightDemontjeGrey4.tgs.gen"	  
 RightDemontjeGrey4_Col:                     include "..\sprites\enemies\Demontje\RightDemontjeGrey4.tcs.gen"  | db 00,00,00,00
+
+LeftSnowballThrower1_Char:                  include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower1.tgs.gen"	  
+LeftSnowballThrower1_Col:                   include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower1.tcs.gen"  | db 00,00, 00,00, 16,00+1, 16,00+1
+LeftSnowballThrower2_Char:                  include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower2.tgs.gen"	  
+LeftSnowballThrower2_Col:                   include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower2.tcs.gen"  | db 00,00, 00,00, 16,00-1, 16,00-1
+LeftSnowballThrower3_Char:                  include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower3.tgs.gen"	  
+LeftSnowballThrower3_Col:                   include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower3.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+LeftSnowballThrower4_Char:                  include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower4.tgs.gen"	  
+LeftSnowballThrower4_Col:                   include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower4.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+LeftSnowballThrower5_Char:                  include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower5.tgs.gen"	  
+LeftSnowballThrower5_Col:                   include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower5.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+LeftSnowballThrower6_Char:                  include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower6.tgs.gen"	  
+LeftSnowballThrower6_Col:                   include "..\sprites\enemies\SnowballThrower\LeftSnowballThrower6.tcs.gen"  | db 00,00, 00,00, 16,00+1, 16,00+1
+
+RightSnowballThrower1_Char:                 include "..\sprites\enemies\SnowballThrower\RightSnowballThrower1.tgs.gen"	  
+RightSnowballThrower1_Col:                  include "..\sprites\enemies\SnowballThrower\RightSnowballThrower1.tcs.gen"  | db 00,00, 00,00, 16,00-1, 16,00-1
+RightSnowballThrower2_Char:                 include "..\sprites\enemies\SnowballThrower\RightSnowballThrower2.tgs.gen"	  
+RightSnowballThrower2_Col:                  include "..\sprites\enemies\SnowballThrower\RightSnowballThrower2.tcs.gen"  | db 00,00, 00,00, 16,00+1, 16,00+1
+RightSnowballThrower3_Char:                 include "..\sprites\enemies\SnowballThrower\RightSnowballThrower3.tgs.gen"	  
+RightSnowballThrower3_Col:                  include "..\sprites\enemies\SnowballThrower\RightSnowballThrower3.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+RightSnowballThrower4_Char:                 include "..\sprites\enemies\SnowballThrower\RightSnowballThrower4.tgs.gen"	  
+RightSnowballThrower4_Col:                  include "..\sprites\enemies\SnowballThrower\RightSnowballThrower4.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+RightSnowballThrower5_Char:                 include "..\sprites\enemies\SnowballThrower\RightSnowballThrower5.tgs.gen"	  
+RightSnowballThrower5_Col:                  include "..\sprites\enemies\SnowballThrower\RightSnowballThrower5.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+RightSnowballThrower6_Char:                 include "..\sprites\enemies\SnowballThrower\RightSnowballThrower6.tgs.gen"	  
+RightSnowballThrower6_Col:                  include "..\sprites\enemies\SnowballThrower\RightSnowballThrower6.tcs.gen"  | db 00,00, 00,00, 16,00-1, 16,00-1
+
+LeftSnowballThrowerAttack1_Char:            include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack1.tgs.gen"	  
+LeftSnowballThrowerAttack1_Col:             include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack1.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+LeftSnowballThrowerAttack2_Char:            include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack2.tgs.gen"	  
+LeftSnowballThrowerAttack2_Col:             include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack2.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+LeftSnowballThrowerAttack3_Char:            include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack3.tgs.gen"	  
+LeftSnowballThrowerAttack3_Col:             include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack3.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+LeftSnowballThrowerAttack4_Char:            include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack4.tgs.gen"	  
+LeftSnowballThrowerAttack4_Col:             include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack4.tcs.gen"  | db 00+3,00-3, 00+3,00-3, 16+3,00+2, 16+3,00+2
+LeftSnowballThrowerAttack5_Char:            include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack5.tgs.gen"	  
+LeftSnowballThrowerAttack5_Col:             include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack5.tcs.gen"  | db 00+4,00-2, 00+4,00-2, 16+4,00+1, 16+4,00+1
+LeftSnowballThrowerAttack6_Char:            include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack6.tgs.gen"	  
+LeftSnowballThrowerAttack6_Col:             include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack6.tcs.gen"  | db 00+4,00-1, 00+4,00-1, 16+4,00+2, 16+4,00+2
+LeftSnowballThrowerAttack7_Char:            include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack7.tgs.gen"	  
+LeftSnowballThrowerAttack7_Col:             include "..\sprites\enemies\SnowballThrower\LeftSnowballThrowerAttack7.tcs.gen"  | db 00,00-2, 00,00-2, 16,00-1, 16,00-1
+
+RightSnowballThrowerAttack1_Char:           include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack1.tgs.gen"	  
+RightSnowballThrowerAttack1_Col:            include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack1.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+RightSnowballThrowerAttack2_Char:           include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack2.tgs.gen"	  
+RightSnowballThrowerAttack2_Col:            include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack2.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+RightSnowballThrowerAttack3_Char:           include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack3.tgs.gen"	  
+RightSnowballThrowerAttack3_Col:            include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack3.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00
+RightSnowballThrowerAttack4_Char:           include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack4.tgs.gen"	  
+RightSnowballThrowerAttack4_Col:            include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack4.tcs.gen"  | db 00+3,00+3, 00+3,00+3, 16+3,00-2, 16+3,00-2
+RightSnowballThrowerAttack5_Char:           include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack5.tgs.gen"	  
+RightSnowballThrowerAttack5_Col:            include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack5.tcs.gen"  | db 00+4,00+2, 00+4,00+2, 16+4,00-1, 16+4,00-1
+RightSnowballThrowerAttack6_Char:           include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack6.tgs.gen"	  
+RightSnowballThrowerAttack6_Col:            include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack6.tcs.gen"  | db 00+4,00+1, 00+4,00+1, 16+4,00-2, 16+4,00-2
+RightSnowballThrowerAttack7_Char:           include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack7.tgs.gen"	  
+RightSnowballThrowerAttack7_Col:            include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack7.tcs.gen"  | db 00,00+2, 00,00+2, 16,00+1, 16,00+1
+
+
 	ds		$c000-$,$ff
 dephase
 
@@ -2160,16 +2259,43 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
+
+
+; Note: The routine below is a bit complex because it supports
+; songs > 16K. However, if you know that your song will always be < 16K you
+; can simplify it a lot:
+; - read the header and trash it!
+; - read the rest of the file
+; - modify the play_nextpos routine so that 3 is added to the pattern address
 ;
-; block $61
+; block $61 - $62
 ;
-Graphicsblock5:  equ   $61
+MusicTestBlock:  equ   $61
+phase	$8000
+;  incbin "..\music\perftest.mwm",7  ;skip header
+  incbin "perftest.mwm" ;,7  ;skip header..... Header is 6 bytes ???
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $63
+;
+Graphicsblock5:  equ   $63
 phase	$4000
 scoreboard:
   incbin "..\grapx\scoreboard.SC5",7,$1000  ;skip header
 itemsKarniMata:
   incbin "..\grapx\itemsKarniMata.SC5",7,$1000  ;skip header
 	ds		$6000-$,$ff
+dephase
+
+;
+; block $64 - $65
+;
+MusicReplayerBlock:  equ   $64
+phase	$4000
+  include "MusicPlayer_new.asm"  
+	ds		$8000-$,$ff
 dephase
 
 

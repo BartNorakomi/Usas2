@@ -16,16 +16,17 @@ MapB01_016Data: db MapsBlock02 | dw MapB01_016 | db 2,3,3                  | Map
 MapB01_019Data: db MapsBlock02 | dw MapB01_019 | db 2,3,3                  | MapB01_020Data: db MapsBlock02 | dw MapB01_020 | db 2,3,3                  | MapB01_021Data: db MapsBlock02 | dw MapB01_021 | db 2,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_016Data
+WorldMapPointer:  dw  MapB01_018Data
 
 loadGraphics:
+;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
+
   call  screenoff
   call  ReSetVariables
 
   call  SwapSpatColAndCharTable2
   call  SwapSpatColAndCharTable
   call  SwapSpatColAndCharTable2
-  
   
   ld    ix,(WorldMapPointer)
   call  SetEngineType                 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
@@ -50,17 +51,11 @@ loadGraphics:
 ;  ei
 ;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
 
-
-
-
   ld    a,1
   ld    (CopyObject+spage),a
-
-
-
-
-
-
+  ld    a,216
+  ld    (CopyObject+sy),a  
+  
   call  SetInterruptHandler           ;set Lineint and Vblank  
   call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank | if normal engine: wait for lineint
 
@@ -68,6 +63,106 @@ loadGraphics:
   ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
   jp    LevelEngine
 
+InitiateMusicReplayer:                ;set music replayer at $4000 in ram
+  ld    a,(slot.page2rom)             ;all RAM except page 2
+  out   ($a8),a
+  
+  ld    a,MusicReplayerBlock          ;Music replayer block
+  call  block34                       ;set at $8000
+  
+  ld    hl,$8000
+  ld    de,$4000
+  ld    bc,$4000
+  ldir                                ;copy music replayer to $4000 in ram
+  
+  ld    a,MusicTestBlock              ;set test tune at $8000 in rom
+  call  block34                       ;song at $8000        
+  
+  call  initOPL4                      ;Initialise OPL4
+;  call  Initialise                    ;Initialise driver
+;  call  stop_music                    ;stop + halt music
+;  call  Music.LoadKit
+;  call  Music.LoadSong
+;  Call  start_music
+
+.playloop:
+;  Call  play_int                      ;play music on interrupt
+  halt
+  jp .playloop
+
+
+
+
+
+
+
+
+
+
+
+
+
+initOPL4:       ld      a,5
+                out     ($c6),a
+                ld      a,3
+                out     ($c7),a
+
+; Initialiseer OPL4 om te lezen/schrijven
+                ld      e,$20
+                ld      hl,OWNTONES * 12
+setSRAMacces:   ld      bc,256 * 17 + 2
+                call    wave_out          ; Memory Acces mogelijk
+                ld      b,e
+                ld      c,3
+                call    wave_out
+                ld      b,h
+                inc     c
+                call    wave_out
+                ld      b,l
+                inc     c
+                call    wave_out
+                ld      a,6
+                out     ($7e),a
+
+                ld      hl,cymball
+                ld      b,12    ; 12 bytes verplaatsen
+move_headers1:  in      a,($c4)
+                and     1
+                jr      nz,move_headers1
+                ld      a,(hl)
+                inc     hl
+                out     ($7f),a
+                djnz    move_headers1
+                ret
+
+; Schrijf waarde naar register
+wave_out:       ld      a,c
+                out     ($7e),a
+		nop
+                ld      a,b
+                out     ($7f),a
+                ret
+
+; cymball - 400
+cymball:     	db    70,120,216,18,126,181,165,      0,244,242,6,0
+
+OWNTONES:       equ     48      ; aantal mogelijke eigen samples
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 ReSetVariables:
   ;set player sprites to spritenumber 28 for char and color address
   ld    a,$7b ;-2

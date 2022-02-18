@@ -28,12 +28,16 @@
 ;Hunchback
 ;Scorpion
 ;Octopussy
+;OctopussyBullet
 ;HugeBlob
 ;HugeBlobSWsprite
 ;OP_SlowDownHandler
 ;GlassBall1
 ;GlassBall2
 ;SensorTentacles
+;YellowWasp
+;SnowballThrower
+;Snowball
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -414,7 +418,7 @@ ExplosionBig:
   ld    a,(ix+enemies_and_objects.v2)       ;y backup
   ld    (ix+enemies_and_objects.y),a        ;y    
     
-  call  .Animate
+  call  .Animate                            ;out hl -> sprite character data to out to Vram
   
 	ld		a,RedExplosionSpriteblock           ;set block at $a000, page 2 - block containing sprite data
   exx                                       ;store hl. hl now points to color data
@@ -447,7 +451,7 @@ ExplosionSmall:
   ld    a,(ix+enemies_and_objects.v2)       ;y backup
   ld    (ix+enemies_and_objects.y),a        ;y    
   
-  call  .Animate
+  call  .Animate                            ;out hl -> sprite character data to out to Vram
   
 	ld		a,RedExplosionSpriteblock           ;set block at $a000, page 2 - block containing sprite data
   exx                                       ;store hl. hl now points to color data
@@ -541,20 +545,420 @@ Template:
   ld    hl,RightBeetleWalk1_Char
   ret
 
+SxSnowball: equ 241
+Snowball:
+;v1 = sx
+;v2=Phase (0=Snowball Moving, 1=Snowball Splashing) 
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Explosion Animation Counter
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=Snowball Moving, 1=Snowball Splashing) 
+  or    a
+  jp    z,SnowballMoving
+
+  SnowballSplashing:
+  ld    a,216
+  ld    (CopyObject+sy),a  
+  call  .Animate                            ;out hl -> sprite character data to out to Vram
+
+  ld    hl,SxDemontjeBulletTable
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.v5)       ;v5=Explosion Animation Counter
+  add   hl,de
+  
+  ld    a,(hl)                              ;sx
+  ld    (ix+enemies_and_objects.v1),a       ;sx
+  inc   hl  
+  ld    a,(hl)                              ;nx + ny
+  ld    (ix+enemies_and_objects.nx),a       ;nx  
+  ld    (ix+enemies_and_objects.ny),a       ;ny  
+  jp    VramObjectsTransparantCopies
+
+  .Animate:
+  ld    a,(framecounter)
+  and   7
+  ret   nz
+  call  .MoveObject1PixelRightAndDown
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=Explosion Animation Counter
+  add   a,2
+  ld    (ix+enemies_and_objects.v5),a       ;v5=Explosion Animation Counter
+  cp    2 * 4
+  ret   nz
+
+  pop   af                                  ;pop the call and remove bullet
+  ld    (ix+enemies_and_objects.alive?),0  
+  ld    (ix+enemies_and_objects.v5),0       ;v5=Explosion Animation Counter
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=bullet, 1=explosion) 
+  ld    (ix+enemies_and_objects.nx),15      ;nx  
+  ld    (ix+enemies_and_objects.ny),04      ;ny  
+  ld    (ix+enemies_and_objects.v1),SxSnowball
+  jp    VramObjectsTransparantCopiesRemoveAndClearBuffer
+
+  .MoveObject1PixelRightAndDown:
+  inc   (ix+enemies_and_objects.y)          ;y
+  ld    l,(ix+enemies_and_objects.x)
+  ld    h,(ix+enemies_and_objects.x+1)
+  inc   hl
+  ld    (ix+enemies_and_objects.x),l
+  ld    (ix+enemies_and_objects.x+1),h
+  ret
+  
+  SnowballMoving:
+  call  CollisionObjectPlayer               ;Check if player is hit by Vram object
+;  call  .Gravity
+;  call  .CheckCollisionForeground
+  call  MoveSpriteHorizontally              ;Add v4 to x (16 bit)
+
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    a,216+04
+  jr    z,.SetSY
+  ld    a,216
+  .SetSY:
+  ld    (CopyObject+sy),a
+  call  VramObjectsTransparantCopies
+
+  .CheckCollisionForeground:
+  call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
+  ret   nz
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Snowball Moving, 1=Snowball Splashing) 
+  ld    a,(ix+enemies_and_objects.y) 
+  sub   a,4
+  ld    (ix+enemies_and_objects.y),a 
+  ret
+  
+SnowballThrower:
+;v1=Animation Counter
+;v2=Phase (0=Walking, 1=Throwing)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,SnowballThrowerSpriteblock        ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=Walking, 1=Throwing)  
+  or    a
+  jp    z,SnowballThrowerWalking
+
+  SnowballThrowerThrowing:  
+
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,RightSnowbalThrowerAttack
+  jp    z,.GoAnimate
+  ld    hl,LeftSnowbalThrowerAttack
+  .GoAnimate:
+  ld    b,15                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 08                            ;06 animation frame addresses
+  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 03
+  jr    z,.ThrowSnowBallOne
+  cp    2 * 06
+  jr    z,.ThrowSnowBallTwo
+  cp    2 * 07
+  ret   nz
+
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=Walking, 1=Throwing)  
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ret
+
+  .ThrowSnowBallOne:
+  ld    a,(framecounter)
+  and   15
+  ret   nz
+
+  push  hl                                  ;hl -> sprite character data to out to Vram
+  ld    (ix+enemies_and_objects.Alive?+(lenghtenemytable*1)),1
+  ld    a,(ix+enemies_and_objects.y)
+  add   a,13+4
+  ld    (ix+enemies_and_objects.y+(lenghtenemytable*1)),a
+
+  ld    l,(ix+enemies_and_objects.x)
+  ld    h,(ix+enemies_and_objects.x+1)
+  ld    de,-14
+  add   hl,de
+  ld    (ix+enemies_and_objects.x+(lenghtenemytable*1)),l
+  ld    (ix+enemies_and_objects.x+1+(lenghtenemytable*1)),h
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  add   a,a                                 ;*2
+  ld    (ix+enemies_and_objects.v4+(lenghtenemytable*1)),a
+  pop   hl                                  ;hl -> sprite character data to out to Vram
+  ret
+
+  .ThrowSnowBallTwo:
+  ld    a,(framecounter)
+  and   15
+  ret   nz
+
+  push  hl                                  ;hl -> sprite character data to out to Vram
+  ld    (ix+enemies_and_objects.Alive?+(lenghtenemytable*2)),1
+  ld    a,(ix+enemies_and_objects.y)
+  add   a,19+2
+  ld    (ix+enemies_and_objects.y+(lenghtenemytable*2)),a
+
+  ld    l,(ix+enemies_and_objects.x)
+  ld    h,(ix+enemies_and_objects.x+1)
+  ld    de,-14
+  add   hl,de
+  ld    (ix+enemies_and_objects.x+(lenghtenemytable*2)),l
+  ld    (ix+enemies_and_objects.x+1+(lenghtenemytable*2)),h
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  add   a,a                                 ;*2
+  ld    (ix+enemies_and_objects.v4+(lenghtenemytable*2)),a
+  pop   hl                                  ;hl -> sprite character data to out to Vram
+  ret
+
+  SnowballThrowerWalking:
+  ld    a,(framecounter)
+  rrca
+  call  c,MoveSpriteHorizontally
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  GreenSpiderWalkSlow.CheckFloor      ;checks for floor. if not found invert direction
+  call  .CheckThrow
+
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,RightSnowbalThrowerWalk
+  jp    z,.GoAnimate
+  ld    hl,LeftSnowbalThrowerWalk
+  .GoAnimate:
+  ld    b,07                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 06                            ;06 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  .CheckThrow:
+  ld    a,(ix+enemies_and_objects.x)
+  cp    120
+  jr    nc,.EndCheckSmallerThan120
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ret   nz                                  ;dont throw when x<120 and looking left
+  .EndCheckSmallerThan120:
+
+  ld    a,(ix+enemies_and_objects.x)
+  cp    200
+  jr    c,.EndCheckBiggerThan200
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ret   z                                   ;dont throw when x>200 and looking right
+  .EndCheckBiggerThan200:
+
+  ld    a,r
+  and   31
+  ret   nz
+  
+  bit   0,(ix+enemies_and_objects.Alive?+(lenghtenemytable*1))
+  ret   nz
+  bit   0,(ix+enemies_and_objects.Alive?+(lenghtenemytable*2))
+  ret   nz
+
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Walking, 1=Throwing)  
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ret
+  
+LeftSnowbalThrowerAttack:
+  dw  LeftSnowballThrowerAttack1_Char
+  dw  LeftSnowballThrowerAttack2_Char
+  dw  LeftSnowballThrowerAttack3_Char
+  dw  LeftSnowballThrowerAttack4_Char
+  dw  LeftSnowballThrowerAttack5_Char
+  dw  LeftSnowballThrowerAttack6_Char
+  dw  LeftSnowballThrowerAttack7_Char
+  dw  LeftSnowballThrowerAttack7_Char
+
+RightSnowbalThrowerAttack:
+  dw  RightSnowballThrowerAttack1_Char
+  dw  RightSnowballThrowerAttack2_Char
+  dw  RightSnowballThrowerAttack3_Char
+  dw  RightSnowballThrowerAttack4_Char
+  dw  RightSnowballThrowerAttack5_Char
+  dw  RightSnowballThrowerAttack6_Char
+  dw  RightSnowballThrowerAttack7_Char
+  dw  RightSnowballThrowerAttack7_Char
+
+LeftSnowbalThrowerWalk:
+  dw  LeftSnowballThrower1_Char
+  dw  LeftSnowballThrower2_Char
+  dw  LeftSnowballThrower3_Char
+  dw  LeftSnowballThrower4_Char
+  dw  LeftSnowballThrower5_Char
+  dw  LeftSnowballThrower6_Char
+
+RightSnowbalThrowerWalk:
+  dw  RightSnowballThrower1_Char
+  dw  RightSnowballThrower2_Char
+  dw  RightSnowballThrower3_Char
+  dw  RightSnowballThrower4_Char
+  dw  RightSnowballThrower5_Char
+  dw  RightSnowballThrower6_Char
 
 
 
 
+YellowWasp:
+;v1=Animation Counter
+;v2=Phase (0=Hovering Towards player, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=repeating steps
+;v6=pointer to movement table
+;v7=attack duration
+;v8=face left (0) or face right (1) 
+  call  .HandlePhase                        ;(0=Hovering Towards player, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,YellowWaspSpriteblock             ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=Hanging, 1=Attacking)  
+  or    a
+  jp    z,YellowWaspHoveringTowardsPlayer
 
+  YellowWaspAttacking:
+  call  WaspFlyingInPlace.faceplayerSkipRandomness ;v8=face left (0) or face right (1)  
+  ld    de,WaspMovementTable
+  call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+  call  .Animate
+
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=attack duration
+  inc   a
+  and   63
+  ld    (ix+enemies_and_objects.v7),a       ;v7=attack duration
+  ret   nz
+  ld    (ix+enemies_and_objects.v2),+0      ;v2=Phase (0=Hovering Towards player, 1=attacking)
+  ret
+
+  .Animate:
+  bit   0,(ix+enemies_and_objects.v8)       ;v8=face left (0) or face right (1)  
+  ld    hl,RightYellowWasp
+  jp    z,.GoAnimate
+  ld    hl,LeftYellowWasp
+  .GoAnimate:
+  ld    b,0                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;06 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+  
+  YellowWaspHoveringTowardsPlayer:
+  call  .HoverTowardsPlayer
+  call  WaspFlyingInPlace.faceplayerSkipRandomness ;v8=face left (0) or face right (1)  
+  call  .CheckAttack
+  jp    YellowWaspAttacking.Animate         ;out hl -> sprite character data to out to Vram
+
+  .CheckAttack:
+  ld    a,r
+;  or    a
+  and   31
+  ret   nz
+  ld    (ix+enemies_and_objects.v2),+1      ;v2=Phase (0=Hovering Towards player, 1=attacking)
+  ret
+
+  .HoverTowardsPlayer:
+  ld    a,(framecounter)
+  rrca
+  jr    c,.HoverHorizontallyTowardsPlayer
+
+  .HoverVerticallyTowardsPlayer:
+  ;Protect Wasp from flying out of screen top
+  ld    a,(ix+enemies_and_objects.y)  
+  cp    18
+  jr    nc,.EndCheckLowerThan18
+  ld    (ix+enemies_and_objects.y),18  
+  .EndCheckLowerThan18:
+  ;/Protect Wasp from flying out of screen top
+
+  ld    a,r
+  and   3
+  ld    (ix+enemies_and_objects.v3),+1      ;v3=Vertical Movement
+  jp    z,MoveSpriteVertically
+  dec   a
+  ld    (ix+enemies_and_objects.v3),-1      ;v3=Vertical Movement
+  jp    z,MoveSpriteVertically
+    
+  ld    a,(ClesY)
+  sub   a,60
+  ld    (ix+enemies_and_objects.v3),-1      ;v3=Vertical Movement
+  jp    c,MoveSpriteVertically
+  sub   a,(ix+enemies_and_objects.y)  
+  jp    c,MoveSpriteVertically
+  ld    (ix+enemies_and_objects.v3),+1      ;v3=Vertical Movement
+  jp    MoveSpriteVertically
+  
+  .HoverHorizontallyTowardsPlayer:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    de,40 + 6
+  jr    nz,.Go
+  ld    de,-30
+  .Go:
+
+  ld    a,r
+  and   3
+  ld    (ix+enemies_and_objects.v4),+1      ;v3=Vertical Movement
+  jp    z,MoveSpriteHorizontally
+  dec   a
+  ld    (ix+enemies_and_objects.v4),-1      ;v3=Vertical Movement
+  jp    z,MoveSpriteHorizontally
+
+  ld    hl,(Clesx)                          ;hl = x player  
+  add   hl,de
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  sbc   hl,de                              
+  ld    (ix+enemies_and_objects.v4),+1      ;v4=Horizontal Movement
+  jp    nc,MoveSpriteHorizontally
+  ld    (ix+enemies_and_objects.v4),-1      ;v4=Horizontal Movement
+  jp    MoveSpriteHorizontally
+
+  .Faceplayer:
+  ld    hl,(Clesx)                          ;hl = x player  
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  sbc   hl,de                               ;make sure wasp always faces player
+  ld    (ix+enemies_and_objects.v4),+1      ;v4=Horizontal Movement
+  ret   nc
+  ld    (ix+enemies_and_objects.v4),-1      ;v4=Horizontal Movement
+  ret
+
+LeftYellowWasp:
+  dw  LeftYellowWasp1_Char
+  dw  LeftYellowWasp2_Char
+  dw  LeftYellowWasp3_Char
+  dw  LeftYellowWasp4_Char
+;  dw  LeftYellowWasp5_Char
+;  dw  LeftYellowWasp6_Char
+;  dw  LeftYellowWasp7_Char
+;  dw  LeftYellowWasp8_Char
+
+RightYellowWasp:
+  dw  RightYellowWasp1_Char
+  dw  RightYellowWasp2_Char
+  dw  RightYellowWasp3_Char
+  dw  RightYellowWasp4_Char
+;  dw  RightYellowWasp5_Char
+;  dw  RightYellowWasp6_Char
+;  dw  RightYellowWasp7_Char
+;  dw  RightYellowWasp8_Char
+  
+  
 SensorTentacles:
 ;v1=Animation Counter
-;v2=Phase (0=walking slow, 1=attacking)
+;v2=Phase (0=Hanging, 1=attacking)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=repeating steps
 ;v6=pointer to movement table
 ;v7=Gravity timer
 ;v8=Starting Y
+;v9=wait until attack timer 
   call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
   call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
@@ -574,7 +978,6 @@ SensorTentacles:
   call  .CheckBacktoPhase0
   call  .Gravity
   
-  
   ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
   or    a
   ld    hl,SensorTentaclesAttack1_Char
@@ -590,6 +993,7 @@ SensorTentacles:
   ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=Hanging, 1=Attacking)  
   ld    (ix+enemies_and_objects.v5),0       ;v5=repeating steps
   ld    (ix+enemies_and_objects.v6),0       ;v6=pointer to movement table 
+  ld    (ix+enemies_and_objects.v7),0       ;v7=Gravity timer
   ret
 
   .Gravity:
@@ -602,12 +1006,10 @@ SensorTentacles:
   
   ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
   dec   a
-;  cp    5
-;  ret   z
   ld    (ix+enemies_and_objects.v3),a       ;v3=Vertical Movement
   ret  
    
-  SensorTentaclesHanging:
+  SensorTentaclesHanging:  
   ld    de,SensorTentaclesMovementTable
   ld    a,(framecounter)
   and   3
@@ -622,11 +1024,22 @@ SensorTentacles:
 
 .DistanceCheck:
   ld    b,60                                ;b-> x distance
-  ld    c,100                               ;c-> y distance
+  ld    c,180                               ;c-> y distance
   call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   nc 
+
+  ld    a,(ix+enemies_and_objects.v9)       ;v9=wait until attack timer 
+  dec   a
+  and   63
+  ld    (ix+enemies_and_objects.v9),a       ;v9=wait until attack timer 
+  ret   nz
+
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Hanging, 1=Attacking)  
+
+  bit   0,(ix+enemies_and_objects.v8)       ;v8=Starting Y
   ld    (ix+enemies_and_objects.v3),3       ;v3=Vertical Movement
+  ret   z
+  ld    (ix+enemies_and_objects.v3),4       ;v3=Vertical Movement
   ret
   
 SensorTentaclesMovementTable:  ;repeating steps(128 = end table/repeat), move y, move x
@@ -1127,15 +1540,77 @@ HugeBlobSwSprite5:  db  054,06,32,    33-16 ,   15+8
 HugeBlobSwSprite6:  db  060,05,32,    33-16 ,   15+6
 HugeBlobSwSprite7:  db  065,08,32,    33-16 ,   15+2
 
+                            ;Sx  ,sy,   ,ny ,addtoY
+SxOctopussyBulletTable: 
+                        db  154  ,216   ,06,  -2
+                        db  154  ,216+6 ,07,  -1
+                        db  170  ,216   ,05,  +2
+                        db  170  ,216+5 ,04,  +1
+                        
 OctopussyBullet:                            ;forced on object positions 1-4
 ;v1 = sx
-;v2=Phase (0=moving, 1=static on floor, 3=fading out)
+;v2=Phase (0=Moving, 1=Splashing) 
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=repeating steps
 ;v6=pointer to movement table
 ;v7=reference to movement table (0, 8, 16, 24, 32, 40, 48, 56)
+;v8=Explosion Animation Counter
   .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=Moving, 1=Splashing)  
+  or    a
+  jp    z,BulletMoving
+  
+  BulletSplashing:
+  call  .Animate                            ;out hl -> sprite character data to out to Vram
+
+  ld    hl,SxOctopussyBulletTable
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.v8)       ;v8=Explosion Animation Counter
+  add   hl,de
+  
+  ld    a,(hl)                              ;sx
+  ld    (ix+enemies_and_objects.v1),a       ;sx
+  inc   hl  
+  ld    a,(hl)                              ;sy
+  ld    (CopyObject+sy),a    
+  inc   hl  
+  ld    a,(hl)                              ;ny
+  ld    (ix+enemies_and_objects.ny),a       ;ny  
+  ld    (ix+enemies_and_objects.nx),16      ;nx  
+  inc   hl  
+
+  ld    a,(framecounter)
+  and   7
+  jp    nz,VramObjectsTransparantCopies
+
+  ld    a,(hl)                              ;add to Y
+  add   a,(ix+enemies_and_objects.y)
+  ld    (ix+enemies_and_objects.y),a
+  jp    VramObjectsTransparantCopies
+
+  .Animate:
+  ld    a,(framecounter)
+  and   7
+  ret   nz
+
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Explosion Animation Counter
+  add   a,4
+  ld    (ix+enemies_and_objects.v8),a       ;v8=Explosion Animation Counter
+  cp    4 * 4
+  ret   nz
+
+  pop   af                                  ;pop the call and remove bullet
+  ld    (ix+enemies_and_objects.alive?),0  
+  ld    (ix+enemies_and_objects.v8),0       ;v8=Explosion Animation Counter
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=Moving, 1=Splashing) 
+  ld    (ix+enemies_and_objects.nx),08      ;nx  
+  ld    (ix+enemies_and_objects.ny),08      ;ny    
+  ld    (ix+enemies_and_objects.v1),146
+  jp    VramObjectsTransparantCopiesRemoveAndClearBuffer
+
+
+  BulletMoving:  
   call  CollisionObjectPlayer               ;Check if player is hit by Vram object / out h=128 if hit
   ld    a,h
   cp    128
@@ -1148,16 +1623,24 @@ OctopussyBullet:                            ;forced on object positions 1-4
   ex    de,hl
   call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
 
+  ld    a,216
+  ld    (CopyObject+sy),a  
+  call  VramObjectsTransparantCopies        ;put object in Vram/screen
   call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
-  jp    nz,VramObjectsTransparantCopies     ;put object in Vram/screen
-  call  VramObjectsTransparantCopiesRemoveAndClearBuffer  ;Clear buffer, so that next time the CleanOb is called buffer is empty
-  ld    (ix+enemies_and_objects.Alive?),0  
+  ret   nz
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Moving, 1=Splashing)  
+
+  inc   (ix+enemies_and_objects.y) 
+  inc   (ix+enemies_and_objects.y)    
+  ld    a,(ix+enemies_and_objects.x)
+  sub   a,4
+  ld    (ix+enemies_and_objects.x),a
   ret
 
 .Playerwashit:
   call  VramObjectsTransparantCopiesRemoveAndClearBuffer  ;Clear buffer, so that next time the CleanOb is called buffer is empty
   ld    (ix+enemies_and_objects.Alive?),0
-  ld    a,1
+  ld    a,1                                   ;Octopussy Bullet Slow Down Handler v1 = player got hit by bullet
   ld    (lenghtenemytable*4+enemies_and_objects+enemies_and_objects.v1),a
   ret
 
@@ -1768,12 +2251,12 @@ RightHunchbackStandingAnimation:
   dw  RightHunchback3_Char
   dw  RightHunchback2_Char
 
-SxDemontjeBullet1: equ 192
-SxDemontjeBullet2: equ 192+11
-SxDemontjeBullet3: equ 192+11+11
-SxDemontjeBullet4: equ 192+11+11+11
-SxDemontjeBullet5: equ 192+11+11+11+7
-SxDemontjeBullet6: equ 192+11+11+11+7+5
+SxDemontjeBullet1: equ 193
+SxDemontjeBullet2: equ 193+11
+SxDemontjeBullet3: equ 193+11+11
+SxDemontjeBullet4: equ 193+11+11+11
+SxDemontjeBullet5: equ 193+11+11+11+7
+SxDemontjeBullet6: equ 193+11+11+11+7+5
 
                             ;Sx               ,nx + ny
 SxDemontjeBulletTable:  db  SxDemontjeBullet3 ,11
@@ -1793,7 +2276,7 @@ DemontjeBullet:
   jp    z,DemontjeBulletMoving
 
   DemontjeBulletExploding:
-  call  .Animate
+  call  .Animate                            ;out hl -> sprite character data to out to Vram
 
   ld    hl,SxDemontjeBulletTable
   ld    d,0
@@ -1838,7 +2321,7 @@ DemontjeBullet:
   ret
   
   DemontjeBulletMoving:
-  call  .Animate
+  call  .Animate                            ;out hl -> sprite character data to out to Vram
   ld    (ix+enemies_and_objects.v1),a       ;sx
   call  CollisionObjectPlayer               ;Check if player is hit by Vram object
   call  .Gravity
@@ -2486,7 +2969,7 @@ Slime:
   SlimeWaiting:
   call  SlimeMoving.DistanceToPlayerCheck   ;check if player is near and attacks, DUCK !
 
-  call  .Animate  
+  call  .Animate                            ;out hl -> sprite character data to out to Vram  
   dec   (ix+enemies_and_objects.v5)         ;v5=Wait timer
   ret   nz
   
@@ -2587,7 +3070,7 @@ FireEyeFireBullet:
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Static Timer
-  call  .Animate
+  call  .Animate                            ;out hl -> sprite character data to out to Vram
   ld    (ix+enemies_and_objects.v1),b       ;sx
   call  .HandlePhase                        ;(0=moving, 1=static on floor, 3=fading out)
   ret
