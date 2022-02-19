@@ -837,7 +837,7 @@ MapB01_017:
 .object2: db 1,        0|dw HugeBlobSWsprite    |db 0*00|dw 0*00|db 21,14|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 
 MapB01_018:
-  incbin "..\maps\b01-018.map.pck"  | .amountofobjects: db  6
+  incbin "..\maps\b01-018.map.pck"  | .amountofobjects: db  7
 ;Snowball Thrower
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object1:db -1,        1|dw SnowballThrower     |db 8*21|dw 8*13|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
@@ -845,12 +845,16 @@ MapB01_018:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
 .object2: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb1,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
 .object3: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb2,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
-
+;Snowball Thrower
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object4:db -1,        1|dw SnowballThrower     |db 8*05|dw 8*13|db 32,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
 ;Snowball
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
 .object5: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb3,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
 .object6: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb4,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
+;Trampoline Blob
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object7:db -1,        1|dw TrampolineBlob      |db 8*17|dw 8*18|db 16,22|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+00, 0|db 255| ds fill
 
 MapB01_019:
   incbin "..\maps\b01-019.map.pck"  | .amountofobjects: db  4
@@ -2137,6 +2141,7 @@ dephase
 ;
 DemontjeGreySpriteblock:  equ   $55
 SnowballThrowerSpriteblock:  equ   $55
+TrampolineBlobSpriteblock:  equ   $55
 phase	$8000
 LeftDemontjeGrey1_Char:                     include "..\sprites\enemies\Demontje\LeftDemontjeGrey1.tgs.gen"	;y offset, x offset  
 LeftDemontjeGrey1_Col:                      include "..\sprites\enemies\Demontje\LeftDemontjeGrey1.tcs.gen"  | db 00,01,00,01
@@ -2212,7 +2217,41 @@ RightSnowballThrowerAttack6_Col:            include "..\sprites\enemies\Snowball
 RightSnowballThrowerAttack7_Char:           include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack7.tgs.gen"	  
 RightSnowballThrowerAttack7_Col:            include "..\sprites\enemies\SnowballThrower\RightSnowballThrowerAttack7.tcs.gen"  | db 00,00+2, 00,00+2, 16,00+1, 16,00+1
 
+TrampolineBlob1_Char:                       include "..\sprites\enemies\TrampolineBlob\TrampolineBlob1.tgs.gen"	  
+TrampolineBlob1_Col:                        include "..\sprites\enemies\TrampolineBlob\TrampolineBlob1.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlob2_Char:                       include "..\sprites\enemies\TrampolineBlob\TrampolineBlob2.tgs.gen"	  
+TrampolineBlob2_Col:                        include "..\sprites\enemies\TrampolineBlob\TrampolineBlob2.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlob3_Char:                       include "..\sprites\enemies\TrampolineBlob\TrampolineBlob3.tgs.gen"	  
+TrampolineBlob3_Col:                        include "..\sprites\enemies\TrampolineBlob\TrampolineBlob3.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlob4_Char:                       include "..\sprites\enemies\TrampolineBlob\TrampolineBlob4.tgs.gen"	  
+TrampolineBlob4_Col:                        include "..\sprites\enemies\TrampolineBlob\TrampolineBlob4.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlob5_Char:                       include "..\sprites\enemies\TrampolineBlob\TrampolineBlob5.tgs.gen"	  
+TrampolineBlob5_Col:                        include "..\sprites\enemies\TrampolineBlob\TrampolineBlob5.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlob6_Char:                       include "..\sprites\enemies\TrampolineBlob\TrampolineBlob6.tgs.gen"	  
+TrampolineBlob6_Col:                        include "..\sprites\enemies\TrampolineBlob\TrampolineBlob6.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlob7_Char:                       include "..\sprites\enemies\TrampolineBlob\TrampolineBlob7.tgs.gen"	  
+TrampolineBlob7_Col:                        include "..\sprites\enemies\TrampolineBlob\TrampolineBlob7.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlob8_Char:                       include "..\sprites\enemies\TrampolineBlob\TrampolineBlob8.tgs.gen"	  
+TrampolineBlob8_Col:                        include "..\sprites\enemies\TrampolineBlob\TrampolineBlob8.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
 
+TrampolineBlobJump1_Char:                   include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump1.tgs.gen"	  
+TrampolineBlobJump1_Col:                    include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump1.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlobJump2_Char:                   include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump2.tgs.gen"	  
+TrampolineBlobJump2_Col:                    include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump2.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlobJump3_Char:                   include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump3.tgs.gen"	  
+TrampolineBlobJump3_Col:                    include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump3.tcs.gen"  | db 00-18,00-5+8, 00-18,00-5+8, 00-2,00-5+8, 00-2,00-5+8
+;TrampolineBlobJump4_Char:                   include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump4.tgs.gen"	  
+;TrampolineBlobJump4_Col:                    include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump4.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlobJump5_Char:                   include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump5.tgs.gen"	  
+TrampolineBlobJump5_Col:                    include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump5.tcs.gen"  | db 00-10,00-5, 00-10,00-5, 00-10,16-5, 00-10,16-5
+TrampolineBlobJump6_Char:                   include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump6.tgs.gen"	  
+TrampolineBlobJump6_Col:                    include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump6.tcs.gen"  | db 00-08,00-5, 00-08,00-5, 00-08,16-5, 00-08,16-5
+;TrampolineBlobJump7_Char:                   include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump7.tgs.gen"	  
+;TrampolineBlobJump7_Col:                    include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump7.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlobJump8_Char:                   include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump8.tgs.gen"	  
+TrampolineBlobJump8_Col:                    include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump8.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+TrampolineBlobJump9_Char:                   include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump9.tgs.gen"	  
+TrampolineBlobJump9_Col:                    include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump9.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
 	ds		$c000-$,$ff
 dephase
 

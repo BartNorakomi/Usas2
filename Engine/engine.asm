@@ -54,7 +54,7 @@ LevelEngine:
   jp    LevelEngine
 
 ClesX:      dw 232 ;150 ;210
-ClesY:      db 170 ; 144-1
+ClesY:      db 130 ; 144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 

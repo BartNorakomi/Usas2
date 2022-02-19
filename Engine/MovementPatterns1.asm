@@ -38,6 +38,7 @@
 ;YellowWasp
 ;SnowballThrower
 ;Snowball
+;TrampolineBlob
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -545,6 +546,194 @@ Template:
   ld    hl,RightBeetleWalk1_Char
   ret
 
+
+
+
+
+
+TrampolineBlob:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Unable to be hit duration
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=Unable to be hit duration
+  dec   a
+  jr    z,.AbleToHitAgain
+  ld    (ix+enemies_and_objects.v5),a       ;v5=Unable to be hit duration
+  jr    .EndCheckPlayerPunchesEnemy
+  .AbleToHitAgain:  
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  .EndCheckPlayerPunchesEnemy:
+
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+	ld		a,TrampolineBlobSpriteblock         ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=TrampolineBlob Moving, 1=TrampolineBlob jumping) 
+  or    a
+  jp    z,TrampolineBlobMoving
+  
+  TrampolineBlobJumping:
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	call  .CheckHit
+	
+	ld		a,(JumpSpeed)
+	or    a
+	jp    p,.Animate
+	ld		a,(Controls)
+  or    %0000 0001
+	ld		(Controls),a
+	
+  .Animate:
+  ld    hl,TrampolineBlobJumpAnimation
+  ld    b,03                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 10                            ;10 animation frame addresses
+  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 09
+  ret   nz
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=TrampolineBlob Moving, 1=TrampolineBlob jumping)  
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ret   nz
+  ld    (ix+enemies_and_objects.v1),2* 03   ;v1=Animation Counter. This makes it so blob also moves in between jumps when going left
+  ret
+
+  .CheckHit:
+  ld    a,(ix+enemies_and_objects.hit?)
+  cp    BlinkDurationWhenHit-4
+  ret   nz
+  ld    (ix+enemies_and_objects.hit?),0
+  ld    (ix+enemies_and_objects.life),255   ;unable to kill Trampoline Blob
+  ret
+
+  TrampolineBlobMoving:  
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+  call  .Move
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  GreenSpiderWalkSlow.CheckFloor      ;checks for floor. if not found invert direction
+  call  .CheckHit                           ;if Blob is hit, cancel blinking white, and invert direction
+  call  .CheckPlayerJumpsOnTrampoline       ;if player jumps on trampoline player is launched in the air, and blob changed to Phase 1
+  
+  .Animate:
+  ld    hl,TrampolineBlobMoveAnimation
+  ld    b,07                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 08                            ;06 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  .CheckPlayerJumpsOnTrampoline:            ;if player jumps on trampoline player is launched in the air, and blob changed to Phase 1
+  ld    b,16                                ;b-> x distance
+  ld    c,14                                ;c-> y distance
+  call  distancecheck24wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   nc
+
+	ld		hl,(PlayerSpriteStand)
+	ld    de,Jump
+  xor   a
+  sbc   hl,de
+  ret   nz
+
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=TrampolineBlob Moving, 1=TrampolineBlob jumping)  
+
+  call  Set_jump
+;	ld    a,(StartingJumpSpeed)
+;	sub   a,2  
+  ld    a,-7
+	ld		(JumpSpeed),a
+	
+	ld		a,(Controls)                        ;up pressed
+  or    %0000 0001
+	ld		(Controls),a	
+  ret
+
+  .CheckHit:
+  ld    a,(ix+enemies_and_objects.hit?)
+  cp    BlinkDurationWhenHit-4
+  ret   nz
+  ld    (ix+enemies_and_objects.hit?),0
+  ld    (ix+enemies_and_objects.life),255   ;unable to kill Trampoline Blob
+  ld    (ix+enemies_and_objects.v5),40      ;v5=Unable to be hit duration
+
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jr    z,.PlayerFacesLeft
+
+  .PlayerFacesRight:
+  ld    (ix+enemies_and_objects.v4),+1      ;v4=Horizontal Movement
+  ld    (ix+enemies_and_objects.v1),2* 03   ;v1=Animation Counter. This makes it so blob also moves in between jumps when going left
+  ret
+
+  .PlayerFacesLeft:
+  ld    (ix+enemies_and_objects.v4),-1      ;v4=Horizontal Movement  
+  ld    (ix+enemies_and_objects.v1),0* 03   ;v1=Animation Counter
+  ret
+  
+  .Move:
+  ld    a,(framecounter)
+  and   1
+  ret   z
+
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  jr    z,.MovingRight
+
+  .MovingLeft:    
+  cp    2 * 01
+  jp    z,MoveSpriteHorizontally
+  cp    2 * 02
+  jp    z,MoveSpriteHorizontally
+  cp    2 * 03
+  jp    z,MoveSpriteHorizontally
+  cp    2 * 04
+  jp    z,MoveSpriteHorizontally
+  ret
+  
+  .MovingRight:
+  cp    2 * 04
+  jp    z,MoveSpriteHorizontally
+  cp    2 * 05
+  jp    z,MoveSpriteHorizontally
+  cp    2 * 06
+  jp    z,MoveSpriteHorizontally
+  cp    2 * 07
+  jp    z,MoveSpriteHorizontally
+  ret
+
+TrampolineBlobMoveAnimation:
+  dw  TrampolineBlob1_Char
+  dw  TrampolineBlob2_Char
+  dw  TrampolineBlob3_Char
+  dw  TrampolineBlob4_Char
+  dw  TrampolineBlob5_Char
+  dw  TrampolineBlob6_Char
+  dw  TrampolineBlob7_Char
+  dw  TrampolineBlob8_Char
+  
+TrampolineBlobJumpAnimation:
+  dw  TrampolineBlobJump1_Char
+  dw  TrampolineBlobJump1_Char
+  dw  TrampolineBlobJump2_Char
+  dw  TrampolineBlobJump3_Char
+;  dw  TrampolineBlobJump4_Char
+  dw  TrampolineBlobJump5_Char
+  dw  TrampolineBlobJump6_Char
+  dw  TrampolineBlobJump3_Char  
+;  dw  TrampolineBlobJump7_Char
+  dw  TrampolineBlobJump8_Char
+  dw  TrampolineBlobJump9_Char
+  dw  TrampolineBlobJump9_Char
+  
 SxSnowball: equ 241
 Snowball:
 ;v1 = sx
