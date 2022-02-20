@@ -14,9 +14,10 @@ MapB01_010Data: db MapsBlock02 | dw MapB01_010 | db 1,3,3                  | Map
 MapB01_013Data: db MapsBlock02 | dw MapB01_013 | db 1,3,3                  | MapB01_014Data: db MapsBlock02 | dw MapB01_014 | db 1,3,3                  | MapB01_015Data: db MapsBlock02 | dw MapB01_015 | db 1,3,3
 MapB01_016Data: db MapsBlock02 | dw MapB01_016 | db 2,3,3                  | MapB01_017Data: db MapsBlock02 | dw MapB01_017 | db 1,3,3                  | MapB01_018Data: db MapsBlock02 | dw MapB01_018 | db 1,3,3
 MapB01_019Data: db MapsBlock02 | dw MapB01_019 | db 2,3,3                  | MapB01_020Data: db MapsBlock02 | dw MapB01_020 | db 2,3,3                  | MapB01_021Data: db MapsBlock02 | dw MapB01_021 | db 2,3,3
+MapB01_022Data: db MapsBlock02 | dw MapB01_022 | db 1,3,3                  | MapB01_023Data: db MapsBlock02 | dw MapB01_023 | db 1,3,3                  | MapB01_024Data: db MapsBlock02 | dw MapB01_024 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_018Data
+WorldMapPointer:  dw  MapB01_024Data
 
 loadGraphics:
 ;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
@@ -919,9 +920,10 @@ copyScoreBoard:
 
 CopyItemsKarniMata:
   .Page3:
-  ld    a,(slot.page12rom)            ;all RAM except page 12
+  ld    a,(slot.page12rom)        ;all RAM except page 12
   out   ($a8),a          
 
+  ;copy Huge Blob graphics to page 3
   ld    hl,$6C00+$8000            ;page 3 - screen 5 - bottom 40 pixels (scoreboard)
   ld    a,Graphicsblock4          ;block to copy from
   call  block12
@@ -930,13 +932,13 @@ CopyItemsKarniMata:
 	call	SetVdp_Write	
 	ld		hl,itemsKarniMataPage3
   ld    c,$98
-  ld    a,32/2              ;copy 32 lines..
+  ld    a,32/2                    ;copy 32 lines..
   ld    b,0
   call  copyGraphicsToScreen.loop1    
 
-
+  ;Copy level objects to page 1
   .Page1:
-  ld    a,(slot.page12rom)            ;all RAM except page 12
+  ld    a,(slot.page12rom)        ;all RAM except page 12
   out   ($a8),a          
 
   ld    hl,$6C00+$8000            ;page 1 - screen 5 - bottom 40 pixels (scoreboard)
@@ -947,7 +949,7 @@ CopyItemsKarniMata:
 	call	SetVdp_Write	
 	ld		hl,itemsKarniMata
   ld    c,$98
-  ld    a,32/2              ;copy 32 lines..
+  ld    a,40/2              ;copy 32 lines..
   ld    b,0
   jp    copyGraphicsToScreen.loop1    
 

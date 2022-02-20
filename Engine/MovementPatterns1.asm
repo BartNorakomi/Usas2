@@ -39,6 +39,8 @@
 ;SnowballThrower
 ;Snowball
 ;TrampolineBlob
+;Lancelot
+;LancelotSword
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -550,6 +552,159 @@ Template:
 
 
 
+
+
+
+LancelotSword:
+  call  CollisionObjectPlayer               ;Check if player is hit by Vram object
+
+  ld    a,(enemies_and_objects+enemies_and_objects.v4)  ;v4=Horizontal Movement
+  or    a
+  ld    hl,RightLancelotSwordSword
+  ld    a,26                                ;sx
+  jp    p,.SetVars
+  ld    hl,LeftLancelotSwordSword
+  xor   a
+  .SetVars:
+  ld    (ix+enemies_and_objects.v1),a       ;sx
+
+  ld    a,(enemies_and_objects+enemies_and_objects.v1)  ;v1=Animation Counter
+  ld    e,a
+  ld    d,0
+  add   hl,de
+
+  ld    a,216+32
+  ld    (CopyObject+sy),a  
+
+  ld    a,(enemies_and_objects+enemies_and_objects.y)
+  add   a,(hl)                              ;add to y
+  ld    (ix+enemies_and_objects.y),a
+
+  inc   hl
+  ld    d,0
+  ld    e,(hl)                              ;add to x
+  bit   7,e
+  jr    z,.EndNegativeCheck
+  dec   d
+  .EndNegativeCheck:
+
+  ld    a,(enemies_and_objects+enemies_and_objects.x)
+  ld    l,a
+  ld    a,(enemies_and_objects+enemies_and_objects.x+1)
+  ld    h,a
+  add   hl,de
+  
+  ld    (ix+enemies_and_objects.x),l
+  ld    (ix+enemies_and_objects.x+1),h
+
+  ld    a,(enemies_and_objects+enemies_and_objects.life)
+  or    a
+  jp    nz,VramObjectsTransparantCopies
+  ld    (ix+enemies_and_objects.Alive?),0
+  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+
+LeftLancelotSwordSword:
+                        ;add to y, add to x
+                        db  19-00  ,   -40-00
+                        db  19+02  ,   -40-01
+                        db  19+01  ,   -40-02
+                        db  19-01  ,   -40-03
+                        db  19-01  ,   -40-04
+                        db  19+02  ,   -40-03
+                        db  19-00  ,   -40-02
+                        db  19-01  ,   -40-01
+
+RightLancelotSwordSword:
+                        ;add to y, add to x
+                        db  19-00  ,   -40-00 + 35
+                        db  19+02  ,   -40+01 + 35
+                        db  19+01  ,   -40+02 + 35
+                        db  19-01  ,   -40+03 + 35
+                        db  19-01  ,   -40+04 + 35
+                        db  19+02  ,   -40+03 + 35
+                        db  19-00  ,   -40+02 + 35
+                        db  19-01  ,   -40+01 + 35
+
+Lancelot:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Shield hit timer
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+
+  bit   1,(ix+enemies_and_objects.v5)       ;v5=Shield hit timer  
+	ld		a,LancelotSpriteblock               ;set block at $a000, page 2 - block containing sprite data
+  jr    z,.SetSpriteBlock
+	ld		a,LancelotShieldHitSpriteblock      ;set block at $a000, page 2 - block containing sprite data
+  .SetSpriteBlock:
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  call  .CheckFacingPlayer                  ;if lancelot faces player, lancelot can die. Otherwise not.
+  call  .CheckAbleToBeHit                   ;after shield has been hit, Shield Hit Timer is on. in that period you can't hit lancelot
+  call  .CheckIfShieldHasBeenHit            ;check if shield has been hit, if so set Shield Hit Timer
+  ld    a,(framecounter)
+  rrca
+  call  c,MoveSpriteHorizontally
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  GreenSpiderWalkSlow.CheckFloor      ;checks for floor. if not found invert direction
+  
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,RightLancelot
+  jp    z,.GoAnimate
+  ld    hl,LeftLancelot
+  .GoAnimate:
+  ld    b,07                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 08                            ;06 animation frame addresses
+  jp    AnimateSprite  
+
+  .CheckFacingPlayer:                       ;if lancelot faces player, lancelot can die. Otherwise not.
+  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
+  ld    (ix+enemies_and_objects.life),1     ;able to kill Lancelot
+  ret   c
+  ld    (ix+enemies_and_objects.life),255   ;unable to kill Lancelot
+  ret
+
+  .CheckIfShieldHasBeenHit:                 ;check if shield has been hit, if so set Shield Hit Timer
+  ld    a,(ix+enemies_and_objects.hit?)
+  ld    (ix+enemies_and_objects.hit?),0     ;reset hit, so Lancelot doesn't blink white when hit from behind
+  or    a
+  ret   z
+  ld    (ix+enemies_and_objects.v5),40      ;v5=Shield hit timer
+  ret
+
+  .CheckAbleToBeHit:
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=Shield hit timer
+  dec   a
+  jp    z,CheckPlayerPunchesEnemy           ;Check if player hit's enemy
+  ld    (ix+enemies_and_objects.v5),a       ;v5=Shield hit timer
+  ret
+
+LeftLancelot:
+  dw  LeftLancelot1_Char
+  dw  LeftLancelot2_Char
+  dw  LeftLancelot3_Char
+  dw  LeftLancelot4_Char
+  dw  LeftLancelot5_Char
+  dw  LeftLancelot6_Char
+  dw  LeftLancelot7_Char
+  dw  LeftLancelot8_Char
+
+RightLancelot:
+  dw  RightLancelot1_Char
+  dw  RightLancelot2_Char
+  dw  RightLancelot3_Char
+  dw  RightLancelot4_Char
+  dw  RightLancelot5_Char
+  dw  RightLancelot6_Char
+  dw  RightLancelot7_Char
+  dw  RightLancelot8_Char
 
 TrampolineBlob:
 ;v1=Animation Counter
@@ -1735,7 +1890,6 @@ SxOctopussyBulletTable:
                         db  154  ,216+6 ,07,  -1
                         db  170  ,216   ,05,  +2
                         db  170  ,216+5 ,04,  +1
-                        
 OctopussyBullet:                            ;forced on object positions 1-4
 ;v1 = sx
 ;v2=Phase (0=Moving, 1=Splashing) 

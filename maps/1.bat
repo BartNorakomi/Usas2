@@ -90,6 +90,15 @@ tmx16 B01-020.tmx B01-020.map
 dos2unix B01-021.tmx
 tmx16 B01-021.tmx B01-021.map
 
+dos2unix B01-022.tmx
+tmx16 B01-022.tmx B01-022.map
+
+dos2unix B01-023.tmx
+tmx16 B01-023.tmx B01-023.map
+
+dos2unix B01-024.tmx
+tmx16 B01-024.tmx B01-024.map
+
 
 pack B01*.map
 

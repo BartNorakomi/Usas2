@@ -895,6 +895,34 @@ MapB01_021:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object4:db -1,        1|dw Slime               |db 8*15|dw 8*27|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
+MapB01_022:
+  incbin "..\maps\b01-022.map.pck"  | .amountofobjects: db  0
+
+MapB01_023:
+  incbin "..\maps\b01-023.map.pck"  | .amountofobjects: db  0
+
+
+
+
+
+MapB01_024:
+  incbin "..\maps\b01-024.map.pck"  | .amountofobjects: db  3
+;Lancelot
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw Lancelot            |db 8*13|dw 8*20|db 32,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+00, 0|db 001| ds fill
+;Lancelot Sword
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object2: db 1,        0|dw LancelotSword       |db 8*10|dw 8*10|db 07,27|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+;Boring Eye Green;v6=Green (0) / Red (1)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object3:db -1,        1|dw BoringEye           |db 8*13|dw 8*17|db 32,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+
+
+
+
+
+
+
 
 	ds		$c000-$,$ff
 dephase
@@ -2317,25 +2345,112 @@ phase	$8000
 dephase
 
 ;
-; block $63
+; block $63 - $64
 ;
 Graphicsblock5:  equ   $63
 phase	$4000
 scoreboard:
   incbin "..\grapx\scoreboard.SC5",7,$1000  ;skip header
 itemsKarniMata:
-  incbin "..\grapx\itemsKarniMata.SC5",7,$1000  ;skip header
-	ds		$6000-$,$ff
+  incbin "..\grapx\itemsKarniMata.SC5",7,$1400  ;skip header
+	ds		$8000-$,$ff
 dephase
 
 ;
-; block $64 - $65
+; block $65 - $66
 ;
-MusicReplayerBlock:  equ   $64
+MusicReplayerBlock:  equ   $65
 phase	$4000
   include "MusicPlayer_new.asm"  
 	ds		$8000-$,$ff
 dephase
+
+;
+; block $67 + $68
+;
+LancelotSpriteblock:  equ   $67
+phase	$8000
+LeftLancelot1_Char:                         include "..\sprites\enemies\Lancelot\LeftLancelot1.tgs.gen"	  
+LeftLancelot1_Col:                          include "..\sprites\enemies\Lancelot\LeftLancelot1.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+LeftLancelot2_Char:                         include "..\sprites\enemies\Lancelot\LeftLancelot2.tgs.gen"	  
+LeftLancelot2_Col:                          include "..\sprites\enemies\Lancelot\LeftLancelot2.tcs.gen"  | db 00+1,00, 00+1,00, 16+1,00, 16+1,00
+LeftLancelot3_Char:                         include "..\sprites\enemies\Lancelot\LeftLancelot3.tgs.gen"	  
+LeftLancelot3_Col:                          include "..\sprites\enemies\Lancelot\LeftLancelot3.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+LeftLancelot4_Char:                         include "..\sprites\enemies\Lancelot\LeftLancelot4.tgs.gen"	  
+LeftLancelot4_Col:                          include "..\sprites\enemies\Lancelot\LeftLancelot4.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+LeftLancelot5_Char:                         include "..\sprites\enemies\Lancelot\LeftLancelot5.tgs.gen"	  
+LeftLancelot5_Col:                          include "..\sprites\enemies\Lancelot\LeftLancelot5.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+LeftLancelot6_Char:                         include "..\sprites\enemies\Lancelot\LeftLancelot6.tgs.gen"	  
+LeftLancelot6_Col:                          include "..\sprites\enemies\Lancelot\LeftLancelot6.tcs.gen"  | db 00+1,00, 00+1,00, 16+1,00, 16+1,00
+LeftLancelot7_Char:                         include "..\sprites\enemies\Lancelot\LeftLancelot7.tgs.gen"	  
+LeftLancelot7_Col:                          include "..\sprites\enemies\Lancelot\LeftLancelot7.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+LeftLancelot8_Char:                         include "..\sprites\enemies\Lancelot\LeftLancelot8.tgs.gen"	  
+LeftLancelot8_Col:                          include "..\sprites\enemies\Lancelot\LeftLancelot8.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+
+RightLancelot1_Char:                        include "..\sprites\enemies\Lancelot\RightLancelot1.tgs.gen"	  
+RightLancelot1_Col:                         include "..\sprites\enemies\Lancelot\RightLancelot1.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+RightLancelot2_Char:                        include "..\sprites\enemies\Lancelot\RightLancelot2.tgs.gen"	  
+RightLancelot2_Col:                         include "..\sprites\enemies\Lancelot\RightLancelot2.tcs.gen"  | db 00+1,00, 00+1,00, 16+1,00, 16+1,00
+RightLancelot3_Char:                        include "..\sprites\enemies\Lancelot\RightLancelot3.tgs.gen"	  
+RightLancelot3_Col:                         include "..\sprites\enemies\Lancelot\RightLancelot3.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+RightLancelot4_Char:                        include "..\sprites\enemies\Lancelot\RightLancelot4.tgs.gen"	  
+RightLancelot4_Col:                         include "..\sprites\enemies\Lancelot\RightLancelot4.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+RightLancelot5_Char:                        include "..\sprites\enemies\Lancelot\RightLancelot5.tgs.gen"	  
+RightLancelot5_Col:                         include "..\sprites\enemies\Lancelot\RightLancelot5.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+RightLancelot6_Char:                        include "..\sprites\enemies\Lancelot\RightLancelot6.tgs.gen"	  
+RightLancelot6_Col:                         include "..\sprites\enemies\Lancelot\RightLancelot6.tcs.gen"  | db 00+1,00, 00+1,00, 16+1,00, 16+1,00
+RightLancelot7_Char:                        include "..\sprites\enemies\Lancelot\RightLancelot7.tgs.gen"	  
+RightLancelot7_Col:                         include "..\sprites\enemies\Lancelot\RightLancelot7.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+RightLancelot8_Char:                        include "..\sprites\enemies\Lancelot\RightLancelot8.tgs.gen"	  
+RightLancelot8_Col:                         include "..\sprites\enemies\Lancelot\RightLancelot8.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $69 + $69
+;
+LancelotShieldHitSpriteblock:  equ   $69
+phase	$8000
+LeftLancelotShieldHit1_Char:                include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit1.tgs.gen"	  
+LeftLancelotShieldHit1_Col:                 include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit1.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+LeftLancelotShieldHit2_Char:                include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit2.tgs.gen"	  
+LeftLancelotShieldHit2_Col:                 include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit2.tcs.gen"  | db 00+1,00, 00+1,00, 16+1,00, 16+1,00
+LeftLancelotShieldHit3_Char:                include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit3.tgs.gen"	  
+LeftLancelotShieldHit3_Col:                 include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit3.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+LeftLancelotShieldHit4_Char:                include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit4.tgs.gen"	  
+LeftLancelotShieldHit4_Col:                 include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit4.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+LeftLancelotShieldHit5_Char:                include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit5.tgs.gen"	  
+LeftLancelotShieldHit5_Col:                 include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit5.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+LeftLancelotShieldHit6_Char:                include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit6.tgs.gen"	  
+LeftLancelotShieldHit6_Col:                 include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit6.tcs.gen"  | db 00+1,00, 00+1,00, 16+1,00, 16+1,00
+LeftLancelotShieldHit7_Char:                include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit7.tgs.gen"	  
+LeftLancelotShieldHit7_Col:                 include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit7.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+LeftLancelotShieldHit8_Char:                include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit8.tgs.gen"	  
+LeftLancelotShieldHit8_Col:                 include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit8.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+
+RightLancelotShieldHit1_Char:               include "..\sprites\enemies\Lancelot\RightLancelotShieldHit1.tgs.gen"	  
+RightLancelotShieldHit1_Col:                include "..\sprites\enemies\Lancelot\RightLancelotShieldHit1.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+RightLancelotShieldHit2_Char:               include "..\sprites\enemies\Lancelot\RightLancelotShieldHit2.tgs.gen"	  
+RightLancelotShieldHit2_Col:                include "..\sprites\enemies\Lancelot\RightLancelotShieldHit2.tcs.gen"  | db 00+1,00, 00+1,00, 16+1,00, 16+1,00
+RightLancelotShieldHit3_Char:               include "..\sprites\enemies\Lancelot\RightLancelotShieldHit3.tgs.gen"	  
+RightLancelotShieldHit3_Col:                include "..\sprites\enemies\Lancelot\RightLancelotShieldHit3.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+RightLancelotShieldHit4_Char:               include "..\sprites\enemies\Lancelot\RightLancelotShieldHit4.tgs.gen"	  
+RightLancelotShieldHit4_Col:                include "..\sprites\enemies\Lancelot\RightLancelotShieldHit4.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+RightLancelotShieldHit5_Char:               include "..\sprites\enemies\Lancelot\RightLancelotShieldHit5.tgs.gen"	  
+RightLancelotShieldHit5_Col:                include "..\sprites\enemies\Lancelot\RightLancelotShieldHit5.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+RightLancelotShieldHit6_Char:               include "..\sprites\enemies\Lancelot\RightLancelotShieldHit6.tgs.gen"	  
+RightLancelotShieldHit6_Col:                include "..\sprites\enemies\Lancelot\RightLancelotShieldHit6.tcs.gen"  | db 00+1,00, 00+1,00, 16+1,00, 16+1,00
+RightLancelotShieldHit7_Char:               include "..\sprites\enemies\Lancelot\RightLancelotShieldHit7.tgs.gen"	  
+RightLancelotShieldHit7_Col:                include "..\sprites\enemies\Lancelot\RightLancelotShieldHit7.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
+RightLancelotShieldHit8_Char:               include "..\sprites\enemies\Lancelot\RightLancelotShieldHit8.tgs.gen"	  
+RightLancelotShieldHit8_Col:                include "..\sprites\enemies\Lancelot\RightLancelotShieldHit8.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+	ds		$c000-$,$ff
+dephase
+
+
+
+
+
 
 
 totallenght:	Equ	$-Usas2
