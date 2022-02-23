@@ -41,6 +41,7 @@
 ;TrampolineBlob
 ;Lancelot
 ;LancelotSword
+;BlackHoleAlien
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -543,7 +544,7 @@ Template:
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
   ret
-  
+    
   .HandlePhase:
   ld    hl,RightBeetleWalk1_Char
   ret
@@ -554,6 +555,187 @@ Template:
 
 
 
+BlackHoleBaby:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,BlackHoleBabySpriteblock          ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=TrampolineBlob Moving, 1=TrampolineBlob jumping) 
+  or    a
+  jp    z,BlackHoleBabyWalking
+  
+  BlackHoleBabyJumping:
+  
+  
+  
+  
+
+
+  call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
+  call  .Gravity
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction / out z=collision found with wall  
+  call  .CheckFloor                         ;checks for collision Floor and if found fall
+  
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    de,RightBlackHoleBaby4_Char
+  ld    hl,RightBlackHoleBaby2_Char
+  jp    z,.DirectionFound
+  ld    de,LeftBlackHoleBaby4_Char
+  ld    hl,LeftBlackHoleBaby2_Char
+  .DirectionFound:
+  bit   7,(ix+enemies_and_objects.v3)       ;v3=Vertical movement
+  ret   z
+  ex    de,hl
+  ret
+
+  .Gravity:
+  ld    a,(ix+enemies_and_objects.v6)       ;v6=Gravity timer
+  inc   a
+  and   7
+  ld    (ix+enemies_and_objects.v6),a       ;v6=Gravity timer
+  ret   nz
+  
+  ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
+  inc   a
+  cp    5
+  ret   z
+  ld    (ix+enemies_and_objects.v3),a       ;v3=Vertical Movement
+  ret
+
+  .CheckFloor:                              ;checks for floor. if not found invert direction
+  bit   7,(ix+enemies_and_objects.v3)       ;v3=Vertical movement
+  ret   nz
+  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  inc   a                                   ;check for background tile (0=background, 1=hard foreground, 2=ladder, 3=lava.)
+  ret   z                                   ;return if background tile is found
+
+  ld    (ix+enemies_and_objects.v6),0       ;v6=Gravity timer / reset every time you snap to floor
+
+  ;snap to platform
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  and   %1111 1000
+  ld    (ix+enemies_and_objects.y),a        ;y
+
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=TrampolineBlob Moving, 1=TrampolineBlob jumping) 
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ret
+   
+  BlackHoleBabyWalking:  
+  ld    a,(ix+enemies_and_objects.hit?)     ;check if enemy is hit ? If so, out white sprite
+  or    a
+  jr    nz,.EndMove
+  ld    a,(framecounter)
+  rrca
+  call  c,MoveSpriteHorizontally
+  .EndMove:
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  GreenSpiderWalkSlow.CheckFloor      ;checks for floor. if not found invert direction
+  ld    a,r
+  and   15
+  jr    nz,.Animate
+  ld    a,(ix+enemies_and_objects.x)
+  and   %0000 1111
+  jr    nz,.Animate
+  
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=BlackHoleBaby Walking, 1=BlackHoleBaby Jumping)  
+  ld    (ix+enemies_and_objects.v3),-2      ;v3=Vertical Movement
+  
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,RightBlackHoleBabyWalk
+  jp    z,.GoAnimate
+  ld    hl,LeftBlackHoleBabyWalk
+  .GoAnimate:
+  ld    b,07                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 06                            ;06 animation frame addresses
+  jp    AnimateSprite  
+
+LeftBlackHoleBabyWalk:
+  dw  LeftBlackHoleBaby1_Char
+  dw  LeftBlackHoleBaby2_Char
+  dw  LeftBlackHoleBaby3_Char
+  dw  LeftBlackHoleBaby4_Char
+  dw  LeftBlackHoleBaby5_Char
+  dw  LeftBlackHoleBaby6_Char
+
+RightBlackHoleBabyWalk:
+  dw  RightBlackHoleBaby1_Char
+  dw  RightBlackHoleBaby2_Char
+  dw  RightBlackHoleBaby3_Char
+  dw  RightBlackHoleBaby4_Char
+  dw  RightBlackHoleBaby5_Char
+  dw  RightBlackHoleBaby6_Char
+
+BlackHoleAlien:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,BlackHoleAlienSpriteblock         ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  call  .Move
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  GreenSpiderWalkSlow.CheckFloor      ;checks for floor. if not found invert direction
+  
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,RightBlackHoleAlienWalk
+  jp    z,.GoAnimate
+  ld    hl,LeftBlackHoleAlienWalk
+  .GoAnimate:
+  ld    b,15                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 06                            ;06 animation frame addresses
+  jp    AnimateSprite  
+
+  .Move:
+  ld    a,(ix+enemies_and_objects.hit?)     ;check if enemy is hit ? If so, out white sprite
+  or    a
+  jr    z,.EndCheckHit
+  ld    a,(framecounter)
+  and   03
+  jp    z,MoveSpriteHorizontally
+  ret
+
+  .EndCheckHit:
+  ld    a,(framecounter)
+  rrca
+  call  c,MoveSpriteHorizontally
+  ret
+
+
+LeftBlackHoleAlienWalk:
+  dw  LeftBlackHoleAlien1_Char
+  dw  LeftBlackHoleAlien2_Char
+  dw  LeftBlackHoleAlien3_Char
+  dw  LeftBlackHoleAlien4_Char
+  dw  LeftBlackHoleAlien5_Char
+  dw  LeftBlackHoleAlien6_Char
+
+RightBlackHoleAlienWalk:
+  dw  RightBlackHoleAlien1_Char
+  dw  RightBlackHoleAlien2_Char
+  dw  RightBlackHoleAlien3_Char
+  dw  RightBlackHoleAlien4_Char
+  dw  RightBlackHoleAlien5_Char
+  dw  RightBlackHoleAlien6_Char
 
 LancelotSword:
   call  CollisionObjectPlayer               ;Check if player is hit by Vram object

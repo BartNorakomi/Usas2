@@ -899,14 +899,18 @@ MapB01_022:
   incbin "..\maps\b01-022.map.pck"  | .amountofobjects: db  0
 
 MapB01_023:
-  incbin "..\maps\b01-023.map.pck"  | .amountofobjects: db  0
-
-
-
-
+  incbin "..\maps\b01-023.map.pck"  | .amountofobjects: db  6
+;Black Hole Baby
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw BlackHoleBaby       |db 8*08|dw 8*05|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
+.object2:db -1,        1|dw BlackHoleBaby       |db 8*12|dw 8*16|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
+.object3:db -1,        1|dw BlackHoleBaby       |db 8*10|dw 8*22|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
+.object4:db -1,        1|dw BlackHoleBaby       |db 8*23|dw 8*03|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
+.object5:db -1,        1|dw BlackHoleBaby       |db 8*23|dw 8*17|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
+.object6:db -1,        1|dw BlackHoleBaby       |db 8*17|dw 8*33|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
 
 MapB01_024:
-  incbin "..\maps\b01-024.map.pck"  | .amountofobjects: db  3
+  incbin "..\maps\b01-024.map.pck"  | .amountofobjects: db  4
 ;Lancelot
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object1:db -1,        1|dw Lancelot            |db 8*13|dw 8*20|db 32,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+00, 0|db 001| ds fill
@@ -916,6 +920,9 @@ MapB01_024:
 ;Boring Eye Green;v6=Green (0) / Red (1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object3:db -1,        1|dw BoringEye           |db 8*13|dw 8*17|db 32,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;Black Hole Alien
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object4:db -1,        1|dw BlackHoleAlien      |db 8*05|dw 8*22|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
 
 
 
@@ -1306,6 +1313,43 @@ PlayerSpriteData_Char_Dying1:               include "..\sprites\secretsofgrindea
 PlayerSpriteData_Colo_Dying1:               include "..\sprites\secretsofgrindea\Dying1.tcs.gen"	  | db +3-8,-3
 PlayerSpriteData_Char_Dying2:               include "..\sprites\secretsofgrindea\Dying2.tgs.gen"	  
 PlayerSpriteData_Colo_Dying2:               include "..\sprites\secretsofgrindea\Dying2.tcs.gen"	  | db +3-8,-3
+
+PlayerSpriteData_Char_LeftCharge1:         include "..\sprites\secretsofgrindea\LeftCharge1.tgs.gen"	  
+PlayerSpriteData_Colo_LeftCharge1:         include "..\sprites\secretsofgrindea\LeftCharge1.tcs.gen"	  | db -1-8,+1
+PlayerSpriteData_Char_LeftCharge2:         include "..\sprites\secretsofgrindea\LeftCharge2.tgs.gen"	  
+PlayerSpriteData_Colo_LeftCharge2:         include "..\sprites\secretsofgrindea\LeftCharge2.tcs.gen"	  | db -3-8,+3
+PlayerSpriteData_Char_LeftCharge3:         include "..\sprites\secretsofgrindea\LeftCharge3.tgs.gen"	  
+PlayerSpriteData_Colo_LeftCharge3:         include "..\sprites\secretsofgrindea\LeftCharge3.tcs.gen"	  | db -3-8,+3
+PlayerSpriteData_Char_LeftCharge4:         include "..\sprites\secretsofgrindea\LeftCharge4.tgs.gen"	  
+PlayerSpriteData_Colo_LeftCharge4:         include "..\sprites\secretsofgrindea\LeftCharge4.tcs.gen"	  | db -3-8,+3
+PlayerSpriteData_Char_LeftCharge5:         include "..\sprites\secretsofgrindea\LeftCharge5.tgs.gen"	  
+PlayerSpriteData_Colo_LeftCharge5:         include "..\sprites\secretsofgrindea\LeftCharge5.tcs.gen"	  | db -4-8,+4
+PlayerSpriteData_Char_LeftCharge6:         include "..\sprites\secretsofgrindea\LeftCharge6.tgs.gen"	  
+PlayerSpriteData_Colo_LeftCharge6:         include "..\sprites\secretsofgrindea\LeftCharge6.tcs.gen"	  | db -4-8,+4
+PlayerSpriteData_Char_LeftCharge7:         include "..\sprites\secretsofgrindea\LeftCharge7.tgs.gen"	  
+PlayerSpriteData_Colo_LeftCharge7:         include "..\sprites\secretsofgrindea\LeftCharge7.tcs.gen"	  | db -2-8,+2
+PlayerSpriteData_Char_LeftCharge8:         include "..\sprites\secretsofgrindea\LeftCharge8.tgs.gen"	  
+PlayerSpriteData_Colo_LeftCharge8:         include "..\sprites\secretsofgrindea\LeftCharge8.tcs.gen"	  | db -1-8,+1
+
+PlayerSpriteData_Char_RightCharge1:        include "..\sprites\secretsofgrindea\RightCharge1.tgs.gen"	  
+PlayerSpriteData_Colo_RightCharge1:        include "..\sprites\secretsofgrindea\RightCharge1.tcs.gen"	  | db +1-8,-1
+PlayerSpriteData_Char_RightCharge2:        include "..\sprites\secretsofgrindea\RightCharge2.tgs.gen"	  
+PlayerSpriteData_Colo_RightCharge2:        include "..\sprites\secretsofgrindea\RightCharge2.tcs.gen"	  | db +3-8,-3
+PlayerSpriteData_Char_RightCharge3:        include "..\sprites\secretsofgrindea\RightCharge3.tgs.gen"	  
+PlayerSpriteData_Colo_RightCharge3:        include "..\sprites\secretsofgrindea\RightCharge3.tcs.gen"	  | db +3-8,-3
+PlayerSpriteData_Char_RightCharge4:        include "..\sprites\secretsofgrindea\RightCharge4.tgs.gen"	  
+PlayerSpriteData_Colo_RightCharge4:        include "..\sprites\secretsofgrindea\RightCharge4.tcs.gen"	  | db +3-8,-3
+PlayerSpriteData_Char_RightCharge5:        include "..\sprites\secretsofgrindea\RightCharge5.tgs.gen"	  
+PlayerSpriteData_Colo_RightCharge5:        include "..\sprites\secretsofgrindea\RightCharge5.tcs.gen"	  | db +4-8,-4
+PlayerSpriteData_Char_RightCharge6:        include "..\sprites\secretsofgrindea\RightCharge6.tgs.gen"	  
+PlayerSpriteData_Colo_RightCharge6:        include "..\sprites\secretsofgrindea\RightCharge6.tcs.gen"	  | db +4-8,-4
+PlayerSpriteData_Char_RightCharge7:        include "..\sprites\secretsofgrindea\RightCharge7.tgs.gen"	  
+PlayerSpriteData_Colo_RightCharge7:        include "..\sprites\secretsofgrindea\RightCharge7.tcs.gen"	  | db +2-8,-2
+PlayerSpriteData_Char_RightCharge8:        include "..\sprites\secretsofgrindea\RightCharge8.tgs.gen"	  
+PlayerSpriteData_Colo_RightCharge8:        include "..\sprites\secretsofgrindea\RightCharge8.tcs.gen"	  | db +1-8,-1
+
+
+
 EndPlayerSprites1: | ds $c000-$,$ff | dephase ;bf80
 
 ;
@@ -2170,6 +2214,8 @@ dephase
 DemontjeGreySpriteblock:  equ   $55
 SnowballThrowerSpriteblock:  equ   $55
 TrampolineBlobSpriteblock:  equ   $55
+BlackHoleAlienSpriteblock:  equ   $55
+BlackHoleBabySpriteblock:  equ   $55
 phase	$8000
 LeftDemontjeGrey1_Char:                     include "..\sprites\enemies\Demontje\LeftDemontjeGrey1.tgs.gen"	;y offset, x offset  
 LeftDemontjeGrey1_Col:                      include "..\sprites\enemies\Demontje\LeftDemontjeGrey1.tcs.gen"  | db 00,01,00,01
@@ -2280,6 +2326,58 @@ TrampolineBlobJump8_Char:                   include "..\sprites\enemies\Trampoli
 TrampolineBlobJump8_Col:                    include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump8.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
 TrampolineBlobJump9_Char:                   include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump9.tgs.gen"	  
 TrampolineBlobJump9_Col:                    include "..\sprites\enemies\TrampolineBlob\TrampolineBlobJump9.tcs.gen"  | db 00,00-5, 00,00-5, 00,16-5, 00,16-5
+
+LeftBlackHoleAlien1_Char:                   include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien1.tgs.gen"	 ;y offset, x offset 
+LeftBlackHoleAlien1_Col:                    include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien1.tcs.gen"  | db 00,00+2,00,00+2, 00,16+2,00,16+2, 16,00+2,16,00+2, 16,16+2,16,16+2
+LeftBlackHoleAlien2_Char:                   include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien2.tgs.gen"	  
+LeftBlackHoleAlien2_Col:                    include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien2.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftBlackHoleAlien3_Char:                   include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien3.tgs.gen"	  
+LeftBlackHoleAlien3_Col:                    include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien3.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+LeftBlackHoleAlien4_Char:                   include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien4.tgs.gen"	  
+LeftBlackHoleAlien4_Col:                    include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien4.tcs.gen"  | db 00,00+2,00,00+2, 00,16+2,00,16+2, 16,00+2,16,00+2, 16,16+2,16,16+2
+LeftBlackHoleAlien5_Char:                   include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien5.tgs.gen"	  
+LeftBlackHoleAlien5_Col:                    include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien5.tcs.gen"  | db 00,00+2,00,00+2, 00,16+2,00,16+2, 16,00+2,16,00+2, 16,16+2,16,16+2
+LeftBlackHoleAlien6_Char:                   include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien6.tgs.gen"	  
+LeftBlackHoleAlien6_Col:                    include "..\sprites\enemies\BlackHoleAlien\LeftBlackHoleAlien6.tcs.gen"  | db 00,00+2,00,00+2, 00,16+2,00,16+2, 16,00+2,16,00+2, 16,16+2,16,16+2
+
+RightBlackHoleAlien1_Char:                  include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien1.tgs.gen"	  
+RightBlackHoleAlien1_Col:                   include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien1.tcs.gen"  | db 00,00-2,00,00-2, 00,16-2,00,16-2, 16,00-2,16,00-2, 16,16-2,16,16-2
+RightBlackHoleAlien2_Char:                  include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien2.tgs.gen"	  
+RightBlackHoleAlien2_Col:                   include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien2.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+RightBlackHoleAlien3_Char:                  include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien3.tgs.gen"	  
+RightBlackHoleAlien3_Col:                   include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien3.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
+RightBlackHoleAlien4_Char:                  include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien4.tgs.gen"	  
+RightBlackHoleAlien4_Col:                   include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien4.tcs.gen"  | db 00,00-2,00,00-2, 00,16-2,00,16-2, 16,00-2,16,00-2, 16,16-2,16,16-2
+RightBlackHoleAlien5_Char:                  include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien5.tgs.gen"	  
+RightBlackHoleAlien5_Col:                   include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien5.tcs.gen"  | db 00,00-2,00,00-2, 00,16-2,00,16-2, 16,00-2,16,00-2, 16,16-2,16,16-2
+RightBlackHoleAlien6_Char:                  include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien6.tgs.gen"	  
+RightBlackHoleAlien6_Col:                   include "..\sprites\enemies\BlackHoleAlien\RightBlackHoleAlien6.tcs.gen"  | db 00,00-2,00,00-2, 00,16-2,00,16-2, 16,00-2,16,00-2, 16,16-2,16,16-2
+
+LeftBlackHoleBaby1_Char:                    include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby1.tgs.gen"	 ;y offset, x offset 
+LeftBlackHoleBaby1_Col:                     include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby1.tcs.gen"  | db 00,00,00,00
+LeftBlackHoleBaby2_Char:                    include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby2.tgs.gen"	  
+LeftBlackHoleBaby2_Col:                     include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby2.tcs.gen"  | db 00,00,00,00
+LeftBlackHoleBaby3_Char:                    include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby3.tgs.gen"	  
+LeftBlackHoleBaby3_Col:                     include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby3.tcs.gen"  | db 00,00,00,00
+LeftBlackHoleBaby4_Char:                    include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby4.tgs.gen"	  
+LeftBlackHoleBaby4_Col:                     include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby4.tcs.gen"  | db 00,00,00,00
+LeftBlackHoleBaby5_Char:                    include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby5.tgs.gen"	  
+LeftBlackHoleBaby5_Col:                     include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby5.tcs.gen"  | db 00,00,00,00
+LeftBlackHoleBaby6_Char:                    include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby6.tgs.gen"	  
+LeftBlackHoleBaby6_Col:                     include "..\sprites\enemies\BlackHoleBaby\LeftBlackHoleBaby6.tcs.gen"  | db 00,00,00,00
+
+RightBlackHoleBaby1_Char:                   include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby1.tgs.gen"	  
+RightBlackHoleBaby1_Col:                    include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby1.tcs.gen"  | db 00,00,00,00
+RightBlackHoleBaby2_Char:                   include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby2.tgs.gen"	  
+RightBlackHoleBaby2_Col:                    include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby2.tcs.gen"  | db 00,00,00,00
+RightBlackHoleBaby3_Char:                   include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby3.tgs.gen"	  
+RightBlackHoleBaby3_Col:                    include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby3.tcs.gen"  | db 00,00,00,00
+RightBlackHoleBaby4_Char:                   include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby4.tgs.gen"	  
+RightBlackHoleBaby4_Col:                    include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby4.tcs.gen"  | db 00,00,00,00
+RightBlackHoleBaby5_Char:                   include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby5.tgs.gen"	  
+RightBlackHoleBaby5_Col:                    include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby5.tcs.gen"  | db 00,00,00,00
+RightBlackHoleBaby6_Char:                   include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby6.tgs.gen"	  
+RightBlackHoleBaby6_Col:                    include "..\sprites\enemies\BlackHoleBaby\RightBlackHoleBaby6.tcs.gen"  | db 00,00,00,00
 	ds		$c000-$,$ff
 dephase
 

@@ -3021,7 +3021,7 @@ LstandingSpriteStand:         equ 6
 LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
-;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit, RSitPunch, LSitPunch, Dying
+;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit, RSitPunch, LSitPunch, Dying, LCharging, RCharging
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
@@ -3029,6 +3029,70 @@ HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
 
+LCharging:
+  ld    hl,LeftChargeAnimation
+  call  AnimateCharging
+  ld    a,(PlayerAniCount)
+  cp    2 * 10                    ;check 10th frame
+  jp    z,Set_L_stand             ;at end of charge change to L_Stand
+
+  call  LAttack.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
+  
+  ;horizontal movement
+  ld    a,(PlayerAniCount)
+  cp    2 * 03                    ;start moving after the 3d frame
+  ret   c
+    
+  ld    de,-4                     ;horizontal movement speed
+  call  DoMovePlayer.EntryForHorizontalMovement
+  ret   nc
+  jp    Set_L_stand               ;on collision change to R_Stand
+
+LeftChargeAnimation:
+  dw  PlayerSpriteData_Char_LeftCharge1 
+  dw  PlayerSpriteData_Char_LeftCharge2 
+  dw  PlayerSpriteData_Char_LeftCharge3 
+  dw  PlayerSpriteData_Char_LeftCharge4 
+  dw  PlayerSpriteData_Char_LeftCharge4 
+  dw  PlayerSpriteData_Char_LeftCharge4 
+  dw  PlayerSpriteData_Char_LeftCharge5
+  dw  PlayerSpriteData_Char_LeftCharge6 
+  dw  PlayerSpriteData_Char_LeftCharge7 
+  dw  PlayerSpriteData_Char_LeftCharge8 
+  dw  PlayerSpriteData_Char_LeftCharge8 
+  
+RCharging:
+  ld    hl,RightChargeAnimation
+  call  AnimateCharging
+  ld    a,(PlayerAniCount)
+  cp    2 * 10                    ;check 10th frame
+  jp    z,Set_R_stand             ;at end of charge change to R_Stand
+
+  call  RAttack.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
+  
+  ;horizontal movement
+  ld    a,(PlayerAniCount)
+  cp    2 * 03                    ;start moving after the 3d frame
+  ret   c
+    
+  ld    de,4                      ;horizontal movement speed
+  call  DoMovePlayer.EntryForHorizontalMovement
+  ret   nc
+  jp    Set_R_stand               ;on collision change to R_Stand
+
+RightChargeAnimation:
+  dw  PlayerSpriteData_Char_RightCharge1 
+  dw  PlayerSpriteData_Char_RightCharge2 
+  dw  PlayerSpriteData_Char_RightCharge3 
+  dw  PlayerSpriteData_Char_RightCharge4 
+  dw  PlayerSpriteData_Char_RightCharge4 
+  dw  PlayerSpriteData_Char_RightCharge4 
+  dw  PlayerSpriteData_Char_RightCharge5 
+  dw  PlayerSpriteData_Char_RightCharge6 
+  dw  PlayerSpriteData_Char_RightCharge7 
+  dw  PlayerSpriteData_Char_RightCharge8 
+  dw  PlayerSpriteData_Char_RightCharge8 
+  
 Dying:
   ld    a,1
   ld    (PlayerDead?),a
@@ -5196,6 +5260,15 @@ AnimateSprite:
   ex    de,hl                     ;out hl -> sprite character data to out to Vram
   ret	
 
+AnimateCharging:
+  ld    a,(framecounter)          ;animate every 4 frames
+  and   1
+  ret   nz
+  
+  ld    a,(PlayerAniCount)
+  add   a,2                       ;2 bytes used for pointer to sprite frame address
+  jr    AnimateRun.SetPlayerAniCount
+  
 AnimateRolling:
   ld    a,(framecounter)          ;animate every 4 frames
   and   1
@@ -5342,7 +5415,8 @@ DoMovePlayer:               ;carry: collision detected
   ld    e,(hl)              ;horizontal movement in de
   inc   hl
   ld    d,(hl)              ;horizontal movement in de
- 
+
+  .EntryForHorizontalMovement:
   ld    hl,(ClesX)
   add   hl,de
   ld    (ClesX),hl
@@ -5567,6 +5641,8 @@ Rrunning:
 	jp		nz,Set_R_attack
 	bit		5,a           ;'M' pressed ?
 	jp		nz,Set_R_Rolling
+	bit		6,a           ;F1 pressed ?
+	jp		nz,Set_R_Charging
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
@@ -5625,6 +5701,8 @@ Lrunning:
 	jp		nz,Set_L_attack
 	bit		5,a           ;'M' pressed ?
 	jp		nz,Set_L_Rolling
+	bit		6,a           ;F1 pressed ?
+	jp		nz,Set_L_Charging
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
@@ -5703,6 +5781,9 @@ Lstanding:
 	bit		5,a           ;'M' pressed ?
 	jp		nz,Set_L_Rolling
 
+	bit		6,a           ;F1 pressed ?
+	jp		nz,Set_L_Charging
+	
 	ld		a,(Controls)
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,Set_L_run
@@ -5752,8 +5833,8 @@ Rstanding:
 	jp		nz,Set_R_Rolling
 
 
-	bit		6,a           ;'M' pressed ?
-	jp		nz,Set_Dying
+	bit		6,a           ;F1 pressed ?
+	jp		nz,Set_R_Charging
 
 
 	ld		a,(Controls)
@@ -6024,6 +6105,28 @@ CheckClimbLadderUp:;
   ld    de,8
   add   hl,de
   ld    (ClesX),hl
+  ret
+
+Set_L_Charging:
+	ld		hl,LCharging
+	ld		(PlayerSpriteStand),hl
+
+;  ld    a,1
+;  ld    (PlayerFacingRight?),a
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_R_Charging:
+	ld		hl,RCharging
+	ld		(PlayerSpriteStand),hl
+
+;  ld    a,1
+;  ld    (PlayerFacingRight?),a
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
   ret
 
 Set_Dying:
