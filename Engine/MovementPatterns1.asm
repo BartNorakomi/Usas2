@@ -331,7 +331,21 @@ ld a,e
   ;Enemy hit                                ;blink white for 31 frames when hit
   ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
   dec   (ix+enemies_and_objects.life)
+  jr    z,.EnemyDied
+  
+	ld		de,(PlayerSpriteStand)
+	ld		hl,Charging
+  xor   a
+  sbc   hl,de
   ret   nz
+
+  ;At this point you hit an enemy with a charge attack, but enemy didn't die. Player now bounces backwards.
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jp    nz,Set_R_BouncingBack
+  jp    Set_L_BouncingBack
+  
+  .EnemyDied:
   ld    (ix+enemies_and_objects.hit?),00    ;stop blinking white when dead
 
   ;Enemy dies
@@ -3432,7 +3446,7 @@ Slime:
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Wait timer
-  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  call  .HandlePhase                        ;0=moving, 1=waiting, 2=duck, 3=unduck) ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
   call  CheckPlayerPunchesEnemyOnlySitting  ;Check if player hit's enemy
   call  CollisionEnemyPlayer                ;Check if player is hit by enemy
@@ -3442,7 +3456,7 @@ Slime:
   ret
   
   .HandlePhase:
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=moving, 1=static on floor, 3=duck)
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=moving, 1=waiting, 2=duck, 3=unduck)
   or    a
   jp    z,SlimeMoving
   dec   a
@@ -3465,7 +3479,7 @@ Slime:
   cp    2 * 03
   ret   nz
 
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=moving, 1=static on floor, 2=duck, 3=unduck)
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=moving, 1=waiting, 2=duck, 3=unduck)
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ret
 
@@ -3487,7 +3501,7 @@ Slime:
   ld    a,(EnableHitbox?)
   or    a
   ret   nz                                  ;check if player is still attacking
-  ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=moving, 1=static on floor, 2=duck, 3=unduck)
+  ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=moving, 1=waiting, 2=duck, 3=unduck)
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ret
 
@@ -3498,7 +3512,7 @@ Slime:
   dec   (ix+enemies_and_objects.v5)         ;v5=Wait timer
   ret   nz
   
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=moving, 1=static on floor, 2=duck, 3=unduck)
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=moving, 1=waiting, 2=duck, 3=unduck)
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ret
 
@@ -3510,7 +3524,7 @@ Slime:
   .GoAnimate:
   ld    b,15                                ;animate every x frames (based on framecounter)
   ld    c,2 * 03                            ;07 animation frame addresses
-  jp     AnimateSprite                       ;out hl -> sprite character data to out to Vram
+  jp     AnimateSprite                      ;out hl -> sprite character data to out to Vram
 
   SlimeMoving:
   call  .DistanceToPlayerCheck              ;check if player is near and attacks, DUCK !
@@ -3525,7 +3539,7 @@ Slime:
   pop   af                                  ;check if slime changed direction. If so change to Phase 1
   cp    b
   jr    z,.Animate
-  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=moving, 1=static on floor, 2=duck, 3=unduck)
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase v2=Phase (0=moving, 1=waiting, 2=duck, 3=unduck)
   ld    (ix+enemies_and_objects.v5),50      ;v5=Wait timer
   jp    SlimeWaiting.Animate
 
@@ -3538,8 +3552,14 @@ Slime:
   ld    a,(EnableHitbox?)
   or    a
   ret   z                                   ;check if player is attacking
+
+	ld		de,(PlayerSpriteStand)              ;don't duck if player is charging
+	ld		hl,Charging
+  xor   a
+  sbc   hl,de
+  ret   z
   
-  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=moving, 1=static on floor, 2=duck, 3=unduck)
+  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase v2=Phase (0=moving, 1=waiting, 2=duck, 3=unduck)
   ret
 
   .Animate:

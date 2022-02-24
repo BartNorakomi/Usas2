@@ -1,3 +1,6 @@
+waterval palette animaties:
+https://www.youtube.com/watch?v=aMcJ1Jvtef0&ab_channel=GDC
+
 een hendel overhalen, het scherm fade out, dan krijg je een ander scherm te zien waar een gate open gaat.
 
 speciale engine (misschien voor deel 2) waarbij elke map (256x191) 4x een heel beetje anders uitziet. Je ziet de map afhankelijk van welke emotie je hebt

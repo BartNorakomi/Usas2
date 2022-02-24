@@ -53,8 +53,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 232 ;150 ;210
-ClesY:      db 130 ; 144-1
+ClesX:      dw 20 ;150 ;210
+ClesY:      db 20; 144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -2915,6 +2915,8 @@ checktile:                  ;in b->add y to check, de->add x to check
   bit   7,h
   jr    nz,.CheckTileIsOutOfScreenLeft
 
+  .EntryOutOfScreenLeft:
+
   ld    a,(Clesy)
 ;get player Y in pixels and convert it to tiles
   add   a,b
@@ -3004,9 +3006,13 @@ checktile:                  ;in b->add y to check, de->add x to check
 	ret
 
 .CheckTileIsOutOfScreenLeft:
-  xor   a                   ;reset carry
-  dec   a                   ;1 = wall
-  ret
+  ld    hl,0
+  jp    .EntryOutOfScreenLeft
+
+
+;  xor   a                   ;reset carry
+;  dec   a                   ;1 = wall
+;  ret
 
 playermovementspeed:    db  2
 oldx:                   dw  0
@@ -3021,7 +3027,8 @@ LstandingSpriteStand:         equ 6
 LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
-;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit, RSitPunch, LSitPunch, Dying, LCharging, RCharging
+;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
+;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
@@ -3029,26 +3036,81 @@ HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
 
-LCharging:
+
+;  dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
+RBouncingBack:
+	ld		a,(Controls)
+  set   0,a
+	ld		(Controls),a                ;force up pressed, to enable/simulate maximum jump height
+  call  Jump.VerticalMovement
+
+  ld    a,0
+  ld    (RunningTablePointer),a
+  call  MovePlayerLeft.skipFacingDirection
+    
+  ld    hl,RightRollingAnimation
+  call  AnimateRolling             ;animate
+  ret
+
+LBouncingBack:
+	ld		a,(Controls)
+  set   0,a
+	ld		(Controls),a                ;force up pressed, to enable/simulate maximum jump height
+  call  Jump.VerticalMovement
+
+  ld    a,RunningTablePointerRunRightEndValue-4
+  ld    (RunningTablePointer),a
+  call  MovePlayerRight.skipFacingDirection
+    
+  ld    hl,LeftRollingAnimation
+  call  AnimateRolling             ;animate
+  ret
+
+Charging:
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jr    nz,.RCharging
+
+  .LCharging:
   ld    hl,LeftChargeAnimation
   call  AnimateCharging
   ld    a,(PlayerAniCount)
-  cp    2 * 10                    ;check 10th frame
-  jp    z,Set_L_stand             ;at end of charge change to L_Stand
+  cp    2 * 11                      ;check 10th frame
+  jp    z,Set_L_stand               ;at end of charge change to L_Stand
 
-  call  LAttack.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
+  call  LSitPunch.SetAttackHitBox     ;set the hitbox coordinates and enable hitbox
   
   ;horizontal movement
   ld    a,(PlayerAniCount)
-  cp    2 * 03                    ;start moving after the 3d frame
+  cp    2 * 04                      ;start moving after the 3d frame
   ret   c
     
-  ld    de,-4                     ;horizontal movement speed
+  ld    de,-4                       ;horizontal movement speed
   call  DoMovePlayer.EntryForHorizontalMovement
   ret   nc
-  jp    Set_L_stand               ;on collision change to R_Stand
+  jp    Set_L_stand                 ;on collision change to R_Stand
+
+  .RCharging:
+  ld    hl,RightChargeAnimation
+  call  AnimateCharging
+  ld    a,(PlayerAniCount)
+  cp    2 * 11                      ;check 10th frame
+  jp    z,Set_R_stand               ;at end of charge change to R_Stand
+
+  call  RSitPunch.SetAttackHitBox     ;set the hitbox coordinates and enable hitbox
+  
+  ;horizontal movement
+  ld    a,(PlayerAniCount)
+  cp    2 * 04                      ;start moving after the 3d frame
+  ret   c
+    
+  ld    de,4                        ;horizontal movement speed
+  call  DoMovePlayer.EntryForHorizontalMovement
+  ret   nc
+  jp    Set_R_stand                 ;on collision change to R_Stand
 
 LeftChargeAnimation:
+  dw  PlayerSpriteData_Char_LeftCharge1 
   dw  PlayerSpriteData_Char_LeftCharge1 
   dw  PlayerSpriteData_Char_LeftCharge2 
   dw  PlayerSpriteData_Char_LeftCharge3 
@@ -3061,26 +3123,8 @@ LeftChargeAnimation:
   dw  PlayerSpriteData_Char_LeftCharge8 
   dw  PlayerSpriteData_Char_LeftCharge8 
   
-RCharging:
-  ld    hl,RightChargeAnimation
-  call  AnimateCharging
-  ld    a,(PlayerAniCount)
-  cp    2 * 10                    ;check 10th frame
-  jp    z,Set_R_stand             ;at end of charge change to R_Stand
-
-  call  RAttack.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
-  
-  ;horizontal movement
-  ld    a,(PlayerAniCount)
-  cp    2 * 03                    ;start moving after the 3d frame
-  ret   c
-    
-  ld    de,4                      ;horizontal movement speed
-  call  DoMovePlayer.EntryForHorizontalMovement
-  ret   nc
-  jp    Set_R_stand               ;on collision change to R_Stand
-
 RightChargeAnimation:
+  dw  PlayerSpriteData_Char_RightCharge1 
   dw  PlayerSpriteData_Char_RightCharge1 
   dw  PlayerSpriteData_Char_RightCharge2 
   dw  PlayerSpriteData_Char_RightCharge3 
@@ -4957,14 +5001,14 @@ Jump:
 
 
   ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
-  ld    de,+3 ;XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
+  ld    de,+3-8 ;XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
   jr    z,.SnapToPlatformBelow  
 
   dec   a                   ;check for tilenr 2=ladder 
   jr    z,.LadderFound
 
-  dec   hl                  ;check next tile
+  inc   hl                  ;check next tile
   ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
   dec   a                   ;1 = wall
   jr    z,.SnapToPlatformBelow  
@@ -5001,6 +5045,8 @@ Jump:
   ld    de,XaddLeftPlayer+2-16   ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
   jr    nz,.CheckLadderRightSide
+
+;
 
   ld    b,YaddFeetPlayer-9  ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer+2-16   ;add x to check (x is expressed in pixels)
@@ -5642,7 +5688,7 @@ Rrunning:
 	bit		5,a           ;'M' pressed ?
 	jp		nz,Set_R_Rolling
 	bit		6,a           ;F1 pressed ?
-	jp		nz,Set_R_Charging
+	jp		nz,Set_Charging
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
@@ -5702,7 +5748,7 @@ Lrunning:
 	bit		5,a           ;'M' pressed ?
 	jp		nz,Set_L_Rolling
 	bit		6,a           ;F1 pressed ?
-	jp		nz,Set_L_Charging
+	jp		nz,Set_Charging
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
@@ -5782,7 +5828,7 @@ Lstanding:
 	jp		nz,Set_L_Rolling
 
 	bit		6,a           ;F1 pressed ?
-	jp		nz,Set_L_Charging
+	jp		nz,Set_Charging
 	
 	ld		a,(Controls)
 	bit		2,a           ;cursor left pressed ?
@@ -5834,7 +5880,7 @@ Rstanding:
 
 
 	bit		6,a           ;F1 pressed ?
-	jp		nz,Set_R_Charging
+	jp		nz,Set_Charging
 
 
 	ld		a,(Controls)
@@ -6107,8 +6153,11 @@ CheckClimbLadderUp:;
   ld    (ClesX),hl
   ret
 
-Set_L_Charging:
-	ld		hl,LCharging
+Set_L_BouncingBack:
+  xor   a
+  ld    (EnableHitbox?),a
+  
+	ld		hl,LBouncingBack
 	ld		(PlayerSpriteStand),hl
 
 ;  ld    a,1
@@ -6116,17 +6165,73 @@ Set_L_Charging:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
+  ld    a,(StartingJumpSpeedWhenHit)
+	ld		(JumpSpeed),a
+  ret
+  
+Set_R_BouncingBack:
+  xor   a
+  ld    (EnableHitbox?),a
+  
+	ld		hl,RBouncingBack
+	ld		(PlayerSpriteStand),hl
+
+;  ld    a,1
+;  ld    (PlayerFacingRight?),a
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ld    a,(StartingJumpSpeedWhenHit)
+	ld		(JumpSpeed),a
   ret
 
-Set_R_Charging:
-	ld		hl,RCharging
+Set_Charging:
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jr    nz,.FacingRight
+
+  .FacingLeft:
+  ;check at height of waiste if player is near on the right side
+  ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer-16  ;add 0 to x to check left side of player for collision (player moved left)
+
+;  ld    a,(ClesX+1)
+;  bit   7,a
+;  ret   nz                  ;no need to perform tilecheck when player is out of screen on the left side
+
+  call  checktile           ;out z=collision found with wall
+  ret   z
+  ;now do the same check, but 2 tiles lower
+	add		hl,bc               ;1 tile lower
+	add		hl,bc               ;1 tile lower
+  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+  dec   a                   ;1 = wall
+  ret   z
+	ld		hl,Charging
 	ld		(PlayerSpriteStand),hl
 
-;  ld    a,1
-;  ld    (PlayerFacingRight?),a
+  ld    hl,0 
+  ld    (PlayerAniCount),hl  
+  ret  
+
+  .FacingRight:
+  ;check at height of waiste if player is near on the right side
+  ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer+16 ;add 15 to x to check right side of player for collision (player moved right)
+  call  checktile           ;out z=collision found with wall
+  ret   z  
+  ;now do the same check, but 2 tiles lower 
+	add		hl,bc               ;1 tile lower
+	add		hl,bc               ;1 tile lower
+  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+  dec   a                   ;1 = wall
+  ret   z
+  
+	ld		hl,Charging
+	ld		(PlayerSpriteStand),hl
 
   ld    hl,0 
-  ld    (PlayerAniCount),hl
+  ld    (PlayerAniCount),hl  
   ret
 
 Set_Dying:
@@ -6349,12 +6454,10 @@ Set_R_Push:
   ret
 
 Set_L_BeingHit:
-  xor   a
-  ld    (EnableHitbox?),a
 	ld		hl,LBeingHit
 	ld		(PlayerSpriteStand),hl
   xor   a
-	ld		(PlayerAniCount),a
+  ld    (EnableHitbox?),a
 ;  ld    a,1
 ;  ld    (PlayerFacingRight?),a                    ;since we move right, but face left, let's pretend we actually face right. This way the camera moves accordingly
   ld    a,(RunningTablePointer)
@@ -6374,7 +6477,6 @@ Set_R_BeingHit:
 	ld		(PlayerSpriteStand),hl
   xor   a
   ld    (EnableHitbox?),a
-	ld		(PlayerAniCount),a
 ;  ld    (PlayerFacingRight?),a                    ;since we move left, but face right, let's pretend we actually face left. This way the camera moves accordingly
   ld    a,(RunningTablePointer)
   ld    (RunningTablePointerWhenHit),a
