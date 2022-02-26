@@ -42,6 +42,9 @@
 ;Lancelot
 ;LancelotSword
 ;BlackHoleAlien
+;BlackHoleBaby
+;Waterfall
+;WaterfallEyes
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -569,6 +572,185 @@ Template:
 
 
 
+
+
+
+WaterfallEyesYellowClosedSX: equ 128
+WaterfallEyesYellowOpenSX: equ 140
+WaterfallEyes:
+;v1=sx
+;v2=Active Timer
+;v3=Wait Timer
+;v4=Amount of Waterfalls
+;v5=Last Waterfalls Activated
+;v6=Y waterfall 1
+;v7=x waterfall 1
+;v8=Y waterfall 2
+;v9=x waterfall 2
+;v10=Y waterfall 3
+;v11=x waterfall 3
+
+  call  .OpenEyes
+  call  .CheckActivateWaterFall
+  
+  ld    a,216+13
+  ld    (CopyObject+sy),a  
+
+  jp    VramObjectsTransparantCopies
+
+  .CheckActivateWaterFall:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Active Timer
+  or    a
+  ret   z
+  inc   a
+  ld    (ix+enemies_and_objects.v2),a       ;v2=Active Timer
+  jr    z,.CloseEyes
+
+  cp    40
+  ret   nz
+  .ActivateWaterFall:
+  ld    (ix+lenghtenemytable+enemies_and_objects.Alive?),-1
+  ld    (ix+lenghtenemytable+enemies_and_objects.v5),-1      ;v5=Animation Counter
+  ld    (ix+lenghtenemytable+enemies_and_objects.v2),0       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End)   
+
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  add   a,18
+  ld    (ix+lenghtenemytable+enemies_and_objects.x),a      
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  add   a,11
+  ld    (ix+lenghtenemytable+enemies_and_objects.y),a     
+  ret
+
+  .CloseEyes:
+  ld    (ix+enemies_and_objects.v1),WaterfallEyesYellowClosedSX
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Active Timer
+  ret
+
+  .OpenEyes:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Active Timer
+  or    a
+  ret   nz                                  ;return if already active. Eyes are open when active
+  
+  ld    a,(ix+enemies_and_objects.v3)       ;v3=Wait Timer
+  dec   a
+  and   127
+  ld    (ix+enemies_and_objects.v3),a       ;v3=Wait Timer
+  ret   nz
+
+  ld    (ix+enemies_and_objects.v1),WaterfallEyesYellowOpenSX
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Active Timer
+
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=Last Waterfalls Activated
+  inc   a
+  cp    (ix+enemies_and_objects.v4)         ;v4=Amount of Waterfalls
+  jr    nz,.SetWaterFall
+  xor   a
+  .SetWaterFall:
+  ld    (ix+enemies_and_objects.v5),a       ;v5=Last Waterfalls Activated
+  jr    z,.SetWaterFall1
+  dec   a
+  jr    z,.SetWaterFall2
+
+  .SetWaterFall3:
+  ld    a,(ix+enemies_and_objects.v11)      ;x waterfall 3
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ld    a,(ix+enemies_and_objects.v10)      ;y waterfall 3
+  ld    (ix+enemies_and_objects.y),a        ;y  
+  ret
+  
+  .SetWaterFall2:
+  ld    a,(ix+enemies_and_objects.v9)       ;x waterfall 2
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ld    a,(ix+enemies_and_objects.v8)       ;y waterfall 2
+  ld    (ix+enemies_and_objects.y),a        ;y
+  ret
+
+  .SetWaterFall1:
+  ld    a,(ix+enemies_and_objects.v7)       ;x waterfall 1
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ld    a,(ix+enemies_and_objects.v6)       ;y waterfall 1
+  ld    (ix+enemies_and_objects.y),a        ;y
+  ret
+
+Waterfall:
+;v1=Animation Counter
+;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End)
+;v3=
+;v4=
+;v5=Animation Counter
+  call  .HandlePhase                        ;(0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,WaterfallSpriteblock              ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+    
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End)
+  or    a
+  jp    z,WaterfallStart
+  dec   a
+  jp    z,Waterfalling
+  
+  WaterfallEnd:
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=Animation Counter
+  inc   a
+  ld    (ix+enemies_and_objects.v5),a       ;v5=Animation Counter
+  sub   EndWaterFalling+1
+  ld    hl,WaterfallEnd1_Char
+  ret   z
+  dec   a
+  ld    hl,WaterfallEnd2_Char
+  ret   z
+  dec   a
+  ld    hl,WaterfallEnd3_Char
+  ret   z
+  ld    (ix+enemies_and_objects.alive?),0  
+  ld    (ix+enemies_and_objects.y),217+2-32    ;y  
+  ret
+
+  EndWaterFalling:  equ 170
+  Waterfalling:
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=Animation Counter
+  inc   a
+  ld    (ix+enemies_and_objects.v5),a       ;v5=Animation Counter
+  cp    EndWaterFalling
+  jr    nz,.Animate
+  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) 
+
+  .Animate:
+  ld    hl,WaterfallAnimation
+  ld    b,00                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 08                            ;06 animation frame addresses
+  jp    AnimateSprite  
+  
+  WaterfallStart:
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=Animation Counter
+  inc   a
+  ld    (ix+enemies_and_objects.v5),a       ;v5=Animation Counter
+  ld    hl,WaterfallStart1_Char
+  ret   z
+  dec   a
+  ld    hl,WaterfallStart2_Char
+  ret   z
+  dec   a
+  ld    hl,WaterfallStart3_Char
+  ret   z
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) 
+  ret
+
+WaterfallAnimation:
+  dw  Waterfall1_Char
+  dw  Waterfall2_Char
+  dw  Waterfall3_Char
+  dw  Waterfall4_Char
+  dw  Waterfall5_Char
+  dw  Waterfall6_Char
+  dw  Waterfall7_Char
+  dw  Waterfall8_Char
+  
 BlackHoleBaby:
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
@@ -589,12 +771,6 @@ BlackHoleBaby:
   jp    z,BlackHoleBabyWalking
   
   BlackHoleBabyJumping:
-  
-  
-  
-  
-
-
   call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
   call  .Gravity
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction / out z=collision found with wall  
@@ -752,6 +928,8 @@ RightBlackHoleAlienWalk:
   dw  RightBlackHoleAlien6_Char
 
 LancelotSword:
+;v1=sx
+;v4=Horizontal Movement
   call  CollisionObjectPlayer               ;Check if player is hit by Vram object
 
   ld    a,(enemies_and_objects+enemies_and_objects.v4)  ;v4=Horizontal Movement
@@ -2087,7 +2265,7 @@ SxOctopussyBulletTable:
                         db  170  ,216   ,05,  +2
                         db  170  ,216+5 ,04,  +1
 OctopussyBullet:                            ;forced on object positions 1-4
-;v1 = sx
+;v1=sx
 ;v2=Phase (0=Moving, 1=Splashing) 
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
@@ -2809,6 +2987,9 @@ DemontjeBullet:
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Explosion Animation Counter
+  ld    a,216
+  ld    (CopyObject+sy),a  
+
   .HandlePhase:
   ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=bullet, 1=explosion) 
   or    a

@@ -896,7 +896,22 @@ MapB01_021:
 .object4:db -1,        1|dw Slime               |db 8*15|dw 8*27|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
 MapB01_022:
-  incbin "..\maps\b01-022.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\b01-022.map.pck"  | .amountofobjects: db  5
+
+;Demontje Bullet
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1: db 0,        0|dw DemontjeBullet      |db 8*10|dw 8*15|db 11,11|dw CleanOb1,0 db 0,0,0,                     +146,+00,-01,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
+;Demontje v7=Green (0) / Red(1) / Brown(2) / Grey(3)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object2:db -1,        1|dw Demontje            |db 8*20|dw 8*30|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object3:db -1,        1|dw Demontje            |db 8*18|dw 8*08|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 001| ds fill
+;Waterfall eyes
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
+.object4: db 1,        0|dw WaterfallEyes       |db 8*15+5|dw 8*26+1|db 02,12|dw CleanOb2,0 db 0,0,0,                 +128,+00,+00,+03,+01,8*15+5,8*10+1,8*15+5,8*18+1,8*15+5,8*26+1| ds fill
+;Waterfall
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object5:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
+;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
 
 MapB01_023:
   incbin "..\maps\b01-023.map.pck"  | .amountofobjects: db  6
@@ -925,7 +940,14 @@ MapB01_024:
 .object4:db -1,        1|dw BlackHoleAlien      |db 8*05|dw 8*22|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
 
 
+MapB01_025:
+  incbin "..\maps\b01-025.map.pck"  | .amountofobjects: db  0
 
+MapB01_026:
+  incbin "..\maps\b01-026.map.pck"  | .amountofobjects: db  0
+
+MapB01_027:
+  incbin "..\maps\b01-027.map.pck"  | .amountofobjects: db  0
 
 
 
@@ -2385,6 +2407,7 @@ dephase
 ; block $57 + $58
 ;
 DemontjeRedSpriteblock:  equ   $57
+WaterfallSpriteblock:  equ   $57
 phase	$8000
 LeftDemontjeRed1_Char:                      include "..\sprites\enemies\Demontje\LeftDemontjeRed1.tgs.gen"	;y offset, x offset  
 LeftDemontjeRed1_Col:                       include "..\sprites\enemies\Demontje\LeftDemontjeRed1.tcs.gen"  | db 00,01,00,01
@@ -2403,6 +2426,38 @@ RightDemontjeRed3_Char:                     include "..\sprites\enemies\Demontje
 RightDemontjeRed3_Col:                      include "..\sprites\enemies\Demontje\RightDemontjeRed3.tcs.gen"  | db 00,00,00,00
 RightDemontjeRed4_Char:                     include "..\sprites\enemies\Demontje\RightDemontjeRed4.tgs.gen"	  
 RightDemontjeRed4_Col:                      include "..\sprites\enemies\Demontje\RightDemontjeRed4.tcs.gen"  | db 00,00,00,00
+
+Waterfall1_Char:                            include "..\sprites\enemies\Waterfall\Waterfall1.tgs.gen"	;y offset, x offset  
+Waterfall1_Col:                             include "..\sprites\enemies\Waterfall\Waterfall1.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+Waterfall2_Char:                            include "..\sprites\enemies\Waterfall\Waterfall2.tgs.gen"	;y offset, x offset  
+Waterfall2_Col:                             include "..\sprites\enemies\Waterfall\Waterfall2.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+Waterfall3_Char:                            include "..\sprites\enemies\Waterfall\Waterfall3.tgs.gen"	;y offset, x offset  
+Waterfall3_Col:                             include "..\sprites\enemies\Waterfall\Waterfall3.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+Waterfall4_Char:                            include "..\sprites\enemies\Waterfall\Waterfall4.tgs.gen"	;y offset, x offset  
+Waterfall4_Col:                             include "..\sprites\enemies\Waterfall\Waterfall4.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+Waterfall5_Char:                            include "..\sprites\enemies\Waterfall\Waterfall5.tgs.gen"	;y offset, x offset  
+Waterfall5_Col:                             include "..\sprites\enemies\Waterfall\Waterfall5.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+Waterfall6_Char:                            include "..\sprites\enemies\Waterfall\Waterfall6.tgs.gen"	;y offset, x offset  
+Waterfall6_Col:                             include "..\sprites\enemies\Waterfall\Waterfall6.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+Waterfall7_Char:                            include "..\sprites\enemies\Waterfall\Waterfall7.tgs.gen"	;y offset, x offset  
+Waterfall7_Col:                             include "..\sprites\enemies\Waterfall\Waterfall7.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+Waterfall8_Char:                            include "..\sprites\enemies\Waterfall\Waterfall8.tgs.gen"	;y offset, x offset  
+Waterfall8_Col:                             include "..\sprites\enemies\Waterfall\Waterfall8.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+
+WaterfallStart1_Char:                       include "..\sprites\enemies\Waterfall\WaterfallStart1.tgs.gen"	;y offset, x offset  
+WaterfallStart1_Col:                        include "..\sprites\enemies\Waterfall\WaterfallStart1.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallStart2_Char:                       include "..\sprites\enemies\Waterfall\WaterfallStart2.tgs.gen"	;y offset, x offset  
+WaterfallStart2_Col:                        include "..\sprites\enemies\Waterfall\WaterfallStart2.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallStart3_Char:                       include "..\sprites\enemies\Waterfall\WaterfallStart3.tgs.gen"	;y offset, x offset  
+WaterfallStart3_Col:                        include "..\sprites\enemies\Waterfall\WaterfallStart3.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+
+WaterfallEnd1_Char:                         include "..\sprites\enemies\Waterfall\WaterfallEnd1.tgs.gen"	;y offset, x offset  
+WaterfallEnd1_Col:                          include "..\sprites\enemies\Waterfall\WaterfallEnd1.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallEnd2_Char:                         include "..\sprites\enemies\Waterfall\WaterfallEnd2.tgs.gen"	;y offset, x offset  
+WaterfallEnd2_Col:                          include "..\sprites\enemies\Waterfall\WaterfallEnd2.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallEnd3_Char:                         include "..\sprites\enemies\Waterfall\WaterfallEnd3.tgs.gen"	;y offset, x offset  
+WaterfallEnd3_Col:                          include "..\sprites\enemies\Waterfall\WaterfallEnd3.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+
 	ds		$c000-$,$ff
 dephase
 

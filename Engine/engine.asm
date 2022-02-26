@@ -53,8 +53,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 20 ;150 ;210
-ClesY:      db 20; 144-1
+ClesX:      dw 150 ;210
+ClesY:      db 144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 

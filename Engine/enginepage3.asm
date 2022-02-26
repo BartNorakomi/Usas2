@@ -15,9 +15,10 @@ MapB01_013Data: db MapsBlock02 | dw MapB01_013 | db 1,3,3                  | Map
 MapB01_016Data: db MapsBlock02 | dw MapB01_016 | db 2,3,3                  | MapB01_017Data: db MapsBlock02 | dw MapB01_017 | db 1,3,3                  | MapB01_018Data: db MapsBlock02 | dw MapB01_018 | db 1,3,3
 MapB01_019Data: db MapsBlock02 | dw MapB01_019 | db 2,3,3                  | MapB01_020Data: db MapsBlock02 | dw MapB01_020 | db 2,3,3                  | MapB01_021Data: db MapsBlock02 | dw MapB01_021 | db 2,3,3
 MapB01_022Data: db MapsBlock02 | dw MapB01_022 | db 1,3,3                  | MapB01_023Data: db MapsBlock02 | dw MapB01_023 | db 1,3,3                  | MapB01_024Data: db MapsBlock02 | dw MapB01_024 | db 1,3,3
+MapB01_025Data: db MapsBlock02 | dw MapB01_025 | db 1,3,3                  | MapB01_026Data: db MapsBlock02 | dw MapB01_026 | db 1,3,3                  | MapB01_027Data: db MapsBlock02 | dw MapB01_027 | db 1,3,3
 
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_018Data
+WorldMapPointer:  dw  MapB01_027Data
 
 loadGraphics:
 ;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
@@ -1299,8 +1300,7 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .sprnrinspat:           equ 9
 .SprNrTimes16:          equ 9
 .ObjectNumber:          equ 9
-.spataddress:           equ 11
-.coordinates:           equ 11
+.spataddress:           equ 11 | .coordinates:           equ 11
 .nrsprites:             equ 13
 .nrspritesSimple:       equ 14
 .nrspritesTimes16:      equ 15
@@ -1308,14 +1308,13 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .v2:                    equ 17
 .v3:                    equ 18
 .v4:                    equ 19
-.v5:                    equ 20
-.SnapPlayer?:           equ 20
+.v5:                    equ 20 | .SnapPlayer?:           equ 20
 .v6:                    equ 21
 .v7:                    equ 22
 .v8:                    equ 23
 .v9:                    equ 24
-.hit?:                  equ 25
-.life:                  equ 26
+.hit?:                  equ 25 | .v10:                   equ 25
+.life:                  equ 26 | .v11:                   equ 26
 
 endenginepage3variables:  equ $+enginepage3length
 org variables
