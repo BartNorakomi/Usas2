@@ -49,6 +49,7 @@
 ;WaterfallMouth
 ;DrippingOoze
 ;DrippingOozeDrop
+;BigStatueMouth
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -117,6 +118,29 @@ CheckCollisionWallEnemy:                    ;checks for collision wall and if fo
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   neg
   ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
+  ret
+
+CheckCollisionWallEnemyV8:                  ;checks for collision wall and if found invert horizontal movement
+  ld    a,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
+  ld    hl,-16                              ;add to x to check right side of sprite for collision
+  bit   7,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
+  jr    z,.MovingRight
+  .MovingLeft:
+  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
+  neg
+  ld    (ix+enemies_and_objects.v8),a       ;v4=Horizontal Movement
+  ret
+  .MovingRight:
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
+  add   hl,de
+  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
+  neg
+  ld    (ix+enemies_and_objects.v8),a       ;v4=Horizontal Movement
   ret
 
 CheckFloorUnderBothFeetEnemy:               ;Used for Zombie, to check if he is completely without floor under him
@@ -586,6 +610,106 @@ Template:
 
 
 
+
+
+
+
+
+CuteMiniBat:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=repeating steps
+;v6=pointer to movement table
+;v7=Target Y
+;v8=face left (0) or face right (1)  
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,CuteMiniBatSpriteblock            ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+    
+  .HandlePhase:
+  call  .CheckTurnAround                    ;turn around at the left and right edge of screen
+  call  .MoveToTargetY                      ;Move Towards Target Y
+;  call  CheckCollisionWallEnemyV8           ;checks for collision wall and if found invert direction in V8
+  call  .Move
+    
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v8)       ;v8=face left (0) or face right (1)  
+  ld    hl,RightCuteMiniBat
+  jp    z,.GoAnimate
+  ld    hl,LeftCuteMiniBat
+  .GoAnimate:
+  ld    b,07                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 03                            ;06 animation frame addresses
+  jp    AnimateSprite  
+
+  .CheckTurnAround:                         ;turn around at the left and right edge of screen
+  ld    a,(ix+enemies_and_objects.x)
+  cp    20
+  jr    c,.MoveRight
+  cp    40
+  ret   c
+  bit   0,(ix+enemies_and_objects.x+1)
+  ret   z
+  .MoveLeft:
+  ld    (ix+enemies_and_objects.v8),-1      ;v8=face left (0) or face right (1)  
+  ret  
+  .MoveRight:
+  bit   0,(ix+enemies_and_objects.x+1)
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),1       ;v8=face left (0) or face right (1)  
+  ret
+  
+  .MoveToTargetY:
+  ld    a,r
+  and   15
+  ret   nz
+  
+  ld    a,(ix+enemies_and_objects.y)
+  cp    (ix+enemies_and_objects.v7)         ;v7=Target Y
+  jr    nc,.MoveUp
+  inc   (ix+enemies_and_objects.y)
+  ret
+  .MoveUp:
+  dec   (ix+enemies_and_objects.y)
+  ret
+
+  .Move:
+  ld    de,MiniBatMovementTableRight1
+  bit   7,(ix+enemies_and_objects.v8)       ;v8=face left (0) or face right (1)  
+  jp    z,MoveObjectWithStepTableNew        ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+  jp    MoveObjectWithStepTableNewMirroredX ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+
+MiniBatMovementTableRight1:                 ;repeating steps(128 = end table/repeat), move y, move x
+  db  03,+0,+1,  01,+0,+0,  01,+1,+1,  01,+0,+1,  01,+0,+0
+  db  03,+0,+1,  01,-1,+1,  03,+0,+1,  01,+0,+0,  02,-1,+1
+  db  03,+1,+1,  01,-1,-0,  02,-1,+1,  01,-0,-0,  02,+1,+1
+  db  01,-0,-0,  01,-0,+1,  01,-1,+0,  01,+1,+0,  02,-0,+0,  01,+1,+0
+  db  128
+
+LeftCuteMiniBat:
+  dw  LeftCuteMiniBat1_Char
+  dw  LeftCuteMiniBat2_Char
+  dw  LeftCuteMiniBat3_Char
+
+RightCuteMiniBat:
+  dw  RightCuteMiniBat1_Char
+  dw  RightCuteMiniBat2_Char
+  dw  RightCuteMiniBat3_Char
+
+BigStatueMouth:
+  ld    a,3
+  ld    (CopyObject+spage),a
+  ld    a,216+21
+  ld    (CopyObject+sy),a  
+  jp    VramObjectsTransparantCopies
+  
 SXDrippingOoze1:  equ 149
 SXDrippingOoze2:  equ 149+5
 SXDrippingOoze3:  equ 149+5+5
@@ -4593,6 +4717,68 @@ MoveObjectWithStepTableNewMirrorX:
   ld    (ix+enemies_and_objects.x),l          ;x object
   ld    (ix+enemies_and_objects.x+1),h        ;x object
   ret  
+
+
+
+
+MoveObjectWithStepTableNewMirroredX:
+  dec   (ix+enemies_and_objects.v5)         ;repeating steps
+  jp    p,.moveObject
+  
+  .NextStep:
+  ld    a,(ix+enemies_and_objects.v6)         ;pointer to movement table
+  ld    h,0
+  ld    l,a
+  add   hl,de
+  add   a,3
+  ld    (ix+enemies_and_objects.v6),a         ;pointer to movement table
+  
+  ld    a,(hl)                                ;repeating steps(128 = end table/repeat)
+  cp    128
+  jr    nz,.EndCheckEndTable
+  ld    (ix+enemies_and_objects.v6),+3        ;pointer to movement table
+  ex    de,hl
+  ld    a,(hl)
+
+  .EndCheckEndTable:
+  ld    (ix+enemies_and_objects.v5),a         ;repeating steps
+  inc   hl
+  ld    a,(hl)                                ;y movement
+  ld    (ix+enemies_and_objects.v3),a         ;v3=y movement
+  inc   hl
+  ld    a,(hl)                                ;x movement
+  neg
+  ld    (ix+enemies_and_objects.v4),a         ;v4=x movement
+
+  .moveObject:
+  ld    a,(ix+enemies_and_objects.y)          ;y object
+  add   a,(ix+enemies_and_objects.v3)         ;add y movement to y
+  ld    (ix+enemies_and_objects.y),a          ;y object
+
+  ;8 bit
+;  ld    a,(ix+enemies_and_objects.x)          ;x object
+;  add   a,(ix+enemies_and_objects.v4)         ;add x movement to x
+;  ld    (ix+enemies_and_objects.x),a          ;x object
+
+  ;16 bit
+  ld    a,(ix+enemies_and_objects.v4)         ;x movement
+  or    a
+  ld    d,0
+  jp    p,.positive
+  dec   d
+  .positive:
+  ld    e,a
+  ld    l,(ix+enemies_and_objects.x)          ;x object
+  ld    h,(ix+enemies_and_objects.x+1)        ;x object
+  add   hl,de
+  ld    (ix+enemies_and_objects.x),l          ;x object
+  ld    (ix+enemies_and_objects.x+1),h        ;x object
+  ret
+  
+  
+  
+  
+  
   
 MoveObjectWithStepTableNew:                 ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
   dec   (ix+enemies_and_objects.v5)         ;repeating steps

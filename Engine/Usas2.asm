@@ -895,10 +895,6 @@ MapB01_021:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object4:db -1,        1|dw Slime               |db 8*15|dw 8*27|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
-
-
-
-
 MapB01_022:
   incbin "..\maps\b01-022.map.pck"  | .amountofobjects: db  6
 ;Demontje Bullet
@@ -945,7 +941,6 @@ MapB01_024:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object4:db -1,        1|dw BlackHoleAlien      |db 8*05|dw 8*22|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
 
-
 MapB01_025:
   incbin "..\maps\b01-025.map.pck"  | .amountofobjects: db  3
 ;Waterfall eyes
@@ -958,15 +953,6 @@ MapB01_025:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object6:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
 ;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
-
-
-
-
-
-
-
-
-
 
 MapB01_026:
   incbin "..\maps\b01-026.map.pck"  | .amountofobjects: db  10
@@ -984,8 +970,6 @@ MapB01_026:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object4:db -0,        1|dw DrippingOoze        |db 8*22|dw 8*24|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 
-
-
 ;Waterfall eyes
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
 .object5: db 1,        0|dw WaterfallEyesGrey   |db 8*15+3|dw 8*28|db 06,14|dw CleanOb3,0 db 0,0,0,                   +095,+00,200,+02,+01,8*15+3,8*06,8*15+3,8*28,8*00+3,8*00| ds fill
@@ -996,9 +980,6 @@ MapB01_026:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object7:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
 ;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
-
-
-
 
 ;Waterfall eyes
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
@@ -1012,10 +993,14 @@ MapB01_026:
 
 
 
-
 MapB01_027:
-  incbin "..\maps\b01-027.map.pck"  | .amountofobjects: db  0
-
+  incbin "..\maps\b01-027.map.pck"  | .amountofobjects: db  2
+;Big Statue Mouth
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+;Cute Mini Bat
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object2:db -1,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+40,+01,+00, 0|db 001| ds fill
 
 
 
@@ -2476,6 +2461,7 @@ dephase
 DemontjeRedSpriteblock:  equ   $57
 WaterfallSpriteblock:  equ   $57
 DrippingOozeSpriteblock:  equ   $57
+CuteMiniBatSpriteblock:  equ   $57
 phase	$8000
 LeftDemontjeRed1_Char:                      include "..\sprites\enemies\Demontje\LeftDemontjeRed1.tgs.gen"	;y offset, x offset  
 LeftDemontjeRed1_Col:                       include "..\sprites\enemies\Demontje\LeftDemontjeRed1.tcs.gen"  | db 00,01,00,01
@@ -2580,6 +2566,21 @@ DrippingOoze17_Char:                        incbin "..\sprites\enemies\DrippingO
 DrippingOoze17_Col:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+16*064,064  | db 00,00, 00,16, 16,00, 16,16
 DrippingOoze18_Char:                        incbin "..\sprites\enemies\DrippingOoze\1.spr",17*128,128
 DrippingOoze18_Col:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+17*064,064  | db 00,00, 00,16, 16,00, 16,16
+
+LeftCuteMiniBat1_Char:                      include "..\sprites\enemies\CuteMiniBat\LeftCuteMiniBat1.tgs.gen"	;y offset, x offset  
+LeftCuteMiniBat1_Col:                       include "..\sprites\enemies\CuteMiniBat\LeftCuteMiniBat1.tcs.gen"  | db 00,00,00,00
+LeftCuteMiniBat2_Char:                      include "..\sprites\enemies\CuteMiniBat\LeftCuteMiniBat2.tgs.gen"	  
+LeftCuteMiniBat2_Col:                       include "..\sprites\enemies\CuteMiniBat\LeftCuteMiniBat2.tcs.gen"  | db 00,00,00,00
+LeftCuteMiniBat3_Char:                      include "..\sprites\enemies\CuteMiniBat\LeftCuteMiniBat3.tgs.gen"	  
+LeftCuteMiniBat3_Col:                       include "..\sprites\enemies\CuteMiniBat\LeftCuteMiniBat3.tcs.gen"  | db 00,00,00,00
+
+RightCuteMiniBat1_Char:                     include "..\sprites\enemies\CuteMiniBat\RightCuteMiniBat1.tgs.gen"	  
+RightCuteMiniBat1_Col:                      include "..\sprites\enemies\CuteMiniBat\RightCuteMiniBat1.tcs.gen"  | db 00,00,00,00
+RightCuteMiniBat2_Char:                     include "..\sprites\enemies\CuteMiniBat\RightCuteMiniBat2.tgs.gen"	  
+RightCuteMiniBat2_Col:                      include "..\sprites\enemies\CuteMiniBat\RightCuteMiniBat2.tcs.gen"  | db 00,00,00,00
+RightCuteMiniBat3_Char:                     include "..\sprites\enemies\CuteMiniBat\RightCuteMiniBat3.tgs.gen"	  
+RightCuteMiniBat3_Col:                      include "..\sprites\enemies\CuteMiniBat\RightCuteMiniBat3.tcs.gen"  | db 00,00,00,00
+
 
 	ds		$c000-$,$ff
 dephase
