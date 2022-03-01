@@ -3,6 +3,10 @@
   db 9
   db 0
   db 0
+  db 0
+  db 0
+  db 0
+  db 0
   db 9
   db 9
   db 0
@@ -11,10 +15,10 @@
   db 0
   db 0
   db 0
-  db 9
-  db 9
-  db 0
-  db 0
+  db 255
+  db 255
+  db 255
+  db 255
   db 255
   db 255
   db 255
@@ -25,43 +29,39 @@
   db 255
   db 255
   db 255
-  db 255
-  db 255
-  db 64
-  db 64
   db 255
   db 255
 ; Sprite 1 - Mode : 2 sprites, color OR on 
-  db 0
-  db 0
-  db 0
-  db 0
-  db 9
-  db 9
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 9
-  db 9
-  db 0
-  db 0
-  db 255
-  db 255
-  db 255
-  db 255
-  db 64
-  db 64
   db 255
   db 255
   db 255
   db 255
   db 255
   db 255
-  db 64
-  db 64
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
   db 255
   db 255
 ; Sprite 2 - Mode : 2 sprites, color OR on 

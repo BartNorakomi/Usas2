@@ -895,9 +895,12 @@ MapB01_021:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object4:db -1,        1|dw Slime               |db 8*15|dw 8*27|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
-MapB01_022:
-  incbin "..\maps\b01-022.map.pck"  | .amountofobjects: db  5
 
+
+
+
+MapB01_022:
+  incbin "..\maps\b01-022.map.pck"  | .amountofobjects: db  6
 ;Demontje Bullet
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object1: db 0,        0|dw DemontjeBullet      |db 8*10|dw 8*15|db 11,11|dw CleanOb1,0 db 0,0,0,                     +146,+00,-01,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
@@ -907,10 +910,13 @@ MapB01_022:
 .object3:db -1,        1|dw Demontje            |db 8*18|dw 8*08|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 001| ds fill
 ;Waterfall eyes
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
-.object4: db 1,        0|dw WaterfallEyes       |db 8*15+5|dw 8*26+1|db 02,12|dw CleanOb2,0 db 0,0,0,                 +128,+00,+00,+03,+01,8*15+5,8*10+1,8*15+5,8*18+1,8*15+5,8*26+1| ds fill
+.object4: db 1,        0|dw WaterfallEyesYellow |db 8*15+3|dw 8*26|db 06,14|dw CleanOb2,0 db 0,0,0,                   +067,+00,+00,+03,+01,8*15+3,8*10,8*15+3,8*18,8*15+3,8*26| ds fill
+;Waterfall mouth
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object5: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*26+2|db 06,10|dw CleanOb3,0 db 0,0,0,                 +119,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000| ds fill
 ;Waterfall
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object5:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
+.object6:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
 ;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
 
 MapB01_023:
@@ -941,10 +947,71 @@ MapB01_024:
 
 
 MapB01_025:
-  incbin "..\maps\b01-025.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\b01-025.map.pck"  | .amountofobjects: db  3
+;Waterfall eyes
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
+.object4: db 1,        0|dw WaterfallEyesGrey   |db 8*15+3|dw 8*22|db 06,14|dw CleanOb1,0 db 0,0,0,                   +095,+00,+01,+02,+01,8*15+3,8*14,8*15+3,8*22,8*00+3,8*00| ds fill
+;Waterfall mouth
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
+.object5: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*22+2|db 06,10|dw CleanOb2,0 db 0,0,0,                   +139,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000| ds fill
+;Waterfall
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object6:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
+;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
+
+
+
+
+
+
+
+
+
 
 MapB01_026:
-  incbin "..\maps\b01-026.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\b01-026.map.pck"  | .amountofobjects: db  10
+;Dripping Ooze Drop
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   , Hit?,life 
+.object1: db 1,        0|dw DrippingOozeDrop    |db 8*09-5|dw 8*10+3|db 08,05|dw CleanOb1,0 db 0,0,0,                 +149,+02,+03,+00,+63,+00,+00,8*09-5,8*10+3, 0|db 000| ds fill
+;Dripping Ooze
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object2:db -0,        1|dw DrippingOoze        |db 8*22|dw 8*24|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+
+;Dripping Ooze Drop
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   , Hit?,life 
+.object3: db 1,        0|dw DrippingOozeDrop    |db 8*09-5|dw 8*22+3|db 08,05|dw CleanOb2,0 db 0,0,0,                 +149,+02,+03,+00,180,+00,+00,8*09-5,8*22+3, 0|db 000| ds fill
+;Dripping Ooze
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object4:db -0,        1|dw DrippingOoze        |db 8*22|dw 8*24|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+
+
+
+;Waterfall eyes
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
+.object5: db 1,        0|dw WaterfallEyesGrey   |db 8*15+3|dw 8*28|db 06,14|dw CleanOb3,0 db 0,0,0,                   +095,+00,200,+02,+01,8*15+3,8*06,8*15+3,8*28,8*00+3,8*00| ds fill
+;Waterfall mouth
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object6: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*28+2|db 06,10|dw CleanOb4,0 db 0,0,0,                 +139,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000| ds fill
+;Waterfall
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object7:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
+;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
+
+
+
+
+;Waterfall eyes
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
+.object8: db 1,        0|dw WaterfallEyesYellow |db 8*15+3|dw 8*17|db 06,14|dw CleanOb5,0 db 0,0,0,                   +067,+00,+01,+01,+00,8*15+3,8*17,8*00+3,8*00,8*00+3,8*00| ds fill
+;Waterfall mouth
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object9: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*17+2|db 06,10|dw CleanOb6,0 db 0,0,0,                 +119,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000| ds fill
+;Waterfall
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object10:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
+
+
+
 
 MapB01_027:
   incbin "..\maps\b01-027.map.pck"  | .amountofobjects: db  0
@@ -2408,6 +2475,7 @@ dephase
 ;
 DemontjeRedSpriteblock:  equ   $57
 WaterfallSpriteblock:  equ   $57
+DrippingOozeSpriteblock:  equ   $57
 phase	$8000
 LeftDemontjeRed1_Char:                      include "..\sprites\enemies\Demontje\LeftDemontjeRed1.tgs.gen"	;y offset, x offset  
 LeftDemontjeRed1_Col:                       include "..\sprites\enemies\Demontje\LeftDemontjeRed1.tcs.gen"  | db 00,01,00,01
@@ -2450,6 +2518,14 @@ WaterfallStart2_Char:                       include "..\sprites\enemies\Waterfal
 WaterfallStart2_Col:                        include "..\sprites\enemies\Waterfall\WaterfallStart2.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
 WaterfallStart3_Char:                       include "..\sprites\enemies\Waterfall\WaterfallStart3.tgs.gen"	;y offset, x offset  
 WaterfallStart3_Col:                        include "..\sprites\enemies\Waterfall\WaterfallStart3.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallStart4_Char:                       include "..\sprites\enemies\Waterfall\WaterfallStart4.tgs.gen"	;y offset, x offset  
+WaterfallStart4_Col:                        include "..\sprites\enemies\Waterfall\WaterfallStart4.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallStart5_Char:                       include "..\sprites\enemies\Waterfall\WaterfallStart5.tgs.gen"	;y offset, x offset  
+WaterfallStart5_Col:                        include "..\sprites\enemies\Waterfall\WaterfallStart5.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallStart6_Char:                       include "..\sprites\enemies\Waterfall\WaterfallStart6.tgs.gen"	;y offset, x offset  
+WaterfallStart6_Col:                        include "..\sprites\enemies\Waterfall\WaterfallStart6.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallStart7_Char:                       include "..\sprites\enemies\Waterfall\WaterfallStart7.tgs.gen"	;y offset, x offset  
+WaterfallStart7_Col:                        include "..\sprites\enemies\Waterfall\WaterfallStart7.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
 
 WaterfallEnd1_Char:                         include "..\sprites\enemies\Waterfall\WaterfallEnd1.tgs.gen"	;y offset, x offset  
 WaterfallEnd1_Col:                          include "..\sprites\enemies\Waterfall\WaterfallEnd1.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
@@ -2457,6 +2533,53 @@ WaterfallEnd2_Char:                         include "..\sprites\enemies\Waterfal
 WaterfallEnd2_Col:                          include "..\sprites\enemies\Waterfall\WaterfallEnd2.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
 WaterfallEnd3_Char:                         include "..\sprites\enemies\Waterfall\WaterfallEnd3.tgs.gen"	;y offset, x offset  
 WaterfallEnd3_Col:                          include "..\sprites\enemies\Waterfall\WaterfallEnd3.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallEnd4_Char:                         include "..\sprites\enemies\Waterfall\WaterfallEnd4.tgs.gen"	;y offset, x offset  
+WaterfallEnd4_Col:                          include "..\sprites\enemies\Waterfall\WaterfallEnd4.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallEnd5_Char:                         include "..\sprites\enemies\Waterfall\WaterfallEnd5.tgs.gen"	;y offset, x offset  
+WaterfallEnd5_Col:                          include "..\sprites\enemies\Waterfall\WaterfallEnd5.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallEnd6_Char:                         include "..\sprites\enemies\Waterfall\WaterfallEnd6.tgs.gen"	;y offset, x offset  
+WaterfallEnd6_Col:                          include "..\sprites\enemies\Waterfall\WaterfallEnd6.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallEnd7_Char:                         include "..\sprites\enemies\Waterfall\WaterfallEnd7.tgs.gen"	;y offset, x offset  
+WaterfallEnd7_Col:                          include "..\sprites\enemies\Waterfall\WaterfallEnd7.tcs.gen"  | db 00-1,00-3, 00-1,00-3, 16-1,00-3, 16-1,00-3, 32-1,00-3, 32-1,00-3, 48-1,00-3, 48-1,00-3
+WaterfallEnd8Empty_Char:                    include "..\sprites\enemies\Waterfall\WaterfallEnd8Empty.tgs.gen"	;y offset, x offset  
+WaterfallEnd8_Col:                          include "..\sprites\enemies\Waterfall\WaterfallEnd7.tcs.gen"  | db 00,00, 00,00, 16,00, 16,00, 32,00, 32,00, 48,00, 48,00
+
+DrippingOoze1_Char:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",0*128,128
+DrippingOoze1_Col:                          incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+0*064,064  | db 16+5,00, 16+5,16, 16,00, 16,16
+DrippingOoze2_Char:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",1*128,128
+DrippingOoze2_Col:                          incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+1*064,064  | db 16+5,00, 16+5,16, 16,00, 16,16
+DrippingOoze3_Char:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",2*128,128
+DrippingOoze3_Col:                          incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+2*064,064  | db 16+8,00, 16+8,16, 16,00, 16,16
+DrippingOoze4_Char:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",3*128,128
+DrippingOoze4_Col:                          incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+3*064,064  | db 16,00, 16,16, 16+5,00, 16+5,16
+DrippingOoze5_Char:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",4*128,128
+DrippingOoze5_Col:                          incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+4*064,064  | db 16,00, 16,16, 16+6,00, 16+6,16
+DrippingOoze6_Char:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",5*128,128
+DrippingOoze6_Col:                          incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+5*064,064  | db 15,00, 15,16, 15+11,00, 15+11,16
+DrippingOoze7_Char:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",6*128,128
+DrippingOoze7_Col:                          incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+6*064,064  | db 00,00, 00,16, 16,00, 16,16
+DrippingOoze8_Char:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",7*128,128
+DrippingOoze8_Col:                          incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+7*064,064  | db 00,00, 00,16, 16,00, 16,16
+DrippingOoze9_Char:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",8*128,128
+DrippingOoze9_Col:                          incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+8*064,064  | db 00,00, 00,16, 16,00, 16,16
+DrippingOoze10_Char:                        incbin "..\sprites\enemies\DrippingOoze\1.spr",9*128,128
+DrippingOoze10_Col:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+9*064,064  | db 00,00, 00,16, 16,00, 16,16
+DrippingOoze11_Char:                        incbin "..\sprites\enemies\DrippingOoze\1.spr",10*128,128
+DrippingOoze11_Col:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+10*064,064  | db 00,00, 00,16, 16,00, 16,16
+DrippingOoze12_Char:                        incbin "..\sprites\enemies\DrippingOoze\1.spr",11*128,128
+DrippingOoze12_Col:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+11*064,064  | db 00,00, 00,16, 16,00, 16,16
+DrippingOoze13_Char:                        incbin "..\sprites\enemies\DrippingOoze\1.spr",12*128,128
+DrippingOoze13_Col:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+12*064,064  | db 00,00, 00,16, 16,00, 16,16
+DrippingOoze14_Char:                        incbin "..\sprites\enemies\DrippingOoze\1.spr",13*128,128
+DrippingOoze14_Col:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+13*064,064  | db 00,00, 00,16, 16,00, 16,16
+DrippingOoze15_Char:                        incbin "..\sprites\enemies\DrippingOoze\1.spr",14*128,128
+DrippingOoze15_Col:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+14*064,064  | db 00,00, 00,16, 16,00, 16,16
+DrippingOoze16_Char:                        incbin "..\sprites\enemies\DrippingOoze\1.spr",15*128,128
+DrippingOoze16_Col:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+15*064,064  | db 00,00, 00,16, 16,00, 16,16
+DrippingOoze17_Char:                        incbin "..\sprites\enemies\DrippingOoze\1.spr",16*128,128
+DrippingOoze17_Col:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+16*064,064  | db 00,00, 00,16, 16,00, 16,16
+DrippingOoze18_Char:                        incbin "..\sprites\enemies\DrippingOoze\1.spr",17*128,128
+DrippingOoze18_Col:                         incbin "..\sprites\enemies\DrippingOoze\1.spr",72*32+17*064,064  | db 00,00, 00,16, 16,00, 16,16
 
 	ds		$c000-$,$ff
 dephase

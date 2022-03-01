@@ -2,24 +2,20 @@
   db 255
   db 9
   db 0
-  db 9
-  db 9
-  db 0
-  db 0
   db 0
   db 0
   db 0
   db 0
   db 9
-  db 9
-  db 0
-  db 0
-  db 0
   db 255
   db 255
   db 255
-  db 64
-  db 64
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
   db 255
   db 255
   db 255
@@ -27,7 +23,11 @@
   db 255
   db 255
   db 64
-  db 64
+  db 255
+  db 255
+  db 255
+  db 255
+  db 255
   db 255
   db 255
   db 255

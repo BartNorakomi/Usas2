@@ -135,6 +135,10 @@ Handle_HardWareSprite_Enemies_And_objects:
   ld    a,(de) | inc a | call z,.docheck             
   ld    de,enemies_and_objects+(7*lenghtenemytable)                                     
   ld    a,(de) | inc a | call z,.docheck             
+  ld    de,enemies_and_objects+(8*lenghtenemytable)
+  ld    a,(de) | inc a | call z,.docheck             
+  ld    de,enemies_and_objects+(9*lenghtenemytable)                                     
+  ld    a,(de) | inc a | call z,.docheck             
 
 	ld		a,(slot.ram)	      ;back to full RAM
 	out		($a8),a	
@@ -444,6 +448,11 @@ CleanOb5:
   db    002,000,001,000   ;nx,--,ny,--
   db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
+CleanOb6:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    002,000,001,000   ;nx,--,ny,--
+  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
 PuzzleSwitchTable2: db  0,1,2,3,1,3,0, 0,0,0

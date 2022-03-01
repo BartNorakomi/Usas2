@@ -44,7 +44,11 @@
 ;BlackHoleAlien
 ;BlackHoleBaby
 ;Waterfall
-;WaterfallEyes
+;WaterfallEyesYellow
+;WaterfallEyesGrey
+;WaterfallMouth
+;DrippingOoze
+;DrippingOozeDrop
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -575,9 +579,169 @@ Template:
 
 
 
-WaterfallEyesYellowClosedSX: equ 128
-WaterfallEyesYellowOpenSX: equ 140
-WaterfallEyes:
+
+
+
+
+
+
+
+SXDrippingOoze1:  equ 149
+SXDrippingOoze2:  equ 149+5
+SXDrippingOoze3:  equ 149+5+5
+SXDrippingOoze4:  equ 149+5+5+5
+
+DrippingOozeDrop:
+;v1=sx
+;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
+;v3=Vertical Movement
+;v4=Grow Duration
+;v5=Wait FOr Respawn Counter
+;v8=Y spawn
+;v9=X spawn
+  call  CollisionObjectPlayer               ;Check if player is hit by Vram object
+
+  ld    a,216+32 
+  ld    (CopyObject+sy),a  
+
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
+  or    a
+  jp    z,DrippingOozeGrowing
+  dec   a
+  jp    z,DrippingOozeFalling
+  
+  DrippingOozeWaitingForRespawn:
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=Wait FOr Respawn Counter
+  inc   a
+  ld    (ix+enemies_and_objects.v5),a       ;v5=Wait FOr Respawn Counter
+  cp    64
+  ret   nz
+  ld    (ix+enemies_and_objects.v5),0       ;v5=Wait FOr Respawn Counter
+
+  ld    (ix+enemies_and_objects.v1),SXDrippingOoze1  
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Y spawn  
+  ld    (ix+enemies_and_objects.y),a        ;y  
+
+  ld    a,r
+  rrca
+  ld    a,(ix+enemies_and_objects.v9)       ;v9=X spawn 
+  jr    c,.SetX
+  add   a,19
+  .SetX:
+  ld    (ix+enemies_and_objects.x),a        ;x  
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)  
+  ld    (ix+enemies_and_objects.v4),0       ;v4=Grow Duration
+  ret
+  
+  DrippingOozeFalling:
+  ld    (ix+enemies_and_objects.v1),SXDrippingOoze4
+  call  MoveSpriteVertically                ;Add v3 to y
+  call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
+  jp    nz,VramObjectsTransparantCopies
+
+  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
+  ;activate DrippingOoze in the pool
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),-1
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  add   a,4
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.x),a      
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  add   a,-25
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.y),a  
+  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+      
+  DrippingOozeGrowing:
+  call  VramObjectsTransparantCopies
+
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Grow Duration
+  inc   a
+  ld    (ix+enemies_and_objects.v4),a       ;v4=Grow Duration
+  cp    50
+  ret   c
+  ld    (ix+enemies_and_objects.v1),SXDrippingOoze2
+  cp    100
+  ret   c
+  ld    (ix+enemies_and_objects.v1),SXDrippingOoze3
+  cp    150
+  ret   c
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
+  ret
+  
+DrippingOoze:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 15
+  call  c,CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,DrippingOozeSpriteblock           ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+    
+  .Animate:
+  ld    hl,DrippingOozeAnimation
+  ld    b,01                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 20                            ;06 animation frame addresses
+  call  AnimateSprite  
+
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 19
+  ret   nz
+  ld    (ix+enemies_and_objects.v1),00      ;v1=Animation Counter
+  jp    RemoveSprite
+    
+DrippingOozeAnimation:
+  dw  DrippingOoze1_Char
+  dw  DrippingOoze1_Char
+  dw  DrippingOoze2_Char
+  dw  DrippingOoze3_Char
+  dw  DrippingOoze4_Char
+  dw  DrippingOoze5_Char
+  dw  DrippingOoze6_Char
+  dw  DrippingOoze7_Char
+  dw  DrippingOoze8_Char
+  dw  DrippingOoze9_Char
+  dw  DrippingOoze10_Char
+  dw  DrippingOoze11_Char
+  dw  DrippingOoze12_Char
+  dw  DrippingOoze13_Char
+  dw  DrippingOoze14_Char
+  dw  DrippingOoze15_Char
+  dw  DrippingOoze16_Char
+  dw  DrippingOoze17_Char
+  dw  DrippingOoze18_Char
+  dw  DrippingOoze18_Char
+  
+WaterfallMouth:
+  ld    a,216+32 
+  ld    (CopyObject+sy),a  
+  jp    VramObjectsTransparantCopies
+
+WaterfallEyesYellowClosedSX: equ 67 
+WaterfallEyesYellowOpenSX: equ 53 
+WaterfallMouthYellowClosedSX: equ 119 
+WaterfallMouthYellowOpenSX: equ 109 
+
+WaterfallEyesGreyClosedSX: equ 95 
+WaterfallEyesGreyOpenSX: equ 81
+WaterfallMouthGreyClosedSX: equ 139 
+WaterfallMouthGreyOpenSX: equ 129 
+
+WaterfallEyesGrey:
+  ld    b,WaterfallMouthGreyOpenSX
+  ld    c,WaterfallMouthGreyClosedSX
+  ld    d,WaterfallEyesGreyClosedSX
+  ld    e,WaterfallEyesGreyOpenSX
+  jp    WaterfallEyesYellow.EntryPointForGreyEyes
+  
+WaterfallEyesYellow:
 ;v1=sx
 ;v2=Active Timer
 ;v3=Wait Timer
@@ -590,10 +754,16 @@ WaterfallEyes:
 ;v10=Y waterfall 3
 ;v11=x waterfall 3
 
+  ld    b,WaterfallMouthYellowOpenSX
+  ld    c,WaterfallMouthYellowClosedSX
+  ld    d,WaterfallEyesYellowClosedSX
+  ld    e,WaterfallEyesYellowOpenSX
+  .EntryPointForGreyEyes:
+
   call  .OpenEyes
   call  .CheckActivateWaterFall
   
-  ld    a,216+13
+  ld    a,216+32 
   ld    (CopyObject+sy),a  
 
   jp    VramObjectsTransparantCopies
@@ -606,23 +776,37 @@ WaterfallEyes:
   ld    (ix+enemies_and_objects.v2),a       ;v2=Active Timer
   jr    z,.CloseEyes
 
+  cp    20
+  jr    z,.OpenMouth
+
   cp    40
   ret   nz
   .ActivateWaterFall:
-  ld    (ix+lenghtenemytable+enemies_and_objects.Alive?),-1
-  ld    (ix+lenghtenemytable+enemies_and_objects.v5),-1      ;v5=Animation Counter
-  ld    (ix+lenghtenemytable+enemies_and_objects.v2),0       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End)   
+  ld    (ix+(2*lenghtenemytable)+enemies_and_objects.Alive?),-1
 
   ld    a,(ix+enemies_and_objects.x)        ;x
-  add   a,18
-  ld    (ix+lenghtenemytable+enemies_and_objects.x),a      
+  add   a,19
+  ld    (ix+(2*lenghtenemytable)+enemies_and_objects.x),a      
   ld    a,(ix+enemies_and_objects.y)        ;y
-  add   a,11
-  ld    (ix+lenghtenemytable+enemies_and_objects.y),a     
+  add   a,13
+  ld    (ix+(2*lenghtenemytable)+enemies_and_objects.y),a     
+  ret
+
+  .OpenMouth:
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v1),b
+  
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  add   a,21-19
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.x),a      
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  add   a,20-8
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.y),a     
   ret
 
   .CloseEyes:
-  ld    (ix+enemies_and_objects.v1),WaterfallEyesYellowClosedSX
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v1),c
+
+  ld    (ix+enemies_and_objects.v1),d
   ld    (ix+enemies_and_objects.v2),0       ;v2=Active Timer
   ret
 
@@ -633,11 +817,12 @@ WaterfallEyes:
   
   ld    a,(ix+enemies_and_objects.v3)       ;v3=Wait Timer
   dec   a
-  and   127
+;  and   127
   ld    (ix+enemies_and_objects.v3),a       ;v3=Wait Timer
   ret   nz
+  ld    (ix+enemies_and_objects.v3),200     ;v3=Wait Timer
 
-  ld    (ix+enemies_and_objects.v1),WaterfallEyesYellowOpenSX
+  ld    (ix+enemies_and_objects.v1),e
   ld    (ix+enemies_and_objects.v2),1       ;v2=Active Timer
 
   ld    a,(ix+enemies_and_objects.v5)       ;v5=Last Waterfalls Activated
@@ -680,7 +865,6 @@ Waterfall:
 ;v5=Animation Counter
   call  .HandlePhase                        ;(0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
-  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
   call  CollisionEnemyPlayer                ;Check if player is hit by enemy
 	ld		a,WaterfallSpriteblock              ;set block at $a000, page 2 - block containing sprite data
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
@@ -695,21 +879,17 @@ Waterfall:
   jp    z,Waterfalling
   
   WaterfallEnd:
-  ld    a,(ix+enemies_and_objects.v5)       ;v5=Animation Counter
-  inc   a
-  ld    (ix+enemies_and_objects.v5),a       ;v5=Animation Counter
-  sub   EndWaterFalling+1
-  ld    hl,WaterfallEnd1_Char
-  ret   z
-  dec   a
-  ld    hl,WaterfallEnd2_Char
-  ret   z
-  dec   a
-  ld    hl,WaterfallEnd3_Char
-  ret   z
-  ld    (ix+enemies_and_objects.alive?),0  
-  ld    (ix+enemies_and_objects.y),217+2-32    ;y  
-  ret
+  ld    hl,WaterfallEndAnimation
+  ld    b,00                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 10                            ;06 animation frame addresses
+  call  AnimateSprite  
+  
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 09
+  ret   nz
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) 
+  ld    (ix+enemies_and_objects.v1),-2      ;v1=Animation Counter
+  jp    RemoveSprite
 
   EndWaterFalling:  equ 170
   Waterfalling:
@@ -718,7 +898,9 @@ Waterfall:
   ld    (ix+enemies_and_objects.v5),a       ;v5=Animation Counter
   cp    EndWaterFalling
   jr    nz,.Animate
+  ld    (ix+enemies_and_objects.v1),-2      ;v1=Animation Counter
   ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) 
+  ld    (ix+enemies_and_objects.v5),0       ;v5=Animation Counter
 
   .Animate:
   ld    hl,WaterfallAnimation
@@ -727,20 +909,40 @@ Waterfall:
   jp    AnimateSprite  
   
   WaterfallStart:
-  ld    a,(ix+enemies_and_objects.v5)       ;v5=Animation Counter
-  inc   a
-  ld    (ix+enemies_and_objects.v5),a       ;v5=Animation Counter
-  ld    hl,WaterfallStart1_Char
-  ret   z
-  dec   a
-  ld    hl,WaterfallStart2_Char
-  ret   z
-  dec   a
-  ld    hl,WaterfallStart3_Char
-  ret   z
+  ld    hl,WaterfallStartAnimation
+  ld    b,00                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 08                            ;06 animation frame addresses
+  call  AnimateSprite  
+  
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 07
+  ret   nz  
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) 
+  ld    (ix+enemies_and_objects.v1),-2      ;v1=Animation Counter
   ret
+  
+WaterfallEndAnimation:
+  dw  WaterfallEnd1_Char
+  dw  WaterfallEnd1_Char
+  dw  WaterfallEnd2_Char
+  dw  WaterfallEnd3_Char
+  dw  WaterfallEnd4_Char
+  dw  WaterfallEnd5_Char
+  dw  WaterfallEnd6_Char
+  dw  WaterfallEnd7_Char
+  dw  WaterfallEnd8Empty_Char
+  dw  WaterfallEnd8Empty_Char
 
+WaterfallStartAnimation:
+  dw  WaterfallStart1_Char
+  dw  WaterfallStart2_Char
+  dw  WaterfallStart3_Char
+  dw  WaterfallStart4_Char
+  dw  WaterfallStart5_Char
+  dw  WaterfallStart6_Char
+  dw  WaterfallStart7_Char
+  dw  WaterfallStart7_Char
+  
 WaterfallAnimation:
   dw  Waterfall1_Char
   dw  Waterfall2_Char
@@ -1265,7 +1467,7 @@ TrampolineBlobJumpAnimation:
   
 SxSnowball: equ 241
 Snowball:
-;v1 = sx
+;v1=sx
 ;v2=Phase (0=Snowball Moving, 1=Snowball Splashing) 
 ;v3=Vertical Movement
 ;v4=Horizontal Movement

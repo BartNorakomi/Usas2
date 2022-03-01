@@ -1,131 +1,131 @@
 ; Sprite 0 - Mode : 2 sprites, color OR on 
   db 0
-  db 1
+  db 7
+  db 7
+  db 7
+  db 7
+  db 7
+  db 7
+  db 7
+  db 4
   db 3
+  db 7
+  db 7
+  db 7
+  db 7
+  db 7
+  db 7
+  db 0
+  db 224
+  db 224
+  db 224
+  db 224
+  db 224
+  db 224
+  db 224
+  db 32
+  db 192
+  db 224
+  db 224
+  db 224
+  db 224
+  db 224
+  db 224
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
   db 3
-  db 2
-  db 1
-  db 3
-  db 3
-  db 3
-  db 3
-  db 3
-  db 3
-  db 2
-  db 1
-  db 3
-  db 3
+  db 4
   db 0
-  db 128
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
   db 192
-  db 192
-  db 64
-  db 128
-  db 192
-  db 192
-  db 192
-  db 192
-  db 192
-  db 192
-  db 64
-  db 128
-  db 192
-  db 192
+  db 32
   db 0
   db 0
   db 0
   db 0
-  db 1
-  db 2
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 1
-  db 2
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 128
-  db 64
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 0
-  db 128
-  db 64
   db 0
   db 0
 ; Sprite 1 - Mode : 2 sprites, color OR on 
-  db 3
-  db 3
-  db 3
-  db 3
-  db 2
-  db 1
-  db 3
-  db 3
-  db 3
-  db 3
-  db 3
-  db 3
-  db 2
-  db 1
-  db 3
-  db 3
-  db 192
-  db 192
-  db 192
-  db 192
-  db 64
-  db 128
-  db 192
-  db 192
-  db 192
-  db 192
-  db 192
-  db 192
-  db 64
-  db 128
-  db 192
-  db 192
-  db 0
-  db 0
-  db 0
-  db 0
-  db 1
-  db 2
   db 0
   db 0
   db 0
   db 0
   db 0
   db 0
-  db 1
-  db 2
   db 0
   db 0
   db 0
   db 0
   db 0
   db 0
-  db 128
-  db 64
   db 0
   db 0
   db 0
   db 0
   db 0
   db 0
-  db 128
-  db 64
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
+  db 0
   db 0
   db 0
 ; Sprite 2 - Mode : 2 sprites, color OR on 
