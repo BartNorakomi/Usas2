@@ -1,6 +1,9 @@
 waterval palette animaties:
 https://www.youtube.com/watch?v=aMcJ1Jvtef0&ab_channel=GDC
 
+MINI waterval, maar wel heel cool: 6:23
+https://www.youtube.com/watch?v=B3CY74SaBVE&ab_channel=YourFriendJacob
+
 een hendel overhalen, het scherm fade out, dan krijg je een ander scherm te zien waar een gate open gaat.
 
 speciale engine (misschien voor deel 2) waarbij elke map (256x191) 4x een heel beetje anders uitziet. Je ziet de map afhankelijk van welke emotie je hebt
@@ -78,24 +81,10 @@ https://www.youtube.com/watch?v=_ZVYqZ_uusQ&ab_channel=BeatThatBoss
 platform: 34:43
 https://www.youtube.com/watch?v=_ZVYqZ_uusQ&ab_channel=BeatThatBoss
 
-rollende band met 'presses' en lasers 14:52
-https://www.youtube.com/watch?v=rrlivqMBDuY&ab_channel=horheristo
-
 cles angry kan rollen, maar als je eerst springt, dan kun je in de lucht spatie (of rollen) vast houden, om op je plaats te blijven hangen, te rollen/chargen en dan een richting in te drukken, te releasen, en die richting uit schieten...
-
-Duwen sprites: 3:20
-https://www.youtube.com/watch?v=ngssU-NNljw&ab_channel=Marioalexsan
-rennen sprites: 13:10 
-Climb ladder: 30:13
 
 Shoot arrow: 12:09
 https://www.youtube.com/watch?v=X9BAaxurcgE&ab_channel=HexDSL
-
-climb ladder: 15:34
-https://www.youtube.com/watch?v=5zLwA2I8TKk&list=PL5Lgag0FDBLXxg2WIdUxBNwih54vN6lhu&index=5&ab_channel=DocFirebird
-
-duwen 22:18
-https://www.youtube.com/watch?v=5zLwA2I8TKk&list=PL5Lgag0FDBLXxg2WIdUxBNwih54vN6lhu&index=6&ab_channel=DocFirebird
 
 starwars the force magic, waarbij je een enemy optilt en uit elkaar laat spatten
 
@@ -106,8 +95,8 @@ bij het looppunt van een tune heb je een 1/128 kans om een alternatieve versie t
 
 8:05 air balloon scene, met r#23
 https://www.youtube.com/watch?v=XnwSDXPCOgE&ab_channel=BestIndieGames
-beautiful mine sprites: 17:16
 
+beautiful mine sprites: 17:16
 18:31 cool monster, de scene daarna ook
 https://www.youtube.com/watch?v=JqgfIPppmrs&ab_channel=BestIndieGames
 6:12 leuke vleermuis  12:57 leuke blob sprite 13:33 leuke vleermuis 
@@ -186,3 +175,6 @@ https://www.youtube.com/watch?v=kjza835l3bk&ab_channel=BestIndieGames
 
 leuke, speelse projectiles: 51:28
 https://www.youtube.com/watch?v=MRbKqK1y1F8&ab_channel=Retromation
+
+Coole poison (of lava) ontploffinkjes:
+https://www.youtube.com/watch?v=IN2s6JqtkN0&ab_channel=Northernlion

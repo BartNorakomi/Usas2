@@ -50,6 +50,7 @@
 ;DrippingOoze
 ;DrippingOozeDrop
 ;BigStatueMouth
+;CuteMiniBat
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -243,64 +244,6 @@ checkFacingPlayer:                          ;out: c = object/enemy is facing pla
   scf
   ret
   
-CollisionObjectPlayer:  
-  ld    hl,(Clesx)                          ;hl = x player
-  ld    bc,20-2-16                          ;reduce this value to reduce the hitbox size (on the left side)
-  jp    CollisionEnemyPlayer.ObjectEntry
-  
-  CollisionEnemyPlayer:
-;check if player collides with left side of enemy/object
-  ld    hl,(Clesx)                          ;hl = x player
-  ld    bc,20-2                             ;reduce this value to reduce the hitbox size (on the left side)
-
-  .ObjectEntry:
-  add   hl,bc
-
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-
-  or    a                                   ;reset flag
-  sbc   hl,de
-  ret   c
-
-;check if player collides with right side of enemy/object
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-
-ld a,09-4 ;nx + 10                          ;reduce this value to reduce the hitbox size (on the right side)
-add a,c
-ld c,a
-
-  sbc   hl,bc  
-  ret   nc
-
-;check if player collides with top side of enemy/object
-  ld    a,(Clesy)                           ;a = y player
-  add   a,11-4                              ;reduce this value to reduce the hitbox size (on the yop side)
-  sub   (ix+enemies_and_objects.y)
-  ret   c
-
-;check if player collides with bottom side of enemy/object
-  ld    c,(ix+enemies_and_objects.ny)       ;width object
-
-ld e,a ;store a
-ld a,20-4 ;ny + 20   ;if this is 20-8 it would be same reduction top as bottom, but at the bottom its better if there is less reduction                         ;reduce this value to reduce the hitbox size (on the left side)
-add a,c
-ld c,a
-ld a,e
-
-  sub   a,c
-  ret   nc
-  
-  .PlayerIsHit:
-  ld    a,(PlayerInvulnerable?)
-  or    a
-  ret   nz
-
-  ld    a,(PlayerFacingRight?)
-  or    a
-  jp    z,Set_L_BeingHit
-  jp    Set_R_BeingHit
-
 CheckPlayerPunchesEnemyOnlySitting:
   ld    a,(HitBoxSY)                        ;a = y hitbox
   push  af
@@ -636,7 +579,6 @@ CuteMiniBat:
   .HandlePhase:
   call  .CheckTurnAround                    ;turn around at the left and right edge of screen
   call  .MoveToTargetY                      ;Move Towards Target Y
-;  call  CheckCollisionWallEnemyV8           ;checks for collision wall and if found invert direction in V8
   call  .Move
     
   .Animate:
@@ -703,12 +645,77 @@ RightCuteMiniBat:
   dw  RightCuteMiniBat2_Char
   dw  RightCuteMiniBat3_Char
 
+BigStatueMouthOpenSx: equ 0
+BigStatueMouthClosedSx: equ 14
 BigStatueMouth:
   ld    a,3
   ld    (CopyObject+spage),a
   ld    a,216+21
   ld    (CopyObject+sy),a  
-  jp    VramObjectsTransparantCopies
+
+  ld    a,(framecounter)
+  cp    60
+  jr    nz,.EndCheckCloseMouth
+  ld    (ix+enemies_and_objects.v1),BigStatueMouthClosedSx  
+  .EndCheckCloseMouth:
+
+  call  VramObjectsTransparantCopies
+  call  .CheckOpenMouth
+  ret
+  
+  .CheckOpenMouth:  
+  ld    a,(framecounter)
+  or    a
+  ret   nz
+  
+  .SearchEmptySlot:
+  push  ix
+  pop   iy
+  ld    de,lenghtenemytable
+  
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptySlotFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  ret   nz
+  
+  .EmptySlotFound:
+  ld    (iy+enemies_and_objects.v1),BigStatueMouthOpenSx  
+  
+  ld    (ix+enemies_and_objects.alive?),-1 
+
+  ld    a,(iy+enemies_and_objects.y)
+  sub   a,2
+  ld    (ix+enemies_and_objects.y),a
+
+  ld    a,(iy+enemies_and_objects.x)
+  add   a,15
+  ld    (ix+enemies_and_objects.x),a
+  
+  ld    (ix+enemies_and_objects.x+1),0
+  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    hl,CuteMiniBat
+  ld    (ix+enemies_and_objects.movementpattern),l
+  ld    (ix+enemies_and_objects.movementpattern+1),h
+  ld    (ix+enemies_and_objects.nrsprites),72-(02*6)
+  ld    (ix+enemies_and_objects.nrspritesSimple),2
+  ld    (ix+enemies_and_objects.nrspritesTimes16),2*16
+  ld    (ix+enemies_and_objects.life),1
+  ret  
+  
   
 SXDrippingOoze1:  equ 149
 SXDrippingOoze2:  equ 149+5
