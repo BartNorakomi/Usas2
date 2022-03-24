@@ -607,6 +607,17 @@ ConvertToMapinRam:
 ;tiles 52 - 255 are hard foreground
 ;tiles 256 - > are background
 
+
+;newer
+;tilenr: 1 t/m 16 = ladder
+;tilenr: 17 t/m 31 = 
+;tilenr: 32 t/m 33 = spikes
+;tilenr: 34 t/m 39 = poison
+;tilenr: 48 t/m 49 = stairs left
+;tilenr: 50 t/m 51 = stairs right
+;tilenr: 52 t/m 255 = foreground
+;tilenr: 256 t/m 1023 = background
+
 ;convert into
 ;tile 0 = background
 ;tile 1 = hardforeground

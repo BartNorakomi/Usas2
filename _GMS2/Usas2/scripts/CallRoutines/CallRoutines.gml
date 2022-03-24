@@ -1,0 +1,266 @@
+// Script assets have changed for v2.3.0 see
+// https://help.yoyogames.com/hc/en-us/articles/360005277377 for more information
+//player
+function Movement()
+{
+}
+	
+function HorizontalMovement() 
+{
+	horizontal_collision = false; // reset horizontal collision
+	if (hsp = -1)
+		movementTablePointer -=1;		
+	if (movementTablePointer =-1)
+		movementTablePointer =0;
+	if (hsp = +1)
+		movementTablePointer +=1;		
+	if (movementTablePointer =movementTableLenght)
+		movementTablePointer =movementTableLenght-1;
+	if (hsp = 0)
+	{	
+		if (movementTablePointer < movementTableMiddle)
+			movementTablePointer +=1;		
+		if (movementTablePointer > movementTableMiddle)
+			movementTablePointer -=1;	
+	}
+	x += movement_table[movementTablePointer];
+	//moving right
+	if (movement_table[movementTablePointer]) > 0
+	{	
+		if (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top) > 51)
+		or (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top+16) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top+16) > 51)
+		or (tilemap_get_at_pixel(tilemap,bbox_right,bbox_bottom-1) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right,bbox_bottom-1) > 51)
+//		if (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top) < 256) || (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top+16) < 256) || (tilemap_get_at_pixel(tilemap,bbox_right,bbox_bottom-1) < 256)
+		{	
+			x = x - (x mod 8); // Snap x Position
+			movementTablePointer = movementTableMiddle;
+			horizontal_collision = true;
+		}
+}
+	//moving left
+	if (movement_table[movementTablePointer]) < 0
+	{	
+		if (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top) > 51)
+		or (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top+16) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top+16) > 51)
+		or (tilemap_get_at_pixel(tilemap,bbox_left,bbox_bottom-1) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left,bbox_bottom-1) > 51)
+//		if (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top) < 256) || (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top+16) < 256) || (tilemap_get_at_pixel(tilemap,bbox_left,bbox_bottom-1) < 256) 
+		{	
+			x = x - (x mod 8) + 8; // Snap x Position
+			movementTablePointer = movementTableMiddle;
+			horizontal_collision = true;
+		}
+	}
+}
+
+function VerticalMovement() 
+{
+	jump_speed +=0.25;
+	if !keyboard_check(vk_up)
+	{
+		if (jump_speed < 0) jump_speed +=0.25;
+	}
+	if (jump_speed > 7) jump_speed = 7;
+	y += jump_speed;
+
+//show_debug_message("bbox_bottom=" + (bbox_bottom));
+//show_debug_message("x=" + string(x) + " y=" + string(y));
+//show_debug_message("bbox_left=" + string(bbox_left) + "   bbox_right=" + string(bbox_right) + "   bbox_top=" + string(bbox_top) + "   bbox_bottom=" + string(bbox_bottom));
+
+// check collision when jumping up
+	if (jump_speed < 0)
+	{
+		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_top) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_top) > 51)		
+		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_top) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_top) > 51)			
+			y = y - (y mod 8) + 8; // Snap y Position
+	}
+
+	if (jump_speed > 0)
+	{
+		// check collision foreground when falling
+		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) > 51)		
+		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) > 51)			
+		{
+			pose = "standing"; // foreground tile found when jumping down. change to standing pose
+			audio_play_sound(sndLand2, 2, false);
+			y = y - (y mod 8); // Snap y Position
+		}
+		// check collision ladder when falling
+		else
+		{
+		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 32)		
+		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 32)		
+		{
+			// while falling a ladder tile is found at player's feet. 
+			// check 16 pixels left of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
+			if (tilemap_get_at_pixel(tilemap,bbox_left+1-16,bbox_bottom) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left+1-16,bbox_bottom) > 51)
+			and (tilemap_get_at_pixel(tilemap,bbox_left+1-16,bbox_bottom-8) > 255)
+			// check 16 pixels right of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
+			or (tilemap_get_at_pixel(tilemap,bbox_right-1+16,bbox_bottom) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right-1+16,bbox_bottom) > 51)
+			and (tilemap_get_at_pixel(tilemap,bbox_right-1+16,bbox_bottom-8) > 255)
+			{
+				pose = "standing"; // foreground tile found when jumping down. change to standing pose
+				audio_play_sound(sndLand2, 2, false);
+				y = y - (y mod 8); // Snap y Position
+			}
+		}			
+	}
+}
+
+
+// animate sprite
+	image_index = 1; // player in mid air
+	if (jump_speed < -1)
+		image_index = 0; //  player jumping up
+	if (jump_speed > 1)
+		image_index = 2; // player jumping down
+
+	
+}
+
+function CheckJump()
+{	
+	if keyboard_check_pressed(vk_up)
+	{
+		pose = "jumping";
+		jump_speed = -6.25;
+//		audio_play_sound(sndJump, 1, false);
+		audio_play_sound(sndLand1, 3, false);
+	}
+}	
+
+function CheckSit()  // check if down is pressed. If so -> Sit
+{	
+	if keyboard_check(vk_down)
+		pose = "sitting";
+}	
+
+function FacePlayerLeftOrRight() // face player left or right by scaling x (horizontal mirroring)
+{	
+	if (hsp != 0)
+		image_xscale = hsp;	// face player left or right by scaling x (horizontal mirroring)
+}	
+
+function CheckStandingOnPlatform() // check if player is standing on platform. If not -> fall
+{	
+//		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) > 51)
+//		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) > 51)			
+		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256)
+		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 256)
+		{}else
+		{	
+			pose = "jumping";
+			jump_speed = +0.25;
+		}
+}	
+
+function CheckStandPunch() // check if trig A is pressed. If so -> standpunch
+{
+	if keyboard_check_pressed(vk_space)
+	{
+		pose = "standpunch";
+		image_index = 0;
+	}
+}
+
+function CheckSitPunch() // check if trig A is pressed. If so -> sitpunch
+{
+	if keyboard_check_pressed(vk_space)
+	{
+		pose = "sitpunch";
+		image_index = 0;
+	}
+}
+
+function CheckRoll() // check if trig B is pressed. If so -> Roll
+{
+	if keyboard_check_pressed(vk_lcontrol)
+	{
+		pose = "rolling";
+		animationcounter = 0;
+		image_index = 0;
+	}
+}
+
+//enemies
+function FaceEnemyLeftOrRight() // face player left or right by scaling x (horizontal mirroring)
+{	
+	if (MovementDirection = "right")
+		image_xscale = 1;	// face player left or right by scaling x (horizontal mirroring)
+	if (MovementDirection = "left")
+		image_xscale = -1;	// face player left or right by scaling x (horizontal mirroring)
+}	
+
+function MoveEnemyHorizontally()
+{
+	if (MovementDirection = "right")
+	{	
+		x += MovementSpeed;
+	}	
+	if (MovementDirection = "left")
+	{	
+		x -= MovementSpeed;
+	}
+}
+
+function TurnAtEndPlatform()
+{	
+	if (MovementDirection = "right")
+	{
+		if (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) = 0)
+			MovementDirection = "left";
+	}
+	if (MovementDirection = "left")
+	{
+		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) = 0)
+			MovementDirection = "right";
+	}
+
+}
+
+function TurnWhenHitWall()
+{	
+	if (MovementDirection = "right")
+	{
+		if (tilemap_get_at_pixel(tilemap,bbox_right,bbox_bottom-1) != 0)
+			MovementDirection = "left";
+	}
+	if (MovementDirection = "left")
+	{
+		if (tilemap_get_at_pixel(tilemap,bbox_left,bbox_bottom-1) != 0)
+			MovementDirection = "right";
+	}
+
+}
+//objects
+function CheckChangeRoom()
+{	
+show_debug_message(x);
+show_debug_message(y);
+show_debug_message(RoomX);
+	if (x=296)
+	{
+		RoomX += 1;
+		x=10;
+		room_goto(global.map_array[RoomY,RoomX]);
+	}
+	if (x=8)
+	{
+		RoomX -= 1;
+		x=294;
+		room_goto(global.map_array[RoomY,RoomX]);		
+	}
+	if (y>194)
+	{
+		RoomY += 1;
+		y=18;
+		room_goto(global.map_array[RoomY,RoomX]);		
+	}
+	if (y<18)
+	{
+		RoomY -= 1;
+		y=194;
+		room_goto(global.map_array[RoomY,RoomX]);		
+	}
+
+
+}
