@@ -1,10 +1,7 @@
 // Script assets have changed for v2.3.0 see
 // https://help.yoyogames.com/hc/en-us/articles/360005277377 for more information
 //player
-function Movement()
-{
-}
-	
+
 function HorizontalMovement() 
 {
 	horizontal_collision = false; // reset horizontal collision
@@ -55,7 +52,7 @@ function HorizontalMovement()
 function VerticalMovement() 
 {
 	jump_speed +=0.25;
-	if !keyboard_check(vk_up)
+	if (vsp != -1)
 	{
 		if (jump_speed < 0) jump_speed +=0.25;
 	}
@@ -128,7 +125,15 @@ function CheckJump()
 	}
 }	
 
-function CheckSit()  // check if down is pressed. If so -> Sit
+function CheckKickWhileJump()
+{	
+	if keyboard_check_pressed(vk_space)
+	{
+		kickwhilejump = kickwhilejumpduration;
+	}
+}	
+
+function CheckSit()  // check if down is pressed. if so -> sit
 {	
 	if keyboard_check(vk_down)
 		pose = "sitting";
@@ -140,7 +145,7 @@ function FacePlayerLeftOrRight() // face player left or right by scaling x (hori
 		image_xscale = hsp;	// face player left or right by scaling x (horizontal mirroring)
 }	
 
-function CheckStandingOnPlatform() // check if player is standing on platform. If not -> fall
+function CheckStandingOnPlatform() // check if player is standing on platform. if not -> fall
 {	
 //		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) > 51)
 //		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) > 51)			
@@ -153,7 +158,7 @@ function CheckStandingOnPlatform() // check if player is standing on platform. I
 		}
 }	
 
-function CheckStandPunch() // check if trig A is pressed. If so -> standpunch
+function CheckStandPunch() // check if trig A is pressed. if so -> standpunch
 {
 	if keyboard_check_pressed(vk_space)
 	{
@@ -162,7 +167,7 @@ function CheckStandPunch() // check if trig A is pressed. If so -> standpunch
 	}
 }
 
-function CheckSitPunch() // check if trig A is pressed. If so -> sitpunch
+function CheckSitPunch() // check if trig A is pressed. if so -> sitpunch
 {
 	if keyboard_check_pressed(vk_space)
 	{
@@ -171,7 +176,7 @@ function CheckSitPunch() // check if trig A is pressed. If so -> sitpunch
 	}
 }
 
-function CheckRoll() // check if trig B is pressed. If so -> Roll
+function CheckRoll() // check if trig B is pressed. if so -> Roll
 {
 	if keyboard_check_pressed(vk_lcontrol)
 	{
@@ -180,6 +185,59 @@ function CheckRoll() // check if trig B is pressed. If so -> Roll
 		image_index = 0;
 	}
 }
+
+function CheckLadderBelow() // check if down is pressed and if there is a ladder below player. if so -> climb down 
+{
+	if keyboard_check(vk_down)
+	{
+		//check if there is a ladder tile below left foot AND right foot
+		if (tilemap_get_at_pixel(tilemap,bbox_left+6,bbox_bottom) < 32)
+		and (tilemap_get_at_pixel(tilemap,bbox_right-7,bbox_bottom) < 32)
+			{
+				x = x - (x mod 8); // Snap x Position
+				pose = "climbdown";
+				animationcounter = 0;
+				//after snapping player could be 1 tile too much to the left. check again for ladder under left foot. If not, then move 1 tile to the right
+				if (tilemap_get_at_pixel(tilemap,bbox_left,bbox_bottom) > 31) x += 8;
+			}
+	}
+}
+
+function CheckLadderBelowMidAir() // check if down is pressed and if there is a ladder below player. if so -> climb down 
+{
+	if keyboard_check_pressed(vk_down)
+	{
+		//check if there is a ladder tile below left foot AND right foot
+		if (tilemap_get_at_pixel(tilemap,bbox_left+6,bbox_bottom) < 32)
+		and (tilemap_get_at_pixel(tilemap,bbox_right-7,bbox_bottom) < 32)
+			{
+				x = x - (x mod 8); // Snap x Position
+				pose = "climb";
+				//after snapping player could be 1 tile too much to the left. check again for ladder under left foot. If not, then move 1 tile to the right
+				if (tilemap_get_at_pixel(tilemap,bbox_left,bbox_bottom) > 31) x += 8;
+			}
+	}
+}
+
+function CheckLadderAbove() // check if up is pressed and if there is a ladder above player. if so -> climb up
+{
+	if keyboard_check_pressed(vk_up)
+	{
+		//check if there is a ladder tile below left foot AND right foot
+		show_debug_message(x);
+
+		if (tilemap_get_at_pixel(tilemap,bbox_left+6,bbox_top) < 32)
+		and (tilemap_get_at_pixel(tilemap,bbox_right-7,bbox_top) < 32)
+			{
+				x = x - (x mod 8); // Snap x Position
+				//after snapping player could be 1 tile too much to the left. check again for ladder left side. If not found, then move 1 tile to the right
+				if (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top) > 32) x += 8;
+				pose = "climb";
+				animationcounter = 0;				
+			}
+	}
+}
+
 
 //enemies
 function FaceEnemyLeftOrRight() // face player left or right by scaling x (horizontal mirroring)
@@ -231,12 +289,30 @@ function TurnWhenHitWall()
 	}
 
 }
+
+function CheckCollisionPlayerEnemy()
+{	
+	if place_meeting(x, y, oPlayer)
+	{
+		if (oPlayer.PlayerInvulnerable = 0)
+		{
+			oPlayer.pose = "beinghit";
+			oPlayer.jump_speed = -4;
+			oPlayer.animationcounter = 0;
+			oPlayer.PlayerInvulnerable = 100; // invulnerable frames after being hit
+			oPlayer.movementTablePointer_stored = oPlayer.movementTablePointer;
+			audio_play_sound(sndPlayerhit, 1, false);
+			audio_play_sound(sndPlayerhit, 1, false);
+		}
+}	
+}
+
 //objects
 function CheckChangeRoom()
 {	
-show_debug_message(x);
-show_debug_message(y);
-show_debug_message(RoomX);
+//show_debug_message(x);
+//show_debug_message(y);
+//show_debug_message(RoomX);
 	if (x=296)
 	{
 		RoomX += 1;

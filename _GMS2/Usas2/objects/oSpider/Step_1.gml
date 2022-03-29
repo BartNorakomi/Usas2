@@ -3,6 +3,8 @@
 tilemap = layer_tilemap_get_id("ForegroundTiles"); //assign ForegroundTiles to our tilemap. we use this for collision detection
 
 FaceEnemyLeftOrRight(); //  face enemy left or right by scaling x (horizontal mirroring)
-MoveEnemyHorizontally();
+//MoveEnemyHorizontally();
 TurnAtEndPlatform();
 TurnWhenHitWall();
+CheckCollisionPlayerEnemy(); // Check if player gets hit by enemy
+
