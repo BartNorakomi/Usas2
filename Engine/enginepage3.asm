@@ -1,6 +1,6 @@
 phase	$c000
 WorldMapData:
-WorldMapDataWidth:      equ 3     ;amount of maps 
+WorldMapDataWidth:      equ 4     ;amount of maps 
 WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
               ;block            mapname   enginetype,tiledata,palette
 MapA01_001Data: db MapsBlock01 | dw MapA01_001 | db 1,3,3                  | MapA01_002Data: db MapsBlock01 | dw MapA01_002 | db 1,3,3                  | MapA01_003Data: db MapsBlock01 | dw MapA01_003 | db 1,3,3
@@ -17,8 +17,14 @@ MapB01_019Data: db MapsBlock02 | dw MapB01_019 | db 2,3,3                  | Map
 MapB01_022Data: db MapsBlock02 | dw MapB01_022 | db 1,3,3                  | MapB01_023Data: db MapsBlock02 | dw MapB01_023 | db 1,3,3                  | MapB01_024Data: db MapsBlock02 | dw MapB01_024 | db 1,3,3
 MapB01_025Data: db MapsBlock02 | dw MapB01_025 | db 1,3,3                  | MapB01_026Data: db MapsBlock02 | dw MapB01_026 | db 1,3,3                  | MapB01_027Data: db MapsBlock02 | dw MapB01_027 | db 1,3,3
 
+MapA01Data: db MapsBlock03 | dw MapA01 | db 1,0,0   | MapB01Data: db MapsBlock03 | dw MapB01 | db 1,0,0   | MapC01Data: db MapsBlock03 | dw MapC01 | db 1,0,0   | MapD01Data: db MapsBlock03 | dw MapD01 | db 1,0,0
+MapA02Data: db MapsBlock03 | dw MapA02 | db 1,0,0   | MapB02Data: db MapsBlock03 | dw MapB02 | db 1,0,0   | MapC02Data: db MapsBlock03 | dw MapC02 | db 1,0,0   | MapD02Data: db MapsBlock03 | dw MapD02 | db 1,0,0
+MapA03Data: db MapsBlock03 | dw MapA03 | db 1,0,0   | MapB03Data: db MapsBlock03 | dw MapB03 | db 1,0,0   | MapC03Data: db MapsBlock03 | dw MapC03 | db 1,0,0   | MapD03Data: db MapsBlock03 | dw MapD03 | db 1,0,0
+
+
 ;WorldMapPointer:  dw  MapA01_009Data
-WorldMapPointer:  dw  MapB01_027Data
+;WorldMapPointer:  dw  MapB01_027Data
+WorldMapPointer:  dw  Mapa01Data
 
 loadGraphics:
 ;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
@@ -328,6 +334,9 @@ UnpackMapdata_SetObjects:
 SetMapPalette:
 ;set palette
   ld    a,(ix+5)                      ;palette
+  or    a
+  ld    hl,VoodooWaspPalette
+  jr    z,.goSetPalette
   dec   a
   ld    hl,A01Palette
   jr    z,.goSetPalette
@@ -342,8 +351,11 @@ SetMapPalette:
 SetTilesInVram:  
 ;set tiles in Vram
   ld    a,(ix+4)                      ;tile data
+  or    a
+  ld    d,VoodooWaspTilesBlock
+  jr    z,.settiles
   dec   a
-  ld    d,A01TilesBlock
+  ld    d,VoodooWaspTilesBlock
   jr    z,.settiles
   dec   a
   ld    d,B01TilesBlock
@@ -971,6 +983,9 @@ B01Palette:
   incbin "..\grapx\B01palette.PL" ;file palette 
 KarniMataPalette:
   incbin "..\grapx\KarniMatapalette.PL" ;file palette 
+VoodooWaspPalette:
+  incbin "..\grapx\sVoodooWaspPalette.PL" ;file palette 
+
 
 ;  incbin "..\grapx\UsasTilesW1Apalette" ;file palette 
 ;  incbin "..\grapx\usasWorld2palette" ;file palette 

@@ -402,13 +402,10 @@ dephase
 ;
 ; block $05 - $08
 ;
-;Graphicsblock1:  equ   $05
+VoodooWaspTilesBlock:  equ   $05
 phase	$4000
-;  incbin "..\grapx\usasWorld2a.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\usasWorld1a.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\usas1.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\bomba1.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\Mulana1.SC5",7,$6A00  ;skip header
+  incbin "..\grapx\sVoodooWasp.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\sVoodooWaspBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
@@ -2682,7 +2679,7 @@ RightLancelot8_Col:                         include "..\sprites\enemies\Lancelot
 dephase
 
 ;
-; block $69 + $69
+; block $69 + $6a
 ;
 LancelotShieldHitSpriteblock:  equ   $69
 phase	$8000
@@ -2719,6 +2716,48 @@ RightLancelotShieldHit7_Char:               include "..\sprites\enemies\Lancelot
 RightLancelotShieldHit7_Col:                include "..\sprites\enemies\Lancelot\RightLancelotShieldHit7.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
 RightLancelotShieldHit8_Char:               include "..\sprites\enemies\Lancelot\RightLancelotShieldHit8.tgs.gen"	  
 RightLancelotShieldHit8_Col:                include "..\sprites\enemies\Lancelot\RightLancelotShieldHit8.tcs.gen"  | db 00-2+1,00, 00-2+1,00, 16-2+1,00, 16-2+1,00
+	ds		$c000-$,$ff
+dephase
+
+
+
+
+
+
+;
+; block $6b - &6c
+;
+
+MapsBlock03:  equ   $6b
+phase	$8000
+MapA01:
+  incbin "..\maps\a01.map.pck"  | .amountofobjects: db  0
+MapA02:
+  incbin "..\maps\a02.map.pck"  | .amountofobjects: db  0
+MapA03:
+  incbin "..\maps\a03.map.pck"  | .amountofobjects: db  0
+
+MapB01:
+  incbin "..\maps\b01.map.pck"  | .amountofobjects: db  0
+MapB02:
+  incbin "..\maps\b02.map.pck"  | .amountofobjects: db  0
+MapB03:
+  incbin "..\maps\b03.map.pck"  | .amountofobjects: db  0
+
+MapC01:
+  incbin "..\maps\c01.map.pck"  | .amountofobjects: db  0
+MapC02:
+  incbin "..\maps\c02.map.pck"  | .amountofobjects: db  0
+MapC03:
+  incbin "..\maps\c03.map.pck"  | .amountofobjects: db  0
+
+MapD01:
+  incbin "..\maps\d01.map.pck"  | .amountofobjects: db  0
+MapD02:
+  incbin "..\maps\d02.map.pck"  | .amountofobjects: db  0
+MapD03:
+  incbin "..\maps\d03.map.pck"  | .amountofobjects: db  0
+
 	ds		$c000-$,$ff
 dephase
 
