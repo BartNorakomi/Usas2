@@ -242,50 +242,52 @@ function CheckLadderAbove() // check if up is pressed and if there is a ladder a
 //enemies
 function FaceEnemyLeftOrRight() // face player left or right by scaling x (horizontal mirroring)
 {	
-	if (MovementDirection = "right")
+	if (movementDirection = "right")
 		image_xscale = 1;	// face player left or right by scaling x (horizontal mirroring)
-	if (MovementDirection = "left")
+	if (movementDirection = "left")
 		image_xscale = -1;	// face player left or right by scaling x (horizontal mirroring)
 }	
 
 function MoveEnemyHorizontally()
 {
-	if (MovementDirection = "right")
+	if (movementDirection = "right")
 	{	
-		x += MovementSpeed;
+		x += movementSpeed;
 	}	
-	if (MovementDirection = "left")
+	if (movementDirection = "left")
 	{	
-		x -= MovementSpeed;
+		x -= movementSpeed;
 	}
 }
 
 function TurnAtEndPlatform()
 {	
-	if (MovementDirection = "right")
+	if (movementDirection = "right")
 	{
-		if (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) = 0)
-			MovementDirection = "left";
+		if (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom-0) > 255)
+			movementDirection = "left";
 	}
-	if (MovementDirection = "left")
+	else
+	if (movementDirection = "left")
 	{
-		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) = 0)
-			MovementDirection = "right";
+		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom-0) > 255)
+			movementDirection = "right";
 	}
 
 }
 
 function TurnWhenHitWall()
 {	
-	if (MovementDirection = "right")
+	if (movementDirection = "right")
 	{
-		if (tilemap_get_at_pixel(tilemap,bbox_right,bbox_bottom-1) != 0)
-			MovementDirection = "left";
+		if (tilemap_get_at_pixel(tilemap,bbox_right,bbox_bottom-1) < 256)
+			movementDirection = "left";
 	}
-	if (MovementDirection = "left")
+	else
+	if (movementDirection = "left")
 	{
-		if (tilemap_get_at_pixel(tilemap,bbox_left,bbox_bottom-1) != 0)
-			MovementDirection = "right";
+		if (tilemap_get_at_pixel(tilemap,bbox_left,bbox_bottom-1) < 256)
+			movementDirection = "right";
 	}
 
 }
@@ -304,8 +306,35 @@ function CheckCollisionPlayerEnemy()
 			audio_play_sound(sndPlayerhit, 1, false);
 			audio_play_sound(sndPlayerhit, 1, false);
 		}
-}	
+	}	
 }
+
+function CheckEnemyGetsHit()
+{	
+	if (enemyHitCounter > 0) enemyHitCounter -= 1;
+	else
+	if place_meeting(x, y, oPlayerPunchBox)
+	{
+		if (oPlayerPunchBox.visible = true)
+		{
+			audio_play_sound(sndPlayerhit, 1, false);
+			audio_play_sound(sndPlayerhit, 1, false);
+			life -= 1;
+			enemyHitCounter = 31; // blink duration when hit
+			if (life = 0)
+			{
+				instance_destroy();
+				// x position of explosion is x - 16 + (nx/2)
+				// y position of explosion is y + ny - 24 (is 16 in msx version)      
+				instance_create_layer(x -16 + (nx / 2), y + ny -24, "Instances", oExplosion);
+				oExplosion.sprite_index = explosionsprite;
+
+			}
+		}
+	}	
+}
+
+
 
 //objects
 function CheckChangeRoom()

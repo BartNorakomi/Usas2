@@ -30,6 +30,29 @@ dos2unix D03.tmx
 tmx16 D03.tmx D03.map
 pack D*.map
 
+dos2unix E01.tmx
+tmx16 E01.tmx E01.map
+dos2unix E02.tmx
+tmx16 E02.tmx E02.map
+dos2unix E03.tmx
+tmx16 E03.tmx E03.map
+pack E*.map
+
+dos2unix F01.tmx
+tmx16 F01.tmx F01.map
+dos2unix F02.tmx
+tmx16 F02.tmx F02.map
+dos2unix F03.tmx
+tmx16 F03.tmx F03.map
+pack F*.map
+
+dos2unix G01.tmx
+tmx16 G01.tmx G01.map
+dos2unix G02.tmx
+tmx16 G02.tmx G02.map
+dos2unix G03.tmx
+tmx16 G03.tmx G03.map
+pack G*.map
 
 cd..
 cd engine

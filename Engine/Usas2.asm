@@ -404,21 +404,18 @@ dephase
 ;
 VoodooWaspTilesBlock:  equ   $05
 phase	$4000
-  incbin "..\grapx\sVoodooWasp.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\sVoodooWaspBottom48Lines.SC5",7,48 * 128 ;48 lines
+  incbin "..\grapx\tilesheets\sVoodooWasp.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sVoodooWaspBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
 ;
 ; block $09 - $0c
 ;
-;Graphicsblock2:  equ   $09
+GoddessTilesBlock:  equ   $09
 phase	$4000
-;  incbin "..\grapx\usasWorld2b.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\usasWorld1b.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\usas2.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\bomba2.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\Mulana2.SC5",7,$6A00  ;skip header
+  incbin "..\grapx\tilesheets\sGoddess.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sGoddessBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
@@ -2758,6 +2755,12 @@ MapD02:
 MapD03:
   incbin "..\maps\d03.map.pck"  | .amountofobjects: db  0
 
+MapE01:
+  incbin "..\maps\e01.map.pck"  | .amountofobjects: db  0
+;MapD02:
+;  incbin "..\maps\d02.map.pck"  | .amountofobjects: db  0
+;MapD03:
+;  incbin "..\maps\d03.map.pck"  | .amountofobjects: db  0
 	ds		$c000-$,$ff
 dephase
 

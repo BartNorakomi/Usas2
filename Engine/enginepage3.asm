@@ -17,14 +17,15 @@ MapB01_019Data: db MapsBlock02 | dw MapB01_019 | db 2,3,3                  | Map
 MapB01_022Data: db MapsBlock02 | dw MapB01_022 | db 1,3,3                  | MapB01_023Data: db MapsBlock02 | dw MapB01_023 | db 1,3,3                  | MapB01_024Data: db MapsBlock02 | dw MapB01_024 | db 1,3,3
 MapB01_025Data: db MapsBlock02 | dw MapB01_025 | db 1,3,3                  | MapB01_026Data: db MapsBlock02 | dw MapB01_026 | db 1,3,3                  | MapB01_027Data: db MapsBlock02 | dw MapB01_027 | db 1,3,3
 
-MapA01Data: db MapsBlock03 | dw MapA01 | db 1,0,0   | MapB01Data: db MapsBlock03 | dw MapB01 | db 1,0,0   | MapC01Data: db MapsBlock03 | dw MapC01 | db 1,0,0   | MapD01Data: db MapsBlock03 | dw MapD01 | db 1,0,0
+MapA01Data: db MapsBlock03 | dw MapA01 | db 1,0,0   | MapB01Data: db MapsBlock03 | dw MapB01 | db 1,0,0   | MapC01Data: db MapsBlock03 | dw MapC01 | db 1,0,0   | MapD01Data: db MapsBlock03 | dw MapD01 | db 1,0,0   | MapE01Data: db MapsBlock03 | dw MapE01 | db 1,1,1
 MapA02Data: db MapsBlock03 | dw MapA02 | db 1,0,0   | MapB02Data: db MapsBlock03 | dw MapB02 | db 1,0,0   | MapC02Data: db MapsBlock03 | dw MapC02 | db 1,0,0   | MapD02Data: db MapsBlock03 | dw MapD02 | db 1,0,0
 MapA03Data: db MapsBlock03 | dw MapA03 | db 1,0,0   | MapB03Data: db MapsBlock03 | dw MapB03 | db 1,0,0   | MapC03Data: db MapsBlock03 | dw MapC03 | db 1,0,0   | MapD03Data: db MapsBlock03 | dw MapD03 | db 1,0,0
 
 
 ;WorldMapPointer:  dw  MapA01_009Data
 ;WorldMapPointer:  dw  MapB01_027Data
-WorldMapPointer:  dw  Mapa01Data
+WorldMapPointer:  dw  MapB01_005Data
+;WorldMapPointer:  dw  MapE01Data
 
 loadGraphics:
 ;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
@@ -338,13 +339,13 @@ SetMapPalette:
   ld    hl,VoodooWaspPalette
   jr    z,.goSetPalette
   dec   a
-  ld    hl,A01Palette
+  ld    hl,GoddessPalette
   jr    z,.goSetPalette
   dec   a
   ld    hl,B01Palette
   jr    z,.goSetPalette
   ld    hl,KarniMataPalette
-  .goSetPalette:
+  .goSetPalette:  
   call  setpalette
   ret
 
@@ -355,7 +356,7 @@ SetTilesInVram:
   ld    d,VoodooWaspTilesBlock
   jr    z,.settiles
   dec   a
-  ld    d,VoodooWaspTilesBlock
+  ld    d,GoddessTilesBlock
   jr    z,.settiles
   dec   a
   ld    d,B01TilesBlock
@@ -984,7 +985,9 @@ B01Palette:
 KarniMataPalette:
   incbin "..\grapx\KarniMatapalette.PL" ;file palette 
 VoodooWaspPalette:
-  incbin "..\grapx\sVoodooWaspPalette.PL" ;file palette 
+  incbin "..\grapx\tilesheets\sVoodooWaspPalette.PL" ;file palette 
+GoddessPalette:
+  incbin "..\grapx\tilesheets\sGoddessPalette.PL" ;file palette 
 
 
 ;  incbin "..\grapx\UsasTilesW1Apalette" ;file palette 

@@ -1,7 +1,7 @@
 {
   "spriteId": {
-    "name": "spider_strip4",
-    "path": "sprites/spider_strip4/spider_strip4.yy",
+    "name": "sSpider",
+    "path": "sprites/sSpider/sSpider.yy",
   },
   "solid": false,
   "visible": true,

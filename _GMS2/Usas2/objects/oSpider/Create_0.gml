@@ -1,4 +1,9 @@
 /// @description Insert description here
 // You can write your code in this editor
-MovementDirection = "right";
-MovementSpeed = 0.6;
+enemyHitCounter = 0;
+life = 1;
+nx = 30; // width
+ny = 16; // height
+movementDirection = "right";
+movementSpeed = 0.6;
+explosionsprite = sExplosionSmall;
