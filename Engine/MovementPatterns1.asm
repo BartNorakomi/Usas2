@@ -5024,7 +5024,7 @@ Grinder:
 ;v2=Phase (0=walking slow, 1=attacking)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
-  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  call  .HandlePhase                        ;  ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
   call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
   call  CollisionEnemyPlayer                ;Check if player is hit by enemy

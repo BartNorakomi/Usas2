@@ -8,38 +8,33 @@ if (oPlayer.pose = "standpunch") // standpunch
 {
 	visible = true;	
 	y = oPlayer.y + 6;
-	if (oPlayer.image_xscale = 1) // check player facing player left (-1) or right (1)
-		x = oPlayer.x + 12;
-	else
-		x = oPlayer.x - 12;
+	x = oPlayer.image_xscale * 12 + oPlayer.x;
 }
 
 if (oPlayer.pose = "sitpunch") // standpunch
 {
 	visible = true;	
 	y = oPlayer.y + 8;
-	if (oPlayer.image_xscale = 1) // check player facing player left (-1) or right (1)
-		x = oPlayer.x + 10;
-	else
-		x = oPlayer.x - 10;
+	x = oPlayer.image_xscale * 10 + oPlayer.x;
+}
+
+if (oPlayer.pose = "rolling") // rolling
+{
+	visible = true;	
+	y = oPlayer.y + 6;
+	x = oPlayer.image_xscale * 6 + oPlayer.x;
 }
 
 if (oPlayer.sprite_index = sPlayerKickUp)
 {
 	visible = true;	
 	y = oPlayer.y + 2;
-	if (oPlayer.image_xscale = 1) // check player facing player left (-1) or right (1)
-		x = oPlayer.x + 12;
-	else
-		x = oPlayer.x - 12;
+	x = oPlayer.image_xscale * 12 + oPlayer.x;
 }
 
 if (oPlayer.sprite_index = sPlayerKickDown)
 {
 	visible = true;	
 	y = oPlayer.y + 8;
-	if (oPlayer.image_xscale = 1) // check player facing player left (-1) or right (1)
-		x = oPlayer.x + 12;
-	else
-		x = oPlayer.x - 12;
+	x = oPlayer.image_xscale * 12 + oPlayer.x;
 }

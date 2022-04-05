@@ -173,7 +173,4 @@ if(pose = "beinghit") // being hit
 		jump_speed = 1;
 		animationcounter = 0;
 	}
-	
-	
-	
 }

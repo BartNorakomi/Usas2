@@ -248,16 +248,24 @@ function FaceEnemyLeftOrRight() // face player left or right by scaling x (horiz
 		image_xscale = -1;	// face player left or right by scaling x (horizontal mirroring)
 }	
 
-function MoveEnemyHorizontally()
+function MoveEnemyHorizontallyIncludeSlowDownFactorWhenHit()
 {
 	if (movementDirection = "right")
 	{	
-		x += movementSpeed;
+		if (enemyHitCounter > 0) x += movementSpeed * slowdownfactorwhenhit; // move slow when hit
+		else x += movementSpeed; // move normally when not hit
 	}	
 	if (movementDirection = "left")
 	{	
-		x -= movementSpeed;
+		if (enemyHitCounter > 0) x -= movementSpeed * slowdownfactorwhenhit; // move slow when hit
+		else x -= movementSpeed; // move normally when not hit
 	}
+}
+
+function MoveEnemyHorizontally()
+{
+	if (movementDirection = "right") x += movementSpeed; // move normally
+	if (movementDirection = "left") x -= movementSpeed; // move normally
 }
 
 function TurnAtEndPlatform()

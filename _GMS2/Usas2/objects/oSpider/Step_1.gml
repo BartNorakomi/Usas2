@@ -8,6 +8,3 @@ TurnAtEndPlatform();
 TurnWhenHitWall();
 CheckCollisionPlayerEnemy(); // Check if player gets hit by enemy
 CheckEnemyGetsHit(); // Check if enemy gets hit by player
-
-	if (enemyHitCounter mod 8 > 3) sprite_index = sSpiderHit;
-	else sprite_index = sSpider;
