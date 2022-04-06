@@ -24,7 +24,7 @@ MapA03Data: db MapsBlock03 | dw MapA03 | db 1,0,0   | MapB03Data: db MapsBlock03
 
 ;WorldMapPointer:  dw  MapA01_009Data
 ;WorldMapPointer:  dw  MapB01_027Data
-WorldMapPointer:  dw  MapB01_005Data
+WorldMapPointer:  dw  MapB01_010Data
 ;WorldMapPointer:  dw  MapE01Data
 
 loadGraphics:

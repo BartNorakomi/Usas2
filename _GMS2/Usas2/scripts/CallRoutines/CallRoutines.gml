@@ -178,7 +178,8 @@ function CheckSitPunch() // check if trig A is pressed. if so -> sitpunch
 
 function CheckRoll() // check if trig B is pressed. if so -> Roll
 {
-	if keyboard_check_pressed(vk_lcontrol)
+	//	show_debug_message(keyboard_string);
+	if keyboard_check_pressed(vk_lcontrol) or  keyboard_check_pressed(vk_alt) or keyboard_check(ord("M"))
 	{
 		pose = "rolling";
 		animationcounter = 0;
@@ -268,6 +269,34 @@ function MoveEnemyHorizontally()
 	if (movementDirection = "left") x -= movementSpeed; // move normally
 }
 
+function EnemyFallingVertically()
+{
+	y += fallspeed; // fall normally
+	fallspeed += 0.25;
+	if (fallspeed > 7) fallspeed = 7;
+}
+
+function CheckZombieStandingOnPlatform() // check if enemy is standing on platform. if not -> fall
+{	
+		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256)
+		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 256)
+		{}else
+		{	
+			phase = 2; // (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
+		}
+}	
+
+function CheckZombieFallingOnPlatform() // check if enemy fell platform. if so -> next phase
+{	
+		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256)
+		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 256)
+		{
+			phase = 4; // (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
+			y = y - (y mod 8); // Snap y Position
+			fallspeed = 0.5;
+		}
+}	
+
 function TurnAtEndPlatform()
 {	
 	if (movementDirection = "right")
@@ -342,7 +371,11 @@ function CheckEnemyGetsHit()
 	}	
 }
 
-
+function CheckEnemyOutOfScreen()
+{	
+	// show_debug_message(y);	
+	if (x < 10) or (x > 300) or (y < 4) or (y > 198) instance_destroy();
+}
 
 //objects
 function CheckChangeRoom()
