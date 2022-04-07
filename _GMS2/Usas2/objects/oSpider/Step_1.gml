@@ -8,3 +8,5 @@ TurnAtEndPlatform();
 TurnWhenHitWall();
 CheckCollisionPlayerEnemy(); // Check if player gets hit by enemy
 CheckEnemyGetsHit(); // Check if enemy gets hit by player
+
+show_debug_message(y);

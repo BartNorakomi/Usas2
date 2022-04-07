@@ -10,19 +10,6 @@ hsp = key_right - key_left;
 vsp = key_down - key_up;
 tilemap = layer_tilemap_get_id("ForegroundTiles"); //assign ForegroundTiles to our tilemap. we use this for collision detection
 
-
-if(pose = "standing") // standing
-{
-	sprite_index = sPlayerStand;
-	if (hsp !=0) pose = "walking"; else HorizontalMovement(); // move sprite horizontally		
-	CheckJump(); // check if up is pressed. If so -> Jump
-	CheckStandPunch(); // check if trig A is pressed. If so -> standpunch
-	CheckSit(); // check if down is pressed. If so -> Sit
-	CheckStandingOnPlatform(); // check if player is standing on platform. If not -> fall
-	CheckRoll(); // check if trig B is pressed. If so -> Roll
-	CheckLadderAbove(); // check if up is pressed and if there is a ladder above player. if so -> climb up
-}
-
 if(pose = "sitting") // sitting
 {
 	FacePlayerLeftOrRight(); //  face player left or right by scaling x (horizontal mirroring)
@@ -36,6 +23,42 @@ if(pose = "sitting") // sitting
 	CheckSitPunch(); // check if trig A is pressed. if so -> sitpunch
 	CheckStandingOnPlatform(); // check if player is standing on platform. if not -> fall
 	CheckRoll(); // check if trig B is pressed. if so -> Roll
+	CheckCharge(); // check if trig C is pressed. if so -> charge
+}
+
+if(pose = "jumping") // jumping
+{
+	FacePlayerLeftOrRight(); //  face player left or right by scaling x (horizontal mirroring)
+	HorizontalMovement(); // move player horizontally
+	VerticalMovement(); // move player vertically
+	CheckKickWhileJump(); // check if trig a is pressed. if so, kick while jump
+	CheckLadderAbove(); // check if up is pressed and if there is a ladder above player. if so -> climb up
+	CheckLadderBelowMidAir(); // check if down is pressed and if there is a ladder below player. if so -> climb down 
+	CheckDoubleJump(); // check if up is pressed while jumping and if double jump is available, if so, double jump
+
+
+	// set sprite kick if kicking
+	if (kickwhilejump != 0) 
+	{
+		if (kickwhilejump = kickwhilejumpduration)
+		{
+			if (jump_speed < 0) sprite_index = sPlayerKickUp;
+			else sprite_index = sPlayerKickDown;
+		}
+		kickwhilejump -= 1;
+	}
+	// else set sprite rolling if double jumping
+	else 
+	if (doublejumpobtained = true) and (doublejumpavailable = false) sprite_index = sPlayerRollWhileJump;
+	// else set sprite jumping if double jumping
+	else	
+	{
+		sprite_index = sPlayerJump;
+		// animate sprite while jumping
+		image_index = 1; // player in mid air
+		if (jump_speed < -1) image_index = 0; //  player jumping up
+		if (jump_speed > 1) image_index = 2; // player jumping down
+	}
 }
 
 if(pose = "walking") // walking
@@ -57,29 +80,22 @@ if(pose = "walking") // walking
 	CheckStandingOnPlatform(); // check if player is standing on platform. If not -> fall
 	CheckJump(); // check if up is pressed. If so -> Jump
 	CheckRoll(); // check if trig B is pressed. If so -> Roll
+	CheckCharge(); // check if trig C is pressed. if so -> charge
 	CheckLadderAbove(); // check if up is pressed and if there is a ladder above player. if so -> climb up
 }
 
-if(pose = "jumping") // jumping
+if(pose = "standing") // standing
 {
-	FacePlayerLeftOrRight(); //  face player left or right by scaling x (horizontal mirroring)
-	HorizontalMovement(); // move player horizontally
-	VerticalMovement(); // move player vertically
-	CheckKickWhileJump(); // check if trig a is pressed. if so, kick while jump
+	doublejumpavailable = true; // player can only double jump once when jumping
+	sprite_index = sPlayerStand;
+	if (hsp !=0) pose = "walking"; else HorizontalMovement(); // move sprite horizontally		
+	CheckJump(); // check if up is pressed. If so -> Jump
+	CheckStandPunch(); // check if trig A is pressed. If so -> standpunch
+	CheckSit(); // check if down is pressed. If so -> Sit
+	CheckStandingOnPlatform(); // check if player is standing on platform. If not -> fall
+	CheckRoll(); // check if trig B is pressed. if so -> roll
+	CheckCharge(); // check if trig C is pressed. if so -> charge
 	CheckLadderAbove(); // check if up is pressed and if there is a ladder above player. if so -> climb up
-	CheckLadderBelowMidAir(); // check if down is pressed and if there is a ladder below player. if so -> climb down 
-
-	if (kickwhilejump != 0) 
-	{
-		if (kickwhilejump = kickwhilejumpduration)
-		{
-			if (jump_speed < 0) sprite_index = sPlayerKickUp;
-			else sprite_index = sPlayerKickDown;
-		}
-		kickwhilejump -= 1;
-	}
-	else sprite_index = sPlayerJump;
-
 }
 
 if(pose = "standpunch") // standpunch
@@ -118,6 +134,7 @@ if(pose = "climbdown") // from standing to climbing down the ladder
 
 if(pose = "climb") // climbing
 {
+	doublejumpavailable = true; // player can only double jump once when jumping
 //	show_debug_message(tilemap_get_at_pixel(tilemap,bbox_right+7,bbox_bottom));
 	movementTablePointer = movementTableMiddle;	
 	sprite_index = sPlayerClimb;
@@ -173,4 +190,37 @@ if(pose = "beinghit") // being hit
 		jump_speed = 1;
 		animationcounter = 0;
 	}
+}
+
+if(pose = "dying") // player died
+{
+	sprite_index = sPlayerDead;
+}
+
+if(pose = "charging") // player charging
+{
+	sprite_index = sPlayerCharge;
+	if (image_xscale = -1) movementTablePointer = movementTableStart; // face player left or right by scaling x (horizontal mirroring)
+	if (image_xscale = 1) movementTablePointer = movementTableEnd; // face player left or right by scaling x (horizontal mirroring)
+	
+	if (image_index > 3)
+	{
+		HorizontalMovement(); // move player horizontally	
+		if (horizontal_collision = true) pose = "standing"; // if colliding with wall, go to standing pose		
+		HorizontalMovement(); // move player horizontally	
+		if (horizontal_collision = true) pose = "standing"; // if colliding with wall, go to standing pose		
+		HorizontalMovement(); // move player horizontally	
+		if (horizontal_collision = true) pose = "standing"; // if colliding with wall, go to standing pose		
+	}
+}
+
+if(pose = "bouncingback") // player bouncing back after charging into a enemy which didn't die
+{
+	sprite_index = sPlayerRoll;
+	vsp = -1; // force up being pressed
+	VerticalMovement(); // move player vertically	
+	if (image_xscale = 1) movementTablePointer = movementTableStart; // face player left or right by scaling x (horizontal mirroring)
+	if (image_xscale = -1) movementTablePointer = movementTableEnd; // face player left or right by scaling x (horizontal mirroring)
+	HorizontalMovement(); // move player horizontally	
+	
 }

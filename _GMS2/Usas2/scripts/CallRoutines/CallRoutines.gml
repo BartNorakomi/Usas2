@@ -1,24 +1,23 @@
 // Script assets have changed for v2.3.0 see
 // https://help.yoyogames.com/hc/en-us/articles/360005277377 for more information
-//player
 
+//Windows Key Binding	macOS Key Binding	Scope	Description
+//CTRL + M	CMD + M	General	Fold all open regions
+//CTRL + U	CMD + U	General	Unfold all regions
+
+//player
+#region // HorizontalMovement
 function HorizontalMovement() 
 {
 	horizontal_collision = false; // reset horizontal collision
-	if (hsp = -1)
-		movementTablePointer -=1;		
-	if (movementTablePointer =-1)
-		movementTablePointer =0;
-	if (hsp = +1)
-		movementTablePointer +=1;		
-	if (movementTablePointer =movementTableLenght)
-		movementTablePointer =movementTableLenght-1;
+	if (hsp = -1) movementTablePointer -= 1;		
+	if (movementTablePointer = -1) movementTablePointer = 0;
+	if (hsp = +1) movementTablePointer += 1;		
+	if (movementTablePointer = movementTableLenght) movementTablePointer = movementTableLenght-1;
 	if (hsp = 0)
 	{	
-		if (movementTablePointer < movementTableMiddle)
-			movementTablePointer +=1;		
-		if (movementTablePointer > movementTableMiddle)
-			movementTablePointer -=1;	
+		if (movementTablePointer < movementTableMiddle) movementTablePointer += 1;		
+		if (movementTablePointer > movementTableMiddle) movementTablePointer -= 1;	
 	}
 	x += movement_table[movementTablePointer];
 	//moving right
@@ -27,20 +26,18 @@ function HorizontalMovement()
 		if (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top) > 51)
 		or (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top+16) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top+16) > 51)
 		or (tilemap_get_at_pixel(tilemap,bbox_right,bbox_bottom-1) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right,bbox_bottom-1) > 51)
-//		if (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top) < 256) || (tilemap_get_at_pixel(tilemap,bbox_right,bbox_top+16) < 256) || (tilemap_get_at_pixel(tilemap,bbox_right,bbox_bottom-1) < 256)
 		{	
 			x = x - (x mod 8); // Snap x Position
 			movementTablePointer = movementTableMiddle;
 			horizontal_collision = true;
 		}
-}
+	}
 	//moving left
 	if (movement_table[movementTablePointer]) < 0
 	{	
 		if (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top) > 51)
 		or (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top+16) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top+16) > 51)
 		or (tilemap_get_at_pixel(tilemap,bbox_left,bbox_bottom-1) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left,bbox_bottom-1) > 51)
-//		if (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top) < 256) || (tilemap_get_at_pixel(tilemap,bbox_left,bbox_top+16) < 256) || (tilemap_get_at_pixel(tilemap,bbox_left,bbox_bottom-1) < 256) 
 		{	
 			x = x - (x mod 8) + 8; // Snap x Position
 			movementTablePointer = movementTableMiddle;
@@ -48,20 +45,15 @@ function HorizontalMovement()
 		}
 	}
 }
+#endregion
 
+#region // VerticalMovement
 function VerticalMovement() 
 {
 	jump_speed +=0.25;
-	if (vsp != -1)
-	{
-		if (jump_speed < 0) jump_speed +=0.25;
-	}
+	if (vsp != -1) and (jump_speed < 0) jump_speed +=0.25;
 	if (jump_speed > 7) jump_speed = 7;
 	y += jump_speed;
-
-//show_debug_message("bbox_bottom=" + (bbox_bottom));
-//show_debug_message("x=" + string(x) + " y=" + string(y));
-//show_debug_message("bbox_left=" + string(bbox_left) + "   bbox_right=" + string(bbox_right) + "   bbox_top=" + string(bbox_top) + "   bbox_bottom=" + string(bbox_bottom));
 
 // check collision when jumping up
 	if (jump_speed < 0)
@@ -70,7 +62,6 @@ function VerticalMovement()
 		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_top) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_top) > 51)			
 			y = y - (y mod 8) + 8; // Snap y Position
 	}
-
 	if (jump_speed > 0)
 	{
 		// check collision foreground when falling
@@ -83,7 +74,6 @@ function VerticalMovement()
 		}
 		// check collision ladder when falling
 		else
-		{
 		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 32)		
 		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 32)		
 		{
@@ -102,18 +92,9 @@ function VerticalMovement()
 		}			
 	}
 }
+#endregion
 
-
-// animate sprite
-	image_index = 1; // player in mid air
-	if (jump_speed < -1)
-		image_index = 0; //  player jumping up
-	if (jump_speed > 1)
-		image_index = 2; // player jumping down
-
-	
-}
-
+#region // CheckJump
 function CheckJump()
 {	
 	if keyboard_check_pressed(vk_up)
@@ -122,9 +103,36 @@ function CheckJump()
 		jump_speed = -6.25;
 //		audio_play_sound(sndJump, 1, false);
 		audio_play_sound(sndLand1, 3, false);
+		doublejumpavailable = true; // player can only double jump once when jumping
 	}
 }	
+#endregion
 
+#region // CheckCharge
+function CheckCharge()
+{	
+	if keyboard_check_pressed(ord("N")) 
+	{
+		pose = "charging";
+		image_index = 0; // first frame of charging
+		audio_play_sound(sndWhoosh, 10, false);
+	}
+}	
+#endregion
+
+#region // CheckDoubleJump
+function CheckDoubleJump() // check if up is pressed while jumping and if double jump is available, if so, double jump
+{	
+	if keyboard_check_pressed(vk_up) and (doublejumpobtained = true) and (doublejumpavailable = true)
+	{
+		jump_speed = -6.25;
+		audio_play_sound(sndLand1, 3, false);
+		doublejumpavailable = false; // player can only double jump once when jumping
+	}
+}	
+#endregion
+
+#region // CheckKickWhileJump
 function CheckKickWhileJump()
 {	
 	if keyboard_check_pressed(vk_space)
@@ -132,19 +140,25 @@ function CheckKickWhileJump()
 		kickwhilejump = kickwhilejumpduration;
 	}
 }	
+#endregion
 
+#region // CheckSit
 function CheckSit()  // check if down is pressed. if so -> sit
 {	
 	if keyboard_check(vk_down)
 		pose = "sitting";
 }	
+#endregion
 
+#region // FacePlayerLeftOrRight
 function FacePlayerLeftOrRight() // face player left or right by scaling x (horizontal mirroring)
 {	
 	if (hsp != 0)
 		image_xscale = hsp;	// face player left or right by scaling x (horizontal mirroring)
 }	
+#endregion
 
+#region // CheckStandingOnPlatform
 function CheckStandingOnPlatform() // check if player is standing on platform. if not -> fall
 {	
 //		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) > 51)
@@ -157,7 +171,9 @@ function CheckStandingOnPlatform() // check if player is standing on platform. i
 			jump_speed = +0.25;
 		}
 }	
+#endregion
 
+#region // CheckStandPunch
 function CheckStandPunch() // check if trig A is pressed. if so -> standpunch
 {
 	if keyboard_check_pressed(vk_space)
@@ -166,7 +182,9 @@ function CheckStandPunch() // check if trig A is pressed. if so -> standpunch
 		image_index = 0;
 	}
 }
+#endregion
 
+#region // CheckSitPunch
 function CheckSitPunch() // check if trig A is pressed. if so -> sitpunch
 {
 	if keyboard_check_pressed(vk_space)
@@ -175,18 +193,23 @@ function CheckSitPunch() // check if trig A is pressed. if so -> sitpunch
 		image_index = 0;
 	}
 }
+#endregion
 
+#region // CheckRoll
 function CheckRoll() // check if trig B is pressed. if so -> Roll
 {
 	//	show_debug_message(keyboard_string);
-	if keyboard_check_pressed(vk_lcontrol) or  keyboard_check_pressed(vk_alt) or keyboard_check(ord("M"))
+	if keyboard_check_pressed(vk_lcontrol) or  keyboard_check_pressed(vk_alt) or keyboard_check_pressed(ord("M"))
 	{
 		pose = "rolling";
 		animationcounter = 0;
 		image_index = 0;
+		audio_play_sound(sndRolling, 10, false);
 	}
 }
+#endregion
 
+#region // CheckLadderBelow
 function CheckLadderBelow() // check if down is pressed and if there is a ladder below player. if so -> climb down 
 {
 	if keyboard_check(vk_down)
@@ -203,7 +226,9 @@ function CheckLadderBelow() // check if down is pressed and if there is a ladder
 			}
 	}
 }
+#endregion
 
+#region // CheckLadderBelowMidAir
 function CheckLadderBelowMidAir() // check if down is pressed and if there is a ladder below player. if so -> climb down 
 {
 	if keyboard_check_pressed(vk_down)
@@ -219,7 +244,9 @@ function CheckLadderBelowMidAir() // check if down is pressed and if there is a 
 			}
 	}
 }
+#endregion
 
+#region // CheckLadderAbove
 function CheckLadderAbove() // check if up is pressed and if there is a ladder above player. if so -> climb up
 {
 	if keyboard_check_pressed(vk_up)
@@ -238,9 +265,10 @@ function CheckLadderAbove() // check if up is pressed and if there is a ladder a
 			}
 	}
 }
-
+#endregion
 
 //enemies
+#region // FaceEnemyLeftOrRight
 function FaceEnemyLeftOrRight() // face player left or right by scaling x (horizontal mirroring)
 {	
 	if (movementDirection = "right")
@@ -248,7 +276,9 @@ function FaceEnemyLeftOrRight() // face player left or right by scaling x (horiz
 	if (movementDirection = "left")
 		image_xscale = -1;	// face player left or right by scaling x (horizontal mirroring)
 }	
+#endregion
 
+#region // MoveEnemyHorizontallyIncludeSlowDownFactorWhenHit
 function MoveEnemyHorizontallyIncludeSlowDownFactorWhenHit()
 {
 	if (movementDirection = "right")
@@ -262,20 +292,26 @@ function MoveEnemyHorizontallyIncludeSlowDownFactorWhenHit()
 		else x -= movementSpeed; // move normally when not hit
 	}
 }
+#endregion
 
+#region // MoveEnemyHorizontally
 function MoveEnemyHorizontally()
 {
 	if (movementDirection = "right") x += movementSpeed; // move normally
 	if (movementDirection = "left") x -= movementSpeed; // move normally
 }
+#endregion
 
+#region // EnemyFallingVertically
 function EnemyFallingVertically()
 {
 	y += fallspeed; // fall normally
 	fallspeed += 0.25;
 	if (fallspeed > 7) fallspeed = 7;
 }
+#endregion
 
+#region // CheckZombieStandingOnPlatform
 function CheckZombieStandingOnPlatform() // check if enemy is standing on platform. if not -> fall
 {	
 		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256)
@@ -285,7 +321,9 @@ function CheckZombieStandingOnPlatform() // check if enemy is standing on platfo
 			phase = 2; // (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
 		}
 }	
+#endregion
 
+#region // CheckZombieFallingOnPlatform
 function CheckZombieFallingOnPlatform() // check if enemy fell platform. if so -> next phase
 {	
 		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256)
@@ -296,7 +334,9 @@ function CheckZombieFallingOnPlatform() // check if enemy fell platform. if so -
 			fallspeed = 0.5;
 		}
 }	
+#endregion
 
+#region // TurnAtEndPlatform
 function TurnAtEndPlatform()
 {	
 	if (movementDirection = "right")
@@ -312,7 +352,9 @@ function TurnAtEndPlatform()
 	}
 
 }
+#endregion
 
+#region // TurnWhenHitWall
 function TurnWhenHitWall()
 {	
 	if (movementDirection = "right")
@@ -328,12 +370,14 @@ function TurnWhenHitWall()
 	}
 
 }
+#endregion
 
+#region // CheckCollisionPlayerEnemy
 function CheckCollisionPlayerEnemy()
 {	
 	if place_meeting(x, y, oPlayer)
 	{
-		if (oPlayer.PlayerInvulnerable = 0)
+		if (oPlayer.PlayerInvulnerable = 0) and (oPlayer.pose != "dying")
 		{
 			oPlayer.pose = "beinghit";
 			oPlayer.jump_speed = -4;
@@ -345,7 +389,9 @@ function CheckCollisionPlayerEnemy()
 		}
 	}	
 }
+#endregion
 
+#region // CheckEnemyGetsHit
 function CheckEnemyGetsHit()
 {	
 	if (enemyHitCounter > 0) enemyHitCounter -= 1;
@@ -363,21 +409,31 @@ function CheckEnemyGetsHit()
 				instance_destroy();
 				// x position of explosion is x - 16 + (nx/2)
 				// y position of explosion is y + ny - 24 (is 16 in msx version)      
-				instance_create_layer(x -16 + (nx / 2), y + ny -24, "Instances", oExplosion);
+				instance_create_layer(x, y + (ny/2) - 16, "Instances", oExplosion);
+				//instance_create_layer(x -16 + (nx / 2), y + ny -24, "Instances", oExplosion);
 				oExplosion.sprite_index = explosionsprite;
-
+			}
+			else
+			if(oPlayer.pose = "charging") 
+			{
+				oPlayer.pose = "bouncingback";
+				oPlayer.jump_speed = -5;			
 			}
 		}
 	}	
 }
+#endregion
 
+#region // CheckEnemyOutOfScreen
 function CheckEnemyOutOfScreen()
 {	
 	// show_debug_message(y);	
 	if (x < 10) or (x > 300) or (y < 4) or (y > 198) instance_destroy();
 }
+#endregion
 
 //objects
+#region // CheckChangeRoom
 function CheckChangeRoom()
 {	
 //show_debug_message(x);
@@ -410,3 +466,4 @@ function CheckChangeRoom()
 
 
 }
+#endregion

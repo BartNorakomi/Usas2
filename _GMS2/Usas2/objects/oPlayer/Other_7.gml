@@ -6,3 +6,5 @@ if(pose = "standpunch") pose = "standing";
 if(pose = "sitpunch") pose = "sitting";
 
 if(pose = "climbup") pose = "standing";
+
+if(pose = "charging") pose = "standing";

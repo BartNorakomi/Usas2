@@ -11,6 +11,13 @@ if (oPlayer.pose = "standpunch") // standpunch
 	x = oPlayer.image_xscale * 12 + oPlayer.x;
 }
 
+if (oPlayer.pose = "charging") // charging
+{
+	visible = true;	
+	y = oPlayer.y + 6;
+	x = oPlayer.image_xscale * 12 + oPlayer.x;
+}
+
 if (oPlayer.pose = "sitpunch") // standpunch
 {
 	visible = true;	

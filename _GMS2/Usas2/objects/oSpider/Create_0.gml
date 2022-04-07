@@ -3,7 +3,7 @@
 enemyHitCounter = 0;
 life = 1;
 nx = 30; // width
-ny = 16; // height
+ny = 17; // height
 movementDirection = "right";
 movementSpeed = 0.6;
 explosionsprite = sExplosionSmall;

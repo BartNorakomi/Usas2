@@ -5,6 +5,8 @@ tilemap = layer_tilemap_get_id("ForegroundTiles"); //assign ForegroundTiles to o
 FaceEnemyLeftOrRight(); //  face enemy left or right by scaling x (horizontal mirroring)
 CheckCollisionPlayerEnemy(); // Check if player gets hit by enemy
 CheckEnemyGetsHit(); // Check if enemy gets hit by player
+show_debug_message(y);
+
 
 	
 if (phase = 0) // (0=walking, 1=attacking)
