@@ -7,3 +7,4 @@ ny = 17; // height
 movementDirection = "right";
 movementSpeed = 0.6;
 explosionsprite = sExplosionSmall;
+SnapPlayer = false;

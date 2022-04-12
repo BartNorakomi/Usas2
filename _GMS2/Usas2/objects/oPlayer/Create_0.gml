@@ -29,6 +29,7 @@ movementTableEnd = 16;
 movementTablePointer = movementTableMiddle;
 movementTableLenght = 17;
 PlayerInvulnerable = 0;
+PlayerSnapToPlatform = false;
 
 audio_play_sound(sndWolftune1, 10, true);
 audio_play_sound(sndWolftune1, 10, true);

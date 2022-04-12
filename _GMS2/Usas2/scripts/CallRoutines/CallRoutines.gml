@@ -161,14 +161,15 @@ function FacePlayerLeftOrRight() // face player left or right by scaling x (hori
 #region // CheckStandingOnPlatform
 function CheckStandingOnPlatform() // check if player is standing on platform. if not -> fall
 {	
-//		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256) and (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) > 51)
-//		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 256) and (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) > 51)			
-		if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256)
-		or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 256)
-		{}else
-		{	
-			pose = "jumping";
-			jump_speed = +0.25;
+		if (PlayerSnapToPlatform = false)
+		{
+			if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256)
+			or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 256)
+			{}else
+			{	
+				pose = "jumping";
+				jump_speed = +0.25;
+			}
 		}
 }	
 #endregion
@@ -297,8 +298,19 @@ function MoveEnemyHorizontallyIncludeSlowDownFactorWhenHit()
 #region // MoveEnemyHorizontally
 function MoveEnemyHorizontally()
 {
-	if (movementDirection = "right") x += movementSpeed; // move normally
-	if (movementDirection = "left") x -= movementSpeed; // move normally
+	if (movementDirection = "right") 
+	{
+		x += movementSpeed; // move normally
+		if (SnapPlayer = true)
+			oPlayer.x += movementSpeed;
+	}
+	if (movementDirection = "left")
+	{
+		x -= movementSpeed; // move normally
+		if (SnapPlayer = true)
+			oPlayer.x -= movementSpeed;
+}
+	
 }
 #endregion
 
@@ -409,9 +421,11 @@ function CheckEnemyGetsHit()
 				instance_destroy();
 				// x position of explosion is x - 16 + (nx/2)
 				// y position of explosion is y + ny - 24 (is 16 in msx version)      
-				instance_create_layer(x, y + (ny/2) - 16, "Instances", oExplosion);
-				//instance_create_layer(x -16 + (nx / 2), y + ny -24, "Instances", oExplosion);
-				oExplosion.sprite_index = explosionsprite;
+				var inst = instance_create_layer(x, y + (ny/2) - 16, "Instances", oExplosion);
+				with (inst)
+				{
+					sprite_index = other.explosionsprite;
+				}
 			}
 			else
 			if(oPlayer.pose = "charging") 
@@ -431,6 +445,20 @@ function CheckEnemyOutOfScreen()
 	if (x < 10) or (x > 300) or (y < 4) or (y > 198) instance_destroy();
 }
 #endregion
+
+#region // CheckEnemyFacingPlayer
+function CheckEnemyFacingPlayer()
+{	
+	enemyisfacingplayer = false
+	if (x < oPlayer.x)	// enemy is left of player
+	{
+		if (movementDirection = "right") and (oPlayer.image_xscale = -1) enemyisfacingplayer = true;
+	}
+	else
+		if (movementDirection = "left") and (oPlayer.image_xscale = +1) enemyisfacingplayer = true;
+}
+#endregion
+
 
 //objects
 #region // CheckChangeRoom

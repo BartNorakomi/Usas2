@@ -224,3 +224,5 @@ if(pose = "bouncingback") // player bouncing back after charging into a enemy wh
 	HorizontalMovement(); // move player horizontally	
 	
 }
+
+PlayerSnapToPlatform = false;

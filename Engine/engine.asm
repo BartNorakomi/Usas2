@@ -732,7 +732,7 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   ld    (ClesY),a
   .SkipSnapY:
 
-;Don't snap to object if it falls with a very high speel, like the Glass Ball
+;Don't snap to object if it falls with a very high speed, like the Glass Ball
   ld    a,(ix+enemies_and_objects.v3) ;v3=Vertical Movement
   cp    8
   jr    nz,.NotGlassBallFalling

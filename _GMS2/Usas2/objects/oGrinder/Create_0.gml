@@ -10,3 +10,4 @@ explosionsprite = sExplosionBig;
 slowdownfactorwhenhit = 0.2; // if hit enemy moves slower
 phase = 0; // (0=walking, 1=attacking)
 animationcounter = 0;
+SnapPlayer = false;
