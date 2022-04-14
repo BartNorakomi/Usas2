@@ -4,11 +4,12 @@ enemyHitCounter = 0;
 life = 1;
 nx = 16; // width
 ny = 16; // height
-movementDirection = "right";
-movementSpeed = 0.4;
-//fallspeed = 0.5;
+//movementDirection = "right";
+movementSpeed = 0.0;
 explosionsprite = sExplosionSmall;
-phase = 0; // (0=walking, 1=jumping)
-animationcounter = 0;
+phase = 0; // (0=hanging, 1=attacking)
+waittimer = 0;
 SnapPlayer = false;
-fallspeed = -2;
+
+if (x <(304/2)) movementDirection = "right";
+else movementDirection = "left";

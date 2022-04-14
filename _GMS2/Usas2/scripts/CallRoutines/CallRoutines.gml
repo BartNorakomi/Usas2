@@ -323,6 +323,15 @@ function EnemyFallingVertically()
 }
 #endregion
 
+#region // EnemyFallingVertically
+function EnemyFallingVerticallySlow()
+{
+	y += fallspeed; // fall normally
+	fallspeed += 0.1;
+	if (fallspeed > 7) fallspeed = 7;
+}
+#endregion
+
 #region // CheckZombieStandingOnPlatform
 function CheckZombieStandingOnPlatform() // check if enemy is standing on platform. if not -> fall
 {	

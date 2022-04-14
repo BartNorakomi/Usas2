@@ -6,7 +6,7 @@ pose = "standing";
 //tilemap = layer_tilemap_get_id(layerID);
 
 RoomX = 0;
-RoomY = 3;
+RoomY = 2;
 global.map_array[0,0] = Room1A; global.map_array[0,1] = Room1B;
 global.map_array[1,0] = Room2A; global.map_array[1,1] = Room2B;
 global.map_array[2,0] = Room3A
