@@ -455,8 +455,8 @@ function CheckEnemyOutOfScreen()
 }
 #endregion
 
-#region // CheckEnemyFacingPlayer
-function CheckEnemyFacingPlayer()
+#region // CheckEnemyFacingPlayer out: enemyisfacingplayer = true if this is correct
+function CheckEnemyFacingPlayer() // out: enemyisfacingplayer = true if this is correct
 {	
 	enemyisfacingplayer = false
 	if (x < oPlayer.x)	// enemy is left of player
@@ -468,6 +468,20 @@ function CheckEnemyFacingPlayer()
 }
 #endregion
 
+#region // DistanceCheck out: withindistanceplayer = true if within distance
+function DistanceCheck() // out: withindistanceplayer = true if within distance
+{	
+	withindistanceplayer = false;	
+	
+	xdifference = x - oPlayer.x;
+	ydifference = y - oPlayer.y;
+
+	if (xdifference < 0) xdifference = xdifference *-1
+	if (ydifference < 0) ydifference = ydifference *-1
+	
+	if (xdifference < distancecheckx) and (ydifference < distancechecky) withindistanceplayer = true;
+}
+#endregion
 
 //objects
 #region // CheckChangeRoom
