@@ -1421,10 +1421,10 @@ EndPlayerSprites1: | ds $c000-$,$ff | dephase ;bf80
 ;
 ; block $39 - $3c
 ;
-KarniMataTilesBlock:  equ   $39
+;KarniMataTilesBlock:  equ   $39
 phase	$4000
-  incbin "..\grapx\Karni-Mata-TILES.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\Karni-Mata-TILESbottom.SC5",7,48 * 128 ;48 lines
+;  incbin "..\grapx\tilesheets\sKarniMata.SC5",7,208 * 128      ;208 lines
+;  incbin "..\grapx\tilesheets\sKarniMataBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
@@ -2716,16 +2716,10 @@ RightLancelotShieldHit8_Col:                include "..\sprites\enemies\Lancelot
 	ds		$c000-$,$ff
 dephase
 
-
-
-
-
-
 ;
-; block $6b - &6c
+; block $6b - $6c
 ;
-
-MapsBlock03:  equ   $6b
+MapsBlock0A:  equ   $6b
 phase	$8000
 MapA01:
   incbin "..\maps\a01.map.pck"  | .amountofobjects: db  0
@@ -2733,36 +2727,289 @@ MapA02:
   incbin "..\maps\a02.map.pck"  | .amountofobjects: db  0
 MapA03:
   incbin "..\maps\a03.map.pck"  | .amountofobjects: db  0
+MapA04:
+  incbin "..\maps\a04.map.pck"  | .amountofobjects: db  0
+MapA05:
+  incbin "..\maps\a05.map.pck"  | .amountofobjects: db  0
+MapA06:
+  incbin "..\maps\a06.map.pck"  | .amountofobjects: db  0
+MapA07:
+  incbin "..\maps\a07.map.pck"  | .amountofobjects: db  0
+MapA08:
+  incbin "..\maps\a08.map.pck"  | .amountofobjects: db  0
+MapA09:
+  incbin "..\maps\a09.map.pck"  | .amountofobjects: db  0
+MapA10:
+  incbin "..\maps\a10.map.pck"  | .amountofobjects: db  0
+MapA11:
+  incbin "..\maps\a11.map.pck"  | .amountofobjects: db  0
+MapA12:
+  incbin "..\maps\a12.map.pck"  | .amountofobjects: db  0
+MapA13:
+  incbin "..\maps\a13.map.pck"  | .amountofobjects: db  0
 
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $6d - $6e
+;
+MapsBlock0B:  equ   $6d
+phase	$8000
 MapB01:
   incbin "..\maps\b01.map.pck"  | .amountofobjects: db  0
 MapB02:
   incbin "..\maps\b02.map.pck"  | .amountofobjects: db  0
 MapB03:
   incbin "..\maps\b03.map.pck"  | .amountofobjects: db  0
+MapB04:
+  incbin "..\maps\b04.map.pck"  | .amountofobjects: db  0
+MapB05:
+  incbin "..\maps\b05.map.pck"  | .amountofobjects: db  0
+MapB06:
+  incbin "..\maps\b06.map.pck"  | .amountofobjects: db  0
+MapB07:
+  incbin "..\maps\b07.map.pck"  | .amountofobjects: db  0
+MapB08:
+  incbin "..\maps\b08.map.pck"  | .amountofobjects: db  0
+MapB09:
+  incbin "..\maps\b09.map.pck"  | .amountofobjects: db  0
+MapB10:
+  incbin "..\maps\b10.map.pck"  | .amountofobjects: db  0
+MapB11:
+  incbin "..\maps\b11.map.pck"  | .amountofobjects: db  0
+MapB12:
+  incbin "..\maps\b12.map.pck"  | .amountofobjects: db  0
+MapB13:
+  incbin "..\maps\b13.map.pck"  | .amountofobjects: db  0
+	ds		$c000-$,$ff
+dephase
 
+;
+; block $6f - $70
+;
+MapsBlock0C:  equ   $6f
+phase	$8000
 MapC01:
   incbin "..\maps\c01.map.pck"  | .amountofobjects: db  0
 MapC02:
   incbin "..\maps\c02.map.pck"  | .amountofobjects: db  0
 MapC03:
   incbin "..\maps\c03.map.pck"  | .amountofobjects: db  0
+MapC04:
+  incbin "..\maps\c04.map.pck"  | .amountofobjects: db  0
+MapC05:
+  incbin "..\maps\c05.map.pck"  | .amountofobjects: db  0
+MapC06:
+  incbin "..\maps\c06.map.pck"  | .amountofobjects: db  0
+MapC07:
+  incbin "..\maps\c07.map.pck"  | .amountofobjects: db  0
+MapC08:
+  incbin "..\maps\c08.map.pck"  | .amountofobjects: db  0
+MapC09:
+  incbin "..\maps\c09.map.pck"  | .amountofobjects: db  0
+MapC10:
+  incbin "..\maps\c10.map.pck"  | .amountofobjects: db  0
+MapC11:
+  incbin "..\maps\c11.map.pck"  | .amountofobjects: db  0
+MapC12:
+  incbin "..\maps\c12.map.pck"  | .amountofobjects: db  0
+MapC13:
+  incbin "..\maps\c13.map.pck"  | .amountofobjects: db  0
+	ds		$c000-$,$ff
+dephase
 
+;
+; block $71 - $72
+;
+MapsBlock0D:  equ   $71
+phase	$8000
 MapD01:
   incbin "..\maps\d01.map.pck"  | .amountofobjects: db  0
 MapD02:
   incbin "..\maps\d02.map.pck"  | .amountofobjects: db  0
 MapD03:
   incbin "..\maps\d03.map.pck"  | .amountofobjects: db  0
-
-MapE01:
-  incbin "..\maps\e01.map.pck"  | .amountofobjects: db  0
-;MapD02:
-;  incbin "..\maps\d02.map.pck"  | .amountofobjects: db  0
-;MapD03:
-;  incbin "..\maps\d03.map.pck"  | .amountofobjects: db  0
+MapD04:
+  incbin "..\maps\d04.map.pck"  | .amountofobjects: db  0
+MapD05:
+  incbin "..\maps\d05.map.pck"  | .amountofobjects: db  0
+MapD06:
+  incbin "..\maps\d06.map.pck"  | .amountofobjects: db  0
+MapD07:
+  incbin "..\maps\d07.map.pck"  | .amountofobjects: db  0
+MapD08:
+  incbin "..\maps\d08.map.pck"  | .amountofobjects: db  0
+MapD09:
+  incbin "..\maps\d09.map.pck"  | .amountofobjects: db  0  
+MapD10:
+  incbin "..\maps\d10.map.pck"  | .amountofobjects: db  0  
+MapD11:
+  incbin "..\maps\d11.map.pck"  | .amountofobjects: db  0  
+MapD12:
+  incbin "..\maps\d12.map.pck"  | .amountofobjects: db  0  
+MapD13:
+  incbin "..\maps\d13.map.pck"  | .amountofobjects: db  0  
 	ds		$c000-$,$ff
 dephase
+
+;
+; block $73 - $74
+;
+MapsBlock0E:  equ   $73
+phase	$8000
+MapE01:
+  incbin "..\maps\e01.map.pck"  | .amountofobjects: db  0
+MapE02:
+  incbin "..\maps\e02.map.pck"  | .amountofobjects: db  0
+MapE03:
+  incbin "..\maps\e03.map.pck"  | .amountofobjects: db  0
+MapE04:
+  incbin "..\maps\e04.map.pck"  | .amountofobjects: db  0
+MapE05:
+  incbin "..\maps\e05.map.pck"  | .amountofobjects: db  0
+MapE06:
+  incbin "..\maps\e06.map.pck"  | .amountofobjects: db  0
+MapE07:
+  incbin "..\maps\e07.map.pck"  | .amountofobjects: db  0
+MapE08:
+  incbin "..\maps\e08.map.pck"  | .amountofobjects: db  0
+MapE09:
+  incbin "..\maps\e09.map.pck"  | .amountofobjects: db  0  
+MapE10:
+  incbin "..\maps\e10.map.pck"  | .amountofobjects: db  0
+MapE11:
+  incbin "..\maps\e11.map.pck"  | .amountofobjects: db  0
+MapE12:
+  incbin "..\maps\e12.map.pck"  | .amountofobjects: db  0
+MapE13:
+  incbin "..\maps\e13.map.pck"  | .amountofobjects: db  0  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $75 - $76
+;
+MapsBlock0F:  equ   $75
+phase	$8000
+MapF01:
+  incbin "..\maps\f01.map.pck"  | .amountofobjects: db  0
+MapF02:
+  incbin "..\maps\f02.map.pck"  | .amountofobjects: db  0
+MapF03:
+  incbin "..\maps\f03.map.pck"  | .amountofobjects: db  0
+MapF04:
+  incbin "..\maps\f04.map.pck"  | .amountofobjects: db  0
+MapF05:
+  incbin "..\maps\f05.map.pck"  | .amountofobjects: db  0
+MapF06:
+  incbin "..\maps\f06.map.pck"  | .amountofobjects: db  0
+MapF07:
+  incbin "..\maps\f07.map.pck"  | .amountofobjects: db  0
+MapF08:
+  incbin "..\maps\f08.map.pck"  | .amountofobjects: db  0
+MapF09:
+  incbin "..\maps\f09.map.pck"  | .amountofobjects: db  0
+MapF10:
+  incbin "..\maps\f10.map.pck"  | .amountofobjects: db  0
+MapF11:
+  incbin "..\maps\f11.map.pck"  | .amountofobjects: db  0
+MapF12:
+  incbin "..\maps\f12.map.pck"  | .amountofobjects: db  0
+MapF13:
+  incbin "..\maps\f13.map.pck"  | .amountofobjects: db  0  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $77 - $78
+;
+MapsBlock0G:  equ   $77
+phase	$8000
+MapG01:
+  incbin "..\maps\g01.map.pck"  | .amountofobjects: db  0
+MapG02:
+  incbin "..\maps\g02.map.pck"  | .amountofobjects: db  0
+MapG03:
+  incbin "..\maps\g03.map.pck"  | .amountofobjects: db  0
+MapG04:
+  incbin "..\maps\g04.map.pck"  | .amountofobjects: db  0
+MapG05:
+  incbin "..\maps\g05.map.pck"  | .amountofobjects: db  0
+MapG06:
+  incbin "..\maps\g06.map.pck"  | .amountofobjects: db  0
+MapG07:
+  incbin "..\maps\g07.map.pck"  | .amountofobjects: db  0
+MapG08:
+  incbin "..\maps\g08.map.pck"  | .amountofobjects: db  0
+MapG09:
+  incbin "..\maps\g09.map.pck"  | .amountofobjects: db  0
+MapG10:
+  incbin "..\maps\g10.map.pck"  | .amountofobjects: db  0
+MapG11:
+  incbin "..\maps\g11.map.pck"  | .amountofobjects: db  0
+MapG12:
+  incbin "..\maps\g12.map.pck"  | .amountofobjects: db  0
+MapG13:
+  incbin "..\maps\g13.map.pck"  | .amountofobjects: db  0  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $79 - $88
+;
+ds $2000 * $10
+
+;
+; block $89 - $8c
+;
+KarniMataTilesBlock:  equ   $89
+phase	$4000
+  incbin "..\grapx\tilesheets\sKarniMata.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sKarniMataBottom48Lines.SC5",7,48 * 128 ;48 lines
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $8d - $90
+;
+BlueTempleTilesBlock:  equ   $8d
+phase	$4000
+  incbin "..\grapx\tilesheets\sBlueTemple.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sBlueTempleBottom48Lines.SC5",7,48 * 128 ;48 lines
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $91 - $94
+;
+KonarkTilesBlock:  equ   $91
+phase	$4000
+  incbin "..\grapx\tilesheets\sKonark.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sKonarkBottom48Lines.SC5",7,48 * 128 ;48 lines
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $95 - $98
+;
+BurialTilesBlock:  equ   $95
+phase	$4000
+  incbin "..\grapx\tilesheets\sBurial.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sBurialBottom48Lines.SC5",7,48 * 128 ;48 lines
+	ds		$c000-$,$ff
+dephase
+
+
+
+
+
+
+
+
+
+
+
 
 
 

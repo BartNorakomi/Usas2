@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.5" tiledversion="1.7.1" name="Burial-TILES" tilewidth="8" tileheight="8" tilecount="4096" columns="64">
- <image source="../../grapx/tilesheets/Burial-TILES.bmp" width="512" height="512"/>
+<tileset version="1.5" tiledversion="1.7.2" name="sBurial" tilewidth="8" tileheight="8" tilecount="1024" columns="32">
+ <image source="../../Usas2/Levels/NEW/Tilesets/sBurial.bmp" width="256" height="256"/>
 </tileset>

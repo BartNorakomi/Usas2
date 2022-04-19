@@ -1,6 +1,6 @@
 phase	$c000
 WorldMapData:
-WorldMapDataWidth:      equ 4     ;amount of maps 
+WorldMapDataWidth:      equ 7     ;amount of maps in width 
 WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
               ;block            mapname   enginetype,tiledata,palette
 MapA01_001Data: db MapsBlock01 | dw MapA01_001 | db 1,3,3                  | MapA01_002Data: db MapsBlock01 | dw MapA01_002 | db 1,3,3                  | MapA01_003Data: db MapsBlock01 | dw MapA01_003 | db 1,3,3
@@ -17,15 +17,28 @@ MapB01_019Data: db MapsBlock02 | dw MapB01_019 | db 2,3,3                  | Map
 MapB01_022Data: db MapsBlock02 | dw MapB01_022 | db 1,3,3                  | MapB01_023Data: db MapsBlock02 | dw MapB01_023 | db 1,3,3                  | MapB01_024Data: db MapsBlock02 | dw MapB01_024 | db 1,3,3
 MapB01_025Data: db MapsBlock02 | dw MapB01_025 | db 1,3,3                  | MapB01_026Data: db MapsBlock02 | dw MapB01_026 | db 1,3,3                  | MapB01_027Data: db MapsBlock02 | dw MapB01_027 | db 1,3,3
 
-MapA01Data: db MapsBlock03 | dw MapA01 | db 1,0,0   | MapB01Data: db MapsBlock03 | dw MapB01 | db 1,0,0   | MapC01Data: db MapsBlock03 | dw MapC01 | db 1,0,0   | MapD01Data: db MapsBlock03 | dw MapD01 | db 1,0,0   | MapE01Data: db MapsBlock03 | dw MapE01 | db 1,1,1
-MapA02Data: db MapsBlock03 | dw MapA02 | db 1,0,0   | MapB02Data: db MapsBlock03 | dw MapB02 | db 1,0,0   | MapC02Data: db MapsBlock03 | dw MapC02 | db 1,0,0   | MapD02Data: db MapsBlock03 | dw MapD02 | db 1,0,0
-MapA03Data: db MapsBlock03 | dw MapA03 | db 1,0,0   | MapB03Data: db MapsBlock03 | dw MapB03 | db 1,0,0   | MapC03Data: db MapsBlock03 | dw MapC03 | db 1,0,0   | MapD03Data: db MapsBlock03 | dw MapD03 | db 1,0,0
+MapA01Data: db MapsBlock0A | dw MapA01 | db 1,0,0   | MapB01Data: db MapsBlock0B | dw MapB01 | db 1,0,0   | MapC01Data: db MapsBlock0C | dw MapC01 | db 1,0,0   | MapD01Data: db MapsBlock0D | dw MapD01 | db 1,0,0   | MapE01Data: db MapsBlock0E | dw MapE01 | db 1,1,1   | MapF01Data: db MapsBlock0F | dw MapF01 | db 1,1,1   | MapG01Data: db MapsBlock0G | dw MapG01 | db 1,1,1
+MapA02Data: db MapsBlock0A | dw MapA02 | db 1,0,0   | MapB02Data: db MapsBlock0B | dw MapB02 | db 1,0,0   | MapC02Data: db MapsBlock0C | dw MapC02 | db 1,0,0   | MapD02Data: db MapsBlock0D | dw MapD02 | db 1,0,0   | MapE02Data: db MapsBlock0E | dw MapE02 | db 1,1,1   | MapF02Data: db MapsBlock0F | dw MapF02 | db 1,1,1   | MapG02Data: db MapsBlock0G | dw MapG02 | db 1,1,1
+MapA03Data: db MapsBlock0A | dw MapA03 | db 1,0,0   | MapB03Data: db MapsBlock0B | dw MapB03 | db 1,0,0   | MapC03Data: db MapsBlock0C | dw MapC03 | db 1,0,0   | MapD03Data: db MapsBlock0D | dw MapD03 | db 1,0,0   | MapE03Data: db MapsBlock0E | dw MapE03 | db 1,1,1   | MapF03Data: db MapsBlock0F | dw MapF03 | db 1,1,1   | MapG03Data: db MapsBlock0G | dw MapG03 | db 1,1,1
+MapA04Data: db MapsBlock0A | dw MapA04 | db 2,3,3   | MapB04Data: db MapsBlock0B | dw MapB04 | db 1,3,3   | MapC04Data: db MapsBlock0C | dw MapC04 | db 1,3,3   | MapD04Data: db MapsBlock0D | dw MapD04 | db 1,0,0   | MapE04Data: db MapsBlock0E | dw MapE04 | db 1,1,1   | MapF04Data: db MapsBlock0F | dw MapF04 | db 1,1,1   | MapG04Data: db MapsBlock0G | dw MapG04 | db 1,1,1
+MapA05Data: db MapsBlock0A | dw MapA05 | db 1,3,3   | MapB05Data: db MapsBlock0B | dw MapB05 | db 1,3,3   | MapC05Data: db MapsBlock0C | dw MapC05 | db 1,3,3   | MapD05Data: db MapsBlock0D | dw MapD05 | db 1,0,0   | MapE05Data: db MapsBlock0E | dw MapE05 | db 1,1,1   | MapF05Data: db MapsBlock0F | dw MapF05 | db 1,1,1   | MapG05Data: db MapsBlock0G | dw MapG05 | db 1,1,1
+MapA06Data: db MapsBlock0A | dw MapA06 | db 1,3,3   | MapB06Data: db MapsBlock0B | dw MapB06 | db 1,3,3   | MapC06Data: db MapsBlock0C | dw MapC06 | db 1,3,3   | MapD06Data: db MapsBlock0D | dw MapD06 | db 1,5,5   | MapE06Data: db MapsBlock0E | dw MapE06 | db 1,5,5   | MapF06Data: db MapsBlock0F | dw MapF06 | db 1,5,5   | MapG06Data: db MapsBlock0G | dw MapG06 | db 1,5,5
+MapA07Data: db MapsBlock0A | dw MapA07 | db 1,3,3   | MapB07Data: db MapsBlock0B | dw MapB07 | db 1,3,3   | MapC07Data: db MapsBlock0C | dw MapC07 | db 1,3,3   | MapD07Data: db MapsBlock0D | dw MapD07 | db 1,5,5   | MapE07Data: db MapsBlock0E | dw MapE07 | db 1,5,5   | MapF07Data: db MapsBlock0F | dw MapF07 | db 1,5,5   | MapG07Data: db MapsBlock0G | dw MapG07 | db 1,5,5
+MapA08Data: db MapsBlock0A | dw MapA08 | db 1,4,4   | MapB08Data: db MapsBlock0B | dw MapB08 | db 1,4,4   | MapC08Data: db MapsBlock0C | dw MapC08 | db 1,4,4   | MapD08Data: db MapsBlock0D | dw MapD08 | db 1,4,4   | MapE08Data: db MapsBlock0E | dw MapE08 | db 1,5,5   | MapF08Data: db MapsBlock0F | dw MapF08 | db 1,5,5   | MapG08Data: db MapsBlock0G | dw MapG08 | db 1,5,5
+MapA09Data: db MapsBlock0A | dw MapA09 | db 1,4,4   | MapB09Data: db MapsBlock0B | dw MapB09 | db 1,4,4   | MapC09Data: db MapsBlock0C | dw MapC09 | db 1,4,4   | MapD09Data: db MapsBlock0D | dw MapD09 | db 1,4,4   | MapE09Data: db MapsBlock0E | dw MapE09 | db 1,5,5   | MapF09Data: db MapsBlock0F | dw MapF09 | db 1,5,5   | MapG09Data: db MapsBlock0G | dw MapG09 | db 1,5,5
+MapA10Data: db MapsBlock0A | dw MapA10 | db 1,2,2   | MapB10Data: db MapsBlock0B | dw MapB10 | db 1,2,2   | MapC10Data: db MapsBlock0C | dw MapC10 | db 1,2,2   | MapD10Data: db MapsBlock0D | dw MapD10 | db 1,4,4   | MapE10Data: db MapsBlock0E | dw MapE10 | db 1,4,4   | MapF10Data: db MapsBlock0F | dw MapF10 | db 1,1,1   | MapG10Data: db MapsBlock0G | dw MapG10 | db 1,1,1
+MapA11Data: db MapsBlock0A | dw MapA11 | db 1,2,2   | MapB11Data: db MapsBlock0B | dw MapB11 | db 1,2,2   | MapC11Data: db MapsBlock0C | dw MapC11 | db 1,2,2   | MapD11Data: db MapsBlock0D | dw MapD11 | db 1,4,4   | MapE11Data: db MapsBlock0E | dw MapE11 | db 1,4,4   | MapF11Data: db MapsBlock0F | dw MapF11 | db 1,1,1   | MapG11Data: db MapsBlock0G | dw MapG11 | db 1,1,1
+MapA12Data: db MapsBlock0A | dw MapA12 | db 1,2,2   | MapB12Data: db MapsBlock0B | dw MapB12 | db 1,2,2   | MapC12Data: db MapsBlock0C | dw MapC12 | db 1,2,2   | MapD12Data: db MapsBlock0D | dw MapD12 | db 1,4,4   | MapE12Data: db MapsBlock0E | dw MapE12 | db 1,2,2   | MapF12Data: db MapsBlock0F | dw MapF12 | db 1,1,1   | MapG12Data: db MapsBlock0G | dw MapG12 | db 1,1,1
+MapA13Data: db MapsBlock0A | dw MapA13 | db 1,2,2   | MapB13Data: db MapsBlock0B | dw MapB13 | db 1,2,2   | MapC13Data: db MapsBlock0C | dw MapC13 | db 1,2,2   | MapD13Data: db MapsBlock0D | dw MapD13 | db 1,2,2   | MapE13Data: db MapsBlock0E | dw MapE13 | db 1,2,2   | MapF13Data: db MapsBlock0F | dw MapF13 | db 1,1,1   | MapG13Data: db MapsBlock0G | dw MapG13 | db 1,1,1
+
+
+
 
 
 ;WorldMapPointer:  dw  MapA01_009Data
 ;WorldMapPointer:  dw  MapB01_027Data
-WorldMapPointer:  dw  MapB01_010Data
-;WorldMapPointer:  dw  MapE01Data
+;WorldMapPointer:  dw  MapB01_010Data
+WorldMapPointer:  dw  MapD06Data
 
 loadGraphics:
 ;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
@@ -342,9 +355,18 @@ SetMapPalette:
   ld    hl,GoddessPalette
   jr    z,.goSetPalette
   dec   a
-  ld    hl,B01Palette
+  ld    hl,KonarkPalette
   jr    z,.goSetPalette
+  dec   a
   ld    hl,KarniMataPalette
+  jr    z,.goSetPalette
+  dec   a
+  ld    hl,BlueTemplePalette
+  jr    z,.goSetPalette
+  dec   a
+  ld    hl,BurialPalette
+  jr    z,.goSetPalette
+
   .goSetPalette:  
   call  setpalette
   ret
@@ -359,9 +381,17 @@ SetTilesInVram:
   ld    d,GoddessTilesBlock
   jr    z,.settiles
   dec   a
-  ld    d,B01TilesBlock
+  ld    d,KonarkTilesBlock
   jr    z,.settiles
+  dec   a
   ld    d,KarniMataTilesBlock
+  jr    z,.settiles
+  dec   a
+  ld    d,BlueTempleTilesBlock
+  jr    z,.settiles
+  dec   a
+  ld    d,BurialTilesBlock
+  jr    z,.settiles
 
   .settiles:
   ld    a,(slot.page12rom)            ;all RAM except page 12
@@ -978,24 +1008,18 @@ CopyItemsKarniMata:
   ld    b,0
   jp    copyGraphicsToScreen.loop1    
 
-A01Palette:
-  incbin "..\grapx\A01palette.PL" ;file palette 
-B01Palette:
-  incbin "..\grapx\B01palette.PL" ;file palette 
 KarniMataPalette:
-  incbin "..\grapx\KarniMatapalette.PL" ;file palette 
+  incbin "..\grapx\tilesheets\sKarniMatapalette.PL" ;file palette 
 VoodooWaspPalette:
   incbin "..\grapx\tilesheets\sVoodooWaspPalette.PL" ;file palette 
 GoddessPalette:
   incbin "..\grapx\tilesheets\sGoddessPalette.PL" ;file palette 
-
-
-;  incbin "..\grapx\UsasTilesW1Apalette" ;file palette 
-;  incbin "..\grapx\usasWorld2palette" ;file palette 
-;  incbin "..\grapx\usasWorld1palette" ;file palette 
-;  incbin "..\grapx\usaspalette" ;file palette 
-;  incbin "..\grapx\bombapalette" ;file palette 
-;  incbin "..\grapx\mulanapalette" ;file palette 
+BlueTemplePalette:
+  incbin "..\grapx\tilesheets\sBlueTemplePalette.PL" ;file palette 
+KonarkPalette:
+  incbin "..\grapx\tilesheets\sKonarkPalette.PL" ;file palette 
+BurialPalette:
+  incbin "..\grapx\tilesheets\sBurialPalette.PL" ;file palette 
 
 currentpage:                ds  1
 sprcoltableaddress:         ds  2
