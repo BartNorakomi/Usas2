@@ -53,7 +53,7 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 150 ;210
+ClesX:      dw 250 ;210
 ClesY:      db 144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
@@ -2084,7 +2084,8 @@ CheckMapExit:
 
   ld    a,(ClesX)
   or    a
-  jr    z,.PossibleExitLeftFound
+;  jr    z,.PossibleExitLeftFound
+  jp    z,.PossibleExitLeftFound
 
 .selfmodifyingcodeMapexitRight:
   ld    hl,ExitRight304x216
@@ -2095,18 +2096,67 @@ CheckMapExit:
   ld    hl,(ClesX)
   ld    de,50*8
   sbc   hl,de
-  jr    c,.ExitRightFound
-  jr    .ExitLeftFound  
+;  jr    c,.ExitRightFound
+  jp    c,.ExitRightFound
+  jp    .ExitLeftFound  
 
-.ExitBottomFound:  
+.ExitBottomFound:
+;check if player was climbing stairs left up
+  ld    de,ClimbStairsLeftUp
+  ld    hl,(PlayerSpriteStand)
+  xor   a
+  sbc   hl,de
+  jr    nz,.EndCheckClimbStairsLeftUp1
+  ld    hl,(ClesX)
+  ld    de,18
+  add   hl,de
+  ld    (ClesX),hl
+  .EndCheckClimbStairsLeftUp1:
+
+;check if player was climbing stairs right up
+  ld    de,ClimbStairsRightUp
+  ld    hl,(PlayerSpriteStand)
+  xor   a
+  sbc   hl,de
+  jr    nz,.EndCheckClimbStairsRightUp1
+  ld    hl,(ClesX)
+  ld    de,-18
+  add   hl,de
+  ld    (ClesX),hl
+  .EndCheckClimbStairsRightUp1:
+  
   ld    de,WorldMapDataMapLenght*WorldMapDataWidth
   ld    a,6
   ld    (ClesY),a
   ld    a,0
-  ld    (CameraY),a
+  ld    (CameraY),a  
   jp    .LoadnextMap
   
 .ExitTopFound:  
+;check if player was climbing stairs
+  ld    de,ClimbStairsLeftUp
+  ld    hl,(PlayerSpriteStand)
+  xor   a
+  sbc   hl,de
+  jr    nz,.EndCheckClimbStairs2
+  ld    hl,(ClesX)
+  ld    de,-19
+  add   hl,de
+  ld    (ClesX),hl
+  .EndCheckClimbStairs2:
+
+;check if player was climbing stairs right up
+  ld    de,ClimbStairsRightUp
+  ld    hl,(PlayerSpriteStand)
+  xor   a
+  sbc   hl,de
+  jr    nz,.EndCheckClimbStairsRightUp2
+  ld    hl,(ClesX)
+  ld    de,19
+  add   hl,de
+  ld    (ClesX),hl
+  .EndCheckClimbStairsRightUp2:
+
   ld    de,-WorldMapDataMapLenght*WorldMapDataWidth
   ld    a,176+8 + 24
   ld    (ClesY),a
@@ -2114,7 +2164,18 @@ CheckMapExit:
   ld    (CameraY),a
   jp    .LoadnextMap
   
-.ExitRightFound:  
+.ExitRightFound:
+;check if player was climbing stairs
+  ld    de,ClimbStairsLeftUp
+  ld    hl,(PlayerSpriteStand)
+  xor   a
+  sbc   hl,de
+  jr    nz,.EndCheckClimbStairs3
+  ld    a,(Clesy)
+  add   a,11
+  ld    (Clesy),a
+  .EndCheckClimbStairs3:
+  
   ld    de,WorldMapDataMapLenght
   ld    hl,1
   ld    (ClesX),hl
@@ -2122,11 +2183,22 @@ CheckMapExit:
   ld    (CameraX),a
   jp    .LoadnextMap
 
-.PossibleExitLeftFound:
+.PossibleExitLeftFound:  
   ld    a,(ClesX+1)
   or    a
   ret   nz
   .ExitLeftFound:  
+;check if player was climbing stairs
+  ld    de,ClimbStairsLeftUp
+  ld    hl,(PlayerSpriteStand)
+  xor   a
+  sbc   hl,de
+  jr    nz,.EndCheckClimbStairs4
+  ld    a,(Clesy)
+  sub   a,11
+  ld    (Clesy),a
+  .EndCheckClimbStairs4:
+    
   ld    de,-WorldMapDataMapLenght
   ld    hl,ExitRight304x216
   ld    (ClesX),hl
@@ -3096,7 +3168,7 @@ LstandingSpriteStand:         equ 6
 LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
-;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
+;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack
 PlayerSpriteStand: dw  Rstanding
 
@@ -4029,6 +4101,10 @@ ClimbStairsRightUp:
   sub   4                   ;check for tilenr 5=stairsrightup
   ret   z
 
+  ld    a,(ClesY)           ;return if player is at the bottom of the screen. This means stairs continue into the next map
+  cp    180+8 + 24 - 20
+  ret   nc
+  
   ld    a,RunningTablePointerRunLeftEndValue
   ld    (RunningTablePointer),a ;this will make sure you end the stairs climb with max movement speed in the correct direction
   jp    Set_L_Run
@@ -4078,6 +4154,10 @@ ClimbStairsRightUp:
   sub   4                   ;check for tilenr 5=stairsrightup
   ret   z
 
+  ld    a,(ClesY)           ;return if player is at the bottom of the screen. This means stairs continue into the next map
+  cp    180+8 + 24 - 20
+  ret   nc
+  
   ld    a,RunningTablePointerRunRightEndValue
   ld    (RunningTablePointer),a ;this will make sure you end the stairs climb with max movement speed in the correct direction
   jp    Set_R_Run
@@ -4151,6 +4231,10 @@ ClimbStairsLeftUp:
   sub   3                   ;check for tilenr 4=stairsleftup
   ret   z
 
+  ld    a,(ClesY)           ;return if player is at the bottom of the screen. This means stairs continue into the next map
+  cp    180+8 + 24 - 20
+  ret   nc
+
   ld    a,RunningTablePointerRunRightEndValue
   ld    (RunningTablePointer),a ;this will make sure you end the stairs climb with max movement speed in the correct direction
   jp    Set_R_Run
@@ -4198,6 +4282,10 @@ ClimbStairsLeftUp:
   call  checktile           ;out z=collision found with wall
   sub   3                   ;check for tilenr 4=stairsleftup
   ret   z
+
+  ld    a,(ClesY)           ;return if player is at the bottom of the screen. This means stairs continue into the next map
+  cp    180+8 + 24 - 20
+  ret   nc
 
   ld    a,RunningTablePointerRunLeftEndValue
   ld    (RunningTablePointer),a ;this will make sure you end the stairs climb with max movement speed in the correct direction
