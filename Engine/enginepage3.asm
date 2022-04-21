@@ -38,7 +38,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 1,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapA01_009Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_010Data
-WorldMapPointer:  dw  MapA01Data
+WorldMapPointer:  dw  MapE03Data
 
 loadGraphics:
 ;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
@@ -420,6 +420,16 @@ SetEngineType:                    ;sets engine type (1= 304x216 engine  2=256x21
   ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
   xor   a
   ld    (SpriteSplitFlag),a
+ 
+;check if player enters on the left side of the screen or on the right side. On the left camerax = 0, on the right camerax=15
+  ld    hl,256/2
+  ld    de,(ClesX)
+  sbc   hl,de
+  ld    a,15
+  jr    c,.setCameraX
+  xor   a
+  .setCameraX:
+  ld    (CameraX),a
   
   ;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
   ld    hl,(ClesX)
@@ -429,8 +439,6 @@ SetEngineType:                    ;sets engine type (1= 304x216 engine  2=256x21
   ret   nz
   ld    hl,252 ;28*8
   ld    (ClesX),hl
-  ld    a,15
-  ld    (CameraX),a
   ret
 
 .Engine304x216:                        ;
@@ -654,8 +662,8 @@ ConvertToMapinRam:
 ;newer
 ;tilenr: 1 t/m 16 = ladder
 ;tilenr: 17 t/m 31 = 
-;tilenr: 32 t/m 33 = spikes
-;tilenr: 34 t/m 39 = poison
+;tilenr: 32 t/m 39 = spikes/poison
+;tilenr: 40 t/m 47 = lava
 ;tilenr: 48 t/m 49 = stairs left
 ;tilenr: 50 t/m 51 = stairs right
 ;tilenr: 52 t/m 255 = foreground
@@ -665,9 +673,10 @@ ConvertToMapinRam:
 ;tile 0 = background
 ;tile 1 = hardforeground
 ;tile 2 = laddertiles
-;tile 3 = lava,poison,spikes
+;tile 3 = spikes/poison
 ;tile 4 = stairsleftup
 ;tile 5 = stairsrightup
+;tile 6 = lava
 
   ld    hl,$4000
   ld    iy,MapData
@@ -729,10 +738,15 @@ ConvertToMapinRam:
   sbc   hl,de
   jp    nc,.laddertiles
 
-  ld    hl,47               ;spikes & lava
+  ld    hl,39               ;spikes & poison
   xor   a
   sbc   hl,de
-  jp    nc,.lava            ;lava
+  jp    nc,.spikespoison
+  
+  ld    hl,47               ;lava
+  xor   a
+  sbc   hl,de
+  jp    nc,.lava
 
   ld    hl,49               ;stairs left up
   xor   a
@@ -761,7 +775,7 @@ ConvertToMapinRam:
   ld    (iy),2
   ret
 
-.lava:
+.spikespoison: 
   ld    (iy),3
   ret
 
@@ -771,6 +785,10 @@ ConvertToMapinRam:
 
 .stairsrightup:
   ld    (iy),5
+  ret
+
+.lava:
+  ld    (iy),6
   ret
   
 SetTile:

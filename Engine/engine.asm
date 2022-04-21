@@ -53,8 +53,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 250 ;210
-ClesY:      db 144-1
+ClesX:      dw 30 ;250 ;210
+ClesY:      db 30 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -5129,14 +5129,15 @@ Jump:
 	ld		(PlayerAniCount+1),a
 
   ;unable to jump through the top of the screen
-  ld    a,(Clesy)
-  cp    9
-  jp    nc,.EndCheckTopOfScreen
-  ld    a,(hl)              ;if vertical JumpSpeed is negative then and y<9 then skip vertical movement
-  or    a
-  jp    m,.SkipverticalMovement
-  .EndCheckTopOfScreen:
-
+;  ld    a,(Clesy)
+;  cp    9
+;  jp    nc,.EndCheckTopOfScreen
+;  ld    a,(hl)              ;if vertical JumpSpeed is negative then and y<9 then skip vertical movement
+;  or    a
+;  jp    m,.SkipverticalMovement
+;  .EndCheckTopOfScreen:
+  ;/unable to jump through the top of the screen
+  
   ;move player y
   ld    a,(Clesy)
   add   a,(hl)
@@ -5163,7 +5164,7 @@ Jump:
   jr    z,.SnapToPlatformBelow  
 
   dec   a                   ;check for tilenr 2=ladder 
-  jr    z,.LadderFound
+  jr    z,.LadderFoundUnderLeftFoot1
 
   inc   hl                  ;check next tile
   ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
@@ -5177,7 +5178,19 @@ Jump:
 ;  jr    z,.SnapToPlatformBelow
 
   dec   a                   ;check for tilenr 2=ladder 
+  jr    z,.LadderFoundUnderRightFoot1
+
+  sub   4                   ;check for tilenr 6=lava
   ret   nz
+
+  .LavaFound:
+;  ld    a,(ClesY)           ;don't check lava in top of screen
+ ; cp    20
+ ; ret   c
+  ld    a,(ClesY)           ;don't check lava in bottom of screen
+  cp    $c0                
+  ret   nc
+  jp    Set_Dying
 
 
   
@@ -5195,30 +5208,72 @@ Jump:
 ;  scf
 ;  ret
 
+
+
+
 ;while falling a ladder tile is found at player's feet. 
 ;check 16 pixels left of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
-  .LadderFound:               
+  .LadderFoundUnderRightFoot1:               
   ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
-  ld    de,XaddLeftPlayer+2-16   ;add x to check (x is expressed in pixels)
+;  ld    de,XaddLeftPlayer+2-16   ;add x to check (x is expressed in pixels)
+  ld    de,+3-0-16   ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
-  jr    nz,.CheckLadderRightSide
-
-;
+  jr    nz,.LadderFoundUnderRightFoot2
 
   ld    b,YaddFeetPlayer-9  ;add y to check (y is expressed in pixels)
-  ld    de,XaddLeftPlayer+2-16   ;add x to check (x is expressed in pixels)
+;  ld    de,XaddLeftPlayer+2-16   ;add x to check (x is expressed in pixels)
+  ld    de,+3-0-16   ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
   jr    nz,.SnapToPlatformBelow
 
 ;check 16 pixels right of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
-  .CheckLadderRightSide:
+  .LadderFoundUnderRightFoot2:
   ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
-  ld    de,XaddRightPlayer-2+16  ;add x to check (x is expressed in pixels)
+;  ld    de,XaddRightPlayer-2+16  ;add x to check (x is expressed in pixels)
+  ld    de,+3-0+16  ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
   ret   nz
 
   ld    b,YaddFeetPlayer-9    ;add y to check (y is expressed in pixels)
-  ld    de,XaddRightPlayer-2+16  ;add x to check (x is expressed in pixels)
+;  ld    de,XaddRightPlayer-2+16  ;add x to check (x is expressed in pixels)
+  ld    de,+3-0+16  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jr    nz,.SnapToPlatformBelow
+;  ret   z
+  ret
+
+
+
+
+
+
+
+;while falling a ladder tile is found at player's feet. 
+;check 16 pixels left of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
+  .LadderFoundUnderLeftFoot1:               
+  ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
+;  ld    de,XaddLeftPlayer+2-16   ;add x to check (x is expressed in pixels)
+  ld    de,+3-8-16   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jr    nz,.LadderFoundUnderLeftFoot2
+
+  ld    b,YaddFeetPlayer-9  ;add y to check (y is expressed in pixels)
+;  ld    de,XaddLeftPlayer+2-16   ;add x to check (x is expressed in pixels)
+  ld    de,+3-8-16   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  jr    nz,.SnapToPlatformBelow
+
+;check 16 pixels right of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
+  .LadderFoundUnderLeftFoot2:
+  ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
+;  ld    de,XaddRightPlayer-2+16  ;add x to check (x is expressed in pixels)
+  ld    de,+3-8+16  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  ret   nz
+
+  ld    b,YaddFeetPlayer-9    ;add y to check (y is expressed in pixels)
+;  ld    de,XaddRightPlayer-2+16  ;add x to check (x is expressed in pixels)
+  ld    de,+3-8+16  ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
   ret   z
 
