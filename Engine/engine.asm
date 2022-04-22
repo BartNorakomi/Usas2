@@ -807,7 +807,7 @@ PutPlayersprite:
 ;	ld		a,1
 ;	call	SetVdp_Write
 
-	ld		a,PlayerSpritesBlock
+	ld		a,PlayerSpritesBlock 
 	call	block1234		;set blocks in page 1/2
 
   standchar:	equ	$+1
@@ -6781,9 +6781,9 @@ SetBorderMaskingSprites:
   
   ld    a,(CameraX)
   and   %0000 1111
-  add   a,15
+  add   a,15 + 1
   ld    c,a                 ;x bordermasking sprite left side of screen
-  add   a,225
+  add   a,225 - 1
   ld    d,a                 ;x bordermasking sprite right side of screen
   
   ld    a,(CameraY)

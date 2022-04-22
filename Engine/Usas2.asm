@@ -1413,9 +1413,6 @@ PlayerSpriteData_Char_RightCharge7:        include "..\sprites\secretsofgrindea\
 PlayerSpriteData_Colo_RightCharge7:        include "..\sprites\secretsofgrindea\RightCharge7.tcs.gen"	  | db +2-8,-2
 PlayerSpriteData_Char_RightCharge8:        include "..\sprites\secretsofgrindea\RightCharge8.tgs.gen"	  
 PlayerSpriteData_Colo_RightCharge8:        include "..\sprites\secretsofgrindea\RightCharge8.tcs.gen"	  | db +1-8,-1
-
-
-
 EndPlayerSprites1: | ds $c000-$,$ff | dephase ;bf80
 
 ;
@@ -2863,7 +2860,12 @@ MapE01:
 MapE02:
   incbin "..\maps\e02.map.pck"  | .amountofobjects: db  0
 MapE03:
-  incbin "..\maps\e03.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\e03.map.pck"  | .amountofobjects: db  1
+  
+  ;Player Reflection 
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
+  
 MapE04:
   incbin "..\maps\e04.map.pck"  | .amountofobjects: db  0
 MapE05:
@@ -2897,7 +2899,12 @@ MapF01:
 MapF02:
   incbin "..\maps\f02.map.pck"  | .amountofobjects: db  0
 MapF03:
-  incbin "..\maps\f03.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\f03.map.pck"  | .amountofobjects: db  1
+  
+  ;Player Reflection 
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
+
 MapF04:
   incbin "..\maps\f04.map.pck"  | .amountofobjects: db  0
 MapF05:
@@ -2931,7 +2938,12 @@ MapG01:
 MapG02:
   incbin "..\maps\g02.map.pck"  | .amountofobjects: db  0
 MapG03:
-  incbin "..\maps\g03.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\g03.map.pck"  | .amountofobjects: db  1
+  
+  ;Player Reflection 
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
+
 MapG04:
   incbin "..\maps\g04.map.pck"  | .amountofobjects: db  0
 MapG05:
@@ -2999,6 +3011,67 @@ phase	$4000
   incbin "..\grapx\tilesheets\sBurialBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
+
+;
+; block $99 - $ 9a
+;
+PlayerReflectionSpriteblock:  equ   $99
+phase	$8000
+ReflPlayerSpriteData_Char_RightStand:           include "..\sprites\enemies\ReflectionPlayer\RightStand.tgs.gen"	  
+ReflPlayerSpriteData_Colo_RightStand:           include "..\sprites\enemies\ReflectionPlayer\RightStand.tcs.gen"  | db 0,0, 0,0, 0,0
+
+ReflPlayerSpriteData_Char_LeftStand:           	include "..\sprites\enemies\ReflectionPlayer\LeftStand.tgs.gen"	    
+ReflPlayerSpriteData_Colo_LeftStand:           	include "..\sprites\enemies\ReflectionPlayer\LeftStand.tcs.gen"		| db 0,0, 0,0, 0,0
+
+ReflPlayerSpriteData_Char_RightRun7:            include "..\sprites\enemies\ReflectionPlayer\RightRun7.tgs.gen"	  
+ReflPlayerSpriteData_Colo_RightRun7:            include "..\sprites\enemies\ReflectionPlayer\RightRun7.tcs.gen"	  | db 0,-1, 0,-1, 0,-1 ; db +0-8,-1
+ReflPlayerSpriteData_Char_RightRun8:            include "..\sprites\enemies\ReflectionPlayer\RightRun8.tgs.gen"	  
+ReflPlayerSpriteData_Colo_RightRun8:            include "..\sprites\enemies\ReflectionPlayer\RightRun8.tcs.gen"	  | db 0,-2, 0,-2, 0,-2 ; db +0-8,-2
+ReflPlayerSpriteData_Char_RightRun9:            include "..\sprites\enemies\ReflectionPlayer\RightRun9.tgs.gen"	  
+ReflPlayerSpriteData_Colo_RightRun9:            include "..\sprites\enemies\ReflectionPlayer\RightRun9.tcs.gen"	  | db 0,-2, 0,-2, 0,-2 ; db +0-8,-2
+ReflPlayerSpriteData_Char_RightRun10:           include "..\sprites\enemies\ReflectionPlayer\RightRun10.tgs.gen"	  
+ReflPlayerSpriteData_Colo_RightRun10:           include "..\sprites\enemies\ReflectionPlayer\RightRun10.tcs.gen"	| db 0,-2, 0,-2, 0,-2 ; db +0-8,-2  
+ReflPlayerSpriteData_Char_RightRun1:            include "..\sprites\enemies\ReflectionPlayer\RightRun1.tgs.gen"	  
+ReflPlayerSpriteData_Colo_RightRun1:            include "..\sprites\enemies\ReflectionPlayer\RightRun1.tcs.gen"	  | db 0,-1, 0,-1, 0,-1 ; db +0-8,-1
+ReflPlayerSpriteData_Char_RightRun2:            include "..\sprites\enemies\ReflectionPlayer\RightRun2.tgs.gen"	  
+ReflPlayerSpriteData_Colo_RightRun2:            include "..\sprites\enemies\ReflectionPlayer\RightRun2.tcs.gen"	  | db 0,-1, 0,-1, 0,-1 ; db +0-8,-1
+ReflPlayerSpriteData_Char_RightRun3:            include "..\sprites\enemies\ReflectionPlayer\RightRun3.tgs.gen"	  
+ReflPlayerSpriteData_Colo_RightRun3:            include "..\sprites\enemies\ReflectionPlayer\RightRun3.tcs.gen"	  | db 0,-1, 0,-1, 0,-1 ; db +0-8,-1
+ReflPlayerSpriteData_Char_RightRun4:            include "..\sprites\enemies\ReflectionPlayer\RightRun4.tgs.gen"	  
+ReflPlayerSpriteData_Colo_RightRun4:            include "..\sprites\enemies\ReflectionPlayer\RightRun4.tcs.gen"	  | db 0,-2, 0,-2, 0,-2 ; db +0-8,-2
+ReflPlayerSpriteData_Char_RightRun5:            include "..\sprites\enemies\ReflectionPlayer\RightRun5.tgs.gen"	  
+ReflPlayerSpriteData_Colo_RightRun5:            include "..\sprites\enemies\ReflectionPlayer\RightRun5.tcs.gen"	  | db 0,-3, 0,-3, 0,-3 ; db +0-8,-3
+ReflPlayerSpriteData_Char_RightRun6:            include "..\sprites\enemies\ReflectionPlayer\RightRun6.tgs.gen"	  
+ReflPlayerSpriteData_Colo_RightRun6:            include "..\sprites\enemies\ReflectionPlayer\RightRun6.tcs.gen"	  | db 0,-1, 0,-1, 0,-1 ; db +0-8,-1
+
+ReflPlayerSpriteData_Char_LeftRun2:             include "..\sprites\enemies\ReflectionPlayer\LeftRun2.tgs.gen"	  
+ReflPlayerSpriteData_Colo_LeftRun2:             include "..\sprites\enemies\ReflectionPlayer\LeftRun2.tcs.gen"	  | db 0,+1, 0,+1, 0,+1 ; db +0-8,+1
+ReflPlayerSpriteData_Char_LeftRun3:             include "..\sprites\enemies\ReflectionPlayer\LeftRun3.tgs.gen"	  
+ReflPlayerSpriteData_Colo_LeftRun3:             include "..\sprites\enemies\ReflectionPlayer\LeftRun3.tcs.gen"	  | db 0,+1, 0,+1, 0,+1 ; db +0-8,+1
+ReflPlayerSpriteData_Char_LeftRun4:             include "..\sprites\enemies\ReflectionPlayer\LeftRun4.tgs.gen"	  
+ReflPlayerSpriteData_Colo_LeftRun4:             include "..\sprites\enemies\ReflectionPlayer\LeftRun4.tcs.gen"	  | db 0,+2, 0,+2, 0,+2 ; db +0-8,+2
+ReflPlayerSpriteData_Char_LeftRun5:             include "..\sprites\enemies\ReflectionPlayer\LeftRun5.tgs.gen"	  
+ReflPlayerSpriteData_Colo_LeftRun5:             include "..\sprites\enemies\ReflectionPlayer\LeftRun5.tcs.gen"	  | db 0,+3, 0,+3, 0,+3 ; db +0-8,+3
+ReflPlayerSpriteData_Char_LeftRun6:             include "..\sprites\enemies\ReflectionPlayer\LeftRun6.tgs.gen"	  
+ReflPlayerSpriteData_Colo_LeftRun6:             include "..\sprites\enemies\ReflectionPlayer\LeftRun6.tcs.gen"	  | db 0,+1, 0,+1, 0,+1 ; db +0-8,+1
+ReflPlayerSpriteData_Char_LeftRun7:             include "..\sprites\enemies\ReflectionPlayer\LeftRun7.tgs.gen"	  
+ReflPlayerSpriteData_Colo_LeftRun7:             include "..\sprites\enemies\ReflectionPlayer\LeftRun7.tcs.gen"	  | db 0,+1, 0,+1, 0,+1 ; db +0-8,+1
+ReflPlayerSpriteData_Char_LeftRun8:             include "..\sprites\enemies\ReflectionPlayer\LeftRun8.tgs.gen"	  
+ReflPlayerSpriteData_Colo_LeftRun8:             include "..\sprites\enemies\ReflectionPlayer\LeftRun8.tcs.gen"	  | db 0,+2, 0,+2, 0,+2 ; db +0-8,+2
+ReflPlayerSpriteData_Char_LeftRun9:             include "..\sprites\enemies\ReflectionPlayer\LeftRun9.tgs.gen"	  
+ReflPlayerSpriteData_Colo_LeftRun9:             include "..\sprites\enemies\ReflectionPlayer\LeftRun9.tcs.gen"	  | db 0,+2, 0,+2, 0,+2 ; db +0-8,+2
+ReflPlayerSpriteData_Char_LeftRun10:            include "..\sprites\enemies\ReflectionPlayer\LeftRun10.tgs.gen"	  
+ReflPlayerSpriteData_Colo_LeftRun10:            include "..\sprites\enemies\ReflectionPlayer\LeftRun10.tcs.gen"	  | db 0,+2, 0,+2, 0,+2 ; db +0-8,+2
+ReflPlayerSpriteData_Char_LeftRun1:             include "..\sprites\enemies\ReflectionPlayer\LeftRun1.tgs.gen"	  
+ReflPlayerSpriteData_Colo_LeftRun1:             include "..\sprites\enemies\ReflectionPlayer\LeftRun1.tcs.gen"	  | db 0,+1, 0,+1, 0,+1 ; db +0-8,+1
+
+
+
+
+	ds		$c000-$,$ff
+dephase
+
+
 
 
 

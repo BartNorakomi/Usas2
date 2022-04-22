@@ -51,6 +51,7 @@
 ;DrippingOozeDrop
 ;BigStatueMouth
 ;CuteMiniBat
+;PlayerReflection
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -555,8 +556,63 @@ Template:
 
 
 
+PlayerReflection:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+;  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+;  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,PlayerReflectionSpriteblock        ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+    
+  .HandlePhase:
+  .SetX:
+  ld    hl,(ClesX)
+  ld    de,08
+  add   hl,de
+  ld    (ix+enemies_and_objects.x),l
+  ld    (ix+enemies_and_objects.x+1),h
+  
+  .SetY:
+  ;Player Y = $b7 when standing on the ground
+  ld    a,(ClesY)
+  cp    $b7 - 16
+  jr    nc,.go
+  ld    a,$b7 - 20
+  .go:
+  neg
+  add   $7f
+  ld    (ix+enemies_and_objects.y),a
+  
+  .Animate:
+  ld    iy,ReflPlayerSpriteData_Char_RightStand
+  ld    bc,ReflPlayerSpriteData_Char_LeftStand - ReflPlayerSpriteData_Char_RightStand
 
+  ld    hl,(standchar)
+  ld    de,PlayerSpriteData_Char_RightStand
+  xor   a
+  sbc   hl,de
+  jr    z,.SpriteFound
+  add   iy,bc
+  ld    de,PlayerSpriteData_Char_LeftStand - PlayerSpriteData_Char_RightStand
 
+  ld    a,25
+  .loop:
+  sbc   hl,de
+  jr    z,.SpriteFound
+  add   iy,bc
+  dec   a
+  jr    nz,.loop
+
+  .SpriteFound:
+  push  iy
+  pop   hl
+  ret
 
 CuteMiniBat:
 ;v1=Animation Counter
