@@ -16,7 +16,7 @@
     {"instances":[
         {"properties":[],"isDnd":false,"objectId":{"name":"oSpider","path":"objects/oSpider/oSpider.yy",},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":1.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":192.0,"y":192.0,"resourceVersion":"1.0","name":"inst_5104DD6C","tags":[],"resourceType":"GMRInstance",},
       ],"visible":true,"depth":0,"userdefinedDepth":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":32,"gridY":32,"layers":[],"hierarchyFrozen":false,"effectEnabled":true,"effectType":null,"properties":[],"resourceVersion":"1.0","name":"Instances","tags":[],"resourceType":"GMRInstanceLayer",},
-    {"tilesetId":{"name":"tsKarniMata_Foreground","path":"tilesets/tsKarniMata_Foreground/tsKarniMata_Foreground.yy",},"x":0,"y":0,"tiles":{"SerialiseWidth":38,"SerialiseHeight":27,"TileSerialiseData":[
+    {"tilesetId":null,"x":0,"y":0,"tiles":{"SerialiseWidth":38,"SerialiseHeight":27,"TileSerialiseData":[
 186,187,220,221,222,223,218,219,220,221,222,223,218,219,220,221,222,223,218,219,220,221,222,223,218,219,220,221,222,223,218,219,220,221,222,223,186,187,
 190,191,252,253,254,255,250,251,252,253,254,255,250,251,252,253,254,255,250,251,252,253,254,255,250,251,252,253,254,255,250,251,252,253,254,255,190,191,
 188,189,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,2147483648,188,189,
@@ -45,7 +45,7 @@
 218,219,220,221,222,223,218,219,220,221,222,223,218,219,220,221,222,223,218,219,220,221,222,223,218,219,220,221,222,223,218,219,220,221,222,223,218,219,
 250,251,252,253,254,255,250,251,252,253,254,255,250,251,252,253,254,255,250,251,252,253,254,255,250,251,252,253,254,255,250,251,252,253,254,255,250,251,
 ],},"visible":true,"depth":100,"userdefinedDepth":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":32,"gridY":32,"layers":[],"hierarchyFrozen":false,"effectEnabled":true,"effectType":null,"properties":[],"resourceVersion":"1.0","name":"ForegroundTiles","tags":[],"resourceType":"GMRTileLayer",},
-    {"tilesetId":{"name":"tsKarniMata_Background","path":"tilesets/tsKarniMata_Background/tsKarniMata_Background.yy",},"x":0,"y":0,"tiles":{"SerialiseWidth":38,"SerialiseHeight":27,"TileSerialiseData":[
+    {"tilesetId":null,"x":0,"y":0,"tiles":{"SerialiseWidth":38,"SerialiseHeight":27,"TileSerialiseData":[
 424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,
 456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,
 424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,424,456,

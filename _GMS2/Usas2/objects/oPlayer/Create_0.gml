@@ -5,12 +5,11 @@ pose = "standing";
 //layerID = layer_get_id("ForegroundTiles");
 //tilemap = layer_tilemap_get_id(layerID);
 
-RoomX = 0;
-RoomY = 2;
-global.map_array[0,0] = Room1A; global.map_array[0,1] = Room1B;
-global.map_array[1,0] = Room2A; global.map_array[1,1] = Room2B;
-global.map_array[2,0] = Room3A
-global.map_array[3,0] = Room4A
+RoomX = 2;
+RoomY = 1;
+global.map_array[0,0] = A01; global.map_array[0,1] = B01; global.map_array[0,2] = C01;
+global.map_array[1,0] = A02; global.map_array[1,1] = B02; global.map_array[1,2] = C02;
+global.map_array[2,0] = A03; global.map_array[2,1] = B03; global.map_array[2,2] = C03;
 
 room_goto(global.map_array[RoomY,RoomX]);
 

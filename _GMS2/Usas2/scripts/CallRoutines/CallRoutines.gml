@@ -490,13 +490,13 @@ function CheckChangeRoom()
 //show_debug_message(x);
 //show_debug_message(y);
 //show_debug_message(RoomX);
-	if (x=296)
+	if (x>296)
 	{
 		RoomX += 1;
 		x=10;
 		room_goto(global.map_array[RoomY,RoomX]);
 	}
-	if (x=8)
+	if (x<8)
 	{
 		RoomX -= 1;
 		x=294;
