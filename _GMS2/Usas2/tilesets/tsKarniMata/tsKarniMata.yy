@@ -1056,8 +1056,8 @@
     "TileSerialiseData": [],
   },
   "parent": {
-    "name": "KarniMata",
-    "path": "folders/Tile Sets/KarniMata.yy",
+    "name": "Tile Sets",
+    "path": "folders/Tile Sets.yy",
   },
   "resourceVersion": "1.0",
   "name": "tsKarniMata",

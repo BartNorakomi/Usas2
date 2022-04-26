@@ -1056,8 +1056,8 @@
     "TileSerialiseData": [],
   },
   "parent": {
-    "name": "sVoodooWasp",
-    "path": "folders/Tile Sets/sVoodooWasp.yy",
+    "name": "Tile Sets",
+    "path": "folders/Tile Sets.yy",
   },
   "resourceVersion": "1.0",
   "name": "tsVoodooWasp",

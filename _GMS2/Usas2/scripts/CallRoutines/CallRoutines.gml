@@ -490,28 +490,39 @@ function CheckChangeRoom()
 //show_debug_message(x);
 //show_debug_message(y);
 //show_debug_message(RoomX);
+	// Initialise Viewports
+	view_enabled = true;
+	view_visible[0] = true;
+	view_wport[0] = 768;
+	view_hport[0] = 648;
+	camera_set_view_size(view_camera[0], 256, 216);
+
 	if (x>296)
 	{
 		RoomX += 1;
 		x=10;
+		camera_destroy(view_camera[0]);	/// Clean Up Cameras	
 		room_goto(global.map_array[RoomY,RoomX]);
 	}
 	if (x<8)
 	{
 		RoomX -= 1;
 		x=294;
+		camera_destroy(view_camera[0]);	/// Clean Up Cameras	
 		room_goto(global.map_array[RoomY,RoomX]);		
 	}
 	if (y>194)
 	{
 		RoomY += 1;
 		y=18;
+		camera_destroy(view_camera[0]);	/// Clean Up Cameras	
 		room_goto(global.map_array[RoomY,RoomX]);		
 	}
 	if (y<18)
 	{
 		RoomY -= 1;
 		y=194;
+		camera_destroy(view_camera[0]);	/// Clean Up Cameras	
 		room_goto(global.map_array[RoomY,RoomX]);		
 	}
 
