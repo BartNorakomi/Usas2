@@ -4049,7 +4049,7 @@ ClimbStairsRightUp:
 	bit		3,a           ;cursor right pressed ?
 	jp		nz,.ClimbUp
 
-  ld    a,(NewPrContr)
+;  ld    a,(NewPrContr)
 ;	bit		4,a           ;space pressed ?
 ;	jp		nz,Set_R_standpunch
 ;	bit		5,a           ;b pressed ?
@@ -4179,7 +4179,7 @@ ClimbStairsLeftUp:
 	bit		3,a           ;cursor right pressed ?
 	jp		nz,.ClimbDown
 
-  ld    a,(NewPrContr)
+;  ld    a,(NewPrContr)
 ;	bit		4,a           ;space pressed ?
 ;	jp		nz,Set_R_standpunch
 ;	bit		5,a           ;b pressed ?

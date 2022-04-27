@@ -268,6 +268,113 @@ function CheckLadderAbove() // check if up is pressed and if there is a ladder a
 }
 #endregion
 
+#region // CheckSnapToStairs
+function CheckSnapToStairs() // check if up is pressed while jumping and if there are stairs to snap to
+{
+	if keyboard_check(vk_up)
+	{
+		//check if there is a stairs left up tile below right foot
+		if (tilemap_get_at_pixel(tilemap,bbox_left+8,bbox_bottom) = 48)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+8,bbox_bottom) = 49)
+		{
+			x = x - (x mod 8); // Snap x Position
+			y = y - (y mod 8); // Snap y Position
+			pose = "climbstairsleftup";
+			image_xscale = -1;
+		}
+
+		//check if there is a stairs right up tile below left foot
+		if (tilemap_get_at_pixel(tilemap,bbox_left+8,bbox_bottom) = 50)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+8,bbox_bottom) = 51)
+		{
+			x = x - (x mod 8); // Snap x Position
+			x += 8;
+			y = y - (y mod 8); // Snap y Position
+			pose = "climbstairsrightup";
+			image_xscale = 1;
+		}
+
+	}
+}
+#endregion
+
+#region // CheckClimbStairsDown
+function CheckClimbStairsDown() // check if there are stairs when pressing down, if so climb the stairs.
+{
+	if keyboard_check(vk_down)
+	{
+		// Check if there is a tile below left foot AND right foot
+		// Check stairs going RIGHT UP
+		if (tilemap_get_at_pixel(tilemap,bbox_left-4,bbox_bottom+9) = 50)
+		or (tilemap_get_at_pixel(tilemap,bbox_left-4,bbox_bottom+9) = 51)
+		{
+			x = x - (x mod 8); // Snap x Position
+			x += 8;
+			y = y - (y mod 8); // Snap y Position
+			pose = "climbstairsrightup";
+			image_xscale = 1;
+		}
+		else
+		if (tilemap_get_at_pixel(tilemap,bbox_left+2,bbox_bottom+9) = 50)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+2,bbox_bottom+9) = 51)
+		{
+			x += 6;
+			x = x - (x mod 8); // Snap x Position
+			x += 8;
+			y = y - (y mod 8); // Snap y Position
+			pose = "climbstairsrightup";
+			image_xscale = -1;
+		}
+
+
+
+		// Check stairs going LEFT UP
+		if (tilemap_get_at_pixel(tilemap,bbox_left+14,bbox_bottom+9) = 48)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+14,bbox_bottom+9) = 49)
+		{
+			x = x - (x mod 8); // Snap x Position
+			x += 6;
+			y = y - (y mod 8); // Snap y Position
+			pose = "climbstairsleftup";
+			image_xscale = 1;
+		}
+		else
+		if (tilemap_get_at_pixel(tilemap,bbox_left+8,bbox_bottom+9) = 48)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+8,bbox_bottom+9) = 49)
+		{
+			x = x - (x mod 8); // Snap x Position
+			x -= 8;
+			y = y - (y mod 8); // Snap y Position
+			pose = "climbstairsleftup";
+			image_xscale = 1;
+		}
+
+
+
+
+
+
+
+
+
+
+		//check if there is a stairs right up tile below left foot
+		if (tilemap_get_at_pixel(tilemap,bbox_left+8,bbox_bottom) = 48)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+8,bbox_bottom) = 49)
+		{
+//			x = x - (x mod 8); // Snap x Position
+//			y = y - (y mod 8); // Snap y Position
+//			pose = "climbstairsleftup";
+//			image_xscale = -1;
+		}
+
+	}
+}
+#endregion
+
+
+
+
 //enemies
 #region // FaceEnemyLeftOrRight
 function FaceEnemyLeftOrRight() // face player left or right by scaling x (horizontal mirroring)

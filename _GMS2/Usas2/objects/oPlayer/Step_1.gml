@@ -24,13 +24,16 @@ if(pose = "sitting") // sitting
 	CheckStandingOnPlatform(); // check if player is standing on platform. if not -> fall
 	CheckRoll(); // check if trig B is pressed. if so -> Roll
 	CheckCharge(); // check if trig C is pressed. if so -> charge
+	CheckClimbStairsDown(); // check if there are stairs when pressing down, if so climb the stairs.
 }
 
 if(pose = "jumping") // jumping
 {
 	FacePlayerLeftOrRight(); //  face player left or right by scaling x (horizontal mirroring)
 	HorizontalMovement(); // move player horizontally
+	CheckSnapToStairs(); // check if up is held down while jumping and if there are stairs to snap to
 	VerticalMovement(); // move player vertically
+	CheckSnapToStairs(); // check if up is held down while jumping and if there are stairs to snap to
 	CheckKickWhileJump(); // check if trig a is pressed. if so, kick while jump
 	CheckLadderAbove(); // check if up is pressed and if there is a ladder above player. if so -> climb up
 	CheckLadderBelowMidAir(); // check if down is pressed and if there is a ladder below player. if so -> climb down 
@@ -162,6 +165,7 @@ if(pose = "climb") // climbing
 	{	
 		pose = "climbup"; // jump off the top of the ladder
 		animationcounter = 0;
+		image_index = 0;
 	}
 }
 
@@ -170,6 +174,118 @@ if(pose = "climbup") // jump off the top of the ladder
 	sprite_index = sPlayerClimbJumpUp;
 	animationcounter += 1;
 	y += climbup_table[animationcounter];
+}
+
+if(pose = "climbstairsleftup") // climbing stairs left up
+{	
+	sprite_index = sPlayerRun; // set walking sprite
+	if (hsp = -1) or (vsp = -1) 
+	{
+		x -= 1;
+		y -= 1;
+		if (image_xscale = 1) x -= 6;		
+		image_xscale = -1;	// face player left
+		stored_image_index = image_index;
+
+		// check if there are still stairs when climbing up, if not, then run left
+		if (tilemap_get_at_pixel(tilemap,bbox_left+7,bbox_bottom-1) = 48)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+7,bbox_bottom-1) = 49)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+15,bbox_bottom+7) = 48)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+15,bbox_bottom+7) = 49)
+		{
+		}
+		else
+		{
+			pose = "walking";
+			movementTablePointer = movementTableStart;
+		}
+	}
+	else
+	if (hsp = 1) or (vsp = 1) 
+	{
+		x += 1;
+		y += 1;
+		if (image_xscale = -1) x += 6;
+		image_xscale = 1;	// face player right
+		stored_image_index = image_index;
+		// check if there are still stairs when climbing down, if not, then run right
+		if (tilemap_get_at_pixel(tilemap,bbox_left+2,bbox_bottom-0) = 48)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+2,bbox_bottom-0) = 49)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+10,bbox_bottom+8) = 48)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+10,bbox_bottom+8) = 49)
+		{
+		}
+		else
+		{
+			pose = "walking";
+			movementTablePointer = movementTableEnd;
+		}
+
+
+	}
+
+	if (hsp = 0) and (vsp = 0) 
+	{
+		image_index = stored_image_index; // stop sprite animation
+	}
+
+
+}
+
+if(pose = "climbstairsrightup") // climbing stairs right up
+{	
+	sprite_index = sPlayerRun; // set walking sprite
+	if (hsp = -1) or (vsp = +1) 
+	{
+		x -= 1;
+		y += 1;
+		if (image_xscale = 1) x -= 6;		
+		image_xscale = -1;	// face player left
+		stored_image_index = image_index;
+
+		// check if there are still stairs when climbing down, if not, then run left
+		if (tilemap_get_at_pixel(tilemap,bbox_left+13,bbox_bottom-0) = 50)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+13,bbox_bottom-0) = 51)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+5,bbox_bottom+8) = 50)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+5,bbox_bottom+8) = 51)
+		{
+		}
+		else
+		{
+			pose = "walking";
+			movementTablePointer = movementTableStart;
+		}
+	}
+	else
+	if (hsp = 1) or (vsp = -1) 
+	{
+		x += 1;
+		y -= 1;
+		if (image_xscale = -1) x += 6;
+		image_xscale = 1;	// face player right
+		stored_image_index = image_index;
+		// check if there are still stairs when climbing up, if not, then run right
+		if (tilemap_get_at_pixel(tilemap,bbox_left+8,bbox_bottom-1) = 50)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+8,bbox_bottom-1) = 51)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+0,bbox_bottom+7) = 50)
+		or (tilemap_get_at_pixel(tilemap,bbox_left+0,bbox_bottom+7) = 51)
+		{
+		}
+		else
+		{
+			pose = "walking";
+			movementTablePointer = movementTableEnd;
+		}
+
+
+	}
+
+	if (hsp = 0) and (vsp = 0) 
+	{
+		image_index = stored_image_index; // stop sprite animation
+	}
+
+
 }
 
 if(pose = "beinghit") // being hit

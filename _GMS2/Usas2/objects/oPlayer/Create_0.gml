@@ -5,7 +5,7 @@ pose = "standing";
 //layerID = layer_get_id("ForegroundTiles");
 //tilemap = layer_tilemap_get_id(layerID);
 
-RoomX = 4;
+RoomX = 2;
 RoomY = 5;
 global.map_array[0,0] = A01; global.map_array[0,1] = B01; global.map_array[0,2] = C01; global.map_array[0,3] = D01; global.map_array[0,4] = E01; global.map_array[0,5] = F01; global.map_array[0,6] = G01;
 global.map_array[1,0] = A02; global.map_array[1,1] = B02; global.map_array[1,2] = C02; global.map_array[1,3] = D02; global.map_array[1,4] = E02; global.map_array[1,5] = F02; global.map_array[1,6] = G02;
@@ -39,6 +39,7 @@ movementTablePointer = movementTableMiddle;
 movementTableLenght = 17;
 PlayerInvulnerable = 0;
 PlayerSnapToPlatform = false;
+stored_image_index = 0;
 
 audio_play_sound(sndWolftune1, 10, true);
 audio_play_sound(sndWolftune1, 10, true);
