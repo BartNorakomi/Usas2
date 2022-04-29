@@ -161,11 +161,19 @@ function FacePlayerLeftOrRight() // face player left or right by scaling x (hori
 #region // CheckStandingOnPlatform
 function CheckStandingOnPlatform() // check if player is standing on platform. if not -> fall
 {	
+		// tilenr: 1 t/m 16 = ladder
+		// tilenr: 17 t/m 31 = 
+		// tilenr: 32 t/m 39 = spikes/poison
+		// tilenr: 40 t/m 47 = lava
+		// tilenr: 48 t/m 49 = stairs left
+		// tilenr: 50 t/m 51 = stairs right
+		// tilenr: 52 t/m 255 = foreground
+		// tilenr: 256 t/m 1023 = background	
 		if (PlayerSnapToPlatform = false)
 		{
-			if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 256)
-			or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 256)
-			{}else
+			if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) > 255) and (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) > 255)
+			or (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) > 31) and (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) > 31) 
+			and (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom) < 48) and (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom) < 48) 
 			{	
 				pose = "jumping";
 				jump_speed = +0.25;
@@ -265,6 +273,26 @@ function CheckLadderAbove() // check if up is pressed and if there is a ladder a
 				animationcounter = 0;				
 			}
 	}
+}
+#endregion
+
+#region // CheckSpikesOrPoison
+function CheckSpikesOrPoison() // check if player touches spikes or poison
+{
+	// tilenr: 32 t/m 39 = spikes/poison
+	if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom-1) > 31) and (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom-1) < 40)
+	or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom-1) > 31) and (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom-1) < 40)
+		PlayerHit(); // Player is hit		
+}
+#endregion
+
+#region // CheckLava
+function CheckLava() // check if player touches lava
+{
+	// tilenr: 40 t/m 47 = lava
+	if (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom-1) > 39) and (tilemap_get_at_pixel(tilemap,bbox_left+1,bbox_bottom-1) < 48)
+	or (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom-1) > 39) and (tilemap_get_at_pixel(tilemap,bbox_right-1,bbox_bottom-1) < 48)
+		pose = "dying"; // Player is dead
 }
 #endregion
 
@@ -372,8 +400,21 @@ function CheckClimbStairsDown() // check if there are stairs when pressing down,
 }
 #endregion
 
-
-
+#region // PlayerHit
+function PlayerHit() //  Player is hit
+{
+	if (oPlayer.PlayerInvulnerable = 0) and (oPlayer.pose != "dying")
+	{
+		oPlayer.pose = "beinghit";
+		oPlayer.jump_speed = -4;
+		oPlayer.animationcounter = 0;
+		oPlayer.PlayerInvulnerable = 100; // invulnerable frames after being hit
+		oPlayer.movementTablePointer_stored = oPlayer.movementTablePointer;
+		audio_play_sound(sndPlayerhit, 1, false);
+		audio_play_sound(sndPlayerhit, 1, false);
+	}
+}
+#endregion
 
 //enemies
 #region // FaceEnemyLeftOrRight
@@ -503,19 +544,7 @@ function TurnWhenHitWall()
 #region // CheckCollisionPlayerEnemy
 function CheckCollisionPlayerEnemy()
 {	
-	if place_meeting(x, y, oPlayer)
-	{
-		if (oPlayer.PlayerInvulnerable = 0) and (oPlayer.pose != "dying")
-		{
-			oPlayer.pose = "beinghit";
-			oPlayer.jump_speed = -4;
-			oPlayer.animationcounter = 0;
-			oPlayer.PlayerInvulnerable = 100; // invulnerable frames after being hit
-			oPlayer.movementTablePointer_stored = oPlayer.movementTablePointer;
-			audio_play_sound(sndPlayerhit, 1, false);
-			audio_play_sound(sndPlayerhit, 1, false);
-		}
-	}	
+	if place_meeting(x, y, oPlayer) PlayerHit(); // Player is hit	
 }
 #endregion
 

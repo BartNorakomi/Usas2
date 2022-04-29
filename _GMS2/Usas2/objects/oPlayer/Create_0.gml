@@ -5,8 +5,8 @@ pose = "standing";
 //layerID = layer_get_id("ForegroundTiles");
 //tilemap = layer_tilemap_get_id(layerID);
 
-RoomX = 2;
-RoomY = 5;
+RoomX = 5;
+RoomY = 6;
 global.map_array[0,0] = A01; global.map_array[0,1] = B01; global.map_array[0,2] = C01; global.map_array[0,3] = D01; global.map_array[0,4] = E01; global.map_array[0,5] = F01; global.map_array[0,6] = G01;
 global.map_array[1,0] = A02; global.map_array[1,1] = B02; global.map_array[1,2] = C02; global.map_array[1,3] = D02; global.map_array[1,4] = E02; global.map_array[1,5] = F02; global.map_array[1,6] = G02;
 global.map_array[2,0] = A03; global.map_array[2,1] = B03; global.map_array[2,2] = C03; global.map_array[2,3] = D03; global.map_array[2,4] = E03; global.map_array[2,5] = F03; global.map_array[2,6] = G03;

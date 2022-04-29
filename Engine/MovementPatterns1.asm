@@ -52,6 +52,8 @@
 ;BigStatueMouth
 ;CuteMiniBat
 ;PlayerReflection
+;AppearingBlocks
+;DisappearingBlocks
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -549,11 +551,189 @@ Template:
 
 
 
+AppBlocksHandler:  
+  ld    a,(ix+enemies_and_objects.v1)     ;v1 = activate block timer
+  inc   a
+  and   31
+  ld    (ix+enemies_and_objects.v1),a     ;v1 = activate block timer
+  ret   nz
+  
+  ld    a,(ix+enemies_and_objects.v2)     ;v2 = activate block table step pointer
+  add   a,3
+  ld    (ix+enemies_and_objects.v2),a     ;v2 = activate block table step pointer
+  
+  ld    hl,AppearingBlocksTable-3
+  ld    d,0
+  ld    e,a
+  add   hl,de
+  
+  ld    a,(hl)                            ;dy
+  cp    255
+  jr    nz,.NotEndTable
+  ld    (ix+enemies_and_objects.v2),3     ;v2 = activate block table step pointer
+  ld    hl,AppearingBlocksTable
+  ld    a,(hl)
+  .NotEndTable:
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v2),a
+  inc   hl
+  ld    a,(hl)                            ;dx
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v3),a
+  inc   hl
+  ld    a,(hl)
+  or    a
+  ld    hl,DisappearingBlocks
+  jr    z,.activate
+  ld    hl,AppearingBlocks
+  .activate:
+  ;activate (Dis)appearing Blocks
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.movementpattern),l
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.movementpattern+1),h
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),1
+  ret
+
+AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
+  db    17*8,07*8,1, 07*8,23*8,0, 13*8,13*8,1, 07*8,27*8,0, 13*8,21*8,1, 17*8,07*8,0, 13*8,17*8,1, 13*8,13*8,0, 13*8,23*8,1, 13*8,21*8,0, 11*8,17*8,1
+  db    13*8,17*8,0, 11*8,09*8,1, 13*8,23*8,0, 07*8,13*8,1, 11*8,17*8,0, 07*8,19*8,1, 11*8,09*8,0, 07*8,23*8,1, 07*8,13*8,0, 07*8,27*8,1, 07*8,19*8,0
+  db    255
 
 
+DisappearingBlocks:
+;v1 = dPage
+;v2 = dy
+;v3 = dx
+;v4 = add to sy + dy
+  ld    a,25 * 8
+  ld    (ix+enemies_and_objects.y),a      ;sy object (in page 0)
+  ld    a,03 * 8
+  ld    (ix+enemies_and_objects.x),a      ;sx object (in page 0)
 
+  ld    a,(ix+enemies_and_objects.v4)     ;v4 = add to sy + dy
+  dec   a
+  and   15
+  ld    (ix+enemies_and_objects.v4),a     ;v4 = add to sy + dy
 
+  call  AppearingBlocks.init
 
+  ;put one horizontal line of the block in each page
+  call  AppearingBlocks.PutLine
+  call  AppearingBlocks.PutLine
+  call  AppearingBlocks.PutLine
+  call  AppearingBlocks.PutLine
+  
+  ld    a,(ix+enemies_and_objects.v4)     ;v4 = add to sy + dy
+  or    a
+
+  ;check if all lines are put
+  ret   nz
+  ld    (ix+enemies_and_objects.alive?),0 ;end   
+  ld    c,0
+  
+SetTilesInTileMap:
+;v2 = dy
+;v3 = dx
+  ld    a,(ix+enemies_and_objects.v2)     ;v2 = dy
+	srl		a                                 ;/2
+	srl		a                                 ;/4
+	srl		a                                 ;/8
+  ld    b,a
+  
+  ld    de,40
+  ld    hl,0
+  
+  .loop:
+  add   hl,de
+  djnz  .loop
+
+  ld    a,(ix+enemies_and_objects.v3)     ;v3 = dx
+	srl		a                                 ;/2
+	srl		a                                 ;/4
+	srl		a                                 ;/8
+  ld    e,a
+  add   hl,de
+  
+  ld    de,MapData
+  add   hl,de
+  ld    (hl),c                            ;hardforeground / hardbackground
+  inc   hl
+  ld    (hl),c                            ;hardforeground / hardbackground
+  ld    de,39
+  add   hl,de
+  ld    (hl),c                            ;hardforeground / hardbackground
+  inc   hl
+  ld    (hl),c                            ;hardforeground  / hardbackground 
+  ret
+
+AppearingBlocks:
+;v1 = dPage
+;v2 = dy
+;v3 = dx
+;v4 = add to sy + dy
+  ld    c,1
+  call  SetTilesInTileMap
+
+  ld    a,21 * 8
+  ld    (ix+enemies_and_objects.y),a      ;sy object (in page 0)
+  ld    a,19 * 8
+  ld    (ix+enemies_and_objects.x),a      ;sx object (in page 0)
+
+  call  .init
+
+  ;put one horizontal line of the block in each page
+  call  .PutLine
+  call  .PutLine
+  call  .PutLine
+  call  .PutLine
+  
+  ld    a,(ix+enemies_and_objects.v4)     ;v4 = add to sy + dy
+  inc   a
+  and   15
+  ld    (ix+enemies_and_objects.v4),a     ;v4 = add to sy + dy
+
+  ;check if all lines are put
+  ret   nz
+  ld    (ix+enemies_and_objects.alive?),0 ;end   
+  ret
+  
+  .PutLine:
+  ld    a,(ix+enemies_and_objects.v1)     ;v1 = dPage
+  inc   a
+  and   3
+  ld    (ix+enemies_and_objects.v1),a     ;v1 = dPage
+  ld    (CopyObject+dPage),a 
+  add   a,a                               ;*2
+  add   a,a                               ;*4
+  add   a,a                               ;*8
+  add   a,a                               ;*16
+  ld    b,a
+
+  ld    a,(ix+enemies_and_objects.v3)     ;v3 = dx
+  sub   a,b
+  ld    (CopyObject+dx),a  
+
+  ;put object
+  ld    hl,CopyObject
+  jp    docopy
+
+  .init:
+  ;initialize variables for line 
+  ld    a,(ix+enemies_and_objects.y)      ;sy object (in page 0)
+  add   a,(ix+enemies_and_objects.v4)     ;v4 = add to sy + dy
+  ld    (CopyObject+sy),a  
+  ld    a,(ix+enemies_and_objects.x)      ;sx object (in page 0)
+  ld    (CopyObject+sx),a  
+  ld    a,(ix+enemies_and_objects.v2)     ;v2 = dy
+  add   a,(ix+enemies_and_objects.v4)     ;v4 = add to sy + dy
+  ld    (CopyObject+dy),a  
+  ld    a,16
+  ld    (CopyObject+nx),a
+  ld    a,1
+  ld    (CopyObject+ny),a 
+  xor   a
+  ld    (CopyObject+sPage),a 
+  ld    (CopyObject+copydirection),a
+  ld    a,$d0
+  ld    (CopyObject+copytype),a
+  ret
 
 
 PlayerReflection:

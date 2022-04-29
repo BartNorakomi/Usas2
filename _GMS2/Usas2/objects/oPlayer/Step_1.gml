@@ -38,6 +38,8 @@ if(pose = "jumping") // jumping
 	CheckLadderAbove(); // check if up is pressed and if there is a ladder above player. if so -> climb up
 	CheckLadderBelowMidAir(); // check if down is pressed and if there is a ladder below player. if so -> climb down 
 	CheckDoubleJump(); // check if up is pressed while jumping and if double jump is available, if so, double jump
+	CheckSpikesOrPoison(); // check if player touches spikes or poison
+	CheckLava(); // check if player touches lava
 
 
 	// set sprite kick if kicking
@@ -85,6 +87,8 @@ if(pose = "walking") // walking
 	CheckRoll(); // check if trig B is pressed. If so -> Roll
 	CheckCharge(); // check if trig C is pressed. if so -> charge
 	CheckLadderAbove(); // check if up is pressed and if there is a ladder above player. if so -> climb up
+	CheckSpikesOrPoison(); // check if player touches spikes or poison
+	CheckLava(); // check if player touches lava
 }
 
 if(pose = "standing") // standing
@@ -99,6 +103,8 @@ if(pose = "standing") // standing
 	CheckRoll(); // check if trig B is pressed. if so -> roll
 	CheckCharge(); // check if trig C is pressed. if so -> charge
 	CheckLadderAbove(); // check if up is pressed and if there is a ladder above player. if so -> climb up
+	CheckSpikesOrPoison(); // check if player touches spikes or poison
+	CheckLava(); // check if player touches lava
 }
 
 if(pose = "standpunch") // standpunch

@@ -2727,7 +2727,20 @@ MapA03:
 MapA04:
   incbin "..\maps\a04.map.pck"  | .amountofobjects: db  0
 MapA05:
-  incbin "..\maps\a05.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\a05.map.pck"  | .amountofobjects: db  2
+
+;AppearingBlocks Handler
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object1: db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+
+;AppearingBlocks
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object2: db 0,        0|dw AppearingBlocks     |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,9*8,9*8,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+;.object1: db 1,        0|dw DisappearingBlocks  |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,21*8,19*8,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+  
+  
+  
+  
 MapA06:
   incbin "..\maps\a06.map.pck"  | .amountofobjects: db  0
 MapA07:
