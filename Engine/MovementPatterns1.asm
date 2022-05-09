@@ -54,6 +54,10 @@
 ;PlayerReflection
 ;AppearingBlocks
 ;DisappearingBlocks
+;AppBlocksHandler
+;WorldNameText
+;HugeSpiderBody
+;HugeSpiderLegs
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -551,10 +555,139 @@ Template:
 
 
 
+
+
+
+
+
+
+
+
+
+HugeSpiderLegs:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,HugeSpiderSpriteblock             ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+    
+  .HandlePhase:
+  ld    hl,HugeSpiderAnimation
+  ld    b,07                                ;animate every x frames (based on framecounter)
+  ld    c,2 * 12                            ;12 animation frame addresses
+  jp    AnimateSprite    
+
+HugeSpiderAnimation:
+  dw  HugeSpider1_Char
+  dw  HugeSpider2_Char
+  dw  HugeSpider3_Char
+  dw  HugeSpider4_Char
+  dw  HugeSpider5_Char
+  dw  HugeSpider6_Char
+  dw  HugeSpider7_Char
+  dw  HugeSpider8_Char
+  dw  HugeSpider9_Char
+  dw  HugeSpider10_Char
+  dw  HugeSpider11_Char
+  dw  HugeSpider12_Char
+
+HugeSpiderBody:
+;v1 = sx
+;v2=Phase (0=moving)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Explosion Animation Counter
+  ld    a,216
+  ld    (CopyObject+sy),a  
+  ld    a,3
+  ld    (CopyObject+sPage),a 
+
+  .HandlePhase:
+  ld    d,0
+  ld    e,(ix+(1*lenghtenemytable)+enemies_and_objects.v1)
+  ld    hl,HugeSpiderBodyOffsets
+  add   hl,de                                 ;use v1=Animation Counter of legs to find y+x offsets body
+
+  ld    a,(ix+(1*lenghtenemytable)+enemies_and_objects.y)
+  add   a,(hl)
+  ld    (ix+enemies_and_objects.y),a          ;check y legs and set body accordingly
+  
+  ld    a,(ix+(1*lenghtenemytable)+enemies_and_objects.x)
+  inc   hl
+  add   a,(hl)
+  ld    (ix+enemies_and_objects.x),a          ;check x legs and set body accordingly
+
+  ;check if spider died
+  ld    a,(ix+(1*lenghtenemytable)+enemies_and_objects.life)
+  or    a
+  jp    nz,VramObjectsTransparantCopies
+  ld    (ix+enemies_and_objects.Alive?),0
+  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+  
+HugeSpiderBodyOffsets:  ;y, x
+  db    +01,-16,  +01,-16,  +02,-16,  +03,-17, +02,-18, +01,-17, +01,-16, +01,-16,  +02,-16,  +02,-17,  +02,-18, +01,-17
+
+WorldTextStepTable:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  1,-00,+0
+  db  1,-17,+0,  1,-14,+0,  1,-11,+0,  1,-08,+0,  1,-05,+0,  1,-04,+0,  1,-03,+0,  1,-02,+0,  1,-01,+0,   127,-00,+0
+  db  1,+01,+0,  1,+02,+0,  1,+03,+0,  1,+04,+0,  1,+05,+0,  1,+08,+0,  1,+11,+0,  1,+14,+0,  1,+17,+0,  1,+1,+0,   127,-00,+0
+  db  128
+  
+TextKarniMata:
+  dw ryupage0frame013 | db 1
+
+WorldNameText:                              ;Displays the name of the world in screen when entering that world
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+  ld    de,WorldTextStepTable
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+;  call  BackdropOrange  
+  call  restoreBackgroundObject1
+;  call  ObjectAnimation
+;  call  AnimateGlassBall
+
+  ld    a,(Object1y)
+  cp    8*24+1
+  ld    hl,TextKarniMata
+  jr    c,.SetFrame
+  ld    hl,EmptyFrame  
+  .SetFrame:
+
+  ld    a,(hl)
+  ld    (Player1Frame),a
+  inc   hl
+  ld    a,(hl)
+  ld    (Player1Frame+1),a
+  inc   hl
+  ld    a,(hl)
+  ld    (Player1Frame+2),a
+
+  dec   (ix+enemies_and_objects.v8)       ;v8 = amount of frames alive
+  jr    nz,.SkipEnd
+  ld    (ix+enemies_and_objects.alive?),0 ;end     
+  .SkipEnd:
+
+  call  PutSF2Object ;CHANGES IX 
+;  call  BackdropBlack
+  call  switchpageSF2Engine
+  ret
+
 AppBlocksHandler:  
   ld    a,(ix+enemies_and_objects.v1)     ;v1 = activate block timer
   inc   a
-  and   31
+  and   63
   ld    (ix+enemies_and_objects.v1),a     ;v1 = activate block timer
   ret   nz
   
@@ -582,8 +715,10 @@ AppBlocksHandler:
   ld    a,(hl)
   or    a
   ld    hl,DisappearingBlocks
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v4),240-16  ;sx
   jr    z,.activate
   ld    hl,AppearingBlocks
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v4),128+16  ;sx
   .activate:
   ;activate (Dis)appearing Blocks
   ld    (ix+(1*lenghtenemytable)+enemies_and_objects.movementpattern),l
@@ -592,45 +727,109 @@ AppBlocksHandler:
   ret
 
 AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
-  db    17*8,07*8,1, 07*8,23*8,0, 13*8,13*8,1, 07*8,27*8,0, 13*8,21*8,1, 17*8,07*8,0, 13*8,17*8,1, 13*8,13*8,0, 13*8,23*8,1, 13*8,21*8,0, 11*8,17*8,1
-  db    13*8,17*8,0, 11*8,09*8,1, 13*8,23*8,0, 07*8,13*8,1, 11*8,17*8,0, 07*8,19*8,1, 11*8,09*8,0, 07*8,23*8,1, 07*8,13*8,0, 07*8,27*8,1, 07*8,19*8,0
+  db    15*8,18*8,1, 07*8,20*8,0, 15*8,12*8,1, 07*8,26*8,0, 15*8,06*8,1, 15*8,18*8,0, 10*8,09*8,1, 15*8,12*8,0, 10*8,15*8,1, 15*8,06*8,0, 07*8,20*8,1
+  db    10*8,09*8,0, 07*8,26*8,1, 10*8,15*8,0
   db    255
+  
+AppearingBlocks:
+;v1 = dPage
+;v2 = dy
+;v3 = dx
+;v4 = sx
+  ld    c,1
+  ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
+  cp    176
+  call  z,SetTilesInTileMap
 
+  call  .init                             ;initialize variables for block
+
+  ;put block in page 0,1,2+3
+  call  .PutBlock
+  
+  ld    a,(ix+enemies_and_objects.v1)     ;v1 = dPage
+  and   7
+  ret   nz
+
+  ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
+  add   a,16
+  ld    (ix+enemies_and_objects.v4),a     ;v4 = sx  
+  ret   nz  
+  ld    (ix+enemies_and_objects.alive?),0 ;end   
+  ret
+  
+  .PutBlock:
+  ld    a,(ix+enemies_and_objects.v1)     ;v1 = dPage
+  inc   a
+  ld    (ix+enemies_and_objects.v1),a     ;v1 = dPage
+  and   3
+  ld    (CopyObject+dPage),a 
+  add   a,a                               ;*2
+  add   a,a                               ;*4
+  add   a,a                               ;*8
+  add   a,a                               ;*16
+  ld    b,a
+
+  ld    a,(ix+enemies_and_objects.v3)     ;v3 = dx
+  sub   a,b
+  ld    (CopyObject+dx),a  
+
+  ;put object
+  ld    hl,CopyObject
+  jp    docopy
+
+  .init:
+  ;initialize variables for block
+  ld    a,216
+  ld    (CopyObject+sy),a  
+  
+  ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
+  ld    (CopyObject+sx),a  
+
+  ld    a,(ix+enemies_and_objects.v2)     ;v2 = dy
+  sub   a,4
+  ld    (CopyObject+dy),a  
+  ld    a,16
+  ld    (CopyObject+nx),a
+  ld    a,24
+  ld    (CopyObject+ny),a 
+  ld    a,3
+  ld    (CopyObject+sPage),a 
+  xor   a
+  ld    (CopyObject+copydirection),a
+  ld    a,$d0
+  ld    (CopyObject+copytype),a
+  ret
 
 DisappearingBlocks:
 ;v1 = dPage
 ;v2 = dy
 ;v3 = dx
-;v4 = add to sy + dy
-  ld    a,25 * 8
-  ld    (ix+enemies_and_objects.y),a      ;sy object (in page 0)
-  ld    a,03 * 8
-  ld    (ix+enemies_and_objects.x),a      ;sx object (in page 0)
-
-  ld    a,(ix+enemies_and_objects.v4)     ;v4 = add to sy + dy
-  dec   a
-  and   15
-  ld    (ix+enemies_and_objects.v4),a     ;v4 = add to sy + dy
+;v4 = sx
+  ld    c,0
+  ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
+  cp    160
+  call  z,SetTilesInTileMap
 
   call  AppearingBlocks.init
 
-  ;put one horizontal line of the block in each page
-  call  AppearingBlocks.PutLine
-  call  AppearingBlocks.PutLine
-  call  AppearingBlocks.PutLine
-  call  AppearingBlocks.PutLine
+  ;put block in page 0,1,2+3
+  call  AppearingBlocks.PutBlock
   
-  ld    a,(ix+enemies_and_objects.v4)     ;v4 = add to sy + dy
-  or    a
-
-  ;check if all lines are put
+  ld    a,(ix+enemies_and_objects.v1)     ;v1 = dPage
+  and   7
   ret   nz
+
+  ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
+  sub   a,16
+  ld    (ix+enemies_and_objects.v4),a     ;v4 = sx  
+  cp    128 - 16
+  ret   nz  
   ld    (ix+enemies_and_objects.alive?),0 ;end   
-  ld    c,0
-  
-SetTilesInTileMap:
-;v2 = dy
-;v3 = dx
+  ret
+
+  SetTilesInTileMap:
+  ;v2 = dy
+  ;v3 = dx
   ld    a,(ix+enemies_and_objects.v2)     ;v2 = dy
 	srl		a                                 ;/2
 	srl		a                                 ;/4
@@ -656,86 +855,13 @@ SetTilesInTileMap:
   ld    (hl),c                            ;hardforeground / hardbackground
   inc   hl
   ld    (hl),c                            ;hardforeground / hardbackground
-  ld    de,39
-  add   hl,de
-  ld    (hl),c                            ;hardforeground / hardbackground
-  inc   hl
-  ld    (hl),c                            ;hardforeground  / hardbackground 
-  ret
-
-AppearingBlocks:
-;v1 = dPage
-;v2 = dy
-;v3 = dx
-;v4 = add to sy + dy
-  ld    c,1
-  call  SetTilesInTileMap
-
-  ld    a,21 * 8
-  ld    (ix+enemies_and_objects.y),a      ;sy object (in page 0)
-  ld    a,19 * 8
-  ld    (ix+enemies_and_objects.x),a      ;sx object (in page 0)
-
-  call  .init
-
-  ;put one horizontal line of the block in each page
-  call  .PutLine
-  call  .PutLine
-  call  .PutLine
-  call  .PutLine
-  
-  ld    a,(ix+enemies_and_objects.v4)     ;v4 = add to sy + dy
-  inc   a
-  and   15
-  ld    (ix+enemies_and_objects.v4),a     ;v4 = add to sy + dy
-
-  ;check if all lines are put
-  ret   nz
-  ld    (ix+enemies_and_objects.alive?),0 ;end   
+;  ld    de,39
+;  add   hl,de
+;  ld    (hl),c                            ;hardforeground / hardbackground
+;  inc   hl
+;  ld    (hl),c                            ;hardforeground  / hardbackground 
   ret
   
-  .PutLine:
-  ld    a,(ix+enemies_and_objects.v1)     ;v1 = dPage
-  inc   a
-  and   3
-  ld    (ix+enemies_and_objects.v1),a     ;v1 = dPage
-  ld    (CopyObject+dPage),a 
-  add   a,a                               ;*2
-  add   a,a                               ;*4
-  add   a,a                               ;*8
-  add   a,a                               ;*16
-  ld    b,a
-
-  ld    a,(ix+enemies_and_objects.v3)     ;v3 = dx
-  sub   a,b
-  ld    (CopyObject+dx),a  
-
-  ;put object
-  ld    hl,CopyObject
-  jp    docopy
-
-  .init:
-  ;initialize variables for line 
-  ld    a,(ix+enemies_and_objects.y)      ;sy object (in page 0)
-  add   a,(ix+enemies_and_objects.v4)     ;v4 = add to sy + dy
-  ld    (CopyObject+sy),a  
-  ld    a,(ix+enemies_and_objects.x)      ;sx object (in page 0)
-  ld    (CopyObject+sx),a  
-  ld    a,(ix+enemies_and_objects.v2)     ;v2 = dy
-  add   a,(ix+enemies_and_objects.v4)     ;v4 = add to sy + dy
-  ld    (CopyObject+dy),a  
-  ld    a,16
-  ld    (CopyObject+nx),a
-  ld    a,1
-  ld    (CopyObject+ny),a 
-  xor   a
-  ld    (CopyObject+sPage),a 
-  ld    (CopyObject+copydirection),a
-  ld    a,$d0
-  ld    (CopyObject+copytype),a
-  ret
-
-
 PlayerReflection:
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
@@ -2358,7 +2484,7 @@ GlassBall1:
   call  restoreBackgroundObject1
   call  AnimateGlassBall
   call  RemoveGlassBallWhenOutOfScreen
-  call  PutSF2Object  
+  call  PutSF2Object ;CHANGES IX   
   ret
   
 GlassBall2:
@@ -2377,7 +2503,7 @@ GlassBall2:
   call  restoreBackgroundObject2
   call  AnimateGlassBall
   call  RemoveGlassBallWhenOutOfScreen
-  call  PutSF2Object2
+  call  PutSF2Object2 ;CHANGES IX   
   ret
 
 GlassBall3:
@@ -2396,7 +2522,7 @@ GlassBall3:
   call  restoreBackgroundObject1
   call  AnimateGlassBall
   call  RemoveGlassBallWhenOutOfScreen
-  call  PutSF2Object  
+  call  PutSF2Object ;CHANGES IX     
   ret
   
 GlassBall4:
@@ -2415,7 +2541,7 @@ GlassBall4:
   call  restoreBackgroundObject2
   call  AnimateGlassBall
   call  RemoveGlassBallWhenOutOfScreen
-  call  PutSF2Object2
+  call  PutSF2Object2 ;CHANGES IX   
   ret
 
 GlassBall5:
@@ -2434,7 +2560,7 @@ GlassBall5:
   call  restoreBackgroundObject1
   call  AnimateGlassBall
   call  RemoveGlassBallWhenOutOfScreen
-  call  PutSF2Object  
+  call  PutSF2Object  ;CHANGES IX    
   ret
   
 GlassBall6:
@@ -2453,7 +2579,7 @@ GlassBall6:
   call  restoreBackgroundObject2
   call  AnimateGlassBall
   call  RemoveGlassBallWhenOutOfScreen
-  call  PutSF2Object2
+  call  PutSF2Object2 ;CHANGES IX   
   ret
 
 RemoveGlassBallWhenOutOfScreen:
@@ -5753,7 +5879,7 @@ Sf2Hugeobject1:                             ;movement pattern 3
 ;  call  BackdropOrange  
   call  restoreBackgroundObject1
   call  ObjectAnimation
-  call  PutSF2Object
+  call  PutSF2Object ;CHANGES IX   
 ;  call  BackdropBlack
   ret
 
@@ -5766,7 +5892,7 @@ Sf2Hugeobject2:                             ;movement pattern 4
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject2
 ;  call  ObjectAnimation
-  call  PutSF2Object2
+  call  PutSF2Object2 ;CHANGES IX   
   ret
 
 Sf2Hugeobject3:                             ;movement pattern 5
@@ -5778,7 +5904,7 @@ Sf2Hugeobject3:                             ;movement pattern 5
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject3
 ;  call  ObjectAnimation
-  call  PutSF2Object3
+  call  PutSF2Object3 ;CHANGES IX   
 
   ld    a,-1
   ld    (HugeObjectFrame),a

@@ -2079,7 +2079,7 @@ CheckMapExit:
   jr    nc,.ExitBottomFound
 
 ;  ld    a,(ClesY)
-  cp    4
+  cp    5
   jr    c,.ExitTopFound
 
   ld    a,(ClesX)
@@ -2158,10 +2158,10 @@ CheckMapExit:
   .EndCheckClimbStairsRightUp2:
 
   ld    de,-WorldMapDataMapLenght*WorldMapDataWidth
-  ld    a,176+8 + 24
+  ld    a,176+8 + 24;  - 60
   ld    (ClesY),a
   ld    a,44
-  ld    (CameraY),a
+  ld    (CameraY),a  
   jp    .LoadnextMap
   
 .ExitRightFound:
@@ -3169,7 +3169,7 @@ LsittingSpriteStand:          equ 8
 LrunningSpriteStand:          equ 10
 
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
-;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack
+;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
@@ -3177,6 +3177,93 @@ HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
 
+RMeditate:
+  ld    hl,RightMeditateAnimation - 2
+  call  AnimateMeditating           ;animate
+
+  ld    a,(PlayerAniCount+1)
+  cp    121-1
+  call  z,Set_R_stand               ;at end of meditate change to L_Stand
+  jr    LMeditate.VerticalMovement
+
+LMeditate:
+  ld    hl,LeftMeditateAnimation - 2
+  call  AnimateMeditating           ;animate
+
+  ld    a,(PlayerAniCount+1)
+  cp    121-1
+  call  z,Set_L_stand               ;at end of meditate change to L_Stand
+
+  .VerticalMovement:
+  ld    a,(PlayerAniCount+1)
+  inc   a
+  ld    (PlayerAniCount+1),a
+  and   31
+  ld    e,a
+  ld    d,0
+  ld    hl,VerticalMovementWhileMeditateTable
+  add   hl,de
+  ld    a,(clesY)
+  add   a,(hl)
+  ld    (clesY),a
+
+  ld    b,0
+  ld    a,(PlayerAniCount+1)
+  cp    10
+  jr    nc,.EndCheckSmallerThan6
+  ld    b,-1
+  .EndCheckSmallerThan6:
+  cp    110
+  jr    c,.EndCheckBiggerThan26
+  ld    b,1
+  .EndCheckBiggerThan26:
+  ld    a,(clesY)
+  add   a,b
+  ld    (clesY),a
+  
+  jp    EndMovePlayerHorizontally   ;slowly come to a full stop after running
+  
+VerticalMovementWhileMeditateTable:
+  db    -0,-1,-0,-1,-1,-0,-1,-0
+  db    -0,-1,-0,-0,-0,-1,-0,-0
+  db    +0,+0,+1,+0,+0,+0,+1,+0
+  db    +0,+1,+0,+1,+1,+0,+1,+0
+  
+LeftMeditateAnimation:
+  dw  PlayerSpriteData_Char_LeftMeditate1 
+  dw  PlayerSpriteData_Char_LeftMeditate2 
+
+  dw  PlayerSpriteData_Char_LeftMeditate3 
+  dw  PlayerSpriteData_Char_LeftMeditate4 
+  dw  PlayerSpriteData_Char_LeftMeditate5 
+  dw  PlayerSpriteData_Char_LeftMeditate6
+  dw  PlayerSpriteData_Char_LeftMeditate3 
+  dw  PlayerSpriteData_Char_LeftMeditate4 
+  dw  PlayerSpriteData_Char_LeftMeditate5 
+  dw  PlayerSpriteData_Char_LeftMeditate6
+  dw  PlayerSpriteData_Char_LeftMeditate3 
+  dw  PlayerSpriteData_Char_LeftMeditate4 
+  dw  PlayerSpriteData_Char_LeftMeditate4 
+  dw  PlayerSpriteData_Char_LeftMeditate2
+  dw  PlayerSpriteData_Char_LeftMeditate2 
+  
+RightMeditateAnimation:
+  dw  PlayerSpriteData_Char_RightMeditate1 
+  dw  PlayerSpriteData_Char_RightMeditate2 
+
+  dw  PlayerSpriteData_Char_RightMeditate3 
+  dw  PlayerSpriteData_Char_RightMeditate4 
+  dw  PlayerSpriteData_Char_RightMeditate5 
+  dw  PlayerSpriteData_Char_RightMeditate6
+  dw  PlayerSpriteData_Char_RightMeditate3 
+  dw  PlayerSpriteData_Char_RightMeditate4 
+  dw  PlayerSpriteData_Char_RightMeditate5 
+  dw  PlayerSpriteData_Char_RightMeditate6
+  dw  PlayerSpriteData_Char_RightMeditate3 
+  dw  PlayerSpriteData_Char_RightMeditate4 
+  dw  PlayerSpriteData_Char_RightMeditate5 
+  dw  PlayerSpriteData_Char_RightMeditate2
+  dw  PlayerSpriteData_Char_RightMeditate2 
 
 ;  dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
 RBouncingBack:
@@ -5518,6 +5605,15 @@ AnimateSprite:
   ex    de,hl                     ;out hl -> sprite character data to out to Vram
   ret	
 
+AnimateMeditating:
+  ld    a,(framecounter)          ;animate every 4 frames
+  and   07
+  ret   nz
+  
+  ld    a,(PlayerAniCount)
+  add   a,2                       ;2 bytes used for pointer to sprite frame address
+  jr    AnimateRun.SetPlayerAniCount
+
 AnimateCharging:
   ld    a,(framecounter)          ;animate every 4 frames
   and   1
@@ -6036,6 +6132,10 @@ Lstanding:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_L_attack
+
+	bit		5,a           ;'M' pressed ?
+	jp		nz,Set_L_Meditate
+
 	bit		5,a           ;'M' pressed ?
 	jp		nz,Set_L_Rolling
 
@@ -6087,9 +6187,12 @@ Rstanding:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_R_attack
+
+	bit		5,a           ;'M' pressed ?
+	jp		nz,Set_R_Meditate	
+	
 	bit		5,a           ;'M' pressed ?
 	jp		nz,Set_R_Rolling
-
 
 	bit		6,a           ;F1 pressed ?
 	jp		nz,Set_Charging
@@ -6365,6 +6468,22 @@ CheckClimbLadderUp:;
   ld    (ClesX),hl
   ret
 
+Set_L_Meditate:
+	ld		hl,LMeditate
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_R_Meditate:
+	ld		hl,RMeditate
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
 Set_L_BouncingBack:
   xor   a
   ld    (EnableHitbox?),a
@@ -6612,7 +6731,7 @@ Set_jump:
 	ld		(JumpSpeed),a
   ret
 
-Set_Fall:
+Set_Fall: 
   ld    a,CollisionSYStanding
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
   

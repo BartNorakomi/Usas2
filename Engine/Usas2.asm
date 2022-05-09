@@ -1413,6 +1413,35 @@ PlayerSpriteData_Char_RightCharge7:        include "..\sprites\secretsofgrindea\
 PlayerSpriteData_Colo_RightCharge7:        include "..\sprites\secretsofgrindea\RightCharge7.tcs.gen"	  | db +2-8,-2
 PlayerSpriteData_Char_RightCharge8:        include "..\sprites\secretsofgrindea\RightCharge8.tgs.gen"	  
 PlayerSpriteData_Colo_RightCharge8:        include "..\sprites\secretsofgrindea\RightCharge8.tcs.gen"	  | db +1-8,-1
+
+PlayerSpriteData_Char_LeftMeditate1:       include "..\sprites\secretsofgrindea\LeftMeditate1.tgs.gen"	  
+PlayerSpriteData_Colo_LeftMeditate1:       include "..\sprites\secretsofgrindea\LeftMeditate1.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_LeftMeditate2:       include "..\sprites\secretsofgrindea\LeftMeditate2.tgs.gen"	  
+PlayerSpriteData_Colo_LeftMeditate2:       include "..\sprites\secretsofgrindea\LeftMeditate2.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_LeftMeditate3:       include "..\sprites\secretsofgrindea\LeftMeditate3.tgs.gen"	  
+PlayerSpriteData_Colo_LeftMeditate3:       include "..\sprites\secretsofgrindea\LeftMeditate3.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_LeftMeditate4:       include "..\sprites\secretsofgrindea\LeftMeditate4.tgs.gen"	  
+PlayerSpriteData_Colo_LeftMeditate4:       include "..\sprites\secretsofgrindea\LeftMeditate4.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_LeftMeditate5:       include "..\sprites\secretsofgrindea\LeftMeditate5.tgs.gen"	  
+PlayerSpriteData_Colo_LeftMeditate5:       include "..\sprites\secretsofgrindea\LeftMeditate5.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_LeftMeditate6:       include "..\sprites\secretsofgrindea\LeftMeditate6.tgs.gen"	  
+PlayerSpriteData_Colo_LeftMeditate6:       include "..\sprites\secretsofgrindea\LeftMeditate6.tcs.gen"	      | db -0-8,+0
+
+PlayerSpriteData_Char_RightMeditate1:      include "..\sprites\secretsofgrindea\RightMeditate1.tgs.gen"	  
+PlayerSpriteData_Colo_RightMeditate1:      include "..\sprites\secretsofgrindea\RightMeditate1.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_RightMeditate2:      include "..\sprites\secretsofgrindea\RightMeditate2.tgs.gen"	  
+PlayerSpriteData_Colo_RightMeditate2:      include "..\sprites\secretsofgrindea\RightMeditate2.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_RightMeditate3:      include "..\sprites\secretsofgrindea\RightMeditate3.tgs.gen"	  
+PlayerSpriteData_Colo_RightMeditate3:      include "..\sprites\secretsofgrindea\RightMeditate3.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_RightMeditate4:      include "..\sprites\secretsofgrindea\RightMeditate4.tgs.gen"	  
+PlayerSpriteData_Colo_RightMeditate4:      include "..\sprites\secretsofgrindea\RightMeditate4.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_RightMeditate5:      include "..\sprites\secretsofgrindea\RightMeditate5.tgs.gen"	  
+PlayerSpriteData_Colo_RightMeditate5:      include "..\sprites\secretsofgrindea\RightMeditate5.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_RightMeditate6:      include "..\sprites\secretsofgrindea\RightMeditate6.tgs.gen"	  
+PlayerSpriteData_Colo_RightMeditate6:      include "..\sprites\secretsofgrindea\RightMeditate6.tcs.gen"	      | db -0-8,+0
+
+
+
 EndPlayerSprites1: | ds $c000-$,$ff | dephase ;bf80
 
 ;
@@ -2180,6 +2209,7 @@ DemontjeGreenSpriteblock:  equ   $53
 HugeBlobWhiteSpriteblock:  equ   $53
 SensorTentaclesSpriteblock:  equ   $53
 YellowWaspSpriteblock:  equ   $53
+HugeSpiderSpriteblock:  equ   $53
 phase	$8000
 LeftDemontjeGreen1_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tgs.gen"	;y offset, x offset  
 LeftDemontjeGreen1_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tcs.gen"  | db 00,01,00,01
@@ -2268,6 +2298,31 @@ RightYellowWasp4_Col:                       include "..\sprites\enemies\Wasp\Rig
 ;RightYellowWasp7_Col:                       include "..\sprites\enemies\Wasp\RightYellowWasp7.tcs.gen"  | db 00,00, 00,00
 ;RightYellowWasp8_Char:                      include "..\sprites\enemies\Wasp\RightYellowWasp8.tgs.gen"	  
 ;RightYellowWasp8_Col:                       include "..\sprites\enemies\Wasp\RightYellowWasp8.tcs.gen"  | db 00,00, 00,00
+
+HugeSpider1_Char:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",0*8*32,8*32	  
+HugeSpider1_Col:                            incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,00, 16,16, 16,32, 16,48
+HugeSpider2_Char:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",1*8*32,8*32	  
+HugeSpider2_Col:                            incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,00, 16,16, 16,32, 16,48
+HugeSpider3_Char:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",2*8*32,8*32	  
+HugeSpider3_Col:                            incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,01, 16,17, 16,33, 16,49
+HugeSpider4_Char:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",3*8*32,8*32	  
+HugeSpider4_Col:                            incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,02, 16,18, 16,34, 16,50
+HugeSpider5_Char:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",4*8*32,8*32	  
+HugeSpider5_Col:                            incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,00, 16,16, 16,32, 16,48
+HugeSpider6_Char:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",5*8*32,8*32	  
+HugeSpider6_Col:                            incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,00, 16,16, 16,32, 16,48
+HugeSpider7_Char:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",6*8*32,8*32	  
+HugeSpider7_Col:                            incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,00, 16,16, 16,32, 16,48
+HugeSpider8_Char:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",7*8*32,8*32	  
+HugeSpider8_Col:                            incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,00, 16,16, 16,32, 16,48
+HugeSpider9_Char:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",8*8*32,8*32	  
+HugeSpider9_Col:                            incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,00, 16,16, 16,32, 16,48
+HugeSpider10_Char:                          incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",9*8*32,8*32	  
+HugeSpider10_Col:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,00, 16,16, 16,32, 16,48
+HugeSpider11_Char:                          incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",10*8*32,8*32	  
+HugeSpider11_Col:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,00, 16,16, 16,32, 16,48
+HugeSpider12_Char:                          incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\1.spr",11*8*32,8*32	  
+HugeSpider12_Col:                           incbin "..\sprites\enemies\HugeSpider\1SpriteOnly\black.spr",8*32*12,8*16  | db 00,00, 00,16, 0,32, 0,48, 16,00, 16,16, 16,32, 16,48
 	ds		$c000-$,$ff
 dephase
 
@@ -2725,7 +2780,17 @@ MapA02:
 MapA03:
   incbin "..\maps\a03.map.pck"  | .amountofobjects: db  0
 MapA04:
-  incbin "..\maps\a04.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\a04.map.pck"  | .amountofobjects: db  1
+
+  
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1: db 2,        0|dw WorldNameText       |db 8*24|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
+;.object2: db 2,        0|dw Sf2Hugeobject2      |db 8*12|dw 8*12|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
+;.object3: db 2,        0|dw Sf2Hugeobject3      |db 8*03|dw 8*13|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
+  
+    
+  
+  
 MapA05:
   incbin "..\maps\a05.map.pck"  | .amountofobjects: db  2
 
@@ -2735,7 +2800,7 @@ MapA05:
 
 ;AppearingBlocks
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object2: db 0,        0|dw AppearingBlocks     |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,9*8,9*8,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object2: db 0,        0|dw AppearingBlocks     |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 ;.object1: db 1,        0|dw DisappearingBlocks  |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,21*8,19*8,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
   
   
@@ -2849,7 +2914,18 @@ MapD06:
 MapD07:
   incbin "..\maps\d07.map.pck"  | .amountofobjects: db  0
 MapD08:
-  incbin "..\maps\d08.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\d08.map.pck"  | .amountofobjects: db  2
+
+;Huge Spider Body
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object1: db 1,        0|dw HugeSpiderBody      |db 8*06|dw 8*14|db 21,27|dw CleanOb1,0 db 0,0,0,                     +073,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+
+;Huge Spider Legs
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object2:db -1,        1|dw HugeSpiderLegs      |db 8*04|dw 8*14|db 24,64|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 005| ds fill  
+
+  
+
 MapD09:
   incbin "..\maps\d09.map.pck"  | .amountofobjects: db  0  
 MapD10:
@@ -2875,7 +2951,7 @@ MapE02:
 MapE03:
   incbin "..\maps\e03.map.pck"  | .amountofobjects: db  1
   
-  ;Player Reflection 
+;Player Reflection 
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
   

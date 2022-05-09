@@ -100,10 +100,22 @@ function CheckJump()
 	if keyboard_check_pressed(vk_up)
 	{
 		pose = "jumping";
-		jump_speed = -6.25;
+		jump_speed = -5.50;
 //		audio_play_sound(sndJump, 1, false);
 		audio_play_sound(sndLand1, 3, false);
 		doublejumpavailable = true; // player can only double jump once when jumping
+	}
+}	
+#endregion
+
+#region // CheckDoubleJump
+function CheckDoubleJump() // check if up is pressed while jumping and if double jump is available, if so, double jump
+{	
+	if keyboard_check_pressed(vk_up) and (doublejumpobtained = true) and (doublejumpavailable = true)
+	{
+		jump_speed = -5.50;
+		audio_play_sound(sndLand1, 3, false);
+		doublejumpavailable = false; // player can only double jump once when jumping
 	}
 }	
 #endregion
@@ -116,18 +128,6 @@ function CheckCharge()
 		pose = "charging";
 		image_index = 0; // first frame of charging
 		audio_play_sound(sndWhoosh, 10, false);
-	}
-}	
-#endregion
-
-#region // CheckDoubleJump
-function CheckDoubleJump() // check if up is pressed while jumping and if double jump is available, if so, double jump
-{	
-	if keyboard_check_pressed(vk_up) and (doublejumpobtained = true) and (doublejumpavailable = true)
-	{
-		jump_speed = -6.25;
-		audio_play_sound(sndLand1, 3, false);
-		doublejumpavailable = false; // player can only double jump once when jumping
 	}
 }	
 #endregion
