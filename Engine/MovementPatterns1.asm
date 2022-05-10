@@ -58,6 +58,7 @@
 ;WorldNameText
 ;HugeSpiderBody
 ;HugeSpiderLegs
+;KonarkPaletteObject
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -546,23 +547,64 @@ Template:
 
 
 
+KonarkPaletteObject:
+  ld    a,(ix+enemies_and_objects.v1)     ;v1 = speed
+  inc   a
+  and   3
+  ld    (ix+enemies_and_objects.v1),a     ;v1 = speed
+  ret   nz
 
+  ld    a,(ix+enemies_and_objects.v2)     ;v2 = amount of steps
+  inc   a
+  and   15
+  ld    (ix+enemies_and_objects.v2),a     ;v2 = amount of steps
+  
+  
+  ld    hl,KonarkBrighterPalette1
+  jp    z,setpalette
 
+  dec   a
+  ld    hl,KonarkBrighterPalette2
+  jp    z,setpalette
 
+  dec   a
+  ld    hl,KonarkBrighterPalette2
+  jp    z,setpalette
 
+  dec   a
+  ld    hl,KonarkBrighterPalette3
+  jp    z,setpalette
 
+  dec   a
+  ld    hl,KonarkBrighterPalette3
+  jp    z,setpalette
 
+  dec   a
+  ld    hl,KonarkBrighterPalette3
+  jp    z,setpalette
 
+  dec   a
+  ld    hl,KonarkBrighterPalette2
+  jp    z,setpalette
 
+  dec   a
+  ld    hl,KonarkBrighterPalette2
+  jp    z,setpalette
 
+  dec   a
+  ld    hl,KonarkBrighterPalette1
+  jp    z,setpalette
 
+  dec   a
+  ld    hl,KonarkBrighterPalette1
+  jp    z,setpalette
 
-
-
-
-
-
-
+  dec   a
+  ld    hl,KonarkBrighterPalette1
+  jp    z,setpalette
+  
+  ld    hl,KonarkPalette
+  jp    setpalette
 
 HugeSpiderLegs:
 ;v1=Animation Counter

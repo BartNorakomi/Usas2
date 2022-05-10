@@ -38,7 +38,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 1,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapA01_009Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_010Data
-WorldMapPointer:  dw  MapD08Data
+WorldMapPointer:  dw  MapA12Data
 
 loadGraphics:
 ;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
@@ -1036,6 +1036,12 @@ BlueTemplePalette:
   incbin "..\grapx\tilesheets\sBlueTemplePalette.PL" ;file palette 
 KonarkPalette:
   incbin "..\grapx\tilesheets\sKonarkPalette.PL" ;file palette 
+KonarkBrighterPalette1:
+  incbin "..\grapx\tilesheets\sKonarkBrighterPalette1.PL" ;file palette 
+KonarkBrighterPalette2:
+  incbin "..\grapx\tilesheets\sKonarkBrighterPalette2.PL" ;file palette 
+KonarkBrighterPalette3:
+  incbin "..\grapx\tilesheets\sKonarkBrighterPalette3.PL" ;file palette 
 BurialPalette:
   incbin "..\grapx\tilesheets\sBurialPalette.PL" ;file palette 
 

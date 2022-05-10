@@ -3694,7 +3694,7 @@ RRolling:
   ld    a,(SnapToPlatform?)
   or    a
   jr    nz,..EndCheckSnapToPlatform
-  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  call  CheckFloorInclLadderWhileRolling;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall
   ..EndCheckSnapToPlatform:
   
@@ -3825,7 +3825,7 @@ LRolling:
   ld    a,(SnapToPlatform?)
   or    a
   jr    nz,..EndCheckSnapToPlatform
-  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  call  CheckFloorInclLadderWhileRolling;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall
   ..EndCheckSnapToPlatform:
   
@@ -5908,6 +5908,38 @@ CheckFloor:
   scf
   ret
 
+CheckFloorInclLadderWhileRolling:
+  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer-2   ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  ret   z
+  dec   a                   ;check for tilenr 2=ladder 
+  ret   z  
+  
+  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer+2  ;add x to check (x is expressed in pixels)
+  call  checktile           ;out z=collision found with wall
+  ret   z
+  dec   a                   ;check for tilenr 2=ladder 
+  ret   z  
+
+  ld    a,(PlayerFacingRight?)          ;is player facing right ?
+  or    a
+  ld    de,-6
+  jr    z,.ChangeClesX
+  ld    de,+6
+  .ChangeClesX:
+  ld    hl,(ClesX)
+  add   hl,de
+  ld    (ClesX),hl
+
+  ld    a,(ClesY)
+  add   a,4
+  ld    (ClesY),a
+
+  scf
+  ret
+
 CheckFloorInclLadder:
 ;  ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
 ;  ld    de,XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
@@ -6134,10 +6166,7 @@ Lstanding:
 	jp		nz,Set_L_attack
 
 	bit		5,a           ;'M' pressed ?
-	jp		nz,Set_L_Meditate
-
-	bit		5,a           ;'M' pressed ?
-	jp		nz,Set_L_Rolling
+	jp		nz,.Set_L_MeditateOrRoll
 
 	bit		6,a           ;F1 pressed ?
 	jp		nz,Set_Charging
@@ -6159,6 +6188,12 @@ Lstanding:
   call  CheckClimbLadderUp
   jp    CheckClimbStairsUp
 
+.Set_L_MeditateOrRoll:
+	ld		a,(Controls)
+	bit		2,a           ;cursor left pressed ?
+  jp    nz,Set_L_Rolling
+	jp		Set_L_Meditate
+	
 Rstanding:
   ld    a,(NewPrContr)      ;first handle up pressed, since the checks performed are heavy on the cpu
 	bit		0,a                 ;cursor up pressed ?	
@@ -6189,11 +6224,8 @@ Rstanding:
 	jp		nz,Set_R_attack
 
 	bit		5,a           ;'M' pressed ?
-	jp		nz,Set_R_Meditate	
+	jp		nz,.Set_R_MeditateOrRoll
 	
-	bit		5,a           ;'M' pressed ?
-	jp		nz,Set_R_Rolling
-
 	bit		6,a           ;F1 pressed ?
 	jp		nz,Set_Charging
 
@@ -6209,6 +6241,13 @@ Rstanding:
 .DownPressed:
 	call	Set_R_sit
   jp    CheckClimbStairsDown  
+
+.Set_R_MeditateOrRoll:
+	ld		a,(Controls)
+	bit		3,a           ;cursor right pressed ?
+  jp    nz,Set_R_Rolling
+	jp		Set_R_Meditate
+
     
 CheckClimbStairsDown:
   call  .StairsGoingLeftUp

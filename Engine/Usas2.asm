@@ -2819,7 +2819,12 @@ MapA10:
 MapA11:
   incbin "..\maps\a11.map.pck"  | .amountofobjects: db  0
 MapA12:
-  incbin "..\maps\a12.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\a12.map.pck"  | .amountofobjects: db  1
+;Konark Palette Object
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object1: db 1,        0|dw KonarkPaletteObject |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+
+
 MapA13:
   incbin "..\maps\a13.map.pck"  | .amountofobjects: db  0
 
