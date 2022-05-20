@@ -3079,7 +3079,7 @@ OctopussyBullet:                            ;forced on object positions 1-4
 
   ld    a,216
   ld    (CopyObject+sy),a  
-  call  VramObjectsTransparantCopies        ;put object in Vram/screen
+  call  VramObjectsTransparantCopies        ;put object in Vram/screen ;
   call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
   ret   nz
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Moving, 1=Splashing)  
@@ -3091,7 +3091,7 @@ OctopussyBullet:                            ;forced on object positions 1-4
   ld    (ix+enemies_and_objects.x),a
   ret
 
-.Playerwashit:
+  .Playerwashit:
   call  VramObjectsTransparantCopiesRemoveAndClearBuffer  ;Clear buffer, so that next time the CleanOb is called buffer is empty
   ld    (ix+enemies_and_objects.Alive?),0
   ld    a,1                                   ;Octopussy Bullet Slow Down Handler v1 = player got hit by bullet
@@ -3242,10 +3242,16 @@ Octopussy:
   jp    .GoAnimate
 
   .Near:                                    ;Player is near, so shoot bullets every x frames
-  ld    a,(ix+enemies_and_objects.v6)       ;v6 wait until shooting again
-  dec   a
+
+  ld    a,r                                 ;shoot at random
+  and   1
   jr    z,.OctoMayShoot
-  ld    (ix+enemies_and_objects.v6),a       ;v6 wait until shooting again
+
+
+;  ld    a,(ix+enemies_and_objects.v6)       ;v6 wait until shooting again
+;  dec   a
+;  jr    z,.OctoMayShoot
+;  ld    (ix+enemies_and_objects.v6),a       ;v6 wait until shooting again
   jp    .Animate
   
   .OctoMayShoot:
@@ -7187,7 +7193,7 @@ VramObjectsTransparantCopiesRemoveAndClearBuffer:
   ld    l,(ix+enemies_and_objects.ObjectNumber)
   ld    h,(ix+enemies_and_objects.ObjectNumber+1)
   push  hl
-  call  docopy
+;  call  docopy
   pop   iy
 
   xor   a
@@ -7200,6 +7206,7 @@ VramObjectsTransparantCopiesRemoveAndClearBuffer:
   ret
 
 VramObjectsTransparantCopiesRemove:
+ret
   ld    l,(ix+enemies_and_objects.ObjectNumber)
   ld    h,(ix+enemies_and_objects.ObjectNumber+1)
   jp    docopy
@@ -7212,8 +7219,9 @@ VramObjectsTransparantCopies:
   ld    l,(ix+enemies_and_objects.ObjectNumber)
   ld    h,(ix+enemies_and_objects.ObjectNumber+1)
   push  hl
-  call  docopy
+;  call  docopy
   pop   iy
+  ld    (iy+restorebackground?),1  ;all background restores should be done simultaneously at start of frame (after vblank)
 
   ld    a,(ix+enemies_and_objects.x)
   or    a

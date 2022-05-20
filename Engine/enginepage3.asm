@@ -35,10 +35,10 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 1,2,2   | MapB13Data: db MapsBlock0B
 
 
 
-;WorldMapPointer:  dw  MapA01_009Data
+;WorldMapPointer:  dw  MapB01_002Data
 ;WorldMapPointer:  dw  MapB01_027Data
-;WorldMapPointer:  dw  MapB01_010Data
-WorldMapPointer:  dw  MapA12Data
+;WorldMapPointer:  dw  MapB01_014Data
+WorldMapPointer:  dw  MapD08Data
 
 loadGraphics:
 ;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
@@ -1326,6 +1326,7 @@ nx:                         equ   8
 ny:                         equ   10
 copydirection:              equ   13
 copytype:                   equ   14
+restorebackground?:         equ   -1
 framecounter:               rb    1
 
 Controls:	                  rb		1
