@@ -38,7 +38,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 1,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapB01_002Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapD08Data
+WorldMapPointer:  dw  MapA06Data
 
 loadGraphics:
 ;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
@@ -214,6 +214,9 @@ ReSetVariables:
   xor   a
   ld    (ShakeScreen?),a
   ld    (PlayerDead?),a
+
+  xor   a
+  ld    (ArrowActive?),a              ;remove arrow weapon  
   ret  
 
 .NormalRunningTable:

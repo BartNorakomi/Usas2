@@ -55,7 +55,7 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 180 ;$19 ;230 ;250 ;210
+ClesX:      dw 50 ;$19 ;230 ;250 ;210
 ClesY:      db 30 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
@@ -2520,16 +2520,11 @@ HorizontalOffset: ds  1
 ;h can have a value from 0 - 15 and the screen adjusts horizontally according to the table below
 ;     7   6   5   4   3   2   1   0   15  14  13  12  11  10  9   8
 
-
-TempoldY: db 0
-
 R18ConversionTable: 
 db 8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7
 ;db 8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7
 ;db 8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7
 ;db 8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7
-
-
 
 CameraMoveRightXBoundary: equ 050       ;as soon as the player x>50 and walking right still the camera should start moving right
 CameraMoveLeftXBoundary:  equ 234       ;as soon as the player x<304-50 and walking left still the camera should start moving left
@@ -3197,43 +3192,30 @@ checktile:                  ;in b->add y to check, de->add x to check
 ;  dec   a                   ;1 = wall
 ;  ret
 
-playermovementspeed:    db  2
-oldx:                   dw  0
-oldy:                   db  0
-PlayerFacingRight?:     db  1
-PlayerInvulnerable?:    db  0
-
-RstandingSpriteStand:         equ 0
-RsittingSpriteStand:          equ 2
-RrunningSpriteStand:          equ 4
-LstandingSpriteStand:         equ 6
-LsittingSpriteStand:          equ 8
-LrunningSpriteStand:          equ 10
-
-;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
-;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow
-PlayerSpriteStand: dw  Rstanding
-
-PlayerAniCount:     db  0,0
-HandlePlayerSprite:
-  ld    hl,(PlayerSpriteStand)
-  jp    (hl)
-
-
 ArrowActive?: db  0
-ArrowSpeed: equ 4
+ArrowSpeed: equ 6
 HandlePlayerWeapons:
   ld    a,(ArrowActive?)
   or    a
   ret   z
 
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerArrow+restorebackground?),a 
+  ld    a,(ArrowX)
+  ld    l,a
+  ld    h,0
+  ld    de,15 + 5
+  add   hl,de
+  ld    a,(ArrowY)
+  add   a,16
+  call  checktile.XandYset  ;out z=collision found with wall  
+  jp    z,.RemoveArrow
+  inc   hl                  ;also check next tile
+  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+  dec   a                   ;1 = wall
+  jp    z,.RemoveArrow
 
   ld    iy,CleanPlayerArrow
   
-;  ld    a,(ArrowX)
-  ld    a,(CopyPlayerArrow+dx)  
+  ld    a,(ArrowX)
   or    a
   jp    p,.ObjectOnLeftSideOfScreen
 
@@ -3249,32 +3231,116 @@ HandlePlayerWeapons:
   cp    0*32+31           ;x*32+31 (x=page)
   ld    b,0               ;copy to page 0
   ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+05         ;dx offset CopyObject
+  ld    d,+000+17         ;dx offset CopyObject
   ld    e,-016            ;sx offset CleanObject 
   jp    z,.pagefoundright
 
   cp    1*32+31           ;x*32+31 (x=page)
   ld    b,1               ;copy to page 1
   ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016+05         ;dx offset CopyObject
+  ld    d,-016+17         ;dx offset CopyObject
   ld    e,-016            ;sx offset CleanObject 
   jp    z,.pagefoundright
 
   cp    2*32+31           ;x*32+31 (x=page)
   ld    b,2               ;copy to page 2
   ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032+05         ;dx offset CopyObject
+  ld    d,-032+17         ;dx offset CopyObject
   ld    e,-016            ;sx offset CleanObject 
   jp    z,.pagefoundright
 
   cp    3*32+31           ;x*32+31 (x=page)
   ld    b,3               ;copy to page 3
   ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048+05         ;dx offset CopyObject
+  ld    d,-048+17         ;dx offset CopyObject
   ld    e,+016            ;sx offset CleanObject 
   jp    z,.pagefoundright
 
 .pagefoundright:
+  ld    a,b
+  ld    (CopyPlayerArrow+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,c
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ArrowY)
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+  ld    (CopyPlayerArrow+dy),a
+  
+  ld    a,(ArrowX)
+  add   a,d  
+  ld    (CopyPlayerArrow+dx),a
+  ld    (iy+dx),a
+  add   a,e
+  ld    (iy+sx),a
+
+  ld    a,(ArrowActive?)        ;move arrow with arrow speed (which is set in ArrowActive?)
+  ld    b,a
+  ld    a,(ArrowX)
+  add   a,b
+  ld    (ArrowX),a
+
+  ld    a,(ArrowX)
+  cp    10
+  jr    c,.RemoveArrow          ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+
+  ld    a,(CopyPlayerArrow+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side
+  cp    20
+  ret   c
+
+  ;put arrow
+  ld    hl,CopyPlayerArrow
+  call  docopy
+  
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerArrow+restorebackground?),a   
+  ret
+
+  .RemoveArrow:
+  xor   a
+  ld    (ArrowActive?),a
+  ret
+  
+  .ObjectOnLeftSideOfScreen:
+  ld    a,30+14
+  ld    (CopyPlayerArrow+sx),a  
+  ld    a,%0000 0100      ;set copy direction. Copy from right to left
+  ld    (iy+copydirection),a
+  ld    (CopyPlayerArrow+copydirection),a
+
+  ;set pages to copy to and to clean from
+  ld    a,(PageOnNextVblank)
+  cp    0*32+31           ;x*32+31 (x=page)
+  ld    b,0               ;copy to page 0
+  ld    c,1               ;clean object from vram data in page 1
+  ld    d,+000+30         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jr    z,.pagefoundLeft
+
+  cp    1*32+31           ;x*32+31 (x=page)
+  ld    b,1               ;copy to page 1
+  ld    c,0               ;clean object from vram data in page 2
+  ld    d,-016+30         ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jr    z,.pagefoundLeft
+
+  cp    2*32+31           ;x*32+31 (x=page)
+  ld    b,2               ;copy to page 2
+  ld    c,1               ;clean object from vram data in page 3
+  ld    d,-032+30         ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jr    z,.pagefoundLeft
+
+  cp    3*32+31           ;x*32+31 (x=page)
+  ld    b,3               ;copy to page 3
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-048+30         ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jr    z,.pagefoundLeft
+
+.pagefoundLeft:
   ld    a,b
   ld    (CopyPlayerArrow+dpage),a  
   ld    (iy+dpage),a
@@ -3299,113 +3365,22 @@ HandlePlayerWeapons:
   add   a,e
   ld    (iy+sx),a
 
-  ld    a,(CopyPlayerArrow+dx)
-  cp    255-26
-  jr    nc,.RemoveArrowRight
-  
-  ;put arrow
-  ld    hl,CopyPlayerArrow
-  call  docopy
-  ret
-
-  .RemoveArrowRight:
-  xor   a
-  ld    (ArrowActive?),a
-  ret
-
-
-
-
-
-
-
-
-
-
-
-  .ObjectOnLeftSideOfScreen:
-  ld    a,30+14
-  ld    (CopyPlayerArrow+sx),a  
-  ld    a,%0000 0100      ;set copy direction. Copy from right to left
-  ld    (iy+copydirection),a
-  ld    (CopyPlayerArrow+copydirection),a
-
-  ;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000            ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,0               ;clean object from vram data in page 2
-  ld    d,-016            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,1               ;clean object from vram data in page 3
-  ld    d,-032            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-.pagefoundLeft:
-  ld    a,d
-  add   a,16              ;add nx
-  ld    d,a
- 
-   ld    a,b
-  ld    (CopyPlayerArrow+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,c
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ArrowY)
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-  ld    (CopyPlayerArrow+dy),a
-
-  ld    a,(ArrowActive?)
-  ld    b,a
   ld    a,(ArrowX)
-  add   a,b
-  ld    (ArrowX),a
-  
-  add   a,d
-  ld    (CopyPlayerArrow+dx),a
-  ld    (iy+dx),a
-  add   a,e
-  ld    (iy+sx),a
+  cp    255-10
+  jr    nc,.RemoveArrow         ;if arrow went through the edge of the map (on the right side) remove the arrow from play
 
-  ld    a,(CopyPlayerArrow+dx)
-  cp    0+32
-  jr    c,.RemoveArrowLeft
+  ld    a,(CopyPlayerArrow+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side
+  cp    255-20
+  ret   nc
   
   ;put arrow
   ld    hl,CopyPlayerArrow
   call  docopy
-  ret
-
-  .RemoveArrowLeft:
-  xor   a
-  ld    (ArrowActive?),a
+  
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerArrow+restorebackground?),a   
   ret
  
-
-
-
   db    0                 ;restorebackground?
 CleanPlayerArrow:                                       ;this is used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)
   db    000,000,000,000   ;sx,--,sy,spage
@@ -3423,8 +3398,252 @@ CopyPlayerArrow:                                        ;copy any object into sc
   db    000,%0000 0000,$D0       ;fast copy command -> Copy from left to right
 ;  db    000,%0000 0100,$98       ;slow transparant copy -> Copy from right to left
 
+playermovementspeed:    db  2
+PlayerFacingRight?:     db  1
+PlayerInvulnerable?:    db  0
+
+;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
+;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow
+PlayerSpriteStand: dw  Rstanding
+
+PlayerAniCount:     db  0,0
+HandlePlayerSprite:
+  ld    hl,(PlayerSpriteStand)
+  jp    (hl)
+
+LSitShootArrow:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,38
+  xor   a
+  sbc   hl,de
+  jp    c,Set_L_Sit
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-10
+  xor   a
+  sbc   hl,de
+  jp    nc,Set_L_Sit
+  
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerWeapon+restorebackground?),a 
+
+  ld    a,028
+  ld    (CopyPlayerWeapon+sx),a
+
+;Animate
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  cp    4
+  ld    de,PlayerSpriteData_Char_LeftSitShootArrow1
+  ld    h,-13-1               ;move software sprite h pixels to the Left
+  jr    c,.SetStandChar
+  cp    8
+  ld    de,PlayerSpriteData_Char_LeftSitShootArrow2
+  ld    h,-13-3               ;move software sprite h pixels to the Left
+  jr    c,.SetStandChar
+  cp    12
+  ld    de,PlayerSpriteData_Char_LeftSitShootArrow3
+  jr    c,.SetStandChar
+  ld    de,PlayerSpriteData_Char_LeftSitShootArrow4
+  .SetStandChar:
+	ld		(standchar),de
+
+;set pages to copy to and to clean from
+  ld    a,(PageOnNextVblank)
+  cp    0*32+31           ;x*32+31 (x=page)
+  ld    b,0               ;copy to page 0
+  ld    c,1               ;clean object from vram data in page 1
+  ld    d,+000+05         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    1*32+31           ;x*32+31 (x=page)
+  ld    b,1               ;copy to page 1
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-016+05         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    2*32+31           ;x*32+31 (x=page)
+  ld    b,2               ;copy to page 2
+  ld    c,3               ;clean object from vram data in page 3
+  ld    d,-032+05         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    3*32+31           ;x*32+31 (x=page)
+  ld    b,3               ;copy to page 3
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-048+05         ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+.pagefound:
+  ld    iy,CleanPlayerWeapon
+
+  ld    a,b
+  ld    (CopyPlayerWeapon+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,c
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ClesY)
+  add   a,2
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+  ld    (CopyPlayerWeapon+dy),a
+
+  ld    a,(ClesX)
+  add   a,d
+  add   a,h
+  ld    (CopyPlayerWeapon+dx),a
+  ld    (iy+dx),a
+  add   a,e
+  ld    (iy+sx),a
+  
+  ;put weapon
+  ld    hl,CopyPlayerWeapon
+  call  docopy
+
+  ld    a,(PlayerAniCount)
+  cp    15
+  ret   nz
+
+  ld    a,-ArrowSpeed
+  ld    (ArrowActive?),a
+  ld    a,(ClesX)
+  sub   a,38
+  ld    (ArrowX),a
+  ld    a,(ClesY)
+  add   a,7
+  ld    (ArrowY),a
+  jp    Set_L_Sit 
+
+RSitShootArrow:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,11
+  xor   a
+  sbc   hl,de
+  jp    c,Set_R_Sit
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-37
+  xor   a
+  sbc   hl,de
+  jp    nc,Set_R_Sit
+  
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerWeapon+restorebackground?),a 
+
+  ld    a,028+2
+  ld    (CopyPlayerWeapon+sx),a  
+
+;Animate
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  cp    4
+  ld    de,PlayerSpriteData_Char_RightSitShootArrow1
+  ld    h,1               ;move software sprite h pixels to the right
+  jr    c,.SetStandChar
+  cp    8
+  ld    de,PlayerSpriteData_Char_RightSitShootArrow2
+  ld    h,3               ;move software sprite h pixels to the right
+  jr    c,.SetStandChar
+  cp    12
+  ld    de,PlayerSpriteData_Char_RightSitShootArrow3
+  jr    c,.SetStandChar
+  ld    de,PlayerSpriteData_Char_RightSitShootArrow4
+  .SetStandChar:
+	ld		(standchar),de
+
+;set pages to copy to and to clean from
+  ld    a,(PageOnNextVblank)
+  cp    0*32+31           ;x*32+31 (x=page)
+  ld    b,0               ;copy to page 0
+  ld    c,1               ;clean object from vram data in page 1
+  ld    d,+000+05         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    1*32+31           ;x*32+31 (x=page)
+  ld    b,1               ;copy to page 1
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-016+05         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    2*32+31           ;x*32+31 (x=page)
+  ld    b,2               ;copy to page 2
+  ld    c,3               ;clean object from vram data in page 3
+  ld    d,-032+05         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    3*32+31           ;x*32+31 (x=page)
+  ld    b,3               ;copy to page 3
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-048+05         ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+.pagefound:
+  ld    iy,CleanPlayerWeapon
+
+  ld    a,b
+  ld    (CopyPlayerWeapon+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,c
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ClesY)
+  add   a,2
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+  ld    (CopyPlayerWeapon+dy),a
+
+  ld    a,(ClesX)
+  add   a,d
+  add   a,h
+  ld    (CopyPlayerWeapon+dx),a
+  ld    (iy+dx),a
+  add   a,e
+  ld    (iy+sx),a
+  
+  ;put weapon
+  ld    hl,CopyPlayerWeapon
+  call  docopy
+
+  ld    a,(PlayerAniCount)
+  cp    15
+  ret   nz
+
+  ld    a,ArrowSpeed
+  ld    (ArrowActive?),a
+  ld    a,(ClesX)
+  sub   a,11
+  ld    (ArrowX),a
+  ld    a,(ClesY)
+  add   a,7
+  ld    (ArrowY),a
+  jp    Set_R_Sit  
 
 LShootArrow:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,38
+  xor   a
+  sbc   hl,de
+  jp    c,Set_L_Stand
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-10
+  xor   a
+  sbc   hl,de
+  jp    nc,Set_L_Stand
+  
   ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
   ld    (CleanPlayerWeapon+restorebackground?),a 
 
@@ -3515,15 +3734,26 @@ LShootArrow:
   ld    a,-ArrowSpeed
   ld    (ArrowActive?),a
   ld    a,(ClesX)
-  sub   a,20
-  and   %1111 1100            ;snapp x to steps of 4
+  sub   a,38
   ld    (ArrowX),a
   ld    a,(ClesY)
   inc   a
   ld    (ArrowY),a
   jp    Set_L_Stand  
-  
+    
 RShootArrow:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,11
+  xor   a
+  sbc   hl,de
+  jp    c,Set_R_Stand
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-37
+  xor   a
+  sbc   hl,de
+  jp    nc,Set_R_Stand
+
   ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
   ld    (CleanPlayerWeapon+restorebackground?),a 
 
@@ -3614,13 +3844,12 @@ RShootArrow:
   ld    a,ArrowSpeed
   ld    (ArrowActive?),a
   ld    a,(ClesX)
-  and   %1111 1100            ;snapp x to steps of 4  
+  sub   a,11
   ld    (ArrowX),a
   ld    a,(ClesY)
   inc   a
   ld    (ArrowY),a
   jp    Set_R_Stand  
-
 
 CopyPlayerWeapon:                                        ;copy any object into screen in the normal engine
   db    028+2,000,216+19,003   ;sx,--,sy,spage
@@ -5932,6 +6161,9 @@ Lsitting:
 ;	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_R_standmagic	
 
+	bit		5,a           ;'M' pressed ?
+	jp		nz,Set_L_SitShootArrow
+
 	ld		a,(Controls)
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.EndCheckLeftPressed
@@ -5983,6 +6215,9 @@ Rsitting:
 	jp		nz,Set_R_SitPunch
 ;	bit		5,a           ;b pressed ?
 ;	jp		nz,Set_R_standmagic	
+
+	bit		5,a           ;'M' pressed ?
+	jp		nz,Set_R_SitShootArrow
 
 	ld		a,(Controls)
 	bit		3,a           ;cursor right pressed ?
@@ -6982,12 +7217,37 @@ CheckClimbLadderUp:;
   ld    (ClesX),hl
   ret
 
+Set_L_SitShootArrow:
+	ld		hl,LSitShootArrow
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,0 
+  ld    (PlayerAniCount),a
+
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a  
+  ret
+
+Set_R_SitShootArrow:
+	ld		hl,RSitShootArrow
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,0 
+  ld    (PlayerAniCount),a
+
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a  
+  ret
+
 Set_L_ShootArrow:
 	ld		hl,LShootArrow
 	ld		(PlayerSpriteStand),hl
 
   ld    a,0 
   ld    (PlayerAniCount),a
+
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a  
   ret
 
 Set_R_ShootArrow:
@@ -6996,6 +7256,9 @@ Set_R_ShootArrow:
 
   ld    a,0 
   ld    (PlayerAniCount),a
+ 
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
   ret
 
 Set_L_Meditate:
