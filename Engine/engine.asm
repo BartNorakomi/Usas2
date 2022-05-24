@@ -3199,10 +3199,8 @@ HandlePlayerWeapons:
   or    a
   ret   z
 
-  ld    a,(ArrowX)
-  ld    l,a
-  ld    h,0
-  ld    de,15 + 5
+  ld    hl,(ArrowX)
+  ld    de,20
   add   hl,de
   ld    a,(ArrowY)
   add   a,16
@@ -3390,7 +3388,7 @@ CleanPlayerArrow:                                       ;this is used in the nor
 ;  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 ArrowY: db  100
-ArrowX: db  100
+ArrowX: dw  100
 CopyPlayerArrow:                                        ;copy any object into screen in the normal engine
   db    030,000,216+16,003   ;sx,--,sy,spage
   db    100,000,100,000   ;dx,--,dy,dpage
@@ -5646,6 +5644,11 @@ AnimateWhileJump:
   or    a
   jp    z,.AnimateJumpFacingLeft
 
+.AnimateJumpFacingRight:
+  ld    a,(ShootArrowWhileJump?)
+  or    a
+  jp    nz,ShootArrowWhileJumpRight
+
   ld    a,(KickWhileJump?)
   dec   a
   jr    nz,.KickWhileJumpRight
@@ -5690,6 +5693,10 @@ AnimateWhileJump:
   ret
 
 .AnimateJumpFacingLeft:
+  ld    a,(ShootArrowWhileJump?)
+  or    a
+  jr    nz,ShootArrowWhileJumpLeft
+
   ld    a,(KickWhileJump?)
   dec   a
   jr    nz,.KickWhileJumpLeft
@@ -5730,6 +5737,232 @@ AnimateWhileJump:
 	ld		hl,PlayerSpriteData_Char_LeftLowKick
 	.GoKickLeft:
 	ld		(standchar),hl
+  ret
+
+ShootArrowWhileJumpLeft:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,38
+  xor   a
+  sbc   hl,de
+  jp    c,.endShootArrowWhileJump
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-10
+  xor   a
+  sbc   hl,de
+  jp    nc,.endShootArrowWhileJump
+
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerWeapon+restorebackground?),a 
+
+  ld    a,028
+  ld    (CopyPlayerWeapon+sx),a  
+
+;Animate
+  ld    a,(ShootArrowWhileJump?)
+  inc   a
+  ld    (ShootArrowWhileJump?),a  
+  cp    4
+  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow1
+  ld    h,-13               ;move software sprite h pixels to the Left
+  jr    c,.SetStandChar
+  cp    8
+  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow2
+  ld    h,-13-3               ;move software sprite h pixels to the Left
+  jr    c,.SetStandChar
+  cp    12
+  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow3
+  jr    c,.SetStandChar
+  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow4
+  .SetStandChar:
+	ld		(standchar),de
+
+;set pages to copy to and to clean from
+  ld    a,(PageOnNextVblank)
+  cp    0*32+31           ;x*32+31 (x=page)
+  ld    b,0               ;copy to page 0
+  ld    c,1               ;clean object from vram data in page 1
+  ld    d,+000+04         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    1*32+31           ;x*32+31 (x=page)
+  ld    b,1               ;copy to page 1
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-016+04         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    2*32+31           ;x*32+31 (x=page)
+  ld    b,2               ;copy to page 2
+  ld    c,3               ;clean object from vram data in page 3
+  ld    d,-032+04         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    3*32+31           ;x*32+31 (x=page)
+  ld    b,3               ;copy to page 3
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-048+04         ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+.pagefound:
+  ld    iy,CleanPlayerWeapon
+
+  ld    a,b
+  ld    (CopyPlayerWeapon+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,c
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ClesY)
+  sub   a,5
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+  ld    (CopyPlayerWeapon+dy),a
+
+  ld    a,(ClesX)
+  add   a,d
+  add   a,h
+  ld    (CopyPlayerWeapon+dx),a
+  ld    (iy+dx),a
+  add   a,e
+  ld    (iy+sx),a
+  
+  ;put weapon
+  ld    hl,CopyPlayerWeapon
+  call  docopy
+
+  ld    a,(ShootArrowWhileJump?)
+  cp    15
+  ret   nz
+  
+  ld    a,-ArrowSpeed
+  ld    (ArrowActive?),a
+  ld    a,(ClesX)
+  sub   a,38
+  ld    (ArrowX),a
+  ld    a,(ClesY)
+  ld    (ArrowY),a
+
+  .endShootArrowWhileJump:
+  xor   a
+  ld    (ShootArrowWhileJump?),a
+  ret
+
+ShootArrowWhileJumpRight:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,11
+  xor   a
+  sbc   hl,de
+  jp    c,.endShootArrowWhileJump
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-37
+  xor   a
+  sbc   hl,de
+  jp    nc,.endShootArrowWhileJump
+  
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerWeapon+restorebackground?),a 
+
+  ld    a,028+2
+  ld    (CopyPlayerWeapon+sx),a  
+
+;Animate
+  ld    a,(ShootArrowWhileJump?)
+  inc   a
+  ld    (ShootArrowWhileJump?),a  
+  cp    4
+  ld    de,PlayerSpriteData_Char_RightJumpShootArrow1
+  ld    h,1               ;move software sprite h pixels to the right
+  jr    c,.SetStandChar
+  cp    8
+  ld    de,PlayerSpriteData_Char_RightJumpShootArrow2
+  ld    h,3+1               ;move software sprite h pixels to the right
+  jr    c,.SetStandChar
+  cp    12
+  ld    de,PlayerSpriteData_Char_RightJumpShootArrow3
+  jr    c,.SetStandChar
+  ld    de,PlayerSpriteData_Char_RightJumpShootArrow4
+  .SetStandChar:
+	ld		(standchar),de
+
+;set pages to copy to and to clean from
+  ld    a,(PageOnNextVblank)
+  cp    0*32+31           ;x*32+31 (x=page)
+  ld    b,0               ;copy to page 0
+  ld    c,1               ;clean object from vram data in page 1
+  ld    d,+000+04         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    1*32+31           ;x*32+31 (x=page)
+  ld    b,1               ;copy to page 1
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-016+04         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    2*32+31           ;x*32+31 (x=page)
+  ld    b,2               ;copy to page 2
+  ld    c,3               ;clean object from vram data in page 3
+  ld    d,-032+04         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+  cp    3*32+31           ;x*32+31 (x=page)
+  ld    b,3               ;copy to page 3
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-048+04         ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jp    z,.pagefound
+
+.pagefound:
+  ld    iy,CleanPlayerWeapon
+
+  ld    a,b
+  ld    (CopyPlayerWeapon+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,c
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ClesY)
+  sub   a,5
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+  ld    (CopyPlayerWeapon+dy),a
+
+  ld    a,(ClesX)
+  add   a,d
+  add   a,h
+  ld    (CopyPlayerWeapon+dx),a
+  ld    (iy+dx),a
+  add   a,e
+  ld    (iy+sx),a
+  
+  ;put weapon
+  ld    hl,CopyPlayerWeapon
+  call  docopy
+
+  ld    a,(ShootArrowWhileJump?)
+  cp    15
+  ret   nz
+  
+  ld    a,ArrowSpeed
+  ld    (ArrowActive?),a
+  ld    a,(ClesX)
+  sub   a,11
+  ld    (ArrowX),a
+  ld    a,(ClesY)
+  ld    (ArrowY),a
+
+  .endShootArrowWhileJump:
+  xor   a
+  ld    (ShootArrowWhileJump?),a
   ret
 
 CheckSnapToStairsWhileJump:
@@ -5816,6 +6049,7 @@ CheckSnapToStairsWhileJump:
   ret  
 
 KickWhileJump?:  db  1
+ShootArrowWhileJump?:  db  0
 Jump:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -5836,6 +6070,8 @@ Jump:
   ld    a,(NewPrContr)
 	bit		4,a           ;trig a pressed ?
 	jp    nz,.SetKickWhileJump
+	bit		5,a           ;trig b pressed ?
+	jp    nz,.SetShootArrowWhileJump
 	bit		0,a           ;cursor up pressed ?
 	jp    nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
   ret
@@ -5874,6 +6110,15 @@ Jump:
   ld    a,(ClesY)
   add   a,b                 ;36 - 8 when kicking up, 46 - 8 when kicking down
   ld    (HitBoxSY),a    
+  ret
+
+.SetShootArrowWhileJump:
+  ld    a,(ShootArrowWhileJump?)
+  or    a
+  ret   nz                  ;don't shoot if already shooting
+
+  ld    a,1
+  ld    (ShootArrowWhileJump?),a
   ret
 
 .SetKickWhileJump:
@@ -7434,6 +7679,7 @@ Set_Stairs_Climb_RightUp:
 	ld		(PlayerAniCount),a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
   ld    (EnableHitbox?),a
+  ld    (ShootArrowWhileJump?),a
   ret
 
 Set_Stairs_Climb_LeftUp:
@@ -7447,6 +7693,7 @@ Set_Stairs_Climb_LeftUp:
 	ld		(PlayerAniCount),a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
   ld    (EnableHitbox?),a
+  ld    (ShootArrowWhileJump?),a
   ret
 
 Set_ClimbDown:
@@ -7459,6 +7706,7 @@ Set_ClimbDown:
   xor   a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
   ld    (EnableHitbox?),a
+  ld    (ShootArrowWhileJump?),a
   
   ld    hl,0 
   ld    (PlayerAniCount),hl
@@ -7477,6 +7725,7 @@ Set_ClimbUp:
   xor   a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
   ld    (EnableHitbox?),a
+  ld    (ShootArrowWhileJump?),a
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
@@ -7495,6 +7744,7 @@ Set_Climb_AndResetAniCount:
   xor   a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
   ld    (EnableHitbox?),a
+  ld    (ShootArrowWhileJump?),a
 
 	ld		hl,PlayerSpriteData_Char_Climbing1
 	ld		(standchar),hl	
@@ -7583,6 +7833,7 @@ Set_R_stand:
 
   xor   a
   ld    (EnableHitbox?),a
+  ld    (ShootArrowWhileJump?),a
   ld    a,1
   ld    (PlayerFacingRight?),a	
 	ld		hl,RStanding
@@ -7597,6 +7848,7 @@ Set_L_stand:
 
   xor   a
   ld    (EnableHitbox?),a
+  ld    (ShootArrowWhileJump?),a
   ld    (PlayerFacingRight?),a	
 	ld		hl,LStanding
 	ld		(PlayerSpriteStand),hl
@@ -7626,6 +7878,7 @@ Set_L_BeingHit:
 	ld		(PlayerSpriteStand),hl
   xor   a
   ld    (EnableHitbox?),a
+  ld    (ShootArrowWhileJump?),a
 ;  ld    a,1
 ;  ld    (PlayerFacingRight?),a                    ;since we move right, but face left, let's pretend we actually face right. This way the camera moves accordingly
   ld    a,(RunningTablePointer)
@@ -7648,6 +7901,7 @@ Set_R_BeingHit:
 	ld		(PlayerSpriteStand),hl
   xor   a
   ld    (EnableHitbox?),a
+  ld    (ShootArrowWhileJump?),a
 ;  ld    (PlayerFacingRight?),a                    ;since we move left, but face right, let's pretend we actually face left. This way the camera moves accordingly
   ld    a,(RunningTablePointer)
   ld    (RunningTablePointerWhenHit),a

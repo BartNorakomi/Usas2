@@ -1440,23 +1440,14 @@ PlayerSpriteData_Colo_RightMeditate5:      include "..\sprites\secretsofgrindea\
 PlayerSpriteData_Char_RightMeditate6:      include "..\sprites\secretsofgrindea\RightMeditate6.tgs.gen"	  
 PlayerSpriteData_Colo_RightMeditate6:      include "..\sprites\secretsofgrindea\RightMeditate6.tcs.gen"	      | db -0-8,+0
 
-;PlayerSpriteData_Char_LeftShootArrow1:     include "..\sprites\secretsofgrindea\LeftShootArrow1.tgs.gen"	  
-;PlayerSpriteData_Colo_LeftShootArrow1:     include "..\sprites\secretsofgrindea\LeftShootArrow1.tcs.gen"	      | db -0-8,+0
-;PlayerSpriteData_Char_LeftShootArrow2:     include "..\sprites\secretsofgrindea\LeftShootArrow2.tgs.gen"	  
-;PlayerSpriteData_Colo_LeftShootArrow2:     include "..\sprites\secretsofgrindea\LeftShootArrow2.tcs.gen"	      | db -0-8,+0
-;PlayerSpriteData_Char_LeftShootArrow3:     include "..\sprites\secretsofgrindea\LeftShootArrow3.tgs.gen"	  
-;PlayerSpriteData_Colo_LeftShootArrow3:     include "..\sprites\secretsofgrindea\LeftShootArrow3.tcs.gen"	      | db -0-8,+0
-;PlayerSpriteData_Char_LeftShootArrow4:     include "..\sprites\secretsofgrindea\LeftShootArrow4.tgs.gen"	  
-;PlayerSpriteData_Colo_LeftShootArrow4:     include "..\sprites\secretsofgrindea\LeftShootArrow4.tcs.gen"	      | db -0-8,+0
-
-PlayerSpriteData_Char_RightShootArrow1:    include "..\sprites\secretsofgrindea\RightShootArrow1.tgs.gen"	  
-PlayerSpriteData_Colo_RightShootArrow1:    include "..\sprites\secretsofgrindea\RightShootArrow1.tcs.gen"	      | db -0-8,+0
-PlayerSpriteData_Char_RightShootArrow2:    include "..\sprites\secretsofgrindea\RightShootArrow2.tgs.gen"	  
-PlayerSpriteData_Colo_RightShootArrow2:    include "..\sprites\secretsofgrindea\RightShootArrow2.tcs.gen"	      | db -0-8,+0
-PlayerSpriteData_Char_RightShootArrow3:    include "..\sprites\secretsofgrindea\RightShootArrow3.tgs.gen"	  
-PlayerSpriteData_Colo_RightShootArrow3:    include "..\sprites\secretsofgrindea\RightShootArrow3.tcs.gen"	      | db -0-8,+0
-PlayerSpriteData_Char_RightShootArrow4:    include "..\sprites\secretsofgrindea\RightShootArrow4.tgs.gen"	  
-PlayerSpriteData_Colo_RightShootArrow4:    include "..\sprites\secretsofgrindea\RightShootArrow4.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_LeftShootArrow1:     include "..\sprites\secretsofgrindea\LeftShootArrow1.tgs.gen"	  
+PlayerSpriteData_Colo_LeftShootArrow1:     include "..\sprites\secretsofgrindea\LeftShootArrow1.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_LeftShootArrow2:     include "..\sprites\secretsofgrindea\LeftShootArrow2.tgs.gen"	  
+PlayerSpriteData_Colo_LeftShootArrow2:     include "..\sprites\secretsofgrindea\LeftShootArrow2.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_LeftShootArrow3:     include "..\sprites\secretsofgrindea\LeftShootArrow3.tgs.gen"	  
+PlayerSpriteData_Colo_LeftShootArrow3:     include "..\sprites\secretsofgrindea\LeftShootArrow3.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_LeftShootArrow4:     include "..\sprites\secretsofgrindea\LeftShootArrow4.tgs.gen"	  
+PlayerSpriteData_Colo_LeftShootArrow4:     include "..\sprites\secretsofgrindea\LeftShootArrow4.tcs.gen"	      | db -0-8,+0
 EndPlayerSprites1: | ds $c000-$,$ff | dephase ;bf80
 
 ;
@@ -1470,23 +1461,14 @@ db 1
 PlayerSpriteData_Char_Empty_Copy:           include "..\sprites\secretsofgrindea\Empty.tgs.gen"	  
 PlayerSpriteData_Colo_Empty_Copy:           include "..\sprites\secretsofgrindea\Empty.tcs.gen"	  | db +0-8,+0
 
-PlayerSpriteData_Char_LeftShootArrow1:     include "..\sprites\secretsofgrindea\LeftShootArrow1.tgs.gen"	  
-PlayerSpriteData_Colo_LeftShootArrow1:     include "..\sprites\secretsofgrindea\LeftShootArrow1.tcs.gen"	      | db -0-8,+0
-PlayerSpriteData_Char_LeftShootArrow2:     include "..\sprites\secretsofgrindea\LeftShootArrow2.tgs.gen"	  
-PlayerSpriteData_Colo_LeftShootArrow2:     include "..\sprites\secretsofgrindea\LeftShootArrow2.tcs.gen"	      | db -0-8,+0
-PlayerSpriteData_Char_LeftShootArrow3:     include "..\sprites\secretsofgrindea\LeftShootArrow3.tgs.gen"	  
-PlayerSpriteData_Colo_LeftShootArrow3:     include "..\sprites\secretsofgrindea\LeftShootArrow3.tcs.gen"	      | db -0-8,+0
-PlayerSpriteData_Char_LeftShootArrow4:     include "..\sprites\secretsofgrindea\LeftShootArrow4.tgs.gen"	  
-PlayerSpriteData_Colo_LeftShootArrow4:     include "..\sprites\secretsofgrindea\LeftShootArrow4.tcs.gen"	      | db -0-8,+0
-
-PlayerSpriteData_Char_RightSitShootArrow1: include "..\sprites\secretsofgrindea\RightSitShootArrow1.tgs.gen"	  
-PlayerSpriteData_Colo_RightSitShootArrow1: include "..\sprites\secretsofgrindea\RightSitShootArrow1.tcs.gen"	  | db -0-8,+0
-PlayerSpriteData_Char_RightSitShootArrow2: include "..\sprites\secretsofgrindea\RightSitShootArrow2.tgs.gen"	  
-PlayerSpriteData_Colo_RightSitShootArrow2: include "..\sprites\secretsofgrindea\RightSitShootArrow2.tcs.gen"	  | db -0-8,+0
-PlayerSpriteData_Char_RightSitShootArrow3: include "..\sprites\secretsofgrindea\RightSitShootArrow3.tgs.gen"	  
-PlayerSpriteData_Colo_RightSitShootArrow3: include "..\sprites\secretsofgrindea\RightSitShootArrow3.tcs.gen"	  | db -0-8,+0
-PlayerSpriteData_Char_RightSitShootArrow4: include "..\sprites\secretsofgrindea\RightSitShootArrow4.tgs.gen"	  
-PlayerSpriteData_Colo_RightSitShootArrow4: include "..\sprites\secretsofgrindea\RightSitShootArrow4.tcs.gen"	  | db -0-8,+0
+PlayerSpriteData_Char_RightShootArrow1:    include "..\sprites\secretsofgrindea\RightShootArrow1.tgs.gen"	  
+PlayerSpriteData_Colo_RightShootArrow1:    include "..\sprites\secretsofgrindea\RightShootArrow1.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_RightShootArrow2:    include "..\sprites\secretsofgrindea\RightShootArrow2.tgs.gen"	  
+PlayerSpriteData_Colo_RightShootArrow2:    include "..\sprites\secretsofgrindea\RightShootArrow2.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_RightShootArrow3:    include "..\sprites\secretsofgrindea\RightShootArrow3.tgs.gen"	  
+PlayerSpriteData_Colo_RightShootArrow3:    include "..\sprites\secretsofgrindea\RightShootArrow3.tcs.gen"	      | db -0-8,+0
+PlayerSpriteData_Char_RightShootArrow4:    include "..\sprites\secretsofgrindea\RightShootArrow4.tgs.gen"	  
+PlayerSpriteData_Colo_RightShootArrow4:    include "..\sprites\secretsofgrindea\RightShootArrow4.tcs.gen"	      | db -0-8,+0
 
 PlayerSpriteData_Char_LeftSitShootArrow1:  include "..\sprites\secretsofgrindea\LeftSitShootArrow1.tgs.gen"	  
 PlayerSpriteData_Colo_LeftSitShootArrow1:  include "..\sprites\secretsofgrindea\LeftSitShootArrow1.tcs.gen"	    | db -0-8,+0
@@ -1497,6 +1479,32 @@ PlayerSpriteData_Colo_LeftSitShootArrow3:  include "..\sprites\secretsofgrindea\
 PlayerSpriteData_Char_LeftSitShootArrow4:  include "..\sprites\secretsofgrindea\LeftSitShootArrow4.tgs.gen"	  
 PlayerSpriteData_Colo_LeftSitShootArrow4:  include "..\sprites\secretsofgrindea\LeftSitShootArrow4.tcs.gen"	    | db -0-8,+0
 
+PlayerSpriteData_Char_RightSitShootArrow1: include "..\sprites\secretsofgrindea\RightSitShootArrow1.tgs.gen"	  
+PlayerSpriteData_Colo_RightSitShootArrow1: include "..\sprites\secretsofgrindea\RightSitShootArrow1.tcs.gen"	  | db -0-8,+0
+PlayerSpriteData_Char_RightSitShootArrow2: include "..\sprites\secretsofgrindea\RightSitShootArrow2.tgs.gen"	  
+PlayerSpriteData_Colo_RightSitShootArrow2: include "..\sprites\secretsofgrindea\RightSitShootArrow2.tcs.gen"	  | db -0-8,+0
+PlayerSpriteData_Char_RightSitShootArrow3: include "..\sprites\secretsofgrindea\RightSitShootArrow3.tgs.gen"	  
+PlayerSpriteData_Colo_RightSitShootArrow3: include "..\sprites\secretsofgrindea\RightSitShootArrow3.tcs.gen"	  | db -0-8,+0
+PlayerSpriteData_Char_RightSitShootArrow4: include "..\sprites\secretsofgrindea\RightSitShootArrow4.tgs.gen"	  
+PlayerSpriteData_Colo_RightSitShootArrow4: include "..\sprites\secretsofgrindea\RightSitShootArrow4.tcs.gen"	  | db -0-8,+0
+
+PlayerSpriteData_Char_LeftJumpShootArrow1: include "..\sprites\secretsofgrindea\LeftJumpShootArrow1.tgs.gen"	  
+PlayerSpriteData_Colo_LeftJumpShootArrow1: include "..\sprites\secretsofgrindea\LeftJumpShootArrow1.tcs.gen"	  | db +0-8,+2
+PlayerSpriteData_Char_LeftJumpShootArrow2: include "..\sprites\secretsofgrindea\LeftJumpShootArrow2.tgs.gen"	  
+PlayerSpriteData_Colo_LeftJumpShootArrow2: include "..\sprites\secretsofgrindea\LeftJumpShootArrow2.tcs.gen"	  | db +0-8,+2
+PlayerSpriteData_Char_LeftJumpShootArrow3: include "..\sprites\secretsofgrindea\LeftJumpShootArrow3.tgs.gen"	  
+PlayerSpriteData_Colo_LeftJumpShootArrow3: include "..\sprites\secretsofgrindea\LeftJumpShootArrow3.tcs.gen"	  | db +0-8,+2
+PlayerSpriteData_Char_LeftJumpShootArrow4: include "..\sprites\secretsofgrindea\LeftJumpShootArrow4.tgs.gen"	  
+PlayerSpriteData_Colo_LeftJumpShootArrow4: include "..\sprites\secretsofgrindea\LeftJumpShootArrow4.tcs.gen"	  | db +0-8,+2
+
+PlayerSpriteData_Char_RightJumpShootArrow1:include "..\sprites\secretsofgrindea\RightJumpShootArrow1.tgs.gen"	  
+PlayerSpriteData_Colo_RightJumpShootArrow1:include "..\sprites\secretsofgrindea\RightJumpShootArrow1.tcs.gen"	  | db +0-8,-2
+PlayerSpriteData_Char_RightJumpShootArrow2:include "..\sprites\secretsofgrindea\RightJumpShootArrow2.tgs.gen"	  
+PlayerSpriteData_Colo_RightJumpShootArrow2:include "..\sprites\secretsofgrindea\RightJumpShootArrow2.tcs.gen"	  | db +0-8,-2
+PlayerSpriteData_Char_RightJumpShootArrow3:include "..\sprites\secretsofgrindea\RightJumpShootArrow3.tgs.gen"	  
+PlayerSpriteData_Colo_RightJumpShootArrow3:include "..\sprites\secretsofgrindea\RightJumpShootArrow3.tcs.gen"	  | db +0-8,-2
+PlayerSpriteData_Char_RightJumpShootArrow4:include "..\sprites\secretsofgrindea\RightJumpShootArrow4.tgs.gen"	  
+PlayerSpriteData_Colo_RightJumpShootArrow4:include "..\sprites\secretsofgrindea\RightJumpShootArrow4.tcs.gen"	  | db +0-8,-2
 EndPlayerSprites2: | ds $c000-$,$ff | dephase
 
 

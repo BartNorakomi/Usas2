@@ -262,8 +262,48 @@ CheckPlayerPunchesEnemyOnlySitting:
   ld    (HitBoxSY),a                        ;a = y hitbox
   ret
 
+CheckArrowHitsEnemy:
+;check if enemy/object collides with hitbox arrow left side
+  ld    hl,(ArrowX)                         ;hl = x hitbox
+  ld    bc,46
+  add   hl,bc
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  sbc   hl,de
+  ret   c
+
+;check if enemy/object collides with hitbox arrow right side
+  ld    c,(ix+enemies_and_objects.nx)       ;width object
+  ld    a,16                                ;reduce this value to reduce the hitbox size (on the right side)
+  add   a,c
+  ld    c,a
+  sbc   hl,bc  
+  ret   nc
+
+;check if enemy/object collides with hitbox arrow top side
+  ld    a,(ArrowY)                          ;a = y hitbox
+  sub   (ix+enemies_and_objects.y)
+  ret   c  
+
+;check if enemy/object collides with hitbox arrow bottom side
+  sub   a,(ix+enemies_and_objects.ny)       ;width object
+  ret   nc
+
+  ;Enemy hit                                ;blink white for 31 frames when hit
+  xor   a
+  ld    (ArrowActive?),a                    ;remove arrow when enemy is hit
+  
+  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
+  dec   (ix+enemies_and_objects.life)
+  jr    z,CheckPlayerPunchesEnemy.EnemyDied
+  ret
+
 BlinkDurationWhenHit: equ 31  
 CheckPlayerPunchesEnemy:
+  ld    a,(ArrowActive?)
+  or    a
+  call  nz,CheckArrowHitsEnemy
+  
   ld    a,(ix+enemies_and_objects.hit?)     ;reduce enemy is hit counter
   dec   a
   jp    m,.EndReduceHitTimer
