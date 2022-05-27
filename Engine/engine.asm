@@ -92,7 +92,7 @@ ret
   ret
 
 RestoreBackground:        ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    hl,CleanPlayerArrow+restorebackground?
+  ld    hl,CleanPlayerProjectile+restorebackground?
   bit   0,(hl)
   call  nz,.Restore
 
@@ -3192,37 +3192,99 @@ checktile:                  ;in b->add y to check, de->add x to check
 ;  dec   a                   ;1 = wall
 ;  ret
 
-ArrowActive?: db  0
-ArrowSpeed: equ 6
+ArrowSpeed:             equ 6
+ArrowActive?:           db  0
+ArrowY:                 db  100
+ArrowX:                 dw  100
+ArrowSY:                db  216+16    ;(ix+4)
+ArrowSX_RightSide:      db  030       ;(ix+5)
+ArrowSX_LeftSide:       db  030+15    ;(ix+6)
+ArrowNY:                db  001       ;(ix+7)
+ArrowNX:                db  016       ;(ix+8)
+
+FireballSpeed:          equ 3
+FireballActive?:        db  0         ;(ix+0)
+FireballY:              db  100       ;(ix+1)
+FireballX:              dw  100       ;(ix+2)
+FireballSY:             db  216+32    ;(ix+4)
+FireballSX_RightSide:   db  000       ;(ix+5)
+FireballSX_LeftSide:    db  000+10    ;(ix+6)
+FireballNY:             db  008       ;(ix+7)
+FireballNX:             db  011       ;(ix+8)
+
+
 HandlePlayerWeapons:
   ld    a,(ArrowActive?)
   or    a
-  ret   z
+  jp    nz,Arrow2
 
-  ld    hl,(ArrowX)
-  ld    de,20
-  add   hl,de
-  ld    a,(ArrowY)
+  ld    a,(FireballActive?)
+  or    a
+  jp    nz,Fireball
+  ret
+
+  Arrow2:
+  ld    ix,ArrowActive?
+  jp    GoHandlePlayerWeapon  
+
+  Fireball:
+  ld    ix,FireballActive?
+  ld    b,0
+  jp    p,.DirectionFound
+  ld    b,22
+      
+  .DirectionFound:
+  ld    a,(framecounter)
+  and   7
+  cp    4
+  ld    a,11
+  jr    c,GoHandlePlayerWeapon
+  .RightPose2:
+  xor   a
+;  jp    GoHandlePlayerWeapon  
+  
+  GoHandlePlayerWeapon:
+  add   a,b
+  ld    (FireballSX_RightSide),a
+  add   a,10
+  ld    (FireballSX_LeftSide),a  
+  
+  ld    a,(ix+4)          ;sy  
+  ld    (CopyPlayerProjectile+sy),a
+  ld    a,(ix+7)          ;sy
+  ld    (CopyPlayerProjectile+ny),a
+  ld    (CleanPlayerProjectile+ny),a
+  ld    a,(ix+8)          ;nx
+  ld    (CopyPlayerProjectile+nx),a
+  ld    (CleanPlayerProjectile+nx),a
+  
+  ld    l,(ix+2)            ;FireballX
+  ld    h,(ix+3)            ;FireballX
+  add   a,4
+  ld    d,0
+  ld    e,a
+  add   hl,de  
+  ld    a,(ix+1)            ;FireballY
   add   a,16
   call  checktile.XandYset  ;out z=collision found with wall  
-  jp    z,.RemoveArrow
+  jp    z,.RemoveWeapon
   inc   hl                  ;also check next tile
   ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
   dec   a                   ;1 = wall
-  jp    z,.RemoveArrow
+  jp    z,.RemoveWeapon
 
-  ld    iy,CleanPlayerArrow
+  ld    iy,CleanPlayerProjectile
   
-  ld    a,(ArrowX)
+  ld    a,(ix+2)            ;FireballX
   or    a
   jp    p,.ObjectOnLeftSideOfScreen
 
   .ObjectOnRightSideOfScreen:
-  ld    a,30+00
-  ld    (CopyPlayerArrow+sx),a  
+  ld    a,(ix+5)          ;SX right side
+  ld    (CopyPlayerProjectile+sx),a  
   ld    a,%0000 0000      ;set copy direction. Copy from left to right
   ld    (iy+copydirection),a
-  ld    (CopyPlayerArrow+copydirection),a
+  ld    (CopyPlayerProjectile+copydirection),a
     
   ;set pages to copy to and to clean from
   ld    a,(PageOnNextVblank)
@@ -3256,158 +3318,262 @@ HandlePlayerWeapons:
 
 .pagefoundright:
   ld    a,b
-  ld    (CopyPlayerArrow+dpage),a  
+  ld    (CopyPlayerProjectile+dpage),a  
   ld    (iy+dpage),a
   ld    a,c
   ld    (iy+spage),a
 
 ;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ArrowY)
+  ld    a,(ix+1)            ;FireballY
   ld    (iy+sy),a
   ld    (iy+dy),a
-  ld    (CopyPlayerArrow+dy),a
+  ld    (CopyPlayerProjectile+dy),a
   
-  ld    a,(ArrowX)
+  ld    a,(ix+2)            ;FireballX
   add   a,d  
-  ld    (CopyPlayerArrow+dx),a
+  ld    (CopyPlayerProjectile+dx),a
   ld    (iy+dx),a
   add   a,e
   ld    (iy+sx),a
 
-  ld    a,(ArrowActive?)        ;move arrow with arrow speed (which is set in ArrowActive?)
-  ld    b,a
-  ld    a,(ArrowX)
-  add   a,b
-  ld    (ArrowX),a
+  ld    a,(ix+2)            ;FireballX
+  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
+  ld    (ix+2),a            ;FireballX
 
-  ld    a,(ArrowX)
+  ld    a,(ix+2)            ;FireballX
   cp    10
-  jr    c,.RemoveArrow          ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+  jr    c,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
 
-  ld    a,(CopyPlayerArrow+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side
+  ld    a,(CopyPlayerProjectile+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side
   cp    20
   ret   c
 
   ;put arrow
-  ld    hl,CopyPlayerArrow
+  ld    hl,CopyPlayerProjectile
   call  docopy
   
   ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerArrow+restorebackground?),a   
+  ld    (CleanPlayerProjectile+restorebackground?),a   
   ret
 
-  .RemoveArrow:
+  .RemoveWeapon:
   xor   a
-  ld    (ArrowActive?),a
+  ld    (ix+0),a
   ret
   
   .ObjectOnLeftSideOfScreen:
-  ld    a,30+14
-  ld    (CopyPlayerArrow+sx),a  
+  ld    a,(ix+6)          ;SX left side
+  ld    (CopyPlayerProjectile+sx),a  
   ld    a,%0000 0100      ;set copy direction. Copy from right to left
   ld    (iy+copydirection),a
-  ld    (CopyPlayerArrow+copydirection),a
+  ld    (CopyPlayerProjectile+copydirection),a
 
   ;set pages to copy to and to clean from
   ld    a,(PageOnNextVblank)
   cp    0*32+31           ;x*32+31 (x=page)
   ld    b,0               ;copy to page 0
   ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+30         ;dx offset CopyObject
+  ld    d,+000+16         ;dx offset CopyObject
   ld    e,-016            ;sx offset CleanObject 
   jr    z,.pagefoundLeft
 
   cp    1*32+31           ;x*32+31 (x=page)
   ld    b,1               ;copy to page 1
   ld    c,0               ;clean object from vram data in page 2
-  ld    d,-016+30         ;dx offset CopyObject
+  ld    d,-016+16         ;dx offset CopyObject
   ld    e,+016            ;sx offset CleanObject 
   jr    z,.pagefoundLeft
 
   cp    2*32+31           ;x*32+31 (x=page)
   ld    b,2               ;copy to page 2
   ld    c,1               ;clean object from vram data in page 3
-  ld    d,-032+30         ;dx offset CopyObject
+  ld    d,-032+16         ;dx offset CopyObject
   ld    e,+016            ;sx offset CleanObject 
   jr    z,.pagefoundLeft
 
   cp    3*32+31           ;x*32+31 (x=page)
   ld    b,3               ;copy to page 3
   ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048+30         ;dx offset CopyObject
+  ld    d,-048+16         ;dx offset CopyObject
   ld    e,+016            ;sx offset CleanObject 
   jr    z,.pagefoundLeft
 
 .pagefoundLeft:
   ld    a,b
-  ld    (CopyPlayerArrow+dpage),a  
+  ld    (CopyPlayerProjectile+dpage),a  
   ld    (iy+dpage),a
   ld    a,c
   ld    (iy+spage),a
 
 ;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ArrowY)
+  ld    a,(ix+1)            ;FireballY
   ld    (iy+sy),a
   ld    (iy+dy),a
-  ld    (CopyPlayerArrow+dy),a
+  ld    (CopyPlayerProjectile+dy),a
 
-  ld    a,(ArrowActive?)
-  ld    b,a
-  ld    a,(ArrowX)
-  add   a,b
-  ld    (ArrowX),a
+  ld    a,(ix+2)            ;FireballX
+  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
+  ld    (ix+2),a            ;FireballX
   
   add   a,d
-  ld    (CopyPlayerArrow+dx),a
+  add   a,(ix+8)            ;nx
+  ld    (CopyPlayerProjectile+dx),a
   ld    (iy+dx),a
   add   a,e
   ld    (iy+sx),a
 
-  ld    a,(ArrowX)
+  ld    a,(ix+2)            ;FireballX
   cp    255-10
-  jr    nc,.RemoveArrow         ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+  jr    nc,.RemoveWeapon         ;if arrow went through the edge of the map (on the right side) remove the arrow from play
 
-  ld    a,(CopyPlayerArrow+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side
+  ld    a,(CopyPlayerProjectile+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side
   cp    255-20
   ret   nc
   
   ;put arrow
-  ld    hl,CopyPlayerArrow
+  ld    hl,CopyPlayerProjectile
   call  docopy
   
   ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerArrow+restorebackground?),a   
+  ld    (CleanPlayerProjectile+restorebackground?),a   
   ret
+
+
  
   db    0                 ;restorebackground?
-CleanPlayerArrow:                                       ;this is used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)
+CleanPlayerProjectile:                                       ;this is used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)
   db    000,000,000,000   ;sx,--,sy,spage
   db    000,000,000,000   ;dx,--,dy,dpage
   db    016,000,001,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy -> Copy from left to right
+  db    000,%0000 0000,$90       ;fast copy -> Copy from left to right
 ;  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
-ArrowY: db  100
-ArrowX: dw  100
-CopyPlayerArrow:                                        ;copy any object into screen in the normal engine
+CopyPlayerProjectile:                                        ;copy any object into screen in the normal engine
   db    030,000,216+16,003   ;sx,--,sy,spage
   db    100,000,100,000   ;dx,--,dy,dpage
   db    016,000,001,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy command -> Copy from left to right
+  db    000,%0000 0000,$98       ;fast copy command -> Copy from left to right
 ;  db    000,%0000 0100,$98       ;slow transparant copy -> Copy from right to left
+
+
 
 playermovementspeed:    db  2
 PlayerFacingRight?:     db  1
 PlayerInvulnerable?:    db  0
 
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
-;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow
+;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
 HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
+
+LShootFireball:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,38
+  xor   a
+  sbc   hl,de
+  jp    c,Set_L_Stand
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-10
+  xor   a
+  sbc   hl,de
+  jp    nc,Set_L_Stand
+
+;Animate
+  ld    hl,LeftShootFireballAnimation
+  call  AnimateShootFireball             ;animate
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 14
+  jp    z,Set_L_Stand  
+  cp    2 * 10
+  ret   nz
+
+  ld    a,-FireballSpeed
+  ld    (FireballActive?),a
+  ld    a,(ClesX)
+  sub   a,26
+  ld    (FireballX),a
+  ld    a,(ClesY)
+  ld    (FireballY),a
+  ret
+
+RShootFireball:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,11
+  xor   a
+  sbc   hl,de
+  jp    c,Set_R_Stand
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-37
+  xor   a
+  sbc   hl,de
+  jp    nc,Set_R_Stand
+
+;Animate
+  ld    hl,RightShootFireballAnimation
+  call  AnimateShootFireball             ;animate
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 14
+  jp    z,Set_R_Stand  
+  cp    2 * 10
+  ret   nz
+
+  ld    a,FireballSpeed
+  ld    (FireballActive?),a
+  ld    a,(ClesX)
+  sub   a,20
+  ld    (FireballX),a
+  ld    a,(ClesY)
+  ld    (FireballY),a
+  ret
+
+AnimateShootFireball:
+  ld    a,(framecounter)          ;animate every 4 frames
+  and   1
+  ret   nz
+  
+  ld    a,(PlayerAniCount)
+  add   a,2                       ;2 bytes used for pointer to sprite frame address
+  jp    AnimateRun.SetPlayerAniCount
+
+LeftShootFireballAnimation:
+  dw  PlayerSpriteData_Char_LeftPunch1a 
+  dw  PlayerSpriteData_Char_LeftPunch1a 
+  dw  PlayerSpriteData_Char_LeftPunch1b 
+  dw  PlayerSpriteData_Char_LeftPunch1c 
+  dw  PlayerSpriteData_Char_LeftPunch1c
+  dw  PlayerSpriteData_Char_LeftPunch1c 
+  dw  PlayerSpriteData_Char_LeftPunch1c
+  dw  PlayerSpriteData_Char_LeftPunch1d 
+  dw  PlayerSpriteData_Char_LeftCharge2
+  dw  PlayerSpriteData_Char_LeftCharge5
+  dw  PlayerSpriteData_Char_LeftCharge5
+  dw  PlayerSpriteData_Char_LeftCharge5
+  dw  PlayerSpriteData_Char_LeftCharge5
+  dw  PlayerSpriteData_Char_LeftCharge5
+  
+RightShootFireballAnimation:
+  dw  PlayerSpriteData_Char_RightPunch1a 
+  dw  PlayerSpriteData_Char_RightPunch1a 
+  dw  PlayerSpriteData_Char_RightPunch1b 
+  dw  PlayerSpriteData_Char_RightPunch1c 
+  dw  PlayerSpriteData_Char_RightPunch1c
+  dw  PlayerSpriteData_Char_RightPunch1c 
+  dw  PlayerSpriteData_Char_RightPunch1c
+  dw  PlayerSpriteData_Char_RightPunch1d 
+  dw  PlayerSpriteData_Char_RightCharge2
+  dw  PlayerSpriteData_Char_RightCharge5
+  dw  PlayerSpriteData_Char_RightCharge5
+  dw  PlayerSpriteData_Char_RightCharge5
+  dw  PlayerSpriteData_Char_RightCharge5
+  dw  PlayerSpriteData_Char_RightCharge5
 
 LSitShootArrow:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
@@ -5764,11 +5930,11 @@ ShootArrowWhileJumpLeft:
   ld    (ShootArrowWhileJump?),a  
   cp    4
   ld    de,PlayerSpriteData_Char_LeftJumpShootArrow1
-  ld    h,-13               ;move software sprite h pixels to the Left
+  ld    h,-12               ;move software sprite h pixels to the Left
   jr    c,.SetStandChar
   cp    8
   ld    de,PlayerSpriteData_Char_LeftJumpShootArrow2
-  ld    h,-13-3               ;move software sprite h pixels to the Left
+  ld    h,-12-3               ;move software sprite h pixels to the Left
   jr    c,.SetStandChar
   cp    12
   ld    de,PlayerSpriteData_Char_LeftJumpShootArrow3
@@ -6057,11 +6223,11 @@ Jump:
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
   call  .HandleKickWhileJump        ;if player kicks in the air, enable hitbox and set hixbox coordinates
+  call  AnimateWhileJump
   call  MoveHorizontallyWhileJump
 	ld		a,(Controls)
 	bit		0,a           ;cursor up pressed ?
   call  nz,CheckSnapToStairsWhileJump
-  call  AnimateWhileJump
   call  .VerticalMovement
 	ld		a,(Controls)
 	bit		0,a           ;cursor up pressed ?
@@ -7120,7 +7286,8 @@ Lstanding:
 
 	bit		5,a           ;'M' pressed ?
 ;	jp		nz,.Set_L_MeditateOrRoll
-	jp		nz,Set_L_ShootArrow
+;	jp		nz,Set_L_ShootArrow
+	jp		nz,Set_L_ShootFireball
 
 	bit		6,a           ;F1 pressed ?
 	jp		nz,Set_Charging
@@ -7179,7 +7346,8 @@ Rstanding:
 
 	bit		5,a           ;'M' pressed ?
 ;	jp		nz,.Set_R_MeditateOrRoll
-	jp		nz,Set_R_ShootArrow
+;	jp		nz,Set_R_ShootArrow
+	jp		nz,Set_R_ShootFireball
 	
 	bit		6,a           ;F1 pressed ?
 	jp		nz,Set_Charging
@@ -7484,6 +7652,28 @@ Set_R_SitShootArrow:
   ld    (RunningTablePointer),a  
   ret
 
+Set_L_ShootFireball:
+	ld		hl,LShootFireball
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,0 
+  ld    (PlayerAniCount),a
+ 
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
+  ret
+
+Set_R_ShootFireball:
+	ld		hl,RShootFireball
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,0 
+  ld    (PlayerAniCount),a
+ 
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
+  ret
+  
 Set_L_ShootArrow:
 	ld		hl,LShootArrow
 	ld		(PlayerSpriteStand),hl

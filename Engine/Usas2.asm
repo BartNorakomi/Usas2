@@ -438,7 +438,7 @@ dephase
 Graphicsblock4:  equ   $11
 phase	$4000
 itemsKarniMataPage3:
-  incbin "..\grapx\itemsKarniMataPage3.SC5",7,$1000  ;skip header
+  incbin "..\grapx\itemsKarniMataPage3.SC5",7,$1400  ;skip header
 
 ;  incbin "..\grapx\usasWorld2d.SC5",7,$6A00  ;skip header
 ;  incbin "..\grapx\usasWorld1d.SC5",7,$6A00  ;skip header
