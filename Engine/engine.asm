@@ -3238,17 +3238,16 @@ HandlePlayerWeapons:
   and   7
   cp    4
   ld    a,11
-  jr    c,GoHandlePlayerWeapon
-  .RightPose2:
+  jr    c,.SxFound
   xor   a
-;  jp    GoHandlePlayerWeapon  
-  
-  GoHandlePlayerWeapon:
+  .SxFound:
   add   a,b
   ld    (FireballSX_RightSide),a
   add   a,10
   ld    (FireballSX_LeftSide),a  
+;  jp    GoHandlePlayerWeapon  
   
+  GoHandlePlayerWeapon:
   ld    a,(ix+4)          ;sy  
   ld    (CopyPlayerProjectile+sy),a
   ld    a,(ix+7)          ;sy
@@ -3265,7 +3264,8 @@ HandlePlayerWeapons:
   ld    e,a
   add   hl,de  
   ld    a,(ix+1)            ;FireballY
-  add   a,16
+  add   a,16 + 2
+  
   call  checktile.XandYset  ;out z=collision found with wall  
   jp    z,.RemoveWeapon
   inc   hl                  ;also check next tile
@@ -3495,8 +3495,16 @@ LShootFireball:
 
   ld    a,-FireballSpeed
   ld    (FireballActive?),a
-  ld    a,(ClesX)
-  sub   a,26
+;  ld    a,(ClesX)
+;  sub   a,26
+  ld    hl,(ClesX)
+  ld    de,-26
+  add   hl,de
+  ld    a,l
+  bit   0,h
+  jr    z,.SetX
+  ld    a,255
+  .SetX:
   ld    (FireballX),a
   ld    a,(ClesY)
   ld    (FireballY),a
@@ -3510,7 +3518,7 @@ RShootFireball:
   jp    c,Set_R_Stand
 
   ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37
+  ld    de,304-37-12
   xor   a
   sbc   hl,de
   jp    nc,Set_R_Stand
@@ -3529,6 +3537,9 @@ RShootFireball:
   ld    (FireballActive?),a
   ld    a,(ClesX)
   sub   a,20
+  jr    nc,.SetX
+  xor   a
+  .SetX:
   ld    (FireballX),a
   ld    a,(ClesY)
   ld    (FireballY),a
