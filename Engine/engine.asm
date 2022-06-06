@@ -188,14 +188,11 @@ Handle_HardWareSprite_Enemies_And_objects:
 ;out de -> spritenumber*26 (used for character and color data addreess)
 
   ;set block containing sprite data
-	di
-	ld		(memblocks.3),a                         ;set to block 3+4 at $8000- $c000
-	ld		($9000),a
-	inc		a
-	ld		(memblocks.4),a
-	ld		($b000),a	
+  di
+	ld		(memblocks.2),a                         ;set to block 2 at $8000- $c000
+	ld		($7000),a
 	ei
-  
+
   ;set address to write sprite character data to
 	ld		hl,(invissprchatableaddress)		        ;sprite character table in VRAM ($17800)   
   add   hl,de
@@ -851,7 +848,7 @@ PutPlayersprite:
 	ld		a,PlayerSpritesBlock 
   bit   0,l                                   ;if bit 0 of address of character is set, then add 4 blocks to starting blocks
   jr    z,.go
-  add   a,4
+  add   a,2
   .go:
 	call	block1234		;set blocks in page 1/2
   
@@ -2772,106 +2769,29 @@ CameraEngine304x216:
 ;  out   ($99),a
 ;  ret
 
-block1:
-	di
-	ld    (memblocks.1),a
-	ld    ($5000),a
-	ei
-	ret
-
-block2:	
-	di
-	ld		(memblocks.2),a
-	ld		($7000),a
-	ei
-	ret
-
-block3:		
-	di
-	ld		(memblocks.3),a
-	ld		($9000),a
-	ei
-	ret
-
-block4:		
-	di
-	ld		(memblocks.4),a
-	ld		($b000),a
-	ei
-	ret
-
 block12:	
-	di
+  di
 	ld		(memblocks.1),a
-	ld		($5000),a
-	inc		a
-	ld		(memblocks.2),a
-	ld		($7000),a
-	ei
-	ret
-
-block23:	
-	di
-	ld		(memblocks.2),a
-	ld		($7000),a
-	inc		a
-	ld		(memblocks.3),a
-	ld		($9000),a
+	ld		($6000),a
 	ei
 	ret
 
 block34:	
-	di
-	ld		(memblocks.3),a
-	ld		($9000),a
-	inc		a
-	ld		(memblocks.4),a
-	ld		($b000),a
-	ei
-	ret
-
-block123:	
-	di
-	ld		(memblocks.1),a
-	ld		($5000),a
-	inc		a
+  di
 	ld		(memblocks.2),a
 	ld		($7000),a
-	inc		a
-	ld		(memblocks.3),a
-	ld		($9000),a
-	ei
-	ret
-
-block234:	
-	di
-	ld		(memblocks.2),a
-	ld		($7000),a
-	inc		a
-	ld		(memblocks.3),a
-	ld		($9000),a
-	inc		a
-	ld		(memblocks.4),a
-	ld		($b000),a
 	ei
 	ret
 
 block1234:	 
   di
 	ld		(memblocks.1),a
-	ld		($5000),a
-	inc		a
+	ld		($6000),a
+	inc   a
 	ld		(memblocks.2),a
 	ld		($7000),a
-	inc		a
-	ld		(memblocks.3),a
-	ld		($9000),a
-	inc		a
-	ld		(memblocks.4),a
-	ld		($b000),a
 	ei
 	ret
-
 
 SwapSpatColAndCharTable:
 	ld		a,(vdp_0+6)     ;check current sprite character table

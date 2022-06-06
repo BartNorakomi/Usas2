@@ -38,7 +38,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 1,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapB01_018Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapC07Data
+WorldMapPointer:  dw  MapB04Data
 
 loadGraphics:
 ;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
@@ -53,6 +53,7 @@ loadGraphics:
   ld    ix,(WorldMapPointer)
   call  SetEngineType                 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
   call  SetTilesInVram                ;copies all the tiles to Vram
+  call  PopulateControls              ;this allows for a double jump as soon as you enter a new map
   call  SetMapPalette                 ;sets palette
   call  UnpackMapdata_SetObjects      ;unpacks packed map to $4000 in ram and sets objects
   call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
@@ -81,8 +82,9 @@ loadGraphics:
   call  SetInterruptHandler           ;set Lineint and Vblank  
   call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank | if normal engine: wait for lineint
 
-  xor   a
-  ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
+;  xor   a
+;  ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
+;  ld    (NewPrContr),a                  ;this allows for a double jump as soon as you enter a new map
   jp    LevelEngine
 
 InitiateMusicReplayer:                ;set music replayer at $4000 in ram
@@ -319,14 +321,18 @@ UnpackMapdata_SetObjects:
   djnz  .ClearEnemyTableLoop
 
 ;unpack map data
-  ld    a,(slot.page2rom)             ;all RAM except page 2
+  ld    a,(slot.page12rom)             ;all RAM except page 2
   out   ($a8),a      
 
   ld    a,(ix+0)                      ;Map block
-  call  block34
+  call  block34                       ;we can only switch block34 if page 1 is in rom
 
   ld    l,(ix+1)                      ;map data in rom
   ld    h,(ix+2)
+
+;unpack map data
+  ld    a,(slot.page2rom)             ;all RAM except page 2
+  out   ($a8),a      
     
   ld    de,$4000
   call  Depack
@@ -706,26 +712,26 @@ ConvertToMapinRam:
   ret
   
 ;duplicate the last row 4 tiles
-  ld    hl,40*26 + MapData 
-  ld    de,40*27 + MapData 
-  ld    bc,40
-  ldir  
+;  ld    hl,40*26 + MapData 
+;  ld    de,40*27 + MapData 
+;  ld    bc,40
+;  ldir  
 
-  ld    hl,40*26 + MapData 
-  ld    de,40*28 + MapData 
-  ld    bc,40
-  ldir  
+;  ld    hl,40*26 + MapData 
+;  ld    de,40*28 + MapData 
+;  ld    bc,40
+;  ldir  
 
-  ld    hl,40*26 + MapData 
-  ld    de,40*29 + MapData 
-  ld    bc,40
-  ldir  
+;  ld    hl,40*26 + MapData 
+;  ld    de,40*29 + MapData 
+;  ld    bc,40
+;  ldir  
 
-  ld    hl,40*26 + MapData 
-  ld    de,40*30 + MapData 
-  ld    bc,40
-  ldir  
-  ret
+;  ld    hl,40*26 + MapData 
+;  ld    de,40*30 + MapData 
+;  ld    bc,40
+;  ldir  
+;  ret
 
 .convertTile:
   ;get tilenr in de
@@ -945,7 +951,8 @@ copyGraphicsToScreen:
   call  .loop1    
 
   ld    a,d                 ;Graphicsblock
-  add   a,2
+;  add   a,2
+  inc   a
   call  block12
   
 	ld		hl,$4000
@@ -1229,8 +1236,8 @@ PopulateControls:
 ;  or    a
 ;  jp    nz,.freezecontrols
 
-	ld		a,(NewPrContr)
-	ld		(NewPrContrOld),a
+;	ld		a,(NewPrContr)
+;	ld		(NewPrContrOld),a
 	
 	ld		a,15		; select joystick port 1
 	di

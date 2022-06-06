@@ -293,18 +293,26 @@ init:
 	ldir
 	call	initMem
 
-	xor		a			;init blocks
+;	xor		a			;init blocks
+;	ld		(memblocks.1),a
+;	ld		($5000),a
+;	inc		a
+;	ld		(memblocks.2),a
+;	ld		($7000),a
+;	inc		a
+;	ld		(memblocks.3),a
+;	ld		($9000),a
+;	inc		a
+;	ld		(memblocks.4),a
+;	ld		($b000),a
+
+  xor   a     ;init blocks ascii16
 	ld		(memblocks.1),a
-	ld		($5000),a
+	ld		($6000),a
 	inc		a
 	ld		(memblocks.2),a
 	ld		($7000),a
-	inc		a
-	ld		(memblocks.3),a
-	ld		($9000),a
-	inc		a
-	ld		(memblocks.4),a
-	ld		($b000),a
+
 
 ; load BIOS / engine , load startup
 	ld		hl,tempisr
@@ -388,76 +396,52 @@ enlength:	Equ	$-engine
 	ds		$a000-$,$ff		
 
 ;
-; block $03 - $04
+; block $03
 ;
-;StarFoxSpritesBlock:  equ   $03
+	ds		$2000
+
+;
+; block $04 - $07
+;
 phase	$4000
-;StarFoxShipSprite1Color:
-;	include "../grapx/shippos1.tcs.gen"	    ;sprite color
-;StarFoxShipSprite1Character:
-;	include "../grapx/shippos1.tcs.gen"	    ;sprite color
-	ds		$8000-$,$ff
+	ds		$c000-$,$ff
 dephase
 
 ;
-; block $05 - $08
+; block $08
 ;
-VoodooWaspTilesBlock:  equ   $05
-phase	$4000
-  incbin "..\grapx\tilesheets\sVoodooWasp.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sVoodooWaspBottom48Lines.SC5",7,48 * 128 ;48 lines
-	ds		$c000-$,$ff
-dephase
+	ds		$2000
 
 ;
 ; block $09 - $0c
 ;
-GoddessTilesBlock:  equ   $09
+;GoddessTilesBlock:  equ   $09
 phase	$4000
-  incbin "..\grapx\tilesheets\sGoddess.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sGoddessBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
 ;
-; block $0d - $10
+; block $0d - $0f
 ;
-;Graphicsblock3:  equ   $0d
 phase	$4000
-;  incbin "..\grapx\usasWorld2c.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\usasWorld1c.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\usas3.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\bomba3.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\Mulana3.SC5",7,$6A00  ;skip header
-	ds		$c000-$,$ff
+	ds		$a000-$,$ff
 dephase
 
 ;
-; block $11 - $14
+; block $10 - $13
 ;
-Graphicsblock4:  equ   $11
 phase	$4000
-itemsKarniMataPage3:
-  incbin "..\grapx\itemsKarniMataPage3.SC5",7,$1400  ;skip header
-
-;  incbin "..\grapx\usasWorld2d.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\usasWorld1d.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\usas4.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\bomba4.SC5",7,$6A00  ;skip header
-;  incbin "..\grapx\Mulana4.SC5",7,$6A00  ;skip header
 	ds		$c000-$,$ff
 dephase
+
+; block $14
+  ds  $2000
 
 
 ;
 ; block $15 
 ;
-;Graphicsblock5:  equ   $15
 phase	$4000
-;scoreboard:
-;  incbin "..\grapx\scoreboard.SC5",7,$1000  ;skip header
-;itemsKarniMata:
-;  incbin "..\grapx\itemsKarniMata.SC5",7,$1000  ;skip header
 	ds		$6000-$,$ff
 dephase
 
@@ -1011,23 +995,12 @@ fill: equ 0
 ;ADDED extra byte for x, so from ny everything should be moved 1 more bytes to the right
 
 ;
-; block $22
+; block $22 - $23
+; block $24 - $25
+; block $26 - $27
+; block $28 - $29
 ;
-ryucharacterfaceblock:        equ $22
-ryuactiontablesblock:         equ $22
-phase	$4000
-  incbin "..\grapx\character select\character faces\ryucharacterface.dat"
-;  include "actiontables\ryuactiontables.asm"
-	ds		$6000-$,$ff
-dephase
-
-;
-; block $23 - $24
-; block $25 - $26
-; block $27 - $28
-; block $29 - $2a
-;
-ryuframelistblock:            equ $23
+ryuframelistblock:            equ $22 / 2
 phase	$8000
   include "..\grapx\ryu\spritesryuPage0\frames.lst" 
 	ds		$c000-$,$ff
@@ -1046,12 +1019,12 @@ phase	$8000
 dephase
 
 ;
-; block $2b - $2c
-; block $2d - $2e
-; block $2f - $30
-; block $31 - $32
+; block $2a - $2b
+; block $2c - $2d
+; block $2e - $2f
+; block $30 - $31
 ;
-ryuspritedatablock:           equ $2b
+ryuspritedatablock:           equ $2a / 2
 phase	$0000
   incbin "..\grapx\ryu\spritesryuPage0\frames.dat"
 	ds		$4000-$,$ff
@@ -1070,17 +1043,15 @@ phase	$0000
 dephase
 
 ;
-; block $33 - $34
+; block $33
 ;
-phase	$8000
-	ds		$c000-$,$ff
-dephase
+	ds		$2000 * 2
 
 ;Player's sprite positions 
 ;
-; block $35 - $38
+; block $34 - $37
 ;
-PlayerSpritesBlock:      equ   $35  
+PlayerSpritesBlock:      equ   $34 / 2 
 phase	$4000
 PlayerSpriteData_Char_Empty:                include "..\sprites\secretsofgrindea\Empty.tgs.gen"	  
 PlayerSpriteData_Colo_Empty:                include "..\sprites\secretsofgrindea\Empty.tcs.gen"	  | db +0-8,+0
@@ -1451,11 +1422,11 @@ PlayerSpriteData_Colo_LeftShootArrow4:     include "..\sprites\secretsofgrindea\
 EndPlayerSprites1: | ds $c000-$,$ff | dephase ;bf80
 
 ;
-; block $39 - $3c
+; block $38 - $3b
 ;
 phase	$4000
 
-PlayerSprites2Block:      equ   $39  
+PlayerSprites2Block:      equ   $38 / 2
 phase	$4000
 db 1
 PlayerSpriteData_Char_Empty_Copy:           include "..\sprites\secretsofgrindea\Empty.tgs.gen"	  
@@ -1506,25 +1477,24 @@ PlayerSpriteData_Colo_RightJumpShootArrow3:include "..\sprites\secretsofgrindea\
 PlayerSpriteData_Char_RightJumpShootArrow4:include "..\sprites\secretsofgrindea\RightJumpShootArrow4.tgs.gen"	  
 PlayerSpriteData_Colo_RightJumpShootArrow4:include "..\sprites\secretsofgrindea\RightJumpShootArrow4.tcs.gen"	  | db +0-8,-2
 EndPlayerSprites2: | ds $c000-$,$ff | dephase
-
-
 dephase
 
+
 ;
-; block $3d - $40
+; block $3c - $3f
 ;
-movementpatterns1block:  equ   $3d
+movementpatterns1block:  equ   $3c / 2
 phase	$4000
   include "MovementPatterns1.asm"
 	ds		$c000-$,$ff
 dephase
 
 ;
-; block $41 + $42
+; block $40 + $41
 ;
-RetardZombieSpriteblock:  equ   $41
-SlimeSpriteblock:  equ   $41
-BeetleSpriteblock:  equ   $41
+RetardZombieSpriteblock:  equ   $40 / 2
+SlimeSpriteblock:  equ   $40 / 2
+BeetleSpriteblock:  equ   $40 / 2
 phase	$8000
 LeftRetardZombieWalk1_Char:                 include "..\sprites\enemies\RetardZombie\LeftRetardZombieWalk1.tgs.gen"	 ;y offset, x offset   
 LeftRetardZombieWalk1_Col:                  include "..\sprites\enemies\RetardZombie\LeftRetardZombieWalk1.tcs.gen"  | db 00,00,00,00, 16,00,16,00
@@ -1683,12 +1653,12 @@ RightBeetleFly2_Col:                        include "..\sprites\enemies\Beetle\R
 dephase
 
 ;
-; block $43 + $44
+; block $42 + $43
 ;
-GreenSpiderSpriteblock:  equ   $43
-BoringEyeRedSpriteblock:  equ   $43
-BatSpriteblock:  equ   $43
-OctopussySpriteblock:  equ   $43
+GreenSpiderSpriteblock:  equ   $42 / 2
+BoringEyeRedSpriteblock:  equ   $42 / 2
+BatSpriteblock:  equ   $42 / 2
+OctopussySpriteblock:  equ   $42 / 2
 phase	$8000
 LeftGreenSpiderWalk1_Char:                  include "..\sprites\enemies\Spider\LeftGreenSpiderWalk1.tgs.gen"	;y offset, x offset  
 LeftGreenSpiderWalk1_Col:                   include "..\sprites\enemies\Spider\LeftGreenSpiderWalk1.tcs.gen"  | db -1,00,-1,00, -1,16,-1,16
@@ -1815,11 +1785,11 @@ RightOctopussyAttack_Col:                   include "..\sprites\enemies\Octopuss
 dephase
 
 ;
-; block $45 + $46
+; block $44 + $45
 ;
-GreySpiderSpriteblock:  equ   $45
-BoringEyeGreenSpriteblock:  equ   $45
-HunchbackSpriteblock:  equ   $45
+GreySpiderSpriteblock:  equ   $44 / 2
+BoringEyeGreenSpriteblock:  equ   $44 / 2
+HunchbackSpriteblock:  equ   $44 / 2
 phase	$8000
 LeftGreySpiderWalk1_Char:                   include "..\sprites\enemies\Spider\LeftGreySpiderWalk1.tgs.gen"	 ;y offset, x offset 
 LeftGreySpiderWalk1_Col:                    include "..\sprites\enemies\Spider\LeftGreySpiderWalk1.tcs.gen"  | db -1,00,-1,00, -1,16,-1,16
@@ -1903,10 +1873,10 @@ RightHunchback8_Col:                        include "..\sprites\enemies\Hunchbac
 dephase
 
 ;
-; block $47 + $48
+; block $46 + $47
 ;
-RedExplosionSpriteblock:  equ   $47
-ScorpionSpriteblock:  equ   $47
+RedExplosionSpriteblock:  equ   $46 / 2
+ScorpionSpriteblock:  equ   $46 / 2
 phase	$8000
 RedExplosionSmall1_Char:                    include "..\sprites\explosions\RedExplosionSmall1.tgs.gen"	;y offset, x offset  
 RedExplosionSmall1_col:                     include "..\sprites\explosions\RedExplosionSmall1.tcs.gen"  | db 00,00,00,00
@@ -1970,9 +1940,9 @@ RightScorpionRattle3_Col:                   include "..\sprites\enemies\Scorpion
 dephase
 
 ;
-; block $49 + $4a
+; block $48 + $49
 ;
-GreyExplosionSpriteblock:  equ   $49
+GreyExplosionSpriteblock:  equ   $48 / 2
 phase	$8000
 GreyExplosionSmall1_Char:                   include "..\sprites\explosions\GreyExplosionSmall1.tgs.gen"	 ;y offset, x offset 
 GreyExplosionSmall1_col:                    include "..\sprites\explosions\GreyExplosionSmall1.tcs.gen"  | db 00,00,00,00
@@ -1997,10 +1967,10 @@ GreyExplosionBig5_col:                      include "..\sprites\explosions\GreyE
 dephase
 
 ;
-; block $4b + $4c
+; block $4a + $4b
 ;
-GrinderSpriteblock:  equ   $4b
-TreemanSpriteblock:  equ   $4b
+GrinderSpriteblock:  equ   $4a / 2
+TreemanSpriteblock:  equ   $4a / 2
 phase	$8000
 LeftGrinderWalk1_Char:                      include "..\sprites\enemies\Grinder\LeftGrinderWalk1.tgs.gen"	 ;y offset, x offset 
 LeftGrinderWalk1_Col:                       include "..\sprites\enemies\Grinder\LeftGrinderWalk1.tcs.gen"  | db 00,00,00,00, 00,16,00,16, 16,00,16,00, 16,16,16,16
@@ -2075,10 +2045,10 @@ RightTreemanHit_Col:                        include "..\sprites\enemies\Treeman\
 dephase
 
 ;
-; block $4d + $4e
+; block $4c + $4d
 ;
-GreenWaspSpriteblock:  equ   $4d
-LandstriderSpriteblock:  equ   $4d
+GreenWaspSpriteblock:  equ   $4c / 2
+LandstriderSpriteblock:  equ   $4c / 2
 phase	$8000
 LeftGreenWasp1_Char:                        include "..\sprites\enemies\Wasp\LeftGreenWasp1.tgs.gen"	;y offset, x offset  
 LeftGreenWasp1_Col:                         include "..\sprites\enemies\Wasp\LeftGreenWasp1.tcs.gen"  | db 00,00,00,00
@@ -2174,9 +2144,9 @@ RightBigLandstrider4_Col:                   include "..\sprites\enemies\Landstri
 dephase
 
 ;
-; block $4f + $50
+; block $4e + $4f
 ;
-BrownWaspSpriteblock:  equ   $4f
+BrownWaspSpriteblock:  equ   $4e / 2
 phase	$8000
 LeftBrownWasp1_Char:                        include "..\sprites\enemies\Wasp\LeftBrownWasp1.tgs.gen"	;y offset, x offset  
 LeftBrownWasp1_Col:                         include "..\sprites\enemies\Wasp\LeftBrownWasp1.tcs.gen"  | db 00,00,00,00
@@ -2203,11 +2173,11 @@ RightBrownWaspAttack_Col:                   include "..\sprites\enemies\Wasp\Rig
 dephase
 
 ;
-; block $51 + $52
+; block $50 + $51
 ;
-FireEyeGreySpriteblock:  equ   $51
-DemontjeBrownSpriteblock:  equ   $51
-HugeBlobSpriteblock:  equ   $51
+FireEyeGreySpriteblock:  equ   $50 / 2
+DemontjeBrownSpriteblock:  equ   $50 / 2
+HugeBlobSpriteblock:  equ   $50 / 2
 phase	$8000
 LeftDemontjeBrown1_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeBrown1.tgs.gen"	;y offset, x offset  
 LeftDemontjeBrown1_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeBrown1.tcs.gen"  | db 00,01,00,01
@@ -2258,14 +2228,14 @@ HugeBlob7_Col:                              include "..\sprites\enemies\HugeBlob
 dephase
 
 ;
-; block $53 + $54
+; block $52 + $53
 ;
-FireEyeGreenSpriteblock:  equ   $53
-DemontjeGreenSpriteblock:  equ   $53
-HugeBlobWhiteSpriteblock:  equ   $53
-SensorTentaclesSpriteblock:  equ   $53
-YellowWaspSpriteblock:  equ   $53
-HugeSpiderSpriteblock:  equ   $53
+FireEyeGreenSpriteblock:  equ   $52 / 2
+DemontjeGreenSpriteblock:  equ   $52 / 2
+HugeBlobWhiteSpriteblock:  equ   $52 / 2
+SensorTentaclesSpriteblock:  equ   $52 / 2
+YellowWaspSpriteblock:  equ   $52 / 2
+HugeSpiderSpriteblock:  equ   $52 / 2
 phase	$8000
 LeftDemontjeGreen1_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tgs.gen"	;y offset, x offset  
 LeftDemontjeGreen1_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tcs.gen"  | db 00,01,00,01
@@ -2383,13 +2353,13 @@ HugeSpider12_Col:                           incbin "..\sprites\enemies\HugeSpide
 dephase
 
 ;
-; block $55 + $56
+; block $54 + $55
 ;
-DemontjeGreySpriteblock:  equ   $55
-SnowballThrowerSpriteblock:  equ   $55
-TrampolineBlobSpriteblock:  equ   $55
-BlackHoleAlienSpriteblock:  equ   $55
-BlackHoleBabySpriteblock:  equ   $55
+DemontjeGreySpriteblock:  equ   $54 / 2
+SnowballThrowerSpriteblock:  equ   $54 / 2
+TrampolineBlobSpriteblock:  equ   $54 / 2
+BlackHoleAlienSpriteblock:  equ   $54 / 2
+BlackHoleBabySpriteblock:  equ   $54 / 2
 phase	$8000
 LeftDemontjeGrey1_Char:                     include "..\sprites\enemies\Demontje\LeftDemontjeGrey1.tgs.gen"	;y offset, x offset  
 LeftDemontjeGrey1_Col:                      include "..\sprites\enemies\Demontje\LeftDemontjeGrey1.tcs.gen"  | db 00,01,00,01
@@ -2556,12 +2526,12 @@ RightBlackHoleBaby6_Col:                    include "..\sprites\enemies\BlackHol
 dephase
 
 ;
-; block $57 + $58
+; block $56 + $57
 ;
-DemontjeRedSpriteblock:  equ   $57
-WaterfallSpriteblock:  equ   $57
-DrippingOozeSpriteblock:  equ   $57
-CuteMiniBatSpriteblock:  equ   $57
+DemontjeRedSpriteblock:  equ   $56 / 2
+WaterfallSpriteblock:  equ   $56 / 2
+DrippingOozeSpriteblock:  equ   $56 / 2
+CuteMiniBatSpriteblock:  equ   $56 / 2
 phase	$8000
 LeftDemontjeRed1_Char:                      include "..\sprites\enemies\Demontje\LeftDemontjeRed1.tgs.gen"	;y offset, x offset  
 LeftDemontjeRed1_Col:                       include "..\sprites\enemies\Demontje\LeftDemontjeRed1.tcs.gen"  | db 00,01,00,01
@@ -2685,6 +2655,10 @@ RightCuteMiniBat3_Col:                      include "..\sprites\enemies\CuteMini
 	ds		$c000-$,$ff
 dephase
 
+
+; block $58
+  ds  $2000
+
 ;
 ; block $59 - $5c
 ;
@@ -2697,7 +2671,7 @@ dephase
 ;
 ; block $5d - $60
 ;
-A01TilesBlock:  equ   $5f
+A01TilesBlock:  equ   $5d
 phase	$4000
   incbin "..\grapx\A01.SC5",7,$6A00  ;skip header
 	ds		$c000-$,$ff
@@ -2712,19 +2686,19 @@ dephase
 ; - read the rest of the file
 ; - modify the play_nextpos routine so that 3 is added to the pattern address
 ;
-; block $61 - $62
+; block $61
 ;
 MusicTestBlock:  equ   $61
 phase	$8000
 ;  incbin "..\music\perftest.mwm",7  ;skip header
   incbin "perftest.mwm" ;,7  ;skip header..... Header is 6 bytes ???
-	ds		$c000-$,$ff
+	ds		$a000-$,$ff
 dephase
 
 ;
-; block $63 - $64
+; block $62 - $63
 ;
-Graphicsblock5:  equ   $63
+Graphicsblock5:  equ   $62 / 2
 phase	$4000
 scoreboard:
   incbin "..\grapx\scoreboard.SC5",7,$1000  ;skip header
@@ -2732,6 +2706,9 @@ itemsKarniMata:
   incbin "..\grapx\itemsKarniMata.SC5",7,$1400  ;skip header
 	ds		$8000-$,$ff
 dephase
+
+; block $64
+  ds    $2000
 
 ;
 ; block $65 - $66
@@ -2824,348 +2801,84 @@ RightLancelotShieldHit8_Col:                include "..\sprites\enemies\Lancelot
 	ds		$c000-$,$ff
 dephase
 
-;
-; block $6b - $6c
-;
-MapsBlock0A:  equ   $6b
-phase	$8000
-MapA01:
-  incbin "..\maps\a01.map.pck"  | .amountofobjects: db  0
-MapA02:
-  incbin "..\maps\a02.map.pck"  | .amountofobjects: db  0
-MapA03:
-  incbin "..\maps\a03.map.pck"  | .amountofobjects: db  0
-MapA04:
-  incbin "..\maps\a04.map.pck"  | .amountofobjects: db  1
+; block $6b
+  ds $2000
 
-  
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 2,        0|dw WorldNameText       |db 8*24|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
-;.object2: db 2,        0|dw Sf2Hugeobject2      |db 8*12|dw 8*12|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
-;.object3: db 2,        0|dw Sf2Hugeobject3      |db 8*03|dw 8*13|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
-  
-    
-  
-  
-MapA05:
-  incbin "..\maps\a05.map.pck"  | .amountofobjects: db  2
-
-;AppearingBlocks Handler
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-
-;AppearingBlocks
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object2: db 0,        0|dw AppearingBlocks     |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-;.object1: db 1,        0|dw DisappearingBlocks  |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,21*8,19*8,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-  
-  
-  
-  
-MapA06:
-  incbin "..\maps\a06.map.pck"  | .amountofobjects: db  0
-MapA07:
-  incbin "..\maps\a07.map.pck"  | .amountofobjects: db  0
-MapA08:
-  incbin "..\maps\a08.map.pck"  | .amountofobjects: db  0
-MapA09:
-  incbin "..\maps\a09.map.pck"  | .amountofobjects: db  0
-MapA10:
-  incbin "..\maps\a10.map.pck"  | .amountofobjects: db  0
-MapA11:
-  incbin "..\maps\a11.map.pck"  | .amountofobjects: db  0
-MapA12:
-  incbin "..\maps\a12.map.pck"  | .amountofobjects: db  1
-;Konark Palette Object
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw KonarkPaletteObject |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-
-
-MapA13:
-  incbin "..\maps\a13.map.pck"  | .amountofobjects: db  0
-
-	ds		$c000-$,$ff
-dephase
+; block $6c
+  ds $2000
 
 ;
 ; block $6d - $6e
 ;
-MapsBlock0B:  equ   $6d
-phase	$8000
-MapB01:
-  incbin "..\maps\b01.map.pck"  | .amountofobjects: db  0
-MapB02:
-  incbin "..\maps\b02.map.pck"  | .amountofobjects: db  0
-MapB03:
-  incbin "..\maps\b03.map.pck"  | .amountofobjects: db  0
-MapB04:
-  incbin "..\maps\b04.map.pck"  | .amountofobjects: db  0
-MapB05:
-  incbin "..\maps\b05.map.pck"  | .amountofobjects: db  0
-MapB06:
-  incbin "..\maps\b06.map.pck"  | .amountofobjects: db  0
-MapB07:
-  incbin "..\maps\b07.map.pck"  | .amountofobjects: db  0
-MapB08:
-  incbin "..\maps\b08.map.pck"  | .amountofobjects: db  0
-MapB09:
-  incbin "..\maps\b09.map.pck"  | .amountofobjects: db  0
-MapB10:
-  incbin "..\maps\b10.map.pck"  | .amountofobjects: db  0
-MapB11:
-  incbin "..\maps\b11.map.pck"  | .amountofobjects: db  0
-MapB12:
-  incbin "..\maps\b12.map.pck"  | .amountofobjects: db  0
-MapB13:
-  incbin "..\maps\b13.map.pck"  | .amountofobjects: db  0
-	ds		$c000-$,$ff
-dephase
+  ds $2000 * 2
 
 ;
 ; block $6f - $70
 ;
-MapsBlock0C:  equ   $6f
-phase	$8000
-MapC01:
-  incbin "..\maps\c01.map.pck"  | .amountofobjects: db  0
-MapC02:
-  incbin "..\maps\c02.map.pck"  | .amountofobjects: db  0
-MapC03:
-  incbin "..\maps\c03.map.pck"  | .amountofobjects: db  0
-MapC04:
-  incbin "..\maps\c04.map.pck"  | .amountofobjects: db  0
-MapC05:
-  incbin "..\maps\c05.map.pck"  | .amountofobjects: db  0
-MapC06:
-  incbin "..\maps\c06.map.pck"  | .amountofobjects: db  0
-MapC07:
-  incbin "..\maps\c07.map.pck"  | .amountofobjects: db  0
-MapC08:
-  incbin "..\maps\c08.map.pck"  | .amountofobjects: db  0
-MapC09:
-  incbin "..\maps\c09.map.pck"  | .amountofobjects: db  0
-MapC10:
-  incbin "..\maps\c10.map.pck"  | .amountofobjects: db  0
-MapC11:
-  incbin "..\maps\c11.map.pck"  | .amountofobjects: db  0
-MapC12:
-  incbin "..\maps\c12.map.pck"  | .amountofobjects: db  0
-MapC13:
-  incbin "..\maps\c13.map.pck"  | .amountofobjects: db  0
-	ds		$c000-$,$ff
-dephase
+  ds $2000 * 2
 
 ;
 ; block $71 - $72
 ;
-MapsBlock0D:  equ   $71
-phase	$8000
-MapD01:
-  incbin "..\maps\d01.map.pck"  | .amountofobjects: db  0
-MapD02:
-  incbin "..\maps\d02.map.pck"  | .amountofobjects: db  0
-MapD03:
-  incbin "..\maps\d03.map.pck"  | .amountofobjects: db  0
-MapD04:
-  incbin "..\maps\d04.map.pck"  | .amountofobjects: db  0
-MapD05:
-  incbin "..\maps\d05.map.pck"  | .amountofobjects: db  0
-MapD06:
-  incbin "..\maps\d06.map.pck"  | .amountofobjects: db  0
-MapD07:
-  incbin "..\maps\d07.map.pck"  | .amountofobjects: db  0
-MapD08:
-  incbin "..\maps\d08.map.pck"  | .amountofobjects: db  2
 
-;Huge Spider Body
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw HugeSpiderBody      |db 8*06|dw 8*14|db 21,27|dw CleanOb1,0 db 0,0,0,                     +073,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-
-;Huge Spider Legs
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw HugeSpiderLegs      |db 8*04|dw 8*14|db 24,64|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 005| ds fill  
-
-  
-
-MapD09:
-  incbin "..\maps\d09.map.pck"  | .amountofobjects: db  0  
-MapD10:
-  incbin "..\maps\d10.map.pck"  | .amountofobjects: db  0  
-MapD11:
-  incbin "..\maps\d11.map.pck"  | .amountofobjects: db  0  
-MapD12:
-  incbin "..\maps\d12.map.pck"  | .amountofobjects: db  0  
-MapD13:
-  incbin "..\maps\d13.map.pck"  | .amountofobjects: db  0  
-	ds		$c000-$,$ff
-dephase
+  ds $2000 * 2
 
 ;
 ; block $73 - $74
 ;
-MapsBlock0E:  equ   $73
-phase	$8000
-MapE01:
-  incbin "..\maps\e01.map.pck"  | .amountofobjects: db  0
-MapE02:
-  incbin "..\maps\e02.map.pck"  | .amountofobjects: db  0
-MapE03:
-  incbin "..\maps\e03.map.pck"  | .amountofobjects: db  1
-  
-;Player Reflection 
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
-  
-MapE04:
-  incbin "..\maps\e04.map.pck"  | .amountofobjects: db  0
-MapE05:
-  incbin "..\maps\e05.map.pck"  | .amountofobjects: db  0
-MapE06:
-  incbin "..\maps\e06.map.pck"  | .amountofobjects: db  0
-MapE07:
-  incbin "..\maps\e07.map.pck"  | .amountofobjects: db  0
-MapE08:
-  incbin "..\maps\e08.map.pck"  | .amountofobjects: db  0
-MapE09:
-  incbin "..\maps\e09.map.pck"  | .amountofobjects: db  0  
-MapE10:
-  incbin "..\maps\e10.map.pck"  | .amountofobjects: db  0
-MapE11:
-  incbin "..\maps\e11.map.pck"  | .amountofobjects: db  0
-MapE12:
-  incbin "..\maps\e12.map.pck"  | .amountofobjects: db  0
-MapE13:
-  incbin "..\maps\e13.map.pck"  | .amountofobjects: db  0  
-	ds		$c000-$,$ff
-dephase
+  ds $2000 * 2
 
 ;
 ; block $75 - $76
 ;
-MapsBlock0F:  equ   $75
-phase	$8000
-MapF01:
-  incbin "..\maps\f01.map.pck"  | .amountofobjects: db  0
-MapF02:
-  incbin "..\maps\f02.map.pck"  | .amountofobjects: db  0
-MapF03:
-  incbin "..\maps\f03.map.pck"  | .amountofobjects: db  1
-  
-  ;Player Reflection 
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
-
-MapF04:
-  incbin "..\maps\f04.map.pck"  | .amountofobjects: db  0
-MapF05:
-  incbin "..\maps\f05.map.pck"  | .amountofobjects: db  0
-MapF06:
-  incbin "..\maps\f06.map.pck"  | .amountofobjects: db  0
-MapF07:
-  incbin "..\maps\f07.map.pck"  | .amountofobjects: db  0
-MapF08:
-  incbin "..\maps\f08.map.pck"  | .amountofobjects: db  0
-MapF09:
-  incbin "..\maps\f09.map.pck"  | .amountofobjects: db  0
-MapF10:
-  incbin "..\maps\f10.map.pck"  | .amountofobjects: db  0
-MapF11:
-  incbin "..\maps\f11.map.pck"  | .amountofobjects: db  0
-MapF12:
-  incbin "..\maps\f12.map.pck"  | .amountofobjects: db  0
-MapF13:
-  incbin "..\maps\f13.map.pck"  | .amountofobjects: db  0  
-	ds		$c000-$,$ff
-dephase
+  ds $2000 * 2
 
 ;
 ; block $77 - $78
 ;
-MapsBlock0G:  equ   $77
-phase	$8000
-MapG01:
-  incbin "..\maps\g01.map.pck"  | .amountofobjects: db  0
-MapG02:
-  incbin "..\maps\g02.map.pck"  | .amountofobjects: db  0
-MapG03:
-  incbin "..\maps\g03.map.pck"  | .amountofobjects: db  1
-  
-  ;Player Reflection 
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
+  ds $2000 * 2
 
-MapG04:
-  incbin "..\maps\g04.map.pck"  | .amountofobjects: db  0
-MapG05:
-  incbin "..\maps\g05.map.pck"  | .amountofobjects: db  0
-MapG06:
-  incbin "..\maps\g06.map.pck"  | .amountofobjects: db  0
-MapG07:
-  incbin "..\maps\g07.map.pck"  | .amountofobjects: db  0
-MapG08:
-  incbin "..\maps\g08.map.pck"  | .amountofobjects: db  0
-MapG09:
-  incbin "..\maps\g09.map.pck"  | .amountofobjects: db  0
-MapG10:
-  incbin "..\maps\g10.map.pck"  | .amountofobjects: db  0
-MapG11:
-  incbin "..\maps\g11.map.pck"  | .amountofobjects: db  0
-MapG12:
-  incbin "..\maps\g12.map.pck"  | .amountofobjects: db  0
-MapG13:
-  incbin "..\maps\g13.map.pck"  | .amountofobjects: db  0  
-	ds		$c000-$,$ff
-dephase
 
 ;
-; block $79 - $88
+; block $79 - $87
 ;
-ds $2000 * $10
+ds $2000 * 15
 
 ;
-; block $89 - $8c
+; block $88 - $8b
 ;
-KarniMataTilesBlock:  equ   $89
 phase	$4000
-  incbin "..\grapx\tilesheets\sKarniMata.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sKarniMataBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
+
+; block $$8c
+ds $2000
 
 ;
 ; block $8d - $90
 ;
-BlueTempleTilesBlock:  equ   $8d
 phase	$4000
-  incbin "..\grapx\tilesheets\sBlueTemple.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sBlueTempleBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
 ;
 ; block $91 - $94
 ;
-KonarkTilesBlock:  equ   $91
 phase	$4000
-  incbin "..\grapx\tilesheets\sKonark.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sKonarkBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
 ;
-; block $95 - $98
+; block $95 - $97
 ;
-BurialTilesBlock:  equ   $95
 phase	$4000
-  incbin "..\grapx\tilesheets\sBurial.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sBurialBottom48Lines.SC5",7,48 * 128 ;48 lines
-	ds		$c000-$,$ff
+	ds		$a000-$,$ff
 dephase
 
 ;
-; block $99 - $ 9a
+; block $98 - $99
 ;
-PlayerReflectionSpriteblock:  equ   $99
+PlayerReflectionSpriteblock:  equ   $98 / 2
 phase	$8000
 ReflPlayerSpriteData_Char_RightStand:           include "..\sprites\enemies\ReflectionPlayer\RightStand.tgs.gen"	  
 ReflPlayerSpriteData_Colo_RightStand:           include "..\sprites\enemies\ReflectionPlayer\RightStand.tcs.gen"  | db 0,0, 0,0, 0,0
@@ -3214,13 +2927,336 @@ ReflPlayerSpriteData_Char_LeftRun10:            include "..\sprites\enemies\Refl
 ReflPlayerSpriteData_Colo_LeftRun10:            include "..\sprites\enemies\ReflectionPlayer\LeftRun10.tcs.gen"	  | db 0,+2, 0,+2, 0,+2 ; db +0-8,+2
 ReflPlayerSpriteData_Char_LeftRun1:             include "..\sprites\enemies\ReflectionPlayer\LeftRun1.tgs.gen"	  
 ReflPlayerSpriteData_Colo_LeftRun1:             include "..\sprites\enemies\ReflectionPlayer\LeftRun1.tcs.gen"	  | db 0,+1, 0,+1, 0,+1 ; db +0-8,+1
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $9a - $9f
+;
+
+  ds  6 * $2000
+
+;
+; block $a0 - $bf
+;
+
+  ds  $20 * $2000
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;##################### MAPS #####################
+;##################### MAPS #####################
+;##################### MAPS #####################
+;##################### MAPS #####################
+;##################### MAPS #####################
+
+;
+; block $60
+;
+MapsBlock0A:  equ   $60
+phase	$8000
+MapA01:
+  incbin "..\maps\a01.map.pck"  | .amountofobjects: db  0
+MapA02:
+  incbin "..\maps\a02.map.pck"  | .amountofobjects: db  0
+MapA03:
+  incbin "..\maps\a03.map.pck"  | .amountofobjects: db  0
+MapA04:
+  incbin "..\maps\a04.map.pck"  | .amountofobjects: db  1
+
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1: db 2,        0|dw WorldNameText       |db 8*24|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
+;.object2: db 2,        0|dw Sf2Hugeobject2      |db 8*12|dw 8*12|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
+;.object3: db 2,        0|dw Sf2Hugeobject3      |db 8*03|dw 8*13|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
+  
+MapA05:
+  incbin "..\maps\a05.map.pck"  | .amountofobjects: db  2
+
+;AppearingBlocks Handler
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object1: db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+
+;AppearingBlocks
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object2: db 0,        0|dw AppearingBlocks     |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+;.object1: db 1,        0|dw DisappearingBlocks  |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,21*8,19*8,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+  
+MapA06:
+  incbin "..\maps\a06.map.pck"  | .amountofobjects: db  0
+MapA07:
+  incbin "..\maps\a07.map.pck"  | .amountofobjects: db  0
+MapA08:
+  incbin "..\maps\a08.map.pck"  | .amountofobjects: db  0
+MapA09:
+  incbin "..\maps\a09.map.pck"  | .amountofobjects: db  0
+MapA10:
+  incbin "..\maps\a10.map.pck"  | .amountofobjects: db  0
+MapA11:
+  incbin "..\maps\a11.map.pck"  | .amountofobjects: db  0
+MapA12:
+  incbin "..\maps\a12.map.pck"  | .amountofobjects: db  1
+;Konark Palette Object
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object1: db 1,        0|dw KonarkPaletteObject |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+
+MapA13:
+  incbin "..\maps\a13.map.pck"  | .amountofobjects: db  0
 
 	ds		$c000-$,$ff
 dephase
 
+;
+; block $61
+;
+MapsBlock0B:  equ   $61
+phase	$8000
+MapB01:
+  incbin "..\maps\b01.map.pck"  | .amountofobjects: db  0
+MapB02:
+  incbin "..\maps\b02.map.pck"  | .amountofobjects: db  0
+MapB03:
+  incbin "..\maps\b03.map.pck"  | .amountofobjects: db  0
+MapB04:
+  incbin "..\maps\b04.map.pck"  | .amountofobjects: db  0
+MapB05:
+  incbin "..\maps\b05.map.pck"  | .amountofobjects: db  0
+MapB06:
+  incbin "..\maps\b06.map.pck"  | .amountofobjects: db  0
+MapB07:
+  incbin "..\maps\b07.map.pck"  | .amountofobjects: db  0
+MapB08:
+  incbin "..\maps\b08.map.pck"  | .amountofobjects: db  0
+MapB09:
+  incbin "..\maps\b09.map.pck"  | .amountofobjects: db  0
+MapB10:
+  incbin "..\maps\b10.map.pck"  | .amountofobjects: db  0
+MapB11:
+  incbin "..\maps\b11.map.pck"  | .amountofobjects: db  0
+MapB12:
+  incbin "..\maps\b12.map.pck"  | .amountofobjects: db  0
+MapB13:
+  incbin "..\maps\b13.map.pck"  | .amountofobjects: db  0
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $62
+;
+MapsBlock0C:  equ   $62
+phase	$8000
+MapC01:
+  incbin "..\maps\c01.map.pck"  | .amountofobjects: db  0
+MapC02:
+  incbin "..\maps\c02.map.pck"  | .amountofobjects: db  0
+MapC03:
+  incbin "..\maps\c03.map.pck"  | .amountofobjects: db  0
+MapC04:
+  incbin "..\maps\c04.map.pck"  | .amountofobjects: db  0
+MapC05:
+  incbin "..\maps\c05.map.pck"  | .amountofobjects: db  0
+MapC06:
+  incbin "..\maps\c06.map.pck"  | .amountofobjects: db  0
+MapC07:
+  incbin "..\maps\c07.map.pck"  | .amountofobjects: db  0
+MapC08:
+  incbin "..\maps\c08.map.pck"  | .amountofobjects: db  0
+MapC09:
+  incbin "..\maps\c09.map.pck"  | .amountofobjects: db  0
+MapC10:
+  incbin "..\maps\c10.map.pck"  | .amountofobjects: db  0
+MapC11:
+  incbin "..\maps\c11.map.pck"  | .amountofobjects: db  0
+MapC12:
+  incbin "..\maps\c12.map.pck"  | .amountofobjects: db  0
+MapC13:
+  incbin "..\maps\c13.map.pck"  | .amountofobjects: db  0
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $63
+;
+MapsBlock0D:  equ   $63
+phase	$8000
+MapD01:
+  incbin "..\maps\d01.map.pck"  | .amountofobjects: db  0
+MapD02:
+  incbin "..\maps\d02.map.pck"  | .amountofobjects: db  0
+MapD03:
+  incbin "..\maps\d03.map.pck"  | .amountofobjects: db  0
+MapD04:
+  incbin "..\maps\d04.map.pck"  | .amountofobjects: db  0
+MapD05:
+  incbin "..\maps\d05.map.pck"  | .amountofobjects: db  0
+MapD06:
+  incbin "..\maps\d06.map.pck"  | .amountofobjects: db  0
+MapD07:
+  incbin "..\maps\d07.map.pck"  | .amountofobjects: db  0
+MapD08:
+  incbin "..\maps\d08.map.pck"  | .amountofobjects: db  2
+
+;Huge Spider Body
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object1: db 1,        0|dw HugeSpiderBody      |db 8*06|dw 8*14|db 21,27|dw CleanOb1,0 db 0,0,0,                     +073,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+
+;Huge Spider Legs
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object2:db -1,        1|dw HugeSpiderLegs      |db 8*04|dw 8*14|db 24,64|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 005| ds fill  
+
+  
+
+MapD09:
+  incbin "..\maps\d09.map.pck"  | .amountofobjects: db  0  
+MapD10:
+  incbin "..\maps\d10.map.pck"  | .amountofobjects: db  0  
+MapD11:
+  incbin "..\maps\d11.map.pck"  | .amountofobjects: db  0  
+MapD12:
+  incbin "..\maps\d12.map.pck"  | .amountofobjects: db  0  
+MapD13:
+  incbin "..\maps\d13.map.pck"  | .amountofobjects: db  0  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $64
+;
+MapsBlock0E:  equ   $64
+phase	$8000
+MapE01:
+  incbin "..\maps\e01.map.pck"  | .amountofobjects: db  0
+MapE02:
+  incbin "..\maps\e02.map.pck"  | .amountofobjects: db  0
+MapE03:
+  incbin "..\maps\e03.map.pck"  | .amountofobjects: db  1
+  
+;Player Reflection 
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
+  
+MapE04:
+  incbin "..\maps\e04.map.pck"  | .amountofobjects: db  0
+MapE05:
+  incbin "..\maps\e05.map.pck"  | .amountofobjects: db  0
+MapE06:
+  incbin "..\maps\e06.map.pck"  | .amountofobjects: db  0
+MapE07:
+  incbin "..\maps\e07.map.pck"  | .amountofobjects: db  0
+MapE08:
+  incbin "..\maps\e08.map.pck"  | .amountofobjects: db  0
+MapE09:
+  incbin "..\maps\e09.map.pck"  | .amountofobjects: db  0  
+MapE10:
+  incbin "..\maps\e10.map.pck"  | .amountofobjects: db  0
+MapE11:
+  incbin "..\maps\e11.map.pck"  | .amountofobjects: db  0
+MapE12:
+  incbin "..\maps\e12.map.pck"  | .amountofobjects: db  0
+MapE13:
+  incbin "..\maps\e13.map.pck"  | .amountofobjects: db  0  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $65
+;
+MapsBlock0F:  equ   $65
+phase	$8000
+MapF01:
+  incbin "..\maps\f01.map.pck"  | .amountofobjects: db  0
+MapF02:
+  incbin "..\maps\f02.map.pck"  | .amountofobjects: db  0
+MapF03:
+  incbin "..\maps\f03.map.pck"  | .amountofobjects: db  1
+  
+  ;Player Reflection 
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
+
+MapF04:
+  incbin "..\maps\f04.map.pck"  | .amountofobjects: db  0
+MapF05:
+  incbin "..\maps\f05.map.pck"  | .amountofobjects: db  0
+MapF06:
+  incbin "..\maps\f06.map.pck"  | .amountofobjects: db  0
+MapF07:
+  incbin "..\maps\f07.map.pck"  | .amountofobjects: db  0
+MapF08:
+  incbin "..\maps\f08.map.pck"  | .amountofobjects: db  0
+MapF09:
+  incbin "..\maps\f09.map.pck"  | .amountofobjects: db  0
+MapF10:
+  incbin "..\maps\f10.map.pck"  | .amountofobjects: db  0
+MapF11:
+  incbin "..\maps\f11.map.pck"  | .amountofobjects: db  0
+MapF12:
+  incbin "..\maps\f12.map.pck"  | .amountofobjects: db  0
+MapF13:
+  incbin "..\maps\f13.map.pck"  | .amountofobjects: db  0  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $66
+;
+MapsBlock0G:  equ   $66
+phase	$8000
+MapG01:
+  incbin "..\maps\g01.map.pck"  | .amountofobjects: db  0
+MapG02:
+  incbin "..\maps\g02.map.pck"  | .amountofobjects: db  0
+MapG03:
+  incbin "..\maps\g03.map.pck"  | .amountofobjects: db  1
+  
+  ;Player Reflection 
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
+
+MapG04:
+  incbin "..\maps\g04.map.pck"  | .amountofobjects: db  0
+MapG05:
+  incbin "..\maps\g05.map.pck"  | .amountofobjects: db  0
+MapG06:
+  incbin "..\maps\g06.map.pck"  | .amountofobjects: db  0
+MapG07:
+  incbin "..\maps\g07.map.pck"  | .amountofobjects: db  0
+MapG08:
+  incbin "..\maps\g08.map.pck"  | .amountofobjects: db  0
+MapG09:
+  incbin "..\maps\g09.map.pck"  | .amountofobjects: db  0
+MapG10:
+  incbin "..\maps\g10.map.pck"  | .amountofobjects: db  0
+MapG11:
+  incbin "..\maps\g11.map.pck"  | .amountofobjects: db  0
+MapG12:
+  incbin "..\maps\g12.map.pck"  | .amountofobjects: db  0
+MapG13:
+  incbin "..\maps\g13.map.pck"  | .amountofobjects: db  0  
+	ds		$c000-$,$ff
+dephase
+
+; block $67 - $86
+  ds  $4000 * $20
 
 
 
@@ -3235,10 +3271,82 @@ dephase
 
 
 
+;##################### GRAPHICS #####################
+;##################### GRAPHICS #####################
+;##################### GRAPHICS #####################
+;##################### GRAPHICS #####################
+;##################### GRAPHICS #####################
 
+;
+; block $87 - $88
+;
+VoodooWaspTilesBlock:  equ   $87
+phase	$4000
+  incbin "..\grapx\tilesheets\sVoodooWasp.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sVoodooWaspBottom48Lines.SC5",7,48 * 128 ;48 lines
+	ds		$c000-$,$ff
+dephase
 
+;
+; block $89 - $8a
+;
+GoddessTilesBlock:  equ   $89
+phase	$4000
+  incbin "..\grapx\tilesheets\sGoddess.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sGoddessBottom48Lines.SC5",7,48 * 128 ;48 lines
+	ds		$c000-$,$ff
+dephase
 
+;
+; block $8b - $8c
+;
+KarniMataTilesBlock:  equ   $8b
+phase	$4000
+  incbin "..\grapx\tilesheets\sKarniMata.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sKarniMataBottom48Lines.SC5",7,48 * 128 ;48 lines
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $8d - $8e
+;
+BlueTempleTilesBlock:  equ   $8d
+phase	$4000
+  incbin "..\grapx\tilesheets\sBlueTemple.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sBlueTempleBottom48Lines.SC5",7,48 * 128 ;48 lines
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $8f - $90
+;
+KonarkTilesBlock:  equ   $8f
+phase	$4000
+  incbin "..\grapx\tilesheets\sKonark.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sKonarkBottom48Lines.SC5",7,48 * 128 ;48 lines
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $91 - $92
+;
+BurialTilesBlock:  equ   $91
+phase	$4000
+  incbin "..\grapx\tilesheets\sBurial.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sBurialBottom48Lines.SC5",7,48 * 128 ;48 lines
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $93 - $94
+;
+Graphicsblock4:  equ   $93
+phase	$4000
+itemsKarniMataPage3:
+  incbin "..\grapx\itemsKarniMataPage3.SC5",7,$1400  ;skip header
+	ds		$c000-$,$ff
+dephase
 
 
 totallenght:	Equ	$-Usas2
-	ds		$80000-totallenght
+	ds		(8*$80000)-totallenght
