@@ -2,23 +2,27 @@ LevelEngine:
 ;  call  BackdropBlue
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
 ;  call  BackdropBlack
-  call  BackdropRed
-  call  Sf2EngineObjects          ;di, restore background object, handle action object, put object in screen, handle interaction object and player, prepare page to be set on Vblank, ei 
-  call  BackdropBlack
 ;  call  BackdropRed
-  call  Handle_HardWareSprite_Enemies_And_objects
+  call  Sf2EngineObjects          ;di, restore background object, handle action object, put object in screen, handle interaction object and player, prepare page to be set on Vblank, ei 
 ;  call  BackdropBlack
+  call  BackdropRed
+  call  Handle_HardWareSprite_Enemies_And_objects ;handle movement, out character, color and spat data
+  call  BackdropBlack
 ;  call  BackdropGreen
   call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
 ;  call  BackdropBlack
-  call  BackdropGreen
+;  call  BackdropGreen
   call  PutPlayersprite           ;outs char data to Vram, col data to Vram and sets spat data for player (coordinates depend on camera x+y)
 ;  call  PutPlayerspriteSF2Engine
-  call  BackdropBlack
+;  call  BackdropBlack
 ;  call  BackdropGreen
   call  PutSpatToVram             ;outs all spat data to Vram
 ;  call  BackdropBlack
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
+  
+  call  BackdropBlue
+  call  Player_Tick
+  call  BackdropBlack
 
 ;Routines starting at lineint:
   xor   a                         ;wait for lineint flag to be set. It's better (for now) to put the VRAM objects directly after the lineint
@@ -30,7 +34,7 @@ LevelEngine:
 
   call  SwapSpatColAndCharTable2
 
-  call  BackdropBlue
+  call  BackdropGreen
   call  RestoreBackground         ;remove all vdp copies/software sprites that were put in screen last frame
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
   call  HandlePlayerWeapons
@@ -38,7 +42,11 @@ LevelEngine:
 
   xor   a
   ld    (SnapToPlatForm?),a
-	call	handle_enemies_and_objects
+
+
+  call  BackdropOrange
+	call	handle_enemies_and_objects  ;handle software sprites
+  call  BackdropBlack
 
   call  PopulateControls
 
@@ -83,7 +91,7 @@ BackdropBlack:
 BackdropBlue:
   xor   a
   SetBackDrop:
-ret
+;ret
   di
   out   ($99),a
   ld    a,7+128
@@ -142,7 +150,7 @@ switchpageSF2Engine:
   ld    (PageOnNextVblank),a
   ret
 
-Handle_HardWareSprite_Enemies_And_objects:
+Handle_HardWareSprite_Enemies_And_objects:  ;handle movement, out character, color and spat data
 ;several optimizations are possible here:
 ;1. selfmodifying ld hl,(invissprchatableaddress) into ld hl,nn
 ;2. several calls can be written out, like call SetVdp_Write
@@ -366,7 +374,7 @@ LeftSideOfMap:
   djnz  .CEbitloopWhite
   jp    .EndOutColor
 
-handle_enemies_and_objects:
+handle_enemies_and_objects:                           ;handle software sprites
   ld    a,(scrollEngine)                              ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   ret   nz
@@ -2259,10 +2267,16 @@ DisableLineint:
   di
   
 ; set temp ISR
-	ld		hl,tempisr2
-	ld		de,$38
-	ld		bc,6
-	ldir
+;	ld		hl,tempisr2
+;	ld		de,$38
+;	ld		bc,6
+;	ldir
+
+  ld    hl,InterruptHandlerLoader
+  ld    ($38+1),hl          ;set new normal interrupt
+  ld    a,$c3               ;jump command
+  ld    ($38),a
+
 
   xor   a                 ;set s#0
   out   ($99),a
@@ -2293,9 +2307,48 @@ DisableLineint:
 tempisr2:	
 	push	af
 	in		a,($99)             ;check and acknowledge vblank int (ei0 is set)
+
 	pop		af
 	ei	
 	ret  
+
+InterruptHandlerLoader:
+	push	af
+	push	bc
+	push	de
+	push	hl
+	push	ix
+	push	iy
+	
+	in		a,($99)             ;check and acknowledge vblank int (ei0 is set)
+
+  in	  a,($a8)
+  push	af					      ;store current RAM/ROM state
+  ld    a,(memblocks.1)
+  push  af                ;store current memblock1 
+  ld    a,(memblocks.2)
+  push  af                ;store current memblock2 
+
+  call  Player_Tick
+  
+  pop   af                ;pop current memblock2 
+  ld    (memblocks.2),a
+	ld		($7000),a
+  pop   af                ;pop current memblock1 
+  ld    (memblocks.1),a
+	ld		($6000),a
+  pop	  af					      ;back to former RAM/ROM state
+  out	  ($a8),a	
+    
+	pop		iy
+	pop		ix
+	pop		hl
+	pop		de
+	pop		bc
+	pop		af
+	ei	
+	ret  
+
 
 
 vblankintflag:  db  0

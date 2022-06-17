@@ -38,10 +38,12 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 1,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapB01_018Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapB04Data
+WorldMapPointer:  dw  MapB06Data
 
 loadGraphics:
-;  call  InitiateMusicReplayer         ;set music replayer at $4000 in ram
+;	ld    a,(Player_playing)
+;	and   a
+;  call  z,VGMRePlay
 
   call  screenoff
   call  ReSetVariables
@@ -87,94 +89,231 @@ loadGraphics:
 ;  ld    (NewPrContr),a                  ;this allows for a double jump as soon as you enter a new map
   jp    LevelEngine
 
-InitiateMusicReplayer:                ;set music replayer at $4000 in ram
-  ld    a,(slot.page2rom)             ;all RAM except page 2
+
+
+
+
+SoundData: equ $8000
+VGMRePlay:
+  ld    a,(slot.page12rom)             ;all RAM except page 1+2
+  out   ($a8),a
+  ei
+  
+  ld    a,FormatOPL4_ID
+  call  Player_Detect                 ;detect moonsound
+  ld    bc,0                          ;track nr
+  ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
+  ld    hl,$8000+1
+  call  Player_Play                   ;bc = track number, ahl = sound data (after format ID, so +1)
+  call  Player_Tick                   ;initialise, load samples
+  ret
+  
+Main_Loop:
+  halt
+  call  Player_Tick
+  jp    Main_Loop  
+
+Player_Tick:
+  ld    a,(slot.page12rom)             ;all RAM except page 1+2
   out   ($a8),a
   
-  ld    a,MusicReplayerBlock          ;Music replayer block
-  call  block34                       ;set at $8000
-  
-  ld    hl,$8000
-  ld    de,$4000
-  ld    bc,$4000
-  ldir                                ;copy music replayer to $4000 in ram
-  
-  ld    a,MusicTestBlock              ;set test tune at $8000 in rom
-  call  block34                       ;song at $8000        
-  
-  call  initOPL4                      ;Initialise OPL4
-;  call  Initialise                    ;Initialise driver
-;  call  stop_music                    ;stop + halt music
-;  call  Music.LoadKit
-;  call  Music.LoadSong
-;  Call  start_music
+	ld a,(Player_playing)
+	and a
+	ret z
+	ld ix,(Player_stackPointer)
+	dec (ix)
+	ret nz
+;	call Mapper_GetBank
+	ld a,(ASCII16Mapper_currentBank)	
+	push af
+	call Player_Pop
+;	call Mapper_SetBank
+	ld (ASCII16Mapper_currentBank),a
+	ld (7000H),a
+	call Player_Process
+	ld b,a
+;	call Mapper_GetBank
+	ld a,(ASCII16Mapper_currentBank)	
+	call Player_Push
+	ld (ix),b
+	ld (Player_stackPointer),ix
+	pop af
+;	call Mapper_SetBank
+	ld (ASCII16Mapper_currentBank),a
+	ld (7000H),a
+	ret
 
-.playloop:
-;  Call  play_int                      ;play music on interrupt
-  halt
-  jp .playloop
+FormatOPL4_ID: equ 1
+
+; a = format ID (first byte of sound data)
+; f <- c: found
+Player_Detect:
+	call Player_Detect_Format
+	jp c,Player_SetJumpTable
+	jp Player_ClearJumpTable
+
+; a = format ID (first byte of sound data)
+; f <- c: found
+Player_Detect_Format:
+;	cp FormatOPN_ID
+;	jp z,FormatOPN_Detect
+	cp FormatOPL4_ID
+	jp z,FormatOPL4_Detect
+	and a
+	ret
+
+; f <- c: found
+; hl = jump table
+Player_SetJumpTable:
+	ld de,Player_Process
+	ld bc,3 * 3
+	ldir
+	ret
+
+; f <- c: found
+Player_ClearJumpTable:
+	ld hl,Player_Process
+	ld de,Player_Process + 1
+	ld bc,3 * 3 - 1
+	ld (hl),0C9H  ; ret
+	ldir
+	ret
+
+; hl = sound data
+Player_Jump:
+	ld e,(hl)
+	inc hl
+	ld d,(hl)
+	inc hl
+;	call Mapper_GetBank
+	ld a,(ASCII16Mapper_currentBank)	
+	add a,(hl)
+	inc hl
+	add hl,de
+;	jp Mapper_SetBank
+	ld (ASCII16Mapper_currentBank),a
+	ld (7000H),a
+  ret
+
+; hl = sound data
+; ix = stack pointer
+Player_Return:
+	call Player_Pop
+;	jp Mapper_SetBank
+	ld (ASCII16Mapper_currentBank),a
+	ld (7000H),a	
+  ret
+	
+; hl = sound data
+; ix = stack pointer
+Player_Call:
+	ld e,(hl)
+	inc hl
+	ld d,(hl)
+	inc hl
+	ld b,(hl)
+	inc hl
+;	call Mapper_GetBank
+	ld a,(ASCII16Mapper_currentBank)
+	call Player_Push
+	add hl,de
+	add a,b
+;	jp Mapper_SetBank
+	ld (ASCII16Mapper_currentBank),a
+	ld (7000H),a	
+  ret
+
+INCLUDE "MoonSoundZ80.asm"
+INCLUDE "MoonSound.asm"
+FormatOPL4_Detect:
+	call  MoonSoundZ80_Detect
+	ld    hl,MoonSoundZ80_JumpTable
+;	ret   c
+;	call  MoonSound_Detect
+;	ld    hl,MoonSound_JumpTable
+	ret
+
+;IDBYT2: equ 2DH
+;GETCPU: equ 183H
+
+; f <- c: turbo R
+;Utils_IsTurboR:
+;	ld hl,IDBYT2
+;	call Memory_ReadBIOS
+;	add a,-3
+;	ret
+
+; f <- c: R800
+;Utils_IsR800:
+;	call Utils_IsTurboR
+;	ret nc
+;	push ix
+;	ld ix,GETCPU
+;	call Memory_CallBIOS
+;	pop ix
+;	add a,-1
+;	ret
 
 
 
+; bc = track number
+; ahl = sound data (after format ID, so +1)
+Player_Play:
+	add hl,bc
+	add hl,bc
+	add hl,bc
+	add hl,bc
+	ld b,a
+	xor a
+	ld (Player_playing),a
+	ld a,b
+	ld ix,Player_stack
+	call Player_Push
+	ld a,1
+	ld (ix),a
+	ld (Player_stackPointer),ix
+	ld (Player_playing),a
+	ret
 
+; hl = value
+; ix = stack pointer
+; ix <- stack pointer
+Player_Push:
+	ld (ix + 0),l
+	ld (ix + 1),h
+	ld (ix + 2),a
+	inc ix
+	inc ix
+	inc ix
+	ret
 
+; ix = stack pointer
+; hl <- value
+; ix <- stack pointer
+Player_Pop:
+	dec ix
+	dec ix
+	dec ix
+	ld l,(ix + 0)
+	ld h,(ix + 1)
+	ld a,(ix + 2)
+	ret
 
-
-
-
-
-
-
-
-initOPL4:       ld      a,5
-                out     ($c6),a
-                ld      a,3
-                out     ($c7),a
-
-; Initialiseer OPL4 om te lezen/schrijven
-                ld      e,$20
-                ld      hl,OWNTONES * 12
-setSRAMacces:   ld      bc,256 * 17 + 2
-                call    wave_out          ; Memory Acces mogelijk
-                ld      b,e
-                ld      c,3
-                call    wave_out
-                ld      b,h
-                inc     c
-                call    wave_out
-                ld      b,l
-                inc     c
-                call    wave_out
-                ld      a,6
-                out     ($7e),a
-
-                ld      hl,cymball
-                ld      b,12    ; 12 bytes verplaatsen
-move_headers1:  in      a,($c4)
-                and     1
-                jr      nz,move_headers1
-                ld      a,(hl)
-                inc     hl
-                out     ($7f),a
-                djnz    move_headers1
-                ret
-
-; Schrijf waarde naar register
-wave_out:       ld      a,c
-                out     ($7e),a
-		nop
-                ld      a,b
-                out     ($7f),a
-                ret
-
-; cymball - 400
-cymball:     	db    70,120,216,18,126,181,165,      0,244,242,6,0
-
-OWNTONES:       equ     48      ; aantal mogelijke eigen samples
-
-
-
-
+ASCII16Mapper_currentBank:
+	db usas2repBlock
+Player_STACK_CAPACITY: equ 128
+Player_playing:
+	db 0
+Player_stackPointer:
+	dw Player_stack
+Player_stack:
+	ds Player_STACK_CAPACITY * 3 + 1
+Player_Process:
+	db 0C9H, 0, 0
+Player_Mute:
+	db 0C9H, 0, 0
+Player_Restore:
+	db 0C9H, 0, 0
 
 
 

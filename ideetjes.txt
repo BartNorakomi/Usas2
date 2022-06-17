@@ -1,5 +1,13 @@
 https://www.kickstarter.com/projects/oldbit/meifumado (kwam deze post tegen op reddit)
 
+een item waarmee alle maps zichtbaar worden (de maps  die nog niet verkend zijn zijn dan lichtbruin bijvoorbeeld)
+
+zand-waterval 14:47:50
+https://www.youtube.com/watch?v=9YoShHSAbI0
+
+vijanden kunnen de player een statuseffect geven, bijvoorbeeld confused of poison ofzo.
+dit effect is dan zichtbaar als sprite boven de speler, en verdwijnt als je het scherm weer uit gaat.
+
 waterval palette animaties:
 https://www.youtube.com/watch?v=aMcJ1Jvtef0&ab_channel=GDC
 

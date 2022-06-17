@@ -347,6 +347,7 @@ init:
 ;	call	block34			        ;at address $8000 / page 2
 ;  jp    $8000 ;loader.address      ;set loader in page 2 and jp to it
 
+  call  VGMRePlay
   jp    loadGraphics
 
 		; set temp ISR
@@ -3004,7 +3005,31 @@ MapA05:
 MapA06:
   incbin "..\maps\a06.map.pck"  | .amountofobjects: db  0
 MapA07:
-  incbin "..\maps\a07.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\a07.map.pck"  | .amountofobjects: db  6  
+;Retarded Zombie Spawnpoint
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+01,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000| ds fill
+
+;Retarded Zombie
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object2:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 12*16,spat+(12*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object3:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 16*16,spat+(16*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object4:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 20*16,spat+(20*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object5:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 24*16,spat+(24*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;platform (moving horizontally)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object6: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 MapA08:
   incbin "..\maps\a08.map.pck"  | .amountofobjects: db  0
 MapA09:
@@ -3041,9 +3066,37 @@ MapB04:
 MapB05:
   incbin "..\maps\b05.map.pck"  | .amountofobjects: db  0
 MapB06:
-  incbin "..\maps\b06.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\b06.map.pck"  | .amountofobjects: db  5
+;platform (moving horizontally)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
+
+;Boring Eye Green;v6=Green (0) / Red (1)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object3:db -1,        1|dw BoringEye           |db 8*18|dw 8*09|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;Boring Eye Red;v6=Green (0) / Red (1)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object4:db -1,        1|dw BoringEye           |db 8*18|dw 8*31|db 32,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
+.object5:db -1,        1|dw BoringEye           |db 8*04|dw 8*22|db 32,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
+
+  
+  
+  
 MapB07:
-  incbin "..\maps\b07.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\b07.map.pck"  | .amountofobjects: db  3  
+;platform (moving horizontally)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+;Treeman
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object2:db -1,        1|dw Treeman             |db 8*11|dw 8*30|db 32,26|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
+;Grinder
+.object3:db -1,        1|dw Grinder             |db 8*19|dw 8*16|db 32,32|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill  
+  
+  
 MapB08:
   incbin "..\maps\b08.map.pck"  | .amountofobjects: db  0
 MapB09:
@@ -3346,6 +3399,12 @@ itemsKarniMataPage3:
   incbin "..\grapx\itemsKarniMataPage3.SC5",7,$1400  ;skip header
 	ds		$c000-$,$ff
 dephase
+
+;
+; block $95 -----------------> Music
+;
+usas2repBlock:  equ   $95
+  incbin "usas2.rep"
 
 
 totallenght:	Equ	$-Usas2
