@@ -347,7 +347,9 @@ init:
 ;	call	block34			        ;at address $8000 / page 2
 ;  jp    $8000 ;loader.address      ;set loader in page 2 and jp to it
 
+if MusicOn?
   call  VGMRePlay
+endif
   jp    loadGraphics
 
 		; set temp ISR
@@ -996,16 +998,14 @@ fill: equ 0
 ;ADDED extra byte for x, so from ny everything should be moved 1 more bytes to the right
 
 ;
-; block $22 - $23
-; block $24 - $25
-; block $26 - $27
-; block $28 - $29
+; block $11 - $14
 ;
-ryuframelistblock:            equ $22 / 2
+ryuframelistblock:            equ $11
 phase	$8000
   include "..\grapx\ryu\spritesryuPage0\frames.lst" 
 	ds		$c000-$,$ff
 dephase
+BossDemonframelistblock:            equ $12
 phase	$8000
   include "..\grapx\ryu\spritesryuPage1\frames.lst" 
 	ds		$c000-$,$ff
@@ -1020,16 +1020,14 @@ phase	$8000
 dephase
 
 ;
-; block $2a - $2b
-; block $2c - $2d
-; block $2e - $2f
-; block $30 - $31
+; block $15 - $18
 ;
-ryuspritedatablock:           equ $2a / 2
+ryuspritedatablock:           equ $15
 phase	$0000
   incbin "..\grapx\ryu\spritesryuPage0\frames.dat"
 	ds		$4000-$,$ff
 dephase
+BossDemonspritedatablock:           equ $16
 phase	$0000
   incbin "..\grapx\ryu\spritesryuPage1\frames.dat"
 	ds		$4000-$,$ff
@@ -3045,8 +3043,13 @@ MapA12:
 .object1: db 1,        0|dw KonarkPaletteObject |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 
 MapA13:
-  incbin "..\maps\a13.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\a13.map.pck"  | .amountofobjects: db  3
 
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1: db 2,        0|dw BossDemon1          |db 8*08|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 016| ds fill
+.object2: db 2,        0|dw BossDemon2          |db 8*08|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 016| ds fill
+.object3: db 2,        0|dw BossDemon3          |db 8*08|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+02,+00,+00,+00, 0|db 016| ds fill
+ 
 	ds		$c000-$,$ff
 dephase
 

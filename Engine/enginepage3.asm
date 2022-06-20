@@ -1,4 +1,7 @@
 phase	$c000
+
+MusicOn?:   equ 0
+
 WorldMapData:
 WorldMapDataWidth:      equ 7     ;amount of maps in width 
 WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
@@ -29,7 +32,7 @@ MapA09Data: db MapsBlock0A | dw MapA09 | db 1,4,4   | MapB09Data: db MapsBlock0B
 MapA10Data: db MapsBlock0A | dw MapA10 | db 1,2,2   | MapB10Data: db MapsBlock0B | dw MapB10 | db 1,2,2   | MapC10Data: db MapsBlock0C | dw MapC10 | db 1,2,2   | MapD10Data: db MapsBlock0D | dw MapD10 | db 1,4,4   | MapE10Data: db MapsBlock0E | dw MapE10 | db 1,4,4   | MapF10Data: db MapsBlock0F | dw MapF10 | db 1,1,1   | MapG10Data: db MapsBlock0G | dw MapG10 | db 1,1,1
 MapA11Data: db MapsBlock0A | dw MapA11 | db 1,2,2   | MapB11Data: db MapsBlock0B | dw MapB11 | db 1,2,2   | MapC11Data: db MapsBlock0C | dw MapC11 | db 1,2,2   | MapD11Data: db MapsBlock0D | dw MapD11 | db 1,4,4   | MapE11Data: db MapsBlock0E | dw MapE11 | db 1,4,4   | MapF11Data: db MapsBlock0F | dw MapF11 | db 1,1,1   | MapG11Data: db MapsBlock0G | dw MapG11 | db 1,1,1
 MapA12Data: db MapsBlock0A | dw MapA12 | db 1,2,2   | MapB12Data: db MapsBlock0B | dw MapB12 | db 1,2,2   | MapC12Data: db MapsBlock0C | dw MapC12 | db 1,2,2   | MapD12Data: db MapsBlock0D | dw MapD12 | db 1,4,4   | MapE12Data: db MapsBlock0E | dw MapE12 | db 1,2,2   | MapF12Data: db MapsBlock0F | dw MapF12 | db 1,1,1   | MapG12Data: db MapsBlock0G | dw MapG12 | db 1,1,1
-MapA13Data: db MapsBlock0A | dw MapA13 | db 1,2,2   | MapB13Data: db MapsBlock0B | dw MapB13 | db 1,2,2   | MapC13Data: db MapsBlock0C | dw MapC13 | db 1,2,2   | MapD13Data: db MapsBlock0D | dw MapD13 | db 1,2,2   | MapE13Data: db MapsBlock0E | dw MapE13 | db 1,2,2   | MapF13Data: db MapsBlock0F | dw MapF13 | db 1,1,1   | MapG13Data: db MapsBlock0G | dw MapG13 | db 1,1,1
+MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B | dw MapB13 | db 1,2,2   | MapC13Data: db MapsBlock0C | dw MapC13 | db 1,2,2   | MapD13Data: db MapsBlock0D | dw MapD13 | db 1,2,2   | MapE13Data: db MapsBlock0E | dw MapE13 | db 1,2,2   | MapF13Data: db MapsBlock0F | dw MapF13 | db 1,1,1   | MapG13Data: db MapsBlock0G | dw MapG13 | db 1,1,1
 
 
 
@@ -38,7 +41,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 1,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapB01_018Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapB06Data
+WorldMapPointer:  dw  MapA13Data
 
 loadGraphics:
 ;	ld    a,(Player_playing)
@@ -352,11 +355,11 @@ ReSetVariables:
   ld    bc,RunningTableLenght
   ldir
 
+  ld    a,-1
+  ld    (HugeObjectFrame),a           ;Reset this value by setting it to -1
   xor   a
   ld    (ShakeScreen?),a
   ld    (PlayerDead?),a
-
-  xor   a
   ld    (ArrowActive?),a              ;remove arrow weapon  
   ld    (FireballActive?),a              ;remove arrow weapon  
   ret  
@@ -1478,6 +1481,7 @@ copydirection:              equ   13
 copytype:                   equ   14
 restorebackground?:         equ   -1
 framecounter:               rb    1
+Bossframecounter:           rb    1
 
 Controls:	                  rb		1
 NewPrContr:	                rb		1

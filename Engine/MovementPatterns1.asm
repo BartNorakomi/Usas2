@@ -59,6 +59,8 @@
 ;HugeSpiderBody
 ;HugeSpiderLegs
 ;KonarkPaletteObject
+;BossDemon1
+;BossDemon2
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -626,6 +628,166 @@ Template:
   ret
 
 
+
+
+
+
+
+
+
+
+SetFrameBossDemon:
+  ld    d,0
+  add   a,a
+  add   a,a                                 ;*4
+  ld    b,a
+  add   a,a                                 ;*8
+  add   a,b                                 ;*12
+  ld    e,a    
+  add   hl,de                               ;frame * 12
+
+  ld    a,(hl)
+  ld    (Player1Frame),a
+  inc   hl
+  ld    a,(hl)
+  ld    (Player1Frame+1),a
+  inc   hl
+  ld    b,(hl)                              ;frame list block
+  inc   hl
+  ld    c,(hl)                              ;sprite data block
+  ret
+  
+SnapToBossDemon1:
+  ld    a,(enemies_and_objects+enemies_and_objects.x)
+  ld    (Object1x),a
+  ld    a,(enemies_and_objects+enemies_and_objects.y)
+  ld    (Object1y),a
+  ret
+
+BossDemonIdle0:   dw ryupage1frame000 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle1:   dw ryupage1frame001 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle2:   dw ryupage1frame002 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle3:   dw ryupage1frame003 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle4:   dw ryupage1frame004 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle5:   dw ryupage1frame005 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle6:   dw ryupage1frame006 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle7:   dw ryupage1frame007 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle8:   dw ryupage1frame008 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle9:   dw ryupage1frame009 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle10:   dw ryupage1frame010 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle11:   dw ryupage1frame011 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle12:   dw ryupage1frame012 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle13:   dw ryupage1frame013 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle14:   dw ryupage1frame014 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle15:   dw ryupage1frame015 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle16:   dw ryupage1frame016 | db BossDemonframelistblock, BossDemonspritedatablock
+BossDemonIdle17:   dw ryupage1frame017 | db BossDemonframelistblock, BossDemonspritedatablock
+  
+BossDemon1:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+;v7=sprite frame ?  
+;v8=phase ?  
+  ld    a,(HugeObjectFrame)
+  inc   a
+  and   3
+  ld    (HugeObjectFrame),a
+  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
+  ret   nz
+;  jp    nz,CheckCollisionObjectPlayer  
+
+;  ld    de,LeftAndRightObjectMovementTable
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+;  call  BackdropOrange  
+  call  restoreBackgroundObject1
+
+  call  .HandlePhase                        ;(0=idle, 1=walking, 2=attacking)
+
+  ld    hl,BossDemonIdle0
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame ?  
+  call  SetFrameBossDemon
+  jp    PutSF2Object ;CHANGES IX 
+  
+  .HandlePhase:                             ;(0=idle, 1=walking, 2=attacking)
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking)
+  or    a
+  jp    z,BossDemonIdle
+  dec   a
+  jp    z,BossDemonWalking
+  
+  
+  BossDemonWalking:
+  ret
+
+  BossDemonIdle:
+  ld    a,(Bossframecounter)
+  inc   a
+  ld    (Bossframecounter),a
+  and   3
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame ?  
+  inc   a
+  cp    6
+  jr    nz,.notzero
+  xor   a
+  .notzero:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame ?  
+  ret
+
+  
+BossDemon2:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+  ld    a,(HugeObjectFrame)
+  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
+  ret   nz
+;  jp    nz,CheckCollisionObjectPlayer  
+
+  call  SnapToBossDemon1
+
+;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  restoreBackgroundObject2
+  
+  ;snap to sprite frame
+  ld    hl,BossDemonIdle0+4
+  ld    a,(enemies_and_objects+enemies_and_objects.v7)
+  call  SetFrameBossDemon
+  jp    PutSF2Object2 ;CHANGES IX 
+
+
+BossDemon3:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+  ld    a,(HugeObjectFrame)
+  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
+  ret   nz
+;  jp    nz,CheckCollisionObjectPlayer  
+
+  call  SnapToBossDemon1
+
+;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  restoreBackgroundObject3
+
+  ;snap to sprite frame
+  ld    hl,BossDemonIdle0+8
+  ld    a,(enemies_and_objects+enemies_and_objects.v7)
+  call  SetFrameBossDemon
+  call  PutSF2Object3 ;CHANGES IX 
+  jp    switchpageSF2Engine
 
 KonarkPaletteObject:
   ld    a,(ix+enemies_and_objects.v1)     ;v1 = speed
@@ -2800,6 +2962,9 @@ GlassBalHorizontalAnimation:
   dw ryupage0frame011 | db 1
   dw ryupage0frame010 | db 1
   dw ryupage0frame009 | db 1
+
+LeftAndRightObjectMovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    20,0,1, 20,0,-1, 128
   
 NonMovingObjectMovementTable:
   db    127,0,0, 128

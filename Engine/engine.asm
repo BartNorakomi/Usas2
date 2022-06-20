@@ -91,7 +91,7 @@ BackdropBlack:
 BackdropBlue:
   xor   a
   SetBackDrop:
-;ret
+ret
   di
   out   ($99),a
   ld    a,7+128
@@ -1256,10 +1256,7 @@ Player1FramePage:             db  0
 Object1y:                     db  000
 Object1x:                     db  000
 
-;Object2y:                     db  100
-;Object2x:                     db  100
-
-PutSF2Object:
+PutSF2Object:                 ;in b->framelistblock, c->spritedatablock
   ld    a,(screenpage)
   or    a                     ;if current page =0 then que page 1 to be restored
   ld    ix,RestoreBackgroundObject1Page1
@@ -1274,83 +1271,42 @@ PutSF2Object:
 	out		($a8),a	
 
   ;set framelist in page 2 in rom ($8000 - $bfff)
-	ld    a,ryuframelistblock
+	ld    a,b
   call	block34
 
   ;set framedata in page 1 in rom ($4000 - $7fff)
-	ld    a,ryuspritedatablock
+	ld    a,c
   call	block12
-
+  
   di
   call  GoPutSF2Object
   ei
 
   ld    a,(movementpatternsblock)
-	call	block1234			                                ;at address $4000 / page 1+2  
-  ret
+	jp    block1234			                                ;at address $4000 / page 1+2  
 
-PutSF2Object2:
+PutSF2Object2:                ;in b->framelistblock, c->spritedatablock
   ld    a,(screenpage)
   or    a                     ;if current page =0 then que page 1 to be restored
   ld    ix,RestoreBackgroundObject2Page1
-  jp    z,.startsetupque
+  jp    z,PutSF2Object.startsetupque
   dec   a                     ;if current page =1 then que page 2 to be restored
   ld    ix,RestoreBackgroundObject2Page2
-  jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
+  jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
   ld    ix,RestoreBackgroundObject2Page0
-  .startsetupque:
+  jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
 
-	ld		a,(slot.page12rom)    ;all RAM except page 1+2
-	out		($a8),a	
-
-  ;set framelist in page 2 in rom ($8000 - $bfff)
-	ld    a,ryuframelistblock
-  call	block34
-
-  ;set framedata in page 1 in rom ($4000 - $7fff)
-	ld    a,ryuspritedatablock
-  call	block12
-	
-	ld    a,ryuspritedatablock
-  call	block12
-
-  di
-  call  GoPutSF2Object
-  ei
-
-  ld    a,(movementpatternsblock)
-	call	block1234			                                ;at address $4000 / page 1+2  
-  ret
-
-PutSF2Object3:
+PutSF2Object3:                ;in b->framelistblock, c->spritedatablock
   ld    a,(screenpage)
   or    a                     ;if current page =0 then que page 1 to be restored
   ld    ix,RestoreBackgroundObject3Page1
-  jp    z,.startsetupque
+  jp    z,PutSF2Object.startsetupque
   dec   a                     ;if current page =1 then que page 2 to be restored
   ld    ix,RestoreBackgroundObject3Page2
-  jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
+  jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
   ld    ix,RestoreBackgroundObject3Page0
-  .startsetupque:
+  jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
 
-	ld		a,(slot.page12rom)    ;all RAM except page 1+2
-	out		($a8),a	
-
-  ;set framelist in page 2 in rom ($8000 - $bfff)
-	ld    a,ryuframelistblock
-  call	block34
-
-  ;set framedata in page 1 in rom ($4000 - $7fff)
-	ld    a,ryuspritedatablock
-  call	block12
-
-  di
-  call  GoPutSF2Object
-  ei
-
-  ld    a,(movementpatternsblock)
-	call	block1234			                                ;at address $4000 / page 1+2  
-  ret
 
 ;Frameinfo looks like this:
 
@@ -1369,7 +1325,6 @@ PutSF2Object3:
 ;  dw 01F80h,base+0001Fh
 ;  dw 01F80h,base+0003Eh
 ;  dw 01F80h,base+0005Dh
-
 
 
 ScreenLimitxRight:  equ 256-10
