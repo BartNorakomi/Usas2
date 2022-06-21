@@ -1008,10 +1008,13 @@ dephase
 BossDemonframelistblock:            equ $12
 phase	$8000
   include "..\grapx\ryu\spritesryuPage1\frames.lst" 
+  kut:
 	ds		$c000-$,$ff
 dephase
+BossDemonframelistblock2:            equ $13
 phase	$8000
   include "..\grapx\ryu\spritesryuPage2\frames.lst" 
+	kut2:
 	ds		$c000-$,$ff
 dephase
 phase	$8000
@@ -1032,6 +1035,7 @@ phase	$0000
   incbin "..\grapx\ryu\spritesryuPage1\frames.dat"
 	ds		$4000-$,$ff
 dephase
+BossDemonspritedatablock2:           equ $17
 phase	$0000
   incbin "..\grapx\ryu\spritesryuPage2\frames.dat"
 	ds		$4000-$,$ff
@@ -1042,7 +1046,7 @@ phase	$0000
 dephase
 
 ;
-; block $33
+; block $19
 ;
 	ds		$2000 * 2
 
@@ -1480,20 +1484,20 @@ dephase
 
 
 ;
-; block $3c - $3f
+; block $1e - $1f
 ;
-movementpatterns1block:  equ   $3c / 2
+movementpatterns1block:  equ   $1e
 phase	$4000
   include "MovementPatterns1.asm"
 	ds		$c000-$,$ff
 dephase
 
 ;
-; block $40 + $41
+; block $20
 ;
-RetardZombieSpriteblock:  equ   $40 / 2
-SlimeSpriteblock:  equ   $40 / 2
-BeetleSpriteblock:  equ   $40 / 2
+RetardZombieSpriteblock:  equ   $20
+SlimeSpriteblock:  equ   $20
+BeetleSpriteblock:  equ   $20
 phase	$8000
 LeftRetardZombieWalk1_Char:                 include "..\sprites\enemies\RetardZombie\LeftRetardZombieWalk1.tgs.gen"	 ;y offset, x offset   
 LeftRetardZombieWalk1_Col:                  include "..\sprites\enemies\RetardZombie\LeftRetardZombieWalk1.tcs.gen"  | db 00,00,00,00, 16,00,16,00
@@ -3046,7 +3050,7 @@ MapA13:
   incbin "..\maps\a13.map.pck"  | .amountofobjects: db  3
 
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 2,        0|dw BossDemon1          |db 8*08|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 016| ds fill
+.object1: db 2,        0|dw BossDemon1          |db 8*08|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+01,+00, 0|db 016| ds fill
 .object2: db 2,        0|dw BossDemon2          |db 8*08|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 016| ds fill
 .object3: db 2,        0|dw BossDemon3          |db 8*08|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+02,+00,+00,+00, 0|db 016| ds fill
  
