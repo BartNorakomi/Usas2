@@ -1017,6 +1017,7 @@ phase	$8000
 	kut2:
 	ds		$c000-$,$ff
 dephase
+BossDemonframelistblock3:            equ $14
 phase	$8000
   include "..\grapx\ryu\spritesryuPage3\frames.lst" 
 	ds		$c000-$,$ff
@@ -1040,6 +1041,7 @@ phase	$0000
   incbin "..\grapx\ryu\spritesryuPage2\frames.dat"
 	ds		$4000-$,$ff
 dephase
+BossDemonspritedatablock3:           equ $18
 phase	$0000
   incbin "..\grapx\ryu\spritesryuPage3\frames.dat"
 	ds		$4000-$,$ff

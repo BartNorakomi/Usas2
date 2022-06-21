@@ -774,6 +774,69 @@ BossDemonHit12:   dw ryupage1frame060 | db BossDemonframelistblock, BossDemonspr
 BossDemonHit13:   dw ryupage1frame061 | db BossDemonframelistblock, BossDemonspritedatablock
 BossDemonHit14:   dw ryupage1frame062 | db BossDemonframelistblock, BossDemonspritedatablock
 
+BossDemonDead00:   dw ryupage3frame000 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead01:   dw ryupage3frame001 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead02:   dw ryupage3frame002 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead03:   dw ryupage3frame003 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead04:   dw ryupage3frame004 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead05:   dw ryupage3frame005 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead06:   dw ryupage3frame006 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead07:   dw ryupage3frame007 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead08:   dw ryupage3frame008 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead09:   dw ryupage3frame009 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead10:   dw ryupage3frame010 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead11:   dw ryupage3frame011 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead12:   dw ryupage3frame012 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead13:   dw ryupage3frame013 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead14:   dw ryupage3frame014 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead15:   dw ryupage3frame015 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead16:   dw ryupage3frame016 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead17:   dw ryupage3frame017 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead18:   dw ryupage3frame018 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead19:   dw ryupage3frame019 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead20:   dw ryupage3frame020 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead21:   dw ryupage3frame021 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead22:   dw ryupage3frame022 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead23:   dw ryupage3frame023 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead24:   dw ryupage3frame024 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead25:   dw ryupage3frame025 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead26:   dw ryupage3frame026 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead27:   dw ryupage3frame027 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead28:   dw ryupage3frame028 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead29:   dw ryupage3frame029 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead30:   dw ryupage3frame030 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead31:   dw ryupage3frame031 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead32:   dw ryupage3frame032 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead33:   dw ryupage3frame033 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead34:   dw ryupage3frame034 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead35:   dw ryupage3frame035 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead36:   dw ryupage3frame036 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead37:   dw ryupage3frame037 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead38:   dw ryupage3frame038 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead39:   dw ryupage3frame039 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead40:   dw ryupage3frame040 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead41:   dw ryupage3frame041 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead42:   dw ryupage3frame042 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead43:   dw ryupage3frame043 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead44:   dw ryupage3frame044 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead45:   dw ryupage3frame045 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead46:   dw ryupage3frame046 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead47:   dw ryupage3frame047 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead48:   dw ryupage3frame048 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead49:   dw ryupage3frame049 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead50:   dw ryupage3frame050 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead51:   dw ryupage3frame051 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead52:   dw ryupage3frame052 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead53:   dw ryupage3frame053 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead54:   dw ryupage3frame054 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead55:   dw ryupage3frame055 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead56:   dw ryupage3frame056 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead57:   dw ryupage3frame057 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead58:   dw ryupage3frame058 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead59:   dw ryupage3frame059 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead60:   dw ryupage3frame060 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead61:   dw ryupage3frame061 | db BossDemonframelistblock3, BossDemonspritedatablock3
+BossDemonDead62:   dw ryupage3frame062 | db BossDemonframelistblock3, BossDemonspritedatablock3
   
 BossDemon1:
 ;v1=repeating steps
@@ -823,9 +886,9 @@ BossDemon1:
   ret   nz
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   inc   a
-  cp    16 + 13 + 5
+  cp    16 + 13 + 5 + 31
   jr    nz,.notzero
-  ld    a,16 + 13
+  ld    a,0 ;16 + 13
   .notzero:
   
 
