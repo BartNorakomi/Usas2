@@ -1000,50 +1000,32 @@ fill: equ 0
 ;
 ; block $11 - $14
 ;
-ryuframelistblock:            equ $11
 phase	$8000
-  include "..\grapx\ryu\spritesryuPage0\frames.lst" 
 	ds		$c000-$,$ff
 dephase
-BossDemonframelistblock:            equ $12
 phase	$8000
-  include "..\grapx\ryu\spritesryuPage1\frames.lst" 
-  kut:
 	ds		$c000-$,$ff
 dephase
-BossDemonframelistblock2:            equ $13
 phase	$8000
-  include "..\grapx\ryu\spritesryuPage2\frames.lst" 
-	kut2:
 	ds		$c000-$,$ff
 dephase
-BossDemonframelistblock3:            equ $14
 phase	$8000
-  include "..\grapx\ryu\spritesryuPage3\frames.lst" 
 	ds		$c000-$,$ff
 dephase
 
 ;
 ; block $15 - $18
 ;
-ryuspritedatablock:           equ $15
 phase	$0000
-  incbin "..\grapx\ryu\spritesryuPage0\frames.dat"
 	ds		$4000-$,$ff
 dephase
-BossDemonspritedatablock:           equ $16
 phase	$0000
-  incbin "..\grapx\ryu\spritesryuPage1\frames.dat"
 	ds		$4000-$,$ff
 dephase
-BossDemonspritedatablock2:           equ $17
 phase	$0000
-  incbin "..\grapx\ryu\spritesryuPage2\frames.dat"
 	ds		$4000-$,$ff
 dephase
-BossDemonspritedatablock3:           equ $18
 phase	$0000
-  incbin "..\grapx\ryu\spritesryuPage3\frames.dat"
 	ds		$4000-$,$ff
 dephase
 
@@ -3052,9 +3034,9 @@ MapA13:
   incbin "..\maps\a13.map.pck"  | .amountofobjects: db  3
 
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 2,        0|dw BossDemon1          |db 8*08|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+01,+00, 0|db 016| ds fill
-.object2: db 2,        0|dw BossDemon2          |db 8*08|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 016| ds fill
-.object3: db 2,        0|dw BossDemon3          |db 8*08|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+02,+00,+00,+00, 0|db 016| ds fill
+.object1: db 2,        0|dw BossDemon1          |db 8*08|dw 8*17|db 80,60|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 004| ds fill
+.object2: db 2,        0|dw BossDemon2          |db 8*08|dw 8*17|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 016| ds fill
+.object3: db 2,        0|dw BossDemon3          |db 8*08|dw 8*17|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+02,+00,+00,+00, 0|db 016| ds fill
  
 	ds		$c000-$,$ff
 dephase
@@ -3409,11 +3391,103 @@ itemsKarniMataPage3:
 	ds		$c000-$,$ff
 dephase
 
+; block $95 - $c4
+  ds  $4000 * $30
+
+
+
+
+
+
+
+
+
+
+; block $c5
+ryuframelistblock:            equ $c5
+phase	$8000
+  include "..\grapx\ryu\spritesryuPage0\frames.lst" 
+	ds		$c000-$,$ff
+dephase
+; block $c6
+BossDemonframelistblock:            equ $c6
+phase	$8000
+  include "..\grapx\ryu\spritesryuPage1\frames.lst" 
+	ds		$c000-$,$ff
+dephase
+; block $c7
+BossDemonframelistblock2:            equ $c7
+phase	$8000
+  include "..\grapx\ryu\spritesryuPage2\frames.lst" 
+	ds		$c000-$,$ff
+dephase
+; block $c8
+BossDemonframelistblock3:            equ $c8
+phase	$8000
+  include "..\grapx\ryu\spritesryuPage3\frames.lst" 
+	ds		$c000-$,$ff
+dephase
+; block $c9
+BossDemonframelistblock4:            equ $c9
+phase	$8000
+  include "..\grapx\ryu\spritesryuPage4\frames.lst" 
+	ds		$c000-$,$ff
+dephase
+
+
+; block $ca
+ryuspritedatablock:           equ $ca
+phase	$0000
+  incbin "..\grapx\ryu\spritesryuPage0\frames.dat"
+	ds		$4000-$,$ff
+dephase
+; block $cb
+BossDemonspritedatablock:           equ $cb
+phase	$0000
+  incbin "..\grapx\ryu\spritesryuPage1\frames.dat"
+	ds		$4000-$,$ff
+dephase
+; block $cc
+BossDemonspritedatablock2:           equ $cc
+phase	$0000
+  incbin "..\grapx\ryu\spritesryuPage2\frames.dat"
+	ds		$4000-$,$ff
+dephase
+; block $cd
+BossDemonspritedatablock3:           equ $cd
+phase	$0000
+  incbin "..\grapx\ryu\spritesryuPage3\frames.dat"
+	ds		$4000-$,$ff
+dephase
+; block $ce
+BossDemonspritedatablock4:           equ $ce
+phase	$0000
+  incbin "..\grapx\ryu\spritesryuPage4\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;
-; block $95 -----------------> Music
+; block $cf -----------------> Music
 ;
-usas2repBlock:  equ   $95
+usas2repBlock:  equ   $cf
   incbin "usas2.rep"
+
 
 
 totallenght:	Equ	$-Usas2

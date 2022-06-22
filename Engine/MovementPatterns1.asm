@@ -337,6 +337,35 @@ CheckFireballHitsEnemy:
   jr    z,CheckPlayerPunchesEnemy.EnemyDied
   ret
 
+
+;  ld    a,-60
+;  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+
+;  ld    hl,(Clesx)                          ;hl = x player
+;  ld    bc,50-2-16                          ;reduction to hitbox sx (left side)
+;  jp    CollisionEnemyPlayer.ObjectEntry
+
+
+;CollisionObjectPlayer:  
+;  ld    hl,(Clesx)                          ;hl = x player
+;  ld    bc,20-2-16                          ;reduction to hitbox sx (left side)
+;  jp    CollisionEnemyPlayer.ObjectEntry
+
+
+CheckPlayerPunchesEnemyDemon:
+  ld    hl,(ClesX)
+  ld    de,-14  + 19 + 30
+  add   hl,de
+  ld    (HitBoxSX),hl
+;  ld    a,16
+;  ld    (HitBoxNX),a
+;  ld    a,12
+;  ld    (HitBoxNY),a
+  ld    a,(ClesY)
+  add   a,17 - 6 - 60
+  ld    (HitBoxSY),a
+;  jp    CheckPlayerPunchesEnemy
+
 BlinkDurationWhenHit: equ 31  
 CheckPlayerPunchesEnemy:
   ld    a,(ArrowActive?)
@@ -668,6 +697,7 @@ SnapToBossDemon1:
   ld    (Object1y),a
   ret
 
+;sprite 0-5
 BossDemonIdle00:   dw ryupage1frame000 | db BossDemonframelistblock, BossDemonspritedatablock
 BossDemonIdle01:   dw ryupage1frame001 | db BossDemonframelistblock, BossDemonspritedatablock
 BossDemonIdle02:   dw ryupage1frame002 | db BossDemonframelistblock, BossDemonspritedatablock
@@ -687,6 +717,7 @@ BossDemonIdle15:   dw ryupage1frame015 | db BossDemonframelistblock, BossDemonsp
 BossDemonIdle16:   dw ryupage1frame016 | db BossDemonframelistblock, BossDemonspritedatablock
 BossDemonIdle17:   dw ryupage1frame017 | db BossDemonframelistblock, BossDemonspritedatablock
 
+;sprite 6-15
 BossDemonWalk00:   dw ryupage1frame018 | db BossDemonframelistblock, BossDemonspritedatablock
 BossDemonWalk01:   dw ryupage1frame019 | db BossDemonframelistblock, BossDemonspritedatablock
 BossDemonWalk02:   dw ryupage1frame020 | db BossDemonframelistblock, BossDemonspritedatablock
@@ -718,6 +749,7 @@ BossDemonWalk27:   dw ryupage1frame045 | db BossDemonframelistblock, BossDemonsp
 BossDemonWalk28:   dw ryupage1frame046 | db BossDemonframelistblock, BossDemonspritedatablock
 BossDemonWalk29:   dw ryupage1frame047 | db BossDemonframelistblock, BossDemonspritedatablock
 
+;sprite 16-28
 BossDemonAttack00:   dw ryupage2frame000 | db BossDemonframelistblock2, BossDemonspritedatablock2
 BossDemonAttack01:   dw ryupage2frame001 | db BossDemonframelistblock2, BossDemonspritedatablock2
 BossDemonAttack02:   dw ryupage2frame002 | db BossDemonframelistblock2, BossDemonspritedatablock2
@@ -758,6 +790,7 @@ BossDemonAttack36:   dw ryupage2frame036 | db BossDemonframelistblock2, BossDemo
 BossDemonAttack37:   dw ryupage2frame037 | db BossDemonframelistblock2, BossDemonspritedatablock2
 BossDemonAttack38:   dw ryupage2frame038 | db BossDemonframelistblock2, BossDemonspritedatablock2
 
+;sprite 29-33
 BossDemonHit00:   dw ryupage1frame048 | db BossDemonframelistblock, BossDemonspritedatablock
 BossDemonHit01:   dw ryupage1frame049 | db BossDemonframelistblock, BossDemonspritedatablock
 BossDemonHit02:   dw ryupage1frame050 | db BossDemonframelistblock, BossDemonspritedatablock
@@ -774,6 +807,7 @@ BossDemonHit12:   dw ryupage1frame060 | db BossDemonframelistblock, BossDemonspr
 BossDemonHit13:   dw ryupage1frame061 | db BossDemonframelistblock, BossDemonspritedatablock
 BossDemonHit14:   dw ryupage1frame062 | db BossDemonframelistblock, BossDemonspritedatablock
 
+;sprite 34-54
 BossDemonDead00:   dw ryupage3frame000 | db BossDemonframelistblock3, BossDemonspritedatablock3
 BossDemonDead01:   dw ryupage3frame001 | db BossDemonframelistblock3, BossDemonspritedatablock3
 BossDemonDead02:   dw ryupage3frame002 | db BossDemonframelistblock3, BossDemonspritedatablock3
@@ -807,36 +841,37 @@ BossDemonDead29:   dw ryupage3frame029 | db BossDemonframelistblock3, BossDemons
 BossDemonDead30:   dw ryupage3frame030 | db BossDemonframelistblock3, BossDemonspritedatablock3
 BossDemonDead31:   dw ryupage3frame031 | db BossDemonframelistblock3, BossDemonspritedatablock3
 BossDemonDead32:   dw ryupage3frame032 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead33:   dw ryupage3frame033 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead34:   dw ryupage3frame034 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead35:   dw ryupage3frame035 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead36:   dw ryupage3frame036 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead37:   dw ryupage3frame037 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead38:   dw ryupage3frame038 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead39:   dw ryupage3frame039 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead40:   dw ryupage3frame040 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead41:   dw ryupage3frame041 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead42:   dw ryupage3frame042 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead43:   dw ryupage3frame043 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead44:   dw ryupage3frame044 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead45:   dw ryupage3frame045 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead46:   dw ryupage3frame046 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead47:   dw ryupage3frame047 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead48:   dw ryupage3frame048 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead49:   dw ryupage3frame049 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead50:   dw ryupage3frame050 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead51:   dw ryupage3frame051 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead52:   dw ryupage3frame052 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead53:   dw ryupage3frame053 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead54:   dw ryupage3frame054 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead55:   dw ryupage3frame055 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead56:   dw ryupage3frame056 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead57:   dw ryupage3frame057 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead58:   dw ryupage3frame058 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead59:   dw ryupage3frame059 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead60:   dw ryupage3frame060 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead61:   dw ryupage3frame061 | db BossDemonframelistblock3, BossDemonspritedatablock3
-BossDemonDead62:   dw ryupage3frame062 | db BossDemonframelistblock3, BossDemonspritedatablock3
+
+BossDemonDead33:   dw ryupage4frame000 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead34:   dw ryupage4frame001 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead35:   dw ryupage4frame002 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead36:   dw ryupage4frame003 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead37:   dw ryupage4frame004 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead38:   dw ryupage4frame005 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead39:   dw ryupage4frame006 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead40:   dw ryupage4frame007 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead41:   dw ryupage4frame008 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead42:   dw ryupage4frame009 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead43:   dw ryupage4frame010 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead44:   dw ryupage4frame011 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead45:   dw ryupage4frame012 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead46:   dw ryupage4frame013 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead47:   dw ryupage4frame014 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead48:   dw ryupage4frame015 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead49:   dw ryupage4frame016 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead50:   dw ryupage4frame017 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead51:   dw ryupage4frame018 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead52:   dw ryupage4frame019 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead53:   dw ryupage4frame020 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead54:   dw ryupage4frame021 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead55:   dw ryupage4frame022 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead56:   dw ryupage4frame023 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead57:   dw ryupage4frame024 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead58:   dw ryupage4frame025 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead59:   dw ryupage4frame026 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead60:   dw ryupage4frame027 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead61:   dw ryupage4frame028 | db BossDemonframelistblock4, BossDemonspritedatablock4
+BossDemonDead62:   dw ryupage4frame029 | db BossDemonframelistblock4, BossDemonspritedatablock4
   
 BossDemon1:
 ;v1=repeating steps
@@ -853,32 +888,78 @@ BossDemon1:
   ld    (HugeObjectFrame),a
   cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
   ret   nz
-;  jp    nz,CheckCollisionObjectPlayer  
 
-;  ld    de,LeftAndRightObjectMovementTable
   ld    de,NonMovingObjectMovementTable
   call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
-;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
 ;  call  BackdropOrange  
   call  restoreBackgroundObject1
 
-  call  .HandlePhase                        ;(0=idle, 1=walking, 2=attacking)
+  call  .HandlePhase                        ;(0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
 
   ld    bc,BossDemonIdle00
   call  SetFrameBossDemon
   jp    PutSF2Object ;CHANGES IX 
   
-  .HandlePhase:                             ;(0=idle, 1=walking, 2=attacking)
+  .HandlePhase:                             ;(0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
   ld    a,(Bossframecounter)
   inc   a
   ld    (Bossframecounter),a
 
-  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking)
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
   or    a
   jp    z,BossDemonIdle
   dec   a
   jp    z,BossDemonWalking
+  dec   a
+  jp    z,BossDemonAttacking
+  dec   a
+  jp    z,BossDemonHit
+  dec   a
+  jp    z,BossDemonDead
+    
+  BossDemonDead:
+  ld    a,(Bossframecounter)
+  and   1
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  cp    54                                  ;sprite 34-54 are dead
+  jr    z,.LastSprite
+  inc   a
+  .LastSprite:  
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
   
+  BossDemonHit:
+  ld    a,(Bossframecounter)
+  and   1
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  inc   a
+  cp    34                                  ;sprite 29-33 are hit
+  jr    nz,.notzero
+
+  ld    (ix+enemies_and_objects.v8),0       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    a,0
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
+  
+  .notzero:  
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
+  
+  
+  BossDemonAttacking:
+  ld    a,(Bossframecounter)
+  and   1
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  inc   a
+  cp    28                                  ;sprite 16-28 are attacking
+  jr    nz,.notzero
+  ld    a,16
+  .notzero:  
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
   
   BossDemonWalking:
   ld    a,(Bossframecounter)
@@ -886,24 +967,46 @@ BossDemon1:
   ret   nz
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   inc   a
-  cp    16 + 13 + 5 + 31
+  cp    16                                  ;sprite 6-15 are walking
   jr    nz,.notzero
-  ld    a,0 ;16 + 13
-  .notzero:
-  
-
-;  ld    a,16
-  
+  ld    a,6
+  .notzero:  
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret
 
-  BossDemonIdle:
+  BossDemonIdle:  
+;  call  CheckCollisionObjectPlayerForBigBosses  ;check collision with player - and handle interaction of player with object
+
+  call  CollisionObjectPlayerDemon         ;Check if player is hit by Vram object                            
+  call  CheckPlayerPunchesEnemyDemon       ;Check if player hit's enemy
+
+  ;check if dead
+  ld    a,(ix+enemies_and_objects.life)
+  dec   a
+  jr    nz,.EndCheckDead
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    a,34
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
+  .EndCheckDead:
+
+  ;check if hit
+  ld    a,(ix+enemies_and_objects.hit?)
+  or    a
+  jr    z,.EndCheckHit
+  ld    (ix+enemies_and_objects.hit?),0
+  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    a,29
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
+  .EndCheckHit:
+
   ld    a,(Bossframecounter)
   and   3
   ret   nz
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   inc   a
-  cp    6
+  cp    6                                   ;sprite 0-5 are idle
   jr    nz,.notzero
   xor   a
   .notzero:

@@ -2919,15 +2919,24 @@ SwapSpatColAndCharTable2:
   ld    (invissprchatableaddress),hl
   ret
 
+CollisionObjectPlayerDemon:
+  ld    a,-60
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+
+  ld    hl,(Clesx)                          ;hl = x player
+  ld    bc,50-2-16                          ;reduction to hitbox sx (left side)
+  jp    CollisionEnemyPlayer.ObjectEntry
+
+
 CollisionObjectPlayer:  
   ld    hl,(Clesx)                          ;hl = x player
-  ld    bc,20-2-16                          ;reduce this value to reduce the hitbox size (on the left side)
+  ld    bc,20-2-16                          ;reduction to hitbox sx (left side)
   jp    CollisionEnemyPlayer.ObjectEntry
   
   CollisionEnemyPlayer:
 ;check if player collides with left side of enemy/object
   ld    hl,(Clesx)                          ;hl = x player
-  ld    bc,20-2                             ;reduce this value to reduce the hitbox size (on the left side)
+  ld    bc,20-2                             ;reduction to hitbox sx (left side)
 
   .ObjectEntry:
   add   hl,bc
