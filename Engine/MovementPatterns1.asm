@@ -354,7 +354,7 @@ CheckFireballHitsEnemy:
 
 CheckPlayerPunchesEnemyDemon:
   ld    hl,(ClesX)
-  ld    de,-14  + 19 + 30
+  ld    de,35 + 8
   add   hl,de
   ld    (HitBoxSX),hl
 ;  ld    a,16
@@ -872,6 +872,12 @@ BossDemonDead59:   dw ryupage4frame026 | db BossDemonframelistblock4, BossDemons
 BossDemonDead60:   dw ryupage4frame027 | db BossDemonframelistblock4, BossDemonspritedatablock4
 BossDemonDead61:   dw ryupage4frame028 | db BossDemonframelistblock4, BossDemonspritedatablock4
 BossDemonDead62:   dw ryupage4frame029 | db BossDemonframelistblock4, BossDemonspritedatablock4
+
+BossDemonWalkLeftMovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    40,0,-2, 128
+BossDemonWalkRightMovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    40,0,+2, 128
+
   
 BossDemon1:
 ;v1=repeating steps
@@ -882,6 +888,7 @@ BossDemon1:
 ;v6=active on which frame ?  
 ;v7=sprite frame
 ;v8=phase
+;v9=move left (-1) or right (0)
   ld    a,(HugeObjectFrame)
   inc   a
   and   3
@@ -889,8 +896,6 @@ BossDemon1:
   cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
   ret   nz
 
-  ld    de,NonMovingObjectMovementTable
-  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
 ;  call  BackdropOrange  
   call  restoreBackgroundObject1
 
@@ -938,9 +943,10 @@ BossDemon1:
   cp    34                                  ;sprite 29-33 are hit
   jr    nz,.notzero
 
+  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
+  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table      
+  ld    (ix+enemies_and_objects.v7),0       ;v7=sprite frame
   ld    (ix+enemies_and_objects.v8),0       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-  ld    a,0
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret
   
   .notzero:  
@@ -949,6 +955,8 @@ BossDemon1:
   
   
   BossDemonAttacking:
+  call  .CollisionObjectPlayerDemonAttacking
+    
   ld    a,(Bossframecounter)
   and   1
   ret   nz
@@ -956,15 +964,73 @@ BossDemon1:
   inc   a
   cp    28                                  ;sprite 16-28 are attacking
   jr    nz,.notzero
-  ld    a,16
+
+
+
+
+;  ld    (ix+enemies_and_objects.v7),16      ;v7=sprite frame
+;ret
+
+
+  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
+  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table      
+  ld    (ix+enemies_and_objects.v7),0       ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v8),0       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ret    
   .notzero:  
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret
+
+  .CollisionObjectPlayerDemonAttacking:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  cp    24
+  jp    nz,CollisionObjectPlayerDemon       ;Check if player is hit by Vram object                            
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  sub   a,74
+  ld    (ix+enemies_and_objects.x),a        ;x
+  call  CollisionObjectPlayerDemon          ;Check if player is hit by Vram object                            
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  add   a,74
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ret
   
   BossDemonWalking:
+  bit   7,(ix+enemies_and_objects.v9)       ;v9=move left (-1) or right (0)
+  ld    de,BossDemonWalkLeftMovementTable
+  jr    nz,.GoMove
+  ld    de,BossDemonWalkRightMovementTable
+  .GoMove:
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+
+  call  CollisionObjectPlayerDemon         ;Check if player is hit by Vram object                            
+  call  CheckPlayerPunchesEnemyDemon       ;Check if player hit's enemy
+
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  cp    116
+  jr    nz,.endcheckStartAttacking
+  ld    (ix+enemies_and_objects.v7),16      ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v9),0       ;v9=move left (-1) or right (0)
+  ret  
+  .endcheckStartAttacking:
+
+  cp    8*26 + 2
+  jr    nz,.endcheckStartBackToIdle
+  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
+  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table    
+  ld    (ix+enemies_and_objects.v7),00      ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v8),0       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v9),-1      ;v9=move left (-1) or right (0)
+  ret  
+  .endcheckStartBackToIdle:
+
+  call  BossDemonCheckIfDead                ;call gets popped if dead
+  call  BossDemonCheckIfHit                 ;call gets popped if hit
+
   ld    a,(Bossframecounter)
-  and   3
+  and   1
   ret   nz
+    
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   inc   a
   cp    16                                  ;sprite 6-15 are walking
@@ -974,33 +1040,26 @@ BossDemon1:
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret
 
-  BossDemonIdle:  
-;  call  CheckCollisionObjectPlayerForBigBosses  ;check collision with player - and handle interaction of player with object
-
+  BossDemonIdle:
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
   call  CollisionObjectPlayerDemon         ;Check if player is hit by Vram object                            
   call  CheckPlayerPunchesEnemyDemon       ;Check if player hit's enemy
-
-  ;check if dead
-  ld    a,(ix+enemies_and_objects.life)
-  dec   a
-  jr    nz,.EndCheckDead
-  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-  ld    a,34
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  
+  ld    a,r
+  and   31
+  jr    nz,.EndCheckStartWalking
+  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
+  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table    
+  ld    (ix+enemies_and_objects.v7),6       ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
   ret
-  .EndCheckDead:
+  .EndCheckStartWalking:
 
-  ;check if hit
-  ld    a,(ix+enemies_and_objects.hit?)
-  or    a
-  jr    z,.EndCheckHit
-  ld    (ix+enemies_and_objects.hit?),0
-  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-  ld    a,29
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
-  ret
-  .EndCheckHit:
+  call  BossDemonCheckIfDead                ;call gets popped if dead
+  call  BossDemonCheckIfHit                 ;call gets popped if hit
 
+  ;animate
   ld    a,(Bossframecounter)
   and   3
   ret   nz
@@ -1010,6 +1069,26 @@ BossDemon1:
   jr    nz,.notzero
   xor   a
   .notzero:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
+
+  BossDemonCheckIfHit:
+  ld    a,(ix+enemies_and_objects.hit?)
+  or    a
+  ret   z
+  pop   af                                  ;pop call  
+  ld    (ix+enemies_and_objects.hit?),0
+  ld    (ix+enemies_and_objects.v7),29      ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ret
+
+  BossDemonCheckIfDead:
+  ld    a,(ix+enemies_and_objects.life)
+  dec   a
+  ret   nz
+  pop   af                                  ;pop call
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    a,34
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret
 
@@ -1206,7 +1285,7 @@ WorldNameText:                              ;Displays the name of the world in s
 ;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
 ;v6=active on which frame ?  
   ld    de,WorldTextStepTable
-  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
 ;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
 ;  call  BackdropOrange  
   call  restoreBackgroundObject1
@@ -3034,7 +3113,7 @@ GlassBall1:
   cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
   jp    nz,CheckCollisionObjectPlayer
   ld    de,GlassBallMovementTable1
-  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject1
   call  AnimateGlassBall
@@ -3053,7 +3132,7 @@ GlassBall2:
   cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
   jp    nz,CheckCollisionObjectPlayer
   ld    de,GlassBallMovementTable1
-  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject2
   call  AnimateGlassBall
@@ -3072,7 +3151,7 @@ GlassBall3:
   cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
   jp    nz,CheckCollisionObjectPlayer
   ld    de,GlassBallMovementTable2
-  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject1
   call  AnimateGlassBall
@@ -3091,7 +3170,7 @@ GlassBall4:
   cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
   jp    nz,CheckCollisionObjectPlayer
   ld    de,GlassBallMovementTable3
-  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject2
   call  AnimateGlassBall
@@ -3110,7 +3189,7 @@ GlassBall5:
   cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
   jp    nz,CheckCollisionObjectPlayer
   ld    de,GlassBallMovementTable4
-  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject1
   call  AnimateGlassBall
@@ -3129,7 +3208,7 @@ GlassBall6:
   cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
   jp    nz,CheckCollisionObjectPlayer
   ld    de,GlassBallMovementTable2
-  call  MoveObjectWithStepTable             ;v1=repeating steps, v2pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject2
   call  AnimateGlassBall

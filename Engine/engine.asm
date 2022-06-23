@@ -2924,7 +2924,7 @@ CollisionObjectPlayerDemon:
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
 
   ld    hl,(Clesx)                          ;hl = x player
-  ld    bc,50-2-16                          ;reduction to hitbox sx (left side)
+  ld    bc,30                               ;reduction to hitbox sx (left side)
   jp    CollisionEnemyPlayer.ObjectEntry
 
 
