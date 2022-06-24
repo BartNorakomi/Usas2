@@ -268,7 +268,14 @@ CheckPlayerPunchesEnemyOnlySitting:
 CheckArrowHitsEnemy:
 ;check if enemy/object collides with hitbox arrow left side
   ld    hl,(ArrowX)                         ;hl = x hitbox
-  ld    bc,46
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    bc,46                               ;normal engine
+  jr    z,.engineFound
+  ld    bc,46 - 14                          ;sf2 engine
+  .engineFound:
+
   add   hl,bc
   ld    e,(ix+enemies_and_objects.x)  
   ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
@@ -304,7 +311,14 @@ CheckArrowHitsEnemy:
 CheckFireballHitsEnemy:
 ;check if enemy/object collides with hitbox arrow left side
   ld    hl,(FireballX)                      ;hl = x hitbox
-  ld    bc,46
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    bc,46                               ;normal engine
+  jr    z,.engineFound
+  ld    bc,46 - 18                          ;sf2 engine
+  .engineFound:
+
   add   hl,bc
   ld    e,(ix+enemies_and_objects.x)  
   ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object

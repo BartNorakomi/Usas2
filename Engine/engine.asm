@@ -3202,7 +3202,7 @@ HandlePlayerWeapons:
   add   hl,de  
   ld    a,(ix+1)            ;FireballY
   add   a,16 + 2
-  
+
   call  checktile.XandYset  ;out z=collision found with wall  
   jp    z,.RemoveWeapon
   inc   hl                  ;also check next tile
@@ -3211,7 +3211,11 @@ HandlePlayerWeapons:
   jp    z,.RemoveWeapon
 
   ld    iy,CleanPlayerProjectile
-  
+
+  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jp    nz,PlayerWeaponSf2Engine
+    
   ld    a,(ix+2)            ;FireballX
   or    a
   jp    p,.ObjectOnLeftSideOfScreen
@@ -3375,7 +3379,68 @@ HandlePlayerWeapons:
   ld    (CleanPlayerProjectile+restorebackground?),a   
   ret
 
+PlayerWeaponSf2Engine:  
+  ld    a,(ix+5)          ;SX right side
+  ld    (CopyPlayerProjectile+sx),a  
+  ld    a,%0000 0000      ;set copy direction. Copy from left to right
+  ld    (iy+copydirection),a
+  ld    (CopyPlayerProjectile+copydirection),a  
 
+  ;set pages to copy to and to clean from
+;  ld    a,(PageOnNextVblank)
+;  cp    0*32+31           ;x*32+31 (x=page)
+;  ld    b,0               ;copy to page 0
+;  jp    z,.pagefoundright
+
+;  cp    1*32+31           ;x*32+31 (x=page)
+;  ld    b,1               ;copy to page 1
+;  jp    z,.pagefoundright
+;  ld    b,2               ;copy to page 2
+;  .pagefoundright:
+
+  ld    a,(screenpage)
+;  ld    b,a
+
+;  ld    a,b               ;copy object to vram page
+  ld    (CopyPlayerProjectile+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ix+1)            ;FireballY
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+  ld    (CopyPlayerProjectile+dy),a
+  
+  ld    a,(ix+2)            ;FireballX
+  ld    (CopyPlayerProjectile+dx),a
+  ld    (iy+dx),a
+  ld    (iy+sx),a
+
+  ld    a,(ix+2)            ;FireballX
+  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
+  ld    (ix+2),a            ;FireballX
+
+  ld    a,(ix+2)            ;FireballX
+  cp    10
+  jr    c,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+  cp    256-10
+  jr    nc,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+
+  ;put arrow
+  ld    hl,CopyPlayerProjectile
+  call  docopy
+  
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerProjectile+restorebackground?),a   
+  ret
+
+  .RemoveWeapon:
+  xor   a
+  ld    (ix+0),a
+  ret
+  
  
   db    0                 ;restorebackground?
 CleanPlayerProjectile:                                       ;this is used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)
@@ -3422,7 +3487,7 @@ LShootFireball:
 
 ;Animate
   ld    hl,LeftShootFireballAnimation
-  call  AnimateShootFireball             ;animate
+  call  AnimateShootFireball  ;animate
 
   ld    a,(PlayerAniCount)
   cp    2 * 14
@@ -3430,13 +3495,21 @@ LShootFireball:
   cp    2 * 10
   ret   nz
 
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    de,-26                ;normal engine
+  jr    z,.engineFound
+  ld    de,-18                ;SF2 engine 
+  .engineFound:
+
   ld    a,-FireballSpeed
   ld    (FireballActive?),a
 ;  ld    a,(ClesX)
 ;  sub   a,26
   ld    hl,(ClesX)
-  ld    de,-26
-  add   hl,de
+;  ld    de,-26               ;normal engine
+;  ld    de,-18                ;SF2 engine 
+  add   hl,de                 ;adjust x starting placement projectile
   ld    a,l
   bit   0,h
   jr    z,.SetX
@@ -3470,10 +3543,20 @@ RShootFireball:
   cp    2 * 10
   ret   nz
 
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,20                  ;normal engine
+  jr    z,.engineFound
+  ld    b,04                  ;SF2 engine 
+  .engineFound:
+
+
   ld    a,FireballSpeed
   ld    (FireballActive?),a
   ld    a,(ClesX)
-  sub   a,20
+  sub   a,b                   ;adjust x starting placement projectile
+  
+  
   jr    nc,.SetX
   xor   a
   .SetX:
@@ -8017,6 +8100,9 @@ Set_L_BeingHit:
   xor   a
   ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
+  ld    a,1
+  ld    (KickWhileJump?),a  
+
 ;  ld    a,1
 ;  ld    (PlayerFacingRight?),a                    ;since we move right, but face left, let's pretend we actually face right. This way the camera moves accordingly
   ld    a,(RunningTablePointer)
@@ -8040,6 +8126,9 @@ Set_R_BeingHit:
   xor   a
   ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
+  ld    a,1
+  ld    (KickWhileJump?),a  
+  
 ;  ld    (PlayerFacingRight?),a                    ;since we move left, but face right, let's pretend we actually face left. This way the camera moves accordingly
   ld    a,(RunningTablePointer)
   ld    (RunningTablePointerWhenHit),a

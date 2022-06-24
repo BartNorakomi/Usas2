@@ -1,6 +1,6 @@
 phase	$c000
 
-MusicOn?:   equ 1
+MusicOn?:   equ 0
 
 WorldMapData:
 WorldMapDataWidth:      equ 7     ;amount of maps in width 
