@@ -2926,7 +2926,11 @@ CollisionObjectPlayerDemon:
   ld    hl,(Clesx)                          ;hl = x player
   ld    bc,30                               ;reduction to hitbox sx (left side)
   jp    CollisionEnemyPlayer.ObjectEntry
+;  call  CollisionEnemyPlayer.ObjectEntry
 
+;  ld    a,CollisionSYStanding
+;  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+;  ret
 
 CollisionObjectPlayer:  
   ld    hl,(Clesx)                          ;hl = x player
@@ -3606,7 +3610,76 @@ RightShootFireballAnimation:
   dw  PlayerSpriteData_Char_RightCharge5
   dw  PlayerSpriteData_Char_RightCharge5
 
+lSitShootArrowSf2Engine:
+;Animate
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  cp    4
+  ld    de,PlayerSpriteData_Char_LeftSitShootArrow1
+  ld    h,-9               ;move software sprite h pixels to the Left
+  jr    c,.SetStandChar
+  cp    8
+  ld    de,PlayerSpriteData_Char_LeftSitShootArrow2
+  ld    h,-11               ;move software sprite h pixels to the Left
+  jr    c,.SetStandChar
+  cp    12
+  ld    de,PlayerSpriteData_Char_LeftSitShootArrow3
+  jr    c,.SetStandChar
+  ld    de,PlayerSpriteData_Char_LeftSitShootArrow4
+  .SetStandChar:
+	ld		(standchar),de
+
+  ld    iy,CleanPlayerWeapon
+
+  ld    a,(screenpage)
+  ld    (CopyPlayerWeapon+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ClesY)
+  add   a,2
+  ld    (CopyPlayerWeapon+dy),a
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+
+  ld    a,(ClesX)
+  add   a,h
+  ld    (CopyPlayerWeapon+dx),a
+  ld    (iy+dx),a
+  ld    (iy+sx),a
+  
+  ;put weapon
+  ld    hl,CopyPlayerWeapon
+  call  docopy
+
+  ld    a,(PlayerAniCount)
+  cp    15
+  ret   nz
+
+  ld    a,-ArrowSpeed
+  ld    (ArrowActive?),a
+  ld    a,(ClesX)
+  sub   a,8
+  ld    (ArrowX),a
+  ld    a,(ClesY)
+  add   a,7
+  ld    (ArrowY),a
+  jp    Set_L_Sit  
+
 LSitShootArrow:
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerWeapon+restorebackground?),a 
+
+  ld    a,028
+  ld    (CopyPlayerWeapon+sx),a  
+
+  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jp    nz,LSitShootArrowSf2Engine
+
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,38
   xor   a
@@ -3619,12 +3692,6 @@ LSitShootArrow:
   sbc   hl,de
   jp    nc,Set_L_Sit
   
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
-
-  ld    a,028
-  ld    (CopyPlayerWeapon+sx),a
-
 ;Animate
   ld    a,(PlayerAniCount)
   inc   a
@@ -3716,7 +3783,76 @@ LSitShootArrow:
   ld    (ArrowY),a
   jp    Set_L_Sit 
 
+RSitShootArrowSf2Engine:
+;Animate
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  cp    4
+  ld    de,PlayerSpriteData_Char_RightSitShootArrow1
+  ld    h,6               ;move software sprite h pixels to the right
+  jr    c,.SetStandChar
+  cp    8
+  ld    de,PlayerSpriteData_Char_RightSitShootArrow2
+  ld    h,8               ;move software sprite h pixels to the right
+  jr    c,.SetStandChar
+  cp    12
+  ld    de,PlayerSpriteData_Char_RightSitShootArrow3
+  jr    c,.SetStandChar
+  ld    de,PlayerSpriteData_Char_RightSitShootArrow4
+  .SetStandChar:
+	ld		(standchar),de
+
+  ld    iy,CleanPlayerWeapon
+
+  ld    a,(screenpage)
+  ld    (CopyPlayerWeapon+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ClesY)
+  add   a,2
+  ld    (CopyPlayerWeapon+dy),a
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+
+  ld    a,(ClesX)
+  add   a,h
+  ld    (CopyPlayerWeapon+dx),a
+  ld    (iy+dx),a
+  ld    (iy+sx),a
+  
+  ;put weapon
+  ld    hl,CopyPlayerWeapon
+  call  docopy
+
+  ld    a,(PlayerAniCount)
+  cp    15
+  ret   nz
+
+  ld    a,ArrowSpeed
+  ld    (ArrowActive?),a
+  ld    a,(ClesX)
+  sub   a,11 -3
+  ld    (ArrowX),a
+  ld    a,(ClesY)
+  add   a,7
+  ld    (ArrowY),a
+  jp    Set_R_Sit    
+
 RSitShootArrow:
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerWeapon+restorebackground?),a 
+
+  ld    a,028+2
+  ld    (CopyPlayerWeapon+sx),a  
+
+  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jp    nz,RSitShootArrowSf2Engine
+  
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,11
   xor   a
@@ -3729,12 +3865,6 @@ RSitShootArrow:
   sbc   hl,de
   jp    nc,Set_R_Sit
   
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
-
-  ld    a,028+2
-  ld    (CopyPlayerWeapon+sx),a  
-
 ;Animate
   ld    a,(PlayerAniCount)
   inc   a
@@ -3826,7 +3956,76 @@ RSitShootArrow:
   ld    (ArrowY),a
   jp    Set_R_Sit  
 
+LShootArrowSf2Engine:
+;Animate
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  cp    4
+  ld    de,PlayerSpriteData_Char_LeftShootArrow1
+  ld    h,-8               ;move software sprite h pixels to the Left
+  jr    c,.SetStandChar
+  cp    8
+  ld    de,PlayerSpriteData_Char_LeftShootArrow2
+  ld    h,-11               ;move software sprite h pixels to the Left
+  jr    c,.SetStandChar
+  cp    12
+  ld    de,PlayerSpriteData_Char_LeftShootArrow3
+  jr    c,.SetStandChar
+  ld    de,PlayerSpriteData_Char_LeftShootArrow4
+  .SetStandChar:
+	ld		(standchar),de
+
+  ld    iy,CleanPlayerWeapon
+
+  ld    a,(screenpage)
+  ld    (CopyPlayerWeapon+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ClesY)
+  sub   a,4
+  ld    (CopyPlayerWeapon+dy),a
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+
+  ld    a,(ClesX)
+  add   a,h
+  ld    (CopyPlayerWeapon+dx),a
+  ld    (iy+dx),a
+  ld    (iy+sx),a
+  
+  ;put weapon
+  ld    hl,CopyPlayerWeapon
+  call  docopy
+
+  ld    a,(PlayerAniCount)
+  cp    15
+  ret   nz
+
+  ld    a,-ArrowSpeed
+  ld    (ArrowActive?),a
+  ld    a,(ClesX)
+  sub   a,8
+  ld    (ArrowX),a
+  ld    a,(ClesY)
+  inc   a
+  ld    (ArrowY),a
+  jp    Set_L_Stand  
+
 LShootArrow:
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerWeapon+restorebackground?),a 
+
+  ld    a,028
+  ld    (CopyPlayerWeapon+sx),a  
+
+  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jp    nz,LShootArrowSf2Engine
+
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,38
   xor   a
@@ -3839,12 +4038,6 @@ LShootArrow:
   sbc   hl,de
   jp    nc,Set_L_Stand
   
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
-
-  ld    a,028
-  ld    (CopyPlayerWeapon+sx),a
-
 ;Animate
   ld    a,(PlayerAniCount)
   inc   a
@@ -3935,8 +4128,77 @@ LShootArrow:
   inc   a
   ld    (ArrowY),a
   jp    Set_L_Stand  
+
+RShootArrowSf2Engine:
+;Animate
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  cp    4
+  ld    de,PlayerSpriteData_Char_RightShootArrow1
+  ld    h,6               ;move software sprite h pixels to the right
+  jr    c,.SetStandChar
+  cp    8
+  ld    de,PlayerSpriteData_Char_RightShootArrow2
+  ld    h,8               ;move software sprite h pixels to the right
+  jr    c,.SetStandChar
+  cp    12
+  ld    de,PlayerSpriteData_Char_RightShootArrow3
+  jr    c,.SetStandChar
+  ld    de,PlayerSpriteData_Char_RightShootArrow4
+  .SetStandChar:
+	ld		(standchar),de
+
+  ld    iy,CleanPlayerWeapon
+
+  ld    a,(screenpage)
+  ld    (CopyPlayerWeapon+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ClesY)
+  sub   a,4
+  ld    (CopyPlayerWeapon+dy),a
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+
+  ld    a,(ClesX)
+  add   a,h
+  ld    (CopyPlayerWeapon+dx),a
+  ld    (iy+dx),a
+  ld    (iy+sx),a
+  
+  ;put weapon
+  ld    hl,CopyPlayerWeapon
+  call  docopy
+
+  ld    a,(PlayerAniCount)
+  cp    15
+  ret   nz
+
+  ld    a,ArrowSpeed
+  ld    (ArrowActive?),a
+  ld    a,(ClesX)
+  sub   a,11 -3
+  ld    (ArrowX),a
+  ld    a,(ClesY)
+  inc   a
+  ld    (ArrowY),a
+  jp    Set_R_Stand  
     
 RShootArrow:
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerWeapon+restorebackground?),a 
+
+  ld    a,028+2
+  ld    (CopyPlayerWeapon+sx),a  
+
+  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jp    nz,RShootArrowSf2Engine
+
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,11
   xor   a
@@ -3948,12 +4210,6 @@ RShootArrow:
   xor   a
   sbc   hl,de
   jp    nc,Set_R_Stand
-
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
-
-  ld    a,028+2
-  ld    (CopyPlayerWeapon+sx),a  
 
 ;Animate
   ld    a,(PlayerAniCount)
@@ -5892,15 +6148,15 @@ AnimateWhileJump:
 .AnimateJumpFacingLeft:
   ld    a,(ShootArrowWhileJump?)
   or    a
-  jr    nz,ShootArrowWhileJumpLeft
+  jp    nz,ShootArrowWhileJumpLeft
 
   ld    a,(KickWhileJump?)
   dec   a
-  jr    nz,.KickWhileJumpLeft
+  jp    nz,.KickWhileJumpLeft
 
   ld    a,(DoubleJumpAvailable?)
   or    a
-  jr    z,.RollingJumpLeft
+  jp    z,.RollingJumpLeft
   
   ld    a,(JumpSpeed)
   add   a,2
@@ -5936,7 +6192,79 @@ AnimateWhileJump:
 	ld		(standchar),hl
   ret
 
+ShootArrowWhileJumpLeftSf2Engine:
+;Animate
+  ld    a,(ShootArrowWhileJump?)
+  inc   a
+  ld    (ShootArrowWhileJump?),a  
+  cp    4
+  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow1
+  ld    h,-8               ;move software sprite h pixels to the Left
+  jr    c,.SetStandChar
+  cp    8
+  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow2
+  ld    h,-11               ;move software sprite h pixels to the Left
+  jr    c,.SetStandChar
+  cp    12
+  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow3
+  jr    c,.SetStandChar
+  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow4
+  .SetStandChar:
+	ld		(standchar),de
+
+  ld    iy,CleanPlayerWeapon
+
+  ld    a,(screenpage)
+  ld    (CopyPlayerWeapon+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ClesY)
+  sub   a,5
+  ld    (CopyPlayerWeapon+dy),a
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+
+  ld    a,(ClesX)
+  add   a,h
+  ld    (CopyPlayerWeapon+dx),a
+  ld    (iy+dx),a
+  ld    (iy+sx),a
+  
+  ;put weapon
+  ld    hl,CopyPlayerWeapon
+  call  docopy
+
+  ld    a,(ShootArrowWhileJump?)
+  cp    15
+  ret   nz
+  
+  ld    a,-ArrowSpeed
+  ld    (ArrowActive?),a
+  ld    a,(ClesX)
+  sub   a,8
+  ld    (ArrowX),a
+  ld    a,(ClesY)
+  ld    (ArrowY),a
+
+  .endShootArrowWhileJump:
+  xor   a
+  ld    (ShootArrowWhileJump?),a
+  ret
+  
 ShootArrowWhileJumpLeft:
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerWeapon+restorebackground?),a 
+
+  ld    a,028
+  ld    (CopyPlayerWeapon+sx),a  
+
+  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jp    nz,ShootArrowWhileJumpLeftSf2Engine
+
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,38
   xor   a
@@ -5948,12 +6276,6 @@ ShootArrowWhileJumpLeft:
   xor   a
   sbc   hl,de
   jp    nc,.endShootArrowWhileJump
-
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
-
-  ld    a,028
-  ld    (CopyPlayerWeapon+sx),a  
 
 ;Animate
   ld    a,(ShootArrowWhileJump?)
@@ -6049,7 +6371,79 @@ ShootArrowWhileJumpLeft:
   ld    (ShootArrowWhileJump?),a
   ret
 
+ShootArrowWhileJumpRightSf2Engine:
+;Animate
+  ld    a,(ShootArrowWhileJump?)
+  inc   a
+  ld    (ShootArrowWhileJump?),a  
+  cp    4
+  ld    de,PlayerSpriteData_Char_RightJumpShootArrow1
+  ld    h,5               ;move software sprite h pixels to the right
+  jr    c,.SetStandChar
+  cp    8
+  ld    de,PlayerSpriteData_Char_RightJumpShootArrow2
+  ld    h,8               ;move software sprite h pixels to the right
+  jr    c,.SetStandChar
+  cp    12
+  ld    de,PlayerSpriteData_Char_RightJumpShootArrow3
+  jr    c,.SetStandChar
+  ld    de,PlayerSpriteData_Char_RightJumpShootArrow4
+  .SetStandChar:
+	ld		(standchar),de
+
+  ld    iy,CleanPlayerWeapon
+
+  ld    a,(screenpage)
+  ld    (CopyPlayerWeapon+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
+  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ClesY)
+  sub   a,5
+  ld    (CopyPlayerWeapon+dy),a
+  ld    (iy+sy),a
+  ld    (iy+dy),a
+
+  ld    a,(ClesX)
+  add   a,h
+  ld    (CopyPlayerWeapon+dx),a
+  ld    (iy+dx),a
+  ld    (iy+sx),a
+  
+  ;put weapon
+  ld    hl,CopyPlayerWeapon
+  call  docopy
+
+  ld    a,(ShootArrowWhileJump?)
+  cp    15
+  ret   nz
+  
+  ld    a,ArrowSpeed
+  ld    (ArrowActive?),a
+  ld    a,(ClesX)
+  sub   a,11-3
+  ld    (ArrowX),a
+  ld    a,(ClesY)
+  ld    (ArrowY),a
+
+  .endShootArrowWhileJump:
+  xor   a
+  ld    (ShootArrowWhileJump?),a
+  ret
+  
 ShootArrowWhileJumpRight:
+  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ld    (CleanPlayerWeapon+restorebackground?),a 
+
+  ld    a,028+2
+  ld    (CopyPlayerWeapon+sx),a  
+
+  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jp    nz,ShootArrowWhileJumpRightSf2Engine
+
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,11
   xor   a
@@ -6062,12 +6456,6 @@ ShootArrowWhileJumpRight:
   sbc   hl,de
   jp    nc,.endShootArrowWhileJump
   
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
-
-  ld    a,028+2
-  ld    (CopyPlayerWeapon+sx),a  
-
 ;Animate
   ld    a,(ShootArrowWhileJump?)
   inc   a

@@ -348,7 +348,7 @@ CheckFireballHitsEnemy:
   
   ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
   dec   (ix+enemies_and_objects.life)
-  jr    z,CheckPlayerPunchesEnemy.EnemyDied
+  jp    z,CheckPlayerPunchesEnemy.EnemyDied
   ret
 
 
@@ -378,6 +378,21 @@ CheckPlayerPunchesEnemyDemon:
   ld    a,(ClesY)
   add   a,17 - 6 - 60
   ld    (HitBoxSY),a
+  
+  ld    a,(FireballY)                       ;a = y hitbox
+  sub   a,60
+  ld    (FireballY),a                       ;a = y hitbox
+  ld    a,(ArrowY)                          ;a = y hitbox
+  sub   a,60
+  ld    (ArrowY),a                          ;a = y hitbox
+  call  CheckPlayerPunchesEnemy
+  ld    a,(FireballY)                       ;a = y hitbox
+  add   a,60
+  ld    (FireballY),a                       ;a = y hitbox
+  ld    a,(ArrowY)                          ;a = y hitbox
+  add   a,60
+  ld    (ArrowY),a                          ;a = y hitbox
+  ret
 ;  jp    CheckPlayerPunchesEnemy
 
 BlinkDurationWhenHit: equ 31  
