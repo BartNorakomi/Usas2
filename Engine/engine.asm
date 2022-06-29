@@ -872,6 +872,12 @@ PutPlayersprite:
   ld    hl,PlayerSpriteData_Char_Empty+2
   .EndCheckPlayerInvulnerable:    
 
+;  ld    a,(framecounter)
+;  and   1
+;  jr    z,.skip
+;  ld    hl,PlayerSpriteData_Char_Empty+2
+;  .skip:
+
 ;ALERT, THIS WRITE TO R#14 IS REQUIRED IN THE SF2 ENGINE !!! 
 
   ;SetVdp_Write address for Sprite Character
@@ -3468,13 +3474,38 @@ PlayerFacingRight?:     db  1
 PlayerInvulnerable?:    db  0
 
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
-;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball
+;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
 HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
+
+;  ld    e,(hl)
+;  inc   hl
+;  ld    d,(hl)
+    
+;	ld		(standchar),de
+   
+;RightSilhouetteKickAnimation:          ;xoffset sprite top, xoffset sprite bottom
+  dw  PlayerSpriteData_Char_RightSilhouetteHighKick 
+  dw  PlayerSpriteData_Char_RightSilhouetteLowKick 
+  dw  PlayerSpriteData_Char_LeftLowKick 
+  dw  PlayerSpriteData_Char_LeftHighKick 
+
+RSilhouetteKick:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  and   15
+  cp    8
+  ld    hl,PlayerSpriteData_Char_RightSilhouetteHighKick
+	jr    c,.setCharacter
+  ld    hl,PlayerSpriteData_Char_RightSilhouetteLowKick
+	.setCharacter:
+	ld		(standchar),hl  
+  ret
 
 LShootFireball:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
@@ -7561,7 +7592,8 @@ Rrunning:
 	jp		nz,Set_R_attack
 	bit		5,a           ;'M' pressed ?
 ;	jp		nz,Set_R_Rolling
-	jp		nz,Set_R_ShootArrow
+;	jp		nz,Set_R_ShootArrow
+	jp		nz,Set_R_SilhouetteKick
 		
 	bit		6,a           ;F1 pressed ?
 	jp		nz,Set_Charging
@@ -8047,6 +8079,14 @@ CheckClimbLadderUp:;
   ld    de,8
   add   hl,de
   ld    (ClesX),hl
+  ret
+
+Set_R_SilhouetteKick:
+	ld		hl,RSilhouetteKick
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,0 
+  ld    (PlayerAniCount),a
   ret
 
 Set_L_SitShootArrow:

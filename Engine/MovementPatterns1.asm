@@ -708,6 +708,7 @@ SetFrameBossDemon:
   add   hl,de                               ;*12
   add   hl,bc                               ;frame * 12 + frame address
 
+  SetFrameSF2Object:
   ld    a,(hl)
   ld    (Player1Frame),a
   inc   hl
@@ -932,7 +933,13 @@ BossDemon1:
 
   ld    bc,BossDemonIdle00
   call  SetFrameBossDemon
-  jp    PutSF2Object ;CHANGES IX 
+  jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  
+;  ld    b,(hl)                              ;frame list block
+;  inc   hl
+;  ld    c,(hl)                              ;sprite data block
+  ret  
+  
   
   .HandlePhase:                             ;(0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
   ld    a,(Bossframecounter)
@@ -1304,7 +1311,7 @@ WorldTextStepTable:  ;repeating steps(128 = end table/repeat), move y, move x
   db  128
   
 TextKarniMata:
-  dw ryupage0frame013 | db 1
+  dw ryupage0frame013 | db ryuframelistblock, ryuspritedatablock
 
 WorldNameText:                              ;Displays the name of the world in screen when entering that world
 ;v1=repeating steps
@@ -1327,22 +1334,14 @@ WorldNameText:                              ;Displays the name of the world in s
   jr    c,.SetFrame
   ld    hl,EmptyFrame  
   .SetFrame:
-
-  ld    a,(hl)
-  ld    (Player1Frame),a
-  inc   hl
-  ld    a,(hl)
-  ld    (Player1Frame+1),a
-  inc   hl
-  ld    a,(hl)
-  ld    (Player1Frame+2),a
+  call  SetFrameSF2Object                 ;in: hl->frame. out: b=frame list block, c=sprite data block
 
   dec   (ix+enemies_and_objects.v8)       ;v8 = amount of frames alive
   jr    nz,.SkipEnd
   ld    (ix+enemies_and_objects.alive?),0 ;end     
   .SkipEnd:
-
-  call  PutSF2Object ;CHANGES IX 
+  
+  call  PutSF2Object                      ;in: b=frame list block, c=sprite data block. CHANGES IX 
 ;  call  BackdropBlack
   call  switchpageSF2Engine
   ret
@@ -3325,7 +3324,7 @@ AnimateGlassBall:
   ret
 
 EmptyFrame:
-  dw ryupage0frame012 | db 1
+  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
 
 GlassBalHorizontalAnimation:
   dw ryupage0frame004 | db 1

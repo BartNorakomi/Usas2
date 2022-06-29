@@ -41,7 +41,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapB01_018Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapA13Data
+WorldMapPointer:  dw  MapA07Data
 
 loadGraphics:
 ;	ld    a,(Player_playing)
