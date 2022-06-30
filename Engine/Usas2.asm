@@ -1464,16 +1464,15 @@ PlayerSpriteData_Colo_RightJumpShootArrow3:include "..\sprites\secretsofgrindea\
 PlayerSpriteData_Char_RightJumpShootArrow4:include "..\sprites\secretsofgrindea\RightJumpShootArrow4.tgs.gen"	  
 PlayerSpriteData_Colo_RightJumpShootArrow4:include "..\sprites\secretsofgrindea\RightJumpShootArrow4.tcs.gen"	  | db +0-8,-2
 
+PlayerSpriteData_Char_LeftSilhouetteHighKick:  include "..\sprites\secretsofgrindea\LeftSilhouetteHighKick.tgs.gen"	  
+PlayerSpriteData_Colo_LeftSilhouetteHighKick:  include "..\sprites\secretsofgrindea\LeftSilhouetteHighKick.tcs.gen"	  | db +0-8,-6
+PlayerSpriteData_Char_LeftSilhouetteLowKick:   include "..\sprites\secretsofgrindea\LeftSilhouetteLowKick.tgs.gen"	  
+PlayerSpriteData_Colo_LeftSilhouetteLowKick:   include "..\sprites\secretsofgrindea\LeftSilhouetteLowKick.tcs.gen"	  | db +0-8,-6
+
 PlayerSpriteData_Char_RightSilhouetteHighKick:  include "..\sprites\secretsofgrindea\RightSilhouetteHighKick.tgs.gen"	  
 PlayerSpriteData_Colo_RightSilhouetteHighKick:  include "..\sprites\secretsofgrindea\RightSilhouetteHighKick.tcs.gen"	  | db +0-8,+6
 PlayerSpriteData_Char_RightSilhouetteLowKick:   include "..\sprites\secretsofgrindea\RightSilhouetteLowKick.tgs.gen"	  
 PlayerSpriteData_Colo_RightSilhouetteLowKick:   include "..\sprites\secretsofgrindea\RightSilhouetteLowKick.tcs.gen"	  | db +0-8,+6
-
-
-;PlayerSpriteData_Char_LeftLowKick:          include "..\sprites\secretsofgrindea\LeftLowKick.tgs.gen"	  
-;PlayerSpriteData_Colo_LeftLowKick:          include "..\sprites\secretsofgrindea\LeftLowKick.tcs.gen"	| db +0-8,-6
-;PlayerSpriteData_Char_LeftHighKick:         include "..\sprites\secretsofgrindea\LeftHighKick.tgs.gen"	  
-;PlayerSpriteData_Colo_LeftHighKick:         include "..\sprites\secretsofgrindea\LeftHighKick.tcs.gen"	| db -0-8,-6
 
 EndPlayerSprites2: | ds $c000-$,$ff | dephase
 dephase

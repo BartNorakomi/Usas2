@@ -3482,29 +3482,175 @@ HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
 
-;  ld    e,(hl)
-;  inc   hl
-;  ld    d,(hl)
-    
-;	ld		(standchar),de
-   
-;RightSilhouetteKickAnimation:          ;xoffset sprite top, xoffset sprite bottom
-  dw  PlayerSpriteData_Char_RightSilhouetteHighKick 
-  dw  PlayerSpriteData_Char_RightSilhouetteLowKick 
-  dw  PlayerSpriteData_Char_LeftLowKick 
-  dw  PlayerSpriteData_Char_LeftHighKick 
+RSilhouetteKickAnimateTable:
+  db    0,1,0,0,1,1, 3,3,2,2,3, 1,1,1,0,1,1, 3,3,2,3,3, 1,0,0,1,1,1, 3,2,2,3,2, 1,0,1
 
-RSilhouetteKick:
+LSilhouetteKickAnimateTable:
+  db    1,1,1,1,1,1, 3,3,3,3,3, 1,1,1,1,1,1, 3,3,3,3,3, 1,1,1,1,1,1, 3,3,3,3,3, 1,1,1
+
+LSilhouetteKick:
+  call  .CheckPassThroughWall       ;if there is a wall in front of player and player would be able to end up at the other side, then set PlayerAniCount+1 to 255
+  call  LSitPunch.SetAttackHitBox     ;set the hitbox coordinates and enable hitbox
+  call  .Animate
+  
+  ;horizontal movement    
+  ld    de,-2                       ;horizontal movement speed
+  ld    a,(PlayerAniCount+1)        ;255 = unobstructed movement is allowed
+  inc   a
+  jr    nz,.NormalMovement
+  .UnobstructedMovement:
+  ld    hl,(ClesX)
+  add   hl,de
+  ld    (ClesX),hl  
+  ret
+  .NormalMovement:
+  call  DoMovePlayer.EntryForHorizontalMovement
+  ret   nc
+  jp    Set_L_stand                 ;on collision change to R_Stand  
+
+  .Animate:
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
-  and   15
-  cp    8
+  cp    32
+  jp    z,Set_L_stand               ;end of Silhouete Kick
+  ld    hl,LSilhouetteKickAnimateTable-1
+  ld    d,0
+  ld    e,a
+  add   hl,de
+  ld    a,(hl)                      ;0=high kick, 1=silhouette high kick, 2=low kick, 3=silhouette low kick
+  or    a
+  ld    hl,PlayerSpriteData_Char_LeftHighKick
+	jr    z,.setCharacter
+	dec   a
+  ld    hl,PlayerSpriteData_Char_LeftSilhouetteHighKick
+	jr    z,.setCharacter
+	dec   a
+  ld    hl,PlayerSpriteData_Char_LeftLowKick
+	jr    z,.setCharacter
+  ld    hl,PlayerSpriteData_Char_LeftSilhouetteLowKick
+	.setCharacter:
+	ld		(standchar),hl  
+  ret
+
+  .CheckPassThroughWall:
+  ld    a,(PlayerAniCount+1)
+  or    a
+  ret   nz
+  inc   a
+  ld    (PlayerAniCount+1),a
+
+  ld    hl,(ClesX)
+  ld    de,70
+  sbc   hl,de
+  ret   c                           ;passing through wall disabled when x<70
+
+  ld    hl,(ClesX)
+  push  hl
+  call  .GoCheck
+  pop   hl
+  ld    (ClesX),hl
+  ret
+  
+  .GoCheck:
+  ld    de,-48                      ;move player 48 pixels to the right and then check for a wall
+  add   hl,de
+  ld    (ClesX),hl
+
+  ld    de,-2                       ;horizontal movement speed
+  call  DoMovePlayer.EntryForHorizontalMovement
+  ret   c                           ;return if there is a wall, in this case player cannot move through a wall prior to the end location
+  ld    de,-14                      ;horizontal movement speed
+  call  DoMovePlayer.EntryForHorizontalMovement
+  ret   c                           ;return if there is a wall, in this case player cannot move through a wall prior to the end location
+  
+  ld    a,255
+  ld    (PlayerAniCount+1),a        ;there is no wall at the end location, so allow player to move to a wall prior to the end location
+  ret
+
+RSilhouetteKick:
+  call  .CheckPassThroughWall       ;if there is a wall in front of player and player would be able to end up at the other side, then set PlayerAniCount+1 to 255
+  call  RSitPunch.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
+  call  .Animate
+  
+  ;horizontal movement    
+  ld    de,2                        ;horizontal movement speed
+  ld    a,(PlayerAniCount+1)        ;255 = unobstructed movement is allowed
+  inc   a
+  jr    nz,.NormalMovement
+  .UnobstructedMovement:
+  ld    hl,(ClesX)
+  add   hl,de
+  ld    (ClesX),hl  
+  ret
+  .NormalMovement:
+  call  DoMovePlayer.EntryForHorizontalMovement
+  ret   nc
+  jp    Set_R_stand                 ;on collision change to R_Stand  
+
+  .Animate:
+  ld    a,(PlayerAniCount)
+  inc   a
+  ld    (PlayerAniCount),a
+  cp    32
+  jp    z,Set_R_stand               ;end of Silhouete Kick
+  ld    hl,RSilhouetteKickAnimateTable-1
+  ld    d,0
+  ld    e,a
+  add   hl,de
+  ld    a,(hl)                      ;0=high kick, 1=silhouette high kick, 2=low kick, 3=silhouette low kick
+  or    a
+  ld    hl,PlayerSpriteData_Char_RightHighKick
+	jr    z,.setCharacter
+	dec   a
   ld    hl,PlayerSpriteData_Char_RightSilhouetteHighKick
-	jr    c,.setCharacter
+	jr    z,.setCharacter
+	dec   a
+  ld    hl,PlayerSpriteData_Char_RightLowKick
+	jr    z,.setCharacter
   ld    hl,PlayerSpriteData_Char_RightSilhouetteLowKick
 	.setCharacter:
 	ld		(standchar),hl  
+  ret
+
+  .CheckPassThroughWall:
+  ld    a,(PlayerAniCount+1)
+  or    a
+  ret   nz
+  inc   a
+  ld    (PlayerAniCount+1),a
+
+  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    de,230
+  jr    z,.setMaxX
+  ld    de,184
+  .setMaxX:
+  ld    hl,(ClesX)
+  sbc   hl,de
+  ret   nc                          ;passing through wall disabled when x>230 for normal engine and x>184 for SF2 engine
+
+  ld    hl,(ClesX)
+  push  hl
+  call  .GoCheck
+  pop   hl
+  ld    (ClesX),hl
+  ret
+  
+  .GoCheck:
+  ld    de,48                       ;move player 48 pixels to the right and then check for a wall
+  add   hl,de
+  ld    (ClesX),hl
+
+  ld    de,2                        ;horizontal movement speed
+  call  DoMovePlayer.EntryForHorizontalMovement
+  ret   c                           ;return if there is a wall, in this case player cannot move through a wall prior to the end location
+  ld    de,14                       ;horizontal movement speed
+  call  DoMovePlayer.EntryForHorizontalMovement
+  ret   c                           ;return if there is a wall, in this case player cannot move through a wall prior to the end location
+  
+  ld    a,255
+  ld    (PlayerAniCount+1),a        ;there is no wall at the end location, so allow player to move to a wall prior to the end location
   ret
 
 LShootFireball:
@@ -7574,7 +7720,72 @@ CheckLavaPoisonSpikes:      ;out z-> lava poison or spikes found
 ;  call  checktile           ;out z=collision found with wall
 ;  sub   2                   ;check for tilenr 3=lava poison spikes
 ;  ret
-  
+
+Lrunning:
+;  call  checkfloor
+;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+;	bit		1,a           ;cursor down pressed ?
+;	jp		nz,.Maybe_Set_R_sit
+  ld    a,(NewPrContr)
+	bit		0,a           ;cursor up pressed ?
+	jr		nz,.UpPressed
+	bit		4,a           ;space pressed ?
+	jp		nz,Set_L_attack
+	bit		5,a           ;'M' pressed ?
+;	jp		nz,Set_L_Rolling
+;	jp		nz,Set_L_ShootArrow
+	jp		nz,Set_L_SilhouetteKick	
+	
+	bit		6,a           ;F1 pressed ?
+	jp		nz,Set_Charging
+
+	ld		a,(Controls)
+	bit		1,a           ;cursor down pressed ?
+	jp		nz,.DownPressed
+	bit		2,a           ;cursor left pressed ?
+	jp		nz,.MoveAndAnimate
+;	bit		3,a           ;cursor right pressed ?
+;	jp		nz,.AnimateRun
+	
+  jp    Set_L_stand
+
+.DownPressed:
+	call	Set_L_sit
+  call  CheckClimbStairsDown  
+  ret
+    
+  .MoveAndAnimate:
+  call  MovePlayerLeft      ;out: c-> collision detected
+  jp    c,Set_L_stand       ;on collision change to R_Stand
+
+  ld    a,(SnapToPlatform?)
+  or    a
+  jr    nz,.EndCheckSnapToPlatform
+  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    c,Set_Fall
+  .EndCheckSnapToPlatform:
+
+  call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
+  jp    z,Set_L_BeingHit
+
+	ld		a,(Controls)
+	bit		0,a           ;cursor up pressed ?
+	call  nz,CheckClimbStairsUp
+	    
+  ld    hl,LeftRunAnimation
+  jp    AnimateRun
+
+  .UpPressed:
+	call  Set_jump
+  call  CheckClimbLadderUp
+	call  CheckClimbStairsUp  
+  ret
+
 Rrunning:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -7637,71 +7848,7 @@ Rrunning:
   call  CheckClimbLadderUp	
 	call  CheckClimbStairsUp    
   ret
-
-Lrunning:
-;  call  checkfloor
-;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-;	bit		1,a           ;cursor down pressed ?
-;	jp		nz,.Maybe_Set_R_sit
-  ld    a,(NewPrContr)
-	bit		0,a           ;cursor up pressed ?
-	jr		nz,.UpPressed
-	bit		4,a           ;space pressed ?
-	jp		nz,Set_L_attack
-	bit		5,a           ;'M' pressed ?
-;	jp		nz,Set_L_Rolling
-	jp		nz,Set_L_ShootArrow
-	
-	bit		6,a           ;F1 pressed ?
-	jp		nz,Set_Charging
-
-	ld		a,(Controls)
-	bit		1,a           ;cursor down pressed ?
-	jp		nz,.DownPressed
-	bit		2,a           ;cursor left pressed ?
-	jp		nz,.MoveAndAnimate
-;	bit		3,a           ;cursor right pressed ?
-;	jp		nz,.AnimateRun
-	
-  jp    Set_L_stand
-
-.DownPressed:
-	call	Set_L_sit
-  call  CheckClimbStairsDown  
-  ret
-    
-  .MoveAndAnimate:
-  call  MovePlayerLeft      ;out: c-> collision detected
-  jp    c,Set_L_stand       ;on collision change to R_Stand
-
-  ld    a,(SnapToPlatform?)
-  or    a
-  jr    nz,.EndCheckSnapToPlatform
-  call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
-  jp    c,Set_Fall
-  .EndCheckSnapToPlatform:
-
-  call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
-  jp    z,Set_L_BeingHit
-
-	ld		a,(Controls)
-	bit		0,a           ;cursor up pressed ?
-	call  nz,CheckClimbStairsUp
-	    
-  ld    hl,LeftRunAnimation
-  jp    AnimateRun
-
-  .UpPressed:
-	call  Set_jump
-  call  CheckClimbLadderUp
-	call  CheckClimbStairsUp  
-  ret
-
+  
 CheckWallSides:                     ;if we are snapped to a platform or object, check if we get pushed into a wall, if so snap to wall
   call  DoMovePlayer.PlayerMovedRight
   jp    DoMovePlayer.PlayerMovedLeft
@@ -8081,12 +8228,20 @@ CheckClimbLadderUp:;
   ld    (ClesX),hl
   ret
 
+Set_L_SilhouetteKick:
+	ld		hl,LSilhouetteKick
+	ld		(PlayerSpriteStand),hl
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+  
 Set_R_SilhouetteKick:
 	ld		hl,RSilhouetteKick
 	ld		(PlayerSpriteStand),hl
 
-  ld    a,0 
-  ld    (PlayerAniCount),a
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
   ret
 
 Set_L_SitShootArrow:
