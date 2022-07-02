@@ -63,7 +63,7 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 50 ;$19 ;230 ;250 ;210
+ClesX:      dw 10 ;$19 ;230 ;250 ;210
 ClesY:      db 30 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
@@ -3664,7 +3664,7 @@ LShootFireball:
   ld    de,304-10
   xor   a
   sbc   hl,de
-  jp    nc,Set_L_Stand
+  jp    nc,BruteForceMovementLeft
 
 ;Animate
   ld    hl,LeftShootFireballAnimation
@@ -3706,7 +3706,7 @@ RShootFireball:
   ld    de,11
   xor   a
   sbc   hl,de
-  jp    c,Set_R_Stand
+  jp    c,BruteForceMovementRight
 
   ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
   ld    de,304-37-12
@@ -3867,7 +3867,7 @@ LSitShootArrow:
   ld    de,304-10
   xor   a
   sbc   hl,de
-  jp    nc,Set_L_Sit
+  jp    nc,BruteForceMovementLeft
   
 ;Animate
   ld    a,(PlayerAniCount)
@@ -4019,6 +4019,26 @@ RSitShootArrowSf2Engine:
   ld    (ArrowY),a
   jp    Set_R_Sit    
 
+BruteForceMovementLeft:
+	ld		hl,PlayerSpriteData_Char_LeftStand
+	ld		(standchar),hl
+	
+  ld    hl,(clesx)
+  ld    de,-2
+  add   hl,de
+  ld    (clesx),hl
+  ret
+  
+BruteForceMovementRight:
+	ld		hl,PlayerSpriteData_Char_RightStand
+	ld		(standchar),hl
+	
+  ld    hl,(clesx)
+  ld    de,2
+  add   hl,de
+  ld    (clesx),hl
+  ret
+  	
 RSitShootArrow:
   ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
   ld    (CleanPlayerWeapon+restorebackground?),a 
@@ -4034,7 +4054,7 @@ RSitShootArrow:
   ld    de,11
   xor   a
   sbc   hl,de
-  jp    c,Set_R_Sit
+  jp    c,BruteForceMovementRight
 
   ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
   ld    de,304-37
@@ -4213,7 +4233,7 @@ LShootArrow:
   ld    de,304-10
   xor   a
   sbc   hl,de
-  jp    nc,Set_L_Stand
+  jp    nc,BruteForceMovementLeft
   
 ;Animate
   ld    a,(PlayerAniCount)
@@ -4380,7 +4400,7 @@ RShootArrow:
   ld    de,11
   xor   a
   sbc   hl,de
-  jp    c,Set_R_Stand
+  jp    c,BruteForceMovementRight
 
   ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
   ld    de,304-37
@@ -6452,7 +6472,7 @@ ShootArrowWhileJumpLeft:
   ld    de,304-10
   xor   a
   sbc   hl,de
-  jp    nc,.endShootArrowWhileJump
+  jp    nc,BruteForceMovementLeft
 
 ;Animate
   ld    a,(ShootArrowWhileJump?)
@@ -6625,7 +6645,7 @@ ShootArrowWhileJumpRight:
   ld    de,11
   xor   a
   sbc   hl,de
-  jp    c,.endShootArrowWhileJump
+  jp    c,BruteForceMovementRight
 
   ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
   ld    de,304-37

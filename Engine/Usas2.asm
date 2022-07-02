@@ -392,74 +392,64 @@ phase	engaddr
 endengine:
 dephase
 enlength:	Equ	$-engine
+;
+; fill remainder of blocks 00-01
+;
+	ds		$c000-$,$ff		
 
 ;
-; fill remainder of blocks 00-02
+; block $02
 ;
-	ds		$a000-$,$ff		
+	ds		$4000
 
 ;
 ; block $03
 ;
-	ds		$2000
+	ds		$4000
 
 ;
-; block $04 - $07
+; block $04
 ;
-phase	$4000
-	ds		$c000-$,$ff
-dephase
+	ds		$4000
+
+;
+; block $05
+;
+	ds		$4000
+
+;
+; block $06
+;
+	ds		$4000
+
+;
+; block $07
+;
+	ds		$4000
 
 ;
 ; block $08
 ;
-	ds		$2000
+	ds		$4000
 
 ;
-; block $09 - $0c
+; block $09
 ;
-;GoddessTilesBlock:  equ   $09
+	ds		$4000
+
+;
+; block $0A
+;
+	ds		$4000
+
+;
+; block $0B
+;
+teamNXTlogoblock:  equ $B
 phase	$4000
-	ds		$c000-$,$ff
+	include "teamNXTlogo.asm"
+	ds		$8000-$,$ff
 dephase
-
-;
-; block $0d - $0f
-;
-phase	$4000
-	ds		$a000-$,$ff
-dephase
-
-;
-; block $10 - $13
-;
-phase	$4000
-	ds		$c000-$,$ff
-dephase
-
-; block $14
-  ds  $2000
-
-
-;
-; block $15 
-;
-phase	$4000
-	ds		$6000-$,$ff
-dephase
-
-
-;
-; block $16 - $17
-;
-;resetorg:
-loaderblock:  equ $16
-phase	$8000
-	include "loader.asm"
-	ds		$c000-$,$ff
-dephase
-;org resetorg+$4000
-;/main loader of the game, this deals with loading the levels/music/sprites etc and initialising game variables
 
 ;
 ; block $18 - $1b

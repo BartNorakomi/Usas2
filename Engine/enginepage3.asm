@@ -41,9 +41,11 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapB01_018Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapA03Data
+WorldMapPointer:  dw  MapB03Data
 
 loadGraphics:
+  call  StartTeamNXTLogo             ;sets logo routine in rom at $4000 page 1 and run it
+
 ;	ld    a,(Player_playing)
 ;	and   a
 ;  call  z,VGMRePlay
@@ -92,13 +94,17 @@ loadGraphics:
 ;  ld    (NewPrContr),a                  ;this allows for a double jump as soon as you enter a new map
   jp    LevelEngine
 
+StartTeamNXTLogo:
+  ld    a,(slot.page12rom)            ;all RAM except page 1+2
+  out   ($a8),a
 
-
-
+  ld    a,teamNXTlogoblock            ;teamNXT logo routine at $4000
+  call  block12
+  jp    TeamNXTLogoRoutine
 
 SoundData: equ $8000
 VGMRePlay:
-  ld    a,(slot.page12rom)             ;all RAM except page 1+2
+  ld    a,(slot.page12rom)            ;all RAM except page 1+2
   out   ($a8),a
   ei
   
