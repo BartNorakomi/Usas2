@@ -41,7 +41,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapB01_018Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapB03Data
+WorldMapPointer:  dw  MapA07Data
 
 loadGraphics:
   call  StartTeamNXTLogo             ;sets logo routine in rom at $4000 page 1 and run it
@@ -99,8 +99,14 @@ StartTeamNXTLogo:
   out   ($a8),a
 
   ld    a,teamNXTlogoblock            ;teamNXT logo routine at $4000
-  call  block12
+  call  block34
   jp    TeamNXTLogoRoutine
+
+CopyLogoPart:                                       ;this is used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from left to right
 
 SoundData: equ $8000
 VGMRePlay:
@@ -1523,6 +1529,14 @@ R19onVblank:                  rb    1
 
 DoubleJumpAvailable?:         rb    1
 PlayerDead?:                  rb    1
+
+LogoAnimationPhase:           rb    1
+LogoAnimationTimer1:          rb    1
+LogoAnimationTimer2:          rb    1
+LogoAnimationTimer3:          rb    1
+LogoAnimationVar1:            rb    1
+LogoAnimationVar2:            rb    1
+LogoAnimationVar3:            rb    1
 
 
 amountofenemies:        equ 22

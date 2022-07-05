@@ -63,8 +63,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 10 ;$19 ;230 ;250 ;210
-ClesY:      db 30 ;144-1
+ClesX:      dw 100 ;$19 ;230 ;250 ;210
+ClesY:      db 100 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -831,6 +831,26 @@ PutPlayerspriteSF2Engine:
 	ei
 	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
 
+PutPlayerSpriteMeditateSplit:
+  ld    hl,(ClesX)
+  push  hl
+  ld    a,(ClesY)
+  push  af
+  
+  ld    hl,100
+  ld    (ClesX),hl
+  ld    a,90
+  ld    (ClesY),a
+  
+  ld    hl,PlayerSpriteData_Char_RightMeditate5
+  call  ContinueAfterMeditateSplit
+
+  pop   af
+  ld    (ClesY),a
+  pop   hl
+  ld    (ClesX),hl
+  ret
+
 PutPlayersprite:
 	ld		a,(slot.page12rom)	;all RAM except page 1+2
 	out		($a8),a	
@@ -850,9 +870,24 @@ PutPlayersprite:
 ;	ld		a,1
 ;	call	SetVdp_Write
 
+;  ld    a,(framecounter)
+;  and   7                                     ;0
+;  jr    z,PutPlayerSpriteMeditateSplit
+;;  dec   a                                     ;1
+ ; jr    z,PutPlayerSpriteMeditateSplit
+ ; dec   a                                     ;2
+ ; dec   a                                     ;3
+ ; dec   a                                     ;4
+ ; jr    z,PutPlayerSpriteMeditateSplit
+ ; dec   a                                     ;5
+ ; dec   a                                     ;6
+ ; jr    z,PutPlayerSpriteMeditateSplit
+
+
   standchar:	equ	$+1
 	ld		hl,PlayerSpriteData_Char_RightStand  ;sprite character in ROM
 
+  ContinueAfterMeditateSplit:
 	ld		a,PlayerSpritesBlock 
   bit   0,l                                   ;if bit 0 of address of character is set, then add 4 blocks to starting blocks
   jr    z,.go
@@ -2773,15 +2808,13 @@ CameraEngine304x216:
 ; $b000 -> $7800 -> 
 ;*************************************************************
 
-;setpage:              ;in a->x*32+31 (x=page)
-;  ld    a,b
-;  ld    (currentpage),a
-;  di
-;  out   ($99),a
-;  ld    a,2+128
-;  ei
-;  out   ($99),a
-;  ret
+setpage:              ;in a->x*32+31 (x=page)
+  di
+  out   ($99),a
+  ld    a,2+128
+  ei
+  out   ($99),a
+  ret
 
 block12:	
   di

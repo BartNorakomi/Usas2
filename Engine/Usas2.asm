@@ -446,9 +446,9 @@ enlength:	Equ	$-engine
 ; block $0B
 ;
 teamNXTlogoblock:  equ $B
-phase	$4000
+phase	$8000
 	include "teamNXTlogo.asm"
-	ds		$8000-$,$ff
+	ds		$c000-$,$ff
 dephase
 
 ;
@@ -3396,8 +3396,37 @@ itemsKarniMataPage3:
 	ds		$c000-$,$ff
 dephase
 
-; block $95 - $c4
-  ds  $4000 * $30
+;
+; block $95 - $96
+;
+TeamNXTLogoTransparantGraphicsblock:  equ   $95
+phase	$4000
+  incbin "..\grapx\TeamNXTLogo\TransparantBlocks.SC5",7,200*128  ;skip header, height is 200, total bytes = $6400
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $97 - $98
+;
+TeamNXTLogoNonTransparantGraphicsblock:  equ   $97
+phase	$4000
+  incbin "..\grapx\TeamNXTLogo\NonTransparantBlocks.SC5",7,200*128  ;kip header, height is 200, total bytes = $6400
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $99 - $9a
+;
+LightTunnelGraphicsblock:  equ   $99
+phase	$4000
+  incbin "..\grapx\TeamNXTLogo\LightTunnel2.SC5",7,212*128  ;kip header, height is 212, total bytes = $6A00
+	ds		$c000-$,$ff
+dephase
+
+
+
+; block $9b - $c4
+  ds  $4000 * $2a
 
 
 
