@@ -5,11 +5,11 @@
 ;
 
 ; f <- c: found
-MoonSoundZ80_Detect:
+;MoonSoundZ80_Detect:
 ;	call Utils_IsR800
 ;	ccf
 ;	ret nc
-	jp MoonSound_Detect
+;	jp MoonSound_Detect
 
 MoonSoundZ80_JumpTable:
 	jp MoonSoundZ80_Process

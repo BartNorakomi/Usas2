@@ -8843,7 +8843,7 @@ ScreenOff:
   out   ($99),a
   ret
 
-;ScreenOn:
+ScreenOn:
   ld    a,(VDP_0+1)       ;screen on
   or    %0100 0000
   di

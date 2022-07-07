@@ -253,6 +253,16 @@ init:
 	ld		($f3ea),a	  ;background color 
 	ld		($f3eb),a	  ;border color
 
+  ld    a,15        ;start write to this palette color (15)
+  di
+	out		($99),a
+	ld		a,16+128
+	out		($99),a
+	xor		a
+	out		($9a),a
+  ei
+	out		($9a),a
+
 	ld 		a,5			    ;switch to screen 5
 	call 	$5f
 
@@ -347,8 +357,12 @@ init:
 ;	call	block34			        ;at address $8000 / page 2
 ;  jp    $8000 ;loader.address      ;set loader in page 2 and jp to it
 
+
 if MusicOn?
   call  VGMRePlay
+endif
+if LogoOn?
+  jp    PlayLogo
 endif
   jp    loadGraphics
 
@@ -3417,9 +3431,10 @@ dephase
 ;
 ; block $99 - $9a
 ;
-LightTunnelGraphicsblock:  equ   $99
+BossAreaTilesBlock:  equ   $99
 phase	$4000
-  incbin "..\grapx\TeamNXTLogo\LightTunnel2.SC5",7,212*128  ;kip header, height is 212, total bytes = $6A00
+  incbin "..\grapx\tilesheets\sBossArea.SC5",7,208 * 128      ;208 lines
+;  incbin "..\grapx\tilesheets\sBossAreaBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
