@@ -19,7 +19,7 @@ LevelEngine:
   call  PutSpatToVram             ;outs all spat data to Vram
 ;  call  BackdropBlack
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
-  
+  call  CheckF1Menu               ;check if F1 is pressed and the menu can be entered
   call  BackdropBlue
   call  Player_Tick
   call  BackdropBlack
@@ -99,7 +99,24 @@ ret
   out   ($99),a	
   ret
 
-RestoreBackground:        ;all background restores should be done simultaneously at start of frame (after vblank)
+CheckF1Menu:                        ;check if F1 is pressed and the menu can be entered
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)	
+	bit		6,a           ;F1 pressed ?
+  ret   z
+
+  ld    a,(slot.page12rom)            ;all RAM except page 1+2
+  out   ($a8),a
+
+  ld    a,F1Menublock                 ;F1 Menu routine at $4000
+  call  block12
+  jp    F1MenuRoutine
+  
+RestoreBackground:                  ;all background restores should be done simultaneously at start of frame (after vblank)
   ld    hl,CleanPlayerProjectile+restorebackground?
   bit   0,(hl)
   call  nz,.Restore
@@ -3505,6 +3522,7 @@ CopyPlayerProjectile:                                        ;copy any object in
 playermovementspeed:    db  2
 PlayerFacingRight?:     db  1
 PlayerInvulnerable?:    db  0
+CurrentMagicWeapon:     db  0 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick
 
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
@@ -3547,7 +3565,7 @@ LSilhouetteKick:
   ld    (PlayerAniCount),a
   cp    32
   jp    z,Set_L_stand               ;end of Silhouete Kick
-  ld    hl,LSilhouetteKickAnimateTable-1
+  ld    hl,RSilhouetteKickAnimateTable-1
   ld    d,0
   ld    e,a
   add   hl,de
@@ -6932,6 +6950,10 @@ Jump:
   or    a
   ret   nz                  ;don't shoot if already shooting
 
+  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick
+  cp    4
+  ret   nz
+
   ld    a,1
   ld    (ShootArrowWhileJump?),a
   ret
@@ -7218,12 +7240,10 @@ Lsitting:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_L_SitPunch
-;	bit		5,a           ;b pressed ?
-;	jp		nz,Set_R_standmagic	
-
 	bit		5,a           ;'M' pressed ?
-	jp		nz,Set_L_SitShootArrow
-
+  .MagicWeaponLeftSelfModifyingJump:
+  nop | nop | nop
+  
 	ld		a,(Controls)
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.EndCheckLeftPressed
@@ -7273,11 +7293,9 @@ Rsitting:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_R_SitPunch
-;	bit		5,a           ;b pressed ?
-;	jp		nz,Set_R_standmagic	
-
 	bit		5,a           ;'M' pressed ?
-	jp		nz,Set_R_SitShootArrow
+  .MagicWeaponRightSelfModifyingJump:
+  nop | nop | nop
 
 	ld		a,(Controls)
 	bit		3,a           ;cursor right pressed ?
@@ -7790,13 +7808,9 @@ Lrunning:
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_L_attack
 	bit		5,a           ;'M' pressed ?
-;	jp		nz,Set_L_Rolling
-;	jp		nz,Set_L_ShootArrow
-	jp		nz,Set_L_SilhouetteKick	
+  .MagicWeaponLeftSelfModifyingJump:
+  nop | nop | nop
 	
-	bit		6,a           ;F1 pressed ?
-	jp		nz,Set_Charging
-
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
 	jp		nz,.DownPressed
@@ -7855,12 +7869,11 @@ Rrunning:
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_R_attack
 	bit		5,a           ;'M' pressed ?
-;	jp		nz,Set_R_Rolling
-;	jp		nz,Set_R_ShootArrow
-	jp		nz,Set_R_SilhouetteKick
+  .MagicWeaponRightSelfModifyingJump:
+  nop | nop | nop
 		
-	bit		6,a           ;F1 pressed ?
-	jp		nz,Set_Charging
+;	bit		6,a           ;F1 pressed ?
+;	jp		nz,Set_Charging
 
 	ld		a,(Controls)
 	bit		1,a           ;cursor down pressed ?
@@ -7934,14 +7947,9 @@ Lstanding:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_L_attack
-
 	bit		5,a           ;'M' pressed ?
-;	jp		nz,.Set_L_MeditateOrRoll
-;	jp		nz,Set_L_ShootArrow
-	jp		nz,Set_L_ShootFireball
-
-	bit		6,a           ;F1 pressed ?
-	jp		nz,Set_Charging
+  .MagicWeaponLeftSelfModifyingJump:
+  nop | nop | nop
 	
 	ld		a,(Controls)
 	bit		2,a           ;cursor left pressed ?
@@ -7965,6 +7973,9 @@ Lstanding:
 	bit		2,a           ;cursor left pressed ?
   jp    nz,Set_L_Rolling
 	jp		Set_L_Meditate
+
+NoMagicWeapon:
+  ret
 	
 Rstanding:
   ld    a,(NewPrContr)      ;first handle up pressed, since the checks performed are heavy on the cpu
@@ -7994,15 +8005,9 @@ Rstanding:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
 	jp		nz,Set_R_attack
-
 	bit		5,a           ;'M' pressed ?
-;	jp		nz,.Set_R_MeditateOrRoll
-;	jp		nz,Set_R_ShootArrow
-	jp		nz,Set_R_ShootFireball
-	
-	bit		6,a           ;F1 pressed ?
-	jp		nz,Set_Charging
-
+  .MagicWeaponRightSelfModifyingJump:
+  nop | nop | nop
 
 	ld		a,(Controls)
 	bit		2,a           ;cursor left pressed ?

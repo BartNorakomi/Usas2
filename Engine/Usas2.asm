@@ -392,13 +392,13 @@ tempisr:
 
 
 ; 
-; block 00 - 02 engine 
+; block 00
 ;	
 enginepage3:
 	include	"enginepage3.asm"	
 
 ; 
-; block 00 - 02 engine 
+; block 00 - 01 engine 
 ;	
 engine:
 phase	engaddr
@@ -414,7 +414,13 @@ enlength:	Equ	$-engine
 ;
 ; block $02
 ;
-	ds		$4000
+F1Menublock:  equ $02
+phase	$4000
+	include	"F1Menu.asm"	
+endF1MenuRoutine:
+F1MenuRoutinelength:	Equ	$-F1MenuRoutine
+	ds		$8000-$,$ff		
+dephase
 
 ;
 ; block $03
