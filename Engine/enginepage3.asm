@@ -7,19 +7,19 @@ WorldMapData:
 WorldMapDataWidth:      equ 7     ;amount of maps in width 
 WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
               ;block            mapname   enginetype,tiledata,palette
-MapA01_001Data: db MapsBlock01 | dw MapA01_001 | db 1,3,3                  | MapA01_002Data: db MapsBlock01 | dw MapA01_002 | db 1,3,3                  | MapA01_003Data: db MapsBlock01 | dw MapA01_003 | db 1,3,3
-MapA01_004Data: db MapsBlock01 | dw MapA01_004 | db 1,3,3                  | MapA01_005Data: db MapsBlock01 | dw MapA01_005 | db 1,3,3                  | MapA01_006Data: db MapsBlock01 | dw MapA01_006 | db 1,3,3
-MapA01_007Data: db MapsBlock01 | dw MapA01_007 | db 1,3,3                  | MapA01_008Data: db MapsBlock01 | dw MapA01_008 | db 1,3,3                  | MapA01_009Data: db MapsBlock01 | dw MapA01_009 | db 1,3,3
+;MapA01_001Data: db MapsBlock01 | dw MapA01_001 | db 1,3,3                  | MapA01_002Data: db MapsBlock01 | dw MapA01_002 | db 1,3,3                  | MapA01_003Data: db MapsBlock01 | dw MapA01_003 | db 1,3,3
+;MapA01_004Data: db MapsBlock01 | dw MapA01_004 | db 1,3,3                  | MapA01_005Data: db MapsBlock01 | dw MapA01_005 | db 1,3,3                  | MapA01_006Data: db MapsBlock01 | dw MapA01_006 | db 1,3,3
+;MapA01_007Data: db MapsBlock01 | dw MapA01_007 | db 1,3,3                  | MapA01_008Data: db MapsBlock01 | dw MapA01_008 | db 1,3,3                  | MapA01_009Data: db MapsBlock01 | dw MapA01_009 | db 1,3,3
 
-MapB01_001Data: db MapsBlock02 | dw MapB01_001 | db 2,3,3                  | MapB01_002Data: db MapsBlock02 | dw MapB01_002 | db 1,3,3                  | MapB01_003Data: db MapsBlock02 | dw MapB01_003 | db 1,3,3
-MapB01_004Data: db MapsBlock02 | dw MapB01_004 | db 1,3,3                  | MapB01_005Data: db MapsBlock02 | dw MapB01_005 | db 1,3,3                  | MapB01_006Data: db MapsBlock02 | dw MapB01_006 | db 1,3,3
-MapB01_007Data: db MapsBlock02 | dw MapB01_007 | db 1,3,3                  | MapB01_008Data: db MapsBlock02 | dw MapB01_008 | db 1,3,3                  | MapB01_009Data: db MapsBlock02 | dw MapB01_009 | db 1,3,3
-MapB01_010Data: db MapsBlock02 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock02 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock02 | dw MapB01_012 | db 1,3,3
-MapB01_013Data: db MapsBlock02 | dw MapB01_013 | db 1,3,3                  | MapB01_014Data: db MapsBlock02 | dw MapB01_014 | db 1,3,3                  | MapB01_015Data: db MapsBlock02 | dw MapB01_015 | db 1,3,3
-MapB01_016Data: db MapsBlock02 | dw MapB01_016 | db 2,3,3                  | MapB01_017Data: db MapsBlock02 | dw MapB01_017 | db 1,3,3                  | MapB01_018Data: db MapsBlock02 | dw MapB01_018 | db 1,3,3
-MapB01_019Data: db MapsBlock02 | dw MapB01_019 | db 2,3,3                  | MapB01_020Data: db MapsBlock02 | dw MapB01_020 | db 2,3,3                  | MapB01_021Data: db MapsBlock02 | dw MapB01_021 | db 2,3,3
-MapB01_022Data: db MapsBlock02 | dw MapB01_022 | db 1,3,3                  | MapB01_023Data: db MapsBlock02 | dw MapB01_023 | db 1,3,3                  | MapB01_024Data: db MapsBlock02 | dw MapB01_024 | db 1,3,3
-MapB01_025Data: db MapsBlock02 | dw MapB01_025 | db 1,3,3                  | MapB01_026Data: db MapsBlock02 | dw MapB01_026 | db 1,3,3                  | MapB01_027Data: db MapsBlock02 | dw MapB01_027 | db 1,3,3
+;MapB01_001Data: db MapsBlock02 | dw MapB01_001 | db 2,3,3                  | MapB01_002Data: db MapsBlock02 | dw MapB01_002 | db 1,3,3                  | MapB01_003Data: db MapsBlock02 | dw MapB01_003 | db 1,3,3
+;MapB01_004Data: db MapsBlock02 | dw MapB01_004 | db 1,3,3                  | MapB01_005Data: db MapsBlock02 | dw MapB01_005 | db 1,3,3                  | MapB01_006Data: db MapsBlock02 | dw MapB01_006 | db 1,3,3
+;MapB01_007Data: db MapsBlock02 | dw MapB01_007 | db 1,3,3                  | MapB01_008Data: db MapsBlock02 | dw MapB01_008 | db 1,3,3                  | MapB01_009Data: db MapsBlock02 | dw MapB01_009 | db 1,3,3
+;MapB01_010Data: db MapsBlock02 | dw MapB01_010 | db 1,3,3                  | MapB01_011Data: db MapsBlock02 | dw MapB01_011 | db 1,3,3                  | MapB01_012Data: db MapsBlock02 | dw MapB01_012 | db 1,3,3
+;MapB01_013Data: db MapsBlock02 | dw MapB01_013 | db 1,3,3                  | MapB01_014Data: db MapsBlock02 | dw MapB01_014 | db 1,3,3                  | MapB01_015Data: db MapsBlock02 | dw MapB01_015 | db 1,3,3
+;MapB01_016Data: db MapsBlock02 | dw MapB01_016 | db 2,3,3                  | MapB01_017Data: db MapsBlock02 | dw MapB01_017 | db 1,3,3                  | MapB01_018Data: db MapsBlock02 | dw MapB01_018 | db 1,3,3
+;MapB01_019Data: db MapsBlock02 | dw MapB01_019 | db 2,3,3                  | MapB01_020Data: db MapsBlock02 | dw MapB01_020 | db 2,3,3                  | MapB01_021Data: db MapsBlock02 | dw MapB01_021 | db 2,3,3
+;MapB01_022Data: db MapsBlock02 | dw MapB01_022 | db 1,3,3                  | MapB01_023Data: db MapsBlock02 | dw MapB01_023 | db 1,3,3                  | MapB01_024Data: db MapsBlock02 | dw MapB01_024 | db 1,3,3
+;MapB01_025Data: db MapsBlock02 | dw MapB01_025 | db 1,3,3                  | MapB01_026Data: db MapsBlock02 | dw MapB01_026 | db 1,3,3                  | MapB01_027Data: db MapsBlock02 | dw MapB01_027 | db 1,3,3
 
 MapA01Data: db MapsBlock0A | dw MapA01 | db 1,0,0   | MapB01Data: db MapsBlock0B | dw MapB01 | db 1,0,0   | MapC01Data: db MapsBlock0C | dw MapC01 | db 1,0,0   | MapD01Data: db MapsBlock0D | dw MapD01 | db 1,0,0   | MapE01Data: db MapsBlock0E | dw MapE01 | db 1,1,1   | MapF01Data: db MapsBlock0F | dw MapF01 | db 1,1,1   | MapG01Data: db MapsBlock0G | dw MapG01 | db 1,1,1
 MapA02Data: db MapsBlock0A | dw MapA02 | db 1,0,0   | MapB02Data: db MapsBlock0B | dw MapB02 | db 1,0,0   | MapC02Data: db MapsBlock0C | dw MapC02 | db 1,0,0   | MapD02Data: db MapsBlock0D | dw MapD02 | db 1,0,0   | MapE02Data: db MapsBlock0E | dw MapE02 | db 1,1,1   | MapF02Data: db MapsBlock0F | dw MapF02 | db 1,1,1   | MapG02Data: db MapsBlock0G | dw MapG02 | db 1,1,1
@@ -38,7 +38,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapB01_018Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapD04Data
+WorldMapPointer:  dw  MapD06Data
 
 PlayLogo:
   call  StartTeamNXTLogo             ;sets logo routine in rom at $4000 page 1 and run it

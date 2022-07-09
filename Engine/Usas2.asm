@@ -3444,10 +3444,18 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
+;
+; block $9b - $9c
+;
+F1MenuGraphicsBlock:  equ   $9b
+phase	$4000
+  incbin "..\grapx\F1Menu\F1Menu.SC5",7,212 * 128      ;212 lines
+	ds		$c000-$,$ff
+dephase
 
 
 ; block $9b - $c4
-  ds  $4000 * $2a
+  ds  $4000 * $1e
 
 
 

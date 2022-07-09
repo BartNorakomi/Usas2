@@ -63,8 +63,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 100 ;$19 ;230 ;250 ;210
-ClesY:      db 100 ;144-1
+ClesX:      dw 30 ;$19 ;230 ;250 ;210
+ClesY:      db 30 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -99,6 +99,13 @@ ret
   out   ($99),a	
   ret
 
+FreeToUseFastCopy:                    ;freely usable anywhere
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,122,000   ;dx,--,dy,dpage
+  db    004,000,004,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
+
+
 CheckF1Menu:                        ;check if F1 is pressed and the menu can be entered
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -109,7 +116,7 @@ CheckF1Menu:                        ;check if F1 is pressed and the menu can be 
 	bit		6,a           ;F1 pressed ?
   ret   z
 
-  ld    a,(slot.page12rom)            ;all RAM except page 1+2
+  ld    a,(slot.page1rom)            ;all RAM except page 1
   out   ($a8),a
 
   ld    a,F1Menublock                 ;F1 Menu routine at $4000
@@ -2342,7 +2349,7 @@ InterruptHandlerLoader:
   ld    a,(memblocks.2)
   push  af                ;store current memblock2 
 
-  call  Player_Tick
+  call  Player_Tick       ;music player
   
   pop   af                ;pop current memblock2 
   ld    (memblocks.2),a
