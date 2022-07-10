@@ -1,6 +1,6 @@
 phase	$c000
 
-MusicOn?:   equ 0
+MusicOn?:   equ 1
 LogoOn?:    equ 0
 
 WorldMapData:
@@ -30,15 +30,15 @@ MapA06Data: db MapsBlock0A | dw MapA06 | db 1,3,3   | MapB06Data: db MapsBlock0B
 MapA07Data: db MapsBlock0A | dw MapA07 | db 1,3,3   | MapB07Data: db MapsBlock0B | dw MapB07 | db 1,3,3   | MapC07Data: db MapsBlock0C | dw MapC07 | db 1,3,3   | MapD07Data: db MapsBlock0D | dw MapD07 | db 1,5,5   | MapE07Data: db MapsBlock0E | dw MapE07 | db 1,5,5   | MapF07Data: db MapsBlock0F | dw MapF07 | db 1,5,5   | MapG07Data: db MapsBlock0G | dw MapG07 | db 1,5,5
 MapA08Data: db MapsBlock0A | dw MapA08 | db 1,4,4   | MapB08Data: db MapsBlock0B | dw MapB08 | db 1,4,4   | MapC08Data: db MapsBlock0C | dw MapC08 | db 1,4,4   | MapD08Data: db MapsBlock0D | dw MapD08 | db 1,4,4   | MapE08Data: db MapsBlock0E | dw MapE08 | db 1,5,5   | MapF08Data: db MapsBlock0F | dw MapF08 | db 1,5,5   | MapG08Data: db MapsBlock0G | dw MapG08 | db 1,5,5
 MapA09Data: db MapsBlock0A | dw MapA09 | db 1,4,4   | MapB09Data: db MapsBlock0B | dw MapB09 | db 1,4,4   | MapC09Data: db MapsBlock0C | dw MapC09 | db 1,4,4   | MapD09Data: db MapsBlock0D | dw MapD09 | db 1,4,4   | MapE09Data: db MapsBlock0E | dw MapE09 | db 1,5,5   | MapF09Data: db MapsBlock0F | dw MapF09 | db 1,5,5   | MapG09Data: db MapsBlock0G | dw MapG09 | db 1,5,5
-MapA10Data: db MapsBlock0A | dw MapA10 | db 1,2,2   | MapB10Data: db MapsBlock0B | dw MapB10 | db 1,2,2   | MapC10Data: db MapsBlock0C | dw MapC10 | db 1,2,2   | MapD10Data: db MapsBlock0D | dw MapD10 | db 1,4,4   | MapE10Data: db MapsBlock0E | dw MapE10 | db 1,4,4   | MapF10Data: db MapsBlock0F | dw MapF10 | db 1,1,1   | MapG10Data: db MapsBlock0G | dw MapG10 | db 1,1,1
-MapA11Data: db MapsBlock0A | dw MapA11 | db 1,2,2   | MapB11Data: db MapsBlock0B | dw MapB11 | db 1,2,2   | MapC11Data: db MapsBlock0C | dw MapC11 | db 1,2,2   | MapD11Data: db MapsBlock0D | dw MapD11 | db 1,4,4   | MapE11Data: db MapsBlock0E | dw MapE11 | db 1,4,4   | MapF11Data: db MapsBlock0F | dw MapF11 | db 1,1,1   | MapG11Data: db MapsBlock0G | dw MapG11 | db 1,1,1
-MapA12Data: db MapsBlock0A | dw MapA12 | db 1,2,2   | MapB12Data: db MapsBlock0B | dw MapB12 | db 1,2,2   | MapC12Data: db MapsBlock0C | dw MapC12 | db 1,2,2   | MapD12Data: db MapsBlock0D | dw MapD12 | db 1,4,4   | MapE12Data: db MapsBlock0E | dw MapE12 | db 1,2,2   | MapF12Data: db MapsBlock0F | dw MapF12 | db 1,1,1   | MapG12Data: db MapsBlock0G | dw MapG12 | db 1,1,1
-MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B | dw MapB13 | db 1,2,2   | MapC13Data: db MapsBlock0C | dw MapC13 | db 1,2,2   | MapD13Data: db MapsBlock0D | dw MapD13 | db 1,2,2   | MapE13Data: db MapsBlock0E | dw MapE13 | db 1,2,2   | MapF13Data: db MapsBlock0F | dw MapF13 | db 1,1,1   | MapG13Data: db MapsBlock0G | dw MapG13 | db 1,1,1
+MapA10Data: db MapsBlock0A | dw MapA10 | db 1,2,2   | MapB10Data: db MapsBlock0B | dw MapB10 | db 1,2,2   | MapC10Data: db MapsBlock0C | dw MapC10 | db 1,2,2   | MapD10Data: db MapsBlock0D | dw MapD10 | db 1,4,4   | MapE10Data: db MapsBlock0E | dw MapE10 | db 1,4,4   | MapF10Data: db MapsBlock0F | dw MapF10 | db 1,5,5   | MapG10Data: db MapsBlock0G | dw MapG10 | db 1,5,5
+MapA11Data: db MapsBlock0A | dw MapA11 | db 1,2,2   | MapB11Data: db MapsBlock0B | dw MapB11 | db 1,2,2   | MapC11Data: db MapsBlock0C | dw MapC11 | db 1,2,2   | MapD11Data: db MapsBlock0D | dw MapD11 | db 1,4,4   | MapE11Data: db MapsBlock0E | dw MapE11 | db 1,4,4   | MapF11Data: db MapsBlock0F | dw MapF11 | db 1,5,5   | MapG11Data: db MapsBlock0G | dw MapG11 | db 1,5,5
+MapA12Data: db MapsBlock0A | dw MapA12 | db 1,2,2   | MapB12Data: db MapsBlock0B | dw MapB12 | db 1,2,2   | MapC12Data: db MapsBlock0C | dw MapC12 | db 1,2,2   | MapD12Data: db MapsBlock0D | dw MapD12 | db 1,4,4   | MapE12Data: db MapsBlock0E | dw MapE12 | db 1,2,2   | MapF12Data: db MapsBlock0F | dw MapF12 | db 1,5,5   | MapG12Data: db MapsBlock0G | dw MapG12 | db 1,5,5
+MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B | dw MapB13 | db 1,2,2   | MapC13Data: db MapsBlock0C | dw MapC13 | db 1,2,2   | MapD13Data: db MapsBlock0D | dw MapD13 | db 1,2,2   | MapE13Data: db MapsBlock0E | dw MapE13 | db 1,2,2   | MapF13Data: db MapsBlock0F | dw MapF13 | db 1,5,5   | MapG13Data: db MapsBlock0G | dw MapG13 | db 1,5,5
 
 ;WorldMapPointer:  dw  MapB01_018Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapD06Data
+WorldMapPointer:  dw  MapF12Data
 
 PlayLogo:
   call  StartTeamNXTLogo             ;sets logo routine in rom at $4000 page 1 and run it
@@ -47,29 +47,30 @@ loadGraphics:
 ;	and   a
 ;  call  z,VGMRePlay
 
-  call  screenoff
-  call  ReSetVariables
+  ld    a,(slot.page1rom)             ;all RAM except page 1
+  out   ($a8),a
+  ld    a,Loaderblock                 ;loader routine at $4000
+  call  block12
+  call  loader                        ;loader routines
 
-  call  SwapSpatColAndCharTable2
-  call  SwapSpatColAndCharTable
-  call  SwapSpatColAndCharTable2
-  
-  ld    ix,(WorldMapPointer)
-  call  SetEngineType                 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
-  call  SetTilesInVram                ;copies all the tiles to Vram
-  call  PopulateControls              ;this allows for a double jump as soon as you enter a new map
-  call  SetMapPalette                 ;sets palette
-  call  UnpackMapdata_SetObjects      ;unpacks packed map to $4000 in ram and sets objects
+
+;  call  SetTilesInVram                ;copies all the tiles to Vram
+  call  UnpackMapdata_SetObjects      ;unpacks packed map to $4000 in ram and sets objects. 
+                                      ;ends with: all RAM except page 2
   call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
   call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
-  call  CopyScoreBoard                ;copy scoreboard to page 0 - screen 5 - bottom 40 pixels (scoreboard)
-  call  CopyItemsKarniMata            ;copy items to page 1 - screen 5 - bottom 40 pixels (scoreboard)
-  call  RemoveSpritesFromScreen
+
+
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a       
+  call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
+  call  CopyItemsKarniMata            ;copy items to page 1 - screen 5 - bottom 40 pixels (scoreboard) |loader|
+  call  RemoveSpritesFromScreen       ;|loader|
   call  SwapSpatColAndCharTable
   call  PutSpatToVramSlow
   call  SwapSpatColAndCharTable
   call  PutSpatToVramSlow
-  call  initiatebordermaskingsprites
+  call  initiatebordermaskingsprites  ;|loader|
 
 ;	di
 ;  ld    a,$05
@@ -326,60 +327,6 @@ Player_Mute:
 Player_Restore:
 	db 0C9H, 0, 0
 
-
-
-
-
-
-
-
-
-
-
-  
-ReSetVariables:
-  ;set player sprites to spritenumber 28 for char and color address
-  ld    a,$7b ;-2
-  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerCharAddress),a
-  ld    a,$75 ;-1
-  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerColAddress),a
-  ld    a,$73 ;-2
-  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerCharAddressMirror),a
-  ld    a,$6d ;-1
-  ld    (SwapSpatColAndCharTable2.DoubleSelfmodifyingCodePlayerColAddressMirror),a
-  ;set player sprites to spritenumber 28 for spatposition
-  ld    hl,spat+(28 * 2)
-  ld    (Apply32bitShift.SelfmodyfyingSpataddressPlayer),hl          
-  ld    (PlayerLeftSideOfScreen.SelfmodyfyingSpataddressPlayer),hl          
-  ld    (PlayerRightSideOfScreen.SelfmodyfyingSpataddressPlayer),hl          
-  
-  ld    a,StartingJumpSpeedEqu        ;reset Starting Jump Speed
-  ld    (StartingJumpSpeed),a
-  inc   a
-  ld    (StartingJumpSpeedWhenHit),a
-  
-  ld    hl,.NormalRunningTable        ;Reset Normal Running Table
-  ld    de,RunningTable1
-  ld    bc,RunningTableLenght
-  ldir
-
-  ld    a,-1
-  ld    (HugeObjectFrame),a           ;Reset this value by setting it to -1
-  xor   a
-  ld    (ShakeScreen?),a
-  ld    (PlayerDead?),a
-  ld    (ArrowActive?),a              ;remove arrow weapon  
-  ld    (FireballActive?),a              ;remove arrow weapon  
-  ret  
-
-.NormalRunningTable:
-  dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
-;  dw    -1,-2,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+2,+1
-;  dw    -1,-1,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+1,+1
-;  dw    -1,-0,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+0,+1
-;  dw    -1,-0,-0,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+0,+0,+1
-
-
 WaitForInterrupt:
   ld    a,(CameraY)
   xor   a
@@ -395,7 +342,7 @@ WaitForInterrupt:
   .EngineFound:  
   xor   a
   ld    (hl),a  
-.checkflag:
+  .checkflag:
   cp    (hl)
   jr    z,.checkflag
 
@@ -404,40 +351,8 @@ WaitForInterrupt:
   ld    (lineintflag),a
   ld    (SpriteSplitAtY100?),a
   ret
-
 SpriteSplitFlag:      db  1
 SpriteSplitAtY100?:   db  0
-
-PutSpatToVramSlow:
-	ld		hl,(invisspratttableaddress)		;sprite attribute table in VRAM ($17600)
-	ld		a,1
-	call	SetVdp_Write	
-
-	ld		hl,spatSlow			                ;sprite attribute table
-  ld    c,$98
-	call	outix128
-  ret
-
-spatSlow:						;sprite attribute table
-	db		000,000,000,0	,000,000,004,0	,000,000,008,0	,000,000,012,0
-	db		000,000,016,0	,000,000,020,0	,000,000,024,0	,000,000,028,0
-	db		000,000,032,0	,000,000,036,0	,000,000,040,0	,000,000,044,0
-	db		000,000,048,0	,000,000,052,0	,000,000,056,0	,000,000,060,0
-	
-	db		000,000,064,0	,000,000,068,0	,000,000,072,0	,000,000,076,0
-	db		000,000,080,0	,000,000,084,0	,000,100,088,0	,000,100,092,0
-	db		000,100,096,0	,000,100,100,0	,000,000,104,0	,000,000,108,0
-	db		000,000,112,0	,000,000,116,0	,000,000,120,0	,000,000,124,0
-
-RemoveSpritesFromScreen:
-  ld    hl,spat
-  ld    de,2
-  ld    b,32
-  .loop:
-  ld    (hl),217
-  add   hl,de
-  djnz  .loop
-  ret
 
 WaitVblank:
   xor   a
@@ -459,7 +374,7 @@ BuildUpMap:
   jp    z,buildupMap32x27
   ret
   
-UnpackMapdata_SetObjects:
+UnpackMapdata_SetObjects:             ;unpacks packed map to $4000 in ram and sets objects. ends with: all RAM except page 2
   ;set all objects Alive? to 0 / clear all objects from the list
   ld    b,amountofenemies
   ld    hl,enemies_and_objects
@@ -505,121 +420,7 @@ UnpackMapdata_SetObjects:
   jp    nz,.CopyAllEnemiesLoop
   ret
 
-SetMapPalette:
-;set palette
-  ld    a,(ix+5)                      ;palette
-  or    a
-  ld    hl,VoodooWaspPalette          ;0
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,GoddessPalette             ;1
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,KonarkPalette              ;2
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,KarniMataPalette           ;3
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,BlueTemplePalette          ;4
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,BurialPalette              ;5
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,BossAreaPalette            ;6
-  jr    z,.goSetPalette
 
-  .goSetPalette:  
-  call  setpalette
-  ret
-
-SetTilesInVram:  
-;set tiles in Vram
-  ld    a,(ix+4)                      ;tile data
-  or    a
-  ld    d,VoodooWaspTilesBlock        ;0
-  jr    z,.settiles
-  dec   a
-  ld    d,GoddessTilesBlock           ;1
-  jr    z,.settiles
-  dec   a
-  ld    d,KonarkTilesBlock            ;2
-  jr    z,.settiles
-  dec   a
-  ld    d,KarniMataTilesBlock         ;3
-  jr    z,.settiles
-  dec   a
-  ld    d,BlueTempleTilesBlock        ;4
-  jr    z,.settiles
-  dec   a
-  ld    d,BurialTilesBlock            ;5
-  jr    z,.settiles
-  dec   a
-  ld    d,BossAreaTilesBlock          ;6
-  jr    z,.settiles
-
-  .settiles:
-  ld    a,(slot.page12rom)            ;all RAM except page 12
-  out   ($a8),a          
-
-  ld    hl,$8000                      ;page 1 - screen 5
-  ld    b,0
-  call  copyGraphicsToScreen
-  ret
-
-SetEngineType:                    ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
-;Set Engine type
-  ld    a,(ix+3)                  ;engine type
-  ld    (scrollEngine),a          ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a                         ;1= 304x216 engine  2=256x216 SF2 engine
-  jp    z,.Engine304x216
-
-.Engine256x216:                   ;SF2 engine
-  ld    de,CheckTile256x216MapLenght
-  ld    (checktile.selfmodifyingcodeMapLenght+1),de
-  ld    de,ExitRight256x216
-  ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-  ld    a,MapLenght256x216
-  ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
-  ld    de,MapData- 68
-  ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
-  xor   a
-  ld    (SpriteSplitFlag),a
- 
-;check if player enters on the left side of the screen or on the right side. On the left camerax = 0, on the right camerax=15
-  ld    hl,256/2
-  ld    de,(ClesX)
-  sbc   hl,de
-  ld    a,15
-  jr    c,.setCameraX
-  xor   a
-  .setCameraX:
-  ld    (CameraX),a
-  
-  ;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
-  ld    hl,(ClesX)
-  ld    de,ExitRight304x216
-  xor   a
-  sbc   hl,de
-  ret   nz
-  ld    hl,252 ;28*8
-  ld    (ClesX),hl
-  ret
-
-.Engine304x216:                        ;
-  ld    de,CheckTile304x216MapLenght
-  ld    (checktile.selfmodifyingcodeMapLenght+1),de
-  ld    de,ExitRight304x216
-  ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-  ld    a,MapLenght304x216
-  ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
-  ld    de,MapData- 80
-  ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
-
-  ld    a,1
-  ld    (SpriteSplitFlag),a
-  ret
   
 buildupMap32x27:
 ;first put 32*27 tiles to page 0, starting at (0,0)
@@ -1018,80 +819,7 @@ SetInterruptHandler:
   out   ($99),a 
   ret
 
-bordermasksprite_graphics:
-include "../sprites/bordermasksprite.tgs.gen"
-bordermasksprite_color:
-include "../sprites/bordermasksprite.tcs.gen"
-bordermasksprite_color_withCEbit:
-include "../sprites/bordermaskspriteECbit.tcs.gen"
 
-initiatebordermaskingsprites:
-  ld    a,(SpriteSplitFlag)
-  or    a
-  ld    a,11                ;amount of border masking sprites left and right side of screen (without Border Masking Sprites Screensplit)
-  jr    z,.Set
-  ld    a,06                ;amount of border masking sprites left and right side of screen (with Border Masking Sprites Screensplit)
-  .Set:
-  ld    (SetBorderMaskingSprites.selfmodifyingcodeAmountSpritesOneSide),a
-
-	ld		c,$98                 ;out port
-	ld		de,(sprchatableaddress)		      ;sprite character table in VRAM ($17800)
-  call  bordermaskspritecharacter
-	ld		de,(invissprchatableaddress)		;sprite character table in VRAM ($17800)
-  call  bordermaskspritecharacter
-	ld		de,(sprcoltableaddress)		      ;sprite color table in VRAM ($17400)
-  call  bordermaskspritecolor
-	ld		de,(invissprcoltableaddress)		;sprite color table in VRAM ($17400)
-  call  bordermaskspritecolor
-  ret
-
-  bordermaskspritecharacter:
-  ld    a,(SpriteSplitFlag)
-  or    a
-  ld    b,22                ;amount of border masking sprites left and right side of screen (without Border Masking Sprites Screensplit)
-  jr    z,.Set
-  ld    b,12                ;amount of border masking sprites left and right side of screen (with Border Masking Sprites Screensplit)
-  .Set:
-
-  ;put border masking sprites character
-  ld    hl,0 * 32             ;border mask at sprite position 0
-  add   hl,de
-	ld		a,1
-	call	SetVdp_Write
-  
-  .loop:
-  push  bc
-  ld    hl,bordermasksprite_graphics
-	call	outix32               ;1 sprites (1 * 32 = 32 bytes)
-  pop   bc
-  djnz  .loop
-  ;/put border masking sprites character
-  ret
-  
-  bordermaskspritecolor:
-  ld    a,(SpriteSplitFlag)
-  or    a
-  ld    b,11                ;amount of border masking sprites left and right side of screen (without Border Masking Sprites Screensplit)
-  jr    z,.Set
-  ld    b,06                ;amount of border masking sprites left and right side of screen (with Border Masking Sprites Screensplit)
-  .Set:
-    
-  ;put border masking sprites color
-  ld    hl,0 * 16             ;border mask at sprite position 0
-  add   hl,de
-	ld		a,1
-	call	SetVdp_Write
-
-  .loop:                      ;alternate writing Color data between left and right sprites
-  push  bc
-  ld    hl,bordermasksprite_color_withCEbit
-	call	outix16               ;1 sprites left side of screen (1 * 16 = 16 bytes)
-  ld    hl,bordermasksprite_color
-	call	outix16               ;1 sprites right side of screen (1 * 16 = 16 bytes)
-  pop   bc
-  djnz  .loop
-  ;/put border masking sprites color
-  ret
 
 copyGraphicsToScreen:
   ld    a,d                 ;Graphicsblock
@@ -1133,86 +861,17 @@ copyGraphicsToScreen:
   jp    nz,.loop1
   ret
 
-copyScoreBoard:
-  ld    a,(slot.page12rom)            ;all RAM except page 12
-  out   ($a8),a          
 
-  ld    hl,.FillBottomPartScoreBoard
-  call  docopy  
 
-  ld    hl,$6C00            ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
-  ld    a,Graphicsblock5    ;block to copy from
-  call  block12
-  
-	xor   a
-	call	SetVdp_Write	
-	ld		hl,scoreboard
-  ld    c,$98
-  ld    a,32/2              ;copy 32 lines..
-  ld    b,0
-  jp    copyGraphicsToScreen.loop1    
-
-.FillBottomPartScoreBoard:
+FillBottomPartScoreBoard:
   db    000,000,000,000   ;sx,--,sy,spage
   db    000,000,248,000   ;dx,--,dy,dpage
   db    000,001,008,000   ;nx,--,ny,--
   db    %1111 1111,000,$C0       ;fill 
 
-CopyItemsKarniMata:
-  .Page3:
-  ld    a,(slot.page12rom)        ;all RAM except page 12
-  out   ($a8),a          
 
-  ;copy Huge Blob graphics to page 3
-  ld    hl,$6C00+$8000            ;page 3 - screen 5 - bottom 40 pixels (scoreboard) start at y = 216
-  ld    a,Graphicsblock4          ;block to copy from
-  call  block12
-  
-	ld    a,1
-	call	SetVdp_Write	
-	ld		hl,itemsKarniMataPage3
-  ld    c,$98
-  ld    a,40/2                    ;copy 40 lines..
-  ld    b,0
-  call  copyGraphicsToScreen.loop1    
 
-  ;Copy level objects to page 1
-  .Page1:
-  ld    a,(slot.page12rom)        ;all RAM except page 12
-  out   ($a8),a          
 
-  ld    hl,$6C00+$8000            ;page 1 - screen 5 - bottom 40 pixels (scoreboard) start at y = 216
-  ld    a,Graphicsblock5          ;block to copy from
-  call  block12
-  
-	xor   a
-	call	SetVdp_Write	
-	ld		hl,itemsKarniMata
-  ld    c,$98
-  ld    a,40/2                    ;copy 40 lines..
-  ld    b,0
-  jp    copyGraphicsToScreen.loop1    
-
-KarniMataPalette:
-  incbin "..\grapx\tilesheets\sKarniMatapalette.PL" ;file palette 
-VoodooWaspPalette:
-  incbin "..\grapx\tilesheets\sVoodooWaspPalette.PL" ;file palette 
-GoddessPalette:
-  incbin "..\grapx\tilesheets\sGoddessPalette.PL" ;file palette 
-BlueTemplePalette:
-  incbin "..\grapx\tilesheets\sBlueTemplePalette.PL" ;file palette 
-KonarkPalette:
-  incbin "..\grapx\tilesheets\sKonarkPalette.PL" ;file palette 
-KonarkBrighterPalette1:
-  incbin "..\grapx\tilesheets\sKonarkBrighterPalette1.PL" ;file palette 
-KonarkBrighterPalette2:
-  incbin "..\grapx\tilesheets\sKonarkBrighterPalette2.PL" ;file palette 
-KonarkBrighterPalette3:
-  incbin "..\grapx\tilesheets\sKonarkBrighterPalette3.PL" ;file palette 
-BurialPalette:
-  incbin "..\grapx\tilesheets\sBurialPalette.PL" ;file palette 
-BossAreaPalette:
-  incbin "..\grapx\tilesheets\sBossAreaPalette.PL" ;file palette 
 
 currentpage:                ds  1
 sprcoltableaddress:         ds  2

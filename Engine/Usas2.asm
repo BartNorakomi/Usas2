@@ -425,7 +425,14 @@ dephase
 ;
 ; block $03
 ;
-	ds		$4000
+Loaderblock:  equ $03
+phase	$4000
+StartLoaderRoutine:
+	include	"loader.asm"	
+endLoaderRoutine:
+LoaderRoutinelength:	Equ	$-StartLoaderRoutine
+	ds		$8000-$,$ff		
+dephase
 
 ;
 ; block $04
@@ -2707,12 +2714,12 @@ dephase
 ; block $62 - $63
 ;
 Graphicsblock5:  equ   $62 / 2
-phase	$4000
+phase	$8000
 scoreboard:
   incbin "..\grapx\scoreboard.SC5",7,$1000  ;skip header
 itemsKarniMata:
   incbin "..\grapx\itemsKarniMata.SC5",7,$1400  ;skip header
-	ds		$8000-$,$ff
+	ds		$c000-$,$ff
 dephase
 
 ; block $64
@@ -3407,14 +3414,20 @@ phase	$4000
 dephase
 
 ;
-; block $93 - $94
+; block $93
 ;
 Graphicsblock4:  equ   $93
-phase	$4000
+phase	$8000
 itemsKarniMataPage3:
   incbin "..\grapx\itemsKarniMataPage3.SC5",7,$1400  ;skip header
 	ds		$c000-$,$ff
 dephase
+
+;
+; block $94
+;
+
+  ds  $4000
 
 ;
 ; block $95 - $96
@@ -3454,8 +3467,8 @@ phase	$4000
 dephase
 
 
-; block $9b - $c4
-  ds  $4000 * $1e
+; block $9d - $c4
+  ds  $4000 * $28
 
 
 

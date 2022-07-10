@@ -64,7 +64,7 @@ LevelEngine:
   jp    LevelEngine
 
 ClesX:      dw 30 ;$19 ;230 ;250 ;210
-ClesY:      db 30 ;144-1
+ClesY:      db 180 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -3564,14 +3564,14 @@ LSilhouetteKick:
   .NormalMovement:
   call  DoMovePlayer.EntryForHorizontalMovement
   ret   nc
-  jp    Set_L_stand                 ;on collision change to R_Stand  
+  jp    .endSilhouettekick          ;on collision change to L_Stand and allow jumping
 
   .Animate:
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
   cp    32
-  jp    z,Set_L_stand               ;end of Silhouete Kick
+  jp    z,.endSilhouettekick        ;on collision change to L_Stand and allow jumping
   ld    hl,RSilhouetteKickAnimateTable-1
   ld    d,0
   ld    e,a
@@ -3590,6 +3590,18 @@ LSilhouetteKick:
 	.setCharacter:
 	ld		(standchar),hl  
   ret
+
+  .endSilhouettekick:               ;on collision change to L_Stand and allow jumping
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+  and   %1111 1110                  ;reset up
+	ld		(Controls),a
+  jp    Set_L_stand                 ;on collision change to L_Stand  
+
 
   .CheckPassThroughWall:
   ld    a,(PlayerAniCount+1)
@@ -3644,14 +3656,14 @@ RSilhouetteKick:
   .NormalMovement:
   call  DoMovePlayer.EntryForHorizontalMovement
   ret   nc
-  jp    Set_R_stand                 ;on collision change to R_Stand  
+  jp    .endSilhouettekick          ;on collision change to R_Stand and allow jumping
 
   .Animate:
   ld    a,(PlayerAniCount)
   inc   a
   ld    (PlayerAniCount),a
   cp    32
-  jp    z,Set_R_stand               ;end of Silhouete Kick
+  jp    z,.endSilhouettekick        ;on collision change to R_Stand and allow jumping
   ld    hl,RSilhouetteKickAnimateTable-1
   ld    d,0
   ld    e,a
@@ -3670,6 +3682,17 @@ RSilhouetteKick:
 	.setCharacter:
 	ld		(standchar),hl  
   ret
+
+  .endSilhouettekick:               ;on collision change to R_Stand and allow jumping
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+  and   %1111 1110                  ;reset up
+	ld		(Controls),a
+  jp    Set_R_stand                 ;on collision change to R_Stand  
 
   .CheckPassThroughWall:
   ld    a,(PlayerAniCount+1)

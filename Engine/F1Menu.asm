@@ -272,7 +272,7 @@ SelectWeapon:                         ;just set the next magic weapon
   dec   a
   cp    255
   jr    nz,.EndTableCheck
-  ld    a,7
+  ld    a,6
   jr    .EndTableCheck
   
 .Right:
