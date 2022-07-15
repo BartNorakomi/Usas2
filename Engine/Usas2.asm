@@ -2719,6 +2719,8 @@ scoreboard:
   incbin "..\grapx\scoreboard.SC5",7,$1000  ;skip header
 itemsKarniMata:
   incbin "..\grapx\itemsKarniMata.SC5",7,$1400  ;skip header
+ElementalWeapons:
+  incbin "..\grapx\ElementalWeapons.SC5",7,128*22  ;=$b00 - skip header
 	ds		$c000-$,$ff
 dephase
 
@@ -3181,7 +3183,14 @@ MapD02:
 MapD03:
   incbin "..\maps\d03.map.pck"  | .amountofobjects: db  0
 MapD04:
-  incbin "..\maps\d04.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\d04.map.pck"  | .amountofobjects: db  2
+
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1: db 2,        0|dw Altar1              |db 8*02|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object2: db 2,        0|dw Altar2              |db 8*14|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
+;.object3: db 0,        0|dw Altar3              |db 8*00|dw 8*00|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+02,+00,+00,+00, 0|db 000| ds fill
+
+  
 MapD05:
   incbin "..\maps\d05.map.pck"  | .amountofobjects: db  0
 MapD06:
@@ -3542,6 +3551,19 @@ phase	$0000
 	ds		$4000-$,$ff
 dephase
 
+; block $cf
+BossRoomsframelistblock:            equ $cf
+phase	$8000
+  include "..\grapx\BossRoom\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $d0
+BossRoomspritedatablock:           equ $d0
+phase	$0000
+  incbin "..\grapx\BossRoom\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
 
 
 
@@ -3559,9 +3581,9 @@ dephase
 
 
 ;
-; block $cf -----------------> Music
+; block $d1 -----------------> Music
 ;
-usas2repBlock:  equ   $cf
+usas2repBlock:  equ   $d1
   incbin "usas2.rep"
 
 

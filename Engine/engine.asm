@@ -37,7 +37,7 @@ LevelEngine:
   call  BackdropGreen
   call  RestoreBackground         ;remove all vdp copies/software sprites that were put in screen last frame
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
-  call  HandlePlayerWeapons
+  call  HandlePlayerWeapons       ;arrow, fireball, iceweapon, earthweapon, waterweapon
   call  BackdropBlack
 
   xor   a
@@ -63,8 +63,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 30 ;$19 ;230 ;250 ;210
-ClesY:      db 180 ;144-1
+ClesX:      dw 130 ;$19 ;230 ;250 ;210
+ClesY:      db 20 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -101,7 +101,7 @@ ret
 
 FreeToUseFastCopy:                    ;freely usable anywhere
   db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,122,000   ;dx,--,dy,dpage
+  db    000,000,074,000   ;dx,--,dy,dpage
   db    004,000,004,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
 
@@ -3206,16 +3206,45 @@ ArrowSX_LeftSide:       db  030+15    ;(ix+6)
 ArrowNY:                db  001       ;(ix+7)
 ArrowNX:                db  016       ;(ix+8)
 
-FireballSpeed:          equ 3
-FireballActive?:        db  0         ;(ix+0)
-FireballY:              db  100       ;(ix+1)
-FireballX:              dw  100       ;(ix+2)
-FireballSY:             db  216+32    ;(ix+4)
-FireballSX_RightSide:   db  000       ;(ix+5)
-FireballSX_LeftSide:    db  000+10    ;(ix+6)
-FireballNY:             db  008       ;(ix+7)
-FireballNX:             db  011       ;(ix+8)
+FireballSpeed:         equ 3
+FireballActive?:       db  0         ;(ix+0)
+FireballY:             db  100       ;(ix+1)
+FireballX:             dw  100       ;(ix+2)
+FireballSY:            db  216+29    ;(ix+4)
+FireballSX_RightSide:  db  000       ;(ix+5)
+FireballSX_LeftSide:   db  000+10    ;(ix+6)
+FireballNY:            db  011       ;(ix+7)
+FireballNX:            db  016       ;(ix+8)
 
+IceWeaponSpeed:         equ 3
+IceWeaponActive?:       db  0         ;(ix+0)
+IceWeaponY:             db  100       ;(ix+1)
+IceWeaponX:             dw  100       ;(ix+2)
+IceWeaponSY:            db  216+29    ;(ix+4)
+IceWeaponSX_RightSide:  db  000       ;(ix+5)
+IceWeaponSX_LeftSide:   db  000+10    ;(ix+6)
+IceWeaponNY:            db  011       ;(ix+7)
+IceWeaponNX:            db  016       ;(ix+8)
+
+EarthWeaponSpeed:         equ 3
+EarthWeaponActive?:       db  0         ;(ix+0)
+EarthWeaponY:             db  100       ;(ix+1)
+EarthWeaponX:             dw  100       ;(ix+2)
+EarthWeaponSY:            db  216+29    ;(ix+4)
+EarthWeaponSX_RightSide:  db  000       ;(ix+5)
+EarthWeaponSX_LeftSide:   db  000+10    ;(ix+6)
+EarthWeaponNY:            db  011       ;(ix+7)
+EarthWeaponNX:            db  016       ;(ix+8)
+
+WaterWeaponSpeed:         equ 3
+WaterWeaponActive?:       db  0         ;(ix+0)
+WaterWeaponY:             db  100       ;(ix+1)
+WaterWeaponX:             dw  100       ;(ix+2)
+WaterWeaponSY:            db  216+29    ;(ix+4)
+WaterWeaponSX_RightSide:  db  000       ;(ix+5)
+WaterWeaponSX_LeftSide:   db  000+10    ;(ix+6)
+WaterWeaponNY:            db  011       ;(ix+7)
+WaterWeaponNX:            db  016       ;(ix+8)
 
 HandlePlayerWeapons:
   ld    a,(ArrowActive?)
@@ -3225,30 +3254,107 @@ HandlePlayerWeapons:
   ld    a,(FireballActive?)
   or    a
   jp    nz,Fireball
+
+  ld    a,(IceWeaponActive?)
+  or    a
+  jp    nz,IceWeapon
+
+  ld    a,(EarthWeaponActive?)
+  or    a
+  jp    nz,EarthWeapon
+
+  ld    a,(WaterWeaponActive?)
+  or    a
+  jp    nz,WaterWeapon
   ret
+
+  WaterWeapon:
+  ld    ix,WaterWeaponActive?
+  ;ice weapon animation
+  ld    b,128               ;sx of first ice weapon going right
+  jp    p,.DirectionFound
+  ld    b,192               ;sx of first ice weapon going left 
+  .DirectionFound:
+  ld    a,(framecounter)
+  and   7
+  and   %0000 0110          ;0, 2, 4 or 6
+  add   a,a                 ;*2
+  add   a,a                 ;*4
+  add   a,a                 ;*8 (0, 16, 32, 48)    
+  add   a,b
+  ld    (ix+5),a            ;IceWeaponSX_RightSide
+  add   a,15
+  ld    (ix+6),a            ;IceWeaponSX_LeftSide
+  ;/ice weapon animation
+  jp    GoHandlePlayerWeapon  
+
+  EarthWeapon:
+  ld    ix,EarthWeaponActive?
+  ;ice weapon animation
+  ld    b,128               ;sx of first ice weapon going right
+  jp    p,.DirectionFound
+  ld    b,192               ;sx of first ice weapon going left 
+  .DirectionFound:
+  ld    a,(framecounter)
+  and   7
+  and   %0000 0110          ;0, 2, 4 or 6
+  add   a,a                 ;*2
+  add   a,a                 ;*4
+  add   a,a                 ;*8 (0, 16, 32, 48)    
+  add   a,b
+  ld    (ix+5),a            ;IceWeaponSX_RightSide
+  add   a,15
+  ld    (ix+6),a            ;IceWeaponSX_LeftSide
+  ;/ice weapon animation
+  jp    GoHandlePlayerWeapon  
+
+  IceWeapon:
+  ld    ix,IceWeaponActive?
+  ;ice weapon animation
+  ld    b,128               ;sx of first ice weapon going right
+  jp    p,.DirectionFound
+  ld    b,192               ;sx of first ice weapon going left 
+  .DirectionFound:
+  ld    a,(framecounter)
+  and   7
+  and   %0000 0110          ;0, 2, 4 or 6
+  add   a,a                 ;*2
+  add   a,a                 ;*4
+  add   a,a                 ;*8 (0, 16, 32, 48)    
+  add   a,b
+  ld    (ix+5),a            ;IceWeaponSX_RightSide
+  add   a,15
+  ld    (ix+6),a            ;IceWeaponSX_LeftSide
+  ;/ice weapon animation
+  jp    GoHandlePlayerWeapon  
 
   Arrow2:
   ld    ix,ArrowActive?
+  ld    a,216+16            ;sy of arrow going right
+  jp    p,.DirectionFound
+  ld    a,216+17            ;sy of arrow going left
+  .DirectionFound:
+  ld    (ix+4),a
   jp    GoHandlePlayerWeapon  
 
   Fireball:
   ld    ix,FireballActive?
-  ld    b,0
+  ;ice weapon animation
+  ld    b,128               ;sx of first ice weapon going right
   jp    p,.DirectionFound
-  ld    b,22
-      
+  ld    b,192               ;sx of first ice weapon going left 
   .DirectionFound:
   ld    a,(framecounter)
   and   7
-  cp    4
-  ld    a,11
-  jr    c,.SxFound
-  xor   a
-  .SxFound:
+  and   %0000 0110          ;0, 2, 4 or 6
+  add   a,a                 ;*2
+  add   a,a                 ;*4
+  add   a,a                 ;*8 (0, 16, 32, 48)    
   add   a,b
-  ld    (FireballSX_RightSide),a
-  add   a,10
-  ld    (FireballSX_LeftSide),a  
+  ld    (ix+5),a            ;IceWeaponSX_RightSide
+  add   a,15
+  ld    (ix+6),a            ;IceWeaponSX_LeftSide
+  ;/ice weapon animation
 ;  jp    GoHandlePlayerWeapon  
   
   GoHandlePlayerWeapon:
@@ -3529,10 +3635,11 @@ CopyPlayerProjectile:                                        ;copy any object in
 playermovementspeed:    db  2
 PlayerFacingRight?:     db  1
 PlayerInvulnerable?:    db  0
-CurrentMagicWeapon:     db  0 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick
+CurrentMagicWeapon:     db  7 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
 
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
+;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
@@ -3540,11 +3647,292 @@ HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
 
+LShootWater:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,38
+  xor   a
+  sbc   hl,de
+  jp    c,Set_L_Stand
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-10
+  xor   a
+  sbc   hl,de
+  jp    nc,BruteForceMovementLeft
+
+;Animate
+  ld    hl,LeftShootFireballAnimation
+  call  AnimateShootFireball  ;animate
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 14
+  jp    z,Set_L_Stand  
+  cp    2 * 10
+  ret   nz
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    de,-26                ;normal engine
+  jr    z,.engineFound
+  ld    de,-18                ;SF2 engine 
+  .engineFound:
+
+  ld    a,-WaterWeaponSpeed
+  ld    (WaterWeaponActive?),a
+;  ld    a,(ClesX)
+;  sub   a,26
+  ld    hl,(ClesX)
+;  ld    de,-26               ;normal engine
+;  ld    de,-18                ;SF2 engine 
+  add   hl,de                 ;adjust x starting placement projectile
+  ld    a,l
+  bit   0,h
+  jr    z,.SetX
+  ld    a,255
+  .SetX:
+  ld    (WaterWeaponX),a
+  ld    a,(ClesY)
+  ld    (WaterWeaponY),a
+  ret
+  
+RShootWater:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,11
+  xor   a
+  sbc   hl,de
+  jp    c,BruteForceMovementRight
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-37-12
+  xor   a
+  sbc   hl,de
+  jp    nc,Set_R_Stand
+
+;Animate
+  ld    hl,RightShootFireballAnimation
+  call  AnimateShootFireball             ;animate
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 14
+  jp    z,Set_R_Stand  
+  cp    2 * 10
+  ret   nz
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,20                  ;normal engine
+  jr    z,.engineFound
+  ld    b,04                  ;SF2 engine 
+  .engineFound:
+
+  ld    a,WaterWeaponSpeed
+  ld    (WaterWeaponActive?),a
+  ld    a,(ClesX)
+  sub   a,b                   ;adjust x starting placement projectile
+    
+  jr    nc,.SetX
+  xor   a
+  .SetX:
+  ld    (WaterWeaponX),a
+  ld    a,(ClesY)
+  ld    (WaterWeaponY),a
+  ret
+  
+LShootEarth:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,38
+  xor   a
+  sbc   hl,de
+  jp    c,Set_L_Stand
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-10
+  xor   a
+  sbc   hl,de
+  jp    nc,BruteForceMovementLeft
+
+;Animate
+  ld    hl,LeftShootFireballAnimation
+  call  AnimateShootFireball  ;animate
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 14
+  jp    z,Set_L_Stand  
+  cp    2 * 10
+  ret   nz
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    de,-26                ;normal engine
+  jr    z,.engineFound
+  ld    de,-18                ;SF2 engine 
+  .engineFound:
+
+  ld    a,-EarthWeaponSpeed
+  ld    (EarthWeaponActive?),a
+;  ld    a,(ClesX)
+;  sub   a,26
+  ld    hl,(ClesX)
+;  ld    de,-26               ;normal engine
+;  ld    de,-18                ;SF2 engine 
+  add   hl,de                 ;adjust x starting placement projectile
+  ld    a,l
+  bit   0,h
+  jr    z,.SetX
+  ld    a,255
+  .SetX:
+  ld    (EarthWeaponX),a
+  ld    a,(ClesY)
+  ld    (EarthWeaponY),a
+  ret
+  
+RShootEarth:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,11
+  xor   a
+  sbc   hl,de
+  jp    c,BruteForceMovementRight
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-37-12
+  xor   a
+  sbc   hl,de
+  jp    nc,Set_R_Stand
+
+;Animate
+  ld    hl,RightShootFireballAnimation
+  call  AnimateShootFireball             ;animate
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 14
+  jp    z,Set_R_Stand  
+  cp    2 * 10
+  ret   nz
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,20                  ;normal engine
+  jr    z,.engineFound
+  ld    b,04                  ;SF2 engine 
+  .engineFound:
+
+  ld    a,EarthWeaponSpeed
+  ld    (EarthWeaponActive?),a
+  ld    a,(ClesX)
+  sub   a,b                   ;adjust x starting placement projectile
+    
+  jr    nc,.SetX
+  xor   a
+  .SetX:
+  ld    (EarthWeaponX),a
+  ld    a,(ClesY)
+  ld    (EarthWeaponY),a
+  ret
+
+LShootIce:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,38
+  xor   a
+  sbc   hl,de
+  jp    c,Set_L_Stand
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-10
+  xor   a
+  sbc   hl,de
+  jp    nc,BruteForceMovementLeft
+
+;Animate
+  ld    hl,LeftShootFireballAnimation
+  call  AnimateShootFireball  ;animate
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 14
+  jp    z,Set_L_Stand  
+  cp    2 * 10
+  ret   nz
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    de,-26                ;normal engine
+  jr    z,.engineFound
+  ld    de,-18                ;SF2 engine 
+  .engineFound:
+
+  ld    a,-IceWeaponSpeed
+  ld    (IceWeaponActive?),a
+;  ld    a,(ClesX)
+;  sub   a,26
+  ld    hl,(ClesX)
+;  ld    de,-26               ;normal engine
+;  ld    de,-18                ;SF2 engine 
+  add   hl,de                 ;adjust x starting placement projectile
+  ld    a,l
+  bit   0,h
+  jr    z,.SetX
+  ld    a,255
+  .SetX:
+  ld    (IceWeaponX),a
+  ld    a,(ClesY)
+  ld    (IceWeaponY),a
+  ret
+  
+RShootIce:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,11
+  xor   a
+  sbc   hl,de
+  jp    c,BruteForceMovementRight
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-37-12
+  xor   a
+  sbc   hl,de
+  jp    nc,Set_R_Stand
+
+;Animate
+  ld    hl,RightShootFireballAnimation
+  call  AnimateShootFireball             ;animate
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 14
+  jp    z,Set_R_Stand  
+  cp    2 * 10
+  ret   nz
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,20                  ;normal engine
+  jr    z,.engineFound
+  ld    b,04                  ;SF2 engine 
+  .engineFound:
+
+  ld    a,IceWeaponSpeed
+  ld    (IceWeaponActive?),a
+  ld    a,(ClesX)
+  sub   a,b                   ;adjust x starting placement projectile
+    
+  jr    nc,.SetX
+  xor   a
+  .SetX:
+  ld    (IceWeaponX),a
+  ld    a,(ClesY)
+  ld    (IceWeaponY),a
+  ret
+
+;AnimateShootFireball:
+;  ld    a,(framecounter)          ;animate every 4 frames
+;  and   1
+;  ret   nz
+  
+;  ld    a,(PlayerAniCount)
+;  add   a,2                       ;2 bytes used for pointer to sprite frame address
+;  jp    AnimateRun.SetPlayerAniCount
+
 RSilhouetteKickAnimateTable:
   db    0,1,0,0,1,1, 3,3,2,2,3, 1,1,1,0,1,1, 3,3,2,3,3, 1,0,0,1,1,1, 3,2,2,3,2, 1,0,1
-
-LSilhouetteKickAnimateTable:
-  db    1,1,1,1,1,1, 3,3,3,3,3, 1,1,1,1,1,1, 3,3,3,3,3, 1,1,1,1,1,1, 3,3,3,3,3, 1,1,1
+;LSilhouetteKickAnimateTable:
+;  db    1,1,1,1,1,1, 3,3,3,3,3, 1,1,1,1,1,1, 3,3,3,3,3, 1,1,1,1,1,1, 3,3,3,3,3, 1,1,1
 
 LSilhouetteKick:
   call  .CheckPassThroughWall       ;if there is a wall in front of player and player would be able to end up at the other side, then set PlayerAniCount+1 to 255
@@ -3654,8 +4042,11 @@ RSilhouetteKick:
   ld    (ClesX),hl  
   ret
   .NormalMovement:
+;  call  .CheckJustPassedThroughWall ;check if player just passed through a wall and is now at the other side of wall. If so, then change to R_stand
+  
+  
   call  DoMovePlayer.EntryForHorizontalMovement
-  ret   nc
+  ret   nc                          ;not carry = no collision with wall
   jp    .endSilhouettekick          ;on collision change to R_Stand and allow jumping
 
   .Animate:
@@ -8352,6 +8743,72 @@ Set_R_SitShootArrow:
 
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a  
+  ret
+
+Set_L_ShootWater:
+	ld		hl,LShootWater
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,0 
+  ld    (PlayerAniCount),a
+ 
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
+  ret
+
+Set_R_ShootWater:
+	ld		hl,RShootWater
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,0 
+  ld    (PlayerAniCount),a
+ 
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
+  ret
+  
+Set_L_ShootEarth:
+	ld		hl,LShootEarth
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,0 
+  ld    (PlayerAniCount),a
+ 
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
+  ret
+
+Set_R_ShootEarth:
+	ld		hl,RShootEarth
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,0 
+  ld    (PlayerAniCount),a
+ 
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
+  ret
+
+Set_L_ShootIce:
+	ld		hl,LShootIce
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,0 
+  ld    (PlayerAniCount),a
+ 
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
+  ret
+
+Set_R_ShootIce:
+	ld		hl,RShootIce
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,0 
+  ld    (PlayerAniCount),a
+ 
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
   ret
 
 Set_L_ShootFireball:

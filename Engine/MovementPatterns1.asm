@@ -62,6 +62,8 @@
 ;BossDemon1
 ;BossDemon2
 ;BossDemon3
+;Altar1
+;Altar2
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -351,21 +353,135 @@ CheckFireballHitsEnemy:
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
   ret
 
+CheckIceWeaponHitsEnemy:
+;check if enemy/object collides with hitbox arrow left side
+  ld    hl,(IceWeaponX)                      ;hl = x hitbox
 
-;  ld    a,-60
-;  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    bc,46                               ;normal engine
+  jr    z,.engineFound
+  ld    bc,46 - 18                          ;sf2 engine
+  .engineFound:
 
-;  ld    hl,(Clesx)                          ;hl = x player
-;  ld    bc,50-2-16                          ;reduction to hitbox sx (left side)
-;  jp    CollisionEnemyPlayer.ObjectEntry
+  add   hl,bc
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  sbc   hl,de
+  ret   c
 
+;check if enemy/object collides with hitbox arrow right side
+  ld    c,(ix+enemies_and_objects.nx)       ;width object
+  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
+  add   a,c
+  ld    c,a
+  sbc   hl,bc  
+  ret   nc
 
-;CollisionObjectPlayer:  
-;  ld    hl,(Clesx)                          ;hl = x player
-;  ld    bc,20-2-16                          ;reduction to hitbox sx (left side)
-;  jp    CollisionEnemyPlayer.ObjectEntry
+;check if enemy/object collides with hitbox arrow top side
+  ld    a,(IceWeaponY)                       ;a = y hitbox
+  sub   (ix+enemies_and_objects.y)
+  ret   c  
 
+;check if enemy/object collides with hitbox arrow bottom side
+  sub   a,(ix+enemies_and_objects.ny)       ;width object
+  ret   nc
 
+  ;Enemy hit                                ;blink white for 31 frames when hit
+  xor   a
+  ld    (IceWeaponActive?),a                    ;remove arrow when enemy is hit
+  
+  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
+  dec   (ix+enemies_and_objects.life)
+  jp    z,CheckPlayerPunchesEnemy.EnemyDied
+  ret
+
+CheckEarthWeaponHitsEnemy:
+;check if enemy/object collides with hitbox arrow left side
+  ld    hl,(EarthWeaponX)                      ;hl = x hitbox
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    bc,46                               ;normal engine
+  jr    z,.engineFound
+  ld    bc,46 - 18                          ;sf2 engine
+  .engineFound:
+
+  add   hl,bc
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  sbc   hl,de
+  ret   c
+
+;check if enemy/object collides with hitbox arrow right side
+  ld    c,(ix+enemies_and_objects.nx)       ;width object
+  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
+  add   a,c
+  ld    c,a
+  sbc   hl,bc  
+  ret   nc
+
+;check if enemy/object collides with hitbox arrow top side
+  ld    a,(EarthWeaponY)                       ;a = y hitbox
+  sub   (ix+enemies_and_objects.y)
+  ret   c  
+
+;check if enemy/object collides with hitbox arrow bottom side
+  sub   a,(ix+enemies_and_objects.ny)       ;width object
+  ret   nc
+
+  ;Enemy hit                                ;blink white for 31 frames when hit
+  xor   a
+  ld    (EarthWeaponActive?),a                    ;remove arrow when enemy is hit
+  
+  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
+  dec   (ix+enemies_and_objects.life)
+  jp    z,CheckPlayerPunchesEnemy.EnemyDied
+  ret
+
+CheckWaterWeaponHitsEnemy:
+;check if enemy/object collides with hitbox arrow left side
+  ld    hl,(WaterWeaponX)                      ;hl = x hitbox
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    bc,46                               ;normal engine
+  jr    z,.engineFound
+  ld    bc,46 - 18                          ;sf2 engine
+  .engineFound:
+
+  add   hl,bc
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  sbc   hl,de
+  ret   c
+
+;check if enemy/object collides with hitbox arrow right side
+  ld    c,(ix+enemies_and_objects.nx)       ;width object
+  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
+  add   a,c
+  ld    c,a
+  sbc   hl,bc  
+  ret   nc
+
+;check if enemy/object collides with hitbox arrow top side
+  ld    a,(WaterWeaponY)                       ;a = y hitbox
+  sub   (ix+enemies_and_objects.y)
+  ret   c  
+
+;check if enemy/object collides with hitbox arrow bottom side
+  sub   a,(ix+enemies_and_objects.ny)       ;width object
+  ret   nc
+
+  ;Enemy hit                                ;blink white for 31 frames when hit
+  xor   a
+  ld    (WaterWeaponActive?),a                    ;remove arrow when enemy is hit
+  
+  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
+  dec   (ix+enemies_and_objects.life)
+  jp    z,CheckPlayerPunchesEnemy.EnemyDied
+  ret
+  
 CheckPlayerPunchesEnemyDemon:
   ld    hl,(ClesX)
   ld    de,35 + 8
@@ -404,6 +520,19 @@ CheckPlayerPunchesEnemy:
   ld    a,(FireballActive?)
   or    a
   call  nz,CheckFireballHitsEnemy
+  
+  ld    a,(IceWeaponActive?)
+  or    a
+  call  nz,CheckIceWeaponHitsEnemy
+
+  ld    a,(EarthWeaponActive?)
+  or    a
+  call  nz,CheckEarthWeaponHitsEnemy
+
+  ld    a,(WaterWeaponActive?)
+  or    a
+  call  nz,CheckWaterWeaponHitsEnemy
+
   
   ld    a,(ix+enemies_and_objects.hit?)     ;reduce enemy is hit counter
   dec   a
@@ -687,14 +816,131 @@ Template:
   ret
 
 
+AltarGraphics00top:       dw BossRoomframe000 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics01top:       dw BossRoomframe002 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics02top:       dw BossRoomframe004 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics03top:       dw BossRoomframe006 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics04top:       dw BossRoomframe008 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics05top:       dw BossRoomframe010 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics06top:       dw BossRoomframe012 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics07top:       dw BossRoomframe014 | db BossRoomsframelistblock, BossRoomspritedatablock
+
+AltarGraphics08top:       dw BossRoomframe016 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics09top:       dw BossRoomframe018 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics10top:       dw BossRoomframe020 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics11top:       dw BossRoomframe022 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics12top:       dw BossRoomframe024 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics13top:       dw BossRoomframe026 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics14top:       dw BossRoomframe028 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics15top:       dw BossRoomframe030 | db BossRoomsframelistblock, BossRoomspritedatablock
+
+AltarGraphics00bottom:    dw BossRoomframe001 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics01bottom:    dw BossRoomframe003 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics02bottom:    dw BossRoomframe005 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics03bottom:    dw BossRoomframe007 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics04bottom:    dw BossRoomframe009 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics05bottom:    dw BossRoomframe011 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics06bottom:    dw BossRoomframe013 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics07bottom:    dw BossRoomframe015 | db BossRoomsframelistblock, BossRoomspritedatablock
+
+AltarGraphics08bottom:    dw BossRoomframe017 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics09bottom:    dw BossRoomframe019 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics10bottom:    dw BossRoomframe021 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics11bottom:    dw BossRoomframe023 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics12bottom:    dw BossRoomframe025 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics13bottom:    dw BossRoomframe027 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics14bottom:    dw BossRoomframe029 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics15bottom:    dw BossRoomframe031 | db BossRoomsframelistblock, BossRoomspritedatablock
+
+Altar1:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+  ld    a,(HugeObjectFrame)
+  inc   a
+  and   3
+  ld    (HugeObjectFrame),a
+  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
+  ret   nz
+
+  ld    a,(Bossframecounter)
+  inc   a
+  ld    (Bossframecounter),a
+
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+  call  restoreBackgroundObject1
+
+  call  .HandlePhase                        ;(0=diamand animating mid air, 1=freeze player flash screen, 2=diamond fading away, 3=turn around player, 4=door closing)
+
+;  ld    (ix+enemies_and_objects.v7),1       ;v7=sprite frame
 
 
+  ;snap to sprite frame
+  ld    bc,AltarGraphics00top
+  call  SetFrameAltar
+  call  PutSF2Object ;CHANGES IX 
+  ret
 
+  .HandlePhase:
+  call  .animate
+  ret
+  
 
+  .animate:    
+  ld    a,(Bossframecounter)
+  and   1
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  inc   a
+  and   15
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
 
+SetFrameAltar:
+  ld    a,(enemies_and_objects+enemies_and_objects.v7)
+  ld    l,a                                 ;v7=sprite frame
+  ld    h,0
+  add   hl,hl                               ;*2
+  add   hl,hl                               ;*4
+  add   hl,bc                               ;frame * 4 + frame address
 
+  .SetFrameSF2Object:
+  ld    a,(hl)
+  ld    (Player1Frame),a
+  inc   hl
+  ld    a,(hl)
+  ld    (Player1Frame+1),a
+  inc   hl
+  ld    b,(hl)                              ;frame list block
+  inc   hl
+  ld    c,(hl)                              ;sprite data block
+  ret
 
+Altar2:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+  ld    a,(HugeObjectFrame)
+  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
+  ret   nz
 
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+  call  restoreBackgroundObject2
+  
+  ;snap to sprite frame
+  ld    bc,AltarGraphics00bottom
+  call  SetFrameAltar
+  call  PutSF2Object2 ;CHANGES IX 
+  jp    switchpageSF2Engine
 
 SetFrameBossDemon:
   ld    a,(enemies_and_objects+enemies_and_objects.v7)
@@ -938,7 +1184,7 @@ BossDemon1:
 ;  ld    b,(hl)                              ;frame list block
 ;  inc   hl
 ;  ld    c,(hl)                              ;sprite data block
-  ret  
+;  ret  
   
   
   .HandlePhase:                             ;(0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
@@ -1128,7 +1374,6 @@ BossDemon1:
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret
 
-  
 BossDemon2:
 ;v1=repeating steps
 ;v2=pointer to movement table
@@ -1150,7 +1395,6 @@ BossDemon2:
   ld    bc,BossDemonIdle00+4
   call  SetFrameBossDemon
   jp    PutSF2Object2 ;CHANGES IX 
-
 
 BossDemon3:
 ;v1=repeating steps

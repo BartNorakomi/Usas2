@@ -15,7 +15,7 @@ F1MenuRoutine:
   halt
   call  PopulateControls
   call  EraseWeaponBox                ;erase the tag from the active weapon's box
-  call  SelectWeapon                  ;checks left - right and selects that weapon
+  call  SelectWeapon                  ;checks left - right - up - down - and selects that weapon
   call  SetWeaponBox                  ;tag the active weapon's box
   
 ;
@@ -28,6 +28,7 @@ F1MenuRoutine:
   jr    z,.F1MenuLoop
 
   call  ScreenOff
+  call  SetElementalWeaponInVram      ;if an elemental weapon is selected, load it's graphics into Vram
   call  SpritesOn
   call  RestorePage0InVram            ;restore the vram data the was stored in ram earlier
   call  SetInterruptHandler           ;set Lineint and Vblank  
@@ -35,12 +36,62 @@ F1MenuRoutine:
   call  ScreenOn
   ret
 
+SetElementalWeaponInVram:
+  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
+  cp    5
+	ld		hl,ElementalWeapons+11*128+64 ;start copying from this address in rom
+  jp    z,.ShootFire
+  cp    7
+	ld		hl,ElementalWeapons+000       ;start copying from this address in rom
+  jp    z,.ShootIce
+  cp    8
+	ld		hl,ElementalWeapons+11*128    ;start copying from this address in rom
+  jp    z,.ShootEarth
+  cp    9
+	ld		hl,ElementalWeapons+064       ;start copying from this address in rom
+  jp    z,.ShootWater
+  ret
+
+  .ShootFire:
+  .ShootIce:
+  .ShootEarth:
+  .ShootWater:
+  ld    a,(slot.page12rom)            ;all RAM except page 1+2
+  out   ($a8),a
+  ld    a,Graphicsblock5              ;block to copy from
+  call  block34
+  
+;	ld		hl,ElementalWeapons           ;start copying from this address in rom
+  ld    de,64  
+  exx
+  ld    hl,$fac0                      ;start copying to this address in Vram -> page 3 - screen 5 - copy to (128,245)
+  ld    de,128
+  ld    b,11                          ;total height
+.loop:
+	ld    a,1
+	push  hl
+	call	SetVdp_Write
+	pop   hl
+  add   hl,de                         ;start copying to this address in Vram
+  exx
+  ld    c,$98
+  ld    b,64                          ;copy 128 lines
+  otir
+  add   hl,de                         ;start copying from this address in rom
+  exx
+  djnz  .loop
+  ret
+
 EraseWeaponBox:
   xor   a
   ld    (FreeToUseFastCopy+sx),a
   ld    (FreeToUseFastCopy+sy),a
   
-  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick
+  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
+  sub   7
+  jr    nc,.NotCarry
+  add   a,7
+  .NotCarry:
   add   a,a                           ;*2
   add   a,a                           ;*4
   ld    b,a
@@ -59,10 +110,16 @@ EraseWeaponBox:
 SetWeaponBox:
   ld    a,210
   ld    (FreeToUseFastCopy+sx),a
-  ld    a,97
+  ld    a,49
   ld    (FreeToUseFastCopy+sy),a
   
-  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick
+  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
+  sub   7
+  ld    d,074+56                      ;dy
+  jr    nc,.NotCarry
+  ld    d,074                         ;dy
+  add   a,7
+  .NotCarry:
   add   a,a                           ;*2
   add   a,a                           ;*4
   ld    b,a
@@ -72,6 +129,8 @@ SetWeaponBox:
   add   a,b                           ;*36
   add   a,18
   ld    (FreeToUseFastCopy+dx),a
+  ld    a,d
+  ld    (FreeToUseFastCopy+dy),a
   
   ld    hl,FreeToUseFastCopy
   call  docopy
@@ -208,6 +267,15 @@ CheckIfF1MenuIsAccessable:
   ld    a,(FireballActive?)
   or    a
   ret   nz
+  ld    a,(IceWeaponActive?)
+  or    a
+  ret   nz  
+  ld    a,(EarthWeaponActive?)
+  or    a
+  ret   nz 
+  ld    a,(WaterWeaponActive?)
+  or    a
+  ret   nz   
   ld    a,(ShootArrowWhileJump?)
   or    a
   ret   nz
@@ -265,22 +333,43 @@ SelectWeapon:                         ;just set the next magic weapon
   jr    nz,.Right
 	bit		2,a           ;left pressed ?
   jr    nz,.Left
-  ret
+	bit		1,a           ;down pressed ?
+  jr    nz,.Down
+	bit		0,a           ;up pressed ?
+  jr    nz,.Up
+
+  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
+  jr    .EndTableCheck                ;just set the current weapon
+
+.Up:
+  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
+  sub   a,7
+  ret   c
+  jr    .EndTableCheck
+
+.Down:
+  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
+  add   a,7
+  cp    14
+  ret   nc
+  jr    .EndTableCheck
 
 .Left:
-  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick
+  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
   dec   a
-  cp    255
-  jr    nz,.EndTableCheck
-  ld    a,6
+  cp    255  
+  ret   z
+  cp    6
+  ret   z
   jr    .EndTableCheck
   
 .Right:
-  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick
+  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
   inc   a
   cp    7
-  jr    nz,.EndTableCheck
-  xor   a
+  ret   z
+  cp    14
+  ret   z
   .EndTableCheck:
   ld    (CurrentMagicWeapon),a
     
@@ -337,38 +426,67 @@ SelectWeapon:                         ;just set the next magic weapon
   ld    e,a
   ret
 
-.JumpTableMagicSkillsRightStanding:
-  nop | nop | nop
-  jp		nz,Set_R_Rolling
-  jp		nz,Set_Charging
-  jp		nz,Set_R_Meditate
-  jp		nz,Set_R_ShootArrow
-  jp		nz,Set_R_ShootFireball
-  jp		nz,Set_R_SilhouetteKick
-
 .JumpTableMagicSkillsLeftStanding:
-  nop | nop | nop
-  jp		nz,Set_L_Rolling
-  jp		nz,Set_Charging
-  jp		nz,Set_L_Meditate
-  jp		nz,Set_L_ShootArrow
-  jp		nz,Set_L_ShootFireball
-  jp		nz,Set_L_SilhouetteKick
+  nop | nop | nop                     ;magic 0 (nothing)
+  jp		nz,Set_L_Rolling              ;magic 1 rolling)
+  jp		nz,Set_Charging               ;magic 2 (charging)
+  jp		nz,Set_L_Meditate             ;magic 3 (meditate)
+  jp		nz,Set_L_ShootArrow           ;magic 4 (shoot arrow)
+  jp		nz,Set_L_ShootFireball        ;magic 5 (shoot fireball)
+  jp		nz,Set_L_SilhouetteKick       ;magic 6 (silhouette kick)
+  jp		nz,Set_L_ShootIce             ;magic 7 (shoot ice)
+  jp		nz,Set_L_ShootEarth           ;magic 8 (shoot earth)
+  jp		nz,Set_L_ShootWater           ;magic 9 (shoot water)
+  nop | nop | nop                     ;magic 10 (nothing)
+  nop | nop | nop                     ;magic 11 (nothing)
+  nop | nop | nop                     ;magic 12 (nothing)
+  nop | nop | nop                     ;magic 13 (nothing)
+  
+.JumpTableMagicSkillsRightStanding:
+  nop | nop | nop                     ;magic 0 (nothing)
+  jp		nz,Set_R_Rolling              ;magic 1 rolling)
+  jp		nz,Set_Charging               ;magic 2 (charging)
+  jp		nz,Set_R_Meditate             ;magic 3 (meditate)
+  jp		nz,Set_R_ShootArrow           ;magic 4 (shoot arrow)
+  jp		nz,Set_R_ShootFireball        ;magic 5 (shoot fireball)
+  jp		nz,Set_R_SilhouetteKick       ;magic 6 (silhouette kick)
+  jp		nz,Set_R_ShootIce             ;magic 7 (shoot ice)
+  jp		nz,Set_R_ShootEarth           ;magic 8 (shoot earth)
+  jp		nz,Set_R_ShootWater           ;magic 9 (shoot water)
+  nop | nop | nop                     ;magic 10 (nothing)
+  nop | nop | nop                     ;magic 11 (nothing)
+  nop | nop | nop                     ;magic 12 (nothing)
+  nop | nop | nop                     ;magic 13 (nothing)
 
 .JumpTableMagicSkillsLeftSitting:
-  nop | nop | nop
-  jp		nz,Set_L_Rolling
-  jp		nz,Set_Charging
-  jp		nz,Set_L_Meditate
-  jp		nz,Set_L_SitShootArrow
-  jp		nz,Set_L_ShootFireball
-  jp		nz,Set_L_SilhouetteKick
+  nop | nop | nop                     ;magic 0 (nothing)
+  jp		nz,Set_L_Rolling              ;magic 1 rolling)
+  jp		nz,Set_Charging               ;magic 2 (charging)
+  jp		nz,Set_L_Meditate             ;magic 3 (meditate)
+  jp		nz,Set_L_SitShootArrow        ;magic 4 (shoot arrow)
+  jp		nz,Set_L_ShootFireball        ;magic 5 (shoot fireball)
+  jp		nz,Set_L_SilhouetteKick       ;magic 6 (silhouette kick)
+  jp		nz,Set_L_ShootIce             ;magic 7 (shoot ice)
+  jp		nz,Set_L_ShootEarth           ;magic 8 (shoot earth)
+  jp		nz,Set_L_ShootWater           ;magic 9 (shoot water)
+  nop | nop | nop                     ;magic 10 (nothing)
+  nop | nop | nop                     ;magic 11 (nothing)
+  nop | nop | nop                     ;magic 12 (nothing)
+  nop | nop | nop                     ;magic 13 (nothing)
 
 .JumpTableMagicSkillRightSitting:
-  nop | nop | nop
-  jp		nz,Set_R_Rolling
-  jp		nz,Set_Charging
-  jp		nz,Set_R_Meditate
-  jp		nz,Set_R_SitShootArrow
-  jp		nz,Set_R_ShootFireball
-  jp		nz,Set_R_SilhouetteKick
+  nop | nop | nop                     ;magic 0 (nothing)
+  jp		nz,Set_R_Rolling              ;magic 1 rolling)
+  jp		nz,Set_Charging               ;magic 2 (charging)
+  jp		nz,Set_R_Meditate             ;magic 3 (meditate)
+  jp		nz,Set_R_SitShootArrow        ;magic 4 (shoot arrow)
+  jp		nz,Set_R_ShootFireball        ;magic 5 (shoot fireball)
+  jp		nz,Set_R_SilhouetteKick       ;magic 6 (silhouette kick)
+  jp		nz,Set_R_ShootIce             ;magic 7 (shoot ice)
+  jp		nz,Set_R_ShootEarth           ;magic 8 (shoot earth)
+  jp		nz,Set_R_ShootWater           ;magic 9 (shoot water)
+  nop | nop | nop                     ;magic 10 (nothing)
+  nop | nop | nop                     ;magic 11 (nothing)
+  nop | nop | nop                     ;magic 12 (nothing)
+  nop | nop | nop                     ;magic 13 (nothing)
+  
