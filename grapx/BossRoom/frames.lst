@@ -30,27 +30,13 @@
   dw BossRoomframe029
   dw BossRoomframe030
   dw BossRoomframe031
+  dw BossRoomframe032
 
 BossRoomframe000:
   db 010h,060h,078h,000h
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02286h
-  dw 00880h,base+0228Eh
-  dw 00880h,base+02296h
-  dw 00880h,base+0229Eh
-  dw 00880h,base+022A6h
-  dw 00880h,base+022AEh
-  dw 00880h,base+022B6h
-  dw 00880h,base+022BEh
-  dw 00880h,base+022C6h
-  dw 00880h,base+022CEh
-  dw 00880h,base+022D6h
-  dw 00880h,base+022DEh
-  dw 00880h,base+022E6h
-  dw 00880h,base+022EEh
-  dw 00880h,base+022F6h
   dw 00880h,base+022FEh
   dw 00880h,base+02306h
   dw 00880h,base+0230Eh
@@ -58,7 +44,6 @@ BossRoomframe000:
   dw 00880h,base+0231Eh
   dw 00880h,base+02326h
   dw 00880h,base+0232Eh
-  dw 00880h,base+0230Eh
   dw 00880h,base+02336h
   dw 00880h,base+0233Eh
   dw 00880h,base+02346h
@@ -68,52 +53,13 @@ BossRoomframe000:
   dw 00880h,base+02366h
   dw 00880h,base+0236Eh
   dw 00880h,base+02376h
-  dw 00880h,base+02286h
-  dw 00880h,base+0228Eh
-  dw 00880h,base+02296h
-  dw 00880h,base+0229Eh
-  dw 00880h,base+022A6h
-  dw 00880h,base+022AEh
-  dw 00880h,base+022B6h
-  dw 00880h,base+022BEh
-  dw 00880h,base+022C6h
-  dw 00880h,base+022CEh
-  dw 00880h,base+022D6h
-  dw 00880h,base+022DEh
-  dw 00880h,base+022E6h
-  dw 00880h,base+022EEh
-  dw 00880h,base+022F6h
-  dw 00880h,base+022FEh
-  dw 00880h,base+02306h
-  dw 00880h,base+0230Eh
-  dw 00880h,base+02316h
-  dw 00880h,base+0231Eh
-  dw 00880h,base+02326h
-  dw 00880h,base+0232Eh
-  dw 00880h,base+0230Eh
-  dw 00880h,base+02336h
-  dw 00880h,base+0233Eh
-  dw 00880h,base+02346h
-  dw 00880h,base+0234Eh
-  dw 00880h,base+02356h
-  dw 00880h,base+0235Eh
-  dw 00880h,base+02366h
-  dw 00880h,base+0236Eh
-  dw 00880h,base+02376h
-  dw 00880h,base+02286h
-  dw 00880h,base+0228Eh
-  dw 00880h,base+02296h
-  dw 00880h,base+0229Eh
-  dw 00880h,base+022A6h
-  dw 00880h,base+022AEh
-  dw 00880h,base+022B6h
-  dw 00880h,base+022BEh
   dw 00880h,base+0237Eh
   dw 00880h,base+02386h
   dw 00880h,base+0238Eh
   dw 00880h,base+02396h
   dw 00880h,base+0239Eh
   dw 00880h,base+023A6h
+  dw 00880h,base+02386h
   dw 00880h,base+023AEh
   dw 00880h,base+023B6h
   dw 00880h,base+023BEh
@@ -123,6 +69,46 @@ BossRoomframe000:
   dw 00880h,base+023DEh
   dw 00880h,base+023E6h
   dw 00880h,base+023EEh
+  dw 00880h,base+022FEh
+  dw 00880h,base+02306h
+  dw 00880h,base+0230Eh
+  dw 00880h,base+02316h
+  dw 00880h,base+0231Eh
+  dw 00880h,base+02326h
+  dw 00880h,base+0232Eh
+  dw 00880h,base+02336h
+  dw 00880h,base+0233Eh
+  dw 00880h,base+02346h
+  dw 00880h,base+0234Eh
+  dw 00880h,base+02356h
+  dw 00880h,base+0235Eh
+  dw 00880h,base+02366h
+  dw 00880h,base+0236Eh
+  dw 00880h,base+02376h
+  dw 00880h,base+0237Eh
+  dw 00880h,base+02386h
+  dw 00880h,base+0238Eh
+  dw 00880h,base+02396h
+  dw 00880h,base+0239Eh
+  dw 00880h,base+023A6h
+  dw 00880h,base+02386h
+  dw 00880h,base+023AEh
+  dw 00880h,base+023B6h
+  dw 00880h,base+023BEh
+  dw 00880h,base+023C6h
+  dw 00880h,base+023CEh
+  dw 00880h,base+023D6h
+  dw 00880h,base+023DEh
+  dw 00880h,base+023E6h
+  dw 00880h,base+023EEh
+  dw 00880h,base+022FEh
+  dw 00880h,base+02306h
+  dw 00880h,base+0230Eh
+  dw 00880h,base+02316h
+  dw 00880h,base+0231Eh
+  dw 00880h,base+02326h
+  dw 00880h,base+0232Eh
+  dw 00880h,base+02336h
   dw 00880h,base+023F6h
   dw 00880h,base+023FEh
   dw 00880h,base+02406h
@@ -131,10 +117,25 @@ BossRoomframe000:
   dw 00880h,base+0241Eh
   dw 00880h,base+02426h
   dw 00880h,base+0242Eh
-  dw 00800h,base+02436h
+  dw 00880h,base+02436h
+  dw 00880h,base+0243Eh
+  dw 00880h,base+02446h
+  dw 00880h,base+0244Eh
+  dw 00880h,base+02456h
+  dw 00880h,base+0245Eh
+  dw 00880h,base+02466h
+  dw 00880h,base+0246Eh
+  dw 00880h,base+02476h
+  dw 00880h,base+0247Eh
+  dw 00880h,base+02486h
+  dw 00880h,base+0248Eh
+  dw 00880h,base+02496h
+  dw 00880h,base+0249Eh
+  dw 00880h,base+024A6h
+  dw 00800h,base+024AEh
 
 BossRoomframe001:
-  db 020h,040h,070h,000h
+  db 020h,058h,070h,000h
   db 070h
   db 000h,000h,000h,000h,000h
   db 000h,000h
@@ -170,29 +171,13 @@ BossRoomframe001:
   dw 01080h,base+001D0h
   dw 01080h,base+001E0h
   dw 01084h,base+001F0h
-  dw 00880h,base+0243Eh
-  dw 00880h,base+02446h
-  dw 00880h,base+0244Eh
-  dw 00880h,base+0229Eh
-  dw 00880h,base+022A6h
-  dw 00880h,base+022AEh
-  dw 00880h,base+022B6h
-  dw 00880h,base+022BEh
-  dw 00880h,base+022C6h
-  dw 00880h,base+022CEh
-  dw 00880h,base+022D6h
-  dw 00880h,base+022DEh
-  dw 00880h,base+022E6h
-  dw 00880h,base+022EEh
-  dw 00880h,base+022F6h
-  dw 00880h,base+022FEh
-  dw 00880h,base+02306h
-  dw 00880h,base+0230Eh
+  dw 00880h,base+024B6h
+  dw 00880h,base+024BEh
+  dw 00880h,base+024C6h
   dw 00880h,base+02316h
   dw 00880h,base+0231Eh
   dw 00880h,base+02326h
   dw 00880h,base+0232Eh
-  dw 00880h,base+0230Eh
   dw 00880h,base+02336h
   dw 00880h,base+0233Eh
   dw 00880h,base+02346h
@@ -201,36 +186,60 @@ BossRoomframe001:
   dw 00880h,base+0235Eh
   dw 00880h,base+02366h
   dw 00880h,base+0236Eh
-  dw 00800h,base+02376h
+  dw 00880h,base+02376h
+  dw 00880h,base+0237Eh
+  dw 00880h,base+02386h
+  dw 00880h,base+0238Eh
+  dw 00880h,base+02396h
+  dw 00880h,base+0239Eh
+  dw 00880h,base+023A6h
+  dw 00880h,base+02386h
+  dw 00880h,base+023AEh
+  dw 00880h,base+023B6h
+  dw 00880h,base+023BEh
+  dw 00880h,base+023C6h
+  dw 00880h,base+023CEh
+  dw 00880h,base+023D6h
+  dw 00880h,base+023DEh
+  dw 00880h,base+023E6h
+  dw 0087Fh,base+023EEh
+  dw 00A80h,base+01FC0h
+  dw 00A80h,base+01FCAh
+  dw 00A80h,base+01FD4h
+  dw 00A80h,base+01FDEh
+  dw 00A80h,base+01FE8h
+  dw 00A80h,base+01FF2h
+  dw 00A80h,base+01FFCh
+  dw 00A80h,base+02006h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+0201Ah
+  dw 00A80h,base+02024h
+  dw 00A80h,base+0202Eh
+  dw 00A80h,base+02038h
+  dw 00A80h,base+02042h
+  dw 00A80h,base+0204Ch
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02056h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02060h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A00h,base+013CAh
 
 BossRoomframe002:
   db 010h,060h,078h,000h
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02286h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
+  dw 00880h,base+022FEh
   dw 00880h,base+024CEh
   dw 00880h,base+024D6h
   dw 00880h,base+024DEh
   dw 00880h,base+024E6h
   dw 00880h,base+024EEh
   dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
   dw 00880h,base+024FEh
   dw 00880h,base+02506h
   dw 00880h,base+0250Eh
@@ -241,51 +250,12 @@ BossRoomframe002:
   dw 00880h,base+02536h
   dw 00880h,base+0253Eh
   dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
-  dw 00880h,base+024CEh
-  dw 00880h,base+024D6h
-  dw 00880h,base+024DEh
-  dw 00880h,base+024E6h
-  dw 00880h,base+024EEh
-  dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
-  dw 00880h,base+024FEh
-  dw 00880h,base+02506h
-  dw 00880h,base+0250Eh
-  dw 00880h,base+02516h
-  dw 00880h,base+0251Eh
-  dw 00880h,base+02526h
-  dw 00880h,base+0252Eh
-  dw 00880h,base+02536h
-  dw 00880h,base+0253Eh
-  dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
   dw 00880h,base+0254Eh
   dw 00880h,base+02556h
   dw 00880h,base+0255Eh
   dw 00880h,base+02566h
   dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
   dw 00880h,base+02576h
   dw 00880h,base+0257Eh
   dw 00880h,base+02586h
@@ -296,6 +266,46 @@ BossRoomframe002:
   dw 00880h,base+025AEh
   dw 00880h,base+025B6h
   dw 00880h,base+025BEh
+  dw 00880h,base+024CEh
+  dw 00880h,base+024D6h
+  dw 00880h,base+024DEh
+  dw 00880h,base+024E6h
+  dw 00880h,base+024EEh
+  dw 00880h,base+024F6h
+  dw 00880h,base+024FEh
+  dw 00880h,base+02506h
+  dw 00880h,base+0250Eh
+  dw 00880h,base+02516h
+  dw 00880h,base+0251Eh
+  dw 00880h,base+02526h
+  dw 00880h,base+0252Eh
+  dw 00880h,base+02536h
+  dw 00880h,base+0253Eh
+  dw 00880h,base+02546h
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 00880h,base+025B6h
+  dw 00880h,base+025BEh
+  dw 00880h,base+024CEh
+  dw 00880h,base+024D6h
+  dw 00880h,base+024DEh
+  dw 00880h,base+024E6h
+  dw 00880h,base+024EEh
+  dw 00880h,base+024F6h
+  dw 00880h,base+024FEh
+  dw 00880h,base+02506h
   dw 00880h,base+025C6h
   dw 00880h,base+025CEh
   dw 00880h,base+025D6h
@@ -303,10 +313,25 @@ BossRoomframe002:
   dw 00880h,base+025E6h
   dw 00880h,base+025EEh
   dw 00880h,base+025F6h
-  dw 00800h,base+025FEh
+  dw 00880h,base+025FEh
+  dw 00880h,base+02606h
+  dw 00880h,base+0260Eh
+  dw 00880h,base+02616h
+  dw 00880h,base+0261Eh
+  dw 00880h,base+02626h
+  dw 00880h,base+0262Eh
+  dw 00880h,base+02636h
+  dw 00880h,base+0263Eh
+  dw 00880h,base+02646h
+  dw 00880h,base+0264Eh
+  dw 00880h,base+02656h
+  dw 00880h,base+0265Eh
+  dw 00880h,base+02666h
+  dw 00880h,base+0266Eh
+  dw 00800h,base+02676h
 
 BossRoomframe003:
-  db 020h,040h,070h,000h
+  db 020h,058h,070h,000h
   db 070h
   db 000h,000h,000h,000h,000h
   db 000h,000h
@@ -342,29 +367,13 @@ BossRoomframe003:
   dw 01080h,base+003D0h
   dw 01080h,base+003E0h
   dw 01084h,base+003F0h
-  dw 00880h,base+02606h
-  dw 00880h,base+0260Eh
-  dw 00880h,base+02616h
-  dw 00880h,base+0261Eh
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
-  dw 00880h,base+024CEh
-  dw 00880h,base+024D6h
-  dw 00880h,base+024DEh
+  dw 00880h,base+0267Eh
+  dw 00880h,base+02686h
+  dw 00880h,base+0268Eh
+  dw 00880h,base+02696h
   dw 00880h,base+024E6h
   dw 00880h,base+024EEh
   dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
   dw 00880h,base+024FEh
   dw 00880h,base+02506h
   dw 00880h,base+0250Eh
@@ -373,28 +382,53 @@ BossRoomframe003:
   dw 00880h,base+02526h
   dw 00880h,base+0252Eh
   dw 00880h,base+02536h
-  dw 00800h,base+0253Eh
+  dw 00880h,base+0253Eh
+  dw 00880h,base+02546h
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 0087Fh,base+025B6h
+  dw 00A80h,base+01FC0h
+  dw 00A80h,base+01FCAh
+  dw 00A80h,base+01FD4h
+  dw 00A80h,base+01FDEh
+  dw 00A80h,base+01FE8h
+  dw 00A80h,base+01FF2h
+  dw 00A80h,base+01FFCh
+  dw 00A80h,base+02006h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+0201Ah
+  dw 00A80h,base+02024h
+  dw 00A80h,base+0202Eh
+  dw 00A80h,base+02038h
+  dw 00A80h,base+02042h
+  dw 00A80h,base+0204Ch
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02056h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02060h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A00h,base+013CAh
 
 BossRoomframe004:
   db 010h,060h,078h,000h
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02626h
-  dw 00880h,base+0262Eh
-  dw 00880h,base+02636h
-  dw 00880h,base+0263Eh
-  dw 00880h,base+02646h
-  dw 00880h,base+0264Eh
-  dw 00880h,base+02656h
-  dw 00880h,base+0265Eh
-  dw 00880h,base+02666h
-  dw 00880h,base+0266Eh
-  dw 00880h,base+02676h
-  dw 00880h,base+0267Eh
-  dw 00880h,base+02686h
-  dw 00880h,base+0268Eh
-  dw 00880h,base+02696h
   dw 00880h,base+0269Eh
   dw 00880h,base+026A6h
   dw 00880h,base+026AEh
@@ -402,7 +436,6 @@ BossRoomframe004:
   dw 00880h,base+026BEh
   dw 00880h,base+026C6h
   dw 00880h,base+026CEh
-  dw 00880h,base+026AEh
   dw 00880h,base+026D6h
   dw 00880h,base+026DEh
   dw 00880h,base+026E6h
@@ -412,55 +445,13 @@ BossRoomframe004:
   dw 00880h,base+02706h
   dw 00880h,base+0270Eh
   dw 00880h,base+02716h
-  dw 00880h,base+02626h
-  dw 00880h,base+0262Eh
-  dw 00880h,base+02636h
-  dw 00880h,base+0263Eh
-  dw 00880h,base+02646h
-  dw 00880h,base+0264Eh
-  dw 00880h,base+02656h
-  dw 00880h,base+0265Eh
-  dw 00880h,base+02666h
-  dw 00880h,base+0266Eh
-  dw 00880h,base+02676h
-  dw 00880h,base+0267Eh
-  dw 00880h,base+02686h
-  dw 00880h,base+0268Eh
-  dw 00880h,base+02696h
-  dw 00880h,base+0269Eh
-  dw 00880h,base+026A6h
-  dw 00880h,base+026AEh
-  dw 00880h,base+026B6h
-  dw 00880h,base+026BEh
-  dw 00880h,base+026C6h
-  dw 00880h,base+026CEh
-  dw 00880h,base+026AEh
-  dw 00880h,base+026D6h
-  dw 00880h,base+026DEh
-  dw 00880h,base+026E6h
-  dw 00880h,base+026EEh
-  dw 00880h,base+026F6h
-  dw 00880h,base+026FEh
-  dw 00880h,base+02706h
-  dw 00880h,base+0270Eh
-  dw 00880h,base+02716h
-  dw 00880h,base+02626h
-  dw 00880h,base+0262Eh
-  dw 00880h,base+02636h
-  dw 00880h,base+0263Eh
-  dw 00880h,base+02646h
-  dw 00880h,base+0264Eh
-  dw 00880h,base+02656h
-  dw 00880h,base+0265Eh
-  dw 00880h,base+02666h
-  dw 00880h,base+0266Eh
-  dw 00880h,base+02676h
   dw 00880h,base+0271Eh
   dw 00880h,base+02726h
   dw 00880h,base+0272Eh
   dw 00880h,base+02736h
   dw 00880h,base+0273Eh
   dw 00880h,base+02746h
+  dw 00880h,base+02726h
   dw 00880h,base+0274Eh
   dw 00880h,base+02756h
   dw 00880h,base+0275Eh
@@ -470,15 +461,73 @@ BossRoomframe004:
   dw 00880h,base+0277Eh
   dw 00880h,base+02786h
   dw 00880h,base+0278Eh
+  dw 00880h,base+0269Eh
+  dw 00880h,base+026A6h
+  dw 00880h,base+026AEh
+  dw 00880h,base+026B6h
+  dw 00880h,base+026BEh
+  dw 00880h,base+026C6h
+  dw 00880h,base+026CEh
+  dw 00880h,base+026D6h
+  dw 00880h,base+026DEh
+  dw 00880h,base+026E6h
+  dw 00880h,base+026EEh
+  dw 00880h,base+026F6h
+  dw 00880h,base+026FEh
+  dw 00880h,base+02706h
+  dw 00880h,base+0270Eh
+  dw 00880h,base+02716h
+  dw 00880h,base+0271Eh
+  dw 00880h,base+02726h
+  dw 00880h,base+0272Eh
+  dw 00880h,base+02736h
+  dw 00880h,base+0273Eh
+  dw 00880h,base+02746h
+  dw 00880h,base+02726h
+  dw 00880h,base+0274Eh
+  dw 00880h,base+02756h
+  dw 00880h,base+0275Eh
+  dw 00880h,base+02766h
+  dw 00880h,base+0276Eh
+  dw 00880h,base+02776h
+  dw 00880h,base+0277Eh
+  dw 00880h,base+02786h
+  dw 00880h,base+0278Eh
+  dw 00880h,base+0269Eh
+  dw 00880h,base+026A6h
+  dw 00880h,base+026AEh
+  dw 00880h,base+026B6h
+  dw 00880h,base+026BEh
+  dw 00880h,base+026C6h
+  dw 00880h,base+026CEh
+  dw 00880h,base+026D6h
+  dw 00880h,base+026DEh
+  dw 00880h,base+026E6h
+  dw 00880h,base+026EEh
   dw 00880h,base+02796h
   dw 00880h,base+0279Eh
   dw 00880h,base+027A6h
   dw 00880h,base+027AEh
   dw 00880h,base+027B6h
-  dw 00800h,base+027BEh
+  dw 00880h,base+027BEh
+  dw 00880h,base+027C6h
+  dw 00880h,base+027CEh
+  dw 00880h,base+027D6h
+  dw 00880h,base+027DEh
+  dw 00880h,base+027E6h
+  dw 00880h,base+027EEh
+  dw 00880h,base+027F6h
+  dw 00880h,base+027FEh
+  dw 00880h,base+02806h
+  dw 00880h,base+0280Eh
+  dw 00880h,base+02816h
+  dw 00880h,base+0281Eh
+  dw 00880h,base+02826h
+  dw 00880h,base+0282Eh
+  dw 00800h,base+02836h
 
 BossRoomframe005:
-  db 020h,040h,070h,000h
+  db 020h,058h,070h,000h
   db 070h
   db 000h,000h,000h,000h,000h
   db 000h,000h
@@ -514,29 +563,13 @@ BossRoomframe005:
   dw 01080h,base+005D0h
   dw 01080h,base+005E0h
   dw 01084h,base+005F0h
-  dw 00880h,base+027C6h
-  dw 00880h,base+027CEh
-  dw 00880h,base+027D6h
-  dw 00880h,base+027DEh
-  dw 00880h,base+027E6h
-  dw 00880h,base+027EEh
-  dw 00880h,base+02656h
-  dw 00880h,base+0265Eh
-  dw 00880h,base+02666h
-  dw 00880h,base+0266Eh
-  dw 00880h,base+02676h
-  dw 00880h,base+0267Eh
-  dw 00880h,base+02686h
-  dw 00880h,base+0268Eh
-  dw 00880h,base+02696h
-  dw 00880h,base+0269Eh
-  dw 00880h,base+026A6h
-  dw 00880h,base+026AEh
-  dw 00880h,base+026B6h
-  dw 00880h,base+026BEh
-  dw 00880h,base+026C6h
+  dw 00880h,base+0283Eh
+  dw 00880h,base+02846h
+  dw 00880h,base+0284Eh
+  dw 00880h,base+02856h
+  dw 00880h,base+0285Eh
+  dw 00880h,base+02866h
   dw 00880h,base+026CEh
-  dw 00880h,base+026AEh
   dw 00880h,base+026D6h
   dw 00880h,base+026DEh
   dw 00880h,base+026E6h
@@ -545,36 +578,60 @@ BossRoomframe005:
   dw 00880h,base+026FEh
   dw 00880h,base+02706h
   dw 00880h,base+0270Eh
-  dw 00800h,base+02716h
+  dw 00880h,base+02716h
+  dw 00880h,base+0271Eh
+  dw 00880h,base+02726h
+  dw 00880h,base+0272Eh
+  dw 00880h,base+02736h
+  dw 00880h,base+0273Eh
+  dw 00880h,base+02746h
+  dw 00880h,base+02726h
+  dw 00880h,base+0274Eh
+  dw 00880h,base+02756h
+  dw 00880h,base+0275Eh
+  dw 00880h,base+02766h
+  dw 00880h,base+0276Eh
+  dw 00880h,base+02776h
+  dw 00880h,base+0277Eh
+  dw 00880h,base+02786h
+  dw 0087Fh,base+0278Eh
+  dw 00A80h,base+01FC0h
+  dw 00A80h,base+01FCAh
+  dw 00A80h,base+01FD4h
+  dw 00A80h,base+01FDEh
+  dw 00A80h,base+01FE8h
+  dw 00A80h,base+01FF2h
+  dw 00A80h,base+01FFCh
+  dw 00A80h,base+02006h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+0201Ah
+  dw 00A80h,base+02024h
+  dw 00A80h,base+0202Eh
+  dw 00A80h,base+02038h
+  dw 00A80h,base+02042h
+  dw 00A80h,base+0204Ch
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02056h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02060h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A00h,base+013CAh
 
 BossRoomframe006:
   db 010h,060h,078h,000h
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02286h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
+  dw 00880h,base+022FEh
   dw 00880h,base+024CEh
   dw 00880h,base+024D6h
   dw 00880h,base+024DEh
   dw 00880h,base+024E6h
   dw 00880h,base+024EEh
   dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
   dw 00880h,base+024FEh
   dw 00880h,base+02506h
   dw 00880h,base+0250Eh
@@ -585,72 +642,88 @@ BossRoomframe006:
   dw 00880h,base+02536h
   dw 00880h,base+0253Eh
   dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
-  dw 00880h,base+024CEh
-  dw 00880h,base+024D6h
-  dw 00880h,base+024DEh
-  dw 00880h,base+024E6h
-  dw 00880h,base+024EEh
-  dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
-  dw 00880h,base+024FEh
-  dw 00880h,base+02506h
-  dw 00880h,base+0250Eh
-  dw 00880h,base+02516h
-  dw 00880h,base+0251Eh
-  dw 00880h,base+02526h
-  dw 00880h,base+0252Eh
-  dw 00880h,base+02536h
-  dw 00880h,base+0253Eh
-  dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
   dw 00880h,base+0254Eh
   dw 00880h,base+02556h
   dw 00880h,base+0255Eh
-  dw 00880h,base+027F6h
-  dw 00880h,base+027FEh
-  dw 00880h,base+02806h
-  dw 00880h,base+0280Eh
-  dw 00880h,base+02816h
-  dw 00880h,base+0281Eh
-  dw 00880h,base+02826h
-  dw 00880h,base+0282Eh
-  dw 00880h,base+02836h
-  dw 00880h,base+0283Eh
-  dw 00880h,base+02846h
-  dw 00880h,base+0284Eh
-  dw 00880h,base+02856h
-  dw 00880h,base+0285Eh
-  dw 00880h,base+02866h
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 00880h,base+025B6h
+  dw 00880h,base+025BEh
+  dw 00880h,base+024CEh
+  dw 00880h,base+024D6h
+  dw 00880h,base+024DEh
+  dw 00880h,base+024E6h
+  dw 00880h,base+024EEh
+  dw 00880h,base+024F6h
+  dw 00880h,base+024FEh
+  dw 00880h,base+02506h
+  dw 00880h,base+0250Eh
+  dw 00880h,base+02516h
+  dw 00880h,base+0251Eh
+  dw 00880h,base+02526h
+  dw 00880h,base+0252Eh
+  dw 00880h,base+02536h
+  dw 00880h,base+0253Eh
+  dw 00880h,base+02546h
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 00880h,base+025B6h
+  dw 00880h,base+025BEh
+  dw 00880h,base+024CEh
+  dw 00880h,base+024D6h
+  dw 00880h,base+024DEh
+  dw 00880h,base+024E6h
+  dw 00880h,base+024EEh
+  dw 00880h,base+024F6h
+  dw 00880h,base+024FEh
+  dw 00880h,base+02506h
+  dw 00880h,base+025C6h
+  dw 00880h,base+025CEh
+  dw 00880h,base+025D6h
   dw 00880h,base+0286Eh
   dw 00880h,base+02876h
   dw 00880h,base+0287Eh
   dw 00880h,base+02886h
-  dw 00800h,base+0288Eh
+  dw 00880h,base+0288Eh
+  dw 00880h,base+02896h
+  dw 00880h,base+0289Eh
+  dw 00880h,base+028A6h
+  dw 00880h,base+028AEh
+  dw 00880h,base+028B6h
+  dw 00880h,base+028BEh
+  dw 00880h,base+028C6h
+  dw 00880h,base+028CEh
+  dw 00880h,base+028D6h
+  dw 00880h,base+028DEh
+  dw 00880h,base+028E6h
+  dw 00880h,base+028EEh
+  dw 00880h,base+028F6h
+  dw 00880h,base+028FEh
+  dw 00800h,base+02906h
 
 BossRoomframe007:
-  db 020h,040h,070h,000h
+  db 020h,058h,070h,000h
   db 070h
   db 000h,000h,000h,000h,000h
   db 000h,000h
@@ -686,29 +759,13 @@ BossRoomframe007:
   dw 01080h,base+007D0h
   dw 01080h,base+007E0h
   dw 01084h,base+007F0h
-  dw 00880h,base+02896h
-  dw 00880h,base+0289Eh
-  dw 00880h,base+028A6h
-  dw 00880h,base+028AEh
-  dw 00880h,base+028B6h
-  dw 00880h,base+028BEh
-  dw 00880h,base+028C6h
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
-  dw 00880h,base+024CEh
-  dw 00880h,base+024D6h
-  dw 00880h,base+024DEh
-  dw 00880h,base+024E6h
-  dw 00880h,base+024EEh
-  dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
+  dw 00880h,base+0290Eh
+  dw 00880h,base+02916h
+  dw 00880h,base+0291Eh
+  dw 00880h,base+02926h
+  dw 00880h,base+0292Eh
+  dw 00880h,base+02936h
+  dw 00880h,base+0293Eh
   dw 00880h,base+024FEh
   dw 00880h,base+02506h
   dw 00880h,base+0250Eh
@@ -717,28 +774,53 @@ BossRoomframe007:
   dw 00880h,base+02526h
   dw 00880h,base+0252Eh
   dw 00880h,base+02536h
-  dw 00800h,base+0253Eh
+  dw 00880h,base+0253Eh
+  dw 00880h,base+02546h
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 0087Fh,base+025B6h
+  dw 00A80h,base+01FC0h
+  dw 00A80h,base+01FCAh
+  dw 00A80h,base+01FD4h
+  dw 00A80h,base+01FDEh
+  dw 00A80h,base+01FE8h
+  dw 00A80h,base+01FF2h
+  dw 00A80h,base+01FFCh
+  dw 00A80h,base+02006h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+0201Ah
+  dw 00A80h,base+02024h
+  dw 00A80h,base+0202Eh
+  dw 00A80h,base+02038h
+  dw 00A80h,base+02042h
+  dw 00A80h,base+0204Ch
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02056h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02060h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A00h,base+013CAh
 
 BossRoomframe008:
   db 010h,060h,078h,000h
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02286h
-  dw 00880h,base+0228Eh
-  dw 00880h,base+02296h
-  dw 00880h,base+0229Eh
-  dw 00880h,base+022A6h
-  dw 00880h,base+022AEh
-  dw 00880h,base+022B6h
-  dw 00880h,base+022BEh
-  dw 00880h,base+022C6h
-  dw 00880h,base+022CEh
-  dw 00880h,base+022D6h
-  dw 00880h,base+022DEh
-  dw 00880h,base+022E6h
-  dw 00880h,base+022EEh
-  dw 00880h,base+022F6h
   dw 00880h,base+022FEh
   dw 00880h,base+02306h
   dw 00880h,base+0230Eh
@@ -746,7 +828,6 @@ BossRoomframe008:
   dw 00880h,base+0231Eh
   dw 00880h,base+02326h
   dw 00880h,base+0232Eh
-  dw 00880h,base+0230Eh
   dw 00880h,base+02336h
   dw 00880h,base+0233Eh
   dw 00880h,base+02346h
@@ -756,21 +837,22 @@ BossRoomframe008:
   dw 00880h,base+02366h
   dw 00880h,base+0236Eh
   dw 00880h,base+02376h
-  dw 00880h,base+02286h
-  dw 00880h,base+0228Eh
-  dw 00880h,base+02296h
-  dw 00880h,base+0229Eh
-  dw 00880h,base+022A6h
-  dw 00880h,base+022AEh
-  dw 00880h,base+022B6h
-  dw 00880h,base+022BEh
-  dw 00880h,base+022C6h
-  dw 00880h,base+022CEh
-  dw 00880h,base+022D6h
-  dw 00880h,base+022DEh
-  dw 00880h,base+022E6h
-  dw 00880h,base+022EEh
-  dw 00880h,base+022F6h
+  dw 00880h,base+0237Eh
+  dw 00880h,base+02386h
+  dw 00880h,base+0238Eh
+  dw 00880h,base+02396h
+  dw 00880h,base+0239Eh
+  dw 00880h,base+023A6h
+  dw 00880h,base+02386h
+  dw 00880h,base+023AEh
+  dw 00880h,base+023B6h
+  dw 00880h,base+023BEh
+  dw 00880h,base+023C6h
+  dw 00880h,base+023CEh
+  dw 00880h,base+023D6h
+  dw 00880h,base+023DEh
+  dw 00880h,base+023E6h
+  dw 00880h,base+023EEh
   dw 00880h,base+022FEh
   dw 00880h,base+02306h
   dw 00880h,base+0230Eh
@@ -778,7 +860,6 @@ BossRoomframe008:
   dw 00880h,base+0231Eh
   dw 00880h,base+02326h
   dw 00880h,base+0232Eh
-  dw 00880h,base+0230Eh
   dw 00880h,base+02336h
   dw 00880h,base+0233Eh
   dw 00880h,base+02346h
@@ -788,41 +869,57 @@ BossRoomframe008:
   dw 00880h,base+02366h
   dw 00880h,base+0236Eh
   dw 00880h,base+02376h
-  dw 00880h,base+02286h
-  dw 00880h,base+0228Eh
-  dw 00880h,base+02296h
-  dw 00880h,base+0229Eh
-  dw 00880h,base+022A6h
-  dw 00880h,base+022AEh
-  dw 00880h,base+022B6h
-  dw 00880h,base+022BEh
-  dw 00880h,base+022C6h
-  dw 00880h,base+022CEh
-  dw 00880h,base+022D6h
-  dw 00880h,base+022DEh
-  dw 00880h,base+022E6h
-  dw 00880h,base+028CEh
-  dw 00880h,base+028D6h
-  dw 00880h,base+028DEh
-  dw 00880h,base+028E6h
-  dw 00880h,base+028EEh
-  dw 00880h,base+028F6h
-  dw 00880h,base+028FEh
-  dw 00880h,base+02906h
-  dw 00880h,base+0290Eh
-  dw 00880h,base+02916h
-  dw 00880h,base+0291Eh
-  dw 00880h,base+02926h
-  dw 00880h,base+0292Eh
-  dw 00880h,base+02936h
-  dw 00880h,base+0293Eh
+  dw 00880h,base+0237Eh
+  dw 00880h,base+02386h
+  dw 00880h,base+0238Eh
+  dw 00880h,base+02396h
+  dw 00880h,base+0239Eh
+  dw 00880h,base+023A6h
+  dw 00880h,base+02386h
+  dw 00880h,base+023AEh
+  dw 00880h,base+023B6h
+  dw 00880h,base+023BEh
+  dw 00880h,base+023C6h
+  dw 00880h,base+023CEh
+  dw 00880h,base+023D6h
+  dw 00880h,base+023DEh
+  dw 00880h,base+023E6h
+  dw 00880h,base+023EEh
+  dw 00880h,base+022FEh
+  dw 00880h,base+02306h
+  dw 00880h,base+0230Eh
+  dw 00880h,base+02316h
+  dw 00880h,base+0231Eh
+  dw 00880h,base+02326h
+  dw 00880h,base+0232Eh
+  dw 00880h,base+02336h
+  dw 00880h,base+0233Eh
+  dw 00880h,base+02346h
+  dw 00880h,base+0234Eh
+  dw 00880h,base+02356h
+  dw 00880h,base+0235Eh
   dw 00880h,base+02946h
   dw 00880h,base+0294Eh
   dw 00880h,base+02956h
-  dw 00800h,base+0295Eh
+  dw 00880h,base+0295Eh
+  dw 00880h,base+02966h
+  dw 00880h,base+0296Eh
+  dw 00880h,base+02976h
+  dw 00880h,base+0297Eh
+  dw 00880h,base+02986h
+  dw 00880h,base+0298Eh
+  dw 00880h,base+02996h
+  dw 00880h,base+0299Eh
+  dw 00880h,base+029A6h
+  dw 00880h,base+029AEh
+  dw 00880h,base+029B6h
+  dw 00880h,base+029BEh
+  dw 00880h,base+029C6h
+  dw 00880h,base+029CEh
+  dw 00800h,base+029D6h
 
 BossRoomframe009:
-  db 020h,040h,070h,000h
+  db 020h,058h,070h,000h
   db 070h
   db 000h,000h,000h,000h,000h
   db 000h,000h
@@ -858,30 +955,14 @@ BossRoomframe009:
   dw 01080h,base+009D0h
   dw 01080h,base+009E0h
   dw 01084h,base+009F0h
-  dw 00880h,base+02966h
-  dw 00880h,base+0296Eh
-  dw 00880h,base+02976h
-  dw 00880h,base+0297Eh
-  dw 00880h,base+02986h
-  dw 00880h,base+0298Eh
-  dw 00880h,base+02996h
-  dw 00880h,base+0299Eh
-  dw 00880h,base+022C6h
-  dw 00880h,base+022CEh
-  dw 00880h,base+022D6h
-  dw 00880h,base+022DEh
-  dw 00880h,base+022E6h
-  dw 00880h,base+022EEh
-  dw 00880h,base+022F6h
-  dw 00880h,base+022FEh
-  dw 00880h,base+02306h
-  dw 00880h,base+0230Eh
-  dw 00880h,base+02316h
-  dw 00880h,base+0231Eh
-  dw 00880h,base+02326h
-  dw 00880h,base+0232Eh
-  dw 00880h,base+0230Eh
-  dw 00880h,base+02336h
+  dw 00880h,base+029DEh
+  dw 00880h,base+029E6h
+  dw 00880h,base+029EEh
+  dw 00880h,base+029F6h
+  dw 00880h,base+029FEh
+  dw 00880h,base+02A06h
+  dw 00880h,base+02A0Eh
+  dw 00880h,base+02A16h
   dw 00880h,base+0233Eh
   dw 00880h,base+02346h
   dw 00880h,base+0234Eh
@@ -889,36 +970,60 @@ BossRoomframe009:
   dw 00880h,base+0235Eh
   dw 00880h,base+02366h
   dw 00880h,base+0236Eh
-  dw 00800h,base+02376h
+  dw 00880h,base+02376h
+  dw 00880h,base+0237Eh
+  dw 00880h,base+02386h
+  dw 00880h,base+0238Eh
+  dw 00880h,base+02396h
+  dw 00880h,base+0239Eh
+  dw 00880h,base+023A6h
+  dw 00880h,base+02386h
+  dw 00880h,base+023AEh
+  dw 00880h,base+023B6h
+  dw 00880h,base+023BEh
+  dw 00880h,base+023C6h
+  dw 00880h,base+023CEh
+  dw 00880h,base+023D6h
+  dw 00880h,base+023DEh
+  dw 00880h,base+023E6h
+  dw 0087Fh,base+023EEh
+  dw 00A80h,base+01FC0h
+  dw 00A80h,base+01FCAh
+  dw 00A80h,base+01FD4h
+  dw 00A80h,base+01FDEh
+  dw 00A80h,base+01FE8h
+  dw 00A80h,base+01FF2h
+  dw 00A80h,base+01FFCh
+  dw 00A80h,base+02006h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+0201Ah
+  dw 00A80h,base+02024h
+  dw 00A80h,base+0202Eh
+  dw 00A80h,base+02038h
+  dw 00A80h,base+02042h
+  dw 00A80h,base+0204Ch
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02056h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02060h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A00h,base+013CAh
 
 BossRoomframe010:
   db 010h,060h,078h,000h
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
+  dw 00880h,base+025BEh
   dw 00880h,base+024CEh
   dw 00880h,base+024D6h
   dw 00880h,base+024DEh
   dw 00880h,base+024E6h
   dw 00880h,base+024EEh
   dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
   dw 00880h,base+024FEh
   dw 00880h,base+02506h
   dw 00880h,base+0250Eh
@@ -929,28 +1034,28 @@ BossRoomframe010:
   dw 00880h,base+02536h
   dw 00880h,base+0253Eh
   dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 00880h,base+025B6h
+  dw 00880h,base+025BEh
   dw 00880h,base+024CEh
   dw 00880h,base+024D6h
   dw 00880h,base+024DEh
   dw 00880h,base+024E6h
   dw 00880h,base+024EEh
   dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
   dw 00880h,base+024FEh
   dw 00880h,base+02506h
   dw 00880h,base+0250Eh
@@ -961,40 +1066,56 @@ BossRoomframe010:
   dw 00880h,base+02536h
   dw 00880h,base+0253Eh
   dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+029A6h
-  dw 00880h,base+029AEh
-  dw 00880h,base+02806h
-  dw 00880h,base+029B6h
-  dw 00880h,base+029BEh
-  dw 00880h,base+0281Eh
-  dw 00880h,base+029C6h
-  dw 00880h,base+0282Eh
-  dw 00880h,base+02836h
-  dw 00880h,base+0283Eh
-  dw 00880h,base+02846h
-  dw 00880h,base+0284Eh
-  dw 00880h,base+029CEh
-  dw 00880h,base+029D6h
-  dw 00880h,base+029DEh
-  dw 00880h,base+029E6h
-  dw 00880h,base+029EEh
-  dw 00880h,base+029F6h
-  dw 00880h,base+029FEh
-  dw 00800h,base+02A06h
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 00880h,base+025B6h
+  dw 00880h,base+025BEh
+  dw 00880h,base+024CEh
+  dw 00880h,base+024D6h
+  dw 00880h,base+024DEh
+  dw 00880h,base+024E6h
+  dw 00880h,base+024EEh
+  dw 00880h,base+024F6h
+  dw 00880h,base+024FEh
+  dw 00880h,base+02506h
+  dw 00880h,base+0250Eh
+  dw 00880h,base+02516h
+  dw 00880h,base+0251Eh
+  dw 00880h,base+02A1Eh
+  dw 00880h,base+02A26h
+  dw 00880h,base+0287Eh
+  dw 00880h,base+02A2Eh
+  dw 00880h,base+02A36h
+  dw 00880h,base+02896h
+  dw 00880h,base+02A3Eh
+  dw 00880h,base+028A6h
+  dw 00880h,base+028AEh
+  dw 00880h,base+028B6h
+  dw 00880h,base+028BEh
+  dw 00880h,base+028C6h
+  dw 00880h,base+02A46h
+  dw 00880h,base+02A4Eh
+  dw 00880h,base+02A56h
+  dw 00880h,base+02A5Eh
+  dw 00880h,base+02A66h
+  dw 00880h,base+02A6Eh
+  dw 00880h,base+02A76h
+  dw 00800h,base+02A7Eh
 
 BossRoomframe011:
-  db 020h,040h,070h,000h
+  db 020h,058h,070h,000h
   db 070h
   db 000h,000h,000h,000h,000h
   db 000h,000h
@@ -1030,29 +1151,13 @@ BossRoomframe011:
   dw 01080h,base+00BD0h
   dw 01080h,base+00BE0h
   dw 01084h,base+00BF0h
-  dw 00880h,base+02A0Eh
-  dw 00880h,base+02A16h
-  dw 00880h,base+02A1Eh
-  dw 00880h,base+028AEh
-  dw 00880h,base+028B6h
-  dw 00880h,base+028BEh
-  dw 00880h,base+028C6h
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
-  dw 00880h,base+024CEh
-  dw 00880h,base+024D6h
-  dw 00880h,base+024DEh
-  dw 00880h,base+024E6h
-  dw 00880h,base+024EEh
-  dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
+  dw 00880h,base+02A86h
+  dw 00880h,base+02A8Eh
+  dw 00880h,base+02A96h
+  dw 00880h,base+02926h
+  dw 00880h,base+0292Eh
+  dw 00880h,base+02936h
+  dw 00880h,base+0293Eh
   dw 00880h,base+024FEh
   dw 00880h,base+02506h
   dw 00880h,base+0250Eh
@@ -1061,28 +1166,53 @@ BossRoomframe011:
   dw 00880h,base+02526h
   dw 00880h,base+0252Eh
   dw 00880h,base+02536h
-  dw 00800h,base+0253Eh
+  dw 00880h,base+0253Eh
+  dw 00880h,base+02546h
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 0087Fh,base+025B6h
+  dw 00A80h,base+01FC0h
+  dw 00A80h,base+01FCAh
+  dw 00A80h,base+01FD4h
+  dw 00A80h,base+01FDEh
+  dw 00A80h,base+01FE8h
+  dw 00A80h,base+01FF2h
+  dw 00A80h,base+01FFCh
+  dw 00A80h,base+02006h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+0201Ah
+  dw 00A80h,base+02024h
+  dw 00A80h,base+0202Eh
+  dw 00A80h,base+02038h
+  dw 00A80h,base+02042h
+  dw 00A80h,base+0204Ch
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02056h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02060h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A00h,base+013CAh
 
 BossRoomframe012:
   db 010h,060h,078h,000h
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02626h
-  dw 00880h,base+0262Eh
-  dw 00880h,base+02636h
-  dw 00880h,base+0263Eh
-  dw 00880h,base+02646h
-  dw 00880h,base+0264Eh
-  dw 00880h,base+02656h
-  dw 00880h,base+0265Eh
-  dw 00880h,base+02666h
-  dw 00880h,base+0266Eh
-  dw 00880h,base+02676h
-  dw 00880h,base+0267Eh
-  dw 00880h,base+02686h
-  dw 00880h,base+0268Eh
-  dw 00880h,base+02696h
   dw 00880h,base+0269Eh
   dw 00880h,base+026A6h
   dw 00880h,base+026AEh
@@ -1090,7 +1220,6 @@ BossRoomframe012:
   dw 00880h,base+026BEh
   dw 00880h,base+026C6h
   dw 00880h,base+026CEh
-  dw 00880h,base+026AEh
   dw 00880h,base+026D6h
   dw 00880h,base+026DEh
   dw 00880h,base+026E6h
@@ -1100,73 +1229,89 @@ BossRoomframe012:
   dw 00880h,base+02706h
   dw 00880h,base+0270Eh
   dw 00880h,base+02716h
-  dw 00880h,base+02626h
-  dw 00880h,base+0262Eh
-  dw 00880h,base+02636h
-  dw 00880h,base+0263Eh
-  dw 00880h,base+02646h
-  dw 00880h,base+0264Eh
-  dw 00880h,base+02656h
-  dw 00880h,base+0265Eh
-  dw 00880h,base+02666h
-  dw 00880h,base+0266Eh
-  dw 00880h,base+02676h
-  dw 00880h,base+0267Eh
-  dw 00880h,base+02686h
-  dw 00880h,base+0268Eh
-  dw 00880h,base+02696h
-  dw 00880h,base+0269Eh
-  dw 00880h,base+026A6h
-  dw 00880h,base+026AEh
-  dw 00880h,base+026B6h
-  dw 00880h,base+026BEh
-  dw 00880h,base+026C6h
-  dw 00880h,base+026CEh
-  dw 00880h,base+026AEh
-  dw 00880h,base+026D6h
-  dw 00880h,base+026DEh
-  dw 00880h,base+026E6h
-  dw 00880h,base+026EEh
-  dw 00880h,base+026F6h
-  dw 00880h,base+026FEh
-  dw 00880h,base+02706h
-  dw 00880h,base+0270Eh
-  dw 00880h,base+02716h
-  dw 00880h,base+02626h
-  dw 00880h,base+0262Eh
-  dw 00880h,base+02636h
-  dw 00880h,base+0263Eh
-  dw 00880h,base+02646h
-  dw 00880h,base+0264Eh
-  dw 00880h,base+02656h
-  dw 00880h,base+0265Eh
-  dw 00880h,base+02666h
-  dw 00880h,base+0266Eh
-  dw 00880h,base+02A26h
-  dw 00880h,base+02A2Eh
-  dw 00880h,base+02A36h
-  dw 00880h,base+02A3Eh
-  dw 00880h,base+02A46h
+  dw 00880h,base+0271Eh
+  dw 00880h,base+02726h
+  dw 00880h,base+0272Eh
+  dw 00880h,base+02736h
   dw 00880h,base+0273Eh
-  dw 00880h,base+02A4Eh
-  dw 00880h,base+02A56h
-  dw 00880h,base+02A5Eh
-  dw 00880h,base+02A66h
-  dw 00880h,base+02A6Eh
-  dw 00880h,base+02A76h
-  dw 00880h,base+02A7Eh
-  dw 00880h,base+02A86h
-  dw 00880h,base+02A8Eh
-  dw 00880h,base+02A96h
+  dw 00880h,base+02746h
+  dw 00880h,base+02726h
+  dw 00880h,base+0274Eh
+  dw 00880h,base+02756h
+  dw 00880h,base+0275Eh
+  dw 00880h,base+02766h
+  dw 00880h,base+0276Eh
+  dw 00880h,base+02776h
+  dw 00880h,base+0277Eh
+  dw 00880h,base+02786h
+  dw 00880h,base+0278Eh
+  dw 00880h,base+0269Eh
+  dw 00880h,base+026A6h
+  dw 00880h,base+026AEh
+  dw 00880h,base+026B6h
+  dw 00880h,base+026BEh
+  dw 00880h,base+026C6h
+  dw 00880h,base+026CEh
+  dw 00880h,base+026D6h
+  dw 00880h,base+026DEh
+  dw 00880h,base+026E6h
+  dw 00880h,base+026EEh
+  dw 00880h,base+026F6h
+  dw 00880h,base+026FEh
+  dw 00880h,base+02706h
+  dw 00880h,base+0270Eh
+  dw 00880h,base+02716h
+  dw 00880h,base+0271Eh
+  dw 00880h,base+02726h
+  dw 00880h,base+0272Eh
+  dw 00880h,base+02736h
+  dw 00880h,base+0273Eh
+  dw 00880h,base+02746h
+  dw 00880h,base+02726h
+  dw 00880h,base+0274Eh
+  dw 00880h,base+02756h
+  dw 00880h,base+0275Eh
+  dw 00880h,base+02766h
+  dw 00880h,base+0276Eh
+  dw 00880h,base+02776h
+  dw 00880h,base+0277Eh
+  dw 00880h,base+02786h
+  dw 00880h,base+0278Eh
+  dw 00880h,base+0269Eh
+  dw 00880h,base+026A6h
+  dw 00880h,base+026AEh
+  dw 00880h,base+026B6h
+  dw 00880h,base+026BEh
+  dw 00880h,base+026C6h
+  dw 00880h,base+026CEh
+  dw 00880h,base+026D6h
+  dw 00880h,base+026DEh
+  dw 00880h,base+026E6h
   dw 00880h,base+02A9Eh
   dw 00880h,base+02AA6h
   dw 00880h,base+02AAEh
   dw 00880h,base+02AB6h
   dw 00880h,base+02ABEh
-  dw 00800h,base+02AC6h
+  dw 00880h,base+027B6h
+  dw 00880h,base+02AC6h
+  dw 00880h,base+02ACEh
+  dw 00880h,base+02AD6h
+  dw 00880h,base+02ADEh
+  dw 00880h,base+02AE6h
+  dw 00880h,base+02AEEh
+  dw 00880h,base+02AF6h
+  dw 00880h,base+02AFEh
+  dw 00880h,base+02B06h
+  dw 00880h,base+02B0Eh
+  dw 00880h,base+02B16h
+  dw 00880h,base+02B1Eh
+  dw 00880h,base+02B26h
+  dw 00880h,base+02B2Eh
+  dw 00880h,base+02B36h
+  dw 00800h,base+02B3Eh
 
 BossRoomframe013:
-  db 020h,040h,070h,000h
+  db 020h,058h,070h,000h
   db 070h
   db 000h,000h,000h,000h,000h
   db 000h,000h
@@ -1202,29 +1347,13 @@ BossRoomframe013:
   dw 01080h,base+00DD0h
   dw 01080h,base+00DE0h
   dw 01084h,base+00DF0h
-  dw 00880h,base+02ACEh
-  dw 00880h,base+02AD6h
-  dw 00880h,base+02ADEh
-  dw 00880h,base+02AE6h
-  dw 00880h,base+02AEEh
-  dw 00880h,base+0264Eh
-  dw 00880h,base+02656h
-  dw 00880h,base+0265Eh
-  dw 00880h,base+02666h
-  dw 00880h,base+0266Eh
-  dw 00880h,base+02676h
-  dw 00880h,base+0267Eh
-  dw 00880h,base+02686h
-  dw 00880h,base+0268Eh
-  dw 00880h,base+02696h
-  dw 00880h,base+0269Eh
-  dw 00880h,base+026A6h
-  dw 00880h,base+026AEh
-  dw 00880h,base+026B6h
-  dw 00880h,base+026BEh
+  dw 00880h,base+02B46h
+  dw 00880h,base+02B4Eh
+  dw 00880h,base+02B56h
+  dw 00880h,base+02B5Eh
+  dw 00880h,base+02B66h
   dw 00880h,base+026C6h
   dw 00880h,base+026CEh
-  dw 00880h,base+026AEh
   dw 00880h,base+026D6h
   dw 00880h,base+026DEh
   dw 00880h,base+026E6h
@@ -1233,36 +1362,60 @@ BossRoomframe013:
   dw 00880h,base+026FEh
   dw 00880h,base+02706h
   dw 00880h,base+0270Eh
-  dw 00800h,base+02716h
+  dw 00880h,base+02716h
+  dw 00880h,base+0271Eh
+  dw 00880h,base+02726h
+  dw 00880h,base+0272Eh
+  dw 00880h,base+02736h
+  dw 00880h,base+0273Eh
+  dw 00880h,base+02746h
+  dw 00880h,base+02726h
+  dw 00880h,base+0274Eh
+  dw 00880h,base+02756h
+  dw 00880h,base+0275Eh
+  dw 00880h,base+02766h
+  dw 00880h,base+0276Eh
+  dw 00880h,base+02776h
+  dw 00880h,base+0277Eh
+  dw 00880h,base+02786h
+  dw 0087Fh,base+0278Eh
+  dw 00A80h,base+01FC0h
+  dw 00A80h,base+01FCAh
+  dw 00A80h,base+01FD4h
+  dw 00A80h,base+01FDEh
+  dw 00A80h,base+01FE8h
+  dw 00A80h,base+01FF2h
+  dw 00A80h,base+01FFCh
+  dw 00A80h,base+02006h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+0201Ah
+  dw 00A80h,base+02024h
+  dw 00A80h,base+0202Eh
+  dw 00A80h,base+02038h
+  dw 00A80h,base+02042h
+  dw 00A80h,base+0204Ch
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02056h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02060h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A00h,base+013CAh
 
 BossRoomframe014:
   db 010h,060h,078h,000h
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02286h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
+  dw 00880h,base+022FEh
   dw 00880h,base+024CEh
   dw 00880h,base+024D6h
   dw 00880h,base+024DEh
   dw 00880h,base+024E6h
   dw 00880h,base+024EEh
   dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
   dw 00880h,base+024FEh
   dw 00880h,base+02506h
   dw 00880h,base+0250Eh
@@ -1273,72 +1426,88 @@ BossRoomframe014:
   dw 00880h,base+02536h
   dw 00880h,base+0253Eh
   dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
-  dw 00880h,base+024CEh
-  dw 00880h,base+024D6h
-  dw 00880h,base+024DEh
-  dw 00880h,base+024E6h
-  dw 00880h,base+024EEh
-  dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
-  dw 00880h,base+024FEh
-  dw 00880h,base+02506h
-  dw 00880h,base+0250Eh
-  dw 00880h,base+02516h
-  dw 00880h,base+0251Eh
-  dw 00880h,base+02526h
-  dw 00880h,base+0252Eh
-  dw 00880h,base+02536h
-  dw 00880h,base+0253Eh
-  dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
   dw 00880h,base+0254Eh
   dw 00880h,base+02556h
   dw 00880h,base+0255Eh
   dw 00880h,base+02566h
   dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
   dw 00880h,base+02576h
   dw 00880h,base+0257Eh
   dw 00880h,base+02586h
   dw 00880h,base+0258Eh
-  dw 00880h,base+02AF6h
-  dw 00880h,base+02AFEh
-  dw 00880h,base+02B06h
-  dw 00880h,base+02B0Eh
-  dw 00880h,base+02B16h
-  dw 00880h,base+02B1Eh
-  dw 00880h,base+02B26h
-  dw 00880h,base+02B2Eh
-  dw 00880h,base+02B36h
-  dw 00880h,base+02B3Eh
-  dw 00880h,base+02B46h
-  dw 00880h,base+02B4Eh
-  dw 00880h,base+02B56h
-  dw 00800h,base+02B5Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 00880h,base+025B6h
+  dw 00880h,base+025BEh
+  dw 00880h,base+024CEh
+  dw 00880h,base+024D6h
+  dw 00880h,base+024DEh
+  dw 00880h,base+024E6h
+  dw 00880h,base+024EEh
+  dw 00880h,base+024F6h
+  dw 00880h,base+024FEh
+  dw 00880h,base+02506h
+  dw 00880h,base+0250Eh
+  dw 00880h,base+02516h
+  dw 00880h,base+0251Eh
+  dw 00880h,base+02526h
+  dw 00880h,base+0252Eh
+  dw 00880h,base+02536h
+  dw 00880h,base+0253Eh
+  dw 00880h,base+02546h
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 00880h,base+025B6h
+  dw 00880h,base+025BEh
+  dw 00880h,base+024CEh
+  dw 00880h,base+024D6h
+  dw 00880h,base+024DEh
+  dw 00880h,base+024E6h
+  dw 00880h,base+024EEh
+  dw 00880h,base+024F6h
+  dw 00880h,base+024FEh
+  dw 00880h,base+02506h
+  dw 00880h,base+025C6h
+  dw 00880h,base+025CEh
+  dw 00880h,base+025D6h
+  dw 00880h,base+025DEh
+  dw 00880h,base+025E6h
+  dw 00880h,base+025EEh
+  dw 00880h,base+025F6h
+  dw 00880h,base+025FEh
+  dw 00880h,base+02606h
+  dw 00880h,base+02B6Eh
+  dw 00880h,base+02B76h
+  dw 00880h,base+02B7Eh
+  dw 00880h,base+02B86h
+  dw 00880h,base+02B8Eh
+  dw 00880h,base+02B96h
+  dw 00880h,base+02B9Eh
+  dw 00880h,base+02BA6h
+  dw 00880h,base+02BAEh
+  dw 00880h,base+02BB6h
+  dw 00880h,base+02BBEh
+  dw 00880h,base+02BC6h
+  dw 00880h,base+02BCEh
+  dw 00800h,base+02BD6h
 
 BossRoomframe015:
-  db 020h,040h,070h,000h
+  db 020h,058h,070h,000h
   db 070h
   db 000h,000h,000h,000h,000h
   db 000h,000h
@@ -1374,29 +1543,13 @@ BossRoomframe015:
   dw 01080h,base+00FD0h
   dw 01080h,base+00FE0h
   dw 01084h,base+00FF0h
-  dw 00880h,base+02B66h
-  dw 00880h,base+0260Eh
-  dw 00880h,base+02616h
-  dw 00880h,base+0261Eh
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
-  dw 00880h,base+024CEh
-  dw 00880h,base+024D6h
-  dw 00880h,base+024DEh
+  dw 00880h,base+02BDEh
+  dw 00880h,base+02686h
+  dw 00880h,base+0268Eh
+  dw 00880h,base+02696h
   dw 00880h,base+024E6h
   dw 00880h,base+024EEh
   dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
   dw 00880h,base+024FEh
   dw 00880h,base+02506h
   dw 00880h,base+0250Eh
@@ -1405,36 +1558,60 @@ BossRoomframe015:
   dw 00880h,base+02526h
   dw 00880h,base+0252Eh
   dw 00880h,base+02536h
-  dw 00800h,base+0253Eh
+  dw 00880h,base+0253Eh
+  dw 00880h,base+02546h
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 0087Fh,base+025B6h
+  dw 00A80h,base+01FC0h
+  dw 00A80h,base+01FCAh
+  dw 00A80h,base+01FD4h
+  dw 00A80h,base+01FDEh
+  dw 00A80h,base+01FE8h
+  dw 00A80h,base+01FF2h
+  dw 00A80h,base+01FFCh
+  dw 00A80h,base+02006h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+02010h
+  dw 00A80h,base+0201Ah
+  dw 00A80h,base+02024h
+  dw 00A80h,base+0202Eh
+  dw 00A80h,base+02038h
+  dw 00A80h,base+02042h
+  dw 00A80h,base+0204Ch
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02056h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+02060h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+013CAh
+  dw 00A00h,base+013CAh
 
 BossRoomframe016:
   db 010h,060h,078h,000h
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
+  dw 00880h,base+025BEh
   dw 00880h,base+024CEh
   dw 00880h,base+024D6h
   dw 00880h,base+024DEh
   dw 00880h,base+024E6h
   dw 00880h,base+024EEh
   dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
   dw 00880h,base+024FEh
   dw 00880h,base+02506h
   dw 00880h,base+0250Eh
@@ -1445,28 +1622,28 @@ BossRoomframe016:
   dw 00880h,base+02536h
   dw 00880h,base+0253Eh
   dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 00880h,base+025B6h
+  dw 00880h,base+025BEh
   dw 00880h,base+024CEh
   dw 00880h,base+024D6h
   dw 00880h,base+024DEh
   dw 00880h,base+024E6h
   dw 00880h,base+024EEh
   dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
   dw 00880h,base+024FEh
   dw 00880h,base+02506h
   dw 00880h,base+0250Eh
@@ -1477,37 +1654,53 @@ BossRoomframe016:
   dw 00880h,base+02536h
   dw 00880h,base+0253Eh
   dw 00880h,base+02546h
-  dw 00880h,base+02456h
-  dw 00880h,base+0245Eh
-  dw 00880h,base+02466h
-  dw 00880h,base+0246Eh
-  dw 00880h,base+02476h
-  dw 00880h,base+0247Eh
-  dw 00880h,base+02486h
-  dw 00880h,base+0248Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+02B6Eh
-  dw 00880h,base+02B76h
-  dw 00880h,base+02B7Eh
-  dw 00880h,base+02B86h
-  dw 00880h,base+02B8Eh
-  dw 00880h,base+02B96h
-  dw 00880h,base+02B9Eh
-  dw 00880h,base+02BA6h
-  dw 00880h,base+02BAEh
-  dw 00880h,base+02BB6h
-  dw 00880h,base+02BBEh
-  dw 00880h,base+02BC6h
-  dw 00880h,base+02BCEh
-  dw 00880h,base+02BD6h
-  dw 00880h,base+02BDEh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 00880h,base+025B6h
+  dw 00880h,base+025BEh
+  dw 00880h,base+024CEh
+  dw 00880h,base+024D6h
+  dw 00880h,base+024DEh
+  dw 00880h,base+024E6h
+  dw 00880h,base+024EEh
+  dw 00880h,base+024F6h
+  dw 00880h,base+024FEh
+  dw 00880h,base+02506h
+  dw 00880h,base+0250Eh
+  dw 00880h,base+02516h
+  dw 00880h,base+0251Eh
+  dw 00880h,base+02526h
+  dw 00880h,base+0252Eh
   dw 00880h,base+02BE6h
   dw 00880h,base+02BEEh
-  dw 00800h,base+02BF6h
+  dw 00880h,base+02BF6h
+  dw 00880h,base+02BFEh
+  dw 00880h,base+02C06h
+  dw 00880h,base+02C0Eh
+  dw 00880h,base+02C16h
+  dw 00880h,base+02C1Eh
+  dw 00880h,base+02C26h
+  dw 00880h,base+02C2Eh
+  dw 00880h,base+02C36h
+  dw 00880h,base+02C3Eh
+  dw 00880h,base+02C46h
+  dw 00880h,base+02C4Eh
+  dw 00880h,base+02C56h
+  dw 00880h,base+02C5Eh
+  dw 00880h,base+02C66h
+  dw 00800h,base+02C6Eh
 
 BossRoomframe017:
   db 020h,058h,070h,000h
@@ -1546,59 +1739,59 @@ BossRoomframe017:
   dw 01080h,base+011D0h
   dw 01080h,base+011E0h
   dw 01084h,base+011F0h
-  dw 00880h,base+02BFEh
-  dw 00880h,base+02C06h
-  dw 00880h,base+02C0Eh
-  dw 00880h,base+02C16h
-  dw 00880h,base+02C1Eh
-  dw 00880h,base+02C26h
-  dw 00880h,base+02C2Eh
-  dw 00880h,base+02C36h
-  dw 00880h,base+02C3Eh
-  dw 00880h,base+02496h
-  dw 00880h,base+0249Eh
-  dw 00880h,base+024A6h
-  dw 00880h,base+024AEh
-  dw 00880h,base+024B6h
-  dw 00880h,base+024BEh
-  dw 00880h,base+024C6h
-  dw 00880h,base+024CEh
-  dw 00880h,base+024D6h
-  dw 00880h,base+024DEh
-  dw 00880h,base+024E6h
-  dw 00880h,base+024EEh
-  dw 00880h,base+024F6h
-  dw 00880h,base+024D6h
-  dw 00880h,base+024FEh
-  dw 00880h,base+02506h
+  dw 00880h,base+02C76h
+  dw 00880h,base+02C7Eh
+  dw 00880h,base+02C86h
+  dw 00880h,base+02C8Eh
+  dw 00880h,base+02C96h
+  dw 00880h,base+02C9Eh
+  dw 00880h,base+02CA6h
+  dw 00880h,base+02CAEh
+  dw 00880h,base+02CB6h
   dw 00880h,base+0250Eh
   dw 00880h,base+02516h
   dw 00880h,base+0251Eh
   dw 00880h,base+02526h
   dw 00880h,base+0252Eh
   dw 00880h,base+02536h
-  dw 0087Fh,base+02C46h
-  dw 00A80h,base+01FC0h
-  dw 00A80h,base+01FCAh
-  dw 00A80h,base+01FD4h
-  dw 00A80h,base+01FDEh
+  dw 00880h,base+0253Eh
+  dw 00880h,base+02546h
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02556h
+  dw 00880h,base+0255Eh
+  dw 00880h,base+02566h
+  dw 00880h,base+0256Eh
+  dw 00880h,base+0254Eh
+  dw 00880h,base+02576h
+  dw 00880h,base+0257Eh
+  dw 00880h,base+02586h
+  dw 00880h,base+0258Eh
+  dw 00880h,base+02596h
+  dw 00880h,base+0259Eh
+  dw 00880h,base+025A6h
+  dw 00880h,base+025AEh
+  dw 0087Fh,base+02CBEh
+  dw 00A80h,base+0206Ah
+  dw 00A80h,base+02074h
+  dw 00A80h,base+0207Eh
+  dw 00A80h,base+02088h
   dw 00A80h,base+01FE8h
   dw 00A80h,base+01FF2h
   dw 00A80h,base+01FFCh
   dw 00A80h,base+02006h
-  dw 00A80h,base+02010h
-  dw 00A80h,base+0201Ah
-  dw 00A80h,base+02024h
-  dw 00A80h,base+0202Eh
-  dw 00A80h,base+02038h
-  dw 00A80h,base+02042h
-  dw 00A80h,base+0204Ch
-  dw 00A80h,base+02056h
+  dw 00A80h,base+02092h
+  dw 00A80h,base+0209Ch
+  dw 00A80h,base+020A6h
+  dw 00A80h,base+020B0h
+  dw 00A80h,base+020BAh
+  dw 00A80h,base+020C4h
+  dw 00A80h,base+020CEh
+  dw 00A80h,base+020D8h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+02060h
+  dw 00A80h,base+020E2h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+0206Ah
-  dw 00A80h,base+02074h
+  dw 00A80h,base+020ECh
+  dw 00A80h,base+020F6h
   dw 00A80h,base+013CAh
   dw 00A80h,base+01713h
   dw 00A00h,base+013CAh
@@ -1608,21 +1801,6 @@ BossRoomframe018:
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02626h
-  dw 00880h,base+0262Eh
-  dw 00880h,base+02636h
-  dw 00880h,base+0263Eh
-  dw 00880h,base+02646h
-  dw 00880h,base+0264Eh
-  dw 00880h,base+02656h
-  dw 00880h,base+0265Eh
-  dw 00880h,base+02666h
-  dw 00880h,base+0266Eh
-  dw 00880h,base+02676h
-  dw 00880h,base+0267Eh
-  dw 00880h,base+02686h
-  dw 00880h,base+0268Eh
-  dw 00880h,base+02696h
   dw 00880h,base+0269Eh
   dw 00880h,base+026A6h
   dw 00880h,base+026AEh
@@ -1630,7 +1808,6 @@ BossRoomframe018:
   dw 00880h,base+026BEh
   dw 00880h,base+026C6h
   dw 00880h,base+026CEh
-  dw 00880h,base+026AEh
   dw 00880h,base+026D6h
   dw 00880h,base+026DEh
   dw 00880h,base+026E6h
@@ -1640,70 +1817,86 @@ BossRoomframe018:
   dw 00880h,base+02706h
   dw 00880h,base+0270Eh
   dw 00880h,base+02716h
-  dw 00880h,base+02626h
-  dw 00880h,base+0262Eh
-  dw 00880h,base+02636h
-  dw 00880h,base+0263Eh
-  dw 00880h,base+02646h
-  dw 00880h,base+0264Eh
-  dw 00880h,base+02656h
-  dw 00880h,base+0265Eh
-  dw 00880h,base+02666h
-  dw 00880h,base+0266Eh
-  dw 00880h,base+02676h
-  dw 00880h,base+0267Eh
-  dw 00880h,base+02686h
-  dw 00880h,base+0268Eh
-  dw 00880h,base+02696h
-  dw 00880h,base+0269Eh
-  dw 00880h,base+026A6h
-  dw 00880h,base+026AEh
-  dw 00880h,base+026B6h
-  dw 00880h,base+026BEh
-  dw 00880h,base+026C6h
-  dw 00880h,base+026CEh
-  dw 00880h,base+026AEh
-  dw 00880h,base+026D6h
-  dw 00880h,base+026DEh
-  dw 00880h,base+026E6h
-  dw 00880h,base+026EEh
-  dw 00880h,base+026F6h
-  dw 00880h,base+026FEh
-  dw 00880h,base+02706h
-  dw 00880h,base+0270Eh
-  dw 00880h,base+02716h
-  dw 00880h,base+02626h
-  dw 00880h,base+0262Eh
-  dw 00880h,base+02636h
-  dw 00880h,base+0263Eh
-  dw 00880h,base+02646h
-  dw 00880h,base+0264Eh
-  dw 00880h,base+02656h
-  dw 00880h,base+0265Eh
-  dw 00880h,base+02666h
-  dw 00880h,base+0266Eh
-  dw 00880h,base+02676h
-  dw 00880h,base+0267Eh
-  dw 00880h,base+02686h
-  dw 00880h,base+0268Eh
-  dw 00880h,base+02696h
-  dw 00880h,base+0269Eh
-  dw 00880h,base+02C4Eh
-  dw 00880h,base+02C56h
-  dw 00880h,base+02C5Eh
-  dw 00880h,base+02C66h
-  dw 00880h,base+02C6Eh
-  dw 00880h,base+02C76h
+  dw 00880h,base+0271Eh
+  dw 00880h,base+02726h
+  dw 00880h,base+0272Eh
+  dw 00880h,base+02736h
+  dw 00880h,base+0273Eh
+  dw 00880h,base+02746h
+  dw 00880h,base+02726h
   dw 00880h,base+0274Eh
-  dw 00880h,base+02C7Eh
-  dw 00880h,base+02C86h
-  dw 00880h,base+02C8Eh
-  dw 00880h,base+02C8Eh
-  dw 00880h,base+02C96h
-  dw 00880h,base+02C9Eh
-  dw 00880h,base+02CA6h
-  dw 00880h,base+02CAEh
-  dw 00800h,base+02CB6h
+  dw 00880h,base+02756h
+  dw 00880h,base+0275Eh
+  dw 00880h,base+02766h
+  dw 00880h,base+0276Eh
+  dw 00880h,base+02776h
+  dw 00880h,base+0277Eh
+  dw 00880h,base+02786h
+  dw 00880h,base+0278Eh
+  dw 00880h,base+0269Eh
+  dw 00880h,base+026A6h
+  dw 00880h,base+026AEh
+  dw 00880h,base+026B6h
+  dw 00880h,base+026BEh
+  dw 00880h,base+026C6h
+  dw 00880h,base+026CEh
+  dw 00880h,base+026D6h
+  dw 00880h,base+026DEh
+  dw 00880h,base+026E6h
+  dw 00880h,base+026EEh
+  dw 00880h,base+026F6h
+  dw 00880h,base+026FEh
+  dw 00880h,base+02706h
+  dw 00880h,base+0270Eh
+  dw 00880h,base+02716h
+  dw 00880h,base+0271Eh
+  dw 00880h,base+02726h
+  dw 00880h,base+0272Eh
+  dw 00880h,base+02736h
+  dw 00880h,base+0273Eh
+  dw 00880h,base+02746h
+  dw 00880h,base+02726h
+  dw 00880h,base+0274Eh
+  dw 00880h,base+02756h
+  dw 00880h,base+0275Eh
+  dw 00880h,base+02766h
+  dw 00880h,base+0276Eh
+  dw 00880h,base+02776h
+  dw 00880h,base+0277Eh
+  dw 00880h,base+02786h
+  dw 00880h,base+0278Eh
+  dw 00880h,base+0269Eh
+  dw 00880h,base+026A6h
+  dw 00880h,base+026AEh
+  dw 00880h,base+026B6h
+  dw 00880h,base+026BEh
+  dw 00880h,base+026C6h
+  dw 00880h,base+026CEh
+  dw 00880h,base+026D6h
+  dw 00880h,base+026DEh
+  dw 00880h,base+026E6h
+  dw 00880h,base+026EEh
+  dw 00880h,base+026F6h
+  dw 00880h,base+026FEh
+  dw 00880h,base+02706h
+  dw 00880h,base+0270Eh
+  dw 00880h,base+02716h
+  dw 00880h,base+02CC6h
+  dw 00880h,base+02CCEh
+  dw 00880h,base+02CD6h
+  dw 00880h,base+02CDEh
+  dw 00880h,base+02CE6h
+  dw 00880h,base+02CEEh
+  dw 00880h,base+027C6h
+  dw 00880h,base+02CF6h
+  dw 00880h,base+02CFEh
+  dw 00880h,base+02D06h
+  dw 00880h,base+02D06h
+  dw 00880h,base+02D0Eh
+  dw 00880h,base+02D16h
+  dw 00880h,base+02D1Eh
+  dw 00880h,base+02D26h
+  dw 00800h,base+02D2Eh
 
 BossRoomframe019:
   db 020h,058h,070h,000h
@@ -1745,56 +1938,56 @@ BossRoomframe019:
   dw 00880h,base+012C4h
   dw 00880h,base+01294h
   dw 00880h,base+01274h
-  dw 00880h,base+02CBEh
-  dw 00880h,base+02CC6h
-  dw 00880h,base+02CCEh
-  dw 00880h,base+02CD6h
-  dw 00880h,base+02C7Eh
-  dw 00880h,base+02CDEh
-  dw 00880h,base+02CE6h
-  dw 00880h,base+02676h
-  dw 00880h,base+0267Eh
-  dw 00880h,base+02686h
-  dw 00880h,base+0268Eh
-  dw 00880h,base+02696h
-  dw 00880h,base+0269Eh
-  dw 00880h,base+026A6h
-  dw 00880h,base+026AEh
-  dw 00880h,base+026B6h
-  dw 00880h,base+026BEh
-  dw 00880h,base+026C6h
-  dw 00880h,base+026CEh
-  dw 00880h,base+026AEh
-  dw 00880h,base+026D6h
-  dw 00880h,base+026DEh
-  dw 00880h,base+026E6h
+  dw 00880h,base+02D36h
+  dw 00880h,base+02D3Eh
+  dw 00880h,base+02D46h
+  dw 00880h,base+02D4Eh
+  dw 00880h,base+02CF6h
+  dw 00880h,base+02D56h
+  dw 00880h,base+02D5Eh
   dw 00880h,base+026EEh
   dw 00880h,base+026F6h
   dw 00880h,base+026FEh
   dw 00880h,base+02706h
-  dw 00880h,base+02CEEh
-  dw 0087Fh,base+02CF6h
-  dw 00A80h,base+0207Eh
-  dw 00A80h,base+02088h
-  dw 00A80h,base+02092h
-  dw 00A80h,base+0209Ch
+  dw 00880h,base+0270Eh
+  dw 00880h,base+02716h
+  dw 00880h,base+0271Eh
+  dw 00880h,base+02726h
+  dw 00880h,base+0272Eh
+  dw 00880h,base+02736h
+  dw 00880h,base+0273Eh
+  dw 00880h,base+02746h
+  dw 00880h,base+02726h
+  dw 00880h,base+0274Eh
+  dw 00880h,base+02756h
+  dw 00880h,base+0275Eh
+  dw 00880h,base+02766h
+  dw 00880h,base+0276Eh
+  dw 00880h,base+02776h
+  dw 00880h,base+0277Eh
+  dw 00880h,base+02D66h
+  dw 0087Fh,base+02D6Eh
+  dw 00A80h,base+02100h
+  dw 00A80h,base+0210Ah
+  dw 00A80h,base+02114h
+  dw 00A80h,base+0211Eh
   dw 00A80h,base+01FE8h
   dw 00A80h,base+01FF2h
   dw 00A80h,base+01FFCh
   dw 00A80h,base+02006h
-  dw 00A80h,base+02010h
-  dw 00A80h,base+0201Ah
-  dw 00A80h,base+02024h
-  dw 00A80h,base+0202Eh
-  dw 00A80h,base+02038h
-  dw 00A80h,base+02042h
-  dw 00A80h,base+0204Ch
-  dw 00A80h,base+02056h
+  dw 00A80h,base+02092h
+  dw 00A80h,base+0209Ch
+  dw 00A80h,base+020A6h
+  dw 00A80h,base+020B0h
+  dw 00A80h,base+020BAh
+  dw 00A80h,base+020C4h
+  dw 00A80h,base+020CEh
+  dw 00A80h,base+020D8h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+02060h
+  dw 00A80h,base+020E2h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+0206Ah
-  dw 00A80h,base+02074h
+  dw 00A80h,base+020ECh
+  dw 00A80h,base+020F6h
   dw 00A80h,base+013CAh
   dw 00A80h,base+01713h
   dw 00A00h,base+013CAh
@@ -1804,21 +1997,6 @@ BossRoomframe020:
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02CFEh
-  dw 00880h,base+02D06h
-  dw 00880h,base+02D0Eh
-  dw 00880h,base+02D16h
-  dw 00880h,base+02D1Eh
-  dw 00880h,base+02D26h
-  dw 00880h,base+02D2Eh
-  dw 00880h,base+02D36h
-  dw 00880h,base+02D3Eh
-  dw 00880h,base+02D46h
-  dw 00880h,base+02D4Eh
-  dw 00880h,base+02D56h
-  dw 00880h,base+02D5Eh
-  dw 00880h,base+02D66h
-  dw 00880h,base+02D6Eh
   dw 00880h,base+02D76h
   dw 00880h,base+02D7Eh
   dw 00880h,base+02D86h
@@ -1826,7 +2004,6 @@ BossRoomframe020:
   dw 00880h,base+02D96h
   dw 00880h,base+02D9Eh
   dw 00880h,base+02DA6h
-  dw 00880h,base+02D86h
   dw 00880h,base+02DAEh
   dw 00880h,base+02DB6h
   dw 00880h,base+02DBEh
@@ -1836,70 +2013,86 @@ BossRoomframe020:
   dw 00880h,base+02DDEh
   dw 00880h,base+02DE6h
   dw 00880h,base+02DEEh
-  dw 00880h,base+02CFEh
-  dw 00880h,base+02D06h
-  dw 00880h,base+02D0Eh
-  dw 00880h,base+02D16h
-  dw 00880h,base+02D1Eh
-  dw 00880h,base+02D26h
-  dw 00880h,base+02D2Eh
-  dw 00880h,base+02D36h
-  dw 00880h,base+02D3Eh
-  dw 00880h,base+02D46h
-  dw 00880h,base+02D4Eh
-  dw 00880h,base+02D56h
-  dw 00880h,base+02D5Eh
-  dw 00880h,base+02D66h
-  dw 00880h,base+02D6Eh
-  dw 00880h,base+02D76h
-  dw 00880h,base+02D7Eh
-  dw 00880h,base+02D86h
-  dw 00880h,base+02D8Eh
-  dw 00880h,base+02D96h
-  dw 00880h,base+02D9Eh
-  dw 00880h,base+02DA6h
-  dw 00880h,base+02D86h
-  dw 00880h,base+02DAEh
-  dw 00880h,base+02DB6h
-  dw 00880h,base+02DBEh
-  dw 00880h,base+02DC6h
-  dw 00880h,base+02DCEh
-  dw 00880h,base+02DD6h
-  dw 00880h,base+02DDEh
-  dw 00880h,base+02DE6h
-  dw 00880h,base+02DEEh
-  dw 00880h,base+02CFEh
-  dw 00880h,base+02D06h
-  dw 00880h,base+02D0Eh
-  dw 00880h,base+02D16h
-  dw 00880h,base+02D1Eh
-  dw 00880h,base+02D26h
-  dw 00880h,base+02D2Eh
-  dw 00880h,base+02D36h
-  dw 00880h,base+02D3Eh
-  dw 00880h,base+02D46h
-  dw 00880h,base+02D4Eh
-  dw 00880h,base+02D56h
-  dw 00880h,base+02D5Eh
-  dw 00880h,base+02D66h
-  dw 00880h,base+02D6Eh
-  dw 00880h,base+02D76h
-  dw 00880h,base+02D7Eh
-  dw 00880h,base+02D86h
-  dw 00880h,base+02D8Eh
   dw 00880h,base+02DF6h
   dw 00880h,base+02DFEh
   dw 00880h,base+02E06h
   dw 00880h,base+02E0Eh
   dw 00880h,base+02E16h
   dw 00880h,base+02E1Eh
+  dw 00880h,base+02DFEh
   dw 00880h,base+02E26h
   dw 00880h,base+02E2Eh
   dw 00880h,base+02E36h
   dw 00880h,base+02E3Eh
   dw 00880h,base+02E46h
   dw 00880h,base+02E4Eh
-  dw 00800h,base+02E56h
+  dw 00880h,base+02E56h
+  dw 00880h,base+02E5Eh
+  dw 00880h,base+02E66h
+  dw 00880h,base+02D76h
+  dw 00880h,base+02D7Eh
+  dw 00880h,base+02D86h
+  dw 00880h,base+02D8Eh
+  dw 00880h,base+02D96h
+  dw 00880h,base+02D9Eh
+  dw 00880h,base+02DA6h
+  dw 00880h,base+02DAEh
+  dw 00880h,base+02DB6h
+  dw 00880h,base+02DBEh
+  dw 00880h,base+02DC6h
+  dw 00880h,base+02DCEh
+  dw 00880h,base+02DD6h
+  dw 00880h,base+02DDEh
+  dw 00880h,base+02DE6h
+  dw 00880h,base+02DEEh
+  dw 00880h,base+02DF6h
+  dw 00880h,base+02DFEh
+  dw 00880h,base+02E06h
+  dw 00880h,base+02E0Eh
+  dw 00880h,base+02E16h
+  dw 00880h,base+02E1Eh
+  dw 00880h,base+02DFEh
+  dw 00880h,base+02E26h
+  dw 00880h,base+02E2Eh
+  dw 00880h,base+02E36h
+  dw 00880h,base+02E3Eh
+  dw 00880h,base+02E46h
+  dw 00880h,base+02E4Eh
+  dw 00880h,base+02E56h
+  dw 00880h,base+02E5Eh
+  dw 00880h,base+02E66h
+  dw 00880h,base+02D76h
+  dw 00880h,base+02D7Eh
+  dw 00880h,base+02D86h
+  dw 00880h,base+02D8Eh
+  dw 00880h,base+02D96h
+  dw 00880h,base+02D9Eh
+  dw 00880h,base+02DA6h
+  dw 00880h,base+02DAEh
+  dw 00880h,base+02DB6h
+  dw 00880h,base+02DBEh
+  dw 00880h,base+02DC6h
+  dw 00880h,base+02DCEh
+  dw 00880h,base+02DD6h
+  dw 00880h,base+02DDEh
+  dw 00880h,base+02DE6h
+  dw 00880h,base+02DEEh
+  dw 00880h,base+02DF6h
+  dw 00880h,base+02DFEh
+  dw 00880h,base+02E06h
+  dw 00880h,base+02E6Eh
+  dw 00880h,base+02E76h
+  dw 00880h,base+02E7Eh
+  dw 00880h,base+02E86h
+  dw 00880h,base+02E8Eh
+  dw 00880h,base+02E96h
+  dw 00880h,base+02E9Eh
+  dw 00880h,base+02EA6h
+  dw 00880h,base+02EAEh
+  dw 00880h,base+02EB6h
+  dw 00880h,base+02EBEh
+  dw 00880h,base+02EC6h
+  dw 00800h,base+02ECEh
 
 BossRoomframe021:
   db 020h,058h,070h,000h
@@ -1946,51 +2139,51 @@ BossRoomframe021:
   dw 00880h,base+014A4h
   dw 00880h,base+01454h
   dw 00880h,base+01454h
-  dw 00880h,base+02E5Eh
-  dw 00880h,base+02E66h
-  dw 00880h,base+02E6Eh
-  dw 00880h,base+02E76h
-  dw 00880h,base+02D5Eh
-  dw 00880h,base+02D66h
-  dw 00880h,base+02D6Eh
-  dw 00880h,base+02D76h
-  dw 00880h,base+02D7Eh
-  dw 00880h,base+02D86h
-  dw 00880h,base+02D8Eh
-  dw 00880h,base+02D96h
-  dw 00880h,base+02D9Eh
-  dw 00880h,base+02DA6h
-  dw 00880h,base+02D86h
-  dw 00880h,base+02DAEh
-  dw 00880h,base+02DB6h
-  dw 00880h,base+02DBEh
-  dw 00880h,base+02DC6h
-  dw 00880h,base+02DCEh
-  dw 00880h,base+02E7Eh
+  dw 00880h,base+02ED6h
+  dw 00880h,base+02EDEh
+  dw 00880h,base+02EE6h
+  dw 00880h,base+02EEEh
+  dw 00880h,base+02DD6h
+  dw 00880h,base+02DDEh
+  dw 00880h,base+02DE6h
+  dw 00880h,base+02DEEh
+  dw 00880h,base+02DF6h
+  dw 00880h,base+02DFEh
+  dw 00880h,base+02E06h
+  dw 00880h,base+02E0Eh
+  dw 00880h,base+02E16h
+  dw 00880h,base+02E1Eh
+  dw 00880h,base+02DFEh
+  dw 00880h,base+02E26h
+  dw 00880h,base+02E2Eh
+  dw 00880h,base+02E36h
+  dw 00880h,base+02E3Eh
+  dw 00880h,base+02E46h
+  dw 00880h,base+02EF6h
   dw 00880h,base+011DCh
-  dw 00880h,base+021B5h
-  dw 0087Fh,base+02E86h
-  dw 00A80h,base+020A6h
-  dw 00A80h,base+020B0h
-  dw 00A80h,base+020BAh
-  dw 00A80h,base+020C4h
+  dw 00880h,base+0222Dh
+  dw 0087Fh,base+02EFEh
+  dw 00A80h,base+02128h
+  dw 00A80h,base+02132h
+  dw 00A80h,base+0213Ch
+  dw 00A80h,base+02146h
   dw 00A80h,base+01FE8h
   dw 00A80h,base+01FF2h
   dw 00A80h,base+01FFCh
   dw 00A80h,base+02006h
-  dw 00A80h,base+02010h
-  dw 00A80h,base+0201Ah
-  dw 00A80h,base+02024h
-  dw 00A80h,base+0202Eh
-  dw 00A80h,base+02038h
-  dw 00A80h,base+02042h
-  dw 00A80h,base+0204Ch
-  dw 00A80h,base+02056h
+  dw 00A80h,base+02092h
+  dw 00A80h,base+0209Ch
+  dw 00A80h,base+020A6h
+  dw 00A80h,base+020B0h
+  dw 00A80h,base+020BAh
+  dw 00A80h,base+020C4h
+  dw 00A80h,base+020CEh
+  dw 00A80h,base+020D8h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+02060h
+  dw 00A80h,base+020E2h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+0206Ah
-  dw 00A80h,base+02074h
+  dw 00A80h,base+020ECh
+  dw 00A80h,base+020F6h
   dw 00A80h,base+013CAh
   dw 00A80h,base+01713h
   dw 00A00h,base+013CAh
@@ -2000,21 +2193,6 @@ BossRoomframe022:
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+02E8Eh
-  dw 00880h,base+02E96h
-  dw 00880h,base+02E9Eh
-  dw 00880h,base+02EA6h
-  dw 00880h,base+02EAEh
-  dw 00880h,base+02EB6h
-  dw 00880h,base+02EBEh
-  dw 00880h,base+02EC6h
-  dw 00880h,base+02ECEh
-  dw 00880h,base+02ED6h
-  dw 00880h,base+02EDEh
-  dw 00880h,base+02EE6h
-  dw 00880h,base+02EEEh
-  dw 00880h,base+02EF6h
-  dw 00880h,base+02EFEh
   dw 00880h,base+02F06h
   dw 00880h,base+02F0Eh
   dw 00880h,base+02F16h
@@ -2022,7 +2200,6 @@ BossRoomframe022:
   dw 00880h,base+02F26h
   dw 00880h,base+02F2Eh
   dw 00880h,base+02F36h
-  dw 00880h,base+02F16h
   dw 00880h,base+02F3Eh
   dw 00880h,base+02F46h
   dw 00880h,base+02F4Eh
@@ -2032,70 +2209,86 @@ BossRoomframe022:
   dw 00880h,base+02F6Eh
   dw 00880h,base+02F76h
   dw 00880h,base+02F7Eh
-  dw 00880h,base+02E8Eh
-  dw 00880h,base+02E96h
-  dw 00880h,base+02E9Eh
-  dw 00880h,base+02EA6h
-  dw 00880h,base+02EAEh
-  dw 00880h,base+02EB6h
-  dw 00880h,base+02EBEh
-  dw 00880h,base+02EC6h
-  dw 00880h,base+02ECEh
-  dw 00880h,base+02ED6h
-  dw 00880h,base+02EDEh
-  dw 00880h,base+02EE6h
-  dw 00880h,base+02EEEh
-  dw 00880h,base+02EF6h
-  dw 00880h,base+02EFEh
-  dw 00880h,base+02F06h
-  dw 00880h,base+02F0Eh
-  dw 00880h,base+02F16h
-  dw 00880h,base+02F1Eh
-  dw 00880h,base+02F26h
-  dw 00880h,base+02F2Eh
-  dw 00880h,base+02F36h
-  dw 00880h,base+02F16h
-  dw 00880h,base+02F3Eh
-  dw 00880h,base+02F46h
-  dw 00880h,base+02F4Eh
-  dw 00880h,base+02F56h
-  dw 00880h,base+02F5Eh
-  dw 00880h,base+02F66h
-  dw 00880h,base+02F6Eh
-  dw 00880h,base+02F76h
-  dw 00880h,base+02F7Eh
-  dw 00880h,base+02E8Eh
-  dw 00880h,base+02E96h
-  dw 00880h,base+02E9Eh
-  dw 00880h,base+02EA6h
-  dw 00880h,base+02EAEh
-  dw 00880h,base+02EB6h
-  dw 00880h,base+02EBEh
-  dw 00880h,base+02EC6h
-  dw 00880h,base+02ECEh
-  dw 00880h,base+02ED6h
-  dw 00880h,base+02EDEh
-  dw 00880h,base+02EE6h
-  dw 00880h,base+02EEEh
-  dw 00880h,base+02EF6h
-  dw 00880h,base+02EFEh
-  dw 00880h,base+02F06h
-  dw 00880h,base+02F0Eh
-  dw 00880h,base+02F16h
-  dw 00880h,base+02F1Eh
-  dw 00880h,base+02F26h
-  dw 00880h,base+02F2Eh
-  dw 00880h,base+02F36h
-  dw 00880h,base+02F16h
   dw 00880h,base+02F86h
   dw 00880h,base+02F8Eh
   dw 00880h,base+02F96h
   dw 00880h,base+02F9Eh
   dw 00880h,base+02FA6h
   dw 00880h,base+02FAEh
+  dw 00880h,base+02F8Eh
   dw 00880h,base+02FB6h
   dw 00880h,base+02FBEh
-  dw 00800h,base+02FC6h
+  dw 00880h,base+02FC6h
+  dw 00880h,base+02FCEh
+  dw 00880h,base+02FD6h
+  dw 00880h,base+02FDEh
+  dw 00880h,base+02FE6h
+  dw 00880h,base+02FEEh
+  dw 00880h,base+02FF6h
+  dw 00880h,base+02F06h
+  dw 00880h,base+02F0Eh
+  dw 00880h,base+02F16h
+  dw 00880h,base+02F1Eh
+  dw 00880h,base+02F26h
+  dw 00880h,base+02F2Eh
+  dw 00880h,base+02F36h
+  dw 00880h,base+02F3Eh
+  dw 00880h,base+02F46h
+  dw 00880h,base+02F4Eh
+  dw 00880h,base+02F56h
+  dw 00880h,base+02F5Eh
+  dw 00880h,base+02F66h
+  dw 00880h,base+02F6Eh
+  dw 00880h,base+02F76h
+  dw 00880h,base+02F7Eh
+  dw 00880h,base+02F86h
+  dw 00880h,base+02F8Eh
+  dw 00880h,base+02F96h
+  dw 00880h,base+02F9Eh
+  dw 00880h,base+02FA6h
+  dw 00880h,base+02FAEh
+  dw 00880h,base+02F8Eh
+  dw 00880h,base+02FB6h
+  dw 00880h,base+02FBEh
+  dw 00880h,base+02FC6h
+  dw 00880h,base+02FCEh
+  dw 00880h,base+02FD6h
+  dw 00880h,base+02FDEh
+  dw 00880h,base+02FE6h
+  dw 00880h,base+02FEEh
+  dw 00880h,base+02FF6h
+  dw 00880h,base+02F06h
+  dw 00880h,base+02F0Eh
+  dw 00880h,base+02F16h
+  dw 00880h,base+02F1Eh
+  dw 00880h,base+02F26h
+  dw 00880h,base+02F2Eh
+  dw 00880h,base+02F36h
+  dw 00880h,base+02F3Eh
+  dw 00880h,base+02F46h
+  dw 00880h,base+02F4Eh
+  dw 00880h,base+02F56h
+  dw 00880h,base+02F5Eh
+  dw 00880h,base+02F66h
+  dw 00880h,base+02F6Eh
+  dw 00880h,base+02F76h
+  dw 00880h,base+02F7Eh
+  dw 00880h,base+02F86h
+  dw 00880h,base+02F8Eh
+  dw 00880h,base+02F96h
+  dw 00880h,base+02F9Eh
+  dw 00880h,base+02FA6h
+  dw 00880h,base+02FAEh
+  dw 00880h,base+02F8Eh
+  dw 00880h,base+02FFEh
+  dw 00880h,base+03006h
+  dw 00880h,base+0300Eh
+  dw 00880h,base+03016h
+  dw 00880h,base+0301Eh
+  dw 00880h,base+03026h
+  dw 00880h,base+0302Eh
+  dw 00880h,base+03036h
+  dw 00800h,base+0303Eh
 
 BossRoomframe023:
   db 020h,058h,070h,000h
@@ -2134,9 +2327,9 @@ BossRoomframe023:
   dw 01080h,base+017D0h
   dw 01080h,base+017E0h
   dw 01084h,base+017F0h
-  dw 00880h,base+02FCEh
+  dw 00880h,base+03046h
   dw 00880h,base+017B4h
-  dw 00880h,base+02FD6h
+  dw 00880h,base+0304Eh
   dw 00880h,base+017B4h
   dw 00880h,base+01764h
   dw 00880h,base+017B4h
@@ -2145,50 +2338,50 @@ BossRoomframe023:
   dw 00880h,base+01704h
   dw 00880h,base+011DCh
   dw 00880h,base+01269h
-  dw 00880h,base+02FDEh
+  dw 00880h,base+03056h
   dw 00880h,base+01614h
-  dw 00880h,base+02FE6h
-  dw 00880h,base+02EFEh
-  dw 00880h,base+02F06h
-  dw 00880h,base+02F0Eh
-  dw 00880h,base+02F16h
-  dw 00880h,base+02F1Eh
-  dw 00880h,base+02F26h
-  dw 00880h,base+02F2Eh
-  dw 00880h,base+02F36h
-  dw 00880h,base+02F16h
-  dw 00880h,base+02F3Eh
-  dw 00880h,base+02F46h
-  dw 00880h,base+02FEEh
+  dw 00880h,base+0305Eh
+  dw 00880h,base+02F76h
+  dw 00880h,base+02F7Eh
+  dw 00880h,base+02F86h
+  dw 00880h,base+02F8Eh
+  dw 00880h,base+02F96h
+  dw 00880h,base+02F9Eh
+  dw 00880h,base+02FA6h
+  dw 00880h,base+02FAEh
+  dw 00880h,base+02F8Eh
+  dw 00880h,base+02FB6h
+  dw 00880h,base+02FBEh
+  dw 00880h,base+03066h
   dw 00880h,base+011DCh
-  dw 00880h,base+02FF6h
-  dw 00880h,base+02FFEh
-  dw 00880h,base+03006h
-  dw 00880h,base+0300Eh
-  dw 0087Fh,base+03016h
-  dw 00A80h,base+020CEh
-  dw 00A80h,base+020D8h
-  dw 00A80h,base+020E2h
-  dw 00A80h,base+0209Ch
+  dw 00880h,base+0306Eh
+  dw 00880h,base+03076h
+  dw 00880h,base+0307Eh
+  dw 00880h,base+03086h
+  dw 0087Fh,base+0308Eh
+  dw 00A80h,base+02010h
+  dw 00A80h,base+02150h
+  dw 00A80h,base+0215Ah
+  dw 00A80h,base+0211Eh
   dw 00A80h,base+01FE8h
   dw 00A80h,base+01FF2h
+  dw 00A80h,base+02164h
+  dw 00A80h,base+0216Eh
+  dw 00A80h,base+02092h
+  dw 00A80h,base+0209Ch
+  dw 00A80h,base+020A6h
+  dw 00A80h,base+020B0h
+  dw 00A80h,base+020BAh
+  dw 00A80h,base+020C4h
+  dw 00A80h,base+020CEh
+  dw 00A80h,base+020D8h
+  dw 00A80h,base+013CAh
+  dw 00A80h,base+020E2h
+  dw 00A80h,base+013CAh
   dw 00A80h,base+020ECh
   dw 00A80h,base+020F6h
-  dw 00A80h,base+02010h
-  dw 00A80h,base+0201Ah
-  dw 00A80h,base+02024h
-  dw 00A80h,base+0202Eh
-  dw 00A80h,base+02038h
-  dw 00A80h,base+02042h
-  dw 00A80h,base+0204Ch
-  dw 00A80h,base+02056h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+02060h
-  dw 00A80h,base+013CAh
-  dw 00A80h,base+0206Ah
-  dw 00A80h,base+02074h
-  dw 00A80h,base+013CAh
-  dw 00A80h,base+02100h
+  dw 00A80h,base+02178h
   dw 00A00h,base+013CAh
 
 BossRoomframe024:
@@ -2196,21 +2389,6 @@ BossRoomframe024:
   db 078h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00880h,base+0301Eh
-  dw 00880h,base+03026h
-  dw 00880h,base+0302Eh
-  dw 00880h,base+03036h
-  dw 00880h,base+0303Eh
-  dw 00880h,base+03046h
-  dw 00880h,base+0304Eh
-  dw 00880h,base+03056h
-  dw 00880h,base+0305Eh
-  dw 00880h,base+03066h
-  dw 00880h,base+0306Eh
-  dw 00880h,base+03076h
-  dw 00880h,base+0307Eh
-  dw 00880h,base+03086h
-  dw 00880h,base+0308Eh
   dw 00880h,base+03096h
   dw 00880h,base+0309Eh
   dw 00880h,base+030A6h
@@ -2218,7 +2396,6 @@ BossRoomframe024:
   dw 00880h,base+030B6h
   dw 00880h,base+030BEh
   dw 00880h,base+030C6h
-  dw 00880h,base+030A6h
   dw 00880h,base+030CEh
   dw 00880h,base+030D6h
   dw 00880h,base+030DEh
@@ -2228,70 +2405,86 @@ BossRoomframe024:
   dw 00880h,base+030FEh
   dw 00880h,base+03106h
   dw 00880h,base+0310Eh
-  dw 00880h,base+0301Eh
-  dw 00880h,base+03026h
-  dw 00880h,base+0302Eh
-  dw 00880h,base+03036h
-  dw 00880h,base+0303Eh
-  dw 00880h,base+03046h
-  dw 00880h,base+0304Eh
-  dw 00880h,base+03056h
-  dw 00880h,base+0305Eh
-  dw 00880h,base+03066h
-  dw 00880h,base+0306Eh
-  dw 00880h,base+03076h
-  dw 00880h,base+0307Eh
-  dw 00880h,base+03086h
-  dw 00880h,base+0308Eh
-  dw 00880h,base+03096h
-  dw 00880h,base+0309Eh
-  dw 00880h,base+030A6h
-  dw 00880h,base+030AEh
-  dw 00880h,base+030B6h
-  dw 00880h,base+030BEh
-  dw 00880h,base+030C6h
-  dw 00880h,base+030A6h
-  dw 00880h,base+030CEh
-  dw 00880h,base+030D6h
-  dw 00880h,base+030DEh
-  dw 00880h,base+030E6h
-  dw 00880h,base+030EEh
-  dw 00880h,base+030F6h
-  dw 00880h,base+030FEh
-  dw 00880h,base+03106h
-  dw 00880h,base+0310Eh
-  dw 00880h,base+0301Eh
-  dw 00880h,base+03026h
-  dw 00880h,base+0302Eh
-  dw 00880h,base+03036h
-  dw 00880h,base+0303Eh
-  dw 00880h,base+03046h
-  dw 00880h,base+0304Eh
-  dw 00880h,base+03056h
-  dw 00880h,base+0305Eh
-  dw 00880h,base+03066h
-  dw 00880h,base+0306Eh
-  dw 00880h,base+03076h
-  dw 00880h,base+0307Eh
-  dw 00880h,base+03086h
-  dw 00880h,base+0308Eh
-  dw 00880h,base+03096h
-  dw 00880h,base+0309Eh
-  dw 00880h,base+030A6h
-  dw 00880h,base+030AEh
-  dw 00880h,base+030B6h
-  dw 00880h,base+030BEh
-  dw 00880h,base+030C6h
-  dw 00880h,base+030A6h
-  dw 00880h,base+030CEh
-  dw 00880h,base+030D6h
-  dw 00880h,base+030DEh
-  dw 00880h,base+030E6h
-  dw 00880h,base+030EEh
   dw 00880h,base+03116h
   dw 00880h,base+0311Eh
   dw 00880h,base+03126h
-  dw 00800h,base+0312Eh
+  dw 00880h,base+0312Eh
+  dw 00880h,base+03136h
+  dw 00880h,base+0313Eh
+  dw 00880h,base+0311Eh
+  dw 00880h,base+03146h
+  dw 00880h,base+0314Eh
+  dw 00880h,base+03156h
+  dw 00880h,base+0315Eh
+  dw 00880h,base+03166h
+  dw 00880h,base+0316Eh
+  dw 00880h,base+03176h
+  dw 00880h,base+0317Eh
+  dw 00880h,base+03186h
+  dw 00880h,base+03096h
+  dw 00880h,base+0309Eh
+  dw 00880h,base+030A6h
+  dw 00880h,base+030AEh
+  dw 00880h,base+030B6h
+  dw 00880h,base+030BEh
+  dw 00880h,base+030C6h
+  dw 00880h,base+030CEh
+  dw 00880h,base+030D6h
+  dw 00880h,base+030DEh
+  dw 00880h,base+030E6h
+  dw 00880h,base+030EEh
+  dw 00880h,base+030F6h
+  dw 00880h,base+030FEh
+  dw 00880h,base+03106h
+  dw 00880h,base+0310Eh
+  dw 00880h,base+03116h
+  dw 00880h,base+0311Eh
+  dw 00880h,base+03126h
+  dw 00880h,base+0312Eh
+  dw 00880h,base+03136h
+  dw 00880h,base+0313Eh
+  dw 00880h,base+0311Eh
+  dw 00880h,base+03146h
+  dw 00880h,base+0314Eh
+  dw 00880h,base+03156h
+  dw 00880h,base+0315Eh
+  dw 00880h,base+03166h
+  dw 00880h,base+0316Eh
+  dw 00880h,base+03176h
+  dw 00880h,base+0317Eh
+  dw 00880h,base+03186h
+  dw 00880h,base+03096h
+  dw 00880h,base+0309Eh
+  dw 00880h,base+030A6h
+  dw 00880h,base+030AEh
+  dw 00880h,base+030B6h
+  dw 00880h,base+030BEh
+  dw 00880h,base+030C6h
+  dw 00880h,base+030CEh
+  dw 00880h,base+030D6h
+  dw 00880h,base+030DEh
+  dw 00880h,base+030E6h
+  dw 00880h,base+030EEh
+  dw 00880h,base+030F6h
+  dw 00880h,base+030FEh
+  dw 00880h,base+03106h
+  dw 00880h,base+0310Eh
+  dw 00880h,base+03116h
+  dw 00880h,base+0311Eh
+  dw 00880h,base+03126h
+  dw 00880h,base+0312Eh
+  dw 00880h,base+03136h
+  dw 00880h,base+0313Eh
+  dw 00880h,base+0311Eh
+  dw 00880h,base+03146h
+  dw 00880h,base+0314Eh
+  dw 00880h,base+03156h
+  dw 00880h,base+0315Eh
+  dw 00880h,base+03166h
+  dw 00880h,base+0318Eh
+  dw 00880h,base+03196h
+  dw 00880h,base+0319Eh
+  dw 00800h,base+031A6h
 
 BossRoomframe025:
   db 020h,058h,070h,000h
@@ -2345,47 +2538,47 @@ BossRoomframe025:
   dw 00880h,base+016C4h
   dw 00880h,base+018D4h
   dw 00880h,base+018E4h
+  dw 00880h,base+031AEh
+  dw 00880h,base+031B6h
+  dw 00880h,base+0311Eh
+  dw 00880h,base+03126h
+  dw 00880h,base+0312Eh
   dw 00880h,base+03136h
   dw 00880h,base+0313Eh
-  dw 00880h,base+030A6h
-  dw 00880h,base+030AEh
-  dw 00880h,base+030B6h
-  dw 00880h,base+030BEh
-  dw 00880h,base+030C6h
   dw 00880h,base+0045Ch
   dw 00880h,base+011DCh
-  dw 00880h,base+03146h
-  dw 00880h,base+0314Eh
-  dw 00880h,base+03156h
-  dw 00880h,base+0315Eh
-  dw 00880h,base+03166h
-  dw 00880h,base+0316Eh
-  dw 00880h,base+03176h
-  dw 0087Fh,base+0317Eh
-  dw 00A80h,base+0210Ah
-  dw 00A80h,base+02114h
-  dw 00A80h,base+01FD4h
-  dw 00A80h,base+01FDEh
+  dw 00880h,base+031BEh
+  dw 00880h,base+031C6h
+  dw 00880h,base+031CEh
+  dw 00880h,base+031D6h
+  dw 00880h,base+031DEh
+  dw 00880h,base+031E6h
+  dw 00880h,base+031EEh
+  dw 0087Fh,base+031F6h
+  dw 00A80h,base+02182h
+  dw 00A80h,base+0218Ch
+  dw 00A80h,base+0207Eh
+  dw 00A80h,base+02088h
   dw 00A80h,base+01FE8h
   dw 00A80h,base+01FF2h
-  dw 00A80h,base+0211Eh
-  dw 00A80h,base+02128h
-  dw 00A80h,base+02132h
-  dw 00A80h,base+0201Ah
-  dw 00A80h,base+02024h
-  dw 00A80h,base+0202Eh
-  dw 00A80h,base+02038h
-  dw 00A80h,base+02042h
-  dw 00A80h,base+0204Ch
-  dw 00A80h,base+02056h
+  dw 00A80h,base+02196h
+  dw 00A80h,base+021A0h
+  dw 00A80h,base+021AAh
+  dw 00A80h,base+0209Ch
+  dw 00A80h,base+020A6h
+  dw 00A80h,base+020B0h
+  dw 00A80h,base+020BAh
+  dw 00A80h,base+020C4h
+  dw 00A80h,base+020CEh
+  dw 00A80h,base+020D8h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+02060h
+  dw 00A80h,base+020E2h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+0206Ah
-  dw 00A80h,base+02074h
+  dw 00A80h,base+020ECh
+  dw 00A80h,base+020F6h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+0213Ch
-  dw 00A00h,base+02146h
+  dw 00A80h,base+021B4h
+  dw 00A00h,base+021BEh
 
 BossRoomframe026:
   db 010h,060h,078h,000h
@@ -2399,21 +2592,6 @@ BossRoomframe026:
   dw 00880h,base+01A34h
   dw 00880h,base+01A44h
   dw 00880h,base+01A54h
-  dw 00880h,base+03186h
-  dw 00880h,base+0318Eh
-  dw 00880h,base+03196h
-  dw 00880h,base+0319Eh
-  dw 00880h,base+031A6h
-  dw 00880h,base+031AEh
-  dw 00880h,base+031B6h
-  dw 00880h,base+031BEh
-  dw 00880h,base+031C6h
-  dw 00880h,base+031CEh
-  dw 00880h,base+031D6h
-  dw 00880h,base+031DEh
-  dw 00880h,base+031E6h
-  dw 00880h,base+031EEh
-  dw 00880h,base+031F6h
   dw 00880h,base+031FEh
   dw 00880h,base+03206h
   dw 00880h,base+0320Eh
@@ -2424,6 +2602,21 @@ BossRoomframe026:
   dw 00880h,base+03236h
   dw 00880h,base+0323Eh
   dw 00880h,base+03246h
+  dw 00880h,base+0324Eh
+  dw 00880h,base+03256h
+  dw 00880h,base+0325Eh
+  dw 00880h,base+03266h
+  dw 00880h,base+0326Eh
+  dw 00880h,base+03276h
+  dw 00880h,base+0327Eh
+  dw 00880h,base+03286h
+  dw 00880h,base+0328Eh
+  dw 00880h,base+03296h
+  dw 00880h,base+0329Eh
+  dw 00880h,base+032A6h
+  dw 00880h,base+032AEh
+  dw 00880h,base+032B6h
+  dw 00880h,base+032BEh
   dw 00880h,base+019F4h
   dw 00880h,base+01A04h
   dw 00880h,base+01A14h
@@ -2431,21 +2624,6 @@ BossRoomframe026:
   dw 00880h,base+01A34h
   dw 00880h,base+01A44h
   dw 00880h,base+01A54h
-  dw 00880h,base+03186h
-  dw 00880h,base+0318Eh
-  dw 00880h,base+03196h
-  dw 00880h,base+0319Eh
-  dw 00880h,base+031A6h
-  dw 00880h,base+031AEh
-  dw 00880h,base+031B6h
-  dw 00880h,base+031BEh
-  dw 00880h,base+031C6h
-  dw 00880h,base+031CEh
-  dw 00880h,base+031D6h
-  dw 00880h,base+031DEh
-  dw 00880h,base+031E6h
-  dw 00880h,base+031EEh
-  dw 00880h,base+031F6h
   dw 00880h,base+031FEh
   dw 00880h,base+03206h
   dw 00880h,base+0320Eh
@@ -2456,6 +2634,21 @@ BossRoomframe026:
   dw 00880h,base+03236h
   dw 00880h,base+0323Eh
   dw 00880h,base+03246h
+  dw 00880h,base+0324Eh
+  dw 00880h,base+03256h
+  dw 00880h,base+0325Eh
+  dw 00880h,base+03266h
+  dw 00880h,base+0326Eh
+  dw 00880h,base+03276h
+  dw 00880h,base+0327Eh
+  dw 00880h,base+03286h
+  dw 00880h,base+0328Eh
+  dw 00880h,base+03296h
+  dw 00880h,base+0329Eh
+  dw 00880h,base+032A6h
+  dw 00880h,base+032AEh
+  dw 00880h,base+032B6h
+  dw 00880h,base+032BEh
   dw 00880h,base+019F4h
   dw 00880h,base+01A04h
   dw 00880h,base+01A14h
@@ -2463,21 +2656,6 @@ BossRoomframe026:
   dw 00880h,base+01A34h
   dw 00880h,base+01A44h
   dw 00880h,base+01A54h
-  dw 00880h,base+03186h
-  dw 00880h,base+0318Eh
-  dw 00880h,base+03196h
-  dw 00880h,base+0319Eh
-  dw 00880h,base+031A6h
-  dw 00880h,base+031AEh
-  dw 00880h,base+031B6h
-  dw 00880h,base+031BEh
-  dw 00880h,base+031C6h
-  dw 00880h,base+031CEh
-  dw 00880h,base+031D6h
-  dw 00880h,base+031DEh
-  dw 00880h,base+031E6h
-  dw 00880h,base+031EEh
-  dw 00880h,base+031F6h
   dw 00880h,base+031FEh
   dw 00880h,base+03206h
   dw 00880h,base+0320Eh
@@ -2487,7 +2665,22 @@ BossRoomframe026:
   dw 00880h,base+0322Eh
   dw 00880h,base+03236h
   dw 00880h,base+0323Eh
-  dw 00800h,base+03246h
+  dw 00880h,base+03246h
+  dw 00880h,base+0324Eh
+  dw 00880h,base+03256h
+  dw 00880h,base+0325Eh
+  dw 00880h,base+03266h
+  dw 00880h,base+0326Eh
+  dw 00880h,base+03276h
+  dw 00880h,base+0327Eh
+  dw 00880h,base+03286h
+  dw 00880h,base+0328Eh
+  dw 00880h,base+03296h
+  dw 00880h,base+0329Eh
+  dw 00880h,base+032A6h
+  dw 00880h,base+032AEh
+  dw 00880h,base+032B6h
+  dw 00800h,base+032BEh
 
 BossRoomframe027:
   db 020h,058h,070h,000h
@@ -2527,8 +2720,8 @@ BossRoomframe027:
   dw 01080h,base+01BD0h
   dw 01084h,base+01BE0h
   dw 00880h,base+018D4h
-  dw 00880h,base+0324Eh
-  dw 00880h,base+03256h
+  dw 00880h,base+032C6h
+  dw 00880h,base+032CEh
   dw 00880h,base+019B5h
   dw 00880h,base+01934h
   dw 00880h,base+011DCh
@@ -2537,8 +2730,8 @@ BossRoomframe027:
   dw 00880h,base+01269h
   dw 00880h,base+011DCh
   dw 00880h,base+01269h
-  dw 00880h,base+0325Eh
-  dw 00880h,base+0324Eh
+  dw 00880h,base+032D6h
+  dw 00880h,base+032C6h
   dw 00880h,base+018D4h
   dw 00880h,base+018E4h
   dw 00880h,base+01652h
@@ -2547,41 +2740,41 @@ BossRoomframe027:
   dw 00880h,base+0001Ch
   dw 00880h,base+01B24h
   dw 00880h,base+01B34h
-  dw 00880h,base+03266h
-  dw 00880h,base+0326Eh
-  dw 00880h,base+03276h
-  dw 00880h,base+0327Eh
-  dw 00880h,base+03286h
-  dw 00880h,base+0328Eh
-  dw 00880h,base+03296h
-  dw 00880h,base+0329Eh
-  dw 00880h,base+032A6h
-  dw 00880h,base+032AEh
-  dw 0087Fh,base+032B6h
-  dw 00A80h,base+02150h
-  dw 00A80h,base+0215Ah
-  dw 00A80h,base+02164h
-  dw 00A80h,base+01FDEh
+  dw 00880h,base+032DEh
+  dw 00880h,base+032E6h
+  dw 00880h,base+032EEh
+  dw 00880h,base+032F6h
+  dw 00880h,base+032FEh
+  dw 00880h,base+03306h
+  dw 00880h,base+0330Eh
+  dw 00880h,base+03316h
+  dw 00880h,base+0331Eh
+  dw 00880h,base+03326h
+  dw 0087Fh,base+0332Eh
+  dw 00A80h,base+021C8h
+  dw 00A80h,base+021D2h
+  dw 00A80h,base+021DCh
+  dw 00A80h,base+02088h
   dw 00A80h,base+01FE8h
-  dw 00A80h,base+0216Eh
-  dw 00A80h,base+02178h
-  dw 00A80h,base+02182h
-  dw 00A80h,base+0218Ch
-  dw 00A80h,base+02196h
-  dw 00A80h,base+02024h
-  dw 00A80h,base+0202Eh
-  dw 00A80h,base+02038h
-  dw 00A80h,base+02042h
-  dw 00A80h,base+0204Ch
-  dw 00A80h,base+02056h
+  dw 00A80h,base+021E6h
+  dw 00A80h,base+021F0h
+  dw 00A80h,base+021FAh
+  dw 00A80h,base+02204h
+  dw 00A80h,base+0220Eh
+  dw 00A80h,base+020A6h
+  dw 00A80h,base+020B0h
+  dw 00A80h,base+020BAh
+  dw 00A80h,base+020C4h
+  dw 00A80h,base+020CEh
+  dw 00A80h,base+020D8h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+02060h
+  dw 00A80h,base+020E2h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+0206Ah
-  dw 00A80h,base+02074h
+  dw 00A80h,base+020ECh
+  dw 00A80h,base+020F6h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+021A0h
-  dw 00A00h,base+021AAh
+  dw 00A80h,base+02218h
+  dw 00A00h,base+02222h
 
 BossRoomframe028:
   db 010h,060h,078h,000h
@@ -2608,18 +2801,18 @@ BossRoomframe028:
   dw 00880h,base+01D04h
   dw 00880h,base+01D14h
   dw 00880h,base+01D24h
-  dw 00880h,base+032BEh
+  dw 00880h,base+03336h
   dw 00880h,base+01D44h
   dw 00880h,base+01D04h
-  dw 00880h,base+032C6h
+  dw 00880h,base+0333Eh
   dw 00880h,base+01D74h
-  dw 00880h,base+032CEh
+  dw 00880h,base+03346h
   dw 00880h,base+01D94h
-  dw 00880h,base+032D6h
-  dw 00880h,base+032DEh
-  dw 00880h,base+032E6h
-  dw 00880h,base+032EEh
-  dw 00880h,base+032F6h
+  dw 00880h,base+0334Eh
+  dw 00880h,base+03356h
+  dw 00880h,base+0335Eh
+  dw 00880h,base+03366h
+  dw 00880h,base+0336Eh
   dw 00880h,base+01BF4h
   dw 00880h,base+01C04h
   dw 00880h,base+01C14h
@@ -2640,18 +2833,18 @@ BossRoomframe028:
   dw 00880h,base+01D04h
   dw 00880h,base+01D14h
   dw 00880h,base+01D24h
-  dw 00880h,base+032BEh
+  dw 00880h,base+03336h
   dw 00880h,base+01D44h
   dw 00880h,base+01D04h
-  dw 00880h,base+032C6h
+  dw 00880h,base+0333Eh
   dw 00880h,base+01D74h
-  dw 00880h,base+032CEh
+  dw 00880h,base+03346h
   dw 00880h,base+01D94h
-  dw 00880h,base+032D6h
-  dw 00880h,base+032DEh
-  dw 00880h,base+032E6h
-  dw 00880h,base+032EEh
-  dw 00880h,base+032F6h
+  dw 00880h,base+0334Eh
+  dw 00880h,base+03356h
+  dw 00880h,base+0335Eh
+  dw 00880h,base+03366h
+  dw 00880h,base+0336Eh
   dw 00880h,base+01BF4h
   dw 00880h,base+01C04h
   dw 00880h,base+01C14h
@@ -2672,18 +2865,18 @@ BossRoomframe028:
   dw 00880h,base+01D04h
   dw 00880h,base+01D14h
   dw 00880h,base+01D24h
-  dw 00880h,base+032BEh
+  dw 00880h,base+03336h
   dw 00880h,base+01D44h
   dw 00880h,base+01D04h
-  dw 00880h,base+032C6h
+  dw 00880h,base+0333Eh
   dw 00880h,base+01D74h
-  dw 00880h,base+032CEh
+  dw 00880h,base+03346h
   dw 00880h,base+01D94h
-  dw 00880h,base+032D6h
-  dw 00880h,base+032DEh
-  dw 00880h,base+032E6h
-  dw 00880h,base+032EEh
-  dw 00800h,base+032F6h
+  dw 00880h,base+0334Eh
+  dw 00880h,base+03356h
+  dw 00880h,base+0335Eh
+  dw 00880h,base+03366h
+  dw 00800h,base+0336Eh
 
 BossRoomframe029:
   db 020h,058h,070h,000h
@@ -2723,61 +2916,61 @@ BossRoomframe029:
   dw 01080h,base+01DD0h
   dw 01084h,base+01DE0h
   dw 00880h,base+01DF4h
-  dw 00880h,base+032FEh
-  dw 00880h,base+01E14h
-  dw 00880h,base+03306h
-  dw 00880h,base+0330Eh
-  dw 00880h,base+03316h
-  dw 00880h,base+0331Eh
-  dw 00880h,base+01870h
-  dw 00880h,base+03326h
-  dw 00880h,base+0332Eh
-  dw 00880h,base+03336h
-  dw 00880h,base+0333Eh
-  dw 00880h,base+03346h
-  dw 00880h,base+018D4h
-  dw 00880h,base+031D2h
-  dw 00880h,base+03136h
-  dw 00880h,base+01688h
-  dw 00880h,base+0045Ch
-  dw 00880h,base+0001Ch
-  dw 00880h,base+0334Eh
-  dw 00880h,base+03356h
-  dw 00880h,base+0335Eh
-  dw 00880h,base+03366h
-  dw 00880h,base+0336Eh
   dw 00880h,base+03376h
+  dw 00880h,base+01E14h
   dw 00880h,base+0337Eh
   dw 00880h,base+03386h
   dw 00880h,base+0338Eh
   dw 00880h,base+03396h
+  dw 00880h,base+01870h
   dw 00880h,base+0339Eh
   dw 00880h,base+033A6h
-  dw 0087Fh,base+033AEh
-  dw 00A80h,base+021B4h
+  dw 00880h,base+033AEh
+  dw 00880h,base+033B6h
+  dw 00880h,base+033BEh
+  dw 00880h,base+018D4h
+  dw 00880h,base+0324Ah
+  dw 00880h,base+031AEh
+  dw 00880h,base+01688h
+  dw 00880h,base+0045Ch
+  dw 00880h,base+0001Ch
+  dw 00880h,base+033C6h
+  dw 00880h,base+033CEh
+  dw 00880h,base+033D6h
+  dw 00880h,base+033DEh
+  dw 00880h,base+033E6h
+  dw 00880h,base+033EEh
+  dw 00880h,base+033F6h
+  dw 00880h,base+033FEh
+  dw 00880h,base+03406h
+  dw 00880h,base+0340Eh
+  dw 00880h,base+03416h
+  dw 00880h,base+0341Eh
+  dw 0087Fh,base+03426h
+  dw 00A80h,base+0222Ch
+  dw 00A80h,base+02132h
+  dw 00A80h,base+0207Eh
+  dw 00A80h,base+02088h
+  dw 00A80h,base+02236h
+  dw 00A80h,base+02240h
+  dw 00A80h,base+0224Ah
+  dw 00A80h,base+02254h
+  dw 00A80h,base+0225Eh
+  dw 00A80h,base+02268h
+  dw 00A80h,base+02272h
   dw 00A80h,base+020B0h
-  dw 00A80h,base+01FD4h
-  dw 00A80h,base+01FDEh
-  dw 00A80h,base+021BEh
-  dw 00A80h,base+021C8h
-  dw 00A80h,base+021D2h
-  dw 00A80h,base+021DCh
-  dw 00A80h,base+021E6h
-  dw 00A80h,base+021F0h
-  dw 00A80h,base+021FAh
-  dw 00A80h,base+0202Eh
-  dw 00A80h,base+02038h
-  dw 00A80h,base+02042h
-  dw 00A80h,base+0204Ch
-  dw 00A80h,base+02056h
+  dw 00A80h,base+020BAh
+  dw 00A80h,base+020C4h
+  dw 00A80h,base+020CEh
+  dw 00A80h,base+020D8h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+02060h
+  dw 00A80h,base+020E2h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+0206Ah
-  dw 00A80h,base+02074h
+  dw 00A80h,base+020ECh
+  dw 00A80h,base+020F6h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+02204h
-  dw 00A00h,base+0220Eh
+  dw 00A80h,base+0227Ch
+  dw 00A00h,base+02286h
 
 BossRoomframe030:
   db 010h,060h,078h,000h
@@ -2926,53 +3119,115 @@ BossRoomframe031:
   dw 00880h,base+01E44h
   dw 00880h,base+01E54h
   dw 00880h,base+01E64h
-  dw 00880h,base+033B6h
+  dw 00880h,base+0342Eh
   dw 00880h,base+01E84h
   dw 00880h,base+01E94h
   dw 00880h,base+01EA4h
   dw 00880h,base+01EB4h
   dw 00880h,base+01EC4h
   dw 00880h,base+01ED4h
-  dw 00880h,base+033BEh
+  dw 00880h,base+03436h
   dw 00880h,base+01EF4h
   dw 00880h,base+0045Ch
   dw 00880h,base+01F14h
-  dw 00880h,base+0334Eh
-  dw 00880h,base+03356h
-  dw 00880h,base+0335Eh
-  dw 00880h,base+03366h
-  dw 00880h,base+0336Eh
-  dw 00880h,base+03376h
-  dw 00880h,base+0337Eh
-  dw 00880h,base+03386h
-  dw 00880h,base+0338Eh
-  dw 00880h,base+03396h
-  dw 00880h,base+0339Eh
-  dw 00880h,base+033A6h
-  dw 0087Fh,base+033AEh
-  dw 00A80h,base+021B4h
-  dw 00A80h,base+020B0h
-  dw 00A80h,base+01FD4h
-  dw 00A80h,base+02218h
-  dw 00A80h,base+02222h
+  dw 00880h,base+033C6h
+  dw 00880h,base+033CEh
+  dw 00880h,base+033D6h
+  dw 00880h,base+033DEh
+  dw 00880h,base+033E6h
+  dw 00880h,base+033EEh
+  dw 00880h,base+033F6h
+  dw 00880h,base+033FEh
+  dw 00880h,base+03406h
+  dw 00880h,base+0340Eh
+  dw 00880h,base+03416h
+  dw 00880h,base+0341Eh
+  dw 0087Fh,base+03426h
   dw 00A80h,base+0222Ch
-  dw 00A80h,base+02236h
-  dw 00A80h,base+02240h
-  dw 00A80h,base+0224Ah
-  dw 00A80h,base+02254h
-  dw 00A80h,base+0225Eh
-  dw 00A80h,base+02268h
-  dw 00A80h,base+02038h
-  dw 00A80h,base+02042h
-  dw 00A80h,base+0204Ch
-  dw 00A80h,base+02056h
+  dw 00A80h,base+02132h
+  dw 00A80h,base+0207Eh
+  dw 00A80h,base+02290h
+  dw 00A80h,base+0229Ah
+  dw 00A80h,base+022A4h
+  dw 00A80h,base+022AEh
+  dw 00A80h,base+022B8h
+  dw 00A80h,base+022C2h
+  dw 00A80h,base+022CCh
+  dw 00A80h,base+022D6h
+  dw 00A80h,base+022E0h
+  dw 00A80h,base+020BAh
+  dw 00A80h,base+020C4h
+  dw 00A80h,base+020CEh
+  dw 00A80h,base+020D8h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+02060h
+  dw 00A80h,base+020E2h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+0206Ah
-  dw 00A80h,base+02074h
+  dw 00A80h,base+020ECh
+  dw 00A80h,base+020F6h
   dw 00A80h,base+013CAh
-  dw 00A80h,base+02272h
-  dw 00A00h,base+0227Ch
+  dw 00A80h,base+022EAh
+  dw 00A00h,base+022F4h
+
+BossRoomframe032:
+  db 010h,038h,070h,000h
+  db 070h
+  db 000h,000h,000h,000h,000h
+  db 000h,000h
+  dw 00880h,base+0343Eh
+  dw 00880h,base+03446h
+  dw 00880h,base+0344Eh
+  dw 00880h,base+03456h
+  dw 00880h,base+0345Eh
+  dw 00880h,base+03466h
+  dw 00880h,base+0346Eh
+  dw 00880h,base+03476h
+  dw 00880h,base+0347Eh
+  dw 00880h,base+03486h
+  dw 00880h,base+0348Eh
+  dw 00880h,base+03496h
+  dw 00880h,base+0349Eh
+  dw 00880h,base+034A6h
+  dw 00880h,base+034AEh
+  dw 00880h,base+034B6h
+  dw 00880h,base+034BEh
+  dw 00880h,base+034C6h
+  dw 00880h,base+034CEh
+  dw 00880h,base+034D6h
+  dw 00880h,base+034DEh
+  dw 00880h,base+034E6h
+  dw 00880h,base+034EEh
+  dw 00880h,base+034F6h
+  dw 00880h,base+0347Eh
+  dw 00880h,base+03486h
+  dw 00880h,base+0348Eh
+  dw 00880h,base+034FEh
+  dw 00880h,base+0349Eh
+  dw 00880h,base+034A6h
+  dw 00880h,base+034AEh
+  dw 00880h,base+034B6h
+  dw 00880h,base+034BEh
+  dw 00880h,base+034C6h
+  dw 00880h,base+034CEh
+  dw 00880h,base+034D6h
+  dw 00880h,base+034DEh
+  dw 00880h,base+034E6h
+  dw 00880h,base+034EEh
+  dw 00880h,base+034F6h
+  dw 00880h,base+0347Eh
+  dw 00880h,base+03486h
+  dw 00880h,base+0348Eh
+  dw 00880h,base+034FEh
+  dw 00880h,base+0349Eh
+  dw 00880h,base+034A6h
+  dw 00880h,base+034AEh
+  dw 00880h,base+034B6h
+  dw 00880h,base+03506h
+  dw 00880h,base+0350Eh
+  dw 00880h,base+03516h
+  dw 00880h,base+0351Eh
+  dw 00880h,base+03526h
+  dw 00880h,base+0352Eh
+  dw 00880h,base+03536h
+  dw 00800h,base+0353Eh
 
 

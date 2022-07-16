@@ -63,7 +63,7 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 130 ;$19 ;230 ;250 ;210
+ClesX:      dw 230 ;$19 ;230 ;250 ;210
 ClesY:      db 20 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
@@ -3639,13 +3639,16 @@ CurrentMagicWeapon:     db  7 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=s
 
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
-;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater
+;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0
 HandlePlayerSprite:
   ld    hl,(PlayerSpriteStand)
   jp    (hl)
+
+DoNothing:
+  ret
 
 LShootWater:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot

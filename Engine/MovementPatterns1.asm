@@ -55,7 +55,7 @@
 ;AppearingBlocks
 ;DisappearingBlocks
 ;AppBlocksHandler
-;WorldNameText
+;AreaSign
 ;HugeSpiderBody
 ;HugeSpiderLegs
 ;KonarkPaletteObject
@@ -816,41 +816,45 @@ Template:
   ret
 
 
-AltarGraphics00top:       dw BossRoomframe000 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics01top:       dw BossRoomframe002 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics02top:       dw BossRoomframe004 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics03top:       dw BossRoomframe006 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics04top:       dw BossRoomframe008 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics05top:       dw BossRoomframe010 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics06top:       dw BossRoomframe012 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics07top:       dw BossRoomframe014 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics00top:       dw BossRoomframe000 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics01top:       dw BossRoomframe002 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics02top:       dw BossRoomframe004 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics03top:       dw BossRoomframe006 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics04top:       dw BossRoomframe008 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics05top:       dw BossRoomframe010 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics06top:       dw BossRoomframe012 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics07top:       dw BossRoomframe014 | db BossRoomframelistblock, BossRoomspritedatablock
 
-AltarGraphics08top:       dw BossRoomframe016 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics09top:       dw BossRoomframe018 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics10top:       dw BossRoomframe020 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics11top:       dw BossRoomframe022 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics12top:       dw BossRoomframe024 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics13top:       dw BossRoomframe026 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics14top:       dw BossRoomframe028 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics15top:       dw BossRoomframe030 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics08top:       dw BossRoomframe016 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics09top:       dw BossRoomframe018 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics10top:       dw BossRoomframe020 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics11top:       dw BossRoomframe022 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics12top:       dw BossRoomframe024 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics13top:       dw BossRoomframe026 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics14top:       dw BossRoomframe028 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics15top:       dw BossRoomframe030 | db BossRoomframelistblock, BossRoomspritedatablock
 
-AltarGraphics00bottom:    dw BossRoomframe001 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics01bottom:    dw BossRoomframe003 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics02bottom:    dw BossRoomframe005 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics03bottom:    dw BossRoomframe007 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics04bottom:    dw BossRoomframe009 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics05bottom:    dw BossRoomframe011 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics06bottom:    dw BossRoomframe013 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics07bottom:    dw BossRoomframe015 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics16top:       dw BossRoomframe032 | db BossRoomframelistblock, BossRoomspritedatablock
 
-AltarGraphics08bottom:    dw BossRoomframe017 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics09bottom:    dw BossRoomframe019 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics10bottom:    dw BossRoomframe021 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics11bottom:    dw BossRoomframe023 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics12bottom:    dw BossRoomframe025 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics13bottom:    dw BossRoomframe027 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics14bottom:    dw BossRoomframe029 | db BossRoomsframelistblock, BossRoomspritedatablock
-AltarGraphics15bottom:    dw BossRoomframe031 | db BossRoomsframelistblock, BossRoomspritedatablock
+AltarGraphics00bottom:    dw BossRoomframe001 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics01bottom:    dw BossRoomframe003 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics02bottom:    dw BossRoomframe005 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics03bottom:    dw BossRoomframe007 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics04bottom:    dw BossRoomframe009 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics05bottom:    dw BossRoomframe011 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics06bottom:    dw BossRoomframe013 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics07bottom:    dw BossRoomframe015 | db BossRoomframelistblock, BossRoomspritedatablock
+
+AltarGraphics08bottom:    dw BossRoomframe017 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics09bottom:    dw BossRoomframe019 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics10bottom:    dw BossRoomframe021 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics11bottom:    dw BossRoomframe023 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics12bottom:    dw BossRoomframe025 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics13bottom:    dw BossRoomframe027 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics14bottom:    dw BossRoomframe029 | db BossRoomframelistblock, BossRoomspritedatablock
+AltarGraphics15bottom:    dw BossRoomframe031 | db BossRoomframelistblock, BossRoomspritedatablock
+
+AltarGraphics16bottom:    dw BossRoomframe032 | db BossRoomframelistblock, BossRoomspritedatablock
 
 Altar1:
 ;v1=repeating steps
@@ -859,9 +863,12 @@ Altar1:
 ;v4=Horizontal Movement
 ;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
 ;v6=active on which frame ?  
+;v7=sprite frame  
+;v8=Phase (0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=turn around player, 4=door closing)
+;v9=FlashScreen Counter
   ld    a,(HugeObjectFrame)
   inc   a
-  and   3
+  and   1
   ld    (HugeObjectFrame),a
   cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
   ret   nz
@@ -870,11 +877,15 @@ Altar1:
   inc   a
   ld    (Bossframecounter),a
 
+  call  .HandlePhase                        ;(0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=turn around player, 4=door closing)
+
   ld    de,NonMovingObjectMovementTable
   call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
-  call  restoreBackgroundObject1
 
-  call  .HandlePhase                        ;(0=diamand animating mid air, 1=freeze player flash screen, 2=diamond fading away, 3=turn around player, 4=door closing)
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=close door, 4=stop restoring background)
+  cp    4
+  call  nz,restoreBackgroundObject1
+
 
 ;  ld    (ix+enemies_and_objects.v7),1       ;v7=sprite frame
 
@@ -885,18 +896,145 @@ Altar1:
   call  PutSF2Object ;CHANGES IX 
   ret
 
-  .HandlePhase:
-  call  .animate
+  .HandlePhase:  
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=close door, 4=stop restoring background)
+  or    a
+  jp    z,DiamondIdle                       ;phase 0
+  dec   a
+  jp    z,FreezePlayerFlashScreen           ;phase 1
+  dec   a
+  jp    z,DiamondFadingAway                 ;phase 2
+  dec   a
+  jp    z,CloseDoor                         ;phase 3
+  dec   a
+  jp    z,StopRestoringBackground           ;phase 4
+  ret
+
+  StopRestoringBackground:
+  ld    a,(ix+enemies_and_objects.v9)       ;v9=FlashScreen Counter / var counter
+  inc   a
+  ld    (ix+enemies_and_objects.v9),a       ;v9=FlashScreen Counter / var counter
+  and   3
+  ret   nz
+  ld    (ix+enemies_and_objects.Alive?),0
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),0  
   ret
   
 
-  .animate:    
+  CloseDoor:
   ld    a,(Bossframecounter)
   and   1
+  ret   nz
+    
+  ;SetTilesInTileMap:
+  ld    hl,MapData + (34 * 12)              ;door starts at (0,12)
+  ld    b,7                                 ;door height
+  ld    de,34-1                             ;next doortile on next row - screenwidth is 32, but mapwidth is 34
+  .loop:
+  ld    (hl),1                              ;hard foreground
+  inc   hl
+  ld    (hl),1                              ;hard foreground
+  add   hl,de
+  djnz  .loop  
+  
+  ld    a,(ix+enemies_and_objects.x)        ;slowly close door
+  inc   a
+  ld    (ix+enemies_and_objects.x),a        ;slowly close door
+  cp    16
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=turn around player, 4=door closing)    
+  xor   a
+  ld    (freezecontrols?),a  
+  ret
+
+  DiamondFadingAway:
+  ld    a,(Bossframecounter)
+  and   3
   ret   nz
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   inc   a
   and   15
+  jr    z,.End
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
+  .End:
+  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=turn around player, 4=door closing)    
+  ld    (ix+enemies_and_objects.v7),16      ;v7=sprite frame 
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.x),000  
+  ld    (ix+enemies_and_objects.x),000      ;set x door at the left most part of screen (it is now out of screen)
+  ld    (ix+enemies_and_objects.y),8*12     ;set y door at the room entrance
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,%0000 0100                        ;turn around player, facing door
+	ld		(Controls),a
+  ret
+
+  FreezePlayerFlashScreen:
+  call  DiamondIdle.animate
+  ld    a,1
+  ld    (freezecontrols?),a
+
+	ld		hl,DoNothing
+	ld		(PlayerSpriteStand),hl
+  
+  ld    a,15                                ;start write to this palette color (15)
+  di
+	out		($99),a
+	ld		a,16+128  
+	out		($99),a
+
+  ld    a,(Bossframecounter)
+  and   1
+  ld    a,255
+  jr    z,.SetColor
+  xor   a
+  .SetColor:
+  out   ($9a),a
+  out   ($9a),a
+  ei
+  or    a
+  ret   nz
+  dec   (ix+enemies_and_objects.v9)         ;v9=FlashScreen Counter
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=turn around player, 4=door closing)    
+
+	ld		hl,Jump
+	ld		(PlayerSpriteStand),hl
+  ret
+  
+  DiamondIdle:
+  call  .animate
+
+  ;distance check
+  ld    hl,(Clesx)                          ;hl = x player
+  ld    de,92                               ;de = x enemy/object  
+  sbc   hl,de
+  ret   c
+  ld    e,58                                ;de = x enemy/object  
+  sbc   hl,de
+  ret   nc
+
+  ld    a,(Clesy)                           ;hl = x player
+  sub   a,150                               ;a = x enemy/object  
+  ret   nc
+  ld    a,(Clesy)                           ;hl = x player
+  sub   a,050                               ;a = x enemy/object  
+  ret   c
+
+  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=turn around player, 4=door closing)  
+  ret
+
+  .animate:    
+  ld    a,(Bossframecounter)
+  and   3
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  inc   a
+  and   7
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret
 
@@ -1553,42 +1691,132 @@ WorldTextStepTable:  ;repeating steps(128 = end table/repeat), move y, move x
   db  1,-17,+0,  1,-14,+0,  1,-11,+0,  1,-08,+0,  1,-05,+0,  1,-04,+0,  1,-03,+0,  1,-02,+0,  1,-01,+0,   127,-00,+0
   db  1,+01,+0,  1,+02,+0,  1,+03,+0,  1,+04,+0,  1,+05,+0,  1,+08,+0,  1,+11,+0,  1,+14,+0,  1,+17,+0,  1,+1,+0,   127,-00,+0
   db  128
+
+WorldTextStepTable2:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  1,-1,+0
+  db  128
+
   
 TextKarniMata:
-  dw ryupage0frame013 | db ryuframelistblock, ryuspritedatablock
+  dw AreaSignsframe000 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe001 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe002 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe003 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe004 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe005 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe006 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe007 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe008 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe009 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe010 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe011 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe012 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe013 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe014 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe015 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe016 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe017 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe018 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe019 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe020 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe021 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe022 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe023 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe024 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe025 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe026 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe027 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe028 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe029 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe030 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe031 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe032 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe033 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe034 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe035 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe036 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe037 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe038 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe039 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe040 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe041 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe042 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe043 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe044 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe045 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe046 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe047 | db AreaSignsframelistblock, AreaSignsspritedatablock
 
-WorldNameText:                              ;Displays the name of the world in screen when entering that world
+
+AreaSign:                                 ;Displays the name of the world in screen when entering that world
 ;v1=repeating steps
 ;v2=pointer to movement table
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
-;v6=active on which frame ?  
-  ld    de,WorldTextStepTable
-  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
-;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-;  call  BackdropOrange  
-  call  restoreBackgroundObject1
-;  call  ObjectAnimation
-;  call  AnimateGlassBall
+;v6=put line in all 3 pages
+;v7=sprite frame
+;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
+;v9=wait timer
+  .HandlePhase:  
+  ld    a,(ix+enemies_and_objects.v8)     ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
+  or    a
+  jp    z,PutAreaSignLine                 ;0=put a new line for 3 frames
+  dec   a
+  jp    z,AreaSignwait                    ;1=wait
+  dec   a
+  jp    z,RemoveAreaSign                  ;2=remote all the lines in all the pages
 
-  ld    a,(Object1y)
-  cp    8*24+1
-  ld    hl,TextKarniMata
-  jr    c,.SetFrame
-  ld    hl,EmptyFrame  
-  .SetFrame:
-  call  SetFrameSF2Object                 ;in: hl->frame. out: b=frame list block, c=sprite data block
-
-  dec   (ix+enemies_and_objects.v8)       ;v8 = amount of frames alive
-  jr    nz,.SkipEnd
-  ld    (ix+enemies_and_objects.alive?),0 ;end     
-  .SkipEnd:
+  RemoveAreaSign:
+  ld    a,(framecounter)
+  rrca
+  ret   c
   
-  call  PutSF2Object                      ;in: b=frame list block, c=sprite data block. CHANGES IX 
-;  call  BackdropBlack
-  call  switchpageSF2Engine
+  ld    a,(ix+enemies_and_objects.y)      ;y object  
+  ld    (RestoreBackgroundObject1Page0+sY),a
+  ld    (RestoreBackgroundObject1Page0+dY),a
+  inc   a
+  cp    200
+  ret   z
+  ld    (ix+enemies_and_objects.y),a    ;y object    
+
+  ld    a,36
+  ld    (RestoreBackgroundObject1Page0+sX),a
+  ld    (RestoreBackgroundObject1Page0+dX),a
+  ld    a,200
+  ld    (RestoreBackgroundObject1Page0+nX),a
+  ld    hl,RestoreBackgroundObject1Page0
+  call  DoCopy                            ;restore page 0   
+  xor   a
+  ld    (screenpage),a                    ;let's use only page 0 for removing sign
+  add   a,31
+  ld    (PageOnNextVblank),a
   ret
+
+  AreaSignwait:
+  dec   (ix+enemies_and_objects.v9)       ;v9=wait timer
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),2     ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)   
+  ret
+
+  PutAreaSignLine:
+  dec   (ix+enemies_and_objects.v6)       ;v6=put line in all 3 pages 
+  jr    nz,.EndCheckNextLine
+  ld    (ix+enemies_and_objects.v6),3     ;v6=put line in all 3 pages
+  inc   (ix+enemies_and_objects.v7)       ;v7=sprite frame
+  ld    a,(ix+enemies_and_objects.v7)     ;v7=sprite frame - check for last frame
+  cp    48
+  jp    nz,.EndCheckNextLine
+  ld    (ix+enemies_and_objects.v8),1     ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages) 
+  ret
+  .EndCheckNextLine:
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable           ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+  ld    bc,TextKarniMata
+  call  SetFrameAltar                     ;in: hl->frame. out: b=frame list block, c=sprite data block  
+  call  PutSF2Object                      ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  call  switchpageSF2Engine  
+  ret  
 
 AppBlocksHandler:  
   ld    a,(ix+enemies_and_objects.v1)     ;v1 = activate block timer

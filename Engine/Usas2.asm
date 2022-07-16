@@ -3000,11 +3000,8 @@ MapA03:
   incbin "..\maps\a03.map.pck"  | .amountofobjects: db  0
 MapA04:
   incbin "..\maps\a04.map.pck"  | .amountofobjects: db  1
-
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 2,        0|dw WorldNameText       |db 8*24|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
-;.object2: db 2,        0|dw Sf2Hugeobject2      |db 8*12|dw 8*12|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
-;.object3: db 2,        0|dw Sf2Hugeobject3      |db 8*03|dw 8*13|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
+.object1: db 2,        0|dw AreaSign             |db 8*05|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+04,+00,+00,+99, 0|db 016| ds fill
   
 MapA05:
   incbin "..\maps\a05.map.pck"  | .amountofobjects: db  2
@@ -3186,7 +3183,7 @@ MapD04:
   incbin "..\maps\d04.map.pck"  | .amountofobjects: db  2
 
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 2,        0|dw Altar1              |db 8*02|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+.object1: db 2,        0|dw Altar1              |db 8*02|dw 8*16|db 20,20|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+10, 0|db 000| ds fill
 .object2: db 2,        0|dw Altar2              |db 8*14|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
 ;.object3: db 0,        0|dw Altar3              |db 8*00|dw 8*00|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+02,+00,+00,+00, 0|db 000| ds fill
 
@@ -3552,7 +3549,7 @@ phase	$0000
 dephase
 
 ; block $cf
-BossRoomsframelistblock:            equ $cf
+BossRoomframelistblock:            equ $cf
 phase	$8000
   include "..\grapx\BossRoom\frames.lst" 
 	ds		$c000-$,$ff
@@ -3561,6 +3558,19 @@ phase	$8000
 BossRoomspritedatablock:           equ $d0
 phase	$0000
   incbin "..\grapx\BossRoom\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+; block $d1
+AreaSignsframelistblock:            equ $d1
+phase	$8000
+  include "..\grapx\AreaSigns\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $d2
+AreaSignsspritedatablock:           equ $d2
+phase	$0000
+  incbin "..\grapx\AreaSigns\frames.dat"
 	ds		$4000-$,$ff
 dephase
 
@@ -3578,12 +3588,10 @@ dephase
 
 
 
-
-
 ;
-; block $d1 -----------------> Music
+; block $d3 -----------------> Music
 ;
-usas2repBlock:  equ   $d1
+usas2repBlock:  equ   $d3
   incbin "usas2.rep"
 
 

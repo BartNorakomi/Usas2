@@ -1,6 +1,6 @@
 phase	$c000
 
-MusicOn?:   equ 0
+MusicOn?:   equ 1
 LogoOn?:    equ 0
 
 WorldMapData:
@@ -38,7 +38,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapB01_018Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapD04Data
+WorldMapPointer:  dw  MapA04Data
 
 PlayLogo:
   call  StartTeamNXTLogo             ;sets logo routine in rom at $4000 page 1 and run it
@@ -665,7 +665,6 @@ ConvertToMapinRam:
   
   dec   c
   jp    nz,.SelfModifyingCodeMapLenght
-  
   ret
   
 ;duplicate the last row 4 tiles
@@ -1042,16 +1041,16 @@ Depack:     ;In: HL: source, DE: destination
 	ret    
 
 ;DoubleTapCounter:         db  1
-;freezecontrols?:          db  0
+freezecontrols?:          db  0
 ;
 ; bit	7	  6	  5		    4		    3		    2		  1		  0
 ;		  0	  0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  F5	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
 PopulateControls:	
-;  ld    a,(freezecontrols?)
-;  or    a
-;  jp    nz,.freezecontrols
+  ld    a,(freezecontrols?)
+  or    a
+  jp    nz,.freezecontrols
 
 ;	ld		a,(NewPrContr)
 ;	ld		(NewPrContrOld),a
@@ -1123,6 +1122,12 @@ PopulateControls:
 ;  ret   z	
 ;  ld    (DoubleTapCounter),a
 	ret
+
+.freezecontrols:
+  xor   a
+	ld		(Controls),a
+	ld		(NewPrContr),a
+  ret
 
 endenginepage3:
 dephase
