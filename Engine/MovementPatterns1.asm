@@ -1698,54 +1698,55 @@ WorldTextStepTable2:  ;repeating steps(128 = end table/repeat), move y, move x
 
   
 TextKarniMata:
-  dw AreaSignsframe000 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe001 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe002 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe003 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe004 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe005 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe006 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe007 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe008 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe009 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe010 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe011 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe012 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe013 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe014 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe015 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe016 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe017 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe018 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe019 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe020 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe021 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe022 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe023 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe024 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe022 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe025 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe021 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe026 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe020 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe027 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe019 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe028 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe018 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe029 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe017 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe030 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe016 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe031 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe015 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe032 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe014 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe033 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe013 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe034 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe012 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe035 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe011 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe036 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe010 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe037 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe009 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe038 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe008 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe039 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe007 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe040 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe006 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe041 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe005 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe042 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe004 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe043 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe003 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe044 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe002 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe045 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe001 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe046 | db AreaSignsframelistblock, AreaSignsspritedatablock
+  dw AreaSignsframe000 | db AreaSignsframelistblock, AreaSignsspritedatablock
   dw AreaSignsframe047 | db AreaSignsframelistblock, AreaSignsspritedatablock
+
 
 
 AreaSign:                                 ;Displays the name of the world in screen when entering that world
@@ -1757,7 +1758,7 @@ AreaSign:                                 ;Displays the name of the world in scr
 ;v6=put line in all 3 pages
 ;v7=sprite frame
 ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
-;v9=wait timer
+;v9=wait timer / bottom of area sign
   .HandlePhase:  
   ld    a,(ix+enemies_and_objects.v8)     ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
   or    a
@@ -1771,14 +1772,25 @@ AreaSign:                                 ;Displays the name of the world in scr
   ld    a,(framecounter)
   rrca
   ret   c
+
+  ld    a,(framecounter)
+  and   %0000 0010
+  jr    z,.FromTopToMiddle
   
+  .FromBottomToMiddle:
+  ld    a,(ix+enemies_and_objects.v9)     ;v9=bottom of area sign
+  dec   a
+  ld    (ix+enemies_and_objects.v9),a     ;v9=bottom of area sign
+  jp    .setYLine
+  
+  .FromTopToMiddle:
   ld    a,(ix+enemies_and_objects.y)      ;y object  
+  inc   a
+  ld    (ix+enemies_and_objects.y),a      ;y object    
+  .setYLine:
   ld    (RestoreBackgroundObject1Page0+sY),a
   ld    (RestoreBackgroundObject1Page0+dY),a
-  inc   a
-  cp    200
-  ret   z
-  ld    (ix+enemies_and_objects.y),a    ;y object    
+  jp    z,RemoveSprite                    ;sets alive? to 0 and set y out of screen display
 
   ld    a,36
   ld    (RestoreBackgroundObject1Page0+sX),a
@@ -1797,6 +1809,11 @@ AreaSign:                                 ;Displays the name of the world in scr
   dec   (ix+enemies_and_objects.v9)       ;v9=wait timer
   ret   nz
   ld    (ix+enemies_and_objects.v8),2     ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)   
+
+  ld    a,(ix+enemies_and_objects.y)      ;y object  
+  add   a,48
+  ld    (ix+enemies_and_objects.v9),a     ;v9=bottom of area sign
+  dec   (ix+enemies_and_objects.y)        ;y object    
   ret
 
   PutAreaSignLine:
