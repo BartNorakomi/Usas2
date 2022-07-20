@@ -7715,6 +7715,7 @@ Lsitting:
 	jp		nz,.Set_R_sit
   .EndCheckLeftPressed:
 	bit		1,a           ;cursor down pressed ?
+	ld		hl,PlayerSpriteData_Char_LeftSitLookDown
 	jp		nz,Rsitting.CheckLadder
 ;	bit		0,a           ;cursor up pressed ?
 ;	jp		nz,Set_jump
@@ -7727,6 +7728,7 @@ Lsitting:
 
   .Set_R_sit:
   call  Set_R_sit
+	ld		hl,PlayerSpriteData_Char_RightSitLookDown
   jp    Rsitting.CheckLadder
 
 
@@ -7777,6 +7779,7 @@ Rsitting:
 	jp		nz,.Set_L_sit
   .EndCheckRightPressed:
 	bit		1,a           ;cursor down pressed ?
+	ld		hl,PlayerSpriteData_Char_RightSitLookDown
 	jp		nz,.CheckLadder
 ;	bit		0,a           ;cursor up pressed ?
 ;	jp		nz,Set_jump
@@ -7789,21 +7792,21 @@ Rsitting:
 
   .Set_L_sit:
   call  Set_L_sit
+	ld		hl,PlayerSpriteData_Char_LeftSitLookDown  
 ;  jp    Rsitting.CheckLadder
 
   .CheckLadder:
   ld    a,(ForceVerticalMovementCameraTimerBackup)
   ld    (ForceVerticalMovementCameraTimer),a
   add   a,2
-  cp    80
+  cp    120
   jr    c,.SetTimer
 
-	ld		hl,PlayerSpriteData_Char_RightStandLookUp
 	ld		(standchar),hl
 
   ld    a,1
   ld    (ForceVerticalMovementCamera?),a  
-  ld    a,80
+  ld    a,120
   .SetTimer:
   ld    (ForceVerticalMovementCameraTimer),a
 
