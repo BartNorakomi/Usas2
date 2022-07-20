@@ -1491,6 +1491,17 @@ PlayerSpriteData_Colo_RightSilhouetteHighKick:  include "..\sprites\secretsofgri
 PlayerSpriteData_Char_RightSilhouetteLowKick:   include "..\sprites\secretsofgrindea\RightSilhouetteLowKick.tgs.gen"	  
 PlayerSpriteData_Colo_RightSilhouetteLowKick:   include "..\sprites\secretsofgrindea\RightSilhouetteLowKick.tcs.gen"	  | db +0-8,+6
 
+PlayerSpriteData_Char_RightStandLookUp:     include "..\sprites\secretsofgrindea\RightStandLookUp.tgs.gen"	;x offset top, x offset bottom
+PlayerSpriteData_Colo_RightStandLookUp:     include "..\sprites\secretsofgrindea\RightStandLookUp.tcs.gen"	| db -2-8,+2
+PlayerSpriteData_Char_LeftStandLookUp:      include "..\sprites\secretsofgrindea\LeftStandLookUp.tgs.gen"	    
+PlayerSpriteData_Colo_LeftStandLookUp:      include "..\sprites\secretsofgrindea\LeftStandLookUp.tcs.gen"		| db +2-8,-2   
+
+PlayerSpriteData_Char_RightSitLookDown:     include "..\sprites\secretsofgrindea\RightSitLookDown.tgs.gen"	;x offset top, x offset bottom
+PlayerSpriteData_Colo_RightSitLookDown:     include "..\sprites\secretsofgrindea\RightSitLookDown.tcs.gen"	| db -0-8,+0
+PlayerSpriteData_Char_LeftSitLookDown:      include "..\sprites\secretsofgrindea\LeftSitLookDown.tgs.gen"	    
+PlayerSpriteData_Colo_LeftSitLookDown:      include "..\sprites\secretsofgrindea\LeftSitLookDown.tcs.gen"		| db +0-8,+0   
+
+
 EndPlayerSprites2: | ds $c000-$,$ff | dephase
 dephase
 

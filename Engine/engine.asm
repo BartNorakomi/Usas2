@@ -63,8 +63,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 230 ;$19 ;230 ;250 ;210
-ClesY:      db 20 ;144-1
+ClesX:      dw 150 ;$19 ;230 ;250 ;210
+ClesY:      db 60 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -2672,15 +2672,25 @@ CameraEngine256x216:
   ret
 
 ShakeScreen?: db 0
+ForceVerticalMovementCamera?:     db  1 ;1=down, -1=up
+ForceVerticalMovementCameraTimer: db  0 ;1=down, -1=up
+ForceVerticalMovementCameraTimerBackup: db  0 ;1=down, -1=up
 
 VerticalMovementCamera:
   ld    a,(ShakeScreen?)
   or    a
   call  nz,.ShakeScreen
   
+  ld    a,(ForceVerticalMovementCamera?)
+  or    a
+  jr    nz,.ForceCameraY
+  
+  ld    a,(JumpSpeed)
+  cp    5
+  jr    z,.ForceCameraDown 
+  
 ;follow y position of player with camera
   ld    a,(Clesy)
-
   cp    100             ;check if player is in the bottom part of screen  
   ld    c,+1            ;vertical camera movent
   jr    nc,.movecameraY
@@ -2697,7 +2707,32 @@ VerticalMovementCamera:
   ld    (CameraY),a
   ret
 
-.ShakeScreen:
+  .ForceCameraDown:
+  ld    a,(ClesY)
+  cp    $48 ;$27
+  ret   c
+
+;  ld    a,r
+;  and   %0000 0001
+;  inc   a
+;  ld    c,a
+  ld    c,2
+
+	ld		hl,(PlayerSpriteStand)
+  ld    de,jump
+  xor   a
+  sbc   hl,de
+  jr    z,.movecameraY
+  xor   a
+  ld    (JumpSpeed),a
+
+  .ForceCameraY:
+  ld    c,a
+  xor   a
+  ld    (ForceVerticalMovementCamera?),a
+  jr    .movecameraY
+
+  .ShakeScreen:
   dec   a
   ld    (ShakeScreen?),a
 
@@ -7634,6 +7669,11 @@ Jump:
   jp    Set_jump.SkipTurnOnDoubleJump
    
 Lsitting:
+  ld    a,(ForceVerticalMovementCameraTimer)
+  ld    (ForceVerticalMovementCameraTimerBackup),a
+  xor   a
+  ld    (ForceVerticalMovementCameraTimer),a
+
   xor   a
   ld    (PlayerFacingRight?),a		
 
@@ -7672,7 +7712,7 @@ Lsitting:
 	bit		2,a           ;cursor left pressed ?
 	jp		nz,.EndCheckLeftPressed
 	bit		3,a           ;cursor right pressed ?
-	jp		nz,Set_R_sit
+	jp		nz,.Set_R_sit
   .EndCheckLeftPressed:
 	bit		1,a           ;cursor down pressed ?
 	jp		nz,Rsitting.CheckLadder
@@ -7683,10 +7723,19 @@ Lsitting:
 ;	ld		a,(Controls)
 ;	bit		3,a           ;cursor right pressed ?
 ;	jp		nz,.AnimateRun
-
 	jp		Set_L_stand
 
+  .Set_R_sit:
+  call  Set_R_sit
+  jp    Rsitting.CheckLadder
+
+
 Rsitting:
+  ld    a,(ForceVerticalMovementCameraTimer)
+  ld    (ForceVerticalMovementCameraTimerBackup),a
+  xor   a
+  ld    (ForceVerticalMovementCameraTimer),a
+
   ld    a,1
   ld    (PlayerFacingRight?),a		
 
@@ -7725,7 +7774,7 @@ Rsitting:
 	bit		3,a           ;cursor right pressed ?
 	jp		nz,.EndCheckRightPressed
 	bit		2,a           ;cursor left pressed ?
-	jp		nz,Set_L_sit
+	jp		nz,.Set_L_sit
   .EndCheckRightPressed:
 	bit		1,a           ;cursor down pressed ?
 	jp		nz,.CheckLadder
@@ -7736,10 +7785,30 @@ Rsitting:
 ;	ld		a,(Controls)
 ;	bit		3,a           ;cursor right pressed ?
 ;	jp		nz,.AnimateRun
-
 	jp		Set_R_stand
 
-.CheckLadder:
+  .Set_L_sit:
+  call  Set_L_sit
+;  jp    Rsitting.CheckLadder
+
+  .CheckLadder:
+  ld    a,(ForceVerticalMovementCameraTimerBackup)
+  ld    (ForceVerticalMovementCameraTimer),a
+  add   a,2
+  cp    80
+  jr    c,.SetTimer
+
+	ld		hl,PlayerSpriteData_Char_RightStandLookUp
+	ld		(standchar),hl
+
+  ld    a,1
+  ld    (ForceVerticalMovementCamera?),a  
+  ld    a,80
+  .SetTimer:
+  ld    (ForceVerticalMovementCameraTimer),a
+
+
+
 ;check if there is a ladder tile below left foot AND right foot
   ld    b,YaddFeetPlayer-0    ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer+6   ;add x to check (x is expressed in pixels)
@@ -8344,6 +8413,14 @@ CheckWallSides:                     ;if we are snapped to a platform or object, 
   jp    DoMovePlayer.PlayerMovedLeft
   
 Lstanding:
+	ld		hl,PlayerSpriteData_Char_LeftStand
+	ld		(standchar),hl
+	
+  ld    a,(ForceVerticalMovementCameraTimer)
+  ld    (ForceVerticalMovementCameraTimerBackup),a
+  xor   a
+  ld    (ForceVerticalMovementCameraTimer),a
+  
   ld    a,(NewPrContr)      ;first handle up pressed, since the checks performed are heavy on the cpu
 	bit		0,a           ;cursor up pressed ?
 	jp		nz,.UpPressed
@@ -8380,6 +8457,9 @@ Lstanding:
 	jp		nz,Set_L_run
 	bit		3,a           ;cursor right pressed ?
 	jp		nz,Set_R_run
+	bit		0,a           ;cursor up pressed ?
+	ld		hl,PlayerSpriteData_Char_LeftStandLookUp
+	jr    nz,Rstanding.ForceCameraUp
 	bit		1,a           ;cursor down pressed ?
   ret   z
 
@@ -8392,16 +8472,18 @@ Lstanding:
   call  CheckClimbLadderUp
   jp    CheckClimbStairsUp
 
-.Set_L_MeditateOrRoll:
-	ld		a,(Controls)
-	bit		2,a           ;cursor left pressed ?
-  jp    nz,Set_L_Rolling
-	jp		Set_L_Meditate
-
-NoMagicWeapon:
-  ret
+;NoMagicWeapon:
+;  ret
 	
 Rstanding:
+	ld		hl,PlayerSpriteData_Char_RightStand
+	ld		(standchar),hl
+
+  ld    a,(ForceVerticalMovementCameraTimer)
+  ld    (ForceVerticalMovementCameraTimerBackup),a
+  xor   a
+  ld    (ForceVerticalMovementCameraTimer),a
+
   ld    a,(NewPrContr)      ;first handle up pressed, since the checks performed are heavy on the cpu
 	bit		0,a                 ;cursor up pressed ?	
 	jp		nz,Lstanding.UpPressed	
@@ -8438,19 +8520,31 @@ Rstanding:
 	jp		nz,Set_L_run
 	bit		3,a           ;cursor right pressed ?
 	jp		nz,Set_R_run
+	bit		0,a           ;cursor up pressed ?
+	ld		hl,PlayerSpriteData_Char_RightStandLookUp
+	jr    nz,.ForceCameraUp
 	bit		1,a           ;cursor down pressed ?
   ret   z
 
-.DownPressed:
+  .DownPressed:
 	call	Set_R_sit
   jp    CheckClimbStairsDown  
 
-.Set_R_MeditateOrRoll:
-	ld		a,(Controls)
-	bit		3,a           ;cursor right pressed ?
-  jp    nz,Set_R_Rolling
-	jp		Set_R_Meditate
+  .ForceCameraUp:		  
+  ld    a,(ForceVerticalMovementCameraTimerBackup)
+  ld    (ForceVerticalMovementCameraTimer),a
+  add   a,2
+  cp    80
+  jr    c,.SetTimer
 
+	ld		(standchar),hl
+	
+  ld    a,-1
+  ld    (ForceVerticalMovementCamera?),a  
+  ld    a,80
+  .SetTimer:
+  ld    (ForceVerticalMovementCameraTimer),a  
+  ret
     
 CheckClimbStairsDown:
   call  .StairsGoingLeftUp
