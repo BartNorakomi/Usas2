@@ -64,6 +64,7 @@
 ;BossDemon3
 ;Altar1
 ;Altar2
+;BossVoodooWasp
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -814,6 +815,267 @@ Template:
   .HandlePhase:
   ld    hl,RightBeetleWalk1_Char
   ret
+
+TemplateBoss:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+;v7=sprite frame
+;v8=phase
+;v9=move left (-1) or right (0)
+  call  restoreBackgroundObject1
+  call  .HandlePhase                        ;(0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+  ld    bc,BossDemonIdle00
+  call  SetFrameBossDemon
+  call  PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  jp    switchpageSF2Engine
+  
+  .HandlePhase:                             ;(0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    a,(Bossframecounter)
+  inc   a
+  ld    (Bossframecounter),a
+
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  or    a
+  jp    z,.BossVoodooWaspIdle
+  dec   a
+
+  .BossVoodooWaspIdle:
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+;  call  CollisionObjectPlayerDemon         ;Check if player is hit by Vram object                            
+;  call  CheckPlayerPunchesEnemyDemon       ;Check if player hit's enemy
+  
+;  ld    a,r
+;  and   31
+;  jr    nz,.EndCheckStartWalking
+;  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
+;  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table    
+;  ld    (ix+enemies_and_objects.v7),6       ;v7=sprite frame
+;  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+;  ret
+;  .EndCheckStartWalking:
+
+  call  BossDemonCheckIfDead                ;call gets popped if dead
+  call  BossDemonCheckIfHit                 ;call gets popped if hit
+
+  ;animate
+  ld    a,(Bossframecounter)
+  and   3
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  inc   a
+  cp    6                                   ;sprite 0-5 are idle
+  jr    nz,.notzero
+  xor   a
+  .notzero:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
+
+
+
+
+
+
+;Idle sitting
+BossVoodooWaspIdle00:   dw VoodooWaspIdleframe000 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle01:   dw VoodooWaspIdleframe001 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle02:   dw VoodooWaspIdleframe002 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle03:   dw VoodooWaspIdleframe003 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle04:   dw VoodooWaspIdleframe004 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle05:   dw VoodooWaspIdleframe005 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle06:   dw VoodooWaspIdleframe006 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle07:   dw VoodooWaspIdleframe007 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle08:   dw VoodooWaspIdleframe008 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle09:   dw VoodooWaspIdleframe009 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle10:   dw VoodooWaspIdleframe010 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle11:   dw VoodooWaspIdleframe011 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle12:   dw VoodooWaspIdleframe012 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle13:   dw VoodooWaspIdleframe013 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle14:   dw VoodooWaspIdleframe014 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle15:   dw VoodooWaspIdleframe015 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle16:   dw VoodooWaspIdleframe016 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle17:   dw VoodooWaspIdleframe017 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+
+;Idle flying
+BossVoodooWaspIdle18:   dw VoodooWaspIdleframe018 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle19:   dw VoodooWaspIdleframe019 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle20:   dw VoodooWaspIdleframe020 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle21:   dw VoodooWaspIdleframe021 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle22:   dw VoodooWaspIdleframe022 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle23:   dw VoodooWaspIdleframe023 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle24:   dw VoodooWaspIdleframe024 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle25:   dw VoodooWaspIdleframe025 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle26:   dw VoodooWaspIdleframe026 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle27:   dw VoodooWaspIdleframe027 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle28:   dw VoodooWaspIdleframe028 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle29:   dw VoodooWaspIdleframe029 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+
+BossAreaVoodooWaspPalette:
+  incbin "..\grapx\tilesheets\sBossAreaVoodooWaspPalette.PL" ;file palette 
+
+BossVoodooWasp:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+;v7=sprite frame
+;v8=phase
+;v9=move left (-1) or right (0)
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+  ld    hl,BossAreaVoodooWaspPalette
+  call  Setpalette
+  call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    de,BossVoodooWaspIdle00
+  jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+
+  .HandlePhase:                            ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    a,(HugeObjectFrame)
+  cp    2
+  ret   nz
+  
+;  ld    a,(Bossframecounter)
+;  inc   a
+;  ld    (Bossframecounter),a
+
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  or    a
+  jp    z,BossVoodooWaspIdleSitting
+  dec   a
+  jp    z,BossVoodooWaspIdleFlying
+;  dec   a
+;  jp    z,BossDemonAttacking
+;  dec   a
+;  jp    z,BossDemonHit
+;  dec   a
+;
+  BossVoodooWaspIdleFlying:
+  ;animate
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  add   a,3
+  cp    30                                  ;sprite 18,21,24,27 are idle flying
+  jr    nz,.notzero
+  ld    a,18
+  .notzero:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret  
+
+  BossVoodooWaspIdleSitting:
+;  ld    de,NonMovingObjectMovementTable
+;  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+;  call  CollisionObjectPlayerDemon         ;Check if player is hit by Vram object                            
+;  call  CheckPlayerPunchesEnemyDemon       ;Check if player hit's enemy
+  
+;  ld    a,r
+;  and   31
+;  jr    nz,.EndCheckStartWalking
+;  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
+;  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table    
+;  ld    (ix+enemies_and_objects.v7),6       ;v7=sprite frame
+;  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+;  ret
+;  .EndCheckStartWalking:
+
+;  call  BossDemonCheckIfDead                ;call gets popped if dead
+;  call  BossDemonCheckIfHit                 ;call gets popped if hit
+
+  ;animate
+  ld    a,(Bossframecounter)
+  and   3
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  inc   a
+  cp    6                                   ;sprite 0-5 are idle
+  jr    nz,.notzero
+  xor   a
+  .notzero:
+;  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
+
+;  BossDemonCheckIfHit:
+;  ld    a,(ix+enemies_and_objects.hit?)
+;  or    a
+;  ret   z
+;  pop   af                                  ;pop call  
+;  ld    (ix+enemies_and_objects.hit?),0
+;  ld    (ix+enemies_and_objects.v7),29      ;v7=sprite frame
+;  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+;  ret
+
+;  BossDemonCheckIfDead:
+;  ld    a,(ix+enemies_and_objects.life)
+;  dec   a
+;  ret   nz
+;  pop   af                                  ;pop call
+;  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+;  ld    a,34
+;  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+;  ret
+
+
+
+
+PutSf2Object3Frames:
+  ld    a,(HugeObjectFrame)
+  inc   a
+  cp    3
+  jr    nz,.SetFrame
+  xor   a
+  .SetFrame:
+  ld    (HugeObjectFrame),a
+
+  jr    z,.Top
+  dec   a
+  jr    z,.Middle
+
+  .Bottom:
+  call  restoreBackgroundObject3
+  ld    a,(ix+enemies_and_objects.v7)
+  add   a,2
+  call  SetFrameBoss
+  call  PutSF2Object3                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  jp    switchpageSF2Engine
+  
+  .Middle:
+  call  restoreBackgroundObject2
+  ld    a,(ix+enemies_and_objects.v7)
+  inc   a
+  call  SetFrameBoss
+  jp    PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  
+  .Top:
+  call  restoreBackgroundObject1
+  ld    a,(ix+enemies_and_objects.v7)
+  call  SetFrameBoss
+  jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+SetFrameBoss:
+  ld    l,a                                 ;v7=sprite frame
+  ld    h,0
+  add   hl,hl                               ;*2
+  add   hl,hl                               ;*4
+  add   hl,de                               ;frame * 12 + frame address
+
+  .SetFrameSF2Object:
+  ld    a,(hl)
+  ld    (Player1Frame),a
+  inc   hl
+  ld    a,(hl)
+  ld    (Player1Frame+1),a
+  inc   hl
+  ld    b,(hl)                              ;frame list block
+  inc   hl
+  ld    c,(hl)                              ;sprite data block
+  ret
+
 
 
 AltarGraphics00top:       dw BossRoomframe000 | db BossRoomframelistblock, BossRoomspritedatablock
