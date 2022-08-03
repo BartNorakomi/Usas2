@@ -3198,7 +3198,7 @@ MapD04:
 .object2: db 0,        0|dw Altar2              |db 8*14|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
 
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3: db 2,        0|dw BossVoodooWasp      |db 8*12|dw 8*12|db 80,60|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+18,+01,+00, 0|db 010| ds fill
+.object3: db 2,        0|dw BossVoodooWasp      |db 8*12|dw 8*12|db 80,60|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+69,+04,+00, 0|db 010| ds fill
 
   
 MapD05:
@@ -3603,7 +3603,18 @@ phase	$0000
 	ds		$4000-$,$ff
 dephase
 
+; block $d5
+BossVoodooWaspHitframelistblock:            equ $d5
+phase	$8000
+  include "..\grapx\BossVoodooWasp\Hit\frames.lst" 
+	ds		$c000-$,$ff
 
+; block $d6
+BossVoodooWaspHitspritedatablock:           equ $d6
+phase	$0000
+  incbin "..\grapx\BossVoodooWasp\Hit\frames.dat"
+	ds		$4000-$,$ff
+dephase
 
 
 
@@ -3616,9 +3627,9 @@ dephase
 
 
 ;
-; block $d5 -----------------> Music
+; block $d7 -----------------> Music
 ;
-usas2repBlock:  equ   $d5
+usas2repBlock:  equ   $d7
   incbin "usas2.rep"
 
 

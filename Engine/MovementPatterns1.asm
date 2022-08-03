@@ -916,6 +916,64 @@ BossVoodooWaspIdle27:   dw VoodooWaspIdleframe027 | db BossVoodooWaspIdleframeli
 BossVoodooWaspIdle28:   dw VoodooWaspIdleframe028 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
 BossVoodooWaspIdle29:   dw VoodooWaspIdleframe029 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
 
+;attacking
+BossVoodooWaspIdle30:   dw VoodooWaspIdleframe030 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle31:   dw VoodooWaspIdleframe031 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle32:   dw VoodooWaspIdleframe032 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle33:   dw VoodooWaspIdleframe033 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle34:   dw VoodooWaspIdleframe034 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle35:   dw VoodooWaspIdleframe035 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle36:   dw VoodooWaspIdleframe036 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle37:   dw VoodooWaspIdleframe037 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle38:   dw VoodooWaspIdleframe038 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle39:   dw VoodooWaspIdleframe039 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle40:   dw VoodooWaspIdleframe040 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle41:   dw VoodooWaspIdleframe041 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle42:   dw VoodooWaspIdleframe042 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle43:   dw VoodooWaspIdleframe043 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle44:   dw VoodooWaspIdleframe044 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle45:   dw VoodooWaspIdleframe045 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle46:   dw VoodooWaspIdleframe046 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle47:   dw VoodooWaspIdleframe047 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle48:   dw VoodooWaspIdleframe048 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle49:   dw VoodooWaspIdleframe049 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle50:   dw VoodooWaspIdleframe050 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle51:   dw VoodooWaspIdleframe051 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle52:   dw VoodooWaspIdleframe052 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle53:   dw VoodooWaspIdleframe053 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+
+;being hit
+BossVoodooWaspHit54:   dw VoodooWaspHitframe000 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit55:   dw VoodooWaspHitframe001 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit56:   dw VoodooWaspHitframe002 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit57:   dw VoodooWaspHitframe003 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit58:   dw VoodooWaspHitframe004 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit59:   dw VoodooWaspHitframe005 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit60:   dw VoodooWaspHitframe006 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit61:   dw VoodooWaspHitframe007 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit62:   dw VoodooWaspHitframe008 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit63:   dw VoodooWaspHitframe009 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit64:   dw VoodooWaspHitframe010 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit65:   dw VoodooWaspHitframe011 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit66:   dw VoodooWaspHitframe012 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit67:   dw VoodooWaspHitframe013 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit68:   dw VoodooWaspHitframe014 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+
+;dying
+BossVoodooWaspHit69:   dw VoodooWaspHitframe015 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit70:   dw VoodooWaspHitframe016 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit71:   dw VoodooWaspHitframe017 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit72:   dw VoodooWaspHitframe018 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit73:   dw VoodooWaspHitframe019 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit74:   dw VoodooWaspHitframe020 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit75:   dw VoodooWaspHitframe021 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit76:   dw VoodooWaspHitframe022 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit77:   dw VoodooWaspHitframe023 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit78:   dw VoodooWaspHitframe024 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit79:   dw VoodooWaspHitframe025 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+BossVoodooWaspHit80:   dw VoodooWaspHitframe026 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
+
+
 BossAreaVoodooWaspPalette:
   incbin "..\grapx\tilesheets\sBossAreaVoodooWaspPalette.PL" ;file palette 
 
@@ -942,21 +1000,55 @@ BossVoodooWasp:
   cp    2
   ret   nz
   
-;  ld    a,(Bossframecounter)
-;  inc   a
-;  ld    (Bossframecounter),a
+  ld    a,(Bossframecounter)
+  inc   a
+  ld    (Bossframecounter),a
 
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   or    a
   jp    z,BossVoodooWaspIdleSitting
   dec   a
   jp    z,BossVoodooWaspIdleFlying
-;  dec   a
-;  jp    z,BossDemonAttacking
-;  dec   a
-;  jp    z,BossDemonHit
-;  dec   a
-;
+  dec   a
+  jp    z,BossVoodooWaspAttacking
+  dec   a
+  jp    z,BossVoodooWaspBeingHit
+  dec   a
+  jp    z,BossVoodooWaspDying
+
+  BossVoodooWaspDying:
+  ;animate
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  add   a,3
+  cp    81                                  ;sprite 18,21,24,27 are idle flying
+  jr    nz,.notzero
+  ld    a,69
+  .notzero:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret  
+
+  BossVoodooWaspBeingHit:
+  ;animate
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  add   a,3
+  cp    69                                  ;sprite 18,21,24,27 are idle flying
+  jr    nz,.notzero
+  ld    a,54
+  .notzero:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret  
+
+  BossVoodooWaspAttacking:
+  ;animate
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  add   a,3
+  cp    54                                  ;sprite 18,21,24,27 are idle flying
+  jr    nz,.notzero
+  ld    a,30
+  .notzero:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret  
+
   BossVoodooWaspIdleFlying:
   ;animate
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
@@ -989,16 +1081,17 @@ BossVoodooWasp:
 
   ;animate
   ld    a,(Bossframecounter)
-  and   3
+  and   1
   ret   nz
+  
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
-  inc   a
-  cp    6                                   ;sprite 0-5 are idle
+  add   a,3
+  cp    18                                  ;sprite 18,21,24,27 are idle flying
   jr    nz,.notzero
-  xor   a
+  ld    a,00
   .notzero:
-;  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
-  ret
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret  
 
 ;  BossDemonCheckIfHit:
 ;  ld    a,(ix+enemies_and_objects.hit?)
