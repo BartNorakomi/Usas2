@@ -54,8 +54,8 @@
   dw VoodooWaspIdleframe053
 
 VoodooWaspIdleframe000:
-  db 030h,00Ch,078h,034h
-  db 094h
+  db 030h,00Ch,07Eh,034h
+  db 09Ah
   db 000h,000h,0CCh,000h,000h
   db 000h,000h
   dw 0037Dh,base+00642h
@@ -72,8 +72,8 @@ VoodooWaspIdleframe000:
   dw 00A00h,base+011F1h
 
 VoodooWaspIdleframe001:
-  db 04Ch,010h,056h,040h
-  db 076h
+  db 04Ch,010h,05Ch,040h
+  db 07Ch
   db 000h,000h,0C0h,000h,000h
   db 000h,000h
   dw 00980h,base+01381h
@@ -104,8 +104,8 @@ VoodooWaspIdleframe001:
   dw 01F00h,base+00105h
 
 VoodooWaspIdleframe002:
-  db 04Ch,012h,05Ch,050h
-  db 064h
+  db 04Ch,012h,062h,050h
+  db 06Ah
   db 000h,000h,0B0h,000h,000h
   db 000h,000h
   dw 00405h,base+018EEh
@@ -201,8 +201,8 @@ VoodooWaspIdleframe002:
   dw 00400h,base+00A6Bh
 
 VoodooWaspIdleframe003:
-  db 030h,00Ch,078h,034h
-  db 092h
+  db 030h,00Ch,07Eh,034h
+  db 098h
   db 000h,000h,0CCh,000h,000h
   db 000h,000h
   dw 0077Eh,base+0156Bh
@@ -219,8 +219,8 @@ VoodooWaspIdleframe003:
   dw 00A00h,base+01205h
 
 VoodooWaspIdleframe004:
-  db 04Ch,010h,056h,040h
-  db 076h
+  db 04Ch,010h,05Ch,040h
+  db 07Ch
   db 000h,000h,0C0h,000h,000h
   db 000h,000h
   dw 0097Fh,base+0139Ch
@@ -253,8 +253,8 @@ VoodooWaspIdleframe004:
   dw 01A00h,base+00391h
 
 VoodooWaspIdleframe005:
-  db 04Ah,012h,05Ch,050h
-  db 062h
+  db 04Ah,012h,062h,050h
+  db 068h
   db 000h,000h,0B0h,000h,000h
   db 000h,000h
   dw 00406h,base+01912h
@@ -351,8 +351,8 @@ VoodooWaspIdleframe005:
   dw 00400h,base+00A6Bh
 
 VoodooWaspIdleframe006:
-  db 04Ah,00Ah,05Ch,036h
-  db 08Eh
+  db 04Ah,00Ah,062h,036h
+  db 094h
   db 000h,000h,0CAh,000h,000h
   db 000h,000h
   dw 0077Eh,base+006D5h
@@ -369,8 +369,8 @@ VoodooWaspIdleframe006:
   dw 01000h,base+006E7h
 
 VoodooWaspIdleframe007:
-  db 04Ah,010h,056h,040h
-  db 056h
+  db 04Ah,010h,05Ch,040h
+  db 05Ch
   db 000h,000h,0C0h,000h,000h
   db 000h,000h
   dw 00304h,base+00020h
@@ -402,8 +402,8 @@ VoodooWaspIdleframe007:
   dw 01A00h,base+0010Ah
 
 VoodooWaspIdleframe008:
-  db 04Ah,012h,05Ch,050h
-  db 062h
+  db 04Ah,012h,062h,050h
+  db 068h
   db 000h,000h,0B0h,000h,000h
   db 000h,000h
   dw 00205h,base+01A42h
@@ -499,8 +499,8 @@ VoodooWaspIdleframe008:
   dw 00400h,base+00A6Bh
 
 VoodooWaspIdleframe009:
-  db 030h,00Ch,078h,034h
-  db 092h
+  db 030h,00Ch,07Eh,034h
+  db 098h
   db 000h,000h,0CCh,000h,000h
   db 000h,000h
   dw 0077Eh,base+0156Bh
@@ -517,8 +517,8 @@ VoodooWaspIdleframe009:
   dw 00A00h,base+01205h
 
 VoodooWaspIdleframe010:
-  db 04Ch,010h,056h,040h
-  db 076h
+  db 04Ch,010h,05Ch,040h
+  db 07Ch
   db 000h,000h,0C0h,000h,000h
   db 000h,000h
   dw 0097Fh,base+0139Ch
@@ -551,8 +551,8 @@ VoodooWaspIdleframe010:
   dw 01A00h,base+00391h
 
 VoodooWaspIdleframe011:
-  db 04Ah,012h,05Ch,050h
-  db 062h
+  db 04Ah,012h,062h,050h
+  db 068h
   db 000h,000h,0B0h,000h,000h
   db 000h,000h
   dw 00406h,base+01912h
@@ -649,8 +649,8 @@ VoodooWaspIdleframe011:
   dw 00400h,base+00A6Bh
 
 VoodooWaspIdleframe012:
-  db 030h,00Ch,078h,034h
-  db 094h
+  db 030h,00Ch,07Eh,034h
+  db 09Ah
   db 000h,000h,0CCh,000h,000h
   db 000h,000h
   dw 0037Dh,base+00642h
@@ -667,8 +667,8 @@ VoodooWaspIdleframe012:
   dw 00A00h,base+011F1h
 
 VoodooWaspIdleframe013:
-  db 04Ch,010h,056h,040h
-  db 076h
+  db 04Ch,010h,05Ch,040h
+  db 07Ch
   db 000h,000h,0C0h,000h,000h
   db 000h,000h
   dw 00980h,base+01381h
@@ -699,8 +699,8 @@ VoodooWaspIdleframe013:
   dw 01F00h,base+00105h
 
 VoodooWaspIdleframe014:
-  db 04Ch,012h,05Ch,050h
-  db 064h
+  db 04Ch,012h,062h,050h
+  db 06Ah
   db 000h,000h,0B0h,000h,000h
   db 000h,000h
   dw 00405h,base+018EEh
@@ -796,8 +796,8 @@ VoodooWaspIdleframe014:
   dw 00400h,base+00A6Bh
 
 VoodooWaspIdleframe015:
-  db 030h,00Ch,078h,034h
-  db 094h
+  db 030h,00Ch,07Eh,034h
+  db 09Ah
   db 000h,000h,0CCh,000h,000h
   db 000h,000h
   dw 0037Dh,base+00642h
@@ -814,8 +814,8 @@ VoodooWaspIdleframe015:
   dw 00A00h,base+011F1h
 
 VoodooWaspIdleframe016:
-  db 04Eh,010h,056h,040h
-  db 076h
+  db 04Eh,010h,05Ch,040h
+  db 07Ch
   db 000h,000h,0C0h,000h,000h
   db 000h,000h
   dw 00980h,base+01381h
@@ -846,8 +846,8 @@ VoodooWaspIdleframe016:
   dw 01B00h,base+0035Bh
 
 VoodooWaspIdleframe017:
-  db 04Ch,012h,05Ch,050h
-  db 064h
+  db 04Ch,012h,062h,050h
+  db 06Ah
   db 000h,000h,0B0h,000h,000h
   db 000h,000h
   dw 00405h,base+018EEh

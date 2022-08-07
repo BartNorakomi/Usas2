@@ -3017,30 +3017,31 @@ SwapSpatColAndCharTable2:
   ld    (invissprchatableaddress),hl
   ret
 
+CollisionObjectPlayerBoss:
 CollisionObjectPlayerDemon:
-  ld    a,-60
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+;  ld    a,-50
+;  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
 
-  ld    hl,(Clesx)                          ;hl = x player
-  ld    bc,30                               ;reduction to hitbox sx (left side)
-  jp    CollisionEnemyPlayer.ObjectEntry
+;  ld    hl,(Clesx)                          ;hl = x player
+;  ld    bc,30                               ;reduction to hitbox sx (left side)
+;  jp    CollisionEnemyPlayer.ObjectEntry
 ;  call  CollisionEnemyPlayer.ObjectEntry
 
 ;  ld    a,CollisionSYStanding
 ;  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
-;  ret
+  ret
 
 CollisionObjectPlayer:  
-  ld    hl,(Clesx)                          ;hl = x player
+;  ld    hl,(Clesx)                          ;hl = x player
   ld    bc,20-2-16                          ;reduction to hitbox sx (left side)
   jp    CollisionEnemyPlayer.ObjectEntry
   
   CollisionEnemyPlayer:
 ;check if player collides with left side of enemy/object
-  ld    hl,(Clesx)                          ;hl = x player
   ld    bc,20-2                             ;reduction to hitbox sx (left side)
 
   .ObjectEntry:
+  ld    hl,(Clesx)                          ;hl = x player
   add   hl,bc
 
   ld    e,(ix+enemies_and_objects.x)  

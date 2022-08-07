@@ -272,7 +272,7 @@ CheckArrowHitsEnemy:
 ;check if enemy/object collides with hitbox arrow left side
   ld    hl,(ArrowX)                         ;hl = x hitbox
 
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  ld    a,(scrollEngine)                    ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   ld    bc,46                               ;normal engine
   jr    z,.engineFound
@@ -482,10 +482,19 @@ CheckWaterWeaponHitsEnemy:
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
   ret
-  
+
+CheckPlayerPunchesBoss:
 CheckPlayerPunchesEnemyDemon:
   ld    hl,(ClesX)
-  ld    de,35 + 8
+  
+  ;adjust hitbox when facing left or right (this only applies to bossfights)
+  ld    a,(PlayerFacingRight?)
+  or    a
+  ld    de,43
+  jr    nz,.PlayerFacingDirectionFound
+  ld    de,43-34  
+  .PlayerFacingDirectionFound:
+  
   add   hl,de
   ld    (HitBoxSX),hl
 ;  ld    a,16
@@ -502,6 +511,15 @@ CheckPlayerPunchesEnemyDemon:
   ld    a,(ArrowY)                          ;a = y hitbox
   sub   a,60
   ld    (ArrowY),a                          ;a = y hitbox
+  ld    a,(IceWeaponY)                          ;a = y hitbox
+  sub   a,60
+  ld    (IceWeaponY),a                          ;a = y hitbox
+  ld    a,(EarthWeaponY)                          ;a = y hitbox
+  sub   a,60
+  ld    (EarthWeaponY),a                          ;a = y hitbox
+  ld    a,(WaterWeaponY)                          ;a = y hitbox
+  sub   a,60
+  ld    (WaterWeaponY),a                          ;a = y hitbox
   call  CheckPlayerPunchesEnemy
   ld    a,(FireballY)                       ;a = y hitbox
   add   a,60
@@ -509,11 +527,27 @@ CheckPlayerPunchesEnemyDemon:
   ld    a,(ArrowY)                          ;a = y hitbox
   add   a,60
   ld    (ArrowY),a                          ;a = y hitbox
+  ld    a,(IceWeaponY)                          ;a = y hitbox
+  add   a,60
+  ld    (IceWeaponY),a                          ;a = y hitbox
+  ld    a,(EarthWeaponY)                          ;a = y hitbox
+  add   a,60
+  ld    (EarthWeaponY),a                          ;a = y hitbox
+  ld    a,(WaterWeaponY)                          ;a = y hitbox
+  add   a,60
+  ld    (WaterWeaponY),a                          ;a = y hitbox
   ret
 ;  jp    CheckPlayerPunchesEnemy
 
 BlinkDurationWhenHit: equ 31  
-CheckPlayerPunchesEnemy:
+CheckPlayerPunchesEnemy:  
+  ld    a,(ix+enemies_and_objects.hit?)     ;reduce enemy is hit counter
+  dec   a
+  jp    m,.EndReduceHitTimer
+  ld    (ix+enemies_and_objects.hit?),a
+  ret                                       ;if enemy is  already hit, don't check if it's hit again
+  .EndReduceHitTimer:
+  
   ld    a,(ArrowActive?)
   or    a
   call  nz,CheckArrowHitsEnemy
@@ -533,15 +567,7 @@ CheckPlayerPunchesEnemy:
   ld    a,(WaterWeaponActive?)
   or    a
   call  nz,CheckWaterWeaponHitsEnemy
-
-  
-  ld    a,(ix+enemies_and_objects.hit?)     ;reduce enemy is hit counter
-  dec   a
-  jp    m,.EndReduceHitTimer
-  ld    (ix+enemies_and_objects.hit?),a
-  ret                                       ;if enemy is  already hit, don't check if it's hit again
-  .EndReduceHitTimer:
-  
+    
   ld    a,(EnableHitbox?)
   or    a
   ret   z
@@ -1072,11 +1098,33 @@ BossVoodooWasp:
   ld    (Object1y),a
   ld    a,(ix+enemies_and_objects.x)        ;x object
   ld    (Object1x),a	
-	
+
+  ld    hl,BossAreaVoodooWaspPalette
+  call  Setpalette	
   .EndCheckVoodooWaspEnterScreen:
 ;/face player upwards when Voodoo Wasp enters 
-  ld    hl,BossAreaVoodooWaspPalette
-  call  Setpalette
+
+  ;Check if player gets hit by boss
+  ld    a,-50                               ;add to sy
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ld    bc,30                               ;reduction to hitbox sx (left side)
+  call  CollisionEnemyPlayer.ObjectEntry
+
+  ;Check if boss gets hit by player
+  call  VoodooWaspCheckIfHit                ;Check if boss is hit, and if so set being hit phase
+  
+;  ld    a,r
+;  and   31
+;  jr    nz,.EndCheckStartWalking
+;  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
+;  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table    
+;  ld    (ix+enemies_and_objects.v7),6       ;v7=sprite frame
+;  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+;  ret
+;  .EndCheckStartWalking:
+
+;  call  BossDemonCheckIfDead                ;call gets popped if dead
+;  call  BossDemonCheckIfHit                 ;call gets popped if hit
 
   call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ld    de,BossVoodooWaspIdle00
@@ -1124,6 +1172,23 @@ BossVoodooWasp:
   jp    z,BossVoodooWaspAttackPattern8      ;14=attack pattern 8 flying back up
   ret
 
+  VoodooWaspCheckIfHit:
+  call  CheckPlayerPunchesBoss              ;Check if player hit's enemy
+  
+  ld    a,(ix+enemies_and_objects.hit?)
+  cp    BlinkDurationWhenHit                ;Check if Boss is hit this very frame
+  ret   nz
+
+  pop   af                                  ;pop call  
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v1-1),a     ;backup v7=sprite frame
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v1-2),a     ;backup v7=sprite frame
+
+  ld    (ix+enemies_and_objects.v7),54      ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ret
+
   BossVoodooWaspAttackPattern8:             ;14=attack pattern 8 flying back up
   call  BossVoodooWaspIdleFlying.animate
 
@@ -1161,6 +1226,7 @@ BossVoodooWasp:
   and   3
   ld    (ix+enemies_and_objects.v8),6       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ld    (ix+enemies_and_objects.v9),0       ;v9=attack pattern
+
   ret   z
   ld    (ix+enemies_and_objects.v8),13      ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   dec   a
@@ -1169,7 +1235,6 @@ BossVoodooWasp:
   dec   a
   ret   z
   ld    (ix+enemies_and_objects.v8),9       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
-
   ld    a,(clesX)
   cp    50
   ld    (ix+enemies_and_objects.v9),3       ;v9=attack pattern
@@ -1181,7 +1246,6 @@ BossVoodooWasp:
   ld    (ix+enemies_and_objects.v9),1       ;v9=attack pattern
   ret   c
   ld    (ix+enemies_and_objects.v9),0       ;v9=attack pattern
-
   ret
 
   BossVoodooWaspAttackPattern6:             ;12=attack pattern 6 flying in a clockwise circle
@@ -1230,7 +1294,13 @@ BossVoodooWasp:
 
   BossVoodooWaspIdleSitting2:
   ld    de,NonMovingObjectMovementTable
-  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+  
+  ld    (ix+enemies_and_objects.nx),70      ;width when sitting
+
+  ld    a,(ix+enemies_and_objects.hit?)
+  or    a
+  jr    nz,.FlyBackUp
   
   ;animate
   ld    a,(Bossframecounter)
@@ -1247,11 +1317,13 @@ BossVoodooWasp:
   ld    a,00
   jr    nz,.notzero
 
+  .FlyBackUp:
   ld    a,(ix+enemies_and_objects.y)        ;y
   cp    102
   jr    z,.VoodooWaspSittingOnBottomFloor
   
   .VoodooWaspSittingOnPlatform:
+  ld    (ix+enemies_and_objects.nx),52      ;width when flying
   ld    (ix+enemies_and_objects.v8),14      ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   call  ResetV1andV2
   ld    a,18
@@ -1259,6 +1331,7 @@ BossVoodooWasp:
   ret  
 
   .VoodooWaspSittingOnBottomFloor:
+  ld    (ix+enemies_and_objects.nx),52      ;width when flying
   ld    (ix+enemies_and_objects.v8),11      ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ld    (ix+enemies_and_objects.y),100       ;y
   call  ResetV1andV2
@@ -1336,6 +1409,14 @@ BossVoodooWasp:
   ld    a,(Bossframecounter)
   rrca
   ret   c
+  
+  ;when Voodoo Wasp attack, move his hitbox slightly to the left
+  ld    a,-50                               ;add to sy
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ld    bc,40                               ;reduction to hitbox sx (left side)
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  cp    54-15
+  call  z,CollisionEnemyPlayer.ObjectEntry
   
   ;animate
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
@@ -1429,12 +1510,25 @@ BossVoodooWasp:
   ret  
 
   BossVoodooWaspBeingHit:
+  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit-20
+  
   ;animate
+  ld    a,(Bossframecounter)
+  and   1
+  ret   nz
+    
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   add   a,3
   cp    69                                  ;sprite 18,21,24,27 are idle flying
   jr    nz,.notzero
-  ld    a,54
+
+  ld    a,(ix+enemies_and_objects.v1-1)     ;backup v7=sprite frame
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ld    a,(ix+enemies_and_objects.v1-2)     ;backup v7=sprite frame
+  ld    (ix+enemies_and_objects.v8),a       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ret
+  
+;  ld    a,54
   .notzero:
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret  

@@ -27,9 +27,9 @@
   dw VoodooWaspHitframe026
 
 VoodooWaspHitframe000:
-  db 04Eh,016h,060h,022h
+  db 04Eh,016h,060h,021h
   db 098h
-  db 000h,000h,0DEh,000h,000h
+  db 000h,000h,0DFh,000h,000h
   db 000h,000h
   dw 0027Ch,base+000B6h
   dw 0057Ah,base+0000Fh
@@ -86,9 +86,9 @@ VoodooWaspHitframe000:
   dw 00D00h,base+006C7h
 
 VoodooWaspHitframe001:
-  db 040h,018h,05Ah,038h
+  db 040h,018h,05Ah,037h
   db 064h
-  db 000h,000h,0C8h,000h,000h
+  db 000h,000h,0C9h,000h,000h
   db 000h,000h
   dw 0050Ah,base+01119h
   dw 0117Ah,base+004B0h
@@ -136,9 +136,9 @@ VoodooWaspHitframe001:
   dw 01200h,base+003FCh
 
 VoodooWaspHitframe002:
-  db 038h,01Dh,064h,050h
+  db 038h,01Dh,064h,04Fh
   db 068h
-  db 000h,000h,0B0h,000h,000h
+  db 000h,000h,0B1h,000h,000h
   db 000h,000h
   dw 00305h,base+00CEEh
   dw 00507h,base+01128h
@@ -249,9 +249,9 @@ VoodooWaspHitframe002:
   dw 00400h,base+0126Dh
 
 VoodooWaspHitframe003:
-  db 054h,019h,062h,027h
+  db 054h,019h,062h,026h
   db 08Eh
-  db 000h,000h,0D9h,000h,000h
+  db 000h,000h,0DAh,000h,000h
   db 000h,000h
   dw 00180h,base+001ADh
   dw 0017Fh,base+0000Bh
@@ -316,9 +316,9 @@ VoodooWaspHitframe003:
   dw 01400h,base+003B0h
 
 VoodooWaspHitframe004:
-  db 036h,018h,062h,040h
+  db 036h,018h,062h,03Fh
   db 070h
-  db 000h,000h,0C0h,000h,000h
+  db 000h,000h,0C1h,000h,000h
   db 000h,000h
   dw 00304h,base+0006Eh
   dw 00B7Ch,base+00981h
@@ -385,9 +385,9 @@ VoodooWaspHitframe004:
   dw 00B00h,base+009ADh
 
 VoodooWaspHitframe005:
-  db 030h,01Bh,06Ah,058h
+  db 030h,01Bh,06Ah,057h
   db 06Ah
-  db 000h,000h,0A8h,000h,000h
+  db 000h,000h,0A9h,000h,000h
   db 000h,000h
   dw 00304h,base+0130Dh
   dw 00203h,base+00042h
@@ -450,9 +450,9 @@ VoodooWaspHitframe005:
   dw 00500h,base+01178h
 
 VoodooWaspHitframe006:
-  db 042h,017h,068h,021h
+  db 042h,017h,068h,020h
   db 07Ah
-  db 000h,000h,0DFh,000h,000h
+  db 000h,000h,0E0h,000h,000h
   db 000h,000h
   dw 00206h,base+012F2h
   dw 0017Ah,base+0005Fh
@@ -504,9 +504,9 @@ VoodooWaspHitframe006:
   dw 00900h,base+00181h
 
 VoodooWaspHitframe007:
-  db 050h,018h,064h,038h
+  db 050h,018h,064h,037h
   db 068h
-  db 000h,000h,0C8h,000h,000h
+  db 000h,000h,0C9h,000h,000h
   db 000h,000h
   dw 0060Ah,base+01030h
   dw 00507h,base+01187h
@@ -595,9 +595,9 @@ VoodooWaspHitframe007:
   dw 00600h,base+01054h
 
 VoodooWaspHitframe008:
-  db 056h,023h,064h,050h
+  db 056h,023h,064h,04Fh
   db 064h
-  db 000h,000h,0B0h,000h,000h
+  db 000h,000h,0B1h,000h,000h
   db 000h,000h
   dw 00203h,base+0102Ah
   dw 00304h,base+00468h
@@ -659,9 +659,9 @@ VoodooWaspHitframe008:
   dw 00400h,base+012A1h
 
 VoodooWaspHitframe009:
-  db 04Ch,019h,062h,027h
+  db 04Ch,019h,062h,026h
   db 072h
-  db 000h,000h,0D9h,000h,000h
+  db 000h,000h,0DAh,000h,000h
   db 000h,000h
   dw 00205h,base+012F2h
   dw 0027Ah,base+00000h
@@ -729,9 +729,9 @@ VoodooWaspHitframe009:
   dw 01C00h,base+000F0h
 
 VoodooWaspHitframe010:
-  db 056h,018h,062h,040h
+  db 056h,018h,062h,03Fh
   db 062h
-  db 000h,000h,0C0h,000h,000h
+  db 000h,000h,0C1h,000h,000h
   db 000h,000h
   dw 00209h,base+00F25h
   dw 01315h,base+003D7h
@@ -820,9 +820,9 @@ VoodooWaspHitframe010:
   dw 00B00h,base+009ADh
 
 VoodooWaspHitframe011:
-  db 030h,01Bh,06Ah,058h
+  db 030h,01Bh,06Ah,057h
   db 06Ah
-  db 000h,000h,0A8h,000h,000h
+  db 000h,000h,0A9h,000h,000h
   db 000h,000h
   dw 00102h,base+00003h
   dw 0020Ah,base+00042h
@@ -862,9 +862,9 @@ VoodooWaspHitframe011:
   dw 00500h,base+01178h
 
 VoodooWaspHitframe012:
-  db 054h,019h,062h,027h
+  db 054h,019h,062h,026h
   db 08Eh
-  db 000h,000h,0D9h,000h,000h
+  db 000h,000h,0DAh,000h,000h
   db 000h,000h
   dw 00180h,base+001ADh
   dw 0017Fh,base+0000Bh
@@ -929,9 +929,9 @@ VoodooWaspHitframe012:
   dw 01400h,base+003B0h
 
 VoodooWaspHitframe013:
-  db 036h,018h,062h,040h
+  db 036h,018h,062h,03Fh
   db 070h
-  db 000h,000h,0C0h,000h,000h
+  db 000h,000h,0C1h,000h,000h
   db 000h,000h
   dw 00304h,base+0006Eh
   dw 00B7Ch,base+00981h
@@ -1004,9 +1004,9 @@ VoodooWaspHitframe013:
   dw 00B00h,base+009ADh
 
 VoodooWaspHitframe014:
-  db 030h,01Bh,06Ah,058h
+  db 030h,01Bh,06Ah,057h
   db 06Ah
-  db 000h,000h,0A8h,000h,000h
+  db 000h,000h,0A9h,000h,000h
   db 000h,000h
   dw 00304h,base+0130Dh
   dw 00203h,base+00042h
