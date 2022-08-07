@@ -973,9 +973,80 @@ BossVoodooWaspHit78:   dw VoodooWaspHitframe024 | db BossVoodooWaspHitframelistb
 BossVoodooWaspHit79:   dw VoodooWaspHitframe025 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
 BossVoodooWaspHit80:   dw VoodooWaspHitframe026 | db BossVoodooWaspHitframelistblock, BossVoodooWaspHitspritedatablock
 
+;Idle flying bottom part
+BossVoodooWaspIdle81:   dw VoodooWaspIdleframe020 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle82:   dw VoodooWaspIdleframe020 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle83:   dw VoodooWaspIdleframe020 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle84:   dw VoodooWaspIdleframe023 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle85:   dw VoodooWaspIdleframe023 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle86:   dw VoodooWaspIdleframe023 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle87:   dw VoodooWaspIdleframe026 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle88:   dw VoodooWaspIdleframe026 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle89:   dw VoodooWaspIdleframe026 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle90:   dw VoodooWaspIdleframe029 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle91:   dw VoodooWaspIdleframe029 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle92:   dw VoodooWaspIdleframe029 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+
+;Idle flying middle and bottom part
+BossVoodooWaspIdle93:   dw VoodooWaspIdleframe020 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle94:   dw VoodooWaspIdleframe019 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle95:   dw VoodooWaspIdleframe020 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle96:   dw VoodooWaspIdleframe023 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle97:   dw VoodooWaspIdleframe022 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle98:   dw VoodooWaspIdleframe023 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle99:   dw VoodooWaspIdleframe026 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle100:  dw VoodooWaspIdleframe025 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle101:  dw VoodooWaspIdleframe026 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle102:  dw VoodooWaspIdleframe029 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle103:  dw VoodooWaspIdleframe028 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
+BossVoodooWaspIdle104:  dw VoodooWaspIdleframe029 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
 
 BossAreaVoodooWaspPalette:
   incbin "..\grapx\tilesheets\sBossAreaVoodooWaspPalette.PL" ;file palette 
+
+ResetV1andV2:
+  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
+  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table
+  ret
+
+VoodooWaspEnterScreenMovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    127,1,0, 128
+VoodooWaspAttackPattern1MovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    030,+0,+0, 003,+5,+3, 003,+5,+2, 003,+5,+1, 040,+5,+0
+VoodooWaspAttackPattern2MovementTable: ;repeating steps(128 = end table/repeat), move y, move x  
+  db    003,-5,-0, 003,-5,-1, 003,-5,-2, 040,-5,-3
+VoodooWaspAttackPattern2bMovementTable: ;repeating steps(128 = end table/repeat), move y, move x  
+  db    006,-5,-0, 003,-5,-2, 040,-5,-2
+
+VoodooWaspAttackPattern3MovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    030,+0,+0, 003,+5,+0, 003,+5,-1, 003,+5,-2, 040,+5,-3
+VoodooWaspAttackPattern4MovementTable: ;repeating steps(128 = end table/repeat), move y, move x  
+  db    003,-5,+0, 003,-5,+1, 003,-5,+2, 040,-5,+3
+
+VoodooWaspAttackPattern5MovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    030,+0,+0, 003,+5,-3, 003,+5,-4, 003,+5,-5, 040,+5,-6
+VoodooWaspAttackPattern6MovementTable: ;repeating steps(128 = end table/repeat), move y, move x  
+  db    003,-5,+3, 003,-5,+4, 003,-5,+5, 040,-5,+6
+
+VoodooWaspAttackPattern7MovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    030,+0,+0, 003,+5,-6, 003,+5,-7, 003,+5,-8, 040,+5,-9
+VoodooWaspAttackPattern7bMovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    030,+0,+0, 003,+5,-5, 003,+5,-6, 003,+5,-6, 040,+5,-7
+VoodooWaspAttackPattern8MovementTable: ;repeating steps(128 = end table/repeat), move y, move x  
+  db    003,-5,+6, 003,-5,+7, 003,-5,+8, 040,-5,+9
+VoodooWaspAttackPattern8bMovementTable: ;repeating steps(128 = end table/repeat), move y, move x  
+  db    003,-5,+5, 003,-5,+6, 003,-5,+6, 040,-5,+7
+
+VoodooWaspAttackPattern9MovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    030,+0,+0, 003,+5,+3, 003,+5,+4, 003,+4,+3, 003,+3,+2, 003,+2,+1, 003,+1,+0, 003,+0,-2, 003,+0,-3, 003,+0,-4, 003,+0,-5, 003,+0,-6, 013,+0,-7
+  db    003,-5,+5, 003,-5,+6, 003,-5,+7, 040,-3,+7
+
+VoodooWaspAttackPattern10MovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    030,+0,+0, 040,+3,+2
+
+VoodooWaspAttackPattern11MovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    040,-3,-2
+
 
 BossVoodooWasp:
 ;v1=repeating steps
@@ -986,11 +1057,27 @@ BossVoodooWasp:
 ;v6=active on which frame ?  
 ;v7=sprite frame
 ;v8=phase
-;v9=move left (-1) or right (0)
-  ld    de,NonMovingObjectMovementTable
-  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+;v9=attack pattern
+;face player upwards when Voodoo Wasp enters
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  cp    5
+  jr    nz,.EndCheckVoodooWaspEnterScreen
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  cp    30
+  jr    c,.EndCheckVoodooWaspEnterScreen
+	ld		hl,PlayerSpriteData_Char_RightStandLookUp
+	ld		(standchar),hl
+
+  ld    a,(ix+enemies_and_objects.y)        ;y object
+  ld    (Object1y),a
+  ld    a,(ix+enemies_and_objects.x)        ;x object
+  ld    (Object1x),a	
+	
+  .EndCheckVoodooWaspEnterScreen:
+;/face player upwards when Voodoo Wasp enters 
   ld    hl,BossAreaVoodooWaspPalette
   call  Setpalette
+
   call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ld    de,BossVoodooWaspIdle00
   jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
@@ -1006,15 +1093,329 @@ BossVoodooWasp:
 
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   or    a
-  jp    z,BossVoodooWaspIdleSitting
+;  jp    z,BossVoodooWaspIdleSitting         ;0=idle sitting
   dec   a
-  jp    z,BossVoodooWaspIdleFlying
+  jp    z,BossVoodooWaspIdleFlying          ;1=idle flying
   dec   a
-  jp    z,BossVoodooWaspAttacking
+;  jp    z,BossVoodooWaspAttacking           ;2=attacking
   dec   a
-  jp    z,BossVoodooWaspBeingHit
+  jp    z,BossVoodooWaspBeingHit            ;3=hit
   dec   a
-  jp    z,BossVoodooWaspDying
+  jp    z,BossVoodooWaspDying               ;4=dead
+  dec   a
+  jp    z,BossVoodooWaspEnterScreen         ;5=enter screen
+  dec   a
+  jp    z,BossVoodooWaspAttackPattern1      ;6=attack pattern 1 flying down
+  dec   a
+  jp    z,BossVoodooWaspAttackPattern2      ;7=attack pattern 2 attacking
+  dec   a
+  jp    z,BossVoodooWaspAttackPattern3      ;8=attack pattern 3 flying back up
+  dec   a
+  jp    z,BossVoodooWaspAttackPattern4      ;9=attack pattern 4 flying down
+  dec   a
+  jp    z,BossVoodooWaspIdleSitting2        ;10=idle sitting2
+  dec   a
+  jp    z,BossVoodooWaspAttackPattern5      ;11=attack pattern 5 flying back up
+  dec   a
+  jp    z,BossVoodooWaspAttackPattern6      ;12=attack pattern 6 flying in a clockwise circle
+  dec   a
+  jp    z,BossVoodooWaspAttackPattern7      ;13=attack pattern 7 flying down to sit on the platform in the middle
+  dec   a
+  jp    z,BossVoodooWaspAttackPattern8      ;14=attack pattern 8 flying back up
+  ret
+
+  BossVoodooWaspAttackPattern8:             ;14=attack pattern 8 flying back up
+  call  BossVoodooWaspIdleFlying.animate
+
+  ld    de,VoodooWaspAttackPattern11MovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+  ld    a,(ix+enemies_and_objects.y)       ;y
+  cp    0
+  ret   nz
+
+  call  ResetV1andV2
+  call  VoodooWaspChooseNewAttackPattern
+  ld    (ix+enemies_and_objects.x),$b0      ;x starting position
+;  ld    (ix+enemies_and_objects.y),0        ;y starting position
+  ret
+
+  BossVoodooWaspAttackPattern7:             ;13=attack pattern 7 flying down to sit on the platform in the middle
+  call  BossVoodooWaspIdleFlying.animate
+
+  ld    de,VoodooWaspAttackPattern10MovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+  ld    a,(ix+enemies_and_objects.y)       ;y
+  cp    30
+  ret   c
+
+  call  ResetV1andV2  
+;  ld    (ix+enemies_and_objects.y),102      ;y
+  ld    (ix+enemies_and_objects.v8),10      ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v7),0       ;v7=sprite frame
+  ret
+
+  VoodooWaspChooseNewAttackPattern:
+  ld    a,r
+  and   3
+  ld    (ix+enemies_and_objects.v8),6       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v9),0       ;v9=attack pattern
+  ret   z
+  ld    (ix+enemies_and_objects.v8),13      ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  dec   a
+  ret   z
+  ld    (ix+enemies_and_objects.v8),12      ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  dec   a
+  ret   z
+  ld    (ix+enemies_and_objects.v8),9       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+
+  ld    a,(clesX)
+  cp    50
+  ld    (ix+enemies_and_objects.v9),3       ;v9=attack pattern
+  ret   c
+  cp    100
+  ld    (ix+enemies_and_objects.v9),2       ;v9=attack pattern
+  ret   c
+  cp    150
+  ld    (ix+enemies_and_objects.v9),1       ;v9=attack pattern
+  ret   c
+  ld    (ix+enemies_and_objects.v9),0       ;v9=attack pattern
+
+  ret
+
+  BossVoodooWaspAttackPattern6:             ;12=attack pattern 6 flying in a clockwise circle
+  call  BossVoodooWaspIdleFlying.animate
+
+  ld    de,VoodooWaspAttackPattern9MovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+  ld    a,(ix+enemies_and_objects.y)       ;y
+  cp    250
+  ret   c
+
+  call  ResetV1andV2
+  call  VoodooWaspChooseNewAttackPattern
+  ld    (ix+enemies_and_objects.x),$b0      ;x starting position
+  ld    (ix+enemies_and_objects.y),0        ;y starting position
+  ret
+
+  BossVoodooWaspAttackPattern5:             ;flying back up
+  call  BossVoodooWaspIdleFlying.animate
+
+  ld    a,(ix+enemies_and_objects.v9)       ;v9=attack pattern
+  or    a
+  ld    de,VoodooWaspAttackPattern2bMovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern4MovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern6MovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern8bMovementTable
+  jr    z,.MovementPatternFound  
+  .MovementPatternFound:  
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+  ld    a,(ix+enemies_and_objects.y)       ;y
+  cp    0
+  ret   nz
+
+  call  ResetV1andV2
+  call  VoodooWaspChooseNewAttackPattern
+  ld    (ix+enemies_and_objects.x),$b0      ;x starting position
+  ret
+
+  BossVoodooWaspIdleSitting2:
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+  
+  ;animate
+  ld    a,(Bossframecounter)
+  and   1
+  ret   nz
+  
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  add   a,3
+  cp    18                                  ;sprite 18,21,24,27 are idle flying
+  jr    nz,.notzero
+
+  ld    a,r
+  and   7
+  ld    a,00
+  jr    nz,.notzero
+
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  cp    102
+  jr    z,.VoodooWaspSittingOnBottomFloor
+  
+  .VoodooWaspSittingOnPlatform:
+  ld    (ix+enemies_and_objects.v8),14      ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  call  ResetV1andV2
+  ld    a,18
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret  
+
+  .VoodooWaspSittingOnBottomFloor:
+  ld    (ix+enemies_and_objects.v8),11      ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.y),100       ;y
+  call  ResetV1andV2
+  ld    a,18
+  .notzero:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret  
+
+  BossVoodooWaspAttackPattern4:             ;flying down
+  call  BossVoodooWaspIdleFlying.animate
+
+  ld    a,(ix+enemies_and_objects.v9)       ;v9=attack pattern
+  or    a
+  ld    de,VoodooWaspAttackPattern1MovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern3MovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern5MovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern7bMovementTable
+  jr    z,.MovementPatternFound  
+  .MovementPatternFound:  
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+  ld    a,(ix+enemies_and_objects.y)       ;y
+  cp    100
+  ret   nz
+
+  call  ResetV1andV2  
+  ld    (ix+enemies_and_objects.y),102      ;y
+  ld    (ix+enemies_and_objects.v8),10      ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v7),0       ;v7=sprite frame
+  ret
+
+  BossVoodooWaspAttackPattern3:             ;flying back up
+  call  BossVoodooWaspIdleFlying.animate
+
+  ld    a,(ix+enemies_and_objects.v9)       ;v9=attack pattern
+  or    a
+  ld    de,VoodooWaspAttackPattern2MovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern4MovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern6MovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern8MovementTable
+  jr    z,.MovementPatternFound  
+  .MovementPatternFound:  
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+  ld    a,(ix+enemies_and_objects.y)       ;y
+  cp    0
+  ret   nz
+
+  call  ResetV1andV2
+  ld    (ix+enemies_and_objects.v8),6       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+
+  ld    a,(ix+enemies_and_objects.v9)       ;v9=attack pattern
+  inc   a
+  ld    (ix+enemies_and_objects.v9),a       ;v9=attack pattern
+  cp    4
+  ret   nz
+
+  call  VoodooWaspChooseNewAttackPattern
+  ld    (ix+enemies_and_objects.x),$b0      ;x starting position
+  ret
+  
+  BossVoodooWaspAttackPattern2:             ;attacking
+  ld    a,(Bossframecounter)
+  rrca
+  ret   c
+  
+  ;animate
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  add   a,3
+  cp    54                                  ;sprite 18,21,24,27 are idle flying
+  jr    nz,.notzero
+  ld    (ix+enemies_and_objects.v8),8       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  call  ResetV1andV2
+  ld    a,18
+  .notzero:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
+
+  BossVoodooWaspAttackPattern1:             ;flying down
+  call  BossVoodooWaspIdleFlying.animate
+
+  ld    a,(ix+enemies_and_objects.v9)       ;v9=attack pattern
+  or    a
+  ld    de,VoodooWaspAttackPattern1MovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern3MovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern5MovementTable
+  jr    z,.MovementPatternFound
+  dec   a
+  ld    de,VoodooWaspAttackPattern7MovementTable
+  jr    z,.MovementPatternFound  
+  .MovementPatternFound:  
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+  ld    a,(ix+enemies_and_objects.y)       ;y
+  cp    80
+  ret   nz
+
+  ld    (ix+enemies_and_objects.v8),7       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ret
+
+  BossVoodooWaspEnterScreen:
+  ld    de,VoodooWaspEnterScreenMovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+  
+  ;animate
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  add   a,3
+  cp    93                                  ;sprite 18,21,24,27 are idle flying
+  jr    z,.Sub12
+  cp    105                                 ;sprite 18,21,24,27 are idle flying
+  jr    z,.Sub12
+  cp    30                                  ;sprite 18,21,24,27 are idle flying
+  jr    nz,.DontSub12
+  .Sub12:
+  sub   a,12
+  .DontSub12:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+
+  ld    a,(ix+enemies_and_objects.y)        ;y Voodoo Wasp
+  cp    -44
+  jr    z,.BottomPartFullyInScreen
+  cp    -12
+  jr    z,.BottomAndMiddlePartFullyInScreen
+  cp    0
+  ret   nz
+  call  ResetV1andV2
+  jp    VoodooWaspChooseNewAttackPattern
+
+  .BottomAndMiddlePartFullyInScreen:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  sub   a,75
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  xor   a
+  ld    (freezecontrols?),a  
+  ret  
+
+  .BottomPartFullyInScreen:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  add   a,12
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret  
 
   BossVoodooWaspDying:
   ;animate
@@ -1038,19 +1439,30 @@ BossVoodooWasp:
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret  
 
-  BossVoodooWaspAttacking:
+;  BossVoodooWaspAttacking:
   ;animate
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
-  add   a,3
-  cp    54                                  ;sprite 18,21,24,27 are idle flying
-  jr    nz,.notzero
-  ld    a,30
-  .notzero:
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
-  ret  
+;  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+;  add   a,3
+;  cp    54                                  ;sprite 18,21,24,27 are idle flying
+;  jr    nz,.notzero
+;  ld    a,30
+;  .notzero:
+;  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+;  ret  
 
   BossVoodooWaspIdleFlying:
-  ;animate
+  call  .animate
+
+;  ld    a,(ix+enemies_and_objects.v9)       ;v9=wait timer
+;  inc   a
+;  and   31
+;  ld    (ix+enemies_and_objects.v9),a       ;v9=wait timer
+;  ret   nz
+;  call  ResetV1andV2
+;  ld    (ix+enemies_and_objects.v8),6       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+;  ret  
+
+  .animate:
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   add   a,3
   cp    30                                  ;sprite 18,21,24,27 are idle flying
@@ -1058,9 +1470,9 @@ BossVoodooWasp:
   ld    a,18
   .notzero:
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
-  ret  
+  ret
 
-  BossVoodooWaspIdleSitting:
+;  BossVoodooWaspIdleSitting:
 ;  ld    de,NonMovingObjectMovementTable
 ;  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
 ;  call  CollisionObjectPlayerDemon         ;Check if player is hit by Vram object                            
@@ -1080,18 +1492,18 @@ BossVoodooWasp:
 ;  call  BossDemonCheckIfHit                 ;call gets popped if hit
 
   ;animate
-  ld    a,(Bossframecounter)
-  and   1
-  ret   nz
+;  ld    a,(Bossframecounter)
+;  and   1
+;  ret   nz
   
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
-  add   a,3
-  cp    18                                  ;sprite 18,21,24,27 are idle flying
-  jr    nz,.notzero
-  ld    a,00
-  .notzero:
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
-  ret  
+;  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+;  add   a,3
+;  cp    18                                  ;sprite 18,21,24,27 are idle flying
+;  jr    nz,.notzero
+;  ld    a,00
+;  .notzero:
+;  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+;  ret  
 
 ;  BossDemonCheckIfHit:
 ;  ld    a,(ix+enemies_and_objects.hit?)
@@ -1169,8 +1581,6 @@ SetFrameBoss:
   ld    c,(hl)                              ;sprite data block
   ret
 
-
-
 AltarGraphics00top:       dw BossRoomframe000 | db BossRoomframelistblock, BossRoomspritedatablock
 AltarGraphics01top:       dw BossRoomframe002 | db BossRoomframelistblock, BossRoomspritedatablock
 AltarGraphics02top:       dw BossRoomframe004 | db BossRoomframelistblock, BossRoomspritedatablock
@@ -1237,17 +1647,16 @@ Altar1:
   ld    de,NonMovingObjectMovementTable
   call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
 
-  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=close door, 4=stop restoring background)
-  cp    4
-  call  nz,restoreBackgroundObject1
-
-
-;  ld    (ix+enemies_and_objects.v7),1       ;v7=sprite frame
-
+;  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=close door, 4=stop restoring background)
+;  cp    4
+;  call  nz,restoreBackgroundObject1
 
   ;snap to sprite frame
   ld    bc,AltarGraphics00top
+
+  ld    a,(ix+enemies_and_objects.v7)
   call  SetFrameAltar
+
   call  PutSF2Object ;CHANGES IX 
   ret
 
@@ -1269,12 +1678,27 @@ Altar1:
   ld    a,(ix+enemies_and_objects.v9)       ;v9=FlashScreen Counter / var counter
   inc   a
   ld    (ix+enemies_and_objects.v9),a       ;v9=FlashScreen Counter / var counter
-  and   3
+  and   7
   ret   nz
+  ld    hl,.PutDoorInPage3                   ;put the door now also in page 3, so no background corruption can occur
+  call  DoCopy
   ld    (ix+enemies_and_objects.Alive?),0
   ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),0  
+  ld    (ix-(1*lenghtenemytable)+enemies_and_objects.Alive?),2  
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,%0000 1000                        ;turn around player, facing right
+	ld		(Controls),a
   ret
-  
+
+  .PutDoorInPage3:
+	db    0,0,8*12,1
+	db    0,0,8*12,3
+	db    32,0,56,0
+	db    0,0,$d0    
 
   CloseDoor:
   ld    a,(Bossframecounter)
@@ -1298,8 +1722,6 @@ Altar1:
   cp    16
   ret   nz
   ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=turn around player, 4=door closing)    
-  xor   a
-  ld    (freezecontrols?),a  
   ret
 
   DiamondFadingAway:
@@ -1394,7 +1816,7 @@ Altar1:
   ret
 
 SetFrameAltar:
-  ld    a,(enemies_and_objects+enemies_and_objects.v7)
+;  ld    a,(enemies_and_objects+enemies_and_objects.v7)
   ld    l,a                                 ;v7=sprite frame
   ld    h,0
   add   hl,hl                               ;*2
@@ -1427,10 +1849,13 @@ Altar2:
   ld    de,NonMovingObjectMovementTable
   call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
 
-  call  restoreBackgroundObject2
+;  ld    a,(ix-(1*lenghtenemytable)+enemies_and_objects.v8)
+;  cp    4
+;  call  nz,restoreBackgroundObject2
   
   ;snap to sprite frame
   ld    bc,AltarGraphics00bottom
+  ld    a,(ix-(1*lenghtenemytable)+enemies_and_objects.v7)
   call  SetFrameAltar
   call  PutSF2Object2 ;CHANGES IX 
   jp    switchpageSF2Engine
@@ -2185,6 +2610,7 @@ AreaSign:                                 ;Displays the name of the world in scr
   ld    de,NonMovingObjectMovementTable
   call  MoveObjectWithStepTable           ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
   ld    bc,TextKarniMata
+  ld    a,(ix+enemies_and_objects.v7)
   call  SetFrameAltar                     ;in: hl->frame. out: b=frame list block, c=sprite data block  
   call  PutSF2Object                      ;in: b=frame list block, c=sprite data block. CHANGES IX 
   call  switchpageSF2Engine  
