@@ -1073,6 +1073,49 @@ VoodooWaspAttackPattern10MovementTable: ;repeating steps(128 = end table/repeat)
 VoodooWaspAttackPattern11MovementTable: ;repeating steps(128 = end table/repeat), move y, move x
   db    040,-3,-2
 
+BossCheckIfDead:
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  cp    4
+  ret   z                                   ;don't check if boss is already dead
+
+  ld    a,(ix+enemies_and_objects.life)
+  dec   a
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v7),69      ;v7=sprite frame
+  ret
+
+CheckPlayerHitByBoss:
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  cp    4
+  ret   z                                   ;don't check if boss is dead
+
+  ld    a,-50                               ;add to sy
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ld    bc,30                               ;reduction to hitbox sx (left side)
+  call  CollisionEnemyPlayer.ObjectEntry
+  ret
+
+VoodooWaspCheckIfHit:
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  cp    4
+  ret   z                                   ;don't check if boss is dead
+
+  call  CheckPlayerPunchesBoss              ;Check if player hit's enemy
+  
+  ld    a,(ix+enemies_and_objects.hit?)
+  cp    BlinkDurationWhenHit                ;Check if Boss is hit this very frame
+  ret   nz
+
+  pop   af                                  ;pop call  
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v1-1),a     ;backup v7=sprite frame
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v1-2),a     ;backup v7=sprite frame
+
+  ld    (ix+enemies_and_objects.v7),54      ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ret
 
 BossVoodooWasp:
 ;v1=repeating steps
@@ -1104,27 +1147,11 @@ BossVoodooWasp:
   .EndCheckVoodooWaspEnterScreen:
 ;/face player upwards when Voodoo Wasp enters 
 
-  ;Check if player gets hit by boss
-  ld    a,-50                               ;add to sy
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
-  ld    bc,30                               ;reduction to hitbox sx (left side)
-  call  CollisionEnemyPlayer.ObjectEntry
-
+  call  CheckPlayerHitByBoss                ;Check if player gets hit by boss
   ;Check if boss gets hit by player
-  call  VoodooWaspCheckIfHit                ;Check if boss is hit, and if so set being hit phase
-  
-;  ld    a,r
-;  and   31
-;  jr    nz,.EndCheckStartWalking
-;  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
-;  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table    
-;  ld    (ix+enemies_and_objects.v7),6       ;v7=sprite frame
-;  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-;  ret
-;  .EndCheckStartWalking:
-
-;  call  BossDemonCheckIfDead                ;call gets popped if dead
-;  call  BossDemonCheckIfHit                 ;call gets popped if hit
+  call  VoodooWaspCheckIfHit                ;call gets popped if dead. Check if boss is hit, and if so set being hit phase
+  ;Check if boss is dead
+  call  BossCheckIfDead                     ;Check if boss is dead, and if so set dying phase
 
   call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ld    de,BossVoodooWaspIdle00
@@ -1170,23 +1197,6 @@ BossVoodooWasp:
   jp    z,BossVoodooWaspAttackPattern7      ;13=attack pattern 7 flying down to sit on the platform in the middle
   dec   a
   jp    z,BossVoodooWaspAttackPattern8      ;14=attack pattern 8 flying back up
-  ret
-
-  VoodooWaspCheckIfHit:
-  call  CheckPlayerPunchesBoss              ;Check if player hit's enemy
-  
-  ld    a,(ix+enemies_and_objects.hit?)
-  cp    BlinkDurationWhenHit                ;Check if Boss is hit this very frame
-  ret   nz
-
-  pop   af                                  ;pop call  
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
-  ld    (ix+enemies_and_objects.v1-1),a     ;backup v7=sprite frame
-  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
-  ld    (ix+enemies_and_objects.v1-2),a     ;backup v7=sprite frame
-
-  ld    (ix+enemies_and_objects.v7),54      ;v7=sprite frame
-  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ret
 
   BossVoodooWaspAttackPattern8:             ;14=attack pattern 8 flying back up
@@ -1499,13 +1509,26 @@ BossVoodooWasp:
   ret  
 
   BossVoodooWaspDying:
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+  
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  add   a,6
+  cp    98
+  jr    c,.EndCheckBottomReached
+  ld    a,98
+  .EndCheckBottomReached:
+  ld    (ix+enemies_and_objects.y),a        ;y
+    
   ;animate
+  ld    a,(Bossframecounter)
+  and   7
+  ret   nz  
+  
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   add   a,3
   cp    81                                  ;sprite 18,21,24,27 are idle flying
-  jr    nz,.notzero
-  ld    a,69
-  .notzero:
+  ret   z
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret  
 
