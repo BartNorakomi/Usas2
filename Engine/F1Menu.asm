@@ -82,10 +82,21 @@ SetElementalWeaponInVram:
   djnz  .loop
   ret
 
+;FreeToUseFastCopy:                    ;freely usable anywhere
+;  db    000,000,000,000   ;sx,--,sy,spage
+;  db    000,000,074,000   ;dx,--,dy,dpage
+;  db    004,000,004,000   ;nx,--,ny,--
+;  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left  
+
 EraseWeaponBox:
   xor   a
   ld    (FreeToUseFastCopy+sx),a
   ld    (FreeToUseFastCopy+sy),a
+  ld    (FreeToUseFastCopy+sPage),a
+  ld    (FreeToUseFastCopy+dPage),a
+  ld    a,4
+  ld    (FreeToUseFastCopy+ny),a
+  ld    (FreeToUseFastCopy+nx),a
   
   ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
   sub   7

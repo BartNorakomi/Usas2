@@ -6,14 +6,9 @@ loader:
   call  SwapSpatColAndCharTable2
   ld    ix,(WorldMapPointer)
   call  SetEngineType                 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
-
-
   call  SetTilesInVram                ;copies all the tiles to Vram
   call  PopulateControls              ;this allows for a double jump as soon as you enter a new map
-
   call  SetMapPalette                 ;sets palette
-
-  
   ret
 
 PutSpatToVramSlow:
@@ -296,15 +291,38 @@ copyGraphicsToScreen2:
   jp    nz,.loop1
   ret
 
-
+;BorderMaskingSpritesCall:
+;  call  SetBorderMaskingSprites       ;set border masking sprites position in Spat
+;NoBorderMaskingSpritesCall:
+;  nop | nop | nop                     ;skip border masking sprites
 SetEngineType:                        ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
 ;Set Engine type
+;  ld    hl,BorderMaskingSpritesCall
+;  ld    de,LevelEngine.SelfModifyingCallBMS
+;  ld    bc,3
+;  ldir
+
+  ld    a,1
+  ld    (SpriteSplitFlag),a           ;sprite split active
+
   ld    a,(ix+3)                      ;engine type
   ld    (scrollEngine),a              ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a                             ;1= 304x216 engine  2=256x216 SF2 engine
   jp    z,.Engine304x216
 
   .Engine256x216:                     ;SF2 engine
+  dec   a                             ;'normal' SF2 engine ?
+  jr    nz,.Engine256x216WithSpriteSplit
+
+;  ld    hl,NoBorderMaskingSpritesCall
+;  ld    de,LevelEngine.SelfModifyingCallBMS
+;  ld    bc,3
+;  ldir
+  
+  xor   a
+  ld    (SpriteSplitFlag),a           ;SF2 engine with spritesplit inactive
+
+  .Engine256x216WithSpriteSplit:
   ld    de,CheckTile256x216MapLenght
   ld    (checktile.selfmodifyingcodeMapLenght+1),de
   ld    de,ExitRight256x216
@@ -313,8 +331,6 @@ SetEngineType:                        ;sets engine type (1= 304x216 engine  2=25
   ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
   ld    de,MapData- 68
   ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
-  xor   a
-  ld    (SpriteSplitFlag),a
  
 ;check if player enters on the left side of the screen or on the right side. On the left camerax = 0, on the right camerax=15
   ld    hl,256/2
@@ -345,9 +361,6 @@ SetEngineType:                        ;sets engine type (1= 304x216 engine  2=25
   ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
   ld    de,MapData- 80
   ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
-
-  ld    a,1
-  ld    (SpriteSplitFlag),a
   ret
   
 ReSetVariables:

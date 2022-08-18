@@ -9,6 +9,7 @@ LevelEngine:
   call  Handle_HardWareSprite_Enemies_And_objects ;handle movement, out character, color and spat data
   call  BackdropBlack
 ;  call  BackdropGreen
+;.SelfModifyingCallBMS:
   call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
 ;  call  BackdropBlack
 ;  call  BackdropGreen
@@ -63,7 +64,7 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 30 ;$19 ;230 ;250 ;210
+ClesX:      dw 230 ;$19 ;230 ;250 ;210
 ClesY:      db 60 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
@@ -1198,8 +1199,8 @@ PlayerRightSideOfScreen:
 
 Sf2EngineObjects:
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  cp    2
-  ret   nz
+  dec   a
+  ret   z
 
 	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
 	out		($a8),a	
@@ -1321,6 +1322,9 @@ Player1FramePage:             db  0
 Object1y:                     db  000
 Object1x:                     db  000
 
+  ;if screenpage=0 then blit in page 1
+  ;if screenpage=1 then blit in page 2
+  ;if screenpage=2 then blit in page 0
 PutSF2Object:                 ;in b->framelistblock, c->spritedatablock
   ld    a,(screenpage)
   or    a                     ;if current page =0 then que page 1 to be restored
@@ -2431,6 +2435,11 @@ vblank:
   out   ($99),a
 
   ld    a,(PageOnNextVblank)  ;set page
+
+
+;  ld    a,3*32+31           ;x*32+31 (x=page)
+
+
   out   ($99),a
   ld    a,2+128
   out   ($99),a
@@ -2606,6 +2615,10 @@ CameraEngine:                           ;prepare R18 and R23 to be set on Vblank
 CameraEngine256x216:
   Call  VerticalMovementCamera
 
+;  xor   a
+;  jr    .SetR18onVlbank
+
+
 .playerfacingRight:
 ;camera should start moving to the right, when player x>50 and facing right
   ld    a,(PlayerFacingRight?)          ;is player facing right ?
@@ -2662,6 +2675,7 @@ CameraEngine256x216:
   ld    hl,R18ConversionTable
   add   hl,de
   ld    a,(hl)
+  .SetR18onVlbank:
   ld    (R18onVblank),a
 
   ld    a,(CameraY)
@@ -4350,7 +4364,7 @@ lSitShootArrowSf2Engine:
   ld    a,-ArrowSpeed
   ld    (ArrowActive?),a
   ld    a,(ClesX)
-  sub   a,8
+  sub   a,9
   ld    (ArrowX),a
   ld    a,(ClesY)
   add   a,7
@@ -4716,7 +4730,7 @@ LShootArrowSf2Engine:
   ld    a,-ArrowSpeed
   ld    (ArrowActive?),a
   ld    a,(ClesX)
-  sub   a,8
+  sub   a,9
   ld    (ArrowX),a
   ld    a,(ClesY)
   inc   a
@@ -6952,7 +6966,7 @@ ShootArrowWhileJumpLeftSf2Engine:
   ld    a,-ArrowSpeed
   ld    (ArrowActive?),a
   ld    a,(ClesX)
-  sub   a,8
+  sub   a,9
   ld    (ArrowX),a
   ld    a,(ClesY)
   ld    (ArrowY),a

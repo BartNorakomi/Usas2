@@ -1073,6 +1073,9 @@ VoodooWaspAttackPattern10MovementTable: ;repeating steps(128 = end table/repeat)
 VoodooWaspAttackPattern11MovementTable: ;repeating steps(128 = end table/repeat), move y, move x
   db    040,-3,-2
 
+VoodooWaspFallingDownMovementTable: ;repeating steps(128 = end table/repeat), move y, move x
+  db    040,+6,+0, 128
+
 BossCheckIfDead:
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
   cp    4
@@ -1081,6 +1084,7 @@ BossCheckIfDead:
   ld    a,(ix+enemies_and_objects.life)
   dec   a
   ret   nz
+  call  ResetV1andV2  
   ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
   ld    (ix+enemies_and_objects.v7),69      ;v7=sprite frame
   ret
@@ -1509,11 +1513,10 @@ BossVoodooWasp:
   ret  
 
   BossVoodooWaspDying:
-  ld    de,NonMovingObjectMovementTable
+  ld    de,VoodooWaspFallingDownMovementTable
   call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
   
   ld    a,(ix+enemies_and_objects.y)        ;y
-  add   a,6
   cp    98
   jr    c,.EndCheckBottomReached
   ld    a,98
@@ -2646,7 +2649,7 @@ TextKarniMata:
 
 
 
-AreaSign:                                 ;Displays the name of the world in screen when entering that world
+AreaSign:                                 ;Displays the name of the world in screen when entering that world 
 ;v1=repeating steps
 ;v2=pointer to movement table
 ;v3=Vertical Movement
@@ -2657,81 +2660,89 @@ AreaSign:                                 ;Displays the name of the world in scr
 ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
 ;v9=wait timer / bottom of area sign
   .HandlePhase:  
-  ld    a,(ix+enemies_and_objects.v8)     ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
+  ld    a,(ix+enemies_and_objects.v8)     ;v8=Phase (0=build up area sign line by line, then wait when finished, 1=remove all the lines line by line)
   or    a
-  jp    z,PutAreaSignLine                 ;0=put a new line for 3 frames
-  dec   a
-  jp    z,AreaSignwait                    ;1=wait
-  dec   a
-  jp    z,RemoveAreaSign                  ;2=remote all the lines in all the pages
+  jr    z,PutAreaSignLine                 ;0=put a new line for 3 frames
 
   RemoveAreaSign:
-  ld    a,(framecounter)
-  rrca
-  ret   c
-
-  ld    a,(framecounter)
-  and   %0000 0010
-  jr    z,.FromTopToMiddle
-  
-  .FromBottomToMiddle:
-  ld    a,(ix+enemies_and_objects.v9)     ;v9=bottom of area sign
-  dec   a
-  ld    (ix+enemies_and_objects.v9),a     ;v9=bottom of area sign
-  jp    .setYLine
-  
-  .FromTopToMiddle:
-  ld    a,(ix+enemies_and_objects.y)      ;y object  
-  inc   a
-  ld    (ix+enemies_and_objects.y),a      ;y object    
-  .setYLine:
-  ld    (RestoreBackgroundObject1Page0+sY),a
-  ld    (RestoreBackgroundObject1Page0+dY),a
-  jp    z,RemoveSprite                    ;sets alive? to 0 and set y out of screen display
-
-  ld    a,36
-  ld    (RestoreBackgroundObject1Page0+sX),a
-  ld    (RestoreBackgroundObject1Page0+dX),a
-  ld    a,200
-  ld    (RestoreBackgroundObject1Page0+nX),a
-  ld    hl,RestoreBackgroundObject1Page0
-  call  DoCopy                            ;restore page 0   
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.v7)     ;v7=sprite frame - check for last frame
+  ld    hl,AreaSignSyTable
+  add   hl,de
+  ld    a,(hl)
+  ld    (FreeToUseFastCopy+sy),a
+  ld    (FreeToUseFastCopy+dy),a
   xor   a
-  ld    (screenpage),a                    ;let's use only page 0 for removing sign
-  add   a,31
-  ld    (PageOnNextVblank),a
-  ret
+  ld    (FreeToUseFastCopy+sPage),a
+  inc   a
+  ld    (FreeToUseFastCopy+dPage),a  
+  ld    hl,FreeToUseFastCopy
+  call  docopy
+  ld    a,3
+  ld    (FreeToUseFastCopy+dPage),a
+  ld    hl,FreeToUseFastCopy
+  call  docopy
 
-  AreaSignwait:
-  dec   (ix+enemies_and_objects.v9)       ;v9=wait timer
-  ret   nz
-  ld    (ix+enemies_and_objects.v8),2     ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)   
-
-  ld    a,(ix+enemies_and_objects.y)      ;y object  
-  add   a,48
-  ld    (ix+enemies_and_objects.v9),a     ;v9=bottom of area sign
-  dec   (ix+enemies_and_objects.y)        ;y object    
+  dec   (ix+enemies_and_objects.v7)       ;v7=sprite frame
+  ret   p
+  ld    (ix+enemies_and_objects.alive?),0 ;end     
   ret
 
   PutAreaSignLine:
-  dec   (ix+enemies_and_objects.v6)       ;v6=put line in all 3 pages 
-  jr    nz,.EndCheckNextLine
-  ld    (ix+enemies_and_objects.v6),3     ;v6=put line in all 3 pages
-  inc   (ix+enemies_and_objects.v7)       ;v7=sprite frame
-  ld    a,(ix+enemies_and_objects.v7)     ;v7=sprite frame - check for last frame
-  cp    48
-  jp    nz,.EndCheckNextLine
-  ld    (ix+enemies_and_objects.v8),1     ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages) 
-  ret
-  .EndCheckNextLine:
   ld    de,NonMovingObjectMovementTable
   call  MoveObjectWithStepTable           ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
   ld    bc,TextKarniMata
   ld    a,(ix+enemies_and_objects.v7)
   call  SetFrameAltar                     ;in: hl->frame. out: b=frame list block, c=sprite data block  
+
+  xor   a
+  ld    (screenpage),a                    ;we (hack)force screen 1 to be active at all time
+  call  switchpageSF2Engine               ;this now switches from page 0 to page 1
+  xor   a
+  ld    (screenpage),a                    ;set screen 0, so object gets put in page 1
+
+  push  ix
   call  PutSF2Object                      ;in: b=frame list block, c=sprite data block. CHANGES IX 
-  call  switchpageSF2Engine  
-  ret  
+  pop   ix
+
+  ld    a,1
+  ld    (screenpage),a                    ;set screen 1, so player's weapons get put in page 1
+
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.v7)     ;v7=sprite frame - check for last frame
+  ld    hl,AreaSignSyTable
+  add   hl,de
+  ld    a,(hl)
+  ld    (FreeToUseFastCopy+sy),a
+  ld    (FreeToUseFastCopy+dy),a
+  ld    a,36
+  ld    (FreeToUseFastCopy+sx),a
+  ld    (FreeToUseFastCopy+dx),a
+  ld    a,1
+  ld    (FreeToUseFastCopy+ny),a
+  ld    a,200
+  ld    (FreeToUseFastCopy+nx),a
+  ld    a,1
+  ld    (FreeToUseFastCopy+sPage),a
+  ld    a,3
+  ld    (FreeToUseFastCopy+dPage),a
+  
+  ld    hl,FreeToUseFastCopy
+  call  docopy
+
+  inc   (ix+enemies_and_objects.v7)       ;v7=sprite frame
+  ld    a,(ix+enemies_and_objects.v7)     ;v7=sprite frame - check for last frame
+  cp    48
+  ret   nz
+  dec   (ix+enemies_and_objects.v7)       ;v7=sprite frame
+  dec   (ix+enemies_and_objects.v9)       ;v9=wait timer
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),1     ;v8=Phase (0=build up area sign line by line, then wait when finished, 1=remove all the lines line by line)  
+  ret
+AreaSignSyTable:
+  db    63,64,62,65,61,66,60,67,59,68,58,69,57,70,56,71
+  db    55,72,54,73,53,74,52,75,51,76,50,77,49,78,48,79
+  db    47,80,46,81,45,82,44,83,43,84,42,85,41,86,40,87
 
 AppBlocksHandler:  
   ld    a,(ix+enemies_and_objects.v1)     ;v1 = activate block timer

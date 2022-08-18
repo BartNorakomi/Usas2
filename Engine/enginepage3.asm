@@ -20,11 +20,11 @@ WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
 ;MapB01_019Data: db MapsBlock02 | dw MapB01_019 | db 2,3,3                  | MapB01_020Data: db MapsBlock02 | dw MapB01_020 | db 2,3,3                  | MapB01_021Data: db MapsBlock02 | dw MapB01_021 | db 2,3,3
 ;MapB01_022Data: db MapsBlock02 | dw MapB01_022 | db 1,3,3                  | MapB01_023Data: db MapsBlock02 | dw MapB01_023 | db 1,3,3                  | MapB01_024Data: db MapsBlock02 | dw MapB01_024 | db 1,3,3
 ;MapB01_025Data: db MapsBlock02 | dw MapB01_025 | db 1,3,3                  | MapB01_026Data: db MapsBlock02 | dw MapB01_026 | db 1,3,3                  | MapB01_027Data: db MapsBlock02 | dw MapB01_027 | db 1,3,3
-
+;engine type 1 = normal (304x192), engine type 2 = SF2 engine with bordermasking spritesplit off, engine type 2 = SF2 engine with bordermasking spritesplit on (so more sprites are available)
 MapA01Data: db MapsBlock0A | dw MapA01 | db 1,0,0   | MapB01Data: db MapsBlock0B | dw MapB01 | db 1,0,0   | MapC01Data: db MapsBlock0C | dw MapC01 | db 1,0,0   | MapD01Data: db MapsBlock0D | dw MapD01 | db 1,0,0   | MapE01Data: db MapsBlock0E | dw MapE01 | db 1,1,1   | MapF01Data: db MapsBlock0F | dw MapF01 | db 1,1,1   | MapG01Data: db MapsBlock0G | dw MapG01 | db 1,1,1
 MapA02Data: db MapsBlock0A | dw MapA02 | db 1,0,0   | MapB02Data: db MapsBlock0B | dw MapB02 | db 1,0,0   | MapC02Data: db MapsBlock0C | dw MapC02 | db 1,0,0   | MapD02Data: db MapsBlock0D | dw MapD02 | db 1,0,0   | MapE02Data: db MapsBlock0E | dw MapE02 | db 1,1,1   | MapF02Data: db MapsBlock0F | dw MapF02 | db 1,1,1   | MapG02Data: db MapsBlock0G | dw MapG02 | db 1,1,1
 MapA03Data: db MapsBlock0A | dw MapA03 | db 1,0,0   | MapB03Data: db MapsBlock0B | dw MapB03 | db 1,0,0   | MapC03Data: db MapsBlock0C | dw MapC03 | db 1,0,0   | MapD03Data: db MapsBlock0D | dw MapD03 | db 1,0,0   | MapE03Data: db MapsBlock0E | dw MapE03 | db 1,1,1   | MapF03Data: db MapsBlock0F | dw MapF03 | db 1,1,1   | MapG03Data: db MapsBlock0G | dw MapG03 | db 1,1,1
-MapA04Data: db MapsBlock0A | dw MapA04 | db 2,3,3   | MapB04Data: db MapsBlock0B | dw MapB04 | db 1,3,3   | MapC04Data: db MapsBlock0C | dw MapC04 | db 1,3,3   | MapD04Data: db MapsBlock0D | dw MapD04 | db 2,6,6   | MapE04Data: db MapsBlock0E | dw MapE04 | db 1,1,1   | MapF04Data: db MapsBlock0F | dw MapF04 | db 1,1,1   | MapG04Data: db MapsBlock0G | dw MapG04 | db 1,1,1
+MapA04Data: db MapsBlock0A | dw MapA04 | db 3,3,3   | MapB04Data: db MapsBlock0B | dw MapB04 | db 1,3,3   | MapC04Data: db MapsBlock0C | dw MapC04 | db 1,3,3   | MapD04Data: db MapsBlock0D | dw MapD04 | db 2,6,6   | MapE04Data: db MapsBlock0E | dw MapE04 | db 1,1,1   | MapF04Data: db MapsBlock0F | dw MapF04 | db 1,1,1   | MapG04Data: db MapsBlock0G | dw MapG04 | db 1,1,1
 MapA05Data: db MapsBlock0A | dw MapA05 | db 1,3,3   | MapB05Data: db MapsBlock0B | dw MapB05 | db 1,3,3   | MapC05Data: db MapsBlock0C | dw MapC05 | db 1,3,3   | MapD05Data: db MapsBlock0D | dw MapD05 | db 1,0,0   | MapE05Data: db MapsBlock0E | dw MapE05 | db 1,1,1   | MapF05Data: db MapsBlock0F | dw MapF05 | db 1,1,1   | MapG05Data: db MapsBlock0G | dw MapG05 | db 1,1,1
 MapA06Data: db MapsBlock0A | dw MapA06 | db 1,3,3   | MapB06Data: db MapsBlock0B | dw MapB06 | db 1,3,3   | MapC06Data: db MapsBlock0C | dw MapC06 | db 1,3,3   | MapD06Data: db MapsBlock0D | dw MapD06 | db 1,5,5   | MapE06Data: db MapsBlock0E | dw MapE06 | db 1,5,5   | MapF06Data: db MapsBlock0F | dw MapF06 | db 1,5,5   | MapG06Data: db MapsBlock0G | dw MapG06 | db 1,5,5
 MapA07Data: db MapsBlock0A | dw MapA07 | db 1,3,3   | MapB07Data: db MapsBlock0B | dw MapB07 | db 1,3,3   | MapC07Data: db MapsBlock0C | dw MapC07 | db 1,3,3   | MapD07Data: db MapsBlock0D | dw MapD07 | db 1,5,5   | MapE07Data: db MapsBlock0E | dw MapE07 | db 1,5,5   | MapF07Data: db MapsBlock0F | dw MapF07 | db 1,5,5   | MapG07Data: db MapsBlock0G | dw MapG07 | db 1,5,5
@@ -38,7 +38,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapB01_018Data
 ;WorldMapPointer:  dw  MapB01_027Data
 ;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapD04Data
+WorldMapPointer:  dw  MapA04Data
 
 PlayLogo:
   call  StartTeamNXTLogo             ;sets logo routine in rom at $4000 page 1 and run it
@@ -47,19 +47,14 @@ loadGraphics:
 ;	and   a
 ;  call  z,VGMRePlay
 
-  ld    a,(slot.page1rom)             ;all RAM except page 1
+  ld    a,(slot.page12rom)             ;all RAM except page 1
   out   ($a8),a
   ld    a,Loaderblock                 ;loader routine at $4000
   call  block12
   call  loader                        ;loader routines
-
-
-;  call  SetTilesInVram                ;copies all the tiles to Vram
-  call  UnpackMapdata_SetObjects      ;unpacks packed map to $4000 in ram and sets objects. 
-                                      ;ends with: all RAM except page 2
+  call  UnpackMapdata_SetObjects      ;unpacks packed map to $4000 in ram and sets objects.                                       ;ends with: all RAM except page 2
   call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
   call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
-
 
   ld    a,(slot.page12rom)            ;all RAM except page 12
   out   ($a8),a       
@@ -365,14 +360,15 @@ WaitVblank:
   ret
 
 BuildUpMap:
-  ld    hl,$4000
+  ld    hl,$4000                      ;map in ram
   ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   jp    z,buildupMap38x27
-  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
-  cp    2
-  jp    z,buildupMap32x27
-  ret
+;  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
+;  cp    2
+;  jp    z,buildupMap32x27
+;  ret
+  jp    buildupMap32x27
   
 UnpackMapdata_SetObjects:             ;unpacks packed map to $4000 in ram and sets objects. ends with: all RAM except page 2
   ;set all objects Alive? to 0 / clear all objects from the list
@@ -386,7 +382,7 @@ UnpackMapdata_SetObjects:             ;unpacks packed map to $4000 in ram and se
   djnz  .ClearEnemyTableLoop
 
 ;unpack map data
-  ld    a,(slot.page12rom)             ;all RAM except page 2
+  ld    a,(slot.page12rom)            ;all RAM except page 2
   out   ($a8),a      
 
   ld    a,(ix+0)                      ;Map block
