@@ -65,6 +65,7 @@
 ;Altar1
 ;Altar2
 ;BossVoodooWasp
+;BossZombieCaterpillar
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -851,59 +852,114 @@ TemplateBoss:
 ;v6=active on which frame ?  
 ;v7=sprite frame
 ;v8=phase
-;v9=move left (-1) or right (0)
-  call  restoreBackgroundObject1
-  call  .HandlePhase                        ;(0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+;v9=attack pattern
+
+;  ld    a,(ix+enemies_and_objects.y)        ;y object
+;  ld    (Object1y),a
+;  ld    a,(ix+enemies_and_objects.x)        ;x object
+;  ld    (Object1x),a	
+
+;  ld    hl,BossAreaVoodooWaspPalette
+;  call  Setpalette	
+
+;  call  CheckPlayerHitByBoss                ;Check if player gets hit by boss
+  ;Check if boss gets hit by player
+;  call  VoodooWaspCheckIfHit                ;call gets popped if dead. Check if boss is hit, and if so set being hit phase
+  ;Check if boss is dead
+;  call  BossCheckIfDead                     ;Check if boss is dead, and if so set dying phase
+
+  call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    de,BossZombieCaterpillarIdle00
+  jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+
+  .HandlePhase:                            ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+
+
   ld    de,NonMovingObjectMovementTable
-  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
-  ld    bc,BossDemonIdle00
-  call  SetFrameBossDemon
-  call  PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
-  jp    switchpageSF2Engine
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+
+  ld    a,(HugeObjectFrame)
+  cp    2
+  ret   nz
   
-  .HandlePhase:                             ;(0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
   ld    a,(Bossframecounter)
   inc   a
   ld    (Bossframecounter),a
-
-  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-  or    a
-  jp    z,.BossVoodooWaspIdle
-  dec   a
-
-  .BossVoodooWaspIdle:
-  ld    de,NonMovingObjectMovementTable
-  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
-;  call  CollisionObjectPlayerDemon         ;Check if player is hit by Vram object                            
-;  call  CheckPlayerPunchesEnemyDemon       ;Check if player hit's enemy
-  
-;  ld    a,r
-;  and   31
-;  jr    nz,.EndCheckStartWalking
-;  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
-;  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table    
-;  ld    (ix+enemies_and_objects.v7),6       ;v7=sprite frame
-;  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-;  ret
-;  .EndCheckStartWalking:
-
-  call  BossDemonCheckIfDead                ;call gets popped if dead
-  call  BossDemonCheckIfHit                 ;call gets popped if hit
-
-  ;animate
-  ld    a,(Bossframecounter)
-  and   3
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
-  inc   a
-  cp    6                                   ;sprite 0-5 are idle
-  jr    nz,.notzero
-  xor   a
-  .notzero:
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret
 
 
+
+
+
+
+;Idle sitting
+BossZombieCaterpillarIdle00:   dw ZombieCaterpillarIdleframe000 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle01:   dw ZombieCaterpillarIdleframe001 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle02:   dw ZombieCaterpillarIdleframe002 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle03:   dw ZombieCaterpillarIdleframe003 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle04:   dw ZombieCaterpillarIdleframe004 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle05:   dw ZombieCaterpillarIdleframe005 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle06:   dw ZombieCaterpillarIdleframe006 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle07:   dw ZombieCaterpillarIdleframe007 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle08:   dw ZombieCaterpillarIdleframe008 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle09:   dw ZombieCaterpillarIdleframe009 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle10:   dw ZombieCaterpillarIdleframe010 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle11:   dw ZombieCaterpillarIdleframe011 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle12:   dw ZombieCaterpillarIdleframe012 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle13:   dw ZombieCaterpillarIdleframe013 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle14:   dw ZombieCaterpillarIdleframe014 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle15:   dw ZombieCaterpillarIdleframe015 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle16:   dw ZombieCaterpillarIdleframe016 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle17:   dw ZombieCaterpillarIdleframe017 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossAreaZombieCaterpillarPalette:
+  incbin "..\grapx\tilesheets\sBossAreaZombieCaterpillarPalette.PL" ;file palette 
+
+BossZombieCaterpillar:
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+;v7=sprite frame
+;v8=phase
+;v9=attack pattern
+
+;  ld    a,(ix+enemies_and_objects.y)        ;y object
+;  ld    (Object1y),a
+;  ld    a,(ix+enemies_and_objects.x)        ;x object
+;  ld    (Object1x),a	
+
+  ld    hl,BossAreaZombieCaterpillarPalette
+  call  Setpalette	
+
+;  call  CheckPlayerHitByBoss                ;Check if player gets hit by boss
+  ;Check if boss gets hit by player
+;  call  VoodooWaspCheckIfHit                ;call gets popped if dead. Check if boss is hit, and if so set being hit phase
+  ;Check if boss is dead
+;  call  BossCheckIfDead                     ;Check if boss is dead, and if so set dying phase
+
+  call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    de,BossZombieCaterpillarIdle00
+  jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+
+  .HandlePhase:                            ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+
+
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+
+  ld    a,(HugeObjectFrame)
+  cp    2
+  ret   nz
+  
+  ld    a,(Bossframecounter)
+  inc   a
+  ld    (Bossframecounter),a
+  ret
 
 
 

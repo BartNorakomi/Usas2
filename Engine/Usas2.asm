@@ -3202,7 +3202,6 @@ MapD03:
   incbin "..\maps\d03.map.pck"  | .amountofobjects: db  0
 MapD04:
   incbin "..\maps\d04.map.pck"  | .amountofobjects: db  3
-
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object1: db 0,        0|dw BossVoodooWasp      |db -066|dw 8*22|db 50,52|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+81,+05,+00, 0|db 020| ds fill
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
@@ -3258,7 +3257,15 @@ MapE03:
 .object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
   
 MapE04:
-  incbin "..\maps\e04.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\e04.map.pck"  | .amountofobjects: db  3
+  
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object1: db 2,       0|dw BossZombieCaterpillar|db  081|dw 8*22|db 50,52|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 020| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
+.object2: db 0,        0|dw Altar1              |db 8*02|dw 8*16|db 20,20|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+10, 0|db 000| ds fill
+.object3: db 0,        0|dw Altar2              |db 8*14|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
+    
+  
 MapE05:
   incbin "..\maps\e05.map.pck"  | .amountofobjects: db  0
 MapE06:
@@ -3626,6 +3633,20 @@ dephase
 
 
 
+; block $d7
+BossZombieCaterpillarIdleframelistblock:            equ $d7
+phase	$8000
+  include "..\grapx\BossZombieCaterpillar\Idle\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $d8
+BossZombieCaterpillarIdlespritedatablock:           equ $d8
+phase	$0000
+  incbin "..\grapx\BossZombieCaterpillar\Idle\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+
 
 
 
@@ -3635,9 +3656,9 @@ dephase
 
 
 ;
-; block $d7 -----------------> Music
+; block $d9 -----------------> Music
 ;
-usas2repBlock:  equ   $d7
+usas2repBlock:  equ   $d9
   incbin "usas2.rep"
 
 
