@@ -913,6 +913,130 @@ BossZombieCaterpillarIdle15:   dw ZombieCaterpillarIdleframe015 | db BossZombieC
 BossZombieCaterpillarIdle16:   dw ZombieCaterpillarIdleframe016 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
 BossZombieCaterpillarIdle17:   dw ZombieCaterpillarIdleframe017 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
 
+;Diving underground
+BossZombieCaterpillarIdle18:   dw ZombieCaterpillarIdleframe018 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle19:   dw ZombieCaterpillarIdleframe019 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle20:   dw ZombieCaterpillarIdleframe020 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle21:   dw ZombieCaterpillarIdleframe021 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle22:   dw ZombieCaterpillarIdleframe022 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle23:   dw ZombieCaterpillarIdleframe023 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle24:   dw ZombieCaterpillarIdleframe024 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle25:   dw ZombieCaterpillarIdleframe025 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle26:   dw ZombieCaterpillarIdleframe026 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle27:   dw ZombieCaterpillarIdleframe027 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle28:   dw ZombieCaterpillarIdleframe028 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle29:   dw ZombieCaterpillarIdleframe029 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle30:   dw ZombieCaterpillarIdleframe030 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle31:   dw ZombieCaterpillarIdleframe031 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle32:   dw ZombieCaterpillarIdleframe032 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle33:   dw ZombieCaterpillarIdleframe033 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle34:   dw ZombieCaterpillarIdleframe034 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle35:   dw ZombieCaterpillarIdleframe035 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarIdle36:   dw ZombieCaterpillarIdleframe043 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle37:   dw ZombieCaterpillarIdleframe036 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle38:   dw ZombieCaterpillarIdleframe037 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarIdle39:   dw ZombieCaterpillarIdleframe043 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle40:   dw ZombieCaterpillarIdleframe038 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle41:   dw ZombieCaterpillarIdleframe039 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarIdle42:   dw ZombieCaterpillarIdleframe043 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle43:   dw ZombieCaterpillarIdleframe043 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle44:   dw ZombieCaterpillarIdleframe040 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarIdle45:   dw ZombieCaterpillarIdleframe043 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle46:   dw ZombieCaterpillarIdleframe043 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle47:   dw ZombieCaterpillarIdleframe041 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarIdle48:   dw ZombieCaterpillarIdleframe043 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle49:   dw ZombieCaterpillarIdleframe043 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle50:   dw ZombieCaterpillarIdleframe042 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarIdle51:   dw ZombieCaterpillarIdleframe043 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle52:   dw ZombieCaterpillarIdleframe043 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle53:   dw ZombieCaterpillarIdleframe043 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+;Attacking
+BossZombieCaterpillarIdle54:   dw ZombieCaterpillarIdleframe044 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle55:   dw ZombieCaterpillarIdleframe044 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle56:   dw ZombieCaterpillarIdleframe044 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarIdle57:   dw ZombieCaterpillarIdleframe045 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle58:   dw ZombieCaterpillarIdleframe045 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle59:   dw ZombieCaterpillarIdleframe045 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarIdle60:   dw ZombieCaterpillarIdleframe046 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle61:   dw ZombieCaterpillarIdleframe046 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle62:   dw ZombieCaterpillarIdleframe046 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarIdle63:   dw ZombieCaterpillarIdleframe047 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle64:   dw ZombieCaterpillarIdleframe047 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle65:   dw ZombieCaterpillarIdleframe047 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarIdle66:   dw ZombieCaterpillarIdleframe048 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle67:   dw ZombieCaterpillarIdleframe048 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle68:   dw ZombieCaterpillarIdleframe049 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarIdle69:   dw ZombieCaterpillarIdleframe050 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle70:   dw ZombieCaterpillarIdleframe051 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+BossZombieCaterpillarIdle71:   dw ZombieCaterpillarIdleframe052 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
+
+BossZombieCaterpillarAttack72:   dw ZombieCaterpillarAttackframe000 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack73:   dw ZombieCaterpillarAttackframe001 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack74:   dw ZombieCaterpillarAttackframe002 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+BossZombieCaterpillarAttack75:   dw ZombieCaterpillarAttackframe003 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack76:   dw ZombieCaterpillarAttackframe004 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack77:   dw ZombieCaterpillarAttackframe005 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+BossZombieCaterpillarAttack78:   dw ZombieCaterpillarAttackframe006 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack79:   dw ZombieCaterpillarAttackframe007 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack80:   dw ZombieCaterpillarAttackframe008 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+BossZombieCaterpillarAttack81:   dw ZombieCaterpillarAttackframe009 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack82:   dw ZombieCaterpillarAttackframe010 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack83:   dw ZombieCaterpillarAttackframe011 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+BossZombieCaterpillarAttack84:   dw ZombieCaterpillarAttackframe012 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack85:   dw ZombieCaterpillarAttackframe013 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack86:   dw ZombieCaterpillarAttackframe014 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+BossZombieCaterpillarAttack87:   dw ZombieCaterpillarAttackframe015 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack88:   dw ZombieCaterpillarAttackframe016 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack89:   dw ZombieCaterpillarAttackframe017 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+BossZombieCaterpillarAttack90:   dw ZombieCaterpillarAttackframe018 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack91:   dw ZombieCaterpillarAttackframe019 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack92:   dw ZombieCaterpillarAttackframe020 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+BossZombieCaterpillarAttack93:   dw ZombieCaterpillarAttackframe021 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack94:   dw ZombieCaterpillarAttackframe022 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack95:   dw ZombieCaterpillarAttackframe023 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+;hit
+BossZombieCaterpillarAttack96:   dw ZombieCaterpillarAttackframe024 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack97:   dw ZombieCaterpillarAttackframe025 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack98:   dw ZombieCaterpillarAttackframe026 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+BossZombieCaterpillarAttack99:   dw ZombieCaterpillarAttackframe027 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack100:   dw ZombieCaterpillarAttackframe028 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack101:   dw ZombieCaterpillarAttackframe029 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+BossZombieCaterpillarAttack102:   dw ZombieCaterpillarAttackframe030 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack103:   dw ZombieCaterpillarAttackframe031 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack104:   dw ZombieCaterpillarAttackframe032 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+BossZombieCaterpillarAttack105:   dw ZombieCaterpillarAttackframe033 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack106:   dw ZombieCaterpillarAttackframe034 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack107:   dw ZombieCaterpillarAttackframe035 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+BossZombieCaterpillarAttack108:   dw ZombieCaterpillarAttackframe036 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack109:   dw ZombieCaterpillarAttackframe037 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+BossZombieCaterpillarAttack110:   dw ZombieCaterpillarAttackframe038 | db BossZombieCaterpillarAttackframelistblock, BossZombieCaterpillarAttackspritedatablock
+
+
+
 BossAreaZombieCaterpillarPalette:
   incbin "..\grapx\tilesheets\sBossAreaZombieCaterpillarPalette.PL" ;file palette 
 
@@ -959,6 +1083,19 @@ BossZombieCaterpillar:
   ld    a,(Bossframecounter)
   inc   a
   ld    (Bossframecounter),a
+  
+
+  .animate:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  add   a,3
+  cp    111; 96 ;54 ; 18                                  ;sprite 18,21,24,27 are idle flying
+  jr    nz,.notzero
+  ld    a,96; 54; 18 ;0
+  .notzero:
+  
+;  ld a,33
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret  
   ret
 
 

@@ -3646,7 +3646,18 @@ phase	$0000
 	ds		$4000-$,$ff
 dephase
 
+; block $d9
+BossZombieCaterpillarAttackframelistblock:            equ $d9
+phase	$8000
+  include "..\grapx\BossZombieCaterpillar\attack\frames.lst" 
+	ds		$c000-$,$ff
 
+; block $da
+BossZombieCaterpillarAttackspritedatablock:           equ $da
+phase	$0000
+  incbin "..\grapx\BossZombieCaterpillar\attack\frames.dat"
+	ds		$4000-$,$ff
+dephase
 
 
 
@@ -3656,9 +3667,9 @@ dephase
 
 
 ;
-; block $d9 -----------------> Music
+; block $db -----------------> Music
 ;
-usas2repBlock:  equ   $d9
+usas2repBlock:  equ   $db
   incbin "usas2.rep"
 
 
