@@ -3659,17 +3659,52 @@ phase	$0000
 	ds		$4000-$,$ff
 dephase
 
+; block $db
+BossZombieCaterpillarDyingPart1framelistblock:            equ $db
+phase	$8000
+  include "..\grapx\BossZombieCaterpillar\DyingPart1\frames.lst" 
+	ds		$c000-$,$ff
 
+; block $dc
+BossZombieCaterpillarDyingPart1spritedatablock:           equ $dc
+phase	$0000
+  incbin "..\grapx\BossZombieCaterpillar\DyingPart1\frames.dat"
+	ds		$4000-$,$ff
+dephase
 
+; block $dd
+BossZombieCaterpillarDyingPart2framelistblock:            equ $dd
+phase	$8000
+  include "..\grapx\BossZombieCaterpillar\DyingPart2\frames.lst" 
+	ds		$c000-$,$ff
 
+; block $de
+BossZombieCaterpillarDyingPart2spritedatablock:           equ $de
+phase	$0000
+  incbin "..\grapx\BossZombieCaterpillar\DyingPart2\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+; block $df
+BossZombieCaterpillarDyingPart3framelistblock:            equ $df
+phase	$8000
+  include "..\grapx\BossZombieCaterpillar\DyingPart3\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $e0
+BossZombieCaterpillarDyingPart3spritedatablock:           equ $e0
+phase	$0000
+  incbin "..\grapx\BossZombieCaterpillar\DyingPart3\frames.dat"
+	ds		$4000-$,$ff
+dephase
 
 
 
 
 ;
-; block $db -----------------> Music
+; block $e1 -----------------> Music
 ;
-usas2repBlock:  equ   $db
+usas2repBlock:  equ   $e1
   incbin "usas2.rep"
 
 
