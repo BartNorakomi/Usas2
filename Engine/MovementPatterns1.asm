@@ -892,7 +892,7 @@ TemplateBoss:
 
 
 
-
+;0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying
 ;Idle sitting
 BossZombieCaterpillarIdle00:   dw ZombieCaterpillarIdleframe000 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
 BossZombieCaterpillarIdle01:   dw ZombieCaterpillarIdleframe001 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
@@ -1133,16 +1133,13 @@ BossZombieCaterpillarAttack180:   dw ZombieCaterpillarDyingPart2frame024 | db Bo
 BossZombieCaterpillarAttack181:   dw ZombieCaterpillarDyingPart2frame024 | db BossZombieCaterpillarDyingPart2framelistblock, BossZombieCaterpillarDyingPart2spritedatablock
 BossZombieCaterpillarAttack182:   dw ZombieCaterpillarDyingPart2frame025 | db BossZombieCaterpillarDyingPart2framelistblock, BossZombieCaterpillarDyingPart2spritedatablock
 
-;Dying Part3
-BossZombieCaterpillarAttack183:   dw ZombieCaterpillarDyingPart3frame000 | db BossZombieCaterpillarDyingPart3framelistblock, BossZombieCaterpillarDyingPart3spritedatablock
-BossZombieCaterpillarAttack184:   dw ZombieCaterpillarDyingPart3frame000 | db BossZombieCaterpillarDyingPart3framelistblock, BossZombieCaterpillarDyingPart3spritedatablock
-BossZombieCaterpillarAttack185:   dw ZombieCaterpillarDyingPart3frame000 | db BossZombieCaterpillarDyingPart3framelistblock, BossZombieCaterpillarDyingPart3spritedatablock
 
 
 BossAreaZombieCaterpillarPalette:
   incbin "..\grapx\tilesheets\sBossAreaZombieCaterpillarPalette.PL" ;file palette 
 
 BossZombieCaterpillar:
+;v1-1=cles x at start of dive  
 ;v1=repeating steps
 ;v2=pointer to movement table
 ;v3=Vertical Movement
@@ -1151,7 +1148,7 @@ BossZombieCaterpillar:
 ;v6=active on which frame ?  
 ;v7=sprite frame
 ;v8=phase
-;v9=attack pattern
+;v9=timer until attack
 
 ;  ld    a,(ix+enemies_and_objects.y)        ;y object
 ;  ld    (Object1y),a
@@ -1161,22 +1158,19 @@ BossZombieCaterpillar:
   ld    hl,BossAreaZombieCaterpillarPalette
   call  Setpalette	
 
-;  call  CheckPlayerHitByBoss                ;Check if player gets hit by boss
+  call  CheckPlayerHitByZombieCaterpillar   ;Check if player gets hit by boss
   ;Check if boss gets hit by player
-;  call  VoodooWaspCheckIfHit                ;call gets popped if dead. Check if boss is hit, and if so set being hit phase
+  call  ZombieCaterpillarCheckIfHit         ;call gets popped if hit. Check if boss is hit, and if so set being hit phase
   ;Check if boss is dead
-;  call  BossCheckIfDead                     ;Check if boss is dead, and if so set dying phase
-
+  call  ZombieCaterpillarCheckIfDead        ;Check if boss is dead, and if so set dying phase
+  
   call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ld    de,BossZombieCaterpillarIdle00
   jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
   .HandlePhase:                            ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
-
-
   ld    de,NonMovingObjectMovementTable
   call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
-
 
   ld    a,(HugeObjectFrame)
   cp    2
@@ -1185,23 +1179,204 @@ BossZombieCaterpillar:
   ld    a,(Bossframecounter)
   inc   a
   ld    (Bossframecounter),a
+
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  or    a
+  jp    z,BossZombieCaterpillarAttack       ;0=attack
+  dec   a
+  jp    z,BossZombieCaterpillarIdle         ;1=Idle
+  dec   a
+  jp    z,BossZombieCaterpillarDiving       ;2=diving underground
+  dec   a
+  jp    z,BossZombieCaterpillarMoving       ;3=moving underground towards player
+  dec   a
+  jp    z,BossZombieCaterpillarHit          ;4=hit
+  dec   a
+  jp    z,BossZombieCaterpillarDead         ;5=dead
+  ret
+
+  BossZombieCaterpillarDead:
+  ld    a,(Bossframecounter)
+  rrca
+  ret   c  
+    
+  .animate:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  add   a,3
+  cp    183                                 ;(0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret   z
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret  
+    
+  BossZombieCaterpillarHit:
+  ld    a,(Bossframecounter)
+  rrca
+  ret   c  
+    
+  .animate:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  add   a,3
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  cp    111                                 ;(0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret   nz
+  ld    (ix+enemies_and_objects.v7),18      ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  ret  
   
+  BossZombieCaterpillarMoving:              ;moving underground towards player
+  ld    b,6
+  .loop:
+  ld    a,(ix+enemies_and_objects.v1-1)     ;v1-1=cles x at start of dive  
+  cp    (ix+enemies_and_objects.x)          ;x
+  jr    z,.GoAttack
+  jr    c,.Moveleft
+  .MoveRight:
+  inc   (ix+enemies_and_objects.x)          ;x
+  djnz  .loop
+  ret
+  .MoveLeft:
+  dec   (ix+enemies_and_objects.x)          ;x
+  djnz  .loop
+  ret
+  .GoAttack:
+  ld    (ix+enemies_and_objects.v8),0       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  ld    (ix+enemies_and_objects.v7),54      ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ;let the timer until attack depend on it's remaining health
+  ld    a,(ix+enemies_and_objects.life)
+  add   a,a
+  add   a,a                                 ;*4
+;  add   a,a                                 ;*8
+  ld    (ix+enemies_and_objects.v9),a       ;v9=timer until attack
+  ret
+  
+  BossZombieCaterpillarDiving:
+  .animate:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  add   a,3
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  cp    54                                  ;(0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+
+  ;set x where to attack
+  ld    a,(ClesX)
+  cp    54
+  jr    nc,.biggerThan54
+  ld    a,54
+  .biggerThan54:  
+  cp    220
+  jr    c,.SmallerThan220
+  ld    a,220
+  .SmallerThan220:
+  ld    (ix+enemies_and_objects.v1-1),a     ;v1-1=cles x at start of dive  
+  ret  
+  
+  BossZombieCaterpillarIdle:
+  ld    a,(Bossframecounter)
+  rrca
+  ret   c  
+
+  call  .animate
+
+  dec   (ix+enemies_and_objects.v9)         ;v9=timer until attack
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  ld    (ix+enemies_and_objects.v7),18      ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret
+  
+  .animate:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  add   a,3
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  cp    18                                  ;(0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret   nz
+  ld    (ix+enemies_and_objects.v7),0       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret  
+  
+  BossZombieCaterpillarAttack:
+  ld    a,(Bossframecounter)
+  rrca
+  ret   c  
+
+  xor   a
+  ld    (freezecontrols?),a  
 
   .animate:
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
   add   a,3
-  cp    183; 111; 96 ;54 ; 18                                  ;sprite 18,21,24,27 are idle flying
-  jr    nz,.notzero
-  ld    a,111; 96; 54; 18 ;0
-  .notzero:
-  
-;  ld a,165
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  cp    96                                  ;(0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  ld    (ix+enemies_and_objects.v7),0       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
   ret  
 
+ZombieCaterpillarCheckIfHit:
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  cp    2
+  ret   z
+  cp    3
+  ret   z
+  cp    5
+  ret   z
+  or    a
+  jr    nz,.EndCheckPossibleToBeHit
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  cp    54+15
+  ret   c  
+  .EndCheckPossibleToBeHit:
 
+  call  CheckPlayerPunchesBoss              ;Check if player hit's enemy
+  
+  ld    a,(ix+enemies_and_objects.hit?)
+  cp    BlinkDurationWhenHit                ;Check if Boss is hit this very frame
+  ret   nz
 
+  pop   af                                  ;pop call  
 
+  ld    (ix+enemies_and_objects.v7),96      ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  ret
+
+ZombieCaterpillarCheckIfDead:
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  cp    5
+  ret   z                                   ;don't check if boss is already dead
+
+  ld    a,(ix+enemies_and_objects.life)
+  dec   a
+  ret   nz
+;  call  ResetV1andV2  
+  ld    (ix+enemies_and_objects.v8),5       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  ld    (ix+enemies_and_objects.v7),111     ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret
+
+ 
+CheckPlayerHitByZombieCaterpillar:
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  cp    5
+  ret   z                                   ;don't check if boss is dead
+  cp    4
+  ret   z                                   ;don't check if boss is hit
+  cp    3
+  ret   z                                   ;don't check if boss is moving underground towards player
+  or    a
+  jr    nz,.EndCheckPossibleToBeHit
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  cp    54+18
+  ret   c  
+  jr    nz,.EndCheckPossibleToBeHit
+  ld    a,-50                               ;add to sy
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ld    bc,54                               ;reduction to hitbox sx (left side)
+  jp    CollisionEnemyPlayer.ObjectEntry
+
+  .EndCheckPossibleToBeHit:
+  ld    a,-50                               ;add to sy
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ld    bc,30                               ;reduction to hitbox sx (left side)
+  jp    CollisionEnemyPlayer.ObjectEntry
+  
 ;Idle sitting
 BossVoodooWaspIdle00:   dw VoodooWaspIdleframe000 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock
 BossVoodooWaspIdle01:   dw VoodooWaspIdleframe001 | db BossVoodooWaspIdleframelistblock, BossVoodooWaspIdlespritedatablock

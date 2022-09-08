@@ -3260,12 +3260,11 @@ MapE04:
   incbin "..\maps\e04.map.pck"  | .amountofobjects: db  3
   
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 2,       0|dw BossZombieCaterpillar|db  081|dw 8*22|db 50,52|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 020| ds fill
+.object1: db 0,       0|dw BossZombieCaterpillar|db  081|dw 8*26|db 70,56|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+54,+00,+30, 0|db 020| ds fill
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2: db 0,        0|dw Altar1              |db 8*02|dw 8*16|db 20,20|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+10, 0|db 000| ds fill
-.object3: db 0,        0|dw Altar2              |db 8*14|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
+.object2: db 2,        0|dw Altar1              |db 8*02|dw 8*16|db 20,20|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+10, 0|db 000| ds fill
+.object3: db 2,        0|dw Altar2              |db 8*14|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
     
-  
 MapE05:
   incbin "..\maps\e05.map.pck"  | .amountofobjects: db  0
 MapE06:
@@ -3685,26 +3684,14 @@ phase	$0000
 	ds		$4000-$,$ff
 dephase
 
-; block $df
-BossZombieCaterpillarDyingPart3framelistblock:            equ $df
-phase	$8000
-  include "..\grapx\BossZombieCaterpillar\DyingPart3\frames.lst" 
-	ds		$c000-$,$ff
-
-; block $e0
-BossZombieCaterpillarDyingPart3spritedatablock:           equ $e0
-phase	$0000
-  incbin "..\grapx\BossZombieCaterpillar\DyingPart3\frames.dat"
-	ds		$4000-$,$ff
-dephase
 
 
 
 
 ;
-; block $e1 -----------------> Music
+; block $df -----------------> Music
 ;
-usas2repBlock:  equ   $e1
+usas2repBlock:  equ   $df
   incbin "usas2.rep"
 
 
