@@ -6625,7 +6625,7 @@ ClimbUpMovementTable:
   db    -3,-2,-1,+0
   db    +0,+1,+2,+2
   db    +0,+0,+0,+0,-100
-ClimbUp:
+ClimbUp:                          ;jump of the top of the ladder onto the platform above/ end climb
   ld    a,(PlayerAniCount+1)
   ld    d,0
   ld    e,a
@@ -6740,6 +6740,9 @@ ClimbDown:
   ld    (Clesy),a
 
   call  AnimateClimbing
+  ld    a,(PlayerAniCount+1)
+  cp    32
+  jp    z,Set_Climb               ;only if we are in ClimbDown, jump to Set_Climb at frame 32.
   ret
 
 AnimateClimbing:
@@ -6747,24 +6750,20 @@ AnimateClimbing:
   ld    a,(PlayerAniCount+1)
   inc   a
   ld    (PlayerAniCount+1),a
-  cp    32
-  jp    z,Set_Climb
-  and   7
+  and   7                         ;animate every 8 frames
   ret   nz
     
   ld    hl,ClimbAnimation  
   ld    a,(PlayerAniCount)
-  add   a,2                       ;2 bytes used for pointer to sprite frame address
-  cp    2 * 08                    ;08 frame addresses
-  jr    nz,.SetPlayerAniCount
-  xor   a
-  .SetPlayerAniCount:
+  inc   a
+  and   7
   ld    (PlayerAniCount),a
-  
+  add   a,a                       ;2 bytes used for pointer to sprite frame address
+
   ld    d,0
   ld    e,a
   add   hl,de
-    
+
   ld    e,(hl)
   inc   hl
   ld    d,(hl)    

@@ -40,7 +40,7 @@
   db 11
   db 11
   db 11
-  db 12
+  db 11
   db 11
   db 11
   db 14
@@ -51,12 +51,12 @@
   db 77
   db 76
   db 76
+  db 79
+  db 79
+  db 76
   db 76
   db 79
   db 76
-  db 76
-  db 79
-  db 79
   db 76
   db 76
   db 79

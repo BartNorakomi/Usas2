@@ -1136,7 +1136,8 @@ BossZombieCaterpillarAttack182:   dw ZombieCaterpillarDyingPart2frame025 | db Bo
 
 
 BossAreaZombieCaterpillarPalette:
-  incbin "..\grapx\tilesheets\sBossAreaZombieCaterpillarPalette.PL" ;file palette 
+;nnnn  incbin "..\grapx\tilesheets\sBossAreaZombieCaterpillarPalette.PL" ;file palette 
+  incbin "..\grapx\tilesheets\sBossAreaZombieCaterpillarDarkerPalette.PL" ;file palette 
 
 BossZombieCaterpillar:
 ;v1-1=cles x at start of dive  
