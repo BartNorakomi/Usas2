@@ -3384,7 +3384,7 @@ HandlePlayerWeapons:
   jp    p,.DirectionFound
   ld    a,216+17            ;sy of arrow going left
   .DirectionFound:
-  ld    (ix+4),a
+  ld    (ix+4),a            ;sy
   jp    GoHandlePlayerWeapon  
 
   Fireball:
@@ -4361,11 +4361,12 @@ lSitShootArrowSf2Engine:
   cp    15
   ret   nz
 
+  ld    a,(ClesX)
+  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
+  jp    c,Set_L_Sit  
+  ld    (ArrowX),a
   ld    a,-ArrowSpeed
   ld    (ArrowActive?),a
-  ld    a,(ClesX)
-  sub   a,9
-  ld    (ArrowX),a
   ld    a,(ClesY)
   add   a,7
   ld    (ArrowY),a
@@ -4537,7 +4538,7 @@ RSitShootArrowSf2Engine:
   ld    a,ArrowSpeed
   ld    (ArrowActive?),a
   ld    a,(ClesX)
-  sub   a,11 -3
+  sub   a,-3                  ;old value= 8, but we had to move the start x of arrow more to the right, otherwise arrow cant be shot when standing at the furthest left in screen
   ld    (ArrowX),a
   ld    a,(ClesY)
   add   a,7
@@ -4727,11 +4728,12 @@ LShootArrowSf2Engine:
   cp    15
   ret   nz
 
+  ld    a,(ClesX)
+  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
+  jp    c,Set_L_Stand    
+  ld    (ArrowX),a
   ld    a,-ArrowSpeed
   ld    (ArrowActive?),a
-  ld    a,(ClesX)
-  sub   a,9
-  ld    (ArrowX),a
   ld    a,(ClesY)
   inc   a
   ld    (ArrowY),a
@@ -4903,7 +4905,7 @@ RShootArrowSf2Engine:
   ld    a,ArrowSpeed
   ld    (ArrowActive?),a
   ld    a,(ClesX)
-  sub   a,11 -3
+  sub   a,-3                  ;old value= 8, but we had to move the start x of arrow more to the right, otherwise arrow cant be shot when standing at the furthest left in screen
   ld    (ArrowX),a
   ld    a,(ClesY)
   inc   a
@@ -6962,11 +6964,12 @@ ShootArrowWhileJumpLeftSf2Engine:
   cp    15
   ret   nz
   
+  ld    a,(ClesX)
+  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
+  jr    c,.endShootArrowWhileJump
+  ld    (ArrowX),a
   ld    a,-ArrowSpeed
   ld    (ArrowActive?),a
-  ld    a,(ClesX)
-  sub   a,9
-  ld    (ArrowX),a
   ld    a,(ClesY)
   ld    (ArrowY),a
 
@@ -7144,7 +7147,7 @@ ShootArrowWhileJumpRightSf2Engine:
   ld    a,ArrowSpeed
   ld    (ArrowActive?),a
   ld    a,(ClesX)
-  sub   a,11-3
+  sub   a,-3                  ;old value= 8, but we had to move the start x of arrow more to the right, otherwise arrow cant be shot when standing at the furthest left in screen
   ld    (ArrowX),a
   ld    a,(ClesY)
   ld    (ArrowY),a
