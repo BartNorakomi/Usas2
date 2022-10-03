@@ -66,6 +66,7 @@
 ;Altar2
 ;BossVoodooWasp
 ;BossZombieCaterpillar
+;Coin
 
 ;Generic Enemy Routines ##############################################################################
 CheckOutOfMap:  
@@ -748,7 +749,7 @@ ExplosionSmall:
 ;v2=y backup
   ld    a,(ix+enemies_and_objects.v2)       ;y backup
   ld    (ix+enemies_and_objects.y),a        ;y    
-  
+
   call  .Animate                            ;out hl -> sprite character data to out to Vram
   
 	ld		a,RedExplosionSpriteblock           ;set block at $a000, page 2 - block containing sprite data
@@ -764,13 +765,24 @@ ExplosionSmall:
   .Animate: 
   ld    hl,ExplosionSmallAnimation
   ld    b,7                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 05                            ;04 animation frame addresses
+  ld    c,2 * 05                            ;05 animation frame addresses
   call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
   ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
   cp    2 * 04                              ;04 animation frame addresses
   ret   nz
-  jp    RemoveSprite
+;  jp    RemoveSprite
+
+
+  ld    de,Coin
+  ld    (ix+enemies_and_objects.movementpattern),e
+  ld    (ix+enemies_and_objects.movementpattern+1),d
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Coin Phase (0=falling, 1=lying still, 2=flying towards player)
+  ld    (ix+enemies_and_objects.v3),3       ;v3=Vertical Movement
+  ld    (ix+enemies_and_objects.v4),0       ;v4=Horizontal Movement
+  ld    (ix+enemies_and_objects.nx),16      ;width coin
+  ld    (ix+enemies_and_objects.ny),16      ;height coin
+  ret
 
 ExplosionSmallAnimation:
   dw  RedExplosionSmall1_Char 
@@ -778,6 +790,218 @@ ExplosionSmallAnimation:
   dw  RedExplosionSmall3_Char 
   dw  RedExplosionSmall4_Char
   dw  RedExplosionSmall4_Char
+
+Coin:
+;v1=Animation Counter
+;v2=Phase (0=falling, 1=lying still, 2=flying towards player)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Wait timer until able to fly towards player
+  call  .HandlePhase                        ;(0=falling, 1=lying still, 2=flying towards player) 
+
+	ld		a,RedExplosionSpriteblock           ;set block at $a000, page 2 - block containing sprite data
+  exx                                       ;store hl. hl now points to color data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+
+  .Animate: 
+  ld    hl,CoinAnimation
+  ld    b,3                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 06                            ;06 animation frame addresses
+  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player) 
+  or    a
+  jp    z,CoinFalling
+  dec   a
+  jp    z,CoinLyingStill
+;  dec   a
+;  jp    z,CoinFlyingTowardsPlayer
+  
+  CoinFlyingTowardsPlayer:
+  call  CoinMoveTowardsPlayer
+  ret
+
+  CoinLyingStill:
+  call  CheckPickUpCoin                     ;check for collision between player and coin and removes coin from play when picked up
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=Wait timer until able to fly towards player
+  dec   a
+  jr    z,.CheckCoinNearPlayer
+  ld    (ix+enemies_and_objects.v5),a       ;v5=Wait timer until able to fly towards player
+  call  Coin.Animate                        ;out hl -> sprite character data to out to Vram
+  ret
+
+  .CheckCoinNearPlayer:                     ;Check if coin is near player, if so fly towards player
+  ld    b,08+20                             ;b-> x distance
+  ld    c,16+10                             ;c-> y distance
+  call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  jr    nc,.EndCheckNearCoin
+  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player)
+  
+  .EndCheckNearCoin:
+  call  Coin.Animate                        ;out hl -> sprite character data to out to Vram
+  ret
+
+  CoinFalling:
+  call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
+  call  .CheckFloor                         ;checks for collision Floor and if found fall
+  call  CheckPickUpCoin                     ;check for collision between player and coin and removes coin from play when picked up
+  call  Coin.Animate                        ;out hl -> sprite character data to out to Vram
+  ret
+
+  .CheckFloor:                              ;checks for floor. 
+  call  CheckFloorUnderBothFeetEnemy        ;checks for floor, out z=collision found with floor - This is used for the Zombie, but works very well for the coin as well
+  ret   nz
+
+  ;snap to platform
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  and   %1111 1000
+  add   a,2
+  ld    (ix+enemies_and_objects.y),a        ;y
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player)
+  ld    (ix+enemies_and_objects.v5),50      ;v5=Wait timer until able to fly towards player
+  ret
+
+  CoinMoveTowardsPlayer:
+  ;set y movement in b
+  ld    a,(ClesY)
+  sub   a,8
+  ld    b,(ix+enemies_and_objects.y)        ;y
+  sub   a,b
+  ld    b,-1
+  jr    c,.EndCheckY
+  ld    b,+1    
+  .EndCheckY:
+  jp    p,.EndCheckYPositive
+  neg
+  .EndCheckYPositive:
+  cp    6
+  jr    nc,.EndCheckYSmallerThan6
+  ld    b,0
+  .EndCheckYSmallerThan6:
+  ;/set y movement in b
+
+  ;set x movement in e
+  ld    hl,(ClesX)
+  ld    de,8
+  add   hl,de
+
+  ld    e,(ix+enemies_and_objects.x)        ;y
+  ld    d,(ix+enemies_and_objects.x+1)      ;y
+  sbc   hl,de
+  ld    de,-1
+  jr    c,.EndCheckX
+  ld    de,+1    
+  .EndCheckX:
+
+  ld    a,l
+  jp    p,.EndCheckXPositive
+  neg
+  .EndCheckXPositive:
+  cp    6
+  jr    nc,.EndCheckXSmallerThan6
+  ld    de,0
+  .EndCheckXSmallerThan6:
+  ;/set x movement in e
+  
+  
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  add   a,b
+  ld    (ix+enemies_and_objects.y),a        ;y 
+
+  ld    l,(ix+enemies_and_objects.x)        ;x
+  ld    h,(ix+enemies_and_objects.x+1)      ;x
+  add   hl,de
+  ld    (ix+enemies_and_objects.x),l        ;x
+  ld    (ix+enemies_and_objects.x+1),h      ;x
+
+;       de=-1   de=0  de=+1
+;b=-1   LU      U     RU
+;b=-0   L             R
+;b=+1   LD      D     RD
+
+  ld    a,b
+  inc   a                                   ;b=0, 1 or 2
+  add   a,a                                 ;*2
+  ld    c,a
+  add   a,a                                 ;*4
+  add   a,c                                 ;*6
+  ld    b,0
+  ld    c,a
+
+  ld    hl,CoinTable
+  inc   de                                  ;de=0, 1 or 2
+  add   hl,de
+  add   hl,de
+  add   hl,bc
+  ld    e,(hl)
+  inc   hl
+  ld    d,(hl)
+  ex    de,hl
+  ret
+  
+  CoinTable:
+  dw    CoinLU_Char,CoinU_Char,CoinRU_Char
+  dw    CoinL_Char,CoinL_Char,CoinD_Char
+  dw    CoinLD_Char,CoinD_Char,CoinRD_Char
+  
+  CheckPickUpCoin:
+  ld    b,08                                ;b-> x distance
+  ld    c,16                                ;c-> y distance
+  call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   nc 
+  jp    RemoveSprite
+
+;check if player collides with left side of enemy/object
+;  ld    bc,16                               ;reduction to hitbox sx (left side)
+
+;  .ObjectEntry:
+;  ld    hl,(Clesx)                          ;hl = x player
+;  add   hl,bc
+
+;  ld    e,(ix+enemies_and_objects.x)  
+;  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+
+;  or    a                                   ;reset flag
+;  sbc   hl,de
+;  ret   c
+
+;check if player collides with right side of enemy/object
+;  ld    c,(ix+enemies_and_objects.nx)       ;width object
+;  sbc   hl,bc  
+;  ret   nc
+
+;check if player collides with top side of enemy/object
+;  ld    a,(Clesy)                           ;a = y player
+;  add   a,07; + 8                            ;increase this value to reduce the hitbox size (on the yop side)
+;  sub   (ix+enemies_and_objects.y)
+;  ret   c
+
+;check if player collides with bottom side of enemy/object
+;  ld    c,(ix+enemies_and_objects.ny)       ;width object
+;  sub   a,c
+;  ret   nc
+
+;  jp    RemoveSprite
+
+
+
+
+
+
+
+
+
+CoinAnimation:
+  dw  Coin1_Char
+  dw  Coin2_Char
+  dw  Coin3_Char
+  dw  Coin4_Char
+  dw  Coin5_Char
+  dw  Coin6_Char
 
 ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer

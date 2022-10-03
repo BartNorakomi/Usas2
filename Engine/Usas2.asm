@@ -722,11 +722,11 @@ MapB01_008:
 
 ;Boring Eye Green;v6=Green (0) / Red (1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3:db -1,        1|dw BoringEye           |db 8*18|dw 8*09|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object3:db -1,        1|dw BoringEye           |db 8*18|dw 8*09|db 22,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
 ;Boring Eye Red;v6=Green (0) / Red (1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -1,        1|dw BoringEye           |db 8*18|dw 8*31|db 32,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
-.object5:db -1,        1|dw BoringEye           |db 8*04|dw 8*22|db 32,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
+.object4:db -1,        1|dw BoringEye           |db 8*18|dw 8*31|db 22,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
+.object5:db -1,        1|dw BoringEye           |db 8*04|dw 8*22|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
 
 MapB01_009:
   incbin "..\maps\b01-009.map.pck"  | .amountofobjects: db  6
@@ -934,7 +934,7 @@ MapB01_024:
 .object2: db 1,        0|dw LancelotSword       |db 8*10|dw 8*10|db 07,27|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
 ;Boring Eye Green;v6=Green (0) / Red (1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3:db -1,        1|dw BoringEye           |db 8*13|dw 8*17|db 32,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object3:db -1,        1|dw BoringEye           |db 8*13|dw 8*17|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
 ;Black Hole Alien
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
 .object4:db -1,        1|dw BlackHoleAlien      |db 8*05|dw 8*22|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
@@ -1961,6 +1961,36 @@ RightScorpionRattle2_Char:                  include "..\sprites\enemies\Scorpion
 RightScorpionRattle2_Col:                   include "..\sprites\enemies\Scorpion\RightScorpionRattle2.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
 RightScorpionRattle3_Char:                  include "..\sprites\enemies\Scorpion\RightScorpionRattle3.tgs.gen"	  
 RightScorpionRattle3_Col:                   include "..\sprites\enemies\Scorpion\RightScorpionRattle3.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
+
+Coin1_Char:                                 include "..\sprites\collectables\coin1.tgs.gen" 
+Coin1_Col:                                  include "..\sprites\collectables\coin1.tcs.gen"  | db 00,00,00,00
+Coin2_Char:                                 include "..\sprites\collectables\coin2.tgs.gen" 
+Coin2_Col:                                  include "..\sprites\collectables\coin2.tcs.gen"  | db 00,00,00,00
+Coin3_Char:                                 include "..\sprites\collectables\coin3.tgs.gen" 
+Coin3_Col:                                  include "..\sprites\collectables\coin3.tcs.gen"  | db 00,00,00,00
+Coin4_Char:                                 include "..\sprites\collectables\coin4.tgs.gen" 
+Coin4_Col:                                  include "..\sprites\collectables\coin4.tcs.gen"  | db 00,00,00,00
+Coin5_Char:                                 include "..\sprites\collectables\coin5.tgs.gen" 
+Coin5_Col:                                  include "..\sprites\collectables\coin5.tcs.gen"  | db 00,00,00,00
+Coin6_Char:                                 include "..\sprites\collectables\coin6.tgs.gen" 
+Coin6_Col:                                  include "..\sprites\collectables\coin6.tcs.gen"  | db 00,00,00,00
+
+CoinLU_Char:                                include "..\sprites\collectables\coinLU.tgs.gen" 
+CoinLU_Col:                                 include "..\sprites\collectables\coinLU.tcs.gen"  | db 00,00,00,00
+CoinL_Char:                                 include "..\sprites\collectables\coinL.tgs.gen" 
+CoinL_Col:                                  include "..\sprites\collectables\coinL.tcs.gen"  | db 00,00,00,00
+CoinLD_Char:                                include "..\sprites\collectables\coinLD.tgs.gen" 
+CoinLD_Col:                                 include "..\sprites\collectables\coinLD.tcs.gen"  | db 00,00,00,00
+CoinD_Char:                                 include "..\sprites\collectables\coinD.tgs.gen" 
+CoinD_Col:                                  include "..\sprites\collectables\coinD.tcs.gen"  | db 00,00,00,00
+CoinRD_Char:                                include "..\sprites\collectables\coinRD.tgs.gen" 
+CoinRD_Col:                                 include "..\sprites\collectables\coinRD.tcs.gen"  | db 00,00,00,00
+CoinR_Char:                                 include "..\sprites\collectables\coinR.tgs.gen" 
+CoinR_Col:                                  include "..\sprites\collectables\coinR.tcs.gen"  | db 00,00,00,00
+CoinRU_Char:                                include "..\sprites\collectables\coinRU.tgs.gen" 
+CoinRu_Col:                                 include "..\sprites\collectables\coinRU.tcs.gen"  | db 00,00,00,00
+CoinU_Char:                                 include "..\sprites\collectables\coinU.tgs.gen" 
+CoinU_Col:                                  include "..\sprites\collectables\coinU.tcs.gen"  | db 00,00,00,00
 
 	ds		$c000-$,$ff
 dephase
@@ -3017,10 +3047,10 @@ MapA04:
 
 ;Boring Eye Green;v6=Green (0) / Red (1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-;.object2:db -1,        1|dw BoringEye           |db 8*09|dw 8*18|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
-;.object3:db -1,        1|dw BoringEye           |db 8*11|dw 8*20|db 32,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
-;.object4:db -1,        1|dw BoringEye           |db 8*13|dw 8*22|db 32,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
-;.object5:db -1,        1|dw BoringEye           |db 8*15|dw 8*24|db 32,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;.object2:db -1,        1|dw BoringEye           |db 8*09|dw 8*18|db 22,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;.object3:db -1,        1|dw BoringEye           |db 8*11|dw 8*20|db 22,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;.object4:db -1,        1|dw BoringEye           |db 8*13|dw 8*22|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;.object5:db -1,        1|dw BoringEye           |db 8*15|dw 8*24|db 22,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
 
   
@@ -3087,7 +3117,7 @@ MapA13:
 
 ;Boring Eye Green;v6=Green (0) / Red (1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-;.object4:db -1,        1|dw BoringEye           |db 8*09|dw 8*18|db 32,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+;.object4:db -1,        1|dw BoringEye           |db 8*09|dw 8*18|db 22,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
 
  
 	ds		$c000-$,$ff
@@ -3119,11 +3149,11 @@ MapB06:
 
 ;Boring Eye Green;v6=Green (0) / Red (1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3:db -1,        1|dw BoringEye           |db 8*18|dw 8*09|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+.object3:db -1,        1|dw BoringEye           |db 8*18|dw 8*09|db 22,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
 ;Boring Eye Red;v6=Green (0) / Red (1)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -1,        1|dw BoringEye           |db 8*18|dw 8*31|db 32,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
-.object5:db -1,        1|dw BoringEye           |db 8*04|dw 8*22|db 32,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
+.object4:db -1,        1|dw BoringEye           |db 8*18|dw 8*31|db 22,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
+.object5:db -1,        1|dw BoringEye           |db 8*04|dw 8*22|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
 
   
   
