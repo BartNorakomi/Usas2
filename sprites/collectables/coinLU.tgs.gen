@@ -7,9 +7,9 @@
   db 218
   db 204
   db 113
-  db 63
   db 30
-  db 1
+  db 0
+  db 0
   db 0
   db 0
   db 0
@@ -20,14 +20,14 @@
   db 128
   db 192
   db 192
-  db 208
   db 192
-  db 132
+  db 192
+  db 128
   db 0
+  db 32
+  db 0
+  db 4
   db 16
-  db 0
-  db 64
-  db 18
   db 0
   db 2
   db 0
@@ -53,10 +53,10 @@
   db 64
   db 64
   db 64
-  db 64
+  db 80
   db 128
-  db 32
-  db 1
+  db 0
+  db 0
   db 0
   db 0
   db 0

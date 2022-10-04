@@ -4,14 +4,14 @@
   db 1
   db 3
   db 3
-  db 11
   db 3
-  db 33
+  db 3
+  db 1
   db 0
   db 8
-  db 0
   db 2
-  db 72
+  db 0
+  db 8
   db 0
   db 64
   db 0
@@ -23,9 +23,9 @@
   db 91
   db 51
   db 142
-  db 252
   db 120
-  db 128
+  db 0
+  db 0
   db 0
   db 0
   db 0
@@ -39,8 +39,8 @@
   db 2
   db 2
   db 1
-  db 4
-  db 128
+  db 0
+  db 0
   db 0
   db 0
   db 0

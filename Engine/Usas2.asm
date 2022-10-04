@@ -1976,21 +1976,64 @@ Coin6_Char:                                 include "..\sprites\collectables\coi
 Coin6_Col:                                  include "..\sprites\collectables\coin6.tcs.gen"  | db 00,00,00,00
 
 CoinLU_Char:                                include "..\sprites\collectables\coinLU.tgs.gen" 
-CoinLU_Col:                                 include "..\sprites\collectables\coinLU.tcs.gen"  | db 00,00,00,00
+CoinLU_Col:                                 include "..\sprites\collectables\coinLU.tcs.gen"  | db 03,03,03,03
 CoinL_Char:                                 include "..\sprites\collectables\coinL.tgs.gen" 
-CoinL_Col:                                  include "..\sprites\collectables\coinL.tcs.gen"  | db 00,00,00,00
+CoinL_Col:                                  include "..\sprites\collectables\coinL.tcs.gen"  | db 00,03,00,03
 CoinLD_Char:                                include "..\sprites\collectables\coinLD.tgs.gen" 
-CoinLD_Col:                                 include "..\sprites\collectables\coinLD.tcs.gen"  | db 00,00,00,00
+CoinLD_Col:                                 include "..\sprites\collectables\coinLD.tcs.gen"  | db -3,03,-3,03
 CoinD_Char:                                 include "..\sprites\collectables\coinD.tgs.gen" 
-CoinD_Col:                                  include "..\sprites\collectables\coinD.tcs.gen"  | db 00,00,00,00
+CoinD_Col:                                  include "..\sprites\collectables\coinD.tcs.gen"  | db -3,00,-3,00
 CoinRD_Char:                                include "..\sprites\collectables\coinRD.tgs.gen" 
-CoinRD_Col:                                 include "..\sprites\collectables\coinRD.tcs.gen"  | db 00,00,00,00
+CoinRD_Col:                                 include "..\sprites\collectables\coinRD.tcs.gen"  | db -3,-3,-3,-3
 CoinR_Char:                                 include "..\sprites\collectables\coinR.tgs.gen" 
-CoinR_Col:                                  include "..\sprites\collectables\coinR.tcs.gen"  | db 00,00,00,00
+CoinR_Col:                                  include "..\sprites\collectables\coinR.tcs.gen"  | db 00,-3,00,-3
 CoinRU_Char:                                include "..\sprites\collectables\coinRU.tgs.gen" 
-CoinRu_Col:                                 include "..\sprites\collectables\coinRU.tcs.gen"  | db 00,00,00,00
+CoinRu_Col:                                 include "..\sprites\collectables\coinRU.tcs.gen"  | db 03,-3,03,-3
 CoinU_Char:                                 include "..\sprites\collectables\coinU.tgs.gen" 
-CoinU_Col:                                  include "..\sprites\collectables\coinU.tcs.gen"  | db 00,00,00,00
+CoinU_Col:                                  include "..\sprites\collectables\coinU.tcs.gen"  | db 03,00,03,00
+CoinEmpty_Char:                             include "..\sprites\collectables\coinEmpty.tgs.gen" 
+CoinEmpty_Col:                              include "..\sprites\collectables\coinEmpty.tcs.gen"  | db 00,00,00,00
+
+CoinAfterglow1_Char:                        include "..\sprites\collectables\coinAfterglow1.tgs.gen" 
+CoinAfterglow1_Col:                         include "..\sprites\collectables\coinAfterglow1.tcs.gen"  | db 00,00,00,00
+CoinAfterglow2_Char:                        include "..\sprites\collectables\coinAfterglow2.tgs.gen" 
+CoinAfterglow2_Col:                         include "..\sprites\collectables\coinAfterglow2.tcs.gen"  | db 00,00,00,00
+CoinAfterglow3_Char:                        include "..\sprites\collectables\coinAfterglow3.tgs.gen" 
+CoinAfterglow3_Col:                         include "..\sprites\collectables\coinAfterglow3.tcs.gen"  | db 00,00,00,00
+CoinAfterglow4_Char:                        include "..\sprites\collectables\coinAfterglow4.tgs.gen" 
+CoinAfterglow4_Col:                         include "..\sprites\collectables\coinAfterglow4.tcs.gen"  | db 00,00,00,00
+CoinAfterglow5_Char:                        include "..\sprites\collectables\coinAfterglow5.tgs.gen" 
+CoinAfterglow5_Col:                         include "..\sprites\collectables\coinAfterglow5.tcs.gen"  | db 00,00,00,00
+CoinAfterglow6_Char:                        include "..\sprites\collectables\coinAfterglow6.tgs.gen" 
+CoinAfterglow6_Col:                         include "..\sprites\collectables\coinAfterglow6.tcs.gen"  | db 00,00,00,00
+CoinAfterglow7_Char:                        include "..\sprites\collectables\coinAfterglow7.tgs.gen" 
+CoinAfterglow7_Col:                         include "..\sprites\collectables\coinAfterglow7.tcs.gen"  | db 00,00,00,00
+CoinAfterglow8_Char:                        include "..\sprites\collectables\coinAfterglow8.tgs.gen" 
+CoinAfterglow8_Col:                         include "..\sprites\collectables\coinAfterglow8.tcs.gen"  | db 00,00,00,00
+CoinAfterglow9_Char:                        include "..\sprites\collectables\coinAfterglow9.tgs.gen" 
+CoinAfterglow9_Col:                         include "..\sprites\collectables\coinAfterglow9.tcs.gen"  | db 00,00,00,00
+CoinAfterglow10_Char:                       include "..\sprites\collectables\coinAfterglow10.tgs.gen" 
+CoinAfterglow10_Col:                        include "..\sprites\collectables\coinAfterglow10.tcs.gen"  | db 00,00,00,00
+CoinAfterglow11_Char:                       include "..\sprites\collectables\coinAfterglow11.tgs.gen" 
+CoinAfterglow11_Col:                        include "..\sprites\collectables\coinAfterglow11.tcs.gen"  | db 00,00,00,00
+CoinAfterglow12_Char:                       include "..\sprites\collectables\coinAfterglow12.tgs.gen" 
+CoinAfterglow12_Col:                        include "..\sprites\collectables\coinAfterglow12.tcs.gen"  | db 00,00,00,00
+CoinAfterglow13_Char:                       include "..\sprites\collectables\coinAfterglow13.tgs.gen" 
+CoinAfterglow13_Col:                        include "..\sprites\collectables\coinAfterglow13.tcs.gen"  | db 00,00,00,00
+CoinAfterglow14_Char:                       include "..\sprites\collectables\coinAfterglow14.tgs.gen" 
+CoinAfterglow14_Col:                        include "..\sprites\collectables\coinAfterglow14.tcs.gen"  | db 00,00,00,00
+CoinAfterglow15_Char:                       include "..\sprites\collectables\coinAfterglow15.tgs.gen" 
+CoinAfterglow15_Col:                        include "..\sprites\collectables\coinAfterglow15.tcs.gen"  | db 00,00,00,00
+CoinAfterglow16_Char:                       include "..\sprites\collectables\coinAfterglow16.tgs.gen" 
+CoinAfterglow16_Col:                        include "..\sprites\collectables\coinAfterglow16.tcs.gen"  | db 00,00,00,00
+CoinAfterglow17_Char:                       include "..\sprites\collectables\coinAfterglow17.tgs.gen" 
+CoinAfterglow17_Col:                        include "..\sprites\collectables\coinAfterglow17.tcs.gen"  | db 00,00,00,00
+CoinAfterglow18_Char:                       include "..\sprites\collectables\coinAfterglow18.tgs.gen" 
+CoinAfterglow18_Col:                        include "..\sprites\collectables\coinAfterglow18.tcs.gen"  | db 00,00,00,00
+CoinAfterglow19_Char:                       include "..\sprites\collectables\coinAfterglow19.tgs.gen" 
+CoinAfterglow19_Col:                        include "..\sprites\collectables\coinAfterglow19.tcs.gen"  | db 00,00,00,00
+CoinAfterglow20_Char:                       include "..\sprites\collectables\coinAfterglow20.tgs.gen" 
+CoinAfterglow20_Col:                        include "..\sprites\collectables\coinAfterglow20.tcs.gen"  | db 00,00,00,00
 
 	ds		$c000-$,$ff
 dephase

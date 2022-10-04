@@ -2,12 +2,12 @@
   db 0
   db 64
   db 0
-  db 72
-  db 2
+  db 8
   db 0
-  db 136
-  db 4
-  db 33
+  db 18
+  db 0
+  db 0
+  db 1
   db 3
   db 3
   db 3
@@ -20,16 +20,16 @@
   db 0
   db 0
   db 0
-  db 128
   db 0
-  db 156
-  db 246
-  db 235
-  db 247
-  db 91
-  db 51
+  db 120
+  db 120
   db 142
-  db 120
+  db 51
+  db 91
+  db 247
+  db 235
+  db 246
+  db 156
   db 120
   db 0
   db 0
@@ -41,7 +41,7 @@
   db 0
   db 1
   db 2
-  db 10
+  db 2
   db 2
   db 2
   db 1
@@ -53,13 +53,13 @@
   db 0
   db 0
   db 0
-  db 120
-  db 228
-  db 10
-  db 21
-  db 9
-  db 165
-  db 205
-  db 122
+  db 0
   db 132
+  db 122
+  db 205
+  db 165
+  db 9
+  db 21
+  db 10
+  db 228
   db 0

@@ -797,6 +797,7 @@ Coin:
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Wait timer until able to fly towards player
+;v6=Wait timer until disappear
   call  .HandlePhase                        ;(0=falling, 1=lying still, 2=flying towards player) 
 
 	ld		a,RedExplosionSpriteblock           ;set block at $a000, page 2 - block containing sprite data
@@ -809,8 +810,7 @@ Coin:
   ld    hl,CoinAnimation
   ld    b,3                                 ;animate every x frames (based on framecounter)
   ld    c,2 * 06                            ;06 animation frame addresses
-  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
-  ret
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
   
   .HandlePhase:
   ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player) 
@@ -818,10 +818,24 @@ Coin:
   jp    z,CoinFalling
   dec   a
   jp    z,CoinLyingStill
+  dec   a
+  jp    z,CoinFlyingTowardsPlayer
 ;  dec   a
-;  jp    z,CoinFlyingTowardsPlayer
+;  jp    z,CoinAfterglow
+  
+  CoinAfterglow:
+  ld    hl,CoinAfterglowAnimation
+  ld    b,3                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 21                            ;06 animation frame addresses
+  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
+
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  cp    2 * 20
+  ret   nz
+  jp    RemoveSprite
   
   CoinFlyingTowardsPlayer:
+  call  CheckPickUpCoin                     ;check for collision between player and coin and removes coin from play when picked up  
   call  CoinMoveTowardsPlayer
   ret
 
@@ -835,14 +849,24 @@ Coin:
   ret
 
   .CheckCoinNearPlayer:                     ;Check if coin is near player, if so fly towards player
-  ld    b,08+20                             ;b-> x distance
-  ld    c,16+10                             ;c-> y distance
+  ld    b,08+40                             ;b-> x distance
+  ld    c,16+00                             ;c-> y distance
   call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   jr    nc,.EndCheckNearCoin
   ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player)
   
   .EndCheckNearCoin:
   call  Coin.Animate                        ;out hl -> sprite character data to out to Vram
+  ld    a,(ix+enemies_and_objects.v6)       ;v6=Wait timer until disappear
+  dec   a
+  ld    (ix+enemies_and_objects.v6),a       ;v6=Wait timer until disappear
+  jp    z,RemoveSprite
+  cp    70
+  ret   nc
+  ld    a,(framecounter)
+  and   3
+  ret   nz
+  ld    hl,CoinEmpty_Char
   ret
 
   CoinFalling:
@@ -862,13 +886,17 @@ Coin:
   add   a,2
   ld    (ix+enemies_and_objects.y),a        ;y
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player)
-  ld    (ix+enemies_and_objects.v5),50      ;v5=Wait timer until able to fly towards player
+  ld    (ix+enemies_and_objects.v5),90      ;v5=Wait timer until able to fly towards player
+  ld    (ix+enemies_and_objects.v6),220     ;v6=Wait timer until disappear
   ret
 
   CoinMoveTowardsPlayer:
   ;set y movement in b
   ld    a,(ClesY)
-  sub   a,8
+
+;  sub   a,8 - 7
+  dec   a
+  
   ld    b,(ix+enemies_and_objects.y)        ;y
   sub   a,b
   ld    b,-1
@@ -910,10 +938,12 @@ Coin:
   
   ld    a,(ix+enemies_and_objects.y)        ;y
   add   a,b
+  add   a,b
   ld    (ix+enemies_and_objects.y),a        ;y 
 
   ld    l,(ix+enemies_and_objects.x)        ;x
   ld    h,(ix+enemies_and_objects.x+1)      ;x
+  add   hl,de
   add   hl,de
   ld    (ix+enemies_and_objects.x),l        ;x
   ld    (ix+enemies_and_objects.x+1),h      ;x
@@ -945,7 +975,7 @@ Coin:
   
   CoinTable:
   dw    CoinLU_Char,CoinU_Char,CoinRU_Char
-  dw    CoinL_Char,CoinL_Char,CoinD_Char
+  dw    CoinL_Char,CoinL_Char,CoinR_Char
   dw    CoinLD_Char,CoinD_Char,CoinRD_Char
   
   CheckPickUpCoin:
@@ -953,7 +983,11 @@ Coin:
   ld    c,16                                ;c-> y distance
   call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ret   nc 
-  jp    RemoveSprite
+;  jp    RemoveSprite
+
+  ld    (ix+enemies_and_objects.v1),00      ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player, 3=coin afterglow)
+  ret
 
 ;check if player collides with left side of enemy/object
 ;  ld    bc,16                               ;reduction to hitbox sx (left side)
@@ -987,14 +1021,6 @@ Coin:
 
 ;  jp    RemoveSprite
 
-
-
-
-
-
-
-
-
 CoinAnimation:
   dw  Coin1_Char
   dw  Coin2_Char
@@ -1002,6 +1028,29 @@ CoinAnimation:
   dw  Coin4_Char
   dw  Coin5_Char
   dw  Coin6_Char
+
+CoinAfterglowAnimation:
+  dw  CoinAfterglow1_Char
+  dw  CoinAfterglow2_Char
+  dw  CoinAfterglow3_Char
+  dw  CoinAfterglow4_Char
+  dw  CoinAfterglow5_Char
+  dw  CoinAfterglow6_Char
+  dw  CoinAfterglow7_Char
+  dw  CoinAfterglow8_Char
+  dw  CoinAfterglow9_Char
+  dw  CoinAfterglow10_Char
+  dw  CoinAfterglow11_Char
+  dw  CoinAfterglow12_Char
+  dw  CoinAfterglow13_Char
+  dw  CoinAfterglow14_Char
+  dw  CoinAfterglow15_Char
+  dw  CoinAfterglow16_Char
+  dw  CoinAfterglow17_Char
+  dw  CoinAfterglow18_Char
+  dw  CoinAfterglow19_Char
+  dw  CoinAfterglow20_Char
+  dw  CoinAfterglow20_Char
 
 ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer
@@ -1039,7 +1088,9 @@ ZombieSpawnPoint:
   ld    (ix+enemies_and_objects.x+1),0
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
+;  ld    (ix+enemies_and_objects.v3),1       ;v3=Vertical Movement
   ld    (ix+enemies_and_objects.v4),1       ;v4=Horizontal Movement
+  ld    (ix+enemies_and_objects.ny),32       ;ny
   ld    hl,RetardedZombie
   ld    (ix+enemies_and_objects.movementpattern),l
   ld    (ix+enemies_and_objects.movementpattern+1),h

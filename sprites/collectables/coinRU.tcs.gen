@@ -8,12 +8,12 @@
   db 7
   db 7
   db 7
-  db 7
-  db 7
-  db 9
+  db 13
+  db 13
+  db 255
   db 7
   db 255
-  db 9
+  db 13
   db 255
   db 255
   db 77
@@ -23,8 +23,8 @@
   db 77
   db 77
   db 77
-  db 73
-  db 73
+  db 79
+  db 79
   db 255
   db 255
   db 255
