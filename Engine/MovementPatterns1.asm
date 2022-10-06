@@ -734,7 +734,18 @@ ExplosionBig:
   ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
   cp    2 * 05                              ;05 animation frame addresses
   ret   nz
-  jp    RemoveSprite
+;  jp    RemoveSprite
+
+  push  hl
+  ld    l,(ix+enemies_and_objects.x)        ;v1=Animation Counter
+  ld    h,(ix+enemies_and_objects.x+1)      ;v1=Animation Counter
+  ld    de,10
+  add   hl,de
+  ld    (ix+enemies_and_objects.x),l        ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.x+1),h      ;v1=Animation Counter
+  pop   hl
+  
+  jp    PutCoin
 
 ExplosionBigAnimation:
   dw  RedExplosionBig1_Char 
@@ -773,7 +784,7 @@ ExplosionSmall:
   ret   nz
 ;  jp    RemoveSprite
 
-
+PutCoin:
   ld    de,Coin
   ld    (ix+enemies_and_objects.movementpattern),e
   ld    (ix+enemies_and_objects.movementpattern+1),d
@@ -782,6 +793,11 @@ ExplosionSmall:
   ld    (ix+enemies_and_objects.v4),0       ;v4=Horizontal Movement
   ld    (ix+enemies_and_objects.nx),16      ;width coin
   ld    (ix+enemies_and_objects.ny),16      ;height coin
+
+  ;backup y and move sprite out of screen
+  ld    a,(ix+enemies_and_objects.y)        ;y  
+  ld    (ix+enemies_and_objects.v7),a       ;y backup
+  ld    (ix+enemies_and_objects.y),217      ;y
   ret
 
 ExplosionSmallAnimation:
@@ -799,6 +815,17 @@ Coin:
 ;v5=Wait timer until able to fly towards player
 ;v6=Wait timer until disappear
   call  .HandlePhase                        ;(0=falling, 1=lying still, 2=flying towards player) 
+
+  ld    (ix+enemies_and_objects.nrsprites),72-(02*6)
+  ld    (ix+enemies_and_objects.nrspritesSimple),2
+  ld    (ix+enemies_and_objects.nrspritesTimes16),2*16
+
+  ld    a,(ix+enemies_and_objects.v7)       ;y backup
+  or    a
+  jr    z,.YRestored
+  ld    (ix+enemies_and_objects.y),a        ;y  
+  ld    (ix+enemies_and_objects.v7),0       ;y backup
+  .YRestored:
 
 	ld		a,RedExplosionSpriteblock           ;set block at $a000, page 2 - block containing sprite data
   exx                                       ;store hl. hl now points to color data
