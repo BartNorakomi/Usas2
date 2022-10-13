@@ -62,7 +62,7 @@ MovePlayerAlongWithObject.positive: equ 080C9h ; last def. pass 3
 ShootArrowWhileJumpLeftSf2Engine.SetStandChar: equ 02B5Bh ; last def. pass 3
 HunchbackJumping.Gravity: equ 06FDEh ; last def. pass 3
 TeamNXTLogoNonTransparantGraphicsblock: equ 097h ; last def. pass 3
-MapA07.object5: equ 09311h ; last def. pass 3
+MapA07.object5: equ 0931Ch ; last def. pass 3
 CoinAfterglow2_Col: equ 0A2A0h ; last def. pass 3
 Sf2Hugeobject3: equ 07FE6h ; last def. pass 3
 RSitShootArrowSf2Engine: equ 01BFEh ; last def. pass 3
@@ -224,7 +224,7 @@ RemoveSpritesFromScreen: equ 0415Fh ; last def. pass 3
 Coin3_Col: equ 09D28h ; last def. pass 3
 RetardZombieRising10_Char: equ 09388h ; last def. pass 3
 Octopussy.HandlePhase: equ 06D43h ; last def. pass 3
-MapA11.amountofobjects: equ 0A1A8h ; last def. pass 3
+MapA11.amountofobjects: equ 0A1B3h ; last def. pass 3
 ConvertToMapinRam.laddertiles: equ 0CF2Ch ; last def. pass 3
 SxOctopussyBulletTable: equ 06B45h ; last def. pass 3
 RightBeetleWalk4_Col: equ 0B25Ch ; last def. pass 3
@@ -234,7 +234,7 @@ PlayerSpriteData_Colo_RightMeditate1: equ 0B83Eh ; last def. pass 3
 LAttack.EndCheckSpace: equ 0272Fh ; last def. pass 3
 MapE02Data: equ 0C042h ; last def. pass 3
 BossDemonAttack19: equ 0561Dh ; last def. pass 3
-MapA09.amountofobjects: equ 09A0Dh ; last def. pass 3
+MapA09.amountofobjects: equ 09A18h ; last def. pass 3
 FireEyeGreen4_Col: equ 08AF2h ; last def. pass 3
 BlackHoleBabyJumping.Gravity: equ 06155h ; last def. pass 3
 MapData: equ 0CA35h ; last def. pass 3
@@ -633,7 +633,7 @@ PlayerSpriteData_Colo_Climbing10: equ 058C2h ; last def. pass 3
 MapB01_026.object9: equ 0B3A5h ; last def. pass 3
 FireEyeGreen4_Char: equ 08992h ; last def. pass 3
 LeftHunchback4_Col: equ 09550h ; last def. pass 3
-MapA07.object2: equ 092C0h ; last def. pass 3
+MapA07.object2: equ 092CBh ; last def. pass 3
 MapA01_005.object2: equ 08D05h ; last def. pass 3
 LeftLancelotShieldHit1_Char: equ 08000h ; last def. pass 3
 ryuPage1frame006: equ 086EAh ; last def. pass 3
@@ -1099,7 +1099,7 @@ MapC01Data: equ 0C00Ch ; last def. pass 3
 Set_Stairs_Climb_RightUp: equ 037DAh ; last def. pass 3
 PlayerSpriteData_Colo_RightPunch2c: equ 06420h ; last def. pass 3
 framestep4Palette: equ 08188h ; last def. pass 3
-MapA07.amountofobjects: equ 092A4h ; last def. pass 3
+MapA07.amountofobjects: equ 092AFh ; last def. pass 3
 ZombieCaterpillarIdleframe019: equ 0887Eh ; last def. pass 3
 LeftGreenWasp1_Col: equ 08040h ; last def. pass 3
 VramObjects.pagefound: equ 087BAh ; last def. pass 3
@@ -1238,7 +1238,7 @@ VoodooWaspEnterScreenMovementTable: equ 04E93h ; last def. pass 3
 Waterfall4_Char: equ 087D0h ; last def. pass 3
 MapD01.amountofobjects: equ 082F3h ; last def. pass 3
 CheckMoveHorizontallyWhenHitFaceRight.MoveTabl2: equ 02306h ; last def. pass 3
-MapA10.amountofobjects: equ 09DC4h ; last def. pass 3
+MapA10.amountofobjects: equ 09DCFh ; last def. pass 3
 SlimeWaiting.GoAnimate: equ 075EFh ; last def. pass 3
 InitiatlizeOverview.NextSwitch: equ 08187h ; last def. pass 3
 RightYellowWasp2_Col: equ 0A55Ch ; last def. pass 3
@@ -1512,7 +1512,7 @@ BossZombieCaterpillarAttack130: equ 048ABh ; last def. pass 3
 BossZombieCaterpillarAttack179: equ 0496Fh ; last def. pass 3
 Coin6_Col: equ 09E54h ; last def. pass 3
 MapA03.amountofobjects: equ 08984h ; last def. pass 3
-MapA12.amountofobjects: equ 0A5B0h ; last def. pass 3
+MapA12.amountofobjects: equ 0A5BBh ; last def. pass 3
 RetardZombieRising20_Col: equ 09BD8h ; last def. pass 3
 BatSpawner: equ 07201h ; last def. pass 3
 RightTreemanWalk3_Col: equ 0A040h ; last def. pass 3
@@ -1624,7 +1624,7 @@ BossVoodooWaspHit71: equ 04D02h ; last def. pass 3
 WaterWeaponActive?: equ 01411h ; last def. pass 3
 MovePlatFormVertically: equ 086CCh ; last def. pass 3
 DrippingOoze1_Char: equ 0A710h ; last def. pass 3
-MapA10: equ 09A0Eh ; last def. pass 3
+MapA10: equ 09A19h ; last def. pass 3
 ZombieCaterpillarIdleframe031: equ 08DBEh ; last def. pass 3
 CheckTileEnemyInHL: equ 0137Eh ; last def. pass 3
 AreaSignsframe017: equ 0817Ch ; last def. pass 3
@@ -1738,7 +1738,7 @@ LogoAnimationPhase5.Go: equ 08110h ; last def. pass 3
 BossZombieCaterpillar.HandlePhase: equ 04A97h ; last def. pass 3
 CoinEmpty_Col: equ 0A1D8h ; last def. pass 3
 RestoreBackgroundObject3Page0: equ 0961h ; last def. pass 3
-MapA13.object3: equ 0A97Ch ; last def. pass 3
+MapA13.object3: equ 0A987h ; last def. pass 3
 BigStatueMouth.EmptySlotFound: equ 05E9Ah ; last def. pass 3
 tempisr2: equ 0F07h ; last def. pass 3
 PuzzleSwitch31On?: equ 04F0h ; last def. pass 3
@@ -1838,7 +1838,7 @@ LBeingHit.SetCharacter: equ 0233Bh ; last def. pass 3
 RRolling.ContinueRollingWhenCollisionTopFound: equ 0238Eh ; last def. pass 3
 HugeBlobSWsprite: equ 06AB5h ; last def. pass 3
 WaterWeaponY: equ 01412h ; last def. pass 3
-MapA07.object1: equ 092A5h ; last def. pass 3
+MapA07.object1: equ 092B0h ; last def. pass 3
 WaterfallEnd1_Col: equ 09B90h ; last def. pass 3
 RightGreenWaspAttack_Char: equ 08384h ; last def. pass 3
 BossZombieCaterpillarIdle28: equ 04713h ; last def. pass 3
@@ -2196,7 +2196,7 @@ ReflPlayerSpriteData_Colo_RightRun9: equ 082B8h ; last def. pass 3
 BossZombieCaterpillarIdle49: equ 04767h ; last def. pass 3
 BossDemonDead26: equ 05711h ; last def. pass 3
 CoinAfterglow19_Char: equ 0A904h ; last def. pass 3
-MapA13.object2: equ 0A961h ; last def. pass 3
+MapA13.object2: equ 0A96Ch ; last def. pass 3
 AppearingBlocks.PutBlock: equ 05CA1h ; last def. pass 3
 PlayerSpriteData_Colo_LeftSitShootArrow4: equ 04693h ; last def. pass 3
 RightBlackHoleAlien5_Char: equ 0B2C8h ; last def. pass 3
@@ -2304,7 +2304,7 @@ OctopussyFloatingInAir.GoAnimate: equ 06DB0h ; last def. pass 3
 LeftRetardZombieWalk2_Col: equ 08148h ; last def. pass 3
 BossVoodooWaspHit54: equ 04CBEh ; last def. pass 3
 RetardZombieRising2_Col: equ 08DC8h ; last def. pass 3
-MapA07.object4: equ 092F6h ; last def. pass 3
+MapA07.object4: equ 09301h ; last def. pass 3
 RightSnowballThrowerAttack2_Col: equ 09340h ; last def. pass 3
 PlayerSpriteData_Colo_RightSitShootArrow4: equ 0499Bh ; last def. pass 3
 ReflPlayerSpriteData_Char_RightRun8: equ 081C2h ; last def. pass 3
@@ -2638,7 +2638,7 @@ putplayer_clipleft.skipotir: equ 0BDEh ; last def. pass 3
 CheckPlayerOrStoneOnSwitch.SwitchFound: equ 082C4h ; last def. pass 3
 memblocks: equ 0D109h ; last def. pass 3
 BossZombieCaterpillarIdle62: equ 0479Bh ; last def. pass 3
-MapA13.amountofobjects: equ 0A945h ; last def. pass 3
+MapA13.amountofobjects: equ 0A950h ; last def. pass 3
 CoinAfterglow: equ 044D0h ; last def. pass 3
 PlayerSpriteData_Char_RightSitPunch2: equ 0A40Ah ; last def. pass 3
 VoodooWaspHitframe024: equ 0983Ah ; last def. pass 3
@@ -2709,7 +2709,7 @@ PlayerSpriteData_Colo_LeftMeditate1: equ 0B3B2h ; last def. pass 3
 PlayerSpriteData_Char_RightPunch2d: equ 06462h ; last def. pass 3
 DrippingOoze13_Char: equ 0B070h ; last def. pass 3
 MapB01_011: equ 09D6Eh ; last def. pass 3
-MapA12: equ 0A1A9h ; last def. pass 3
+MapA12: equ 0A1B4h ; last def. pass 3
 RetardZombieRising5_Col: equ 09020h ; last def. pass 3
 VoodooWaspIdleframe015: equ 08B50h ; last def. pass 3
 block12: equ 0123Dh ; last def. pass 3
@@ -3551,7 +3551,7 @@ romSlot: equ 0C0C4h ; last def. pass 3
 PlayerSpriteData_Char_RightPush3: equ 0806Ch ; last def. pass 3
 VoodooWaspIdleframe028: equ 09B2Ch ; last def. pass 3
 BossVoodooWaspIdle23: equ 04C42h ; last def. pass 3
-MapA12.object1: equ 0A5B1h ; last def. pass 3
+MapA12.object1: equ 0A5BCh ; last def. pass 3
 ryuPage0frame011: equ 088E0h ; last def. pass 3
 MapC02Data: equ 0C036h ; last def. pass 3
 ArrowY: equ 013EEh ; last def. pass 3
@@ -3746,7 +3746,7 @@ PlayerSpriteData_Char_LeftRolling2: equ 0867Ch ; last def. pass 3
 PlayerSpriteData_Char_RightRun9: equ 043CCh ; last def. pass 3
 RyuActions2: equ 0D07h ; last def. pass 3
 ZombieCaterpillarDyingPart1frame008: equ 0842Ah ; last def. pass 3
-MapA08: equ 09347h ; last def. pass 3
+MapA08: equ 09352h ; last def. pass 3
 BossDemonWalkRightMovementTable: equ 057A9h ; last def. pass 3
 MoonSound_ReadFM2Register: equ 0C63Ah ; last def. pass 3
 AnimateWhileJump.SetRightJumpAnimationFrame: equ 02AC1h ; last def. pass 3
@@ -3939,7 +3939,7 @@ CheckPlayerPunchesEnemyDemon.PlayerFacingDirectionFound: equ 0427Fh ; last def. 
 ryuPage1frame050: equ 0B04Eh ; last def. pass 3
 ryuPage1frame014: equ 08F52h ; last def. pass 3
 RightBeetleFly2_Char: equ 0B64Ch ; last def. pass 3
-MapA13: equ 0A5CCh ; last def. pass 3
+MapA13: equ 0A5D7h ; last def. pass 3
 PlayerSpriteData_Char_RightRolling12: equ 09728h ; last def. pass 3
 Climb.EndCheckDownPressed: equ 02A0Eh ; last def. pass 3
 MapC06Data: equ 0C0DEh ; last def. pass 3
@@ -4067,7 +4067,7 @@ RightHunchback3_Char: equ 09F40h ; last def. pass 3
 RightScorpionAttack2_Col: equ 09704h ; last def. pass 3
 RightOctopussyEyesOpen5_Col: equ 0A4F8h ; last def. pass 3
 MoonSound_MuteWave_Loop: equ 0C610h ; last def. pass 3
-MapA07.object6: equ 0932Ch ; last def. pass 3
+MapA07.object6: equ 09337h ; last def. pass 3
 Set_L_Attack: equ 03799h ; last def. pass 3
 HugeBlobJumping.DamagePlayerIfNotJumping: equ 06A06h ; last def. pass 3
 MoveObjectWithStepTableNew: equ 07ADBh ; last def. pass 3
@@ -4076,7 +4076,7 @@ BossDemonIdle03: equ 0551Dh ; last def. pass 3
 SnowballThrowerSpriteblock: equ 02Ah ; last def. pass 3
 ryuPage3frame028: equ 0A696h ; last def. pass 3
 MapA01_009: equ 096D5h ; last def. pass 3
-MapA13.object1: equ 0A946h ; last def. pass 3
+MapA13.object1: equ 0A951h ; last def. pass 3
 PlayerSpriteData_Colo_RightRun1: equ 045D0h ; last def. pass 3
 MapA01_006.object2: equ 08F9Fh ; last def. pass 3
 RightBlackHoleBaby6_Col: equ 0BA74h ; last def. pass 3
@@ -4087,7 +4087,7 @@ ryuPage4frame013: equ 08F78h ; last def. pass 3
 OctopussyBullet: equ 06B55h ; last def. pass 3
 OctopussyFloatingInAir.EmptySlotFound: equ 06DF2h ; last def. pass 3
 BossAreaPalette: equ 04AF6h ; last def. pass 3
-MapA11: equ 09DC5h ; last def. pass 3
+MapA11: equ 09DD0h ; last def. pass 3
 MapB01_025: equ 0B0B4h ; last def. pass 3
 MapA01_006.amountofobjects: equ 08F71h ; last def. pass 3
 PlayerSpriteData_Colo_LeftPunch3c: equ 07650h ; last def. pass 3
@@ -4107,7 +4107,7 @@ LandstriderDucked: equ 078BDh ; last def. pass 3
 SetEngineType.setCameraX: equ 04C95h ; last def. pass 3
 ClimbStairsLeftUp.PlayerFacingLeft: equ 026BEh ; last def. pass 3
 MapC04: equ 08978h ; last def. pass 3
-MapA08.amountofobjects: equ 096A0h ; last def. pass 3
+MapA08.amountofobjects: equ 096ABh ; last def. pass 3
 PuzzleSwitch23On?: equ 04E8h ; last def. pass 3
 RightDemontjeRed2_Col: equ 08234h ; last def. pass 3
 AreaSignsframe029: equ 0823Ch ; last def. pass 3
@@ -4754,7 +4754,7 @@ BossZombieCaterpillarIdle25: equ 04707h ; last def. pass 3
 PlayerSpriteData_Colo_LeftShootArrow3: equ 0BE4Eh ; last def. pass 3
 Jump.VerticalMovement: equ 02ED1h ; last def. pass 3
 RightBeetleFly1_Char: equ 0B520h ; last def. pass 3
-MapA07.object3: equ 092DBh ; last def. pass 3
+MapA07.object3: equ 092E6h ; last def. pass 3
 SetOffsetBlocksAndAttackpoints: equ 0C01h ; last def. pass 3
 PlayerSpriteData_Colo_RightJumpShootArrow1: equ 04D65h ; last def. pass 3
 BossZombieCaterpillarIdle66: equ 047ABh ; last def. pass 3
@@ -5035,7 +5035,7 @@ SwapSpatColAndCharTable: equ 0125Fh ; last def. pass 3
 Set_L_Rolling: equ 037C8h ; last def. pass 3
 MapD05: equ 08B64h ; last def. pass 3
 PlayerSpriteData_Char_LeftMeditate1: equ 0B332h ; last def. pass 3
-MapA09: equ 096A1h ; last def. pass 3
+MapA09: equ 096ACh ; last def. pass 3
 RightGreenWasp2_Char: equ 08258h ; last def. pass 3
 PlayerSpriteData_Char_RightCharge3: equ 0AEA6h ; last def. pass 3
 VramObjectsTransparantCopies: equ 08844h ; last def. pass 3
