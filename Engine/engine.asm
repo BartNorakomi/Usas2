@@ -2284,6 +2284,9 @@ CheckMapExit:
 
   pop   hl                  ;pop the call to this routine
   call  CameraEngine304x216.setR18R19R23andPage  
+
+  xor   a
+  ld    (CheckNewPressedControlUpForDoubleJump),a
   call  DisableLineint	
   jp    loadGraphics
   
@@ -2336,6 +2339,8 @@ tempisr2:
 	ei	
 	ret  
 
+
+CheckNewPressedControlUpForDoubleJump:  db    0
 InterruptHandlerLoader:
 	push	af
 	push	bc
@@ -2354,7 +2359,47 @@ InterruptHandlerLoader:
   push  af                ;store current memblock2 
 
   call  Player_Tick       ;music player
-  
+
+	ld		a,(NewPrContr)
+  push  af
+	ld		a,(Controls)
+	push  af
+
+  call  PopulateControls  ;this allows for a double jump as soon as you enter a new map
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(Controls)
+  bit   0,a               ;check  if up is pressed
+  jr    nz,.EndCheckUpPressed
+  ;at this point up is not pressed, if CheckNewPressedControlUpForDoubleJump=0 then CheckNewPressedControlUpForDoubleJump=1
+  ld    a,(CheckNewPressedControlUpForDoubleJump)
+  or    a
+  jr    nz,.EndCheckUpPressed
+  inc   a
+  ld    (CheckNewPressedControlUpForDoubleJump),a
+  .EndCheckUpPressed:
+
+  ld    a,(Controls)
+  bit   0,a               ;check  if up is pressed
+  jr    z,.EndCheckUpNotPressed
+  ;at this point up is not pressed, if CheckNewPressedControlUpForDoubleJump=0 then CheckNewPressedControlUpForDoubleJump=1
+  ld    a,(CheckNewPressedControlUpForDoubleJump)
+  dec   a
+  jr    nz,.EndCheckUpNotPressed
+  ld    a,2
+  ld    (CheckNewPressedControlUpForDoubleJump),a
+  .EndCheckUpNotPressed:
+
+  pop   af
+	ld		(Controls),a
+
+  pop   af
+	ld		(NewPrContr),a
+
   pop   af                ;pop current memblock2 
   ld    (memblocks.2),a
 	ld		($7000),a
@@ -2394,7 +2439,7 @@ InterruptHandler:
   out   ($99),a
   in    a,($99)           ;check and acknowledge vblank interrupt
   rlca
-  jp    c,vblank  ;vblank detected, so jp to that routine
+  jp    c,vblank          ;vblank detected, so jp to that routine
  
   pop   af 
   ei

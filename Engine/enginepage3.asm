@@ -85,6 +85,15 @@ loadGraphics:
 ;  xor   a
 ;  ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
 ;  ld    (NewPrContr),a                  ;this allows for a double jump as soon as you enter a new map
+
+  ld    a,(CheckNewPressedControlUpForDoubleJump)
+  cp    2
+  jr    nz,.EndCheckDoubleJump        ;check if we need to double jump when entering a new room
+	ld		a,(NewPrContr)
+	set   0,a
+	ld		(NewPrContr),a
+  .EndCheckDoubleJump:
+
   jp    LevelEngine
 
 StartTeamNXTLogo:
