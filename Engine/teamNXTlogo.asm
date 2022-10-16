@@ -266,7 +266,7 @@ LogoAnimationPhase3:              ;fade screen to white
   add   %0001 0001
   ld    (LogoAnimationVar2),a     ;palette step  
 
-  .loop:
+  .loop:                          ;in d=palette step, b=amount of colors
   ld    a,(hl)                    ;0 R2 R1 R0 0 B2 B1 B0
   add   a,d
   bit   3,a

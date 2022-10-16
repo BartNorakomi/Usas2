@@ -50,6 +50,7 @@ LevelEngine:
   call  BackdropBlack
 
   call  PopulateControls
+  call  FadeOutScreenEdges        ;routine that fades out the screen the closer you are to the edges
 
   ld    a,(framecounter)
   inc   a
@@ -64,10 +65,150 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 190 ;$19 ;230 ;250 ;210
+ClesX:      dw 6 ;$19 ;230 ;250 ;210
 ClesY:      db 60 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
+
+
+
+CurrentPalette: ds  32
+fadeoutsteps: equ 2
+FadeOutScreenEdges:
+  ld    bc,fadeoutsteps           ;fade out steps per x pixels              
+
+  xor   a
+  ld    hl,(clesX)                ;301 = rightmost position
+  ld    de,fadeoutsteps*7                   
+  sbc   hl,de
+  jp    c,FadeOutLeftSide
+
+  ld    hl,(clesX)                ;301 = rightmost position
+  ld    de,301 - (fadeoutsteps*7)                   
+  sbc   hl,de
+  jp    nc,FadeOutRightSide
+  ret
+
+  ForceMoveLeft:
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(Controls)
+  and   %1111 0111                ;right unpressed
+  or    %0000 0100                ;left pressed
+  ld    (Controls),a  
+  ret
+  
+  ForceMoveRight:
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(Controls)
+  and   %1111 1011                ;left unpressed
+  or    %0000 1000                ;right pressed
+  ld    (Controls),a  
+  ret
+  
+  FadeOutRightSide:
+  ld    a,(PlayerFacingRight?)          ;is player facing right ?
+  or    a
+  call  z,ForceMoveLeft
+  ld    a,(PlayerFacingRight?)          ;is player facing right ?
+  or    a
+  call  nz,ForceMoveRight
+
+  sbc   hl,bc
+  ld    d,0                       ;palette step (0=normal map palette, 7=completely black)
+  .loop:
+  jr    c,SetPaletteFadeStep
+  inc   d
+  sbc   hl,bc
+  jr    .loop
+
+  FadeOutLeftSide:
+  ld    a,(PlayerFacingRight?)          ;is player facing right ?
+  or    a
+  call  nz,ForceMoveRight
+  ld    a,(PlayerFacingRight?)          ;is player facing right ?
+  or    a
+  call  z,ForceMoveLeft
+  
+  add   hl,bc
+  ld    d,0                       ;palette step (0=normal map palette, 7=completely black)
+  .loop:
+  jr    c,SetPaletteFadeStep
+  inc   d
+  add   hl,bc
+  jr    .loop
+
+  SetPaletteFadeStep:
+	xor		a                         ;start writing to palette color 0
+	di
+	out		($99),a
+	ld		a,16+128
+	out		($99),a  
+  
+  ld    b,16                      ;16 colors
+  ld    hl,CurrentPalette
+  .loop:                          ;in d=palette step, b=amount of colors
+  ;blue
+  ld    a,(hl)                    ;0 R2 R1 R0 0 B2 B1 B0
+  and   %0000 1111                ;only blue
+  sub   a,d                       ;extract palette step / apply darkening
+  jr    nc,.EndCheckOverFlowBlue  ;overflow ?
+  xor   a                         ;no green
+  .EndCheckOverFlowBlue:
+  ld    c,a                       ;store blue in b
+  ;red
+  ld    a,(hl)                    ;0 R2 R1 R0 0 B2 B1 B0
+  and   %1111 0000                ;only red
+  srl   a                         ;shift all bits 1 step right
+  srl   a                         ;shift all bits 1 step right
+  srl   a                         ;shift all bits 1 step right
+  srl   a                         ;shift all bits 1 step right
+  sub   a,d                       ;extract palette step / apply darkening
+  jr    nc,.EndCheckOverFlowRed   ;overflow ?
+  xor   a                         ;no green
+  .EndCheckOverFlowRed:
+  add   a,a                       ;shift all bits 1 step left
+  add   a,a                       ;shift all bits 1 step left
+  add   a,a                       ;shift all bits 1 step left
+  add   a,a                       ;shift all bits 1 step left
+  or    a,c                       ;add blue to red
+  out   ($9a),a                   ;red + blue
+
+  inc   hl                        ;green
+  ld    a,(hl)                    ;0 0 0 0 0 G2 G1 G0
+  sub   a,d                       ;extract palette step / apply darkening
+  jr    nc,.EndCheckOverFlowGreen ;overflow ?
+  xor   a                         ;no green
+  .EndCheckOverFlowGreen:
+  out   ($9a),a                   ;green
+  inc   hl  
+  djnz  .loop
+
+	ei
+  ret
+
+
+
+
+
+
+
+
+  ret
+
+
+
+
+
+
+
 
 BackdropRandom:
   ld    a,r

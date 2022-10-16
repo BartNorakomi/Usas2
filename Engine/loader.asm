@@ -193,7 +193,16 @@ SetMapPalette:
   ld    hl,BossAreaPalette            ;6
   jr    z,.goSetPalette
 
-  .goSetPalette:  
+  .goSetPalette:
+  
+  push  hl
+  ld    de,CurrentPalette
+  ld    bc,32
+  ldir
+  pop   hl
+  
+ret  
+  
   jp    setpalette
 
 KarniMataPalette:
