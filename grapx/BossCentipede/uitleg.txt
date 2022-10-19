@@ -1,0 +1,5 @@
+Rij 1 = Voorkant draai naar links
+Rij 2 = Voorkant draai naar rechts
+Rij 3 = Midden draai
+Rij 4 = Achterkant draai naar links
+Rij 5 = Achterkant draai naar rechts

@@ -631,381 +631,381 @@ MapsBlock02:  equ   $20/2
 phase	$8000
 MapB01_001:
   incbin "..\maps\b01-001.map.pck"  | .amountofobjects: db  3
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 2,        0|dw Sf2Hugeobject1      |db 8*06|dw 8*09|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
-.object2: db 2,        0|dw Sf2Hugeobject2      |db 8*12|dw 8*12|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
-.object3: db 2,        0|dw Sf2Hugeobject3      |db 8*03|dw 8*13|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 2,        0|dw Sf2Hugeobject1      |db 8*06|dw 8*09|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movepatblo1| ds fill-1
+.object2: db 2,        0|dw Sf2Hugeobject2      |db 8*12|dw 8*12|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movepatblo1| ds fill-1
+.object3: db 2,        0|dw Sf2Hugeobject3      |db 8*03|dw 8*13|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movepatblo1| ds fill-1
 
 MapB01_002:
   incbin "..\maps\b01-002.map.pck"  | .amountofobjects: db  4
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life   
-.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
-.object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
-.object3: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*15|db 16,16|dw CleanOb3,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object3: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*15|db 16,16|dw CleanOb3,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Beetle
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -1,        1|dw Beetle           |db 8*14+10|dw 8*19|db 22,28|dw 12*16,spat+(12*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 003| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object4:db -1,        1|dw Beetle           |db 8*14+10|dw 8*19|db 22,28|dw 12*16,spat+(12*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 003,movepatblo1| ds fill-1
  
 MapB01_003:
   incbin "..\maps\b01-003.map.pck"  | .amountofobjects: db  7
 ;Demontje Bullet
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 0,        0|dw DemontjeBullet      |db 8*10|dw 8*15|db 11,11|dw CleanOb1,0 db 0,0,0,                     +146,+00,-01,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 0,        0|dw DemontjeBullet      |db 8*10|dw 8*15|db 11,11|dw CleanOb1,0 db 0,0,0,                     +146,+00,-01,+02,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Demontje v7=Green (0) / Red(1) / Brown(2) / Grey(3)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw Demontje            |db 8*08|dw 8*31|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object3:db -1,        1|dw Demontje            |db 8*11|dw 8*34|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-02,+00,+00,+01,+00,+00, 0|db 001| ds fill
-.object4:db -1,        1|dw Demontje            |db 8*07|dw 8*10|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 001| ds fill
-.object5:db -1,        1|dw Demontje            |db 8*09|dw 8*07|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+02,+00,+00,+03,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -1,        1|dw Demontje            |db 8*08|dw 8*31|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object3:db -1,        1|dw Demontje            |db 8*11|dw 8*34|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-02,+00,+00,+01,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object4:db -1,        1|dw Demontje            |db 8*07|dw 8*10|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object5:db -1,        1|dw Demontje            |db 8*09|dw 8*07|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+02,+00,+00,+03,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;Landstrider
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object6:db -1,        1|dw Landstrider         |db 8*14|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object7:db -1,        1|dw Landstrider         |db 8*24|dw 8*29|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object6:db -1,        1|dw Landstrider         |db 8*14|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object7:db -1,        1|dw Landstrider         |db 8*24|dw 8*29|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_004:
   incbin "..\maps\b01-004.map.pck"  | .amountofobjects: db  3
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
-.object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
-.object3: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*15|db 16,16|dw CleanOb3,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object3: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*15|db 16,16|dw CleanOb3,0 db 0,0,0,                      +64,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 MapB01_005:
   incbin "..\maps\b01-005.map.pck"  | .amountofobjects: db  8
 ;Green Wasp ;v6=Green Wasp(0) / Brown Wasp(1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw Wasp                |db 8*13|dw 8*11|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object2:db -1,        1|dw Wasp                |db 8*10|dw 8*15|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+01,+03,+00,+00,+00, 0|db 001| ds fill
-.object3:db -1,        1|dw Wasp                |db 8*09|dw 8*18|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+02,+06,+00,+00,+00, 0|db 001| ds fill
-.object4:db -1,        1|dw Wasp                |db 8*17|dw 8*23|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+03,+09,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw Wasp                |db 8*13|dw 8*11|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object2:db -1,        1|dw Wasp                |db 8*10|dw 8*15|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+01,+03,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object3:db -1,        1|dw Wasp                |db 8*09|dw 8*18|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+02,+06,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object4:db -1,        1|dw Wasp                |db 8*17|dw 8*23|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+03,+09,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;Brown Wasp ;v6=Green Wasp(0) / Brown Wasp(1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object5:db -1,        1|dw Wasp                |db 8*03|dw 8*10|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+04,+12,+01,+00,+00, 0|db 001| ds fill
-.object6:db -1,        1|dw Wasp                |db 8*05|dw 8*14|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+05,+15,+01,+00,+00, 0|db 001| ds fill
-.object7:db -1,        1|dw Wasp                |db 8*11|dw 8*20|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+06,+18,+01,+00,+00, 0|db 001| ds fill
-.object8:db -1,        1|dw Wasp                |db 8*16|dw 8*28|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+07,+21,+01,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object5:db -1,        1|dw Wasp                |db 8*03|dw 8*10|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+04,+12,+01,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object6:db -1,        1|dw Wasp                |db 8*05|dw 8*14|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+05,+15,+01,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object7:db -1,        1|dw Wasp                |db 8*11|dw 8*20|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+06,+18,+01,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object8:db -1,        1|dw Wasp                |db 8*16|dw 8*28|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+07,+21,+01,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_006:
   incbin "..\maps\b01-006.map.pck" | .amountofobjects: db  5
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw PlatformVertically  |db 8*15|dw 8*13|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+01,+00,+00,+16,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,        0|dw PlatformVertically  |db 8*15|dw 8*13|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+01,+00,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 ;Slime
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw Slime               |db 8*17|dw 8*24|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object3:db -1,        1|dw Slime               |db 8*17|dw 8*06|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object4:db -1,        1|dw Slime               |db 8*05|dw 8*19|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object5:db -1,        1|dw Slime               |db 8*21|dw 8*30|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -1,        1|dw Slime               |db 8*17|dw 8*24|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object3:db -1,        1|dw Slime               |db 8*17|dw 8*06|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object4:db -1,        1|dw Slime               |db 8*05|dw 8*19|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object5:db -1,        1|dw Slime               |db 8*21|dw 8*30|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_007:
   incbin "..\maps\b01-007.map.pck"  | .amountofobjects: db  5
 ;FireEye Grey
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw FireEyeGrey         |db 8*19|dw 8*21|db 48,32|dw 12*16,spat+(12*2)|db 72-(11*6),11  ,11*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 005| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw FireEyeGrey         |db 8*19|dw 8*21|db 48,32|dw 12*16,spat+(12*2)|db 72-(11*6),11  ,11*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 005,movepatblo1| ds fill-1
 ;Fire Eye Firebullets
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object2: db 0,        0|dw FireEyeFireBullet   |db 8*18|dw 8*21|db 13,06|dw CleanOb1,0 db 0,0,0,                     +128,+00,-03,+01,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object3: db 0,        0|dw FireEyeFireBullet   |db 8*18|dw 8*21|db 13,06|dw CleanOb2,0 db 0,0,0,                     +128,+00,-03,+01,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object4: db 0,        0|dw FireEyeFireBullet   |db 8*18|dw 8*21|db 13,06|dw CleanOb3,0 db 0,0,0,                     +128,+00,-03,+01,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object5: db 0,        0|dw FireEyeFireBullet   |db 8*18|dw 8*21|db 13,06|dw CleanOb4,0 db 0,0,0,                     +128,+00,-03,+01,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object2: db 0,        0|dw FireEyeFireBullet   |db 8*18|dw 8*21|db 13,06|dw CleanOb1,0 db 0,0,0,                     +128,+00,-03,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object3: db 0,        0|dw FireEyeFireBullet   |db 8*18|dw 8*21|db 13,06|dw CleanOb2,0 db 0,0,0,                     +128,+00,-03,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object4: db 0,        0|dw FireEyeFireBullet   |db 8*18|dw 8*21|db 13,06|dw CleanOb3,0 db 0,0,0,                     +128,+00,-03,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object5: db 0,        0|dw FireEyeFireBullet   |db 8*18|dw 8*21|db 13,06|dw CleanOb4,0 db 0,0,0,                     +128,+00,-03,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 MapB01_008:
   incbin "..\maps\b01-008.map.pck"  | .amountofobjects: db  5
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 ;Boring Eye Green;v6=Green (0) / Red (1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3:db -1,        1|dw BoringEye           |db 8*18|dw 8*09|db 22,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3:db -1,        1|dw BoringEye           |db 8*18|dw 8*09|db 22,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;Boring Eye Red;v6=Green (0) / Red (1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -1,        1|dw BoringEye           |db 8*18|dw 8*31|db 22,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
-.object5:db -1,        1|dw BoringEye           |db 8*04|dw 8*22|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object4:db -1,        1|dw BoringEye           |db 8*18|dw 8*31|db 22,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object5:db -1,        1|dw BoringEye           |db 8*04|dw 8*22|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_009:
   incbin "..\maps\b01-009.map.pck"  | .amountofobjects: db  6
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 0,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
-.object2: db 0,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 0,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object2: db 0,        0|dw PlatformHorizontally|db 8*11|dw 8*12|db 16,16|dw CleanOb2,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Spider Green
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3:db -0,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3:db -0,        1|dw GreenSpider         |db 8*14|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 ;Bat Spawner
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db +1,        1|dw BatSpawner          |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+00,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object4:db +1,        1|dw BatSpawner          |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+00,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object5:db -0,        1|dw Bat                 |db 8*10|dw 8*19|db 26,22|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object6:db -0,        1|dw Bat                 |db 8*06|dw 8*19|db 26,22|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object5:db -0,        1|dw Bat                 |db 8*10|dw 8*19|db 26,22|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object6:db -0,        1|dw Bat                 |db 8*06|dw 8*19|db 26,22|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_010:
   incbin "..\maps\b01-010.map.pck"  | .amountofobjects: db  6
 ;Retarded Zombie Spawnpoint
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+01,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+01,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 ;Retarded Zombie
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 12*16,spat+(12*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object3:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 16*16,spat+(16*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object4:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 20*16,spat+(20*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object5:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 24*16,spat+(24*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 12*16,spat+(12*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object3:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 16*16,spat+(16*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object4:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 20*16,spat+(20*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object5:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 24*16,spat+(24*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object6: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object6: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 MapB01_011:
   incbin "..\maps\b01-011.map.pck"  | .amountofobjects: db  3
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Treeman
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw Treeman             |db 8*11|dw 8*30|db 32,26|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -1,        1|dw Treeman             |db 8*11|dw 8*30|db 32,26|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005,movepatblo1| ds fill-1
 ;Grinder
-.object3:db -1,        1|dw Grinder             |db 8*19|dw 8*16|db 32,32|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
+.object3:db -1,        1|dw Grinder             |db 8*19|dw 8*16|db 32,32|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005,movepatblo1| ds fill-1
 
 MapB01_012:
   incbin "..\maps\b01-012.map.pck"  | .amountofobjects: db  2
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +32,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +32,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*15|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -1,        1|dw GreenSpider         |db 8*17|dw 8*15|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_013:
   incbin "..\maps\b01-013.map.pck"  | .amountofobjects: db  1
 ;Hunchback
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw Hunchback           |db 8*21|dw 8*34|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 003| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw Hunchback           |db 8*21|dw 8*34|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 003,movepatblo1| ds fill-1
 
 MapB01_014:
   incbin "..\maps\b01-014.map.pck"  | .amountofobjects: db  3
 ;Scorpion
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw Scorpion            |db 8*03|dw 8*20|db 32,22|dw 12*16,spat+(12*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,-01,+01,+00,+00,+00,+00, 0|db 001| ds fill
-.object2:db -1,        1|dw Scorpion            |db 8*12|dw 8*20|db 32,22|dw 18*16,spat+(18*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,-01,+01,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw Scorpion            |db 8*03|dw 8*20|db 32,22|dw 12*16,spat+(12*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,-01,+01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object2:db -1,        1|dw Scorpion            |db 8*12|dw 8*20|db 32,22|dw 18*16,spat+(18*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,-01,+01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;Spider Green
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3:db -1,        1|dw GreenSpider         |db 8*23|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3:db -1,        1|dw GreenSpider         |db 8*23|dw 8*19|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_015:
   incbin "..\maps\b01-015.map.pck"  | .amountofobjects: db  7
 ;Octopussy Bullet
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 0,        0|dw OctopussyBullet     |db 8*12|dw 8*16|db 08,08|dw CleanOb1,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object2: db 0,        0|dw OctopussyBullet     |db 8*13|dw 8*18|db 08,08|dw CleanOb2,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object3: db 0,        0|dw OctopussyBullet     |db 8*14|dw 8*20|db 08,08|dw CleanOb3,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object4: db 0,        0|dw OctopussyBullet     |db 8*15|dw 8*22|db 08,08|dw CleanOb4,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 0,        0|dw OctopussyBullet     |db 8*12|dw 8*16|db 08,08|dw CleanOb1,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object2: db 0,        0|dw OctopussyBullet     |db 8*13|dw 8*18|db 08,08|dw CleanOb2,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object3: db 0,        0|dw OctopussyBullet     |db 8*14|dw 8*20|db 08,08|dw CleanOb3,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object4: db 0,        0|dw OctopussyBullet     |db 8*15|dw 8*22|db 08,08|dw CleanOb4,0 db 0,0,0,                     +146,+00,+02,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Octopussy Bullet Slow Down Handler
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object5: db 1,        0|dw OP_SlowDownHandler  |db 8*12|dw 8*16|db 00,00|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object5: db 1,        0|dw OP_SlowDownHandler  |db 8*12|dw 8*16|db 00,00|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Octopussy
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object6:db -1,        1|dw Octopussy           |db 8*14|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
-.object7:db -1,        1|dw Octopussy           |db 8*14|dw 8*23|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object6:db -1,        1|dw Octopussy           |db 8*14|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object7:db -1,        1|dw Octopussy           |db 8*14|dw 8*23|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_016:
   incbin "..\maps\b01-016.map.pck"  | .amountofobjects: db  3
 ;SensorTentacles
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*16|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+1, 0|db 001| ds fill
-.object2:db -1,        1|dw SensorTentacles     |db 8*07|dw 8*19|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*07+1,+1, 0|db 1| ds fill
-;.object3:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+1, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*16|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+1, 0|db 001,movepatblo1| ds fill-1
+.object2:db -1,        1|dw SensorTentacles     |db 8*07|dw 8*19|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*07+1,+1, 0|db 1,movepatblo1| ds fill-1
+;.object3:db -1,        1|dw SensorTentacles     |db 8*12|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,8*12,+1, 0|db 001,movepatblo1| ds fill-1
 ;Yellow Wasp
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3:db -1,        1|dw YellowWasp          |db 8*12|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3:db -1,        1|dw YellowWasp          |db 8*12|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_017:
   incbin "..\maps\b01-017.map.pck"  | .amountofobjects: db  2
 ;Huge Blob
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw HugeBlob            |db 8*11|dw 8*20|db 48,46|dw 16*16,spat+(16*2)|db 72-(12*6),12  ,12*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw HugeBlob            |db 8*11|dw 8*20|db 48,46|dw 16*16,spat+(16*2)|db 72-(12*6),12  ,12*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005,movepatblo1| ds fill-1
 ;Huge Blob software sprite part
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object2: db 1,        0|dw HugeBlobSWsprite    |db 0*00|dw 0*00|db 21,14|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object2: db 1,        0|dw HugeBlobSWsprite    |db 0*00|dw 0*00|db 21,14|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 MapB01_018:
   incbin "..\maps\b01-018.map.pck"  | .amountofobjects: db  7
 ;Snowball Thrower
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw SnowballThrower     |db 8*21|dw 8*13|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw SnowballThrower     |db 8*21|dw 8*13|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;Snowball
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object2: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb1,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object3: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb2,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object2: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb1,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object3: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb2,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Snowball Thrower
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -1,        1|dw SnowballThrower     |db 8*05|dw 8*13|db 32,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object4:db -1,        1|dw SnowballThrower     |db 8*05|dw 8*13|db 32,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;Snowball
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object5: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb3,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object6: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb4,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object5: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb3,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object6: db 0,        0|dw Snowball            |db 8*21|dw 8*13|db 04,15|dw CleanOb4,0 db 0,0,0,                     +241,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Trampoline Blob
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object7:db -1,        1|dw TrampolineBlob      |db 8*17|dw 8*18|db 16,22|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+00, 0|db 255| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object7:db -1,        1|dw TrampolineBlob      |db 8*17|dw 8*18|db 16,22|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+00, 0|db 255,movepatblo1| ds fill-1
 
 MapB01_019:
   incbin "..\maps\b01-019.map.pck"  | .amountofobjects: db  4
 ;Glass Ball
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 0,        0|dw GlassBall5          |db 8*02|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object2: db 0,        0|dw GlassBall6          |db 8*02|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 0,        0|dw GlassBall5          |db 8*02|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object2: db 0,        0|dw GlassBall6          |db 8*02|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Glass Ball Activator
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Slime
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -1,        1|dw Slime               |db 8*06|dw 8*13|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object4:db -1,        1|dw Slime               |db 8*06|dw 8*13|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_020:
   incbin "..\maps\b01-020.map.pck"  | .amountofobjects: db  4
 ;Glass Ball
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 2,        0|dw GlassBall3          |db 8*19|dw 8*02|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object2: db 2,        0|dw GlassBall4          |db 8*19|dw 8*24|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 2,        0|dw GlassBall3          |db 8*19|dw 8*02|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object2: db 2,        0|dw GlassBall4          |db 8*19|dw 8*24|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Glass Ball Activator
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Slime
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -1,        1|dw Slime               |db 8*23|dw 8*13|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object4:db -1,        1|dw Slime               |db 8*23|dw 8*13|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_021:
   incbin "..\maps\b01-021.map.pck"  | .amountofobjects: db  4
 ;Glass Ball
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 0,        0|dw GlassBall1          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-.object2: db 0,        0|dw GlassBall2          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 0,        0|dw GlassBall1          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object2: db 0,        0|dw GlassBall2          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Glass Ball Activator
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Slime
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -1,        1|dw Slime               |db 8*15|dw 8*27|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object4:db -1,        1|dw Slime               |db 8*15|dw 8*27|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_022:
   incbin "..\maps\b01-022.map.pck"  | .amountofobjects: db  6
 ;Demontje Bullet
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 0,        0|dw DemontjeBullet      |db 8*10|dw 8*15|db 11,11|dw CleanOb1,0 db 0,0,0,                     +146,+00,-01,+02,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 0,        0|dw DemontjeBullet      |db 8*10|dw 8*15|db 11,11|dw CleanOb1,0 db 0,0,0,                     +146,+00,-01,+02,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Demontje v7=Green (0) / Red(1) / Brown(2) / Grey(3)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw Demontje            |db 8*20|dw 8*30|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object3:db -1,        1|dw Demontje            |db 8*18|dw 8*08|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -1,        1|dw Demontje            |db 8*20|dw 8*30|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-02,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object3:db -1,        1|dw Demontje            |db 8*18|dw 8*08|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;Waterfall eyes
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
-.object4: db 1,        0|dw WaterfallEyesYellow |db 8*15+3|dw 8*26|db 06,14|dw CleanOb2,0 db 0,0,0,                   +067,+00,+00,+03,+01,8*15+3,8*10,8*15+3,8*18,8*15+3,8*26| ds fill
+.object4: db 1,        0|dw WaterfallEyesYellow |db 8*15+3|dw 8*26|db 06,14|dw CleanOb2,0 db 0,0,0,                   +067,+00,+00,+03,+01,8*15+3,8*10,8*15+3,8*18,8*15+3,8*26,movepatblo1| ds fill-1
 ;Waterfall mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object5: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*26+2|db 06,10|dw CleanOb3,0 db 0,0,0,                 +119,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object5: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*26+2|db 06,10|dw CleanOb3,0 db 0,0,0,                 +119,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Waterfall
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object6:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
-;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object6:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_023:
   incbin "..\maps\b01-023.map.pck"  | .amountofobjects: db  6
 ;Black Hole Baby
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw BlackHoleBaby       |db 8*08|dw 8*05|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
-.object2:db -1,        1|dw BlackHoleBaby       |db 8*12|dw 8*16|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
-.object3:db -1,        1|dw BlackHoleBaby       |db 8*10|dw 8*22|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
-.object4:db -1,        1|dw BlackHoleBaby       |db 8*23|dw 8*03|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
-.object5:db -1,        1|dw BlackHoleBaby       |db 8*23|dw 8*17|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
-.object6:db -1,        1|dw BlackHoleBaby       |db 8*17|dw 8*33|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw BlackHoleBaby       |db 8*08|dw 8*05|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002,movepatblo1| ds fill-1
+.object2:db -1,        1|dw BlackHoleBaby       |db 8*12|dw 8*16|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002,movepatblo1| ds fill-1
+.object3:db -1,        1|dw BlackHoleBaby       |db 8*10|dw 8*22|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002,movepatblo1| ds fill-1
+.object4:db -1,        1|dw BlackHoleBaby       |db 8*23|dw 8*03|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002,movepatblo1| ds fill-1
+.object5:db -1,        1|dw BlackHoleBaby       |db 8*23|dw 8*17|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002,movepatblo1| ds fill-1
+.object6:db -1,        1|dw BlackHoleBaby       |db 8*17|dw 8*33|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 002,movepatblo1| ds fill-1
 
 MapB01_024:
   incbin "..\maps\b01-024.map.pck"  | .amountofobjects: db  4
 ;Lancelot
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw Lancelot            |db 8*13|dw 8*20|db 32,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw Lancelot            |db 8*13|dw 8*20|db 32,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;Lancelot Sword
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object2: db 1,        0|dw LancelotSword       |db 8*10|dw 8*10|db 07,27|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object2: db 1,        0|dw LancelotSword       |db 8*10|dw 8*10|db 07,27|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Boring Eye Green;v6=Green (0) / Red (1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3:db -1,        1|dw BoringEye           |db 8*13|dw 8*17|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3:db -1,        1|dw BoringEye           |db 8*13|dw 8*17|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;Black Hole Alien
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -1,        1|dw BlackHoleAlien      |db 8*05|dw 8*22|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object4:db -1,        1|dw BlackHoleAlien      |db 8*05|dw 8*22|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005,movepatblo1| ds fill-1
 
 MapB01_025:
   incbin "..\maps\b01-025.map.pck"  | .amountofobjects: db  3
 ;Waterfall eyes
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
-.object4: db 1,        0|dw WaterfallEyesGrey   |db 8*15+3|dw 8*22|db 06,14|dw CleanOb1,0 db 0,0,0,                   +095,+00,+01,+02,+01,8*15+3,8*14,8*15+3,8*22,8*00+3,8*00| ds fill
+.object4: db 1,        0|dw WaterfallEyesGrey   |db 8*15+3|dw 8*22|db 06,14|dw CleanOb1,0 db 0,0,0,                   +095,+00,+01,+02,+01,8*15+3,8*14,8*15+3,8*22,8*00+3,8*00,movepatblo1| ds fill-1
 ;Waterfall mouth
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
-.object5: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*22+2|db 06,10|dw CleanOb2,0 db 0,0,0,                   +139,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000| ds fill
+.object5: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*22+2|db 06,10|dw CleanOb2,0 db 0,0,0,                   +139,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Waterfall
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object6:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
-;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object6:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_026:
   incbin "..\maps\b01-026.map.pck"  | .amountofobjects: db  10
 ;Dripping Ooze Drop
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   , Hit?,life 
-.object1: db 1,        0|dw DrippingOozeDrop    |db 8*09-5|dw 8*10+3|db 08,05|dw CleanOb1,0 db 0,0,0,                 +149,+02,+03,+00,+63,+00,+00,8*09-5,8*10+3, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   ,Hit?,life 
+.object1: db 1,        0|dw DrippingOozeDrop    |db 8*09-5|dw 8*10+3|db 08,05|dw CleanOb1,0 db 0,0,0,                 +149,+02,+03,+00,+63,+00,+00,8*09-5,8*10+3, 0|db 000,movepatblo1| ds fill-1
 ;Dripping Ooze
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -0,        1|dw DrippingOoze        |db 8*22|dw 8*24|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -0,        1|dw DrippingOoze        |db 8*22|dw 8*24|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 ;Dripping Ooze Drop
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   , Hit?,life 
-.object3: db 1,        0|dw DrippingOozeDrop    |db 8*09-5|dw 8*22+3|db 08,05|dw CleanOb2,0 db 0,0,0,                 +149,+02,+03,+00,180,+00,+00,8*09-5,8*22+3, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   ,Hit?,life 
+.object3: db 1,        0|dw DrippingOozeDrop    |db 8*09-5|dw 8*22+3|db 08,05|dw CleanOb2,0 db 0,0,0,                 +149,+02,+03,+00,180,+00,+00,8*09-5,8*22+3, 0|db 000,movepatblo1| ds fill-1
 ;Dripping Ooze
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -0,        1|dw DrippingOoze        |db 8*22|dw 8*24|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object4:db -0,        1|dw DrippingOoze        |db 8*22|dw 8*24|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 ;Waterfall eyes
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
-.object5: db 1,        0|dw WaterfallEyesGrey   |db 8*15+3|dw 8*28|db 06,14|dw CleanOb3,0 db 0,0,0,                   +095,+00,200,+02,+01,8*15+3,8*06,8*15+3,8*28,8*00+3,8*00| ds fill
+.object5: db 1,        0|dw WaterfallEyesGrey   |db 8*15+3|dw 8*28|db 06,14|dw CleanOb3,0 db 0,0,0,                   +095,+00,200,+02,+01,8*15+3,8*06,8*15+3,8*28,8*00+3,8*00,movepatblo1| ds fill-1
 ;Waterfall mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object6: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*28+2|db 06,10|dw CleanOb4,0 db 0,0,0,                 +139,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object6: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*28+2|db 06,10|dw CleanOb4,0 db 0,0,0,                 +139,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Waterfall
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object7:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
-;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object7:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+;.object2:db -0,        1|dw Waterfall           |db 8*17|dw 8*28+3|db 64,10|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 ;Waterfall eyes
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
-.object8: db 1,        0|dw WaterfallEyesYellow |db 8*15+3|dw 8*17|db 06,14|dw CleanOb5,0 db 0,0,0,                   +067,+00,+01,+01,+00,8*15+3,8*17,8*00+3,8*00,8*00+3,8*00| ds fill
+.object8: db 1,        0|dw WaterfallEyesYellow |db 8*15+3|dw 8*17|db 06,14|dw CleanOb5,0 db 0,0,0,                   +067,+00,+01,+01,+00,8*15+3,8*17,8*00+3,8*00,8*00+3,8*00,movepatblo1| ds fill-1
 ;Waterfall mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object9: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*17+2|db 06,10|dw CleanOb6,0 db 0,0,0,                 +119,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object9: db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*17+2|db 06,10|dw CleanOb6,0 db 0,0,0,                 +119,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Waterfall
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object10:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object10:db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 MapB01_027:
   incbin "..\maps\b01-027.map.pck"  | .amountofobjects: db  7
 ;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001| ds fill
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001| ds fill
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001| ds fill
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001| ds fill
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001| ds fill
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
+.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
+.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
+.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
+.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
+.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
 	ds		$c000-$,$ff
 dephase
 
-fill: equ 0
+fill: equ 2
 
 ;NrSprites: (18 - (amount of sprites*3))
 
@@ -1509,11 +1509,7 @@ dephase
 ;
 ; block $1e - $1f
 ;
-movementpatterns1block:  equ   $1e
-phase	$4000
-  include "MovementPatterns1.asm"
-	ds		$c000-$,$ff
-dephase
+	ds		$8000
 
 ;
 ; block $20
@@ -1962,35 +1958,96 @@ RightScorpionRattle2_Col:                   include "..\sprites\enemies\Scorpion
 RightScorpionRattle3_Char:                  include "..\sprites\enemies\Scorpion\RightScorpionRattle3.tgs.gen"	  
 RightScorpionRattle3_Col:                   include "..\sprites\enemies\Scorpion\RightScorpionRattle3.tcs.gen"  | db 00,00,00,00, 16,00,16,00, 16,16,16,16
 
-Coin1_Char:                                 include "..\sprites\collectables\coin1.tgs.gen" 
-Coin1_Col:                                  include "..\sprites\collectables\coin1.tcs.gen"  | db 00,00,00,00
-Coin2_Char:                                 include "..\sprites\collectables\coin2.tgs.gen" 
-Coin2_Col:                                  include "..\sprites\collectables\coin2.tcs.gen"  | db 00,00,00,00
-Coin3_Char:                                 include "..\sprites\collectables\coin3.tgs.gen" 
-Coin3_Col:                                  include "..\sprites\collectables\coin3.tcs.gen"  | db 00,00,00,00
-Coin4_Char:                                 include "..\sprites\collectables\coin4.tgs.gen" 
-Coin4_Col:                                  include "..\sprites\collectables\coin4.tcs.gen"  | db 00,00,00,00
-Coin5_Char:                                 include "..\sprites\collectables\coin5.tgs.gen" 
-Coin5_Col:                                  include "..\sprites\collectables\coin5.tcs.gen"  | db 00,00,00,00
-Coin6_Char:                                 include "..\sprites\collectables\coin6.tgs.gen" 
-Coin6_Col:                                  include "..\sprites\collectables\coin6.tcs.gen"  | db 00,00,00,00
+CoinI1_Char:                                include "..\sprites\collectables\CoinI1.tgs.gen" 
+CoinI1_Col:                                 include "..\sprites\collectables\CoinI1.tcs.gen"  | db 00,00,00,00
+CoinI2_Char:                                include "..\sprites\collectables\CoinI2.tgs.gen" 
+CoinI2_Col:                                 include "..\sprites\collectables\CoinI2.tcs.gen"  | db 00,00,00,00
+CoinI3_Char:                                include "..\sprites\collectables\CoinI3.tgs.gen" 
+CoinI3_Col:                                 include "..\sprites\collectables\CoinI3.tcs.gen"  | db 00,00,00,00
+CoinI4_Char:                                include "..\sprites\collectables\CoinI4.tgs.gen" 
+CoinI4_Col:                                 include "..\sprites\collectables\CoinI4.tcs.gen"  | db 00,00,00,00
+CoinI5_Char:                                include "..\sprites\collectables\CoinI5.tgs.gen" 
+CoinI5_Col:                                 include "..\sprites\collectables\CoinI5.tcs.gen"  | db 00,00,00,00
+CoinI6_Char:                                include "..\sprites\collectables\CoinI6.tgs.gen" 
+CoinI6_Col:                                 include "..\sprites\collectables\CoinI6.tcs.gen"  | db 00,00,00,00
 
-CoinLU_Char:                                include "..\sprites\collectables\coinLU.tgs.gen" 
-CoinLU_Col:                                 include "..\sprites\collectables\coinLU.tcs.gen"  | db 03,03,03,03
-CoinL_Char:                                 include "..\sprites\collectables\coinL.tgs.gen" 
-CoinL_Col:                                  include "..\sprites\collectables\coinL.tcs.gen"  | db 00,03,00,03
-CoinLD_Char:                                include "..\sprites\collectables\coinLD.tgs.gen" 
-CoinLD_Col:                                 include "..\sprites\collectables\coinLD.tcs.gen"  | db -3,03,-3,03
-CoinD_Char:                                 include "..\sprites\collectables\coinD.tgs.gen" 
-CoinD_Col:                                  include "..\sprites\collectables\coinD.tcs.gen"  | db -3,00,-3,00
-CoinRD_Char:                                include "..\sprites\collectables\coinRD.tgs.gen" 
-CoinRD_Col:                                 include "..\sprites\collectables\coinRD.tcs.gen"  | db -3,-3,-3,-3
-CoinR_Char:                                 include "..\sprites\collectables\coinR.tgs.gen" 
-CoinR_Col:                                  include "..\sprites\collectables\coinR.tcs.gen"  | db 00,-3,00,-3
-CoinRU_Char:                                include "..\sprites\collectables\coinRU.tgs.gen" 
-CoinRu_Col:                                 include "..\sprites\collectables\coinRU.tcs.gen"  | db 03,-3,03,-3
-CoinU_Char:                                 include "..\sprites\collectables\coinU.tgs.gen" 
-CoinU_Col:                                  include "..\sprites\collectables\coinU.tcs.gen"  | db 03,00,03,00
+CoinV1_Char:                                include "..\sprites\collectables\CoinV1.tgs.gen" 
+CoinV1_Col:                                 include "..\sprites\collectables\CoinV1.tcs.gen"  | db 00,00,00,00
+CoinV2_Char:                                include "..\sprites\collectables\CoinV2.tgs.gen" 
+CoinV2_Col:                                 include "..\sprites\collectables\CoinV2.tcs.gen"  | db 00,00,00,00
+CoinV3_Char:                                include "..\sprites\collectables\CoinV3.tgs.gen" 
+CoinV3_Col:                                 include "..\sprites\collectables\CoinV3.tcs.gen"  | db 00,00,00,00
+CoinV4_Char:                                include "..\sprites\collectables\CoinV4.tgs.gen" 
+CoinV4_Col:                                 include "..\sprites\collectables\CoinV4.tcs.gen"  | db 00,00,00,00
+CoinV5_Char:                                include "..\sprites\collectables\CoinV5.tgs.gen" 
+CoinV5_Col:                                 include "..\sprites\collectables\CoinV5.tcs.gen"  | db 00,00,00,00
+CoinV6_Char:                                include "..\sprites\collectables\CoinV6.tgs.gen" 
+CoinV6_Col:                                 include "..\sprites\collectables\CoinV6.tcs.gen"  | db 00,00,00,00
+
+CoinX1_Char:                                include "..\sprites\collectables\CoinX1.tgs.gen" 
+CoinX1_Col:                                 include "..\sprites\collectables\CoinX1.tcs.gen"  | db 00,00,00,00
+CoinX2_Char:                                include "..\sprites\collectables\CoinX2.tgs.gen" 
+CoinX2_Col:                                 include "..\sprites\collectables\CoinX2.tcs.gen"  | db 00,00,00,00
+CoinX3_Char:                                include "..\sprites\collectables\CoinX3.tgs.gen" 
+CoinX3_Col:                                 include "..\sprites\collectables\CoinX3.tcs.gen"  | db 00,00,00,00
+CoinX4_Char:                                include "..\sprites\collectables\CoinX4.tgs.gen" 
+CoinX4_Col:                                 include "..\sprites\collectables\CoinX4.tcs.gen"  | db 00,00,00,00
+CoinX5_Char:                                include "..\sprites\collectables\CoinX5.tgs.gen" 
+CoinX5_Col:                                 include "..\sprites\collectables\CoinX5.tcs.gen"  | db 00,00,00,00
+CoinX6_Char:                                include "..\sprites\collectables\CoinX6.tgs.gen" 
+CoinX6_Col:                                 include "..\sprites\collectables\CoinX6.tcs.gen"  | db 00,00,00,00
+
+CoinILU_Char:                               include "..\sprites\collectables\CoinILU.tgs.gen" 
+CoinILU_Col:                                include "..\sprites\collectables\CoinILU.tcs.gen"  | db 03,03,03,03
+CoinIL_Char:                                include "..\sprites\collectables\CoinIL.tgs.gen" 
+CoinIL_Col:                                 include "..\sprites\collectables\CoinIL.tcs.gen"  | db 00,03,00,03
+CoinILD_Char:                               include "..\sprites\collectables\CoinILD.tgs.gen" 
+CoinILD_Col:                                include "..\sprites\collectables\CoinILD.tcs.gen"  | db -3,03,-3,03
+CoinID_Char:                                include "..\sprites\collectables\CoinID.tgs.gen" 
+CoinID_Col:                                 include "..\sprites\collectables\CoinID.tcs.gen"  | db -3,00,-3,00
+CoinIRD_Char:                               include "..\sprites\collectables\CoinIRD.tgs.gen" 
+CoinIRD_Col:                                include "..\sprites\collectables\CoinIRD.tcs.gen"  | db -3,-3,-3,-3
+CoinIR_Char:                                include "..\sprites\collectables\CoinIR.tgs.gen" 
+CoinIR_Col:                                 include "..\sprites\collectables\CoinIR.tcs.gen"  | db 00,-3,00,-3
+CoinIRU_Char:                               include "..\sprites\collectables\CoinIRU.tgs.gen" 
+CoinIRu_Col:                                include "..\sprites\collectables\CoinIRU.tcs.gen"  | db 03,-3,03,-3
+CoinIU_Char:                                include "..\sprites\collectables\CoinIU.tgs.gen" 
+CoinIU_Col:                                 include "..\sprites\collectables\CoinIU.tcs.gen"  | db 03,00,03,00
+
+CoinVLU_Char:                               include "..\sprites\collectables\CoinVLU.tgs.gen" 
+CoinVLU_Col:                                include "..\sprites\collectables\CoinVLU.tcs.gen"  | db 03,03,03,03
+CoinVL_Char:                                include "..\sprites\collectables\CoinVL.tgs.gen" 
+CoinVL_Col:                                 include "..\sprites\collectables\CoinVL.tcs.gen"  | db 00,03,00,03
+CoinVLD_Char:                               include "..\sprites\collectables\CoinVLD.tgs.gen" 
+CoinVLD_Col:                                include "..\sprites\collectables\CoinVLD.tcs.gen"  | db -3,03,-3,03
+CoinVD_Char:                                include "..\sprites\collectables\CoinVD.tgs.gen" 
+CoinVD_Col:                                 include "..\sprites\collectables\CoinVD.tcs.gen"  | db -3,00,-3,00
+CoinVRD_Char:                               include "..\sprites\collectables\CoinVRD.tgs.gen" 
+CoinVRD_Col:                                include "..\sprites\collectables\CoinVRD.tcs.gen"  | db -3,-3,-3,-3
+CoinVR_Char:                                include "..\sprites\collectables\CoinVR.tgs.gen" 
+CoinVR_Col:                                 include "..\sprites\collectables\CoinVR.tcs.gen"  | db 00,-3,00,-3
+CoinVRU_Char:                               include "..\sprites\collectables\CoinVRU.tgs.gen" 
+CoinVRu_Col:                                include "..\sprites\collectables\CoinVRU.tcs.gen"  | db 03,-3,03,-3
+CoinVU_Char:                                include "..\sprites\collectables\CoinVU.tgs.gen" 
+CoinVU_Col:                                 include "..\sprites\collectables\CoinVU.tcs.gen"  | db 03,00,03,00
+
+CoinXLU_Char:                               include "..\sprites\collectables\CoinXLU.tgs.gen" 
+CoinXLU_Col:                                include "..\sprites\collectables\CoinXLU.tcs.gen"  | db 03,03,03,03
+CoinXL_Char:                                include "..\sprites\collectables\CoinXL.tgs.gen" 
+CoinXL_Col:                                 include "..\sprites\collectables\CoinXL.tcs.gen"  | db 00,03,00,03
+CoinXLD_Char:                               include "..\sprites\collectables\CoinXLD.tgs.gen" 
+CoinXLD_Col:                                include "..\sprites\collectables\CoinXLD.tcs.gen"  | db -3,03,-3,03
+CoinXD_Char:                                include "..\sprites\collectables\CoinXD.tgs.gen" 
+CoinXD_Col:                                 include "..\sprites\collectables\CoinXD.tcs.gen"  | db -3,00,-3,00
+CoinXRD_Char:                               include "..\sprites\collectables\CoinXRD.tgs.gen" 
+CoinXRD_Col:                                include "..\sprites\collectables\CoinXRD.tcs.gen"  | db -3,-3,-3,-3
+CoinXR_Char:                                include "..\sprites\collectables\CoinXR.tgs.gen" 
+CoinXR_Col:                                 include "..\sprites\collectables\CoinXR.tcs.gen"  | db 00,-3,00,-3
+CoinXRU_Char:                               include "..\sprites\collectables\CoinXRU.tgs.gen" 
+CoinXRu_Col:                                include "..\sprites\collectables\CoinXRU.tcs.gen"  | db 03,-3,03,-3
+CoinXU_Char:                                include "..\sprites\collectables\CoinXU.tgs.gen" 
+CoinXU_Col:                                 include "..\sprites\collectables\CoinXU.tcs.gen"  | db 03,00,03,00
+
 CoinEmpty_Char:                             include "..\sprites\collectables\coinEmpty.tgs.gen" 
 CoinEmpty_Col:                              include "..\sprites\collectables\coinEmpty.tcs.gen"  | db 00,00,00,00
 
@@ -3084,16 +3141,16 @@ MapA03:
   incbin "..\maps\a03.map.pck"  | .amountofobjects: db  0
 MapA04:
   incbin "..\maps\a04.map.pck"  | .amountofobjects: db  1
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 2,        0|dw AreaSign             |db 8*05|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+00,+00,190, 0|db 016| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 2,        0|dw AreaSign             |db 8*05|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+00,+00,190, 0|db 016,movepatblo1| ds fill-1
 
 
 ;Boring Eye Green;v6=Green (0) / Red (1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-;.object2:db -1,        1|dw BoringEye           |db 8*09|dw 8*18|db 22,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
-;.object3:db -1,        1|dw BoringEye           |db 8*11|dw 8*20|db 22,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
-;.object4:db -1,        1|dw BoringEye           |db 8*13|dw 8*22|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
-;.object5:db -1,        1|dw BoringEye           |db 8*15|dw 8*24|db 22,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+;.object2:db -1,        1|dw BoringEye           |db 8*09|dw 8*18|db 22,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+;.object3:db -1,        1|dw BoringEye           |db 8*11|dw 8*20|db 22,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+;.object4:db -1,        1|dw BoringEye           |db 8*13|dw 8*22|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+;.object5:db -1,        1|dw BoringEye           |db 8*15|dw 8*24|db 22,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 
   
@@ -3101,31 +3158,31 @@ MapA05:
   incbin "..\maps\a05.map.pck"  | .amountofobjects: db  2
 
 ;AppearingBlocks Handler
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 ;AppearingBlocks
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object2: db 0,        0|dw AppearingBlocks     |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
-;.object1: db 1,        0|dw DisappearingBlocks  |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,21*8,19*8,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object2: db 0,        0|dw AppearingBlocks     |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+;.object1: db 1,        0|dw DisappearingBlocks  |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,21*8,19*8,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
   
 MapA06:
   incbin "..\maps\a06.map.pck"  | .amountofobjects: db  0
 MapA07:
   incbin "..\maps\a07.map.pck"  | .amountofobjects: db  6  
 ;Retarded Zombie Spawnpoint
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+01,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc,
+.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+01,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 ;Retarded Zombie
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 12*16,spat+(12*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object3:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 16*16,spat+(16*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object4:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 20*16,spat+(20*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
-.object5:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 24*16,spat+(24*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 12*16,spat+(12*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object3:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 16*16,spat+(16*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object4:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 20*16,spat+(20*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object5:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 24*16,spat+(24*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object6: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object6: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
   
   
   
@@ -3148,19 +3205,19 @@ MapA11:
 MapA12:
   incbin "..\maps\a12.map.pck"  | .amountofobjects: db  1
 ;Konark Palette Object
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw KonarkPaletteObject |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,        0|dw KonarkPaletteObject |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 MapA13:
   incbin "..\maps\a13.map.pck"  | .amountofobjects: db  3
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 2,        0|dw BossDemon1          |db 8*08|dw 8*26|db 80,60|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,-01, 0|db 010| ds fill
-.object2: db 2,        0|dw BossDemon2          |db 8*00|dw 8*00|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
-.object3: db 2,        0|dw BossDemon3          |db 8*00|dw 8*00|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+02,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 2,        0|dw BossDemon1          |db 8*08|dw 8*26|db 80,60|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,-01, 0|db 010,movepatblo1| ds fill-1
+.object2: db 2,        0|dw BossDemon2          |db 8*00|dw 8*00|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object3: db 2,        0|dw BossDemon3          |db 8*00|dw 8*00|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+02,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 ;Boring Eye Green;v6=Green (0) / Red (1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-;.object4:db -1,        1|dw BoringEye           |db 8*09|dw 8*18|db 22,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+;.object4:db -1,        1|dw BoringEye           |db 8*09|dw 8*18|db 22,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
  
 	ds		$c000-$,$ff
@@ -3184,19 +3241,19 @@ MapB05:
 MapB06:
   incbin "..\maps\b06.map.pck"  | .amountofobjects: db  5
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -1,        1|dw GreenSpider         |db 8*23|dw 8*12|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 ;Boring Eye Green;v6=Green (0) / Red (1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object3:db -1,        1|dw BoringEye           |db 8*18|dw 8*09|db 22,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3:db -1,        1|dw BoringEye           |db 8*18|dw 8*09|db 22,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;Boring Eye Red;v6=Green (0) / Red (1)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object4:db -1,        1|dw BoringEye           |db 8*18|dw 8*31|db 22,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
-.object5:db -1,        1|dw BoringEye           |db 8*04|dw 8*22|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object4:db -1,        1|dw BoringEye           |db 8*18|dw 8*31|db 22,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object5:db -1,        1|dw BoringEye           |db 8*04|dw 8*22|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+01,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
   
   
@@ -3204,13 +3261,13 @@ MapB06:
 MapB07:
   incbin "..\maps\b07.map.pck"  | .amountofobjects: db  3  
 ;platform (moving horizontally)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,        0|dw PlatformHorizontally|db 8*15|dw 8*18|db 16,32|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Treeman
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw Treeman             |db 8*11|dw 8*30|db 32,26|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -1,        1|dw Treeman             |db 8*11|dw 8*30|db 32,26|dw 20*16,spat+(20*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005,movepatblo1| ds fill-1
 ;Grinder
-.object3:db -1,        1|dw Grinder             |db 8*19|dw 8*16|db 32,32|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005| ds fill  
+.object3:db -1,        1|dw Grinder             |db 8*19|dw 8*16|db 32,32|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005,movepatblo1| ds fill-1  
   
   
 MapB08:
@@ -3273,13 +3330,26 @@ MapD02:
   incbin "..\maps\d02.map.pck"  | .amountofobjects: db  0
 MapD03:
   incbin "..\maps\d03.map.pck"  | .amountofobjects: db  0
+
+
+
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc,
+;.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+01,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1,movepatblo1| ds fill-1-1
+
+
+
+
 MapD04:
   incbin "..\maps\d04.map.pck"  | .amountofobjects: db  3
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 0,        0|dw BossVoodooWasp      |db -066|dw 8*22|db 50,52|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+81,+05,+00, 0|db 020| ds fill
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2: db 2,        0|dw Altar1              |db 8*02|dw 8*16|db 20,20|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+10, 0|db 000| ds fill
-.object3: db 2,        0|dw Altar2              |db 8*14|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 0,        0|dw BossVoodooWasp      |db -066|dw 8*22|db 50,52|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+81,+05,+00, 0|db 020,movepatblo1| ds fill-1
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2: db 2,        0|dw Altar1              |db 8*02|dw 8*16|db 20,20|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+10, 0|db 000,movepatblo1| ds fill-1
+.object3: db 2,        0|dw Altar2              |db 8*14|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+
+
+
   
 MapD05:
   incbin "..\maps\d05.map.pck"  | .amountofobjects: db  0
@@ -3291,12 +3361,12 @@ MapD08:
   incbin "..\maps\d08.map.pck"  | .amountofobjects: db  2
 
 ;Huge Spider Body
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life,   
-.object1: db 1,        0|dw HugeSpiderBody      |db 8*06|dw 8*14|db 21,27|dw CleanOb1,0 db 0,0,0,                     +073,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,        0|dw HugeSpiderBody      |db 8*06|dw 8*14|db 21,27|dw CleanOb1,0 db 0,0,0,                     +073,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 ;Huge Spider Legs
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2:db -1,        1|dw HugeSpiderLegs      |db 8*04|dw 8*14|db 24,64|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 005| ds fill  
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -1,        1|dw HugeSpiderLegs      |db 8*04|dw 8*14|db 24,64|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 005,movepatblo1| ds fill-1  
 
   
 
@@ -3326,17 +3396,17 @@ MapE03:
   incbin "..\maps\e03.map.pck"  | .amountofobjects: db  1
   
 ;Player Reflection 
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1  
   
 MapE04:
   incbin "..\maps\e04.map.pck"  | .amountofobjects: db  3
   
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1: db 0,       0|dw BossZombieCaterpillar|db  081|dw 8*26|db 70,56|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+54,+00,+30, 0|db 020| ds fill
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object2: db 2,        0|dw Altar1              |db 8*02|dw 8*16|db 20,20|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+10, 0|db 000| ds fill
-.object3: db 2,        0|dw Altar2              |db 8*14|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000| ds fill
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 0,       0|dw BossZombieCaterpillar|db  081|dw 8*26|db 70,56|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+54,+00,+30, 0|db 020,movepatblo1| ds fill-1
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2: db 2,        0|dw Altar1              |db 8*02|dw 8*16|db 20,20|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+10, 0|db 000,movepatblo1| ds fill-1
+.object3: db 2,        0|dw Altar2              |db 8*14|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
     
 MapE05:
   incbin "..\maps\e05.map.pck"  | .amountofobjects: db  0
@@ -3372,8 +3442,8 @@ MapF03:
   incbin "..\maps\f03.map.pck"  | .amountofobjects: db  1
   
   ;Player Reflection 
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1  
 
 MapF04:
   incbin "..\maps\f04.map.pck"  | .amountofobjects: db  0
@@ -3411,8 +3481,8 @@ MapG03:
   incbin "..\maps\g03.map.pck"  | .amountofobjects: db  1
   
   ;Player Reflection 
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9, Hit?,life 
-.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001| ds fill  
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1  
 
 MapG04:
   incbin "..\maps\g04.map.pck"  | .amountofobjects: db  0
@@ -3437,14 +3507,32 @@ MapG13:
 	ds		$c000-$,$ff
 dephase
 
-; block $67 - $86
-  ds  $4000 * $20
 
 
+  ds  $4000
+
+;
+; block $68
+;
+movementpatterns1block:  equ   $68
+movepatblo1:  equ   $68
+phase	$8000
+  include "MovementPatterns1.asm"
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $69
+;
+MovementPatternsFixedPage1block:  equ   $69
+phase	$4000
+  include "MovementPatternsFixedPage1.asm"
+	ds		$8000-$,$ff
+dephase
 
 
-
-
+; block $6a - $86
+  ds  $4000 * $1d
 
 
 

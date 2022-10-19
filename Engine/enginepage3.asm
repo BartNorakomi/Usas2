@@ -35,19 +35,17 @@ MapA11Data: db MapsBlock0A | dw MapA11 | db 1,2,2   | MapB11Data: db MapsBlock0B
 MapA12Data: db MapsBlock0A | dw MapA12 | db 1,2,2   | MapB12Data: db MapsBlock0B | dw MapB12 | db 1,2,2   | MapC12Data: db MapsBlock0C | dw MapC12 | db 1,2,2   | MapD12Data: db MapsBlock0D | dw MapD12 | db 1,4,4   | MapE12Data: db MapsBlock0E | dw MapE12 | db 1,2,2   | MapF12Data: db MapsBlock0F | dw MapF12 | db 1,5,5   | MapG12Data: db MapsBlock0G | dw MapG12 | db 1,5,5
 MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B | dw MapB13 | db 1,2,2   | MapC13Data: db MapsBlock0C | dw MapC13 | db 1,2,2   | MapD13Data: db MapsBlock0D | dw MapD13 | db 1,2,2   | MapE13Data: db MapsBlock0E | dw MapE13 | db 1,2,2   | MapF13Data: db MapsBlock0F | dw MapF13 | db 1,5,5   | MapG13Data: db MapsBlock0G | dw MapG13 | db 1,5,5
 
-;WorldMapPointer:  dw  MapB01_018Data
-;WorldMapPointer:  dw  MapB01_027Data
-;WorldMapPointer:  dw  MapB01_014Data
-WorldMapPointer:  dw  MapB06Data
+WorldMapPointer:  dw  MapD04Data      ;Boss Voodoo Wasp
+;WorldMapPointer:  dw  MapA04Data      ;Retarded Zombies
 
 PlayLogo:
-  call  StartTeamNXTLogo             ;sets logo routine in rom at $4000 page 1 and run it
+  call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
 loadGraphics:
 ;	ld    a,(Player_playing)
 ;	and   a
 ;  call  z,VGMRePlay
 
-  ld    a,(slot.page12rom)             ;all RAM except page 1
+  ld    a,(slot.page12rom)            ;all RAM except page 1
   out   ($a8),a
   ld    a,Loaderblock                 ;loader routine at $4000
   call  block12
@@ -1242,6 +1240,7 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .v9:                    equ 24
 .hit?:                  equ 25 | .v10:                   equ 25
 .life:                  equ 26 | .v11:                   equ 26
+.movementpatternsblock: equ 27
 
 endenginepage3variables:  equ $+enginepage3length
 org variables

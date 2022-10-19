@@ -201,7 +201,7 @@ SetMapPalette:
   ldir
   pop   hl
   
-ret  
+;ret  
   
   jp    setpalette
 

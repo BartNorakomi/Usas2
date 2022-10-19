@@ -66,1018 +66,10 @@
 ;Altar2
 ;BossVoodooWasp
 ;BossZombieCaterpillar
-;Coin
 
-;Generic Enemy Routines ##############################################################################
-CheckOutOfMap:  
-  ld    l,(ix+enemies_and_objects.x)  
-  ld    h,(ix+enemies_and_objects.x+1)      ;x  
-  ld    de,304+16                           ;map width + offset
-  xor   a
-  sbc   hl,de
-  ret   c
-  ;out of map
-  RemoveSprite:
-  ld    (ix+enemies_and_objects.alive?),0  
-  ld    (ix+enemies_and_objects.y),217+2    ;y  
-  ret
 
-MoveSpriteHorizontallyAndVertically:        ;Add v3 to y. Add v4 to x (16 bit)
-  call  MoveSpriteVertically
 
-  MoveSpriteHorizontally:                   ;Add v3 to y. Add v4 to x (16 bit)
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-;	ld		a,(Controls)
-;	bit		6,a                                 ;F1 pressed ?
-;	ret   nz
-	
-  ld    l,(ix+enemies_and_objects.x)  
-  ld    h,(ix+enemies_and_objects.x+1)      ;x
 
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  ld    e,a
-  add   a,a                                 ;sign in carry flag
-  sbc   a                                   ;high byto 0 or -1
-  ld    d,a
-  add   hl,de
-  ld    (ix+enemies_and_objects.x),l  
-  ld    (ix+enemies_and_objects.x+1),h      ;x
-  ret
-
-MoveSpriteVertically:                       ;Add v3 to y. Add v4 to x (16 bit)
-  ld    a,(ix+enemies_and_objects.y)
-  add   (ix+enemies_and_objects.v3)         ;v3=veritcal movement
-  ld    (ix+enemies_and_objects.y),a  
-  ret
-
-CheckCollisionWallEnemy:                    ;checks for collision wall and if found invert horizontal movement
-  ld    a,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
-  ld    hl,-16                              ;add to x to check right side of sprite for collision
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  jr    z,.MovingRight
-  .MovingLeft:
-  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  neg
-  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
-  ret
-  .MovingRight:
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  add   hl,de
-  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  neg
-  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
-  ret
-
-CheckCollisionWallEnemyV8:                  ;checks for collision wall and if found invert horizontal movement
-  ld    a,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
-  ld    hl,-16                              ;add to x to check right side of sprite for collision
-  bit   7,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
-  jr    z,.MovingRight
-  .MovingLeft:
-  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
-  neg
-  ld    (ix+enemies_and_objects.v8),a       ;v4=Horizontal Movement
-  ret
-  .MovingRight:
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  add   hl,de
-  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
-  neg
-  ld    (ix+enemies_and_objects.v8),a       ;v4=Horizontal Movement
-  ret
-
-CheckFloorUnderBothFeetEnemy:               ;Used for Zombie, to check if he is completely without floor under him
-  ld    hl,-16
-  ld    a,(ix+enemies_and_objects.ny)       
-  add   a,16
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  jr    z,.MovingRight
-  .MovingLeft:
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  add   hl,de
-  add   hl,hl                               ;0 if nx=16, 32 if nx=32, 64 if nx=48 formula=(nx-16) *2
-  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
-  .MovingRight:
-  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
-  
-CheckFloorEnemyObjectLeftSide:
-  ld    hl,0
-  ld    a,(ix+enemies_and_objects.ny)       
-  add   a,16
-  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
-CheckFloorEnemyObject:
-  ld    hl,0
-  jp    CheckFloorEnemy.ObjectEntry
-CheckFloorEnemy:  
-  ld    hl,-16  
-  .ObjectEntry:
-  ld    a,(ix+enemies_and_objects.ny)       
-  add   a,16
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  jr    z,.MovingRight
-  .MovingLeft:
-  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
-  .MovingRight:
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  add   hl,de
-  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
-
-distancecheck46wide:                        ;in: b,c->x,y distance between player and object,  out: carry->object within distance
-  ld    hl,(Clesx)                          ;hl = x player
-  ld    de,09-15
-  add   hl,de
-  jp    distancecheck.go
-
-distancecheck24wide:                        ;in: b,c->x,y distance between player and object,  out: carry->object within distance
-  ld    hl,(Clesx)                          ;hl = x player
-  ld    de,09-4
-  add   hl,de
-  jp    distancecheck.go
-
-distancecheck16wide:           ;in: b,c->x,y distance between player and object,  out: carry->object within distance
-  ld    hl,(Clesx)                          ;hl = x player
-  ld    de,09
-  add   hl,de
-  jp    distancecheck.go
-distancecheck:                              ;in: b,c->x,y distance between player and object,  out: carry->object within distance
-  ld    hl,(Clesx)                          ;hl = x player
-  .go:
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  
-  sbc   hl,de
-  ld    a,l
-  jr    nc,.PlayerIsRightSideofObject
-  neg
-  .PlayerIsRightSideofObject:
-  cp    b
-  ret   nc
-  
- ;/check x  
-;check y
-  ld    a,(Clesy)
-  sub   (ix+enemies_and_objects.y)          ;y enemy/object
-  jp    p,.endcheckpositive2
-  neg
-.endcheckpositive2:
-  cp    c
-;/check y  
-  ret
-
-checkFacingPlayer:                          ;out: c = object/enemy is facing player
-  ld    hl,(Clesx)                          ;hl = x player  
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  jr    c,.PlayerIsLeftSideofObject
-  
-  .PlayerIsRightSideofObject:
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  ret   nz
-  scf
-  ret
-  
-  .PlayerIsLeftSideofObject:
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  or    a
-  ret   p
-  scf
-  ret
-  
-CheckPlayerPunchesEnemyOnlySitting:
-  ld    a,(HitBoxSY)                        ;a = y hitbox
-  push  af
-  sub   a,9
-  ld    (HitBoxSY),a                        ;a = y hitbox
-  call  CheckPlayerPunchesEnemy
-  pop   af
-  ld    (HitBoxSY),a                        ;a = y hitbox
-  ret
-
-CheckArrowHitsEnemy:
-;check if enemy/object collides with hitbox arrow left side
-  ld    hl,(ArrowX)                         ;hl = x hitbox
-
-  ld    a,(scrollEngine)                    ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    bc,46                               ;normal engine
-  jr    z,.engineFound
-  ld    bc,46 - 14                          ;sf2 engine
-  .engineFound:
-
-  add   hl,bc
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox arrow right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-  ld    a,16                                ;reduce this value to reduce the hitbox size (on the right side)
-  add   a,c
-  ld    c,a
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox arrow top side
-  ld    a,(ArrowY)                          ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c  
-
-;check if enemy/object collides with hitbox arrow bottom side
-  sub   a,(ix+enemies_and_objects.ny)       ;width object
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  xor   a
-  ld    (ArrowActive?),a                    ;remove arrow when enemy is hit
-  
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jp    z,CheckPlayerPunchesEnemy.EnemyDied
-  ret
-  
-CheckFireballHitsEnemy:
-;check if enemy/object collides with hitbox arrow left side
-  ld    hl,(FireballX)                      ;hl = x hitbox
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    bc,46                               ;normal engine
-  jr    z,.engineFound
-  ld    bc,46 - 18                          ;sf2 engine
-  .engineFound:
-
-  add   hl,bc
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox arrow right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
-  add   a,c
-  ld    c,a
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox arrow top side
-  ld    a,(FireballY)                       ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c  
-
-;check if enemy/object collides with hitbox arrow bottom side
-  sub   a,(ix+enemies_and_objects.ny)       ;width object
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  xor   a
-  ld    (FireballActive?),a                    ;remove arrow when enemy is hit
-  
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jp    z,CheckPlayerPunchesEnemy.EnemyDied
-  ret
-
-CheckIceWeaponHitsEnemy:
-;check if enemy/object collides with hitbox arrow left side
-  ld    hl,(IceWeaponX)                      ;hl = x hitbox
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    bc,46                               ;normal engine
-  jr    z,.engineFound
-  ld    bc,46 - 18                          ;sf2 engine
-  .engineFound:
-
-  add   hl,bc
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox arrow right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
-  add   a,c
-  ld    c,a
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox arrow top side
-  ld    a,(IceWeaponY)                       ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c  
-
-;check if enemy/object collides with hitbox arrow bottom side
-  sub   a,(ix+enemies_and_objects.ny)       ;width object
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  xor   a
-  ld    (IceWeaponActive?),a                    ;remove arrow when enemy is hit
-  
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jp    z,CheckPlayerPunchesEnemy.EnemyDied
-  ret
-
-CheckEarthWeaponHitsEnemy:
-;check if enemy/object collides with hitbox arrow left side
-  ld    hl,(EarthWeaponX)                      ;hl = x hitbox
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    bc,46                               ;normal engine
-  jr    z,.engineFound
-  ld    bc,46 - 18                          ;sf2 engine
-  .engineFound:
-
-  add   hl,bc
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox arrow right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
-  add   a,c
-  ld    c,a
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox arrow top side
-  ld    a,(EarthWeaponY)                       ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c  
-
-;check if enemy/object collides with hitbox arrow bottom side
-  sub   a,(ix+enemies_and_objects.ny)       ;width object
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  xor   a
-  ld    (EarthWeaponActive?),a                    ;remove arrow when enemy is hit
-  
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jp    z,CheckPlayerPunchesEnemy.EnemyDied
-  ret
-
-CheckWaterWeaponHitsEnemy:
-;check if enemy/object collides with hitbox arrow left side
-  ld    hl,(WaterWeaponX)                      ;hl = x hitbox
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    bc,46                               ;normal engine
-  jr    z,.engineFound
-  ld    bc,46 - 18                          ;sf2 engine
-  .engineFound:
-
-  add   hl,bc
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox arrow right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
-  add   a,c
-  ld    c,a
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox arrow top side
-  ld    a,(WaterWeaponY)                       ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c  
-
-;check if enemy/object collides with hitbox arrow bottom side
-  sub   a,(ix+enemies_and_objects.ny)       ;width object
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  xor   a
-  ld    (WaterWeaponActive?),a                    ;remove arrow when enemy is hit
-  
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jp    z,CheckPlayerPunchesEnemy.EnemyDied
-  ret
-
-CheckPlayerPunchesBoss:
-CheckPlayerPunchesEnemyDemon:
-  ld    hl,(ClesX)
-  
-  ;adjust hitbox when facing left or right (this only applies to bossfights)
-  ld    a,(PlayerFacingRight?)
-  or    a
-  ld    de,43
-  jr    nz,.PlayerFacingDirectionFound
-  ld    de,43-34  
-  .PlayerFacingDirectionFound:
-  
-  add   hl,de
-  ld    (HitBoxSX),hl
-;  ld    a,16
-;  ld    (HitBoxNX),a
-;  ld    a,12
-;  ld    (HitBoxNY),a
-  ld    a,(ClesY)
-  add   a,17 - 6 - 60
-  ld    (HitBoxSY),a
-  
-  ld    a,(FireballY)                       ;a = y hitbox
-  sub   a,60
-  ld    (FireballY),a                       ;a = y hitbox
-  ld    a,(ArrowY)                          ;a = y hitbox
-  sub   a,60
-  ld    (ArrowY),a                          ;a = y hitbox
-  ld    a,(IceWeaponY)                          ;a = y hitbox
-  sub   a,60
-  ld    (IceWeaponY),a                          ;a = y hitbox
-  ld    a,(EarthWeaponY)                          ;a = y hitbox
-  sub   a,60
-  ld    (EarthWeaponY),a                          ;a = y hitbox
-  ld    a,(WaterWeaponY)                          ;a = y hitbox
-  sub   a,60
-  ld    (WaterWeaponY),a                          ;a = y hitbox
-  call  CheckPlayerPunchesEnemy
-  ld    a,(FireballY)                       ;a = y hitbox
-  add   a,60
-  ld    (FireballY),a                       ;a = y hitbox
-  ld    a,(ArrowY)                          ;a = y hitbox
-  add   a,60
-  ld    (ArrowY),a                          ;a = y hitbox
-  ld    a,(IceWeaponY)                          ;a = y hitbox
-  add   a,60
-  ld    (IceWeaponY),a                          ;a = y hitbox
-  ld    a,(EarthWeaponY)                          ;a = y hitbox
-  add   a,60
-  ld    (EarthWeaponY),a                          ;a = y hitbox
-  ld    a,(WaterWeaponY)                          ;a = y hitbox
-  add   a,60
-  ld    (WaterWeaponY),a                          ;a = y hitbox
-  ret
-;  jp    CheckPlayerPunchesEnemy
-
-BlinkDurationWhenHit: equ 31  
-CheckPlayerPunchesEnemy:  
-  ld    a,(ix+enemies_and_objects.hit?)     ;reduce enemy is hit counter
-  dec   a
-  jp    m,.EndReduceHitTimer
-  ld    (ix+enemies_and_objects.hit?),a
-  ret                                       ;if enemy is  already hit, don't check if it's hit again
-  .EndReduceHitTimer:
-  
-  ld    a,(ArrowActive?)
-  or    a
-  call  nz,CheckArrowHitsEnemy
-
-  ld    a,(FireballActive?)
-  or    a
-  call  nz,CheckFireballHitsEnemy
-  
-  ld    a,(IceWeaponActive?)
-  or    a
-  call  nz,CheckIceWeaponHitsEnemy
-
-  ld    a,(EarthWeaponActive?)
-  or    a
-  call  nz,CheckEarthWeaponHitsEnemy
-
-  ld    a,(WaterWeaponActive?)
-  or    a
-  call  nz,CheckWaterWeaponHitsEnemy
-    
-  ld    a,(EnableHitbox?)
-  or    a
-  ret   z
-
-;check if enemy/object collides with hitbox left side
-  ld    hl,(HitBoxSX)                       ;hl = x hitbox
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-
-ld a,09-4 ;nx + 10                          ;reduce this value to reduce the hitbox size (on the right side)
-add a,c
-ld c,a
-ld b,0
-
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox top side
-  ld    a,(HitBoxSY)                        ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c
-
-;check if enemy/object collides with hitbox bottom side
-  ld    c,(ix+enemies_and_objects.ny)       ;width object
-
-ld e,a ;store a
-ld a,20-4 ;ny + 20   ;if this is 20-8 it would be same reduction top as bottom, but at the bottom its better if there is less reduction                         ;reduce this value to reduce the hitbox size (on the left side)
-add a,c
-ld c,a
-ld a,e
-
-  sub   a,c
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jr    z,.EnemyDied
-  
-	ld		de,(PlayerSpriteStand)
-	ld		hl,Charging
-  xor   a
-  sbc   hl,de
-  ret   nz
-
-  ;At this point you hit an enemy with a charge attack, but enemy didn't die. Player now bounces backwards.
-  ld    a,(PlayerFacingRight?)
-  or    a
-  jp    nz,Set_R_BouncingBack
-  jp    Set_L_BouncingBack
-  
-  .EnemyDied:
-  ld    (ix+enemies_and_objects.hit?),00    ;stop blinking white when dead
-
-  ;Enemy dies
-  ld    a,(ix+enemies_and_objects.nrspritesSimple)
-  cp    8
-  jr    c,.ExplosionSmall  
-
-  .ExplosionBig:
-  ld    hl,ExplosionBig
-  ld    (ix+enemies_and_objects.movementpattern),l
-  ld    (ix+enemies_and_objects.movementpattern+1),h
-  
-  ;x position of explosion is x - 16 + (nx/2)
-  ld    a,(ix+enemies_and_objects.nx)
-	srl		a                                   ;/2
-  ld    d,0
-  ld    e,a
-  ld    l,(ix+enemies_and_objects.x)  
-  ld    h,(ix+enemies_and_objects.x+1)      ;x
-  add   hl,de
-  ld    de,-16
-  add   hl,de
-  ld    (ix+enemies_and_objects.x),l  
-  ld    (ix+enemies_and_objects.x+1),h      ;x
-  
-  ;y position of explosion is y + ny - 16           
-  ld    a,(ix+enemies_and_objects.y)
-  add   a,(ix+enemies_and_objects.ny)
-  sub   a,32
-;  ld    (ix+enemies_and_objects.y),a
-
-  ;backup y and move sprite out of screen
-;  ld    a,(ix+enemies_and_objects.y)        ;y  
-  ld    (ix+enemies_and_objects.v2),a       ;y backup
-  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.y),217      ;y
-
-  ;we remove all sprite y's from spat. This way any remaining sprites from the object before the explosion will get removed properly
-  ld    l,(ix+enemies_and_objects.spataddress)
-  ld    h,(ix+enemies_and_objects.spataddress+1)
-  ld    b,(ix+enemies_and_objects.nrspritesSimple)
-  .loop:
-  ld    (hl),217
-  inc   hl
-  inc   hl
-  djnz  .loop
-  
-  ld    (ix+enemies_and_objects.nrsprites),72-(08*6)
-  ld    (ix+enemies_and_objects.nrspritesSimple),8
-  ld    (ix+enemies_and_objects.nrspritesTimes16),8*16  
-  ret
-  
-  .ExplosionSmall:
-  ld    hl,ExplosionSmall
-  ld    (ix+enemies_and_objects.movementpattern),l
-  ld    (ix+enemies_and_objects.movementpattern+1),h
-  
-  ;x position of explosion is x - 8 + (nx/2)
-  ld    a,(ix+enemies_and_objects.nx)
-	srl		a                                   ;/2
-  ld    d,0
-  ld    e,a
-  ld    l,(ix+enemies_and_objects.x)  
-  ld    h,(ix+enemies_and_objects.x+1)      ;x
-  add   hl,de
-  ld    de,-8
-  add   hl,de
-  ld    (ix+enemies_and_objects.x),l  
-  ld    (ix+enemies_and_objects.x+1),h      ;x
-  
-  ;y position of explosion is y + ny - 16
-  ld    a,(ix+enemies_and_objects.y)
-  add   a,(ix+enemies_and_objects.ny)
-  sub   a,16
-;  ld    (ix+enemies_and_objects.y),a
-
-  ;backup y and move sprite out of screen
-;  ld    a,(ix+enemies_and_objects.y)        ;y  
-  ld    (ix+enemies_and_objects.v2),a       ;y backup
-  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.y),218      ;y
-  ret
-  
-;/Generic Enemy Routines ##############################################################################
-ExplosionBig:
-;v1=Animation Counter
-;v2=y backup
-  ld    a,(ix+enemies_and_objects.v2)       ;y backup
-  ld    (ix+enemies_and_objects.y),a        ;y    
-    
-  call  .Animate                            ;out hl -> sprite character data to out to Vram
-  
-	ld		a,RedExplosionSpriteblock           ;set block at $a000, page 2 - block containing sprite data
-  exx                                       ;store hl. hl now points to color data
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-  ret
-
-  .Animate: 
-  ld    hl,ExplosionBigAnimation
-  ld    b,7                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 06                            ;05 animation frame addresses
-  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
-
-  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
-  cp    2 * 05                              ;05 animation frame addresses
-  ret   nz
-;  jp    RemoveSprite
-
-  push  hl
-  ld    l,(ix+enemies_and_objects.x)        ;v1=Animation Counter
-  ld    h,(ix+enemies_and_objects.x+1)      ;v1=Animation Counter
-  ld    de,10
-  add   hl,de
-  ld    (ix+enemies_and_objects.x),l        ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.x+1),h      ;v1=Animation Counter
-  pop   hl
-  
-  jp    PutCoin
-
-ExplosionBigAnimation:
-  dw  RedExplosionBig1_Char 
-  dw  RedExplosionBig2_Char 
-  dw  RedExplosionBig3_Char 
-  dw  RedExplosionBig4_Char
-  dw  RedExplosionBig5_Char
-  dw  RedExplosionBig5_Char
-
-ExplosionSmall:
-;v1=Animation Counter
-;v2=y backup
-  ld    a,(ix+enemies_and_objects.v2)       ;y backup
-  ld    (ix+enemies_and_objects.y),a        ;y    
-
-  call  .Animate                            ;out hl -> sprite character data to out to Vram
-  
-	ld		a,RedExplosionSpriteblock           ;set block at $a000, page 2 - block containing sprite data
-  exx                                       ;store hl. hl now points to color data
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-
-  ld    (ix+enemies_and_objects.nrsprites),72-(02*6)
-  ld    (ix+enemies_and_objects.nrspritesSimple),2
-  ld    (ix+enemies_and_objects.nrspritesTimes16),2*16
-  ret
-
-  .Animate: 
-  ld    hl,ExplosionSmallAnimation
-  ld    b,7                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 05                            ;05 animation frame addresses
-  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
-
-  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
-  cp    2 * 04                              ;04 animation frame addresses
-  ret   nz
-;  jp    RemoveSprite
-
-PutCoin:
-  ld    de,Coin
-  ld    (ix+enemies_and_objects.movementpattern),e
-  ld    (ix+enemies_and_objects.movementpattern+1),d
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Coin Phase (0=falling, 1=lying still, 2=flying towards player)
-  ld    (ix+enemies_and_objects.v3),3       ;v3=Vertical Movement
-  ld    (ix+enemies_and_objects.v4),0       ;v4=Horizontal Movement
-  ld    (ix+enemies_and_objects.nx),16      ;width coin
-  ld    (ix+enemies_and_objects.ny),16      ;height coin
-
-  ;backup y and move sprite out of screen
-  ld    a,(ix+enemies_and_objects.y)        ;y  
-  ld    (ix+enemies_and_objects.v7),a       ;y backup
-  ld    (ix+enemies_and_objects.y),217      ;y
-  ret
-
-ExplosionSmallAnimation:
-  dw  RedExplosionSmall1_Char 
-  dw  RedExplosionSmall2_Char 
-  dw  RedExplosionSmall3_Char 
-  dw  RedExplosionSmall4_Char
-  dw  RedExplosionSmall4_Char
-
-Coin:
-;v1=Animation Counter
-;v2=Phase (0=falling, 1=lying still, 2=flying towards player)
-;v3=Vertical Movement
-;v4=Horizontal Movement
-;v5=Wait timer until able to fly towards player
-;v6=Wait timer until disappear
-  call  .HandlePhase                        ;(0=falling, 1=lying still, 2=flying towards player) 
-
-  ld    (ix+enemies_and_objects.nrsprites),72-(02*6)
-  ld    (ix+enemies_and_objects.nrspritesSimple),2
-  ld    (ix+enemies_and_objects.nrspritesTimes16),2*16
-
-  ld    a,(ix+enemies_and_objects.v7)       ;y backup
-  or    a
-  jr    z,.YRestored
-  ld    (ix+enemies_and_objects.y),a        ;y  
-  ld    (ix+enemies_and_objects.v7),0       ;y backup
-  .YRestored:
-
-	ld		a,RedExplosionSpriteblock           ;set block at $a000, page 2 - block containing sprite data
-  exx                                       ;store hl. hl now points to color data
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-  ret
-
-  .Animate: 
-  ld    hl,CoinAnimation
-  ld    b,3                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 06                            ;06 animation frame addresses
-  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
-  
-  .HandlePhase:
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player) 
-  or    a
-  jp    z,CoinFalling
-  dec   a
-  jp    z,CoinLyingStill
-  dec   a
-  jp    z,CoinFlyingTowardsPlayer
-;  dec   a
-;  jp    z,CoinAfterglow
-  
-  CoinAfterglow:
-  ld    hl,CoinAfterglowAnimation
-  ld    b,3                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 21                            ;06 animation frame addresses
-  call  AnimateSprite                       ;out hl -> sprite character data to out to Vram
-
-  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
-  cp    2 * 20
-  ret   nz
-  jp    RemoveSprite
-  
-  CoinFlyingTowardsPlayer:
-  call  CheckPickUpCoin                     ;check for collision between player and coin and removes coin from play when picked up  
-  call  CoinMoveTowardsPlayer
-  ret
-
-  CoinLyingStill:
-  call  CheckPickUpCoin                     ;check for collision between player and coin and removes coin from play when picked up
-  ld    a,(ix+enemies_and_objects.v5)       ;v5=Wait timer until able to fly towards player
-  dec   a
-  jr    z,.CheckCoinNearPlayer
-  ld    (ix+enemies_and_objects.v5),a       ;v5=Wait timer until able to fly towards player
-  call  Coin.Animate                        ;out hl -> sprite character data to out to Vram
-  ret
-
-  .CheckCoinNearPlayer:                     ;Check if coin is near player, if so fly towards player
-  ld    b,08+40                             ;b-> x distance
-  ld    c,16+00                             ;c-> y distance
-  call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
-  jr    nc,.EndCheckNearCoin
-  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player)
-  
-  .EndCheckNearCoin:
-  call  Coin.Animate                        ;out hl -> sprite character data to out to Vram
-  ld    a,(ix+enemies_and_objects.v6)       ;v6=Wait timer until disappear
-  dec   a
-  ld    (ix+enemies_and_objects.v6),a       ;v6=Wait timer until disappear
-  jp    z,RemoveSprite
-  cp    70
-  ret   nc
-  ld    a,(framecounter)
-  and   3
-  ret   nz
-  ld    hl,CoinEmpty_Char
-  ret
-
-  CoinFalling:
-  call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
-  call  .CheckFloor                         ;checks for collision Floor and if found fall
-  call  CheckPickUpCoin                     ;check for collision between player and coin and removes coin from play when picked up
-  call  Coin.Animate                        ;out hl -> sprite character data to out to Vram
-  ret
-
-  .CheckFloor:                              ;checks for floor. 
-  call  CheckFloorUnderBothFeetEnemy        ;checks for floor, out z=collision found with floor - This is used for the Zombie, but works very well for the coin as well
-  ret   nz
-
-  ;snap to platform
-  ld    a,(ix+enemies_and_objects.y)        ;y
-  and   %1111 1000
-  add   a,2
-  ld    (ix+enemies_and_objects.y),a        ;y
-  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player)
-  ld    (ix+enemies_and_objects.v5),90      ;v5=Wait timer until able to fly towards player
-  ld    (ix+enemies_and_objects.v6),220     ;v6=Wait timer until disappear
-  ret
-
-  CoinMoveTowardsPlayer:
-  ;set y movement in b
-  ld    a,(ClesY)
-
-;  sub   a,8 - 7
-  dec   a
-  
-  ld    b,(ix+enemies_and_objects.y)        ;y
-  sub   a,b
-  ld    b,-1
-  jr    c,.EndCheckY
-  ld    b,+1    
-  .EndCheckY:
-  jp    p,.EndCheckYPositive
-  neg
-  .EndCheckYPositive:
-  cp    6
-  jr    nc,.EndCheckYSmallerThan6
-  ld    b,0
-  .EndCheckYSmallerThan6:
-  ;/set y movement in b
-
-  ;set x movement in e
-  ld    hl,(ClesX)
-  ld    de,8
-  add   hl,de
-
-  ld    e,(ix+enemies_and_objects.x)        ;y
-  ld    d,(ix+enemies_and_objects.x+1)      ;y
-  sbc   hl,de
-  ld    de,-1
-  jr    c,.EndCheckX
-  ld    de,+1    
-  .EndCheckX:
-
-  ld    a,l
-  jp    p,.EndCheckXPositive
-  neg
-  .EndCheckXPositive:
-  cp    6
-  jr    nc,.EndCheckXSmallerThan6
-  ld    de,0
-  .EndCheckXSmallerThan6:
-  ;/set x movement in e
-  
-  
-  ld    a,(ix+enemies_and_objects.y)        ;y
-  add   a,b
-  add   a,b
-  ld    (ix+enemies_and_objects.y),a        ;y 
-
-  ld    l,(ix+enemies_and_objects.x)        ;x
-  ld    h,(ix+enemies_and_objects.x+1)      ;x
-  add   hl,de
-  add   hl,de
-  ld    (ix+enemies_and_objects.x),l        ;x
-  ld    (ix+enemies_and_objects.x+1),h      ;x
-
-;       de=-1   de=0  de=+1
-;b=-1   LU      U     RU
-;b=-0   L             R
-;b=+1   LD      D     RD
-
-  ld    a,b
-  inc   a                                   ;b=0, 1 or 2
-  add   a,a                                 ;*2
-  ld    c,a
-  add   a,a                                 ;*4
-  add   a,c                                 ;*6
-  ld    b,0
-  ld    c,a
-
-  ld    hl,CoinTable
-  inc   de                                  ;de=0, 1 or 2
-  add   hl,de
-  add   hl,de
-  add   hl,bc
-  ld    e,(hl)
-  inc   hl
-  ld    d,(hl)
-  ex    de,hl
-  ret
-  
-  CoinTable:
-  dw    CoinLU_Char,CoinU_Char,CoinRU_Char
-  dw    CoinL_Char,CoinL_Char,CoinR_Char
-  dw    CoinLD_Char,CoinD_Char,CoinRD_Char
-  
-  CheckPickUpCoin:
-  ld    b,08                                ;b-> x distance
-  ld    c,16                                ;c-> y distance
-  call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
-  ret   nc 
-;  jp    RemoveSprite
-
-  ld    (ix+enemies_and_objects.v1),00      ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player, 3=coin afterglow)
-  ret
-
-;check if player collides with left side of enemy/object
-;  ld    bc,16                               ;reduction to hitbox sx (left side)
-
-;  .ObjectEntry:
-;  ld    hl,(Clesx)                          ;hl = x player
-;  add   hl,bc
-
-;  ld    e,(ix+enemies_and_objects.x)  
-;  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-
-;  or    a                                   ;reset flag
-;  sbc   hl,de
-;  ret   c
-
-;check if player collides with right side of enemy/object
-;  ld    c,(ix+enemies_and_objects.nx)       ;width object
-;  sbc   hl,bc  
-;  ret   nc
-
-;check if player collides with top side of enemy/object
-;  ld    a,(Clesy)                           ;a = y player
-;  add   a,07; + 8                            ;increase this value to reduce the hitbox size (on the yop side)
-;  sub   (ix+enemies_and_objects.y)
-;  ret   c
-
-;check if player collides with bottom side of enemy/object
-;  ld    c,(ix+enemies_and_objects.ny)       ;width object
-;  sub   a,c
-;  ret   nc
-
-;  jp    RemoveSprite
-
-CoinAnimation:
-  dw  Coin1_Char
-  dw  Coin2_Char
-  dw  Coin3_Char
-  dw  Coin4_Char
-  dw  Coin5_Char
-  dw  Coin6_Char
-
-CoinAfterglowAnimation:
-  dw  CoinAfterglow1_Char
-  dw  CoinAfterglow2_Char
-  dw  CoinAfterglow3_Char
-  dw  CoinAfterglow4_Char
-  dw  CoinAfterglow5_Char
-  dw  CoinAfterglow6_Char
-  dw  CoinAfterglow7_Char
-  dw  CoinAfterglow8_Char
-  dw  CoinAfterglow9_Char
-  dw  CoinAfterglow10_Char
-  dw  CoinAfterglow11_Char
-  dw  CoinAfterglow12_Char
-  dw  CoinAfterglow13_Char
-  dw  CoinAfterglow14_Char
-  dw  CoinAfterglow15_Char
-  dw  CoinAfterglow16_Char
-  dw  CoinAfterglow17_Char
-  dw  CoinAfterglow18_Char
-  dw  CoinAfterglow19_Char
-  dw  CoinAfterglow20_Char
-  dw  CoinAfterglow20_Char
 
 ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer
@@ -1930,6 +922,7 @@ BossVoodooWasp:
   call  BossCheckIfDead                     ;Check if boss is dead, and if so set dying phase
 
   call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+
   ld    de,BossVoodooWaspIdle00
   jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
@@ -2549,8 +1542,8 @@ Altar1:
   ld    a,(ix+enemies_and_objects.v7)
   call  SetFrameAltar
 
-  call  PutSF2Object ;CHANGES IX 
-  ret
+  jp    PutSF2Object ;CHANGES IX 
+;  ret
 
   .HandlePhase:  
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=diamand idle, 1=freeze player flash screen, 2=diamond fading away, 3=close door, 4=stop restoring background)
@@ -8359,130 +7352,75 @@ GrinderRightWalkAnimation:
   dw  RightGrinderWalk4_Char
   dw  RightGrinderWalk5_Char
 
-GreenSpider:
-;v1=Animation Counter
-;v2=Phase (0=walking slow, 1=fast)
-;v3=Vertical Movement
-;v4=Horizontal Movement
-;v5=Grey Spider Slow Down Timer
-;v6=Green Spider(0) / Grey Spider(1)
-  call  .HandlePhase                        ;(0=walking slow, 1=fast) ;out hl -> sprite character data to out to Vram
-  exx                                       ;store hl. hl -> sprite character data to out to Vram
-  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
-  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-  ld    a,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
-  or    a
-	ld		a,GreenSpiderSpriteblock            ;set block at $a000, page 2 - block containing sprite data
-	jr    z,.BlockSet
-	ld		a,GreySpiderSpriteblock             ;set block at $a000, page 2 - block containing sprite data
-  .BlockSet:
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-  ret
-
-  .HandlePhase:                             ;out hl -> sprite character data to out to Vram
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking slow, 1=fast)
-  or    a
-  jp    z,GreenSpiderWalkSlow
-;  dec   a
-;  jp    z,GreenSpiderWalkFast
-
-  GreenSpiderWalkFast:
-  call  MoveSpriteHorizontally
-  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
-  call  GreenSpiderWalkSlow.CheckFloor      ;checks for floor. if not found invert direction
-  call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
+RetardZombieSittingAnimation:
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting2_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting2_Char 
+  dw  RetardZombieSitting1_Char 
+  dw  RetardZombieSitting2_Char 
+  dw  RetardZombieSitting2_Char 
+  dw  RetardZombieSitting2_Char 
   
-  .Animate:
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  ld    hl,GreenSpiderRightWalkAnimation
-  jp    z,.GoAnimate
-  ld    hl,GreenSpiderLeftWalkAnimation
-  .GoAnimate:
-  ld    b,3                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 04                            ;07 animation frame addresses
-  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+RetardZombieRightFallingAnimation:
+  dw  RightRetardZombieFalling1_Char 
+  dw  RightRetardZombieFalling2_Char 
 
-  .DistanceToPlayerCheck:
-  bit   0,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
-  jr    z,.GreenSpider
-  dec   (ix+enemies_and_objects.v5)         ;v5=Grey Spider Slow Down Timer
-  jr    z,.WalkSlow
-  ret
-  .GreenSpider:
-
-  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
-  jp    nc,.WalkSlow
+RetardZombieLeftFallingAnimation:
+  dw  LeftRetardZombieFalling1_Char 
+  dw  LeftRetardZombieFalling2_Char 
   
-  ld    b,99                                ;b-> x distance
-  ld    c,40                                ;c-> y distance
-  call  distancecheck                       ;in: b,c->x,y distance between player and object,  out: carry->object within distance
-  ret   c
-  .WalkSlow:
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking slow, 1=fast)
-  ret
+RightRetardZombieWalkingAnimation:
+  dw  RightRetardZombieWalk1_Char 
+  dw  RightRetardZombieWalk2_Char 
+  dw  RightRetardZombieWalk3_Char 
+  dw  RightRetardZombieWalk4_Char 
+  dw  RightRetardZombieWalk5_Char 
+  dw  RightRetardZombieWalk6_Char 
+  dw  RightRetardZombieWalk7_Char 
 
-  GreenSpiderWalkSlow:
-  ld    a,(framecounter)
-  rrca
-  call  c,MoveSpriteHorizontally
-  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
-  call  .CheckFloor                         ;checks for floor. if not found invert direction
-  call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
+LeftRetardZombieWalkingAnimation:
+  dw  LeftRetardZombieWalk1_Char 
+  dw  LeftRetardZombieWalk2_Char 
+  dw  LeftRetardZombieWalk3_Char 
+  dw  LeftRetardZombieWalk4_Char 
+  dw  LeftRetardZombieWalk5_Char 
+  dw  LeftRetardZombieWalk6_Char 
+  dw  LeftRetardZombieWalk7_Char 
+
+RetardZombieRisingFromGraveAnimation:
+  dw  RetardZombieRising1_Char  
+  dw  RetardZombieRising2_Char  
+  dw  RetardZombieRising3_Char  
+  dw  RetardZombieRising4_Char  
+  dw  RetardZombieRising5_Char  
+  dw  RetardZombieRising6_Char  
+  dw  RetardZombieRising7_Char  
+  dw  RetardZombieRising8_Char  
+  dw  RetardZombieRising9_Char  
+  dw  RetardZombieRising10_Char  
+  dw  RetardZombieRising11_Char  
+  dw  RetardZombieRising12_Char  
+  dw  RetardZombieRising13_Char  
+  dw  RetardZombieRising14_Char  
+  dw  RetardZombieRising15_Char  
+  dw  RetardZombieRising16_Char  
+  dw  RetardZombieRising17_Char  
+  dw  RetardZombieRising18_Char  
+  dw  RetardZombieRising19_Char  
+  dw  RetardZombieRising20_Char  
+  dw  RetardZombieRising21_Char  
+  dw  RetardZombieRising22_Char   
+  dw  RetardZombieRising23_Char  
+  dw  RetardZombieRising24_Char  
+  dw  RetardZombieRising25_Char
+  dw  RetardZombieRising25_Char
   
-  .Animate:
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  ld    hl,GreenSpiderOrangeEyesRightWalkAnimation
-  jp    z,.GoAnimate
-  ld    hl,GreenSpiderOrangeEyesLeftWalkAnimation
-  .GoAnimate:
-  ld    b,7                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 04                            ;04 animation frame addresses
-  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
-
-  .DistanceToPlayerCheck:
-  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
-  ret   nc
-  ld    b,99                                ;b-> x distance
-  ld    c,40                                ;c-> y distance
-  call  distancecheck                       ;in: b,c->x,y distance between player and object,  out: carry->object within distance
-  ret   nc
-  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=walking slow, 1=fast)
-  ret
-
-  .CheckFloor:                              ;checks for floor. if not found invert direction
-  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
-  inc   a                                   ;check for background tile (0=background, 1=hard foreground, 2=ladder, 3=lava.)
-  ret   nz                                  ;return if background tile is NOT found
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  neg
-  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
-  ret
-
-GreenSpiderOrangeEyesLeftWalkAnimation:
-  dw  LeftGreenSpiderOrangeEyesWalk1_Char 
-  dw  LeftGreenSpiderOrangeEyesWalk2_Char 
-  dw  LeftGreenSpiderOrangeEyesWalk3_Char 
-  dw  LeftGreenSpiderOrangeEyesWalk4_Char
-  
-GreenSpiderOrangeEyesRightWalkAnimation:
-  dw  RightGreenSpiderOrangeEyesWalk1_Char 
-  dw  RightGreenSpiderOrangeEyesWalk2_Char 
-  dw  RightGreenSpiderOrangeEyesWalk3_Char 
-  dw  RightGreenSpiderOrangeEyesWalk4_Char
-  
-GreenSpiderLeftWalkAnimation:
-  dw  LeftGreenSpiderWalk1_Char 
-  dw  LeftGreenSpiderWalk2_Char 
-  dw  LeftGreenSpiderWalk3_Char 
-  dw  LeftGreenSpiderWalk4_Char
-
-GreenSpiderRightWalkAnimation:
-  dw  RightGreenSpiderWalk1_Char 
-  dw  RightGreenSpiderWalk2_Char 
-  dw  RightGreenSpiderWalk3_Char 
-  dw  RightGreenSpiderWalk4_Char
-
 RetardedZombie:
 ;v1=Animation Counter
 ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
@@ -8640,74 +7578,129 @@ RetardedZombie:
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ret
 
-RetardZombieSittingAnimation:
-  dw  RetardZombieSitting1_Char 
-  dw  RetardZombieSitting1_Char 
-  dw  RetardZombieSitting1_Char 
-  dw  RetardZombieSitting1_Char 
-  dw  RetardZombieSitting1_Char 
-  dw  RetardZombieSitting1_Char 
-  dw  RetardZombieSitting2_Char 
-  dw  RetardZombieSitting1_Char 
-  dw  RetardZombieSitting2_Char 
-  dw  RetardZombieSitting1_Char 
-  dw  RetardZombieSitting2_Char 
-  dw  RetardZombieSitting2_Char 
-  dw  RetardZombieSitting2_Char 
+GreenSpider:
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=fast)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Grey Spider Slow Down Timer
+;v6=Green Spider(0) / Grey Spider(1)
+  call  .HandlePhase                        ;(0=walking slow, 1=fast) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl -> sprite character data to out to Vram
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+  ld    a,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
+  or    a
+	ld		a,GreenSpiderSpriteblock            ;set block at $a000, page 2 - block containing sprite data
+	jr    z,.BlockSet
+	ld		a,GreySpiderSpriteblock             ;set block at $a000, page 2 - block containing sprite data
+  .BlockSet:
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+
+  .HandlePhase:                             ;out hl -> sprite character data to out to Vram
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking slow, 1=fast)
+  or    a
+  jp    z,GreenSpiderWalkSlow
+;  dec   a
+;  jp    z,GreenSpiderWalkFast
+
+  GreenSpiderWalkFast:
+  call  MoveSpriteHorizontally
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  GreenSpiderWalkSlow.CheckFloor      ;checks for floor. if not found invert direction
+  call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
   
-RetardZombieRightFallingAnimation:
-  dw  RightRetardZombieFalling1_Char 
-  dw  RightRetardZombieFalling2_Char 
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,GreenSpiderRightWalkAnimation
+  jp    z,.GoAnimate
+  ld    hl,GreenSpiderLeftWalkAnimation
+  .GoAnimate:
+  ld    b,3                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;07 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
-RetardZombieLeftFallingAnimation:
-  dw  LeftRetardZombieFalling1_Char 
-  dw  LeftRetardZombieFalling2_Char 
+  .DistanceToPlayerCheck:
+  bit   0,(ix+enemies_and_objects.v6)       ;v6=Green Spider(0) / Grey Spider(1)
+  jr    z,.GreenSpider
+  dec   (ix+enemies_and_objects.v5)         ;v5=Grey Spider Slow Down Timer
+  jr    z,.WalkSlow
+  ret
+  .GreenSpider:
+
+  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
+  jp    nc,.WalkSlow
   
-RightRetardZombieWalkingAnimation:
-  dw  RightRetardZombieWalk1_Char 
-  dw  RightRetardZombieWalk2_Char 
-  dw  RightRetardZombieWalk3_Char 
-  dw  RightRetardZombieWalk4_Char 
-  dw  RightRetardZombieWalk5_Char 
-  dw  RightRetardZombieWalk6_Char 
-  dw  RightRetardZombieWalk7_Char 
+  ld    b,99                                ;b-> x distance
+  ld    c,40                                ;c-> y distance
+  call  distancecheck                       ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   c
+  .WalkSlow:
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking slow, 1=fast)
+  ret
 
-LeftRetardZombieWalkingAnimation:
-  dw  LeftRetardZombieWalk1_Char 
-  dw  LeftRetardZombieWalk2_Char 
-  dw  LeftRetardZombieWalk3_Char 
-  dw  LeftRetardZombieWalk4_Char 
-  dw  LeftRetardZombieWalk5_Char 
-  dw  LeftRetardZombieWalk6_Char 
-  dw  LeftRetardZombieWalk7_Char 
+  GreenSpiderWalkSlow:
+  ld    a,(framecounter)
+  rrca
+  call  c,MoveSpriteHorizontally
+  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+  call  .CheckFloor                         ;checks for floor. if not found invert direction
+  call  .DistanceToPlayerCheck              ;check if player is near, if so, move fasters and eyes become red
+  
+  .Animate:
+  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  ld    hl,GreenSpiderOrangeEyesRightWalkAnimation
+  jp    z,.GoAnimate
+  ld    hl,GreenSpiderOrangeEyesLeftWalkAnimation
+  .GoAnimate:
+  ld    b,7                                 ;animate every x frames (based on framecounter)
+  ld    c,2 * 04                            ;04 animation frame addresses
+  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
-RetardZombieRisingFromGraveAnimation:
-  dw  RetardZombieRising1_Char  
-  dw  RetardZombieRising2_Char  
-  dw  RetardZombieRising3_Char  
-  dw  RetardZombieRising4_Char  
-  dw  RetardZombieRising5_Char  
-  dw  RetardZombieRising6_Char  
-  dw  RetardZombieRising7_Char  
-  dw  RetardZombieRising8_Char  
-  dw  RetardZombieRising9_Char  
-  dw  RetardZombieRising10_Char  
-  dw  RetardZombieRising11_Char  
-  dw  RetardZombieRising12_Char  
-  dw  RetardZombieRising13_Char  
-  dw  RetardZombieRising14_Char  
-  dw  RetardZombieRising15_Char  
-  dw  RetardZombieRising16_Char  
-  dw  RetardZombieRising17_Char  
-  dw  RetardZombieRising18_Char  
-  dw  RetardZombieRising19_Char  
-  dw  RetardZombieRising20_Char  
-  dw  RetardZombieRising21_Char  
-  dw  RetardZombieRising22_Char   
-  dw  RetardZombieRising23_Char  
-  dw  RetardZombieRising24_Char  
-  dw  RetardZombieRising25_Char
-  dw  RetardZombieRising25_Char
+  .DistanceToPlayerCheck:
+  call  checkFacingPlayer                   ;out: c = object/enemy is facing player
+  ret   nc
+  ld    b,99                                ;b-> x distance
+  ld    c,40                                ;c-> y distance
+  call  distancecheck                       ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   nc
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=walking slow, 1=fast)
+  ret
+
+  .CheckFloor:                              ;checks for floor. if not found invert direction
+  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  inc   a                                   ;check for background tile (0=background, 1=hard foreground, 2=ladder, 3=lava.)
+  ret   nz                                  ;return if background tile is NOT found
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  neg
+  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
+  ret
+
+GreenSpiderOrangeEyesLeftWalkAnimation:
+  dw  LeftGreenSpiderOrangeEyesWalk1_Char 
+  dw  LeftGreenSpiderOrangeEyesWalk2_Char 
+  dw  LeftGreenSpiderOrangeEyesWalk3_Char 
+  dw  LeftGreenSpiderOrangeEyesWalk4_Char
+  
+GreenSpiderOrangeEyesRightWalkAnimation:
+  dw  RightGreenSpiderOrangeEyesWalk1_Char 
+  dw  RightGreenSpiderOrangeEyesWalk2_Char 
+  dw  RightGreenSpiderOrangeEyesWalk3_Char 
+  dw  RightGreenSpiderOrangeEyesWalk4_Char
+  
+GreenSpiderLeftWalkAnimation:
+  dw  LeftGreenSpiderWalk1_Char 
+  dw  LeftGreenSpiderWalk2_Char 
+  dw  LeftGreenSpiderWalk3_Char 
+  dw  LeftGreenSpiderWalk4_Char
+
+GreenSpiderRightWalkAnimation:
+  dw  RightGreenSpiderWalk1_Char 
+  dw  RightGreenSpiderWalk2_Char 
+  dw  RightGreenSpiderWalk3_Char 
+  dw  RightGreenSpiderWalk4_Char
     
 Sf2Hugeobject1:                             ;movement pattern 3
   ld    a,(HugeObjectFrame)
@@ -8719,7 +7712,7 @@ Sf2Hugeobject1:                             ;movement pattern 3
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
 ;  call  BackdropOrange  
   call  restoreBackgroundObject1
-  call  ObjectAnimation
+;  call  ObjectAnimation
   call  PutSF2Object ;CHANGES IX   
 ;  call  BackdropBlack
   ret
@@ -9194,557 +8187,6 @@ PlayerOrStoneOnSwitch:
   cp    3
   ret   z
   ld    (ShowOverView?),a
-  ret
-
-InitiatlizeSwitch:
-;When player enters screen switch is in on or off position. Copy the correct position at the coordinates of the switch
-  ld    (ix+enemies_and_objects.v1),0       ;initialize?
-
-  ld    a,(ix+enemies_and_objects.v2)       ;switch number? (1-4)
-  add   a,a                                 ;*2
-  add   a,a                                 ;*4
-  add   a,a                                 ;*8
-  add   a,a                                 ;*16
-  ld    (CopySwitch2+sx),a
-
-;check if switch was on or off / PuzzleSwitch1On?
-  ld    l,(ix+enemies_and_objects.coordinates)
-  ld    h,(ix+enemies_and_objects.coordinates+1)
-
-  ld    a,(ShowOverView?)
-  inc   a
-  cp    3
-  jr    z,.skip
-  ld    (ShowOverView?),a
-  .skip:
-
-  ld    a,(hl)
-  ld    (ix+enemies_and_objects.v3),a       ;switch on?
- 
-;  ld    a,(ix+enemies_and_objects.v3)       ;switch on?
-  or    a
-  jr    z,.EndCheckSwitchOn
-  ld    a,(CopySwitch2+sx)
-  add   a,64
-  ld    (CopySwitch2+sx),a
-  .EndCheckSwitchOn:
-
-  ld    a,(ix+enemies_and_objects.x)        ;x coordinate switch
-  ld    (CopySwitch2+dx),a
-  ld    a,(ix+enemies_and_objects.y)        ;y coordinate switch
-  ld    (CopySwitch2+dy),a
-  xor   a
-  ld    (CopySwitch2+dPage),a
-
-  ld    hl,CopySwitch2
-  call  DoCopy
-
-  ld    a,1
-  ld    (CopySwitch2+dPage),a
-  ld    a,(CopySwitch2+dx)
-  sub   a,16
-  ld    (CopySwitch2+dx),a
-
-  ld    hl,CopySwitch2
-  call  DoCopy
-
-  ld    a,2
-  ld    (CopySwitch2+dPage),a
-  ld    a,(CopySwitch2+dx)
-  sub   a,16
-  ld    (CopySwitch2+dx),a
-
-  ld    hl,CopySwitch2
-  call  DoCopy
-
-  ld    a,3
-  ld    (CopySwitch2+dPage),a
-  ld    a,(CopySwitch2+dx)
-  sub   a,16
-  ld    (CopySwitch2+dx),a
-
-  ld    hl,CopySwitch2
-  call  DoCopy
-  ret      
-
-CheckFloorOrStonePushingStone:
-  ;check left side
-  ld    b,+32                               ;add y to check (y is expressed in pixels)
-;  ld    de,+17                              ;add x to check (x is expressed in pixels)
-  ld    de,+16                              ;add x to check (x is expressed in pixels)
-  call  checktileObject                     ;out z=collision found with wall
-  ret   z
-  ;check right side
-  ld    b,+32                               ;add y to check (y is expressed in pixels)
-;  ld    de,+00                              ;add x to check (x is expressed in pixels)
-  ld    de,+01                              ;add x to check (x is expressed in pixels)
-  call  checktileObject                     ;out z=collision found with wall
-  ret   z
-
-  ;check y collision with object 1 (stone 1) top
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jp    z,.NoCollision1
-  sub   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    nc,.NoCollision1
-
-  ;check y collision with object 1 (stone 1) bottom
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    c,.NoCollision1
-
-  ;check x collision with object 1 (stone 1) check on the left side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.NoCollision1
-
-  ;check x collision with object 1 (stone 1) check on the right side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  .NoCollision1:
-   
-  ;check y collision with object 2 (stone 2) top
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jp    z,.NoCollision2
-  sub   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    nc,.NoCollision2
-
-  ;check y collision with object 2 (stone 2) bottom
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    c,.NoCollision2
-
-  ;check x collision with object 2 (stone 2) check on the left side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.NoCollision2
-
-  ;check x collision with object 2 (stone 2) check on the right side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  .NoCollision2:
-  
-  ;check y collision with object 3 (stone 3) top
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jp    z,.NoCollision3
-  sub   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    nc,.NoCollision3
-
-  ;check y collision with object 3 (stone 3) bottom
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    c,.NoCollision3
-
-  ;check x collision with object 3 (stone 3) check on the left side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.NoCollision3
-
-  ;check x collision with object 3 (stone 3) check on the right side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  .NoCollision3:
-  ld    (ix+enemies_and_objects.v2),1       ;falling stone
-  ld    a,(PlayerFacingRight?)              ;is player facing right ?
-  or    a
-  jp    z,Set_L_stand
-  jp    Set_R_stand
-  
-checktileObject:                            ;same as checktile for player, but now for object
-;get object X in tiles
-  ld    l,(ix+enemies_and_objects.x)        ;x object
-  ld    h,0
-  add   hl,de
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  jp    CheckTile.XandYset
-
-FallingStone:
-  ld    (ix+enemies_and_objects.v4),+0      ;horizontal movement
-  call  VramObjects                         ;put object in Vram/screen
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object. Uses v5/snapplayer?
-  call  AccelerateFall
-  call  MoveObject                          ;adds v3 to y, adds v4 to x. x+y are 8 bit
-  call  CheckFloorFallingStone              ;check collision with floor
-  call  CheckCollisionStone1                ;check collision with other stones while falling
-  call  CheckCollisionStone2                ;check collision with other stones while falling
-  call  CheckCollisionStone3                ;check collision with other stones while falling
-  ret
-
-CheckCollisionStone1:
-  ;check y collision with object 1 (stone 1) top
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  sub   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   nc
-  ;check y collision with object 1 (stone 1) bottom
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  ret   c
-
-  ;check x collision with object 1 (stone 1) check on the left side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  ;check x collision with object 1 (stone 1) check on the right side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   nc
-
-  ;other stone found, snap to stone
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;0=pushing stone, 1=falling stone
-  ret
-  
-CheckCollisionStone2:
-  ;check y collision with object 2 (stone 2) top
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  sub   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   nc
-  ;check y collision with object 2 (stone 2) bottom
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  ret   c
-  
-  ;check x collision with object 2 (stone 2) check on the left side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  ;check x collision with object 2 (stone 2) check on the right side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   nc
-
-  ;other stone found, snap to stone
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;0=pushing stone, 1=falling stone
-  ret
-    
-CheckCollisionStone3:
-  ;check y collision with object 3 (stone 3) top
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  sub   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   nc
-  ;check y collision with object 3 (stone 3) bottom
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  ret   c
-
-  ;check x collision with object 3 (stone 3) check on the left side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  ;check x collision with object 3 (stone 3) check on the right side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   nc
-
-  ;other stone found, snap to stone
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;0=pushing stone, 1=falling stone
-  ret
-
-CheckFloorFallingStone:                     ;if a floor is found, snap to tile, and change back to pushing stone
-  ld    b,+32                               ;add y to check (y is expressed in pixels)
-  ld    de,+08                              ;add x to check (x is expressed in pixels)
-  call  checktileObject                     ;out z=collision found with wall
-  ret   nz
-  
-  ;floor found, snap to floor
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;pushing stone
-  ld    (ix+enemies_and_objects.v3),1       ;vertical movement
-  ld    (ix+enemies_and_objects.v6),0       ;v6 acceleration timer
-  ret
-
-AccelerateFall:
-  ld    a,(ix+enemies_and_objects.v6)       ;v6 acceleration timer
-  inc   a
-  and   3
-  ld    (ix+enemies_and_objects.v6),a
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v3)       ;vertical movement
-  inc   a
-  cp    5
-  ret   z
-  ld    (ix+enemies_and_objects.v3),a
-  ret
- 
-MoveObject:                                 ;adds v3 to y, adds v4 to x. x+y are 8 bit
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  add   a,(ix+enemies_and_objects.v3)       ;add y movement to y
-  ld    (ix+enemies_and_objects.y),a        ;y object
-
-  ld    a,(ix+enemies_and_objects.x)        ;x object
-  add   a,(ix+enemies_and_objects.v4)       ;add x movement to x
-  ld    (ix+enemies_and_objects.x),a        ;x object
-  ret
-  
-SetCoordinatesPuzzlePushingStones:
-  ld    (ix+enemies_and_objects.v7),1       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
-
-  ld    l,(ix+enemies_and_objects.coordinates)
-  ld    h,(ix+enemies_and_objects.coordinates+1)
-  
-  ld    a,(hl)
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  inc   hl
-  ld    a,(hl)
-  ld    (ix+enemies_and_objects.x),a        ;x object
-  ret
-
-StoreCoordinatesPuzzlePushingStones:
-  ld    l,(ix+enemies_and_objects.coordinates)
-  ld    h,(ix+enemies_and_objects.coordinates+1)
-  
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  ld    (hl),a
-  inc   hl
-  ld    a,(ix+enemies_and_objects.x)        ;x object
-  ld    (hl),a
-  ret
-  
-PushingStone:
-  ld    a,(ix+enemies_and_objects.v7)       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
-  or    a
-  jp    z,SetCoordinatesPuzzlePushingStones
-  ld    a,(ix+enemies_and_objects.v7)       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
-  dec   a
-  call  z,StoreCoordinatesPuzzlePushingStones
-
-  ld    a,(ix+enemies_and_objects.v2)       ;falling stone?
-  or    a
-  jp    nz,FallingStone
-
-  call  CheckFloorOrStonePushingStone       ;Check if Stone is still on a platform or on top of another stone. If not, stone falls. Out z=collision found
-
-  call  VramObjects                         ;put object in Vram/screen
-  call  MoveStoneWhenPushed                 ;check if stoned needs to be moved
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object
-  inc   b
-  jp    z,.CollisionRightSide               ;if you collide with a pushing stone from the right side and you are running, then change to pushing pose; if you are pushing, then move stone
-  inc   b 
-  jp    z,.CollisionLeftSide                ;if you collide with a pushing stone from the left side and you are running, then change to pushing pose; if you are pushing, then move stone
-  ret
-
-  .CollisionRightSide:
-;if you collide with a pushing stone from the right side and you are running, then change to pushing pose
-	ld		de,(PlayerSpriteStand)
-	ld		hl,Lrunning
-  sbc   hl,de
-  jp    z,Set_L_Push
-;if you collide with a pushing stone from the right side and you are pushing, then move stone
-	ld		hl,Lpushing
-  xor   a
-  sbc   hl,de
-  ret   nz
-
-  ;unable to push stone if there is another stone lying on top of this one
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-
-  ld    (ix+enemies_and_objects.v4),-1      ;horizontal movement
-  ret
-
-  .CollisionLeftSide:
-;if you collide with a pushing stone from the left side and you are running, then change to pushing pose
-	ld		de,(PlayerSpriteStand)
-	ld		hl,Rrunning
-  sbc   hl,de
-  jp    z,Set_R_Push
-;if you collide with a pushing stone from the left side and you are pushing, then move stone
-	ld		hl,Rpushing
-  xor   a
-  sbc   hl,de
-  ret   nz
-
-  ;unable to push stone if there is another stone lying on top of this one
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-
-  ld    (ix+enemies_and_objects.v4),+1      ;horizontal movement    
-  ret
-
-;When Stone is not moving set x coordinate to odd. The reason we do that is that when copying the block x coordinate is even, and we then can use a fast copy instruction
-SetOddX:
-  set   0,(ix+enemies_and_objects.x)
-  ret
-
-MoveStoneWhenPushed:
-  ld    a,(framecounter)
-  and   1
-  ret   nz
-
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=horizontal movement. Return if 0
-  ld    (ix+enemies_and_objects.v4),+0    
-  or    a
-  jp    z,SetOddX
-;  ret   z
-  
-	ld		hl,Rpushing                         ;check if we are pushing Right
-	ld		de,(PlayerSpriteStand)
-  xor   a
-  sbc   hl,de
-  jp    z,.MovingRight
-
-	ld		hl,Lpushing                         ;check if we are pushing Left
-  xor   a
-  sbc   hl,de
-  ret   nz
-  
-  .MovingLeft:
-  call  CheckCollisionOtherStonesLeft       ;out: z= collision found
-  ret   z
-  
-  ;if Pushing Stone moves left, check if it hits wall on the left side
-  ld    b,YaddFeetPlayer-1                  ;add y to check (y is expressed in pixels)
-  ld    de,XaddRightPlayer-31               ;add to x to check right side of player for collision (player moved right)
-  call  checktile                           ;out z=collision found with wall
-  ret   z
-  dec   (ix+enemies_and_objects.x)          ;move pushing stone left
-  ret
-
-  .MovingRight:
-  call  CheckCollisionOtherStonesRight      ;out: z= collision found
-  ret   z
-    
-  ;if Pushing Stone moves right, check if it hits wall on the right side
-  ld    b,YaddFeetPlayer-1                  ;add y to check (y is expressed in pixels)
-  ld    de,XaddRightPlayer+16               ;add to x to check left side of player for collision (player moved left)
-  call  checktile                           ;out z=collision found with wall
-  ret   z
-  inc   (ix+enemies_and_objects.x)          ;move pushing stone right
-  ret
-
-CheckCollisionOtherStonesLeft:              ;out: z= collision found
-  ;check collision with object 1 (stone 1)
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone1
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone1:
-
-  ;check collision with object 2 (stone 2)
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone2
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone2:
-
-  ;check collision with object 3 (stone 3)
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   nz
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,18
-  cp    (ix+enemies_and_objects.x)
-  ret
-
-CheckCollisionOtherStonesRight:             ;out: z= collision found
-  ;check collision with object 1 (stone 1)
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone1
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,-18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone1:
-  
-  ;check collision with object 2 (stone 2)
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone2  
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,-18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone2:
-    
-  ;check collision with object 3 (stone 3)
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   nz  
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,-18
-  cp    (ix+enemies_and_objects.x)
   ret
 
 PlatformHorizontally:

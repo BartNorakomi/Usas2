@@ -50,7 +50,7 @@ LevelEngine:
   call  BackdropBlack
 
   call  PopulateControls
-  call  FadeOutScreenEdges        ;routine that fades out the screen the closer you are to the edges
+;  call  FadeOutScreenEdges        ;routine that fades out the screen the closer you are to the edges
 
   ld    a,(framecounter)
   inc   a
@@ -65,7 +65,7 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 6 ;$19 ;230 ;250 ;210
+ClesX:      dw 76 ;$19 ;230 ;250 ;210
 ClesY:      db 60 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
@@ -324,8 +324,13 @@ Handle_HardWareSprite_Enemies_And_objects:  ;handle movement, out character, col
 ;4. ld a,(CameraX) and %1111 0000 neg can be hardcoded
 	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
 	out		($a8),a	
-  ld    a,(movementpatternsblock)
-	call	block12 			                                ;at address $4000 / page 1
+
+  ;set the general movement pattern block at address $4000 in page 1
+  di
+  ld    a,MovementPatternsFixedPage1block
+	ld		(memblocks.1),a
+	ld		($6000),a
+  ei
 
   ld    de,enemies_and_objects+(0*lenghtenemytable)                           
   ld    a,(de) | inc a | call z,.docheck            
@@ -355,13 +360,21 @@ Handle_HardWareSprite_Enemies_And_objects:  ;handle movement, out character, col
   .docheck:    
   ld    ixl,e
   ld    ixh,d
+
+  ;set the movement pattern block of this enemy/object at address $8000 in page 2 
+  ld    a,(ix+enemies_and_objects.movementpatternsblock)
+  di
+	ld		(memblocks.2),a
+	ld		($7000),a
+	ei
+ 
   call  movement_enemies_and_objects            ;handle sprite movement and animation
-;out hl -> sprite character data to out to Vram
+;out hl -> address of sprite character data to out to Vram
 ;out a -> EnemySpritesblock
 ;out exx
 ;out de -> spritenumber*26 (used for character and color data addreess)
 
-  ;set block containing sprite data
+  ;set block containing sprite data of this enemy/object at address $8000 in page 2 
   di
 	ld		(memblocks.2),a                         ;set to block 2 at $8000- $c000
 	ld		($7000),a
@@ -547,8 +560,13 @@ handle_enemies_and_objects:                           ;handle software sprites
   
 	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
 	out		($a8),a	
-  ld    a,(movementpatternsblock)
-	call	block1234			                                ;at address $4000 / page 1+2
+
+  ;set the general movement pattern block at address $4000 in page 1
+  di
+  ld    a,MovementPatternsFixedPage1block
+	ld		(memblocks.1),a
+	ld		($6000),a
+  ei
 
   ld    de,enemies_and_objects+(0*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
@@ -603,6 +621,14 @@ handle_enemies_and_objects:                           ;handle software sprites
 ;  call  BackdropRed  
   ld    ixl,e
   ld    ixh,d
+
+  ;set the movement pattern block of this enemy/object at address $8000 in page 2 
+  ld    a,(ix+enemies_and_objects.movementpatternsblock)
+  di
+	ld		(memblocks.2),a
+	ld		($7000),a
+	ei
+  
   call  movement_enemies_and_objects                  ;sprite is in movement area, so let it move !! ^__^
 ;  call  BackdropBlack
   ret
@@ -1345,8 +1371,10 @@ Sf2EngineObjects:
 
 	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
 	out		($a8),a	
-  ld    a,(movementpatternsblock)
-	call	block1234			                                ;at address $4000 / page 1+2
+;  ld    a,movepatblo1 ; (movementpatternsblock)
+;	call	block1234			                                ;at address $4000 / page 1+2
+
+
   
   ld    de,enemies_and_objects+(0*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
   ld    a,(de) | cp 2 | call z,.docheck
@@ -1362,6 +1390,20 @@ Sf2EngineObjects:
   .docheck:
   ld    ixl,e
   ld    ixh,d    
+
+  ;set the general movement pattern block at address $4000 in page 1
+  di
+  ld    a,MovementPatternsFixedPage1block
+	ld		(memblocks.1),a
+	ld		($6000),a
+  ei
+
+  ;set the movement pattern block of this enemy/object at address $8000 in page 2 
+  ld    a,(ix+enemies_and_objects.movementpatternsblock)
+  di
+	ld		(memblocks.2),a
+	ld		($7000),a
+	ei
 
   ld    l,(ix+enemies_and_objects.movementpattern)    ;movementpattern
   ld    h,(ix+enemies_and_objects.movementpattern+1)  ;movementpattern
@@ -1480,20 +1522,32 @@ PutSF2Object:                 ;in b->framelistblock, c->spritedatablock
 	ld		a,(slot.page12rom)    ;all RAM except page 1+2
 	out		($a8),a	
 
-  ;set framelist in page 2 in rom ($8000 - $bfff)
-	ld    a,b
-  call	block34
+	ld		a,(memblocks.2)
+	push  af                    ;store movement pattern block of current object
 
   ;set framedata in page 1 in rom ($4000 - $7fff)
 	ld    a,c
   call	block12
+  ;set framelist in page 2 in rom ($8000 - $bfff)
+	ld    a,b
+  call	block34
   
   di
   call  GoPutSF2Object
   ei
 
-  ld    a,(movementpatternsblock)
-	jp    block1234			                                ;at address $4000 / page 1+2  
+;edit: general movement pattern block is not required anymore at this point
+  ;set the general movement pattern block at address $4000 in page 1
+  di
+;  ld    a,MovementPatternsFixedPage1block
+;	ld		(memblocks.1),a
+;	ld		($6000),a
+  ;set the movement pattern block of this enemy/object at address $8000 in page 2 
+	pop   af                    ;recall movement pattern block of current object
+	ld		(memblocks.2),a
+	ld		($7000),a
+	ei
+  ret
 
 PutSF2Object2:                ;in b->framelistblock, c->spritedatablock
   ld    a,(screenpage)
@@ -1650,8 +1704,10 @@ putplayer_noclip:
   add   a,(hl)                ;add offset x  for first line to destination x
   sub   a,moveplayerleftinscreen
   ld    e,a
-  call  SetOffsetBlocksAndAttackpoints
-  inc   hl                    ;lenght + increment first spriteline
+;  call  SetOffsetBlocksAndAttackpoints
+  ld    bc,10
+  add   hl,bc  
+;  inc   hl                    ;lenght + increment first spriteline
 
   ;if screenpage=0 then blit in page 1
   ;if screenpage=1 then blit in page 2
@@ -1734,15 +1790,18 @@ putplayer_clipright_totallyoutofscreenright:
   sub   a,moveplayerleftinscreen
   add   a,(hl)                ;add player x offset for first line
   ld    e,a
-  jp    SetOffsetBlocksAndAttackpoints
+;  jp    SetOffsetBlocksAndAttackpoints
+  ret
   
 putplayer_clipright:
   ld    a,(bc)                ;player x
   sub   a,moveplayerleftinscreen
   add   a,(hl)                ;add player x offset for first line
   ld    e,a
-  call  SetOffsetBlocksAndAttackpoints
-  inc   hl                    ;lenght + increment first spriteline
+;  call  SetOffsetBlocksAndAttackpoints
+  ld    bc,10
+  add   hl,bc  
+;  inc   hl                    ;lenght + increment first spriteline
 
   ;if screenpage=0 then blit in page 1
   ;if screenpage=1 then blit in page 2
@@ -1849,8 +1908,10 @@ putplayer_clipleft:
   jp    nc,.notcarry
   dec   d
   .notcarry:
-  call  SetOffsetBlocksAndAttackpoints
-  inc   hl                    ;lenght + increment first spriteline
+;  call  SetOffsetBlocksAndAttackpoints
+  ld    bc,10
+  add   hl,bc  
+;  inc   hl                    ;lenght + increment first spriteline
 
   ;if screenpage=0 then blit in page 1
   ;if screenpage=1 then blit in page 2
@@ -2002,286 +2063,289 @@ dec hl
 
   
 
-SetOffsetBlocksAndAttackpoints:
-  Setblock1:
-  ld    a,(bc)                ;player x
-  or    a
-  jp    p,PlayerLeftOfscreenSetBlocksAndattackpoints
+;SetOffsetBlocksAndAttackpoints:
 
-PlayerRightOfscreenSetBlocksAndattackpoints:
+
+;  Setblock1:
+;  ld    a,(bc)                ;player x
+;  or    a
+;  jp    p,PlayerLeftOfscreenSetBlocksAndattackpoints
+
+;.PlayerRightOfscreenSetBlocksAndattackpoints:
   ;block 1
-  sub   a,moveplayerleftinscreen
-  inc   hl                    ;offsetx Block1
-  add   a,(hl)
-  jp    nc,.notcarry1
-  ld    a,252                 ;if Sx Block1 is out of screen right, then set sx Block to 252
-  .notcarry1:
-  ld    (iy+0),a              ;Sx block 1
-  inc   hl                    ;Nx block 1
-  ld    a,(hl)
-  ld    (iy+2),a              ;Nx block 1
-  inc   hl                    ;Ny block 1
-  ld    a,(hl)
-  ld    (iy+3),a              ;Ny block 1
-  add   a,(iy+1)              ;Ny block 1 + Sy block 1
-  ld    (iy+5),a              ;Sy block 2
+;  sub   a,moveplayerleftinscreen
+;  inc   hl                    ;offsetx Block1
+;  add   a,(hl)
+;  jp    nc,.notcarry1
+;  ld    a,252                 ;if Sx Block1 is out of screen right, then set sx Block to 252
+;  .notcarry1:
+;  ld    (iy+0),a              ;Sx block 1
+;  inc   hl                    ;Nx block 1
+;  ld    a,(hl)
+;  ld    (iy+2),a              ;Nx block 1
+;  inc   hl                    ;Ny block 1
+;  ld    a,(hl)
+;  ld    (iy+3),a              ;Ny block 1
+;  add   a,(iy+1)              ;Ny block 1 + Sy block 1
+;  ld    (iy+5),a              ;Sy block 2
 
   ;block 2
-  ld    a,(bc)                ;player x
-  sub   a,moveplayerleftinscreen
-  inc   hl                    ;offsetx Block1
-  add   a,(hl)
-  jp    nc,.notcarry2
-  ld    a,252                 ;if Sx Block1 is out of screen right, then
-  .notcarry2:
-  ld    (iy+4),a              ;Sx block 2
-  inc   hl                    ;Nx block 2
-  ld    a,(hl)
-  ld    (iy+6),a              ;Nx block 2
-  ld    a,(ix+ny)             ;player height total (=Ny block 1 + Ny block 2)
-  sub   a,(iy+3)
-  ld    (iy+7),a              ;Ny block 2
+;  ld    a,(bc)                ;player x
+;  sub   a,moveplayerleftinscreen
+;  inc   hl                    ;offsetx Block1
+;  add   a,(hl)
+;  jp    nc,.notcarry2
+;  ld    a,252                 ;if Sx Block1 is out of screen right, then
+;  .notcarry2:
+;  ld    (iy+4),a              ;Sx block 2
+;  inc   hl                    ;Nx block 2
+;  ld    a,(hl)
+;  ld    (iy+6),a              ;Nx block 2
+;  ld    a,(ix+ny)             ;player height total (=Ny block 1 + Ny block 2)
+;  sub   a,(iy+3)
+;  ld    (iy+7),a              ;Ny block 2
 
   ;attack point1
-  inc   hl                    ;attack point 1 offset x
-  ld    a,(hl)
-  or    a
-  jr    z,.setattackpoint1sx  ;if there is no attack point, then set attackpoint1sx to 0
+;  inc   hl                    ;attack point 1 offset x
+;  ld    a,(hl)
+;  or    a
+;  jr    z,.setattackpoint1sx  ;if there is no attack point, then set attackpoint1sx to 0
 
-  ld    a,(bc)                ;player x
-  add   a,(hl)
-  jp    c,.carry1
-  sub   a,moveplayerleftinscreen
-  jp    .setattackpoint1sx
-  .carry1:
-  sub   a,moveplayerleftinscreen
-  jp    c,.setattackpoint1sx
-  ld    a,254
-  .setattackpoint1sx:
-  ld    (iy+8),a              ;attack point 1 sx
-  inc   hl                    ;attack point 1 offset y
-  dec   bc                    ;player y
-  ld    a,(bc)                ;player y
-  add   a,(hl)
-  ld    (iy+9),a              ;attack point 1 sy
+;  ld    a,(bc)                ;player x
+;  add   a,(hl)
+;  jp    c,.carry1
+;  sub   a,moveplayerleftinscreen
+;  jp    .setattackpoint1sx
+;  .carry1:
+;  sub   a,moveplayerleftinscreen
+;  jp    c,.setattackpoint1sx
+;  ld    a,254
+;  .setattackpoint1sx:
+;  ld    (iy+8),a              ;attack point 1 sx
+;  inc   hl                    ;attack point 1 offset y
+;  dec   bc                    ;player y
+;  ld    a,(bc)                ;player y
+;  add   a,(hl)
+;  ld    (iy+9),a              ;attack point 1 sy
 
   ;attack point2
-  inc   hl                    ;attack point 2 offset x
-  inc   bc
-  ld    a,(bc)                ;player x
-  add   a,(hl)
-  jp    c,.carry2
-  sub   a,moveplayerleftinscreen
-  jp    .setattackpoint2sx
-  .carry2:
-  sub   a,moveplayerleftinscreen
-  jp    c,.setattackpoint2sx
-  ld    a,254
-  .setattackpoint2sx:
-  ld    (iy+10),a             ;attack point 2 sx
-  inc   hl                    ;attack point 2 offset y
-  dec   bc
-  ld    a,(bc)                ;player y
-  add   a,(hl)
-  ld    (iy+11),a             ;attack point 2 sy
-  ret
+;  inc   hl                    ;attack point 2 offset x
+;  inc   bc
+;  ld    a,(bc)                ;player x
+;  add   a,(hl)
+;  jp    c,.carry2
+;  sub   a,moveplayerleftinscreen
+;  jp    .setattackpoint2sx
+;  .carry2:
+;  sub   a,moveplayerleftinscreen
+;  jp    c,.setattackpoint2sx
+;  ld    a,254
+;  .setattackpoint2sx:
+;  ld    (iy+10),a             ;attack point 2 sx
+;  inc   hl                    ;attack point 2 offset y
+;  dec   bc
+;  ld    a,(bc)                ;player y
+;  add   a,(hl)
+;  ld    (iy+11),a             ;attack point 2 sy
+;  ret
 
-PlayerLeftOfscreenSetBlocksAndattackpoints:
+;PlayerLeftOfscreenSetBlocksAndattackpoints:
   ;block 1
-  sub   a,moveplayerleftinscreen
-  inc   hl                    ;offsetx Block1
-  add   a,(hl)
-  jp    c,.notcarry1
-  ld    (iy+0),0              ;Sx block 1
-  inc   hl                    ;Nx block 1
-  add   a,(hl)
-  jp    p,.positive1
-  ld    a,1
-  jp    .positive1
-  .notcarry1:
-  ld    (iy+0),a              ;Sx block 1
-  inc   hl                    ;Nx block 1
-  ld    a,(hl)
-  .positive1:
-  ld    (iy+2),a              ;Nx block 1
-  inc   hl                    ;Ny block 1
-  ld    a,(hl)
-  ld    (iy+3),a              ;Ny block 1
-  add   a,(iy+1)              ;Ny block 1 + Sy block 1
-  ld    (iy+5),a              ;Sy block 2
+;  sub   a,moveplayerleftinscreen
+;  inc   hl                    ;offsetx Block1
+;  add   a,(hl)
+;  jp    c,.notcarry1
+;  ld    (iy+0),0              ;Sx block 1
+;  inc   hl                    ;Nx block 1
+;  add   a,(hl)
+;  jp    p,.positive1
+;  ld    a,1
+;  jp    .positive1
+;  .notcarry1:
+;  ld    (iy+0),a              ;Sx block 1
+;  inc   hl                    ;Nx block 1
+;  ld    a,(hl)
+;  .positive1:
+;  ld    (iy+2),a              ;Nx block 1
+;  inc   hl                    ;Ny block 1
+;  ld    a,(hl)
+;  ld    (iy+3),a              ;Ny block 1
+;  add   a,(iy+1)              ;Ny block 1 + Sy block 1
+;  ld    (iy+5),a              ;Sy block 2
 
   ;block 2
-  ld    a,(bc)                ;player x
-  sub   a,moveplayerleftinscreen
-  inc   hl                    ;offsetx block 2
-  add   a,(hl)
-  jp    c,.notcarry2
-  ld    (iy+4),0              ;Sx block 2
-  inc   hl                    ;Nx block 2
-  add   a,(hl)
-  jp    p,.positive2
-  ld    a,1
-  jp    .positive2
-  .notcarry2:
-  ld    (iy+4),a              ;Sx block 2
-  inc   hl                    ;Nx block 2
-  ld    a,(hl)
-  .positive2:
-  ld    (iy+6),a              ;Nx block 2
-  ld    a,(ix+ny)             ;player height total (=Ny block 1 + Ny block 2)
-  sub   a,(iy+3)
-  ld    (iy+7),a              ;Ny block 2
+;  ld    a,(bc)                ;player x
+;  sub   a,moveplayerleftinscreen
+;  inc   hl                    ;offsetx block 2
+;  add   a,(hl)
+;  jp    c,.notcarry2
+;  ld    (iy+4),0              ;Sx block 2
+;  inc   hl                    ;Nx block 2
+;  add   a,(hl)
+;  jp    p,.positive2
+;  ld    a,1
+;  jp    .positive2
+;  .notcarry2:
+;  ld    (iy+4),a              ;Sx block 2
+;  inc   hl                    ;Nx block 2
+;  ld    a,(hl)
+;  .positive2:
+;  ld    (iy+6),a              ;Nx block 2
+;  ld    a,(ix+ny)             ;player height total (=Ny block 1 + Ny block 2)
+;  sub   a,(iy+3)
+;  ld    (iy+7),a              ;Ny block 2
 
   ;attack point1
-  inc   hl                    ;attack point 1 offset x
-  ld    a,(hl)
-  or    a
-  jr    z,.setattackpoint1sx  ;if there is no attack point, then set attackpoint1sx to 0
+;  inc   hl                    ;attack point 1 offset x
+;  ld    a,(hl)
+;  or    a
+;  jr    z,.setattackpoint1sx  ;if there is no attack point, then set attackpoint1sx to 0
 
-  ld    a,(bc)                ;player x
-  add   a,(hl)
-  jp    nc,.notcarry3
-  sub   a,moveplayerleftinscreen
-  jp    .setattackpoint1sx
+;  ld    a,(bc)                ;player x
+;  add   a,(hl)
+;  jp    nc,.notcarry3
+;  sub   a,moveplayerleftinscreen
+;  jp    .setattackpoint1sx
   
-  .notcarry3:
-  sub   a,moveplayerleftinscreen
-  jr    z,.set1a
-  cp    200
-  jp    c,.setattackpoint1sx
-  .set1a:
-  ld    a,1
-  .setattackpoint1sx:
-  ld    (iy+8),a              ;attack point 1 sx
-  inc   hl                    ;attack point 1 offset y
-  dec   bc                    ;player y
-  ld    a,(bc)                ;player y
-  add   a,(hl)
-  ld    (iy+9),a              ;attack point 1 sy
+;  .notcarry3:
+;  sub   a,moveplayerleftinscreen
+;  jr    z,.set1a
+;  cp    200
+;  jp    c,.setattackpoint1sx
+;  .set1a:
+;  ld    a,1
+;  .setattackpoint1sx:
+;  ld    (iy+8),a              ;attack point 1 sx
+;  inc   hl                    ;attack point 1 offset y
+;  dec   bc                    ;player y
+;  ld    a,(bc)                ;player y
+;  add   a,(hl)
+;  ld    (iy+9),a              ;attack point 1 sy
 
   ;attack point2
-  inc   hl                    ;attack point 2 offset x
-  inc   bc
-  ld    a,(bc)                ;player x
-  add   a,(hl)
-  sub   a,moveplayerleftinscreen
-  jr    z,.set1b
-  cp    224
-  jr    c,.setattackpoint2sx
-.set1b:
-  ld    a,1
-  .setattackpoint2sx:
-  ld    (iy+10),a             ;attack point 2 sx
-  inc   hl                    ;attack point 2 offset y
-  dec   bc
-  ld    a,(bc)                ;player y
-  add   a,(hl)
-  ld    (iy+11),a             ;attack point 2 sy
-  ret
+;  inc   hl                    ;attack point 2 offset x
+;  inc   bc
+;  ld    a,(bc)                ;player x
+;  add   a,(hl)
+;  sub   a,moveplayerleftinscreen
+;  jr    z,.set1b
+;  cp    224
+;  jr    c,.setattackpoint2sx
+;.set1b:
+;  ld    a,1
+;  .setattackpoint2sx:
+;  ld    (iy+10),a             ;attack point 2 sx
+;  inc   hl                    ;attack point 2 offset y
+;  dec   bc
+;  ld    a,(bc)                ;player y
+;  add   a,(hl)
+;  ld    (iy+11),a             ;attack point 2 sy
+;  ret
 	
 base:                         equ   $4000         ;address of heroframes
-RyuActions2:
-.LeftIdleFrame:                ;current spriteframe, total animationsteps
-  db    0,4
-.LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
-  db    0,8,1                 ;animation every 2,5 frames
-.LeftIdleTable:
-  dw ryupage0frame000 | db 1 | dw ryupage0frame001 | db 1
-  dw ryupage0frame002 | db 1 | dw ryupage0frame003 | db 1
-  ds  12
+;RyuActions2:
+;.LeftIdleFrame:                ;current spriteframe, total animationsteps
+;  db    0,4
+;.LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
+;  db    0,8,1                 ;animation every 2,5 frames
+;.LeftIdleTable:
+;  dw ryupage0frame000 | db 1 | dw ryupage0frame001 | db 1
+;  dw ryupage0frame002 | db 1 | dw ryupage0frame003 | db 1
+;  ds  12
 
-GlassBallAnimationRight:
-.LeftIdleFrame:                ;current spriteframe, total animationsteps
-  db    0,8
-.LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
-  db    0,1,0                 ;animation every 2,5 frames
-.LeftIdleTable:
-  dw ryupage0frame004 | db 1 | dw ryupage0frame005 | db 1
-  dw ryupage0frame006 | db 1 | dw ryupage0frame007 | db 1
-  dw ryupage0frame008 | db 1 | dw ryupage0frame009 | db 1
-  dw ryupage0frame010 | db 1 | dw ryupage0frame011 | db 1
+;GlassBallAnimationRight:
+;.LeftIdleFrame:                ;current spriteframe, total animationsteps
+;  db    0,8
+;.LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
+;  db    0,1,0                 ;animation every 2,5 frames
+;.LeftIdleTable:
+;  dw ryupage0frame004 | db 1 | dw ryupage0frame005 | db 1
+;  dw ryupage0frame006 | db 1 | dw ryupage0frame007 | db 1
+;  dw ryupage0frame008 | db 1 | dw ryupage0frame009 | db 1
+;  dw ryupage0frame010 | db 1 | dw ryupage0frame011 | db 1
 
-GlassBallAnimationLeft:
-.LeftIdleFrame:                ;current spriteframe, total animationsteps
-  db    0,8
-.LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
-  db    0,1,0                 ;animation every 2,5 frames
-.LeftIdleTable:
-  dw ryupage0frame011 | db 1 | dw ryupage0frame010 | db 1
-  dw ryupage0frame009 | db 1 | dw ryupage0frame008 | db 1
-  dw ryupage0frame007 | db 1 | dw ryupage0frame006 | db 1
-  dw ryupage0frame005 | db 1 | dw ryupage0frame004 | db 1
+;GlassBallAnimationLeft:
+;.LeftIdleFrame:                ;current spriteframe, total animationsteps
+;  db    0,8
+;.LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
+;  db    0,1,0                 ;animation every 2,5 frames
+;.LeftIdleTable:
+;  dw ryupage0frame011 | db 1 | dw ryupage0frame010 | db 1
+;  dw ryupage0frame009 | db 1 | dw ryupage0frame008 | db 1
+;  dw ryupage0frame007 | db 1 | dw ryupage0frame006 | db 1
+;  dw ryupage0frame005 | db 1 | dw ryupage0frame004 | db 1
 
-GlassBallAnimationFallingDown:
-.LeftIdleFrame:                ;current spriteframe, total animationsteps
-  db    0,2
-.LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
-  db    0,1,0                 ;animation every 2,5 frames
-.LeftIdleTable:
-  dw ryupage0frame004 | db 1 | dw ryupage0frame008 | db 1
-  ds    18
+;GlassBallAnimationFallingDown:
+;.LeftIdleFrame:                ;current spriteframe, total animationsteps
+;  db    0,2
+;.LeftIdleAnimationSpeed:      ;current speed step, ani. speed, ani. speed half frame
+;  db    0,1,0                 ;animation every 2,5 frames
+;.LeftIdleTable:
+;  dw ryupage0frame004 | db 1 | dw ryupage0frame008 | db 1
+;  ds    18
   
-ObjectAnimation:              ;animates, forces writing spriteframe, out: z=animation ended
-  ld    ix,RyuActions2.LeftIdleFrame
-ObjectAnimationIXgiven:       ;animates, forces writing spriteframe, out: z=animation ended
-  ld    iy,Player1Frame
+;ObjectAnimation:              ;animates, forces writing spriteframe, out: z=animation ended
+;  ld    ix,RyuActions2.LeftIdleFrame
+;ObjectAnimationIXgiven:       ;animates, forces writing spriteframe, out: z=animation ended
+;  ld    iy,Player1Frame
               
 ;check speed of animation
-  ld    a,(ix+3)              ;PxLeftIdleAnimationSpeed+1
-  ld    b,a
-  ld    a,(ix+2)              ;P1LeftIdleAnimationSpeed+0
-  inc   a
-  cp    b                     ;overflow check
-  jr    nz,.setanimationspeed
+;  ld    a,(ix+3)              ;PxLeftIdleAnimationSpeed+1
+;  ld    b,a
+;  ld    a,(ix+2)              ;P1LeftIdleAnimationSpeed+0
+;  inc   a
+;  cp    b                     ;overflow check
+;  jr    nz,.setanimationspeed
 
-  ld    a,(ix+4)              ;P1LeftIdleAnimationSpeed+2
-  or    a                     ;should animation speed fluctuate ?
-  jp    z,.endcheckfluctuate
-  ld    b,a
-  neg
-  ld    (ix+4),a              ;P1LeftIdleAnimationSpeed+2
-  ld    a,(ix+3)              ;PxLeftIdleAnimationSpeed+1
-  add   a,b
-  ld    (ix+3),a              ;PxLeftIdleAnimationSpeed+1
-  .endcheckfluctuate:
-  xor   a
-  .setanimationspeed:
-  ld    (ix+2),a              ;P1LeftIdleAnimationSpeed+0
-  jr    nz,.endchangespriteframe
+;  ld    a,(ix+4)              ;P1LeftIdleAnimationSpeed+2
+;  or    a                     ;should animation speed fluctuate ?
+;  jp    z,.endcheckfluctuate
+;  ld    b,a
+;  neg
+;  ld    (ix+4),a              ;P1LeftIdleAnimationSpeed+2
+;  ld    a,(ix+3)              ;PxLeftIdleAnimationSpeed+1
+;  add   a,b
+;  ld    (ix+3),a              ;PxLeftIdleAnimationSpeed+1
+;  .endcheckfluctuate:
+;  xor   a
+;  .setanimationspeed:
+;  ld    (ix+2),a              ;P1LeftIdleAnimationSpeed+0
+;  jr    nz,.endchangespriteframe
 ;/check speed of animation
 
 ;change/animate sprite
-  ld    a,(ix+1)              ;P1LeftIdleFrame+1
-  ld    b,a
-  ld    a,(ix+0)              ;P1LeftIdleFrame+0
-  inc   a
-  cp    b                     ;overflow check
-  jr    nz,.setstep
-  xor   a
-  .setstep:
-  ld    (ix+0),a              ;P1LeftIdleFrame+0
-  .endchangespriteframe:  
+;  ld    a,(ix+1)              ;P1LeftIdleFrame+1
+;  ld    b,a
+;  ld    a,(ix+0)              ;P1LeftIdleFrame+0
+
+;  inc   a
+;  cp    b                     ;overflow check
+;  jr    nz,.setstep
+;  xor   a
+;  .setstep:
+;  ld    (ix+0),a              ;P1LeftIdleFrame+0
+;  .endchangespriteframe:  
 ;/change/animate sprite  
 
-  ld    a,(ix+0)              ;P1LeftIdleFrame+0
-  ld    b,a
-  add   a,a
-  add   a,b                   ;*3 to fetch frame in table
-  ld    b,0
-  ld    c,a
-  add   ix,bc
+;  ld    a,(ix+0)              ;P1LeftIdleFrame+0
+;  ld    b,a
+;  add   a,a
+;  add   a,b                   ;*3 to fetch frame in table
+;  ld    b,0
+;  ld    c,a
+;  add   ix,bc
   
-  ld    a,(ix+7)              ;framepage
-  ld    (iy+2),a              ;write to framepage
+;  ld    a,(ix+7)              ;framepage
+;  ld    (iy+2),a              ;write to framepage
 
-  ld    a,(ix+5)              ;fetch current Idle frame
-  ld    (iy+0),a              ;and write it to PlayerxFrame
-  ld    a,(ix+6)
-  ld    (iy+1),a
+;  ld    a,(ix+5)              ;fetch current Idle frame
+;  ld    (iy+0),a              ;and write it to PlayerxFrame
+;  ld    a,(ix+6)
+;  ld    (iy+1),a
 
-  ld    a,(ix+0)              ;Check if animation ended
-  or    (ix+2)
-  ret
+;  ld    a,(ix+0)              ;Check if animation ended
+;  or    (ix+2)
+;  ret
 
 ExitRight256x216: equ 252 ; 29*8
 ExitRight304x216: equ 38*8-3
@@ -8083,7 +8147,7 @@ AnimateSprite:
   ld    e,(hl)
   inc   hl
   ld    d,(hl)
-  ex    de,hl                     ;out hl -> sprite character data to out to Vram
+  ex    de,hl                               ;out hl -> sprite character data to out to Vram
   ret	
 
 AnimateMeditating:
