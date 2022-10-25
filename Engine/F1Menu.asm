@@ -65,7 +65,7 @@ SetElementalWeaponInVram:
   ld    de,64  
   exx
   ld    hl,$fac0                      ;start copying to this address in Vram -> page 3 - screen 5 - copy to (128,245)
-  ld    de,128
+  ld    de,128                        ;bytes per row
   ld    b,11                          ;total height
 .loop:
 	ld    a,1

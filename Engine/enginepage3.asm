@@ -37,8 +37,8 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 
 ;WorldMapPointer:  dw  MapE04Data      ;Boss Zombie Caterpillar
 ;WorldMapPointer:  dw  MapD04Data      ;Boss Voodoo Wasp
-WorldMapPointer:  dw  MapA07Data      ;Retarded Zombies
-;WorldMapPointer:  dw  MapA04Data      ;
+;WorldMapPointer:  dw  MapA07Data      ;Retarded Zombies
+WorldMapPointer:  dw  MapB04Data      ;
 
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
@@ -82,6 +82,8 @@ loadGraphics:
   call  SetInterruptHandler           ;set Lineint and Vblank  
   call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank | if normal engine: wait for lineint
 
+  call  SetElementalWeaponInVramJumper
+
 ;  xor   a
 ;  ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
 ;  ld    (NewPrContr),a                  ;this allows for a double jump as soon as you enter a new map
@@ -95,6 +97,18 @@ loadGraphics:
   .EndCheckDoubleJump:
 
   jp    LevelEngine
+
+SetElementalWeaponInVramJumper:                        ;check if F1 is pressed and the menu can be entered
+  ld    a,(slot.page12rom)            ;all RAM except page 1+2
+  out   ($a8),a
+
+  ld    a,F1Menublock                 ;F1 Menu routine at $4000
+  call  block12
+
+  jp    SetElementalWeaponInVram
+  
+;  ret
+  
 
 StartTeamNXTLogo:
   ld    a,(slot.page12rom)            ;all RAM except page 1+2

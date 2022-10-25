@@ -4944,6 +4944,8 @@ RSitShootArrow:
   jp    Set_R_Sit  
 
 LShootArrowSf2Engine:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
 ;Animate
   ld    a,(PlayerAniCount)
   inc   a
@@ -5004,6 +5006,8 @@ LShootArrowSf2Engine:
   jp    Set_L_Stand  
 
 LShootArrow:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
   ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
   ld    (CleanPlayerWeapon+restorebackground?),a 
 
@@ -5118,6 +5122,8 @@ LShootArrow:
   jp    Set_L_Stand  
 
 RShootArrowSf2Engine:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
 ;Animate
   ld    a,(PlayerAniCount)
   inc   a
@@ -5177,6 +5183,8 @@ RShootArrowSf2Engine:
   jp    Set_R_Stand  
     
 RShootArrow:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
   ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
   ld    (CleanPlayerWeapon+restorebackground?),a 
 
@@ -9221,14 +9229,14 @@ Set_L_ShootArrow:
   ld    a,0 
   ld    (PlayerAniCount),a
 
-  ld    a,RunningTablePointerCenter
-  ld    (RunningTablePointer),a  
+;  ld    a,RunningTablePointerCenter
+;  ld    (RunningTablePointer),a  
   ret
 
 Set_R_ShootArrow:
-  ld    a,(ArrowActive?)                    ;remove arrow when enemy is hit
-  or    a
-  ret   nz
+;  ld    a,(ArrowActive?)                    ;remove arrow when enemy is hit
+;  or    a
+;  ret   nz
 
 	ld		hl,RShootArrow
 	ld		(PlayerSpriteStand),hl
@@ -9236,8 +9244,8 @@ Set_R_ShootArrow:
   ld    a,0 
   ld    (PlayerAniCount),a
  
-  ld    a,RunningTablePointerCenter
-  ld    (RunningTablePointer),a
+;  ld    a,RunningTablePointerCenter
+;  ld    (RunningTablePointer),a
   ret
 
 Set_L_Meditate:
