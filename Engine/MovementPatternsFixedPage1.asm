@@ -1,3 +1,36 @@
+;CheckOutOfMap
+;MoveSpriteHorizontallyAndVertically
+;CheckCollisionWallEnemy
+;CheckCollisionWallEnemyV8
+;CheckFloorUnderBothFeetEnemy
+;CheckFloorEnemyObjectLeftSide
+;CheckFloorEnemyObject
+;CheckFloorEnemy
+;distancecheck46wide
+;distancecheck24wide
+;distancecheck16wide
+;distancecheck
+;checkFacingPlayer
+;CheckPlayerPunchesEnemyOnlySitting
+;CheckArrowHitsEnemy
+;CheckFireballHitsEnemy
+;CheckIceWeaponHitsEnemy
+;CheckEarthWeaponHitsEnemy
+;CheckWaterWeaponHitsEnemy
+;CheckPlayerPunchesBoss
+;CheckPlayerPunchesEnemyDemon
+;CheckPlayerPunchesEnemy
+;ExplosionBig
+;ExplosionSmall
+;PutCoin
+;Coin
+;FallingStone
+;AccelerateFall
+;MoveObject
+;PushingStone
+;InitiatlizeSwitch
+;checktileObject
+
 ;Generic Enemy/Object Routines ##############################################################################
 CheckOutOfMap:  
   ld    l,(ix+enemies_and_objects.x)  
@@ -280,7 +313,10 @@ CheckFireballHitsEnemy:
   ;Enemy hit                                ;blink white for 31 frames when hit
   xor   a
   ld    (FireballActive?),a                    ;remove arrow when enemy is hit
-  
+
+  ld    a,MagicWeaponDurationValue
+  ld    (MagicWeaponDuration),a  
+    
   ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
@@ -323,7 +359,10 @@ CheckIceWeaponHitsEnemy:
   ;Enemy hit                                ;blink white for 31 frames when hit
   xor   a
   ld    (IceWeaponActive?),a                    ;remove arrow when enemy is hit
-  
+
+  ld    a,MagicWeaponDurationValue
+  ld    (MagicWeaponDuration),a  
+    
   ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
@@ -366,7 +405,10 @@ CheckEarthWeaponHitsEnemy:
   ;Enemy hit                                ;blink white for 31 frames when hit
   xor   a
   ld    (EarthWeaponActive?),a                    ;remove arrow when enemy is hit
-  
+
+  ld    a,MagicWeaponDurationValue
+  ld    (MagicWeaponDuration),a  
+    
   ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
@@ -409,7 +451,10 @@ CheckWaterWeaponHitsEnemy:
   ;Enemy hit                                ;blink white for 31 frames when hit
   xor   a
   ld    (WaterWeaponActive?),a                    ;remove arrow when enemy is hit
-  
+
+  ld    a,MagicWeaponDurationValue
+  ld    (MagicWeaponDuration),a  
+    
   ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied

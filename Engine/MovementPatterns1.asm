@@ -4483,7 +4483,7 @@ AnimateGlassBall:
   ld    (Player1Frame+1),a
   inc   hl
   ld    a,(hl)
-  ld    (Player1Frame+2),a
+;  ld    (Player1Frame+2),a ; DEZE WAS NIET NODIG>.... FF CHECKEN
   ret
 
 EmptyFrame:

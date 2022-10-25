@@ -22,7 +22,7 @@ LevelEngine:
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
   call  CheckF1Menu               ;check if F1 is pressed and the menu can be entered
   call  BackdropBlue
-  call  Player_Tick
+  call  Player_Tick               ;music routine
   call  BackdropBlack
 
 ;Routines starting at lineint:
@@ -37,6 +37,8 @@ LevelEngine:
 
   call  BackdropGreen
   call  RestoreBackground         ;remove all vdp copies/software sprites that were put in screen last frame
+  
+  ;DEZE ROUTINE KAN INDIEN NODIG HELEMAAL NAAR MovementPatternsFixedPage1.asm
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
   call  HandlePlayerWeapons       ;arrow, fireball, iceweapon, earthweapon, waterweapon
   call  BackdropBlack
@@ -1396,11 +1398,11 @@ Sf2EngineObjects:
   ld    a,MovementPatternsFixedPage1block
 	ld		(memblocks.1),a
 	ld		($6000),a
-  ei
+;  ei
 
   ;set the movement pattern block of this enemy/object at address $8000 in page 2 
   ld    a,(ix+enemies_and_objects.movementpatternsblock)
-  di
+;  di
 	ld		(memblocks.2),a
 	ld		($7000),a
 	ei
@@ -1496,11 +1498,11 @@ HugeObjectFrame:  db  -1
 moveplayerleftinscreen:       equ 128
 blitpage:                     db  0
 screenpage:                   db  2
-Player1Spritedatablock:       db  ryuspritedatablock
+;Player1Spritedatablock:       db  ryuspritedatablock
 
-Player1Framelistblock:        db  ryuframelistblock
+;Player1Framelistblock:        db  ryuframelistblock
 Player1Frame:                 dw  ryupage0frame000
-Player1FramePage:             db  0
+;Player1FramePage:             db  0
 
 Object1y:                     db  000
 Object1x:                     db  000
@@ -1705,7 +1707,7 @@ putplayer_noclip:
   sub   a,moveplayerleftinscreen
   ld    e,a
 ;  call  SetOffsetBlocksAndAttackpoints
-  ld    bc,10
+  ld    bc,8 ;10
   add   hl,bc  
 ;  inc   hl                    ;lenght + increment first spriteline
 
@@ -1735,8 +1737,8 @@ putplayer_noclip:
 
   set   6,d                   ;write access
 
-dec hl
-dec hl
+;dec hl
+;dec hl
 
 
   ld    (spatpointer),sp  
@@ -1799,7 +1801,7 @@ putplayer_clipright:
   add   a,(hl)                ;add player x offset for first line
   ld    e,a
 ;  call  SetOffsetBlocksAndAttackpoints
-  ld    bc,10
+  ld    bc,8 ;10
   add   hl,bc  
 ;  inc   hl                    ;lenght + increment first spriteline
 
@@ -1829,8 +1831,8 @@ putplayer_clipright:
 
   set   6,d                   ;write access
 
-dec hl
-dec hl
+;dec hl
+;dec hl
 
   ld    (spatpointer),sp  
   ld    sp,hl
@@ -1909,7 +1911,7 @@ putplayer_clipleft:
   dec   d
   .notcarry:
 ;  call  SetOffsetBlocksAndAttackpoints
-  ld    bc,10
+  ld    bc,8 ;10
   add   hl,bc  
 ;  inc   hl                    ;lenght + increment first spriteline
 
@@ -1939,8 +1941,8 @@ putplayer_clipleft:
 
   set   6,d                   ;write access
 
-dec hl
-dec hl
+;dec hl
+;dec hl
 
   ld    (spatpointer),sp  
   ld    sp,hl
@@ -3506,7 +3508,10 @@ ArrowSX_LeftSide:       db  030+15    ;(ix+6)
 ArrowNY:                db  001       ;(ix+7)
 ArrowNX:                db  016       ;(ix+8)
 
-FireballSpeed:         equ 3
+MagicWeaponDurationValue: equ 29
+MagicWeaponDuration:    db  MagicWeaponDurationValue
+
+FireballSpeed:         equ 4
 FireballActive?:       db  0         ;(ix+0)
 FireballY:             db  100       ;(ix+1)
 FireballX:             dw  100       ;(ix+2)
@@ -3516,7 +3521,7 @@ FireballSX_LeftSide:   db  000+10    ;(ix+6)
 FireballNY:            db  011       ;(ix+7)
 FireballNX:            db  016       ;(ix+8)
 
-IceWeaponSpeed:         equ 3
+IceWeaponSpeed:         equ 4
 IceWeaponActive?:       db  0         ;(ix+0)
 IceWeaponY:             db  100       ;(ix+1)
 IceWeaponX:             dw  100       ;(ix+2)
@@ -3635,7 +3640,7 @@ HandlePlayerWeapons:
   ld    a,216+17            ;sy of arrow going left
   .DirectionFound:
   ld    (ix+4),a            ;sy
-  jp    GoHandlePlayerWeapon  
+  jp    GoHandlePlayerWeapon.skipDurationCheck
 
   Fireball:
   ld    ix,FireballActive?
@@ -3658,6 +3663,12 @@ HandlePlayerWeapons:
 ;  jp    GoHandlePlayerWeapon  
   
   GoHandlePlayerWeapon:
+  ld    a,(MagicWeaponDuration)
+  dec   a
+  ld    (MagicWeaponDuration),a
+  jp    z,.RemoveWeapon
+
+  .skipDurationCheck:
   ld    a,(ix+4)          ;sy  
   ld    (CopyPlayerProjectile+sy),a
   ld    a,(ix+7)          ;sy
@@ -3773,6 +3784,9 @@ HandlePlayerWeapons:
   .RemoveWeapon:
   xor   a
   ld    (ix+0),a
+
+  ld    a,MagicWeaponDurationValue
+  ld    (MagicWeaponDuration),a  
   ret
   
   .ObjectOnLeftSideOfScreen:
@@ -9212,6 +9226,10 @@ Set_L_ShootArrow:
   ret
 
 Set_R_ShootArrow:
+  ld    a,(ArrowActive?)                    ;remove arrow when enemy is hit
+  or    a
+  ret   nz
+
 	ld		hl,RShootArrow
 	ld		(PlayerSpriteStand),hl
 
