@@ -4465,6 +4465,7 @@ LShootFireball:
   cp    2 * 10
   ret   nz
 
+  .EntranceWhileJumping:
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   ld    de,-26                ;normal engine
@@ -4513,6 +4514,7 @@ RShootFireball:
   cp    2 * 10
   ret   nz
 
+  .EntranceWhileJumping:
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   ld    b,20                  ;normal engine
@@ -4559,6 +4561,7 @@ LeftShootFireballAnimation:
   dw  PlayerSpriteData_Char_LeftCharge5
   dw  PlayerSpriteData_Char_LeftCharge5
   dw  PlayerSpriteData_Char_LeftCharge5
+  dw  PlayerSpriteData_Char_LeftCharge5
   
 RightShootFireballAnimation:
   dw  PlayerSpriteData_Char_RightPunch1a 
@@ -4570,6 +4573,7 @@ RightShootFireballAnimation:
   dw  PlayerSpriteData_Char_RightPunch1c
   dw  PlayerSpriteData_Char_RightPunch1d 
   dw  PlayerSpriteData_Char_RightCharge2
+  dw  PlayerSpriteData_Char_RightCharge5
   dw  PlayerSpriteData_Char_RightCharge5
   dw  PlayerSpriteData_Char_RightCharge5
   dw  PlayerSpriteData_Char_RightCharge5
@@ -7097,6 +7101,10 @@ AnimateWhileJump:
   or    a
   jp    nz,ShootArrowWhileJumpRight
 
+  ld    a,(ShootMagicWhileJump?)
+  or    a
+  jp    nz,.ShootMagicWhileJumpRight
+
   ld    a,(KickWhileJump?)
   dec   a
   jr    nz,.KickWhileJumpRight
@@ -7131,6 +7139,23 @@ AnimateWhileJump:
 	ld		(standchar),hl
   ret
 
+.ShootMagicWhileJumpRight:
+;Animate
+  ld    hl,RightShootFireballAnimation
+  call  AnimateShootFireball                    ;animate  
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 10
+  jp    z,RShootFireball.EntranceWhileJumping
+  cp    2 * 14
+  ret   nz
+
+  .end:
+  xor   a
+  ld    (ShootMagicWhileJump?),a
+  ld    (PlayerAniCount),a
+  ret
+
 .RollingJumpRight:
   ld    a,(JumpSpeed)
   sub   a,5
@@ -7144,6 +7169,10 @@ AnimateWhileJump:
   ld    a,(ShootArrowWhileJump?)
   or    a
   jp    nz,ShootArrowWhileJumpLeft
+
+  ld    a,(ShootMagicWhileJump?)
+  or    a
+  jp    nz,.ShootMagicWhileJumpLeft
 
   ld    a,(KickWhileJump?)
   dec   a
@@ -7164,6 +7193,21 @@ AnimateWhileJump:
 	ld		hl,PlayerSpriteData_Char_LeftJump3
 	.SetLeftJumpAnimationFrame:
 	ld		(standchar),hl
+  ret
+
+.ShootMagicWhileJumpLeft:
+;Animate
+  ld    hl,LeftShootFireballAnimation
+  call  AnimateShootFireball                    ;animate  
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 10
+  jp    z,LShootFireball.EntranceWhileJumping
+  cp    2 * 14
+  ret   nz
+  xor   a
+  ld    (ShootMagicWhileJump?),a
+  ld    (PlayerAniCount),a
   ret
 
 .RollingJumpLeft:
@@ -7629,8 +7673,9 @@ CheckSnapToStairsWhileJump:
   ld    (ClesX),hl
   ret  
 
-KickWhileJump?:  db  1
-ShootArrowWhileJump?:  db  0
+KickWhileJump?:         db  1
+ShootMagicWhileJump?:   db  0
+ShootArrowWhileJump?:   db  0
 Jump:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -7652,7 +7697,7 @@ Jump:
 	bit		4,a           ;trig a pressed ?
 	jp    nz,.SetKickWhileJump
 	bit		5,a           ;trig b pressed ?
-	jp    nz,.SetShootArrowWhileJump
+	jp    nz,.SetShootMagicWhileJump
 	bit		0,a           ;cursor up pressed ?
 	jp    nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
   ret
@@ -7693,15 +7738,30 @@ Jump:
   ld    (HitBoxSY),a    
   ret
 
-.SetShootArrowWhileJump:
+.SetShootMagicWhileJump:
   ld    a,(ShootArrowWhileJump?)
   or    a
-  ret   nz                  ;don't shoot if already shooting
+  ret   nz                            ;don't shoot if already shooting
 
-  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick
+  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
   cp    4
+  jr    z,.Arrow
+  cp    5
+  jr    z,.Fireball
+  ret
+
+  .Fireball:
+  ld    a,(ShootMagicWhileJump?)      ;don't shoot if already shooting
+  or    a
   ret   nz
 
+  xor   a
+  ld    (PlayerAniCount),a  
+  ld    a,1
+  ld    (ShootMagicWhileJump?),a  
+  ret
+
+  .Arrow:
   ld    a,1
   ld    (ShootArrowWhileJump?),a
   ret
@@ -7952,6 +8012,20 @@ Jump:
   ld    a,(DoubleJumpAvailable?)
   or    a
   ret   z
+  
+  ld    a,(ShootMagicWhileJump?)  ;don't allow double jump when shooting magic mid air
+  or    a
+  jr    z,.EndCheckShootMagicWhileJump
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+  res   0,a 
+  ld    (Controls),a
+  ret
+  .EndCheckShootMagicWhileJump:
   
   xor   a
   ld    (DoubleJumpAvailable?),a
@@ -9582,6 +9656,23 @@ Set_R_stand:
 	ld		(PlayerSpriteStand),hl
 	ld		hl,PlayerSpriteData_Char_RightStand
 	ld		(standchar),hl
+
+  ld    a,(ShootMagicWhileJump?)                                ;check if player is shooting magic weapon while jumping
+  or    a
+  ret   z
+
+  xor   a
+  ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
+
+  ld    a,(FireballActive?)                                     ;check if fireball is already being shot
+  or    a
+  ret   nz
+
+	ld		hl,RShootFireball
+	ld		(PlayerSpriteStand),hl
+  xor   a
+  ld    (PlayerAniCount),a  
+  ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
   ret
 
 Set_L_stand:
@@ -9596,6 +9687,23 @@ Set_L_stand:
 	ld		(PlayerSpriteStand),hl
 	ld		hl,PlayerSpriteData_Char_LeftStand
 	ld		(standchar),hl
+
+  ld    a,(ShootMagicWhileJump?)                                ;check if player is shooting magic weapon while jumping
+  or    a
+  ret   z
+
+  xor   a
+  ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
+
+  ld    a,(FireballActive?)                                     ;check if fireball is already being shot
+  or    a
+  ret   nz
+
+	ld		hl,LShootFireball
+	ld		(PlayerSpriteStand),hl
+  xor   a
+  ld    (PlayerAniCount),a  
+  ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
   ret
 
 Set_L_Push:
