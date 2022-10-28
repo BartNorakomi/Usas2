@@ -30,6 +30,29 @@
 ;PushingStone
 ;InitiatlizeSwitch
 ;checktileObject
+;AnimateSprite
+
+AnimateSprite:
+  ld    a,(framecounter)                    ;animate every x frames
+  and   b
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+  jp    nz,.SetAnimationCounter
+  add   a,2                                 ;2 bytes used for pointer to sprite frame address
+  cp    c                                   ;amount of frame addresses
+  jP    nz,.SetAnimationCounter
+  xor   a
+  .SetAnimationCounter:
+  ld    (ix+enemies_and_objects.v1),a       ;v1=Animation Counter
+  
+  ld    d,0
+  ld    e,a
+  add   hl,de
+    
+  ld    e,(hl)
+  inc   hl
+  ld    d,(hl)
+  ex    de,hl                               ;out hl -> sprite character data to out to Vram
+  ret	
 
 ;Generic Enemy/Object Routines ##############################################################################
 CheckOutOfMap:  
@@ -890,6 +913,15 @@ Coin:
   call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
   call  .CheckFloor                         ;checks for collision Floor and if found fall
   call  CheckPickUpCoin                     ;check for collision between player and coin and removes coin from play when picked up
+
+
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  cp    210
+  jr    c,.SkipSetTopInScreen
+  ld    (ix+enemies_and_objects.y),0        ;y
+  .SkipSetTopInScreen:
+
+
   jp    Coin.Animate                        ;out hl -> sprite character data to out to Vram
 ;  ret
 

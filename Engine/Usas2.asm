@@ -3034,9 +3034,9 @@ phase	$4000
 dephase
 
 ;
-; block $98 - $99
+; block $4c
 ;
-PlayerReflectionSpriteblock:  equ   $98 / 2
+PlayerReflectionSpriteblock:  equ   $4c ;$98 / 2
 phase	$8000
 ReflPlayerSpriteData_Char_RightStand:           include "..\sprites\enemies\ReflectionPlayer\RightStand.tgs.gen"	  
 ReflPlayerSpriteData_Colo_RightStand:           include "..\sprites\enemies\ReflectionPlayer\RightStand.tcs.gen"  | db 0,0, 0,0, 0,0
@@ -3089,10 +3089,20 @@ ReflPlayerSpriteData_Colo_LeftRun1:             include "..\sprites\enemies\Refl
 dephase
 
 ;
-; block $9a - $9f
+; block $4d
+;
+PlayerMovementRoutinesBlock:  equ   $4d
+phase	$4000
+  include "PlayerMovementRoutines.asm"  
+endPlayerMovementRoutines:  
+	ds		$8000-$,$ff
+dephase
+
+;
+; block $4e - $4f
 ;
 
-  ds  6 * $2000
+  ds  2 * $4000
 
 ;
 ; block $a0 - $bf
@@ -3140,7 +3150,7 @@ MapA02:
 MapA03:
   incbin "..\maps\a03.map.pck"  | .amountofobjects: db  0
 MapA04:
-  incbin "..\maps\a04.map.pck"  | .amountofobjects: db  1
+  incbin "..\maps\a04.map.pck"  | .amountofobjects: db  7
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .object1: db 2,        0|dw AreaSign             |db 8*05|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+00,+00,190, 0|db 016,movepatblo1| ds fill-1
 
@@ -3151,6 +3161,15 @@ MapA04:
 ;.object3:db -1,        1|dw BoringEye           |db 8*11|dw 8*20|db 22,16|dw 16*16,spat+(16*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;.object4:db -1,        1|dw BoringEye           |db 8*13|dw 8*22|db 22,16|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;.object5:db -1,        1|dw BoringEye           |db 8*15|dw 8*24|db 22,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+
+;Coin v8=coin type (0=I, 1=V, 2=X)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object2:db -1,        1|dw Coin                |db 8*00|dw 8*11|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+03,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.object3:db -1,        1|dw Coin                |db 8*04|dw 8*13|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+04,+00,+00,+00,+00,+01,+00, 0|db 001,movepatblo1| ds fill-1
+.object4:db -1,        1|dw Coin                |db 8*08|dw 8*15|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+03,+00,+00,+00,+00,+02,+00, 0|db 001,movepatblo1| ds fill-1
+.object5:db -1,        1|dw Coin                |db 8*12|dw 8*17|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+04,+00,+00,+00,+00,+01,+00, 0|db 001,movepatblo1| ds fill-1
+.object6:db -1,        1|dw Coin                |db 8*16|dw 8*19|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+03,+00,+00,+00,+00,+02,+00, 0|db 001,movepatblo1| ds fill-1
+.object7:db -1,        1|dw Coin                |db 8*20|dw 8*21|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+04,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 
 
   
@@ -3167,7 +3186,12 @@ MapA05:
 ;.object1: db 1,        0|dw DisappearingBlocks  |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,21*8,19*8,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
   
 MapA06:
-  incbin "..\maps\a06.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\a06.map.pck"  | .amountofobjects: db  1
+;Black Hole Alien
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw BlackHoleAlien      |db 8*21|dw 8*04|db 32,30|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005,movepatblo1| ds fill-1
+  
+  
 MapA07:
   incbin "..\maps\a07.map.pck"  | .amountofobjects: db  6  
 ;Retarded Zombie Spawnpoint

@@ -464,7 +464,7 @@ SelectWeapon:                         ;just set the next magic weapon
   jp		nz,Set_R_ShootIce             ;magic 7 (shoot ice)
   jp		nz,Set_R_ShootEarth           ;magic 8 (shoot earth)
   jp		nz,Set_R_ShootWater           ;magic 9 (shoot water)
-  nop | nop | nop                     ;magic 10 (nothing)
+  jp		nz,Set_R_ShootKineticEnergy   ;magic 10 (kinetic energy)
   nop | nop | nop                     ;magic 11 (nothing)
   nop | nop | nop                     ;magic 12 (nothing)
   nop | nop | nop                     ;magic 13 (nothing)
