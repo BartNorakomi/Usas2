@@ -5379,6 +5379,9 @@ Set_R_stand:
   xor   a
   ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
 
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a  
+
   ld    a,(CurrentMagicWeapon)                                  ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
   cp    5
   jp    z,.Fireball
@@ -5451,6 +5454,9 @@ Set_L_stand:
   ret   z
   xor   a
   ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
+
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a  
 
   ld    a,(CurrentMagicWeapon)                                  ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
   cp    5
