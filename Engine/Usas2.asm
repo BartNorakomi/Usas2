@@ -1501,6 +1501,23 @@ PlayerSpriteData_Colo_RightSitLookDown:     include "..\sprites\secretsofgrindea
 PlayerSpriteData_Char_LeftSitLookDown:      include "..\sprites\secretsofgrindea\LeftSitLookDown.tgs.gen"	    
 PlayerSpriteData_Colo_LeftSitLookDown:      include "..\sprites\secretsofgrindea\LeftSitLookDown.tcs.gen"		| db +0-8,+0   
 
+PlayerSpriteData_Char_LeftSpearAttack1:         include "..\sprites\secretsofgrindea\LeftSpearAttack1.tgs.gen"	  
+PlayerSpriteData_Colo_LeftSpearAttack1:         include "..\sprites\secretsofgrindea\LeftSpearAttack1.tcs.gen"	  | db -3-8,+3
+PlayerSpriteData_Char_LeftSpearAttack2:         include "..\sprites\secretsofgrindea\LeftSpearAttack2.tgs.gen"	  
+PlayerSpriteData_Colo_LeftSpearAttack2:         include "..\sprites\secretsofgrindea\LeftSpearAttack2.tcs.gen"	  | db -3-8,+3
+PlayerSpriteData_Char_LeftSpearAttack3:         include "..\sprites\secretsofgrindea\LeftSpearAttack3.tgs.gen"	  
+PlayerSpriteData_Colo_LeftSpearAttack3:         include "..\sprites\secretsofgrindea\LeftSpearAttack3.tcs.gen"	  | db -3-8,+3
+PlayerSpriteData_Char_LeftSpearAttack4:         include "..\sprites\secretsofgrindea\LeftSpearAttack4.tgs.gen"	  
+PlayerSpriteData_Colo_LeftSpearAttack4:         include "..\sprites\secretsofgrindea\LeftSpearAttack4.tcs.gen"	  | db -4-8,+4
+
+PlayerSpriteData_Char_RightSpearAttack1:        include "..\sprites\secretsofgrindea\RightSpearAttack1.tgs.gen"	  
+PlayerSpriteData_Colo_RightSpearAttack1:        include "..\sprites\secretsofgrindea\RightSpearAttack1.tcs.gen"	  | db +3-8,-3
+PlayerSpriteData_Char_RightSpearAttack2:        include "..\sprites\secretsofgrindea\RightSpearAttack2.tgs.gen"	  
+PlayerSpriteData_Colo_RightSpearAttack2:        include "..\sprites\secretsofgrindea\RightSpearAttack2.tcs.gen"	  | db +3-8,-3
+PlayerSpriteData_Char_RightSpearAttack3:        include "..\sprites\secretsofgrindea\RightSpearAttack3.tgs.gen"	  
+PlayerSpriteData_Colo_RightSpearAttack3:        include "..\sprites\secretsofgrindea\RightSpearAttack3.tcs.gen"	  | db +3-8,-3
+PlayerSpriteData_Char_RightSpearAttack4:        include "..\sprites\secretsofgrindea\RightSpearAttack4.tgs.gen"	  
+PlayerSpriteData_Colo_RightSpearAttack4:        include "..\sprites\secretsofgrindea\RightSpearAttack4.tcs.gen"	  | db +4-8,-4
 
 EndPlayerSprites2: | ds $c000-$,$ff | dephase
 dephase

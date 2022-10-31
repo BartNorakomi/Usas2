@@ -3561,6 +3561,15 @@ KineticWeaponSX_LeftSide: db  000+10    ;(ix+6)
 KineticWeaponNY:          db  011       ;(ix+7)
 KineticWeaponNX:          db  016       ;(ix+8)
 
+PrimaryWeaponActive?:       db  0         ;(ix+0)
+PrimaryWeaponY:             db  000       ;(ix+1)
+PrimaryWeaponX:             dw  000       ;(ix+2)
+PrimaryWeaponSY:            db  216+24    ;(ix+4)
+PrimaryWeaponSX_RightSide:  db  229       ;(ix+5) 
+PrimaryWeaponSX_LeftSide:   db  000+00    ;(ix+6)
+PrimaryWeaponNY:            db  005       ;(ix+7)
+PrimaryWeaponNX:            db  009       ;(ix+8)
+
 HandlePlayerWeapons:
   ld    a,(ArrowActive?)
   or    a
@@ -3585,7 +3594,25 @@ HandlePlayerWeapons:
   ld    a,(KineticWeaponActive?)
   or    a
   jp    nz,KineticWeapon
+
+  ld    a,(PrimaryWeaponActive?)
+  or    a
+  jp    nz,PrimaryWeapon
   ret
+
+  PrimaryWeapon:
+  ld    ix,PrimaryWeaponActive?
+  ;ice weapon animation
+  ld    a,229               ;sx of first ice weapon going right
+  jp    p,.DirectionFound
+  ld    a,203               ;sx of first ice weapon going left 
+  .DirectionFound:
+  ld    (ix+5),a            ;IceWeaponSX_RightSide
+  add   a,(ix+8)            ;add nx to determine at what point we should copy when copying from right to left
+  dec   a                   ;add nx - 1
+  ld    (ix+6),a            ;IceWeaponSX_LeftSide
+  ;/ice weapon animation
+  jp    GoHandlePlayerWeapon.skipDurationCheck
 
   KineticWeapon:
   ld    ix,KineticWeaponActive?
@@ -3696,6 +3723,10 @@ HandlePlayerWeapons:
   ;/ice weapon animation
 ;  jp    GoHandlePlayerWeapon  
   
+  
+  
+  
+  
   GoHandlePlayerWeapon:
   ld    a,(MagicWeaponDuration)
   dec   a
@@ -3704,6 +3735,8 @@ HandlePlayerWeapons:
 
   .skipDurationCheck:
   ld    a,(ix+4)          ;sy  
+
+ld a,216+24
   ld    (CopyPlayerProjectile+sy),a
   ld    a,(ix+7)          ;sy
   ld    (CopyPlayerProjectile+ny),a
@@ -4764,7 +4797,14 @@ Lstanding:
 ;
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
-	jp		nz,Set_L_attack
+  .PrimaryWeaponLeftSelfModifyingJump:
+;  nop | nop | nop     ;e.g.   jp		nz,Set_L_attack
+  
+;	jp		nz,Set_L_attack
+	jp		nz,Set_L_Dagger_attack
+
+
+
 	bit		5,a           ;'M' pressed ?
   .MagicWeaponLeftSelfModifyingJump:
   nop | nop | nop
@@ -4827,7 +4867,12 @@ Rstanding:
 ;
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
-	jp		nz,Set_R_attack
+  .PrimaryWeaponRightSelfModifyingJump:
+;  nop | nop | nop     ;e.g.   jp		nz,Set_R_attack
+  
+;	jp		nz,Set_R_attack
+	jp		nz,Set_R_Dagger_attack
+	
 	bit		5,a           ;'M' pressed ?
   .MagicWeaponRightSelfModifyingJump:
   nop | nop | nop     ;e.g.   jp		nz,Set_R_ShootIce             ;magic 7 (shoot ice)
@@ -5135,6 +5180,28 @@ Set_R_attack:
   ld    (AttackRotator),a
 
 	ld		hl,RAttack
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_L_Dagger_attack:
+	ld		hl,LDaggerAttack
+	ld		(PlayerSpriteStand),hl
+
+  xor   a
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_R_Dagger_attack:
+	ld		hl,RDaggerAttack
 	ld		(PlayerSpriteStand),hl
 
   ld    a,1

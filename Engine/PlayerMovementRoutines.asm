@@ -1,6 +1,6 @@
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
-;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing
+;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing, RDaggerAttack
 
 LShootWater:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
@@ -1455,7 +1455,7 @@ Charging:
   call  AnimateCharging
   ld    a,(PlayerAniCount)
   cp    2 * 11                      ;check 10th frame
-  jp    z,Set_L_stand               ;at end of charge change to L_Stand
+  jr    z,endChargeLeft             ;at end of charge change to L_Stand
 
   call  LSitPunch.SetAttackHitBox     ;set the hitbox coordinates and enable hitbox
   
@@ -1467,16 +1467,16 @@ Charging:
   ld    de,-4                       ;horizontal movement speed
   call  DoMovePlayer.EntryForHorizontalMovement
   ret   nc
-  jp    Set_L_stand                 ;on collision change to R_Stand
+  jr    endChargeLeft               ;on collision change to R_Stand
 
   .RCharging:
   ld    hl,RightChargeAnimation
   call  AnimateCharging
   ld    a,(PlayerAniCount)
   cp    2 * 11                      ;check 10th frame
-  jp    z,Set_R_stand               ;at end of charge change to R_Stand
+  jp    z,endChargeRight            ;at end of charge change to R_Stand
 
-  call  RSitPunch.SetAttackHitBox     ;set the hitbox coordinates and enable hitbox
+  call  RSitPunch.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
   
   ;horizontal movement
   ld    a,(PlayerAniCount)
@@ -1486,7 +1486,19 @@ Charging:
   ld    de,4                        ;horizontal movement speed
   call  DoMovePlayer.EntryForHorizontalMovement
   ret   nc
-  jp    Set_R_stand                 ;on collision change to R_Stand
+;  jr    endChargeRight              ;on collision change to R_Stand
+
+  endChargeRight:
+	ld		a,(Controls)
+  and   %1111 1110                  ;reset up
+	ld		(Controls),a
+  jp    Set_R_stand                 ;on collision change to R_Stand  
+
+  endChargeLeft:
+	ld		a,(Controls)
+  and   %1111 1110                  ;reset up
+	ld		(Controls),a
+  jp    Set_L_stand                 ;on collision change to R_Stand  
 
 LeftChargeAnimation:
   dw  PlayerSpriteData_Char_LeftCharge1 
@@ -1886,7 +1898,310 @@ LAttack2:
 ;	cp    15
 ;	ret   nz
 ;  jp    Set_L_Stand
+
+
+
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 12*2, 0
+LeftSwordAttackAnimation:
+  dw  PlayerSpriteData_Char_LeftPunch2b
+  dw  PlayerSpriteData_Char_LeftPunch2b
+  dw  PlayerSpriteData_Char_LeftPunch2b
+  dw  PlayerSpriteData_Char_LeftPunch2c
+  dw  PlayerSpriteData_Char_LeftPunch2c
+  dw  PlayerSpriteData_Char_LeftPunch2c
+  dw  PlayerSpriteData_Char_LeftPunch2d
+  dw  PlayerSpriteData_Char_LeftPunch2d
+  dw  PlayerSpriteData_Char_LeftPunch2d
+  dw  PlayerSpriteData_Char_LeftPunch2a 
+  dw  PlayerSpriteData_Char_LeftPunch2a 
+  dw  PlayerSpriteData_Char_LeftPunch2a 
+
+;animate every x frames, amount of frames * 2, left(0) or Left(1)
+  db  1, 10*2, 0
+LeftDaggerVersion1AttackAnimation:
+  dw  PlayerSpriteData_Char_LeftPunch3a
+  dw  PlayerSpriteData_Char_LeftPunch3a
+  dw  PlayerSpriteData_Char_LeftPunch3a  
+  dw  PlayerSpriteData_Char_LeftPunch3a
+
+  dw  PlayerSpriteData_Char_LeftPunch3c
+  dw  PlayerSpriteData_Char_LeftPunch3c
+  dw  PlayerSpriteData_Char_LeftPunch3c
+
+  dw  PlayerSpriteData_Char_LeftPunch3b
+  dw  PlayerSpriteData_Char_LeftPunch3b
+  dw  PlayerSpriteData_Char_LeftPunch3b
+
+;animate every x frames, amount of frames * 2, left(0) or Left(1)
+  db  1, 10*2, 0
+LeftDaggerVersion2AttackAnimation:
+  dw  PlayerSpriteData_Char_LeftPunch1h
+  dw  PlayerSpriteData_Char_LeftPunch1h
+  dw  PlayerSpriteData_Char_LeftPunch1h
   
+  dw  PlayerSpriteData_Char_LeftPunch1e
+  dw  PlayerSpriteData_Char_LeftPunch1e
+  dw  PlayerSpriteData_Char_LeftPunch1e
+
+  dw  PlayerSpriteData_Char_LeftPunch1f
+  dw  PlayerSpriteData_Char_LeftPunch1f
+
+  dw  PlayerSpriteData_Char_LeftPunch1g
+  dw  PlayerSpriteData_Char_LeftPunch1g
+
+;animate every x frames, amount of frames * 2, left(0) or Left(1)
+  db  3, 12*2, 0
+LeftSpearAttackAnimation:
+  dw  PlayerSpriteData_Char_LeftSpearAttack1
+  dw  PlayerSpriteData_Char_LeftSpearAttack1
+  dw  PlayerSpriteData_Char_LeftSpearAttack1
+
+  dw  PlayerSpriteData_Char_LeftSpearAttack2
+  dw  PlayerSpriteData_Char_LeftSpearAttack2
+  dw  PlayerSpriteData_Char_LeftSpearAttack2
+
+  dw  PlayerSpriteData_Char_LeftSpearAttack3
+  dw  PlayerSpriteData_Char_LeftSpearAttack3
+  dw  PlayerSpriteData_Char_LeftSpearAttack3
+
+  dw  PlayerSpriteData_Char_LeftSpearAttack4
+  dw  PlayerSpriteData_Char_LeftSpearAttack4
+  dw  PlayerSpriteData_Char_LeftSpearAttack4
+
+;animate every x frames, amount of frames * 2, left(0) or Left(1)
+  db  1, 10*2, 0
+LeftAxeAttackAnimation:
+  dw  PlayerSpriteData_Char_LeftCharge7 
+  dw  PlayerSpriteData_Char_LeftCharge7 
+   
+  dw  PlayerSpriteData_Char_LeftCharge4
+  dw  PlayerSpriteData_Char_LeftCharge4
+
+  dw  PlayerSpriteData_Char_LeftCharge3
+  dw  PlayerSpriteData_Char_LeftCharge3
+
+  dw  PlayerSpriteData_Char_LeftCharge5
+  dw  PlayerSpriteData_Char_LeftCharge5
+
+  dw  PlayerSpriteData_Char_LeftCharge7 
+  dw  PlayerSpriteData_Char_LeftCharge7 
+
+LDaggerAttack:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    de,38
+  xor   a
+  sbc   hl,de
+  jp    c,Set_L_Stand
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-10
+  xor   a
+  sbc   hl,de
+  jp    nc,BruteForceMovementLeft
+  .EndCheckEdgesOfScreenLeft:
+
+;Animate
+  ld    hl,LeftDaggerVersion1AttackAnimation-3
+;  ld    hl,LeftDaggerVersion2AttackAnimation-3
+;  ld    hl,LeftSwordAttackAnimation-3
+;  ld    hl,LeftAxeAttackAnimation-3
+;  ld    hl,LeftSpearAttackAnimation-3
+  call  AnimatePlayerStopAtEnd    ;animates player, when end of table is reached, player goes to stand or sit pose
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 02
+  ret   nz
+
+  .EntranceWhileJumping:
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    de,-26                ;normal engine
+  jr    z,.engineFound
+  ld    de,-21                ;SF2 engine  
+  .engineFound:
+
+  ld    ix,PrimaryWeaponActive?
+  ld    (ix),-1             ;active? / movement speed+direction
+  ld    a,203               ;sx of first ice weapon going left 
+  ld    (ix+5),a            ;IceWeaponSX_RightSide
+  add   a,(ix+8)            ;add nx to determine at what point we should copy when copying from right to left
+  dec   a                   ;add nx - 1
+  ld    (ix+6),a            ;IceWeaponSX_LeftSide
+
+  ld    hl,(ClesX)
+  add   hl,de               ;adjust x starting placement projectile
+  ld    a,l
+  bit   0,h
+  jr    z,.SetX
+  ld    a,255
+  .SetX:
+  ld    (ix+2),a            ;x
+  ld    a,(ClesY)
+  ld    (ix+1),a            ;y
+  ret
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 12*2, 1
+RightSwordAttackAnimation:
+  dw  PlayerSpriteData_Char_RightPunch2b
+  dw  PlayerSpriteData_Char_RightPunch2b
+  dw  PlayerSpriteData_Char_RightPunch2b
+  dw  PlayerSpriteData_Char_RightPunch2c
+  dw  PlayerSpriteData_Char_RightPunch2c
+  dw  PlayerSpriteData_Char_RightPunch2c
+  dw  PlayerSpriteData_Char_RightPunch2d
+  dw  PlayerSpriteData_Char_RightPunch2d
+  dw  PlayerSpriteData_Char_RightPunch2d
+  dw  PlayerSpriteData_Char_RightPunch2a 
+  dw  PlayerSpriteData_Char_RightPunch2a 
+  dw  PlayerSpriteData_Char_RightPunch2a 
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 10*2, 1
+RightDaggerVersion1AttackAnimation:
+  dw  PlayerSpriteData_Char_RightPunch3a
+  dw  PlayerSpriteData_Char_RightPunch3a
+  dw  PlayerSpriteData_Char_RightPunch3a  
+  dw  PlayerSpriteData_Char_RightPunch3a
+
+  dw  PlayerSpriteData_Char_RightPunch3c
+  dw  PlayerSpriteData_Char_RightPunch3c
+  dw  PlayerSpriteData_Char_RightPunch3c
+
+  dw  PlayerSpriteData_Char_RightPunch3b
+  dw  PlayerSpriteData_Char_RightPunch3b
+  dw  PlayerSpriteData_Char_RightPunch3b
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 10*2, 1
+RightDaggerVersion2AttackAnimation:
+  dw  PlayerSpriteData_Char_RightPunch1h
+  dw  PlayerSpriteData_Char_RightPunch1h
+  dw  PlayerSpriteData_Char_RightPunch1h
+  
+  dw  PlayerSpriteData_Char_RightPunch1e
+  dw  PlayerSpriteData_Char_RightPunch1e
+  dw  PlayerSpriteData_Char_RightPunch1e
+
+  dw  PlayerSpriteData_Char_RightPunch1f
+  dw  PlayerSpriteData_Char_RightPunch1f
+
+  dw  PlayerSpriteData_Char_RightPunch1g
+  dw  PlayerSpriteData_Char_RightPunch1g
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  3, 12*2, 1
+RightSpearAttackAnimation:
+  dw  PlayerSpriteData_Char_RightSpearAttack1
+  dw  PlayerSpriteData_Char_RightSpearAttack1
+  dw  PlayerSpriteData_Char_RightSpearAttack1
+
+  dw  PlayerSpriteData_Char_RightSpearAttack2
+  dw  PlayerSpriteData_Char_RightSpearAttack2
+  dw  PlayerSpriteData_Char_RightSpearAttack2
+
+  dw  PlayerSpriteData_Char_RightSpearAttack3
+  dw  PlayerSpriteData_Char_RightSpearAttack3
+  dw  PlayerSpriteData_Char_RightSpearAttack3
+
+  dw  PlayerSpriteData_Char_RightSpearAttack4
+  dw  PlayerSpriteData_Char_RightSpearAttack4
+  dw  PlayerSpriteData_Char_RightSpearAttack4
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 10*2, 1
+RightAxeAttackAnimation:
+  dw  PlayerSpriteData_Char_RightCharge7 
+  dw  PlayerSpriteData_Char_RightCharge7 
+   
+  dw  PlayerSpriteData_Char_RightCharge4
+  dw  PlayerSpriteData_Char_RightCharge4
+
+  dw  PlayerSpriteData_Char_RightCharge3
+  dw  PlayerSpriteData_Char_RightCharge3
+
+  dw  PlayerSpriteData_Char_RightCharge5
+  dw  PlayerSpriteData_Char_RightCharge5
+
+  dw  PlayerSpriteData_Char_RightCharge7 
+  dw  PlayerSpriteData_Char_RightCharge7 
+
+RDaggerAttack:
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot and move to the right
+  ld    de,11
+  xor   a
+  sbc   hl,de
+  jp    c,BruteForceMovementRight
+
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    de,304-37-12
+  xor   a
+  sbc   hl,de
+  jp    nc,Set_R_Stand
+
+;Animate
+  ld    hl,RightDaggerVersion1AttackAnimation-3
+;  ld    hl,RightDaggerVersion2AttackAnimation-3
+;  ld    hl,RightSwordAttackAnimation-3
+;  ld    hl,RightAxeAttackAnimation-3
+;  ld    hl,RightSpearAttackAnimation-3
+  call  AnimatePlayerStopAtEnd    ;animates player, when end of table is reached, player goes to stand or sit pose
+
+  ld    a,(PlayerAniCount)
+  cp    2 * 02
+  ret   nz
+
+  .EntranceWhileJumping:
+  ld    a,(scrollEngine)          ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,20                      ;normal engine
+  jr    z,.engineFound
+  ld    b,04                      ;SF2 engine 
+  .engineFound:
+
+
+  ld    ix,PrimaryWeaponActive?
+  ld    (ix),+1             ;active? / movement speed+direction
+  ld    a,229               ;sx of first ice weapon going left 
+  ld    (ix+5),a            ;IceWeaponSX_RightSide
+  add   a,(ix+8)            ;add nx to determine at what point we should copy when copying from right to left
+  dec   a                   ;add nx - 1
+  ld    (ix+6),a            ;IceWeaponSX_LeftSide
+
+  ld    a,(ClesX)
+  sub   a,b                 ;adjust x starting placement projectile    
+  jr    nc,.SetX
+  xor   a
+  .SetX:
+  ld    (ix+2),a            ;x
+  ld    a,(ClesY)
+  ld    (ix+1),a            ;y
+  ret
+
+AnimatePlayerStopAtEnd:           ;animates player, when end of table is reached, player goes to stand or sit pose
+  ld    a,(framecounter)          ;animate every 4 frames
+  and   (hl)                      ;animate every x frames
+  ret   nz
+
+  inc   hl                        ;amount of frames * 2  
+  ld    b,(hl)
+  inc   hl                        ;left(0) or right(1)
+  ld    c,(hl)  
+  inc   hl                        ;start sprite data
+
+  ld    a,(PlayerAniCount)
+  add   a,2                       ;2 bytes used for pointer to sprite frame address
+  cp    b                         ;amount of frames * 2
+  jp    nz,AnimateRun.SetPlayerAniCount
+
+  .end:
+  ld    a,c
+  or    a
+  jp    z,Set_L_Stand
+  jp    Set_R_Stand
+
 RAttack:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
