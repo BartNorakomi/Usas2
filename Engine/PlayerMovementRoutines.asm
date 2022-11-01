@@ -1,6 +1,6 @@
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
-;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing, RDaggerAttack
+;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing, RDaggerAttack, LDaggerAttack
 
 LShootWater:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
@@ -1903,90 +1903,98 @@ LAttack2:
 
 
 ;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 12*2, 0
-LeftSwordAttackAnimation:
-  dw  PlayerSpriteData_Char_LeftPunch2b
-  dw  PlayerSpriteData_Char_LeftPunch2b
-  dw  PlayerSpriteData_Char_LeftPunch2b
-  dw  PlayerSpriteData_Char_LeftPunch2c
-  dw  PlayerSpriteData_Char_LeftPunch2c
-  dw  PlayerSpriteData_Char_LeftPunch2c
-  dw  PlayerSpriteData_Char_LeftPunch2d
-  dw  PlayerSpriteData_Char_LeftPunch2d
-  dw  PlayerSpriteData_Char_LeftPunch2d
-  dw  PlayerSpriteData_Char_LeftPunch2a 
-  dw  PlayerSpriteData_Char_LeftPunch2a 
-  dw  PlayerSpriteData_Char_LeftPunch2a 
-
-;animate every x frames, amount of frames * 2, left(0) or Left(1)
-  db  1, 10*2, 0
-LeftDaggerVersion1AttackAnimation:
-  dw  PlayerSpriteData_Char_LeftPunch3a
-  dw  PlayerSpriteData_Char_LeftPunch3a
-  dw  PlayerSpriteData_Char_LeftPunch3a  
-  dw  PlayerSpriteData_Char_LeftPunch3a
-
-  dw  PlayerSpriteData_Char_LeftPunch3c
-  dw  PlayerSpriteData_Char_LeftPunch3c
-  dw  PlayerSpriteData_Char_LeftPunch3c
-
-  dw  PlayerSpriteData_Char_LeftPunch3b
-  dw  PlayerSpriteData_Char_LeftPunch3b
-  dw  PlayerSpriteData_Char_LeftPunch3b
-
-;animate every x frames, amount of frames * 2, left(0) or Left(1)
-  db  1, 10*2, 0
-LeftDaggerVersion2AttackAnimation:
-  dw  PlayerSpriteData_Char_LeftPunch1h
-  dw  PlayerSpriteData_Char_LeftPunch1h
-  dw  PlayerSpriteData_Char_LeftPunch1h
+  db  1, 12*8, 0
+                                        ;positioning for the SW sprites:
+LeftSwordAttackAnimation:               ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftPunch2b | db 008,040,006,012,216+34,106
+  dw  PlayerSpriteData_Char_LeftPunch2b | db 008,040,006,012,216+34,106
+  dw  PlayerSpriteData_Char_LeftPunch2b | db 008,040,006,012,216+34,106
   
-  dw  PlayerSpriteData_Char_LeftPunch1e
-  dw  PlayerSpriteData_Char_LeftPunch1e
-  dw  PlayerSpriteData_Char_LeftPunch1e
+  dw  PlayerSpriteData_Char_LeftPunch2c | db 002,045,010,016,216+09,112
+  dw  PlayerSpriteData_Char_LeftPunch2c | db 002,045,010,016,216+09,112
+  dw  PlayerSpriteData_Char_LeftPunch2c | db 002,045,010,016,216+09,112
 
-  dw  PlayerSpriteData_Char_LeftPunch1f
-  dw  PlayerSpriteData_Char_LeftPunch1f
+  dw  PlayerSpriteData_Char_LeftPunch2d | db 002,042,009,012,216+10,100
+  dw  PlayerSpriteData_Char_LeftPunch2d | db 002,042,009,012,216+10,100
+  dw  PlayerSpriteData_Char_LeftPunch2d | db 002,042,009,012,216+10,100
 
-  dw  PlayerSpriteData_Char_LeftPunch1g
-  dw  PlayerSpriteData_Char_LeftPunch1g
+  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,027,005,007,216+24,134
+  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,027,005,007,216+24,134
+  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,027,005,007,216+24,134
 
-;animate every x frames, amount of frames * 2, left(0) or Left(1)
-  db  3, 12*2, 0
-LeftSpearAttackAnimation:
-  dw  PlayerSpriteData_Char_LeftSpearAttack1
-  dw  PlayerSpriteData_Char_LeftSpearAttack1
-  dw  PlayerSpriteData_Char_LeftSpearAttack1
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 10*8, 0                        
+                                        ;positioning for the SW sprites:
+LeftDaggerVersion1AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030,005,009,216+24,203
 
-  dw  PlayerSpriteData_Char_LeftSpearAttack2
-  dw  PlayerSpriteData_Char_LeftSpearAttack2
-  dw  PlayerSpriteData_Char_LeftSpearAttack2
+  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035,005,009,216+24,203 
+  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035,005,009,216+24,203
 
-  dw  PlayerSpriteData_Char_LeftSpearAttack3
-  dw  PlayerSpriteData_Char_LeftSpearAttack3
-  dw  PlayerSpriteData_Char_LeftSpearAttack3
+  dw  PlayerSpriteData_Char_LeftPunch3b | db 004,033,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3b | db 004,033,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3b | db 004,033,005,009,216+24,203
 
-  dw  PlayerSpriteData_Char_LeftSpearAttack4
-  dw  PlayerSpriteData_Char_LeftSpearAttack4
-  dw  PlayerSpriteData_Char_LeftSpearAttack4
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 10*8, 0
+                                        ;positioning for the SW sprites:  
+LeftDaggerVersion2AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftPunch1h | db 007,025,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1h | db 007,025,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1h | db 007,025,005,009,216+24,203
+  
+  dw  PlayerSpriteData_Char_LeftPunch1e | db 003,036,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1e | db 003,036,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1e | db 003,036,005,009,216+24,203
 
-;animate every x frames, amount of frames * 2, left(0) or Left(1)
-  db  1, 10*2, 0
-LeftAxeAttackAnimation:
-  dw  PlayerSpriteData_Char_LeftCharge7 
-  dw  PlayerSpriteData_Char_LeftCharge7 
+  dw  PlayerSpriteData_Char_LeftPunch1f | db 005,034,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1f | db 005,034,005,009,216+24,203
+
+  dw  PlayerSpriteData_Char_LeftPunch1g | db 006,029,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1g | db 006,029,005,009,216+24,203
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 11*8, 0
+                                             ;positioning for the SW sprites:  
+LeftSpearAttackAnimation:                    ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftSpearAttack1 | db 002,037,005,013,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack2 | db 003,039,005,015,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack3 | db 004,043,005,019,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack1 | db 002,037,005,013,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack1 | db 002,037,005,013,216+24,172
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 14*8, 0
+                                        ;positioning for the SW sprites:  
+LeftAxeAttackAnimation:                 ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,016,009,012,216+21,084 
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,016,009,012,216+21,084
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,016,009,012,216+21,084
    
-  dw  PlayerSpriteData_Char_LeftCharge4
-  dw  PlayerSpriteData_Char_LeftCharge4
+  dw  PlayerSpriteData_Char_LeftCharge4 | db -15,016,010,012,216+21,116
+  dw  PlayerSpriteData_Char_LeftCharge4 | db -15,016,010,012,216+21,116
 
-  dw  PlayerSpriteData_Char_LeftCharge3
-  dw  PlayerSpriteData_Char_LeftCharge3
+  dw  PlayerSpriteData_Char_LeftCharge3 | db -15,033,013,012,216+21,107
+  dw  PlayerSpriteData_Char_LeftCharge3 | db -15,033,013,012,216+21,107
 
-  dw  PlayerSpriteData_Char_LeftCharge5
-  dw  PlayerSpriteData_Char_LeftCharge5
+  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036,010,012,216+30,093
+  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036,010,012,216+30,093
+  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036,010,012,216+30,093
+  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036,010,012,216+30,093
 
-  dw  PlayerSpriteData_Char_LeftCharge7 
-  dw  PlayerSpriteData_Char_LeftCharge7 
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,031,010,010,216+30,083
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,031,010,010,216+30,083
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,031,010,010,216+30,083
 
 LDaggerAttack:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
@@ -2002,131 +2010,212 @@ LDaggerAttack:
   jp    nc,BruteForceMovementLeft
   .EndCheckEdgesOfScreenLeft:
 
-;Animate
-  ld    hl,LeftDaggerVersion1AttackAnimation-3
-;  ld    hl,LeftDaggerVersion2AttackAnimation-3
-;  ld    hl,LeftSwordAttackAnimation-3
-;  ld    hl,LeftAxeAttackAnimation-3
-;  ld    hl,LeftSpearAttackAnimation-3
-  call  AnimatePlayerStopAtEnd    ;animates player, when end of table is reached, player goes to stand or sit pose
-
-  ld    a,(PlayerAniCount)
-  cp    2 * 02
-  ret   nz
-
-  .EntranceWhileJumping:
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    de,-26                ;normal engine
-  jr    z,.engineFound
-  ld    de,-21                ;SF2 engine  
-  .engineFound:
-
   ld    ix,PrimaryWeaponActive?
   ld    (ix),-1             ;active? / movement speed+direction
-  ld    a,203               ;sx of first ice weapon going left 
+
+;Animate
+;  ld    hl,LeftSwordAttackAnimation-3
+;  ld    hl,LeftDaggerVersion1AttackAnimation-3
+;  ld    hl,LeftDaggerVersion2AttackAnimation-3
+  ld    hl,LeftAxeAttackAnimation-3
+;  ld    hl,LeftSpearAttackAnimation-3
+  call  LeftAnimatePlayerStopAtEnd    ;animates player, when end of table is reached, player goes to stand or sit pose
+
+;  .EntranceWhileJumping:
+  ;set ny,nx,sy,sx and store addy and addx
+  inc   hl                  ;addy
+  ld    b,(hl)
+  inc   hl                  ;subx
+  ld    d,0
+  ld    e,(hl)              ;subx
+  inc   hl                  ;ny
+  ld    a,(hl)
+  ld    (ix+7),a            ;ny
+  inc   hl                  ;nx
+  ld    a,(hl)
+  ld    (ix+8),a            ;nx
+  inc   hl                  ;sy
+  ld    a,(hl)
+  ld    (ix+4),a            ;sy  
+  inc   hl                  ;sx
+  ld    a,(hl)
   ld    (ix+5),a            ;IceWeaponSX_RightSide
   add   a,(ix+8)            ;add nx to determine at what point we should copy when copying from right to left
   dec   a                   ;add nx - 1
   ld    (ix+6),a            ;IceWeaponSX_LeftSide
 
+  ;set x
+  ld    a,(scrollEngine)    ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jr    z,.engineFound
+  ld    a,-16               ;in the SF2 engine, we move all objects 16 pixels more to the left
+  .engineFound:
+  add   a,(ix+9)            ;SubX
+  ld    (ix+9),e            ;SubX
+  ld    e,a
   ld    hl,(ClesX)
-  add   hl,de               ;adjust x starting placement projectile
+  or    a                   ;reset carry
+  sbc   hl,de               ;adjust x starting placement projectile
   ld    a,l
   bit   0,h
   jr    z,.SetX
   ld    a,255
   .SetX:
   ld    (ix+2),a            ;x
+
+  ;set y
   ld    a,(ClesY)
+  add   a,(ix+10)           ;Addy
+  ld    (ix+10),b           ;Addy
   ld    (ix+1),a            ;y
   ret
 
-;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 12*2, 1
-RightSwordAttackAnimation:
-  dw  PlayerSpriteData_Char_RightPunch2b
-  dw  PlayerSpriteData_Char_RightPunch2b
-  dw  PlayerSpriteData_Char_RightPunch2b
-  dw  PlayerSpriteData_Char_RightPunch2c
-  dw  PlayerSpriteData_Char_RightPunch2c
-  dw  PlayerSpriteData_Char_RightPunch2c
-  dw  PlayerSpriteData_Char_RightPunch2d
-  dw  PlayerSpriteData_Char_RightPunch2d
-  dw  PlayerSpriteData_Char_RightPunch2d
-  dw  PlayerSpriteData_Char_RightPunch2a 
-  dw  PlayerSpriteData_Char_RightPunch2a 
-  dw  PlayerSpriteData_Char_RightPunch2a 
+LeftAnimatePlayerStopAtEnd:           ;animates player, when end of table is reached, player goes to stand or sit pose
+  ld    a,(framecounter)          ;animate every 4 frames
+  and   (hl)                      ;animate every x frames
+  ex    af,af'
 
-;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 10*2, 1
-RightDaggerVersion1AttackAnimation:
-  dw  PlayerSpriteData_Char_RightPunch3a
-  dw  PlayerSpriteData_Char_RightPunch3a
-  dw  PlayerSpriteData_Char_RightPunch3a  
-  dw  PlayerSpriteData_Char_RightPunch3a
+  inc   hl                        ;amount of frames * 2  
+  ld    b,(hl)
+  inc   hl                        ;left(0) or right(1)
+  ld    c,(hl)  
+  inc   hl                        ;start sprite data
 
-  dw  PlayerSpriteData_Char_RightPunch3c
-  dw  PlayerSpriteData_Char_RightPunch3c
-  dw  PlayerSpriteData_Char_RightPunch3c
+  ld    a,(PlayerAniCount)
+  call  .SetPlayerCharacter
 
-  dw  PlayerSpriteData_Char_RightPunch3b
-  dw  PlayerSpriteData_Char_RightPunch3b
-  dw  PlayerSpriteData_Char_RightPunch3b
-
-;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 10*2, 1
-RightDaggerVersion2AttackAnimation:
-  dw  PlayerSpriteData_Char_RightPunch1h
-  dw  PlayerSpriteData_Char_RightPunch1h
-  dw  PlayerSpriteData_Char_RightPunch1h
+  ex    af,af'
+  ret   nz
   
-  dw  PlayerSpriteData_Char_RightPunch1e
-  dw  PlayerSpriteData_Char_RightPunch1e
-  dw  PlayerSpriteData_Char_RightPunch1e
+  ld    a,(PlayerAniCount)
+  add   a,8                       ;8 bytes used for pointer to sprite frame address
+  ld    (PlayerAniCount),a
+  cp    b                         ;amount of frames * 2
+  ret   nz
 
-  dw  PlayerSpriteData_Char_RightPunch1f
-  dw  PlayerSpriteData_Char_RightPunch1f
+  .end:
+  ld    a,c
+  or    a
+  jp    z,Set_L_Stand
+  jp    Set_R_Stand
 
-  dw  PlayerSpriteData_Char_RightPunch1g
-  dw  PlayerSpriteData_Char_RightPunch1g
+  .SetPlayerCharacter:  
+  ld    d,0
+  ld    e,a
+  add   hl,de
+    
+  ld    e,(hl)
+  inc   hl
+  ld    d,(hl)
+    
+	ld		(standchar),de
+  ret	
+
+
+
+
+
+
+
+
+
+
+
+
 
 ;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  3, 12*2, 1
-RightSpearAttackAnimation:
-  dw  PlayerSpriteData_Char_RightSpearAttack1
-  dw  PlayerSpriteData_Char_RightSpearAttack1
-  dw  PlayerSpriteData_Char_RightSpearAttack1
+  db  1, 12*8, 1
+                                        ;positioning for the SW sprites:
+RightSwordAttackAnimation:               ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_RightPunch2b | db 008,016,008,012,216+32,116
+  dw  PlayerSpriteData_Char_RightPunch2b | db 008,016,008,012,216+32,116
+  dw  PlayerSpriteData_Char_RightPunch2b | db 008,016,008,012,216+32,116
+  
+  dw  PlayerSpriteData_Char_RightPunch2c | db 002,045,010,016,216+09,112
+  dw  PlayerSpriteData_Char_RightPunch2c | db 002,045,010,016,216+09,112
+  dw  PlayerSpriteData_Char_RightPunch2c | db 002,045,010,016,216+09,112
 
-  dw  PlayerSpriteData_Char_RightSpearAttack2
-  dw  PlayerSpriteData_Char_RightSpearAttack2
-  dw  PlayerSpriteData_Char_RightSpearAttack2
+  dw  PlayerSpriteData_Char_RightPunch2d | db 002,042,009,012,216+10,100
+  dw  PlayerSpriteData_Char_RightPunch2d | db 002,042,009,012,216+10,100
+  dw  PlayerSpriteData_Char_RightPunch2d | db 002,042,009,012,216+10,100
 
-  dw  PlayerSpriteData_Char_RightSpearAttack3
-  dw  PlayerSpriteData_Char_RightSpearAttack3
-  dw  PlayerSpriteData_Char_RightSpearAttack3
-
-  dw  PlayerSpriteData_Char_RightSpearAttack4
-  dw  PlayerSpriteData_Char_RightSpearAttack4
-  dw  PlayerSpriteData_Char_RightSpearAttack4
+  dw  PlayerSpriteData_Char_RightPunch2a | db 003,027,005,007,216+24,134
+  dw  PlayerSpriteData_Char_RightPunch2a | db 003,027,005,007,216+24,134
+  dw  PlayerSpriteData_Char_RightPunch2a | db 003,027,005,007,216+24,134
 
 ;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 10*2, 1
-RightAxeAttackAnimation:
-  dw  PlayerSpriteData_Char_RightCharge7 
-  dw  PlayerSpriteData_Char_RightCharge7 
+  db  1, 10*8, 1                        
+                                        ;positioning for the SW sprites:
+RightDaggerVersion1AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_RightPunch3a | db 004,030,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch3a | db 004,030,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch3a | db 004,030,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch3a | db 004,030,005,009,216+24,203
+
+  dw  PlayerSpriteData_Char_RightPunch3c | db 004,035,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch3c | db 004,035,005,009,216+24,203 
+  dw  PlayerSpriteData_Char_RightPunch3c | db 004,035,005,009,216+24,203
+
+  dw  PlayerSpriteData_Char_RightPunch3b | db 004,033,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch3b | db 004,033,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch3b | db 004,033,005,009,216+24,203
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 10*8, 1
+                                        ;positioning for the SW sprites:  
+RightDaggerVersion2AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_RightPunch1h | db 007,025,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch1h | db 007,025,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch1h | db 007,025,005,009,216+24,203
+  
+  dw  PlayerSpriteData_Char_RightPunch1e | db 003,036,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch1e | db 003,036,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch1e | db 003,036,005,009,216+24,203
+
+  dw  PlayerSpriteData_Char_RightPunch1f | db 005,034,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch1f | db 005,034,005,009,216+24,203
+
+  dw  PlayerSpriteData_Char_RightPunch1g | db 006,029,005,009,216+24,203
+  dw  PlayerSpriteData_Char_RightPunch1g | db 006,029,005,009,216+24,203
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 11*8, 1
+                                             ;positioning for the SW sprites:  
+RightSpearAttackAnimation:                    ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_RightSpearAttack1 | db 002,037,005,013,216+24,172
+  dw  PlayerSpriteData_Char_RightSpearAttack2 | db 003,039,005,015,216+24,172
+  dw  PlayerSpriteData_Char_RightSpearAttack3 | db 004,043,005,019,216+24,172
+  dw  PlayerSpriteData_Char_RightSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_RightSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_RightSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_RightSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_RightSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_RightSpearAttack4 | db 002,050,005,026,216+24,172
+  dw  PlayerSpriteData_Char_RightSpearAttack1 | db 002,037,005,013,216+24,172
+  dw  PlayerSpriteData_Char_RightSpearAttack1 | db 002,037,005,013,216+24,172
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 14*8, 1
+                                        ;positioning for the SW sprites:  
+RightAxeAttackAnimation:                 ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_RightCharge7 | db 004,016,009,012,216+21,084 
+  dw  PlayerSpriteData_Char_RightCharge7 | db 004,016,009,012,216+21,084
+  dw  PlayerSpriteData_Char_RightCharge7 | db 004,016,009,012,216+21,084
    
-  dw  PlayerSpriteData_Char_RightCharge4
-  dw  PlayerSpriteData_Char_RightCharge4
+  dw  PlayerSpriteData_Char_RightCharge4 | db -15,016,010,012,216+21,116
+  dw  PlayerSpriteData_Char_RightCharge4 | db -15,016,010,012,216+21,116
 
-  dw  PlayerSpriteData_Char_RightCharge3
-  dw  PlayerSpriteData_Char_RightCharge3
+  dw  PlayerSpriteData_Char_RightCharge3 | db -15,033,013,012,216+21,107
+  dw  PlayerSpriteData_Char_RightCharge3 | db -15,033,013,012,216+21,107
 
-  dw  PlayerSpriteData_Char_RightCharge5
-  dw  PlayerSpriteData_Char_RightCharge5
+  dw  PlayerSpriteData_Char_RightCharge5 | db 001,036,010,012,216+30,093
+  dw  PlayerSpriteData_Char_RightCharge5 | db 001,036,010,012,216+30,093
+  dw  PlayerSpriteData_Char_RightCharge5 | db 001,036,010,012,216+30,093
+  dw  PlayerSpriteData_Char_RightCharge5 | db 001,036,010,012,216+30,093
 
-  dw  PlayerSpriteData_Char_RightCharge7 
-  dw  PlayerSpriteData_Char_RightCharge7 
+  dw  PlayerSpriteData_Char_RightCharge7 | db 004,031,010,010,216+30,083
+  dw  PlayerSpriteData_Char_RightCharge7 | db 004,031,010,010,216+30,083
+  dw  PlayerSpriteData_Char_RightCharge7 | db 004,031,010,010,216+30,083
 
 RDaggerAttack:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot and move to the right
@@ -2141,66 +2230,79 @@ RDaggerAttack:
   sbc   hl,de
   jp    nc,Set_R_Stand
 
+  ld    ix,PrimaryWeaponActive?
+  ld    (ix),-1             ;active? / movement speed+direction
+
 ;Animate
-  ld    hl,RightDaggerVersion1AttackAnimation-3
+  ld    hl,RightSwordAttackAnimation-3
+;  ld    hl,RightDaggerVersion1AttackAnimation-3
 ;  ld    hl,RightDaggerVersion2AttackAnimation-3
-;  ld    hl,RightSwordAttackAnimation-3
 ;  ld    hl,RightAxeAttackAnimation-3
 ;  ld    hl,RightSpearAttackAnimation-3
-  call  AnimatePlayerStopAtEnd    ;animates player, when end of table is reached, player goes to stand or sit pose
+  call  LeftAnimatePlayerStopAtEnd    ;animates player, when end of table is reached, player goes to stand or sit pose
 
-  ld    a,(PlayerAniCount)
-  cp    2 * 02
-  ret   nz
-
-  .EntranceWhileJumping:
-  ld    a,(scrollEngine)          ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    b,20                      ;normal engine
-  jr    z,.engineFound
-  ld    b,04                      ;SF2 engine 
-  .engineFound:
-
-
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),+1             ;active? / movement speed+direction
-  ld    a,229               ;sx of first ice weapon going left 
+;  .EntranceWhileJumping:
+  ;set ny,nx,sy,sx and store addy and addx
+  inc   hl                  ;addy
+  ld    b,(hl)
+  inc   hl                  ;subx
+  ld    d,0
+  ld    e,(hl)              ;subx
+  inc   hl                  ;ny
+  ld    a,(hl)
+  ld    (ix+7),a            ;ny
+  inc   hl                  ;nx
+  ld    a,(hl)
+  ld    (ix+8),a            ;nx
+  inc   hl                  ;sy
+  ld    a,(hl)
+  ld    (ix+4),a            ;sy  
+  inc   hl                  ;sx
+  ld    a,(hl)
   ld    (ix+5),a            ;IceWeaponSX_RightSide
   add   a,(ix+8)            ;add nx to determine at what point we should copy when copying from right to left
   dec   a                   ;add nx - 1
   ld    (ix+6),a            ;IceWeaponSX_LeftSide
 
-  ld    a,(ClesX)
-  sub   a,b                 ;adjust x starting placement projectile    
-  jr    nc,.SetX
-  xor   a
+  ;set x
+  ld    a,(scrollEngine)    ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jr    z,.engineFound
+  ld    a,-16               ;in the SF2 engine, we move all objects 16 pixels more to the left
+  .engineFound:
+  add   a,(ix+9)            ;SubX
+  ld    (ix+9),e            ;SubX
+  ld    e,a
+  ld    hl,(ClesX)
+  or    a                   ;reset carry
+  sbc   hl,de               ;adjust x starting placement projectile
+  ld    a,l
+  bit   0,h
+  jr    z,.SetX
+  ld    a,255
   .SetX:
   ld    (ix+2),a            ;x
+
+  ;set y
   ld    a,(ClesY)
+  add   a,(ix+10)           ;Addy
+  ld    (ix+10),b           ;Addy
   ld    (ix+1),a            ;y
   ret
 
-AnimatePlayerStopAtEnd:           ;animates player, when end of table is reached, player goes to stand or sit pose
-  ld    a,(framecounter)          ;animate every 4 frames
-  and   (hl)                      ;animate every x frames
-  ret   nz
 
-  inc   hl                        ;amount of frames * 2  
-  ld    b,(hl)
-  inc   hl                        ;left(0) or right(1)
-  ld    c,(hl)  
-  inc   hl                        ;start sprite data
 
-  ld    a,(PlayerAniCount)
-  add   a,2                       ;2 bytes used for pointer to sprite frame address
-  cp    b                         ;amount of frames * 2
-  jp    nz,AnimateRun.SetPlayerAniCount
 
-  .end:
-  ld    a,c
-  or    a
-  jp    z,Set_L_Stand
-  jp    Set_R_Stand
+
+
+
+
+
+
+
+
+
+
 
 RAttack:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running

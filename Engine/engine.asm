@@ -3569,6 +3569,8 @@ PrimaryWeaponSX_RightSide:  db  229       ;(ix+5)
 PrimaryWeaponSX_LeftSide:   db  000+00    ;(ix+6)
 PrimaryWeaponNY:            db  005       ;(ix+7)
 PrimaryWeaponNX:            db  009       ;(ix+8)
+PrimaryWeaponSubX:          db  000       ;(ix+9)
+PrimaryWeaponAddY:          db  000       ;(ix+10)
 
 HandlePlayerWeapons:
   ld    a,(ArrowActive?)
@@ -3603,14 +3605,14 @@ HandlePlayerWeapons:
   PrimaryWeapon:
   ld    ix,PrimaryWeaponActive?
   ;ice weapon animation
-  ld    a,229               ;sx of first ice weapon going right
-  jp    p,.DirectionFound
-  ld    a,203               ;sx of first ice weapon going left 
-  .DirectionFound:
-  ld    (ix+5),a            ;IceWeaponSX_RightSide
-  add   a,(ix+8)            ;add nx to determine at what point we should copy when copying from right to left
-  dec   a                   ;add nx - 1
-  ld    (ix+6),a            ;IceWeaponSX_LeftSide
+;  ld    a,229               ;sx of first ice weapon going right
+;  jp    p,.DirectionFound
+;  ld    a,203               ;sx of first ice weapon going left 
+;  .DirectionFound:
+;  ld    (ix+5),a            ;IceWeaponSX_RightSide
+;  add   a,(ix+8)            ;add nx to determine at what point we should copy when copying from right to left
+;  dec   a                   ;add nx - 1
+;  ld    (ix+6),a            ;IceWeaponSX_LeftSide
   ;/ice weapon animation
   jp    GoHandlePlayerWeapon.skipDurationCheck
 
@@ -3735,10 +3737,8 @@ HandlePlayerWeapons:
 
   .skipDurationCheck:
   ld    a,(ix+4)          ;sy  
-
-ld a,216+24
   ld    (CopyPlayerProjectile+sy),a
-  ld    a,(ix+7)          ;sy
+  ld    a,(ix+7)          ;ny
   ld    (CopyPlayerProjectile+ny),a
   ld    (CleanPlayerProjectile+ny),a
   ld    a,(ix+8)          ;nx
@@ -3829,7 +3829,7 @@ ld a,216+24
   ld    (iy+sx),a
 
   ld    a,(ix+2)            ;FireballX
-  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
+;  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
   ld    (ix+2),a            ;FireballX
 
   ld    a,(ix+2)            ;FireballX
@@ -3849,8 +3849,7 @@ ld a,216+24
   ret
 
   .RemoveWeapon:
-  xor   a
-  ld    (ix+0),a
+  ld    (ix+0),0
 
   ld    a,MagicWeaponDurationValue
   ld    (MagicWeaponDuration),a  
@@ -3907,7 +3906,7 @@ ld a,216+24
   ld    (CopyPlayerProjectile+dy),a
 
   ld    a,(ix+2)            ;FireballX
-  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
+;  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
   ld    (ix+2),a            ;FireballX
   
   add   a,d
@@ -3973,7 +3972,7 @@ PlayerWeaponSf2Engine:
   ld    (iy+sx),a
 
   ld    a,(ix+2)            ;FireballX
-  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
+;  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
   ld    (ix+2),a            ;FireballX
 
   ld    a,(ix+2)            ;FireballX
@@ -3994,8 +3993,7 @@ PlayerWeaponSf2Engine:
   ld    a,MagicWeaponDurationValue
   ld    (MagicWeaponDuration),a  
   
-  xor   a
-  ld    (ix+0),a
+  ld    (ix+0),0
   ret
   
  
@@ -5417,88 +5415,13 @@ Set_L_sit:
 	ld		(PlayerSpriteStand),hl
   ret
 
-Set_R_stand:
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
-
-  xor   a
-  ld    (EnableHitbox?),a
-;  ld    (ShootArrowWhileJump?),a
-  ld    a,1
-  ld    (PlayerFacingRight?),a	
-	ld		hl,RStanding
-	ld		(PlayerSpriteStand),hl
-	ld		hl,PlayerSpriteData_Char_RightStand
-	ld		(standchar),hl
-
-  ld    a,(ShootArrowWhileJump?)
-  or    a
-  jr    z,.EndCheckShootArrowWhileJump
-  xor   a
-  ld    (ShootArrowWhileJump?),a
-	ld		hl,RShootArrow
-	ld		(PlayerSpriteStand),hl
-  .EndCheckShootArrowWhileJump:
-
-  ld    a,(ShootMagicWhileJump?)                                ;check if player was shooting magic weapon while jumping
-  or    a
-  ret   z
-  xor   a
-  ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
-
-  ld    a,RunningTablePointerCenter
-  ld    (RunningTablePointer),a  
-
-  ld    a,(CurrentMagicWeapon)                                  ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
-  cp    5
-  jp    z,.Fireball
-  cp    7
-  jp    z,.Ice
-  cp    8
-  jp    z,.Earth
-  cp    9
-  jp    z,.Water
-  ret
-
-  .Fireball:
-  ld    a,(FireballActive?)                                     ;check if fireball is already being shot
-  or    a
-  ret   nz
-	ld		hl,RShootFireball
-  jr    .SetMagicShootingStand
-
-  .Ice:
-  ld    a,(IceWeaponActive?)                                     ;check if fireball is already being shot
-  or    a
-  ret   nz
-	ld		hl,RShootIce
-  jr    .SetMagicShootingStand
-
-  .Earth:
-  ld    a,(EarthWeaponActive?)                                     ;check if fireball is already being shot
-  or    a
-  ret   nz
-	ld		hl,RShootEarth
-  jr    .SetMagicShootingStand
-
-  .Water:
-  ld    a,(WaterWeaponActive?)                                     ;check if fireball is already being shot
-  or    a
-  ret   nz
-	ld		hl,RShootWater
-	.SetMagicShootingStand:
-	ld		(PlayerSpriteStand),hl
-  xor   a
-;  ld    (PlayerAniCount),a  
-  ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
-  ret
-
 Set_L_stand:
   ld    a,CollisionSYStanding
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
 
   xor   a
   ld    (EnableHitbox?),a
+  ld    (PrimaryWeaponActive?),a
 ;  ld    (ShootArrowWhileJump?),a
   ld    (PlayerFacingRight?),a	
 	ld		hl,LStanding
@@ -5562,6 +5485,83 @@ Set_L_stand:
   or    a
   ret   nz
 	ld		hl,LShootWater
+	.SetMagicShootingStand:
+	ld		(PlayerSpriteStand),hl
+  xor   a
+;  ld    (PlayerAniCount),a  
+  ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
+  ret
+
+Set_R_stand:
+  ld    a,CollisionSYStanding
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+
+  xor   a
+  ld    (EnableHitbox?),a
+  ld    (PrimaryWeaponActive?),a  
+;  ld    (ShootArrowWhileJump?),a
+  ld    a,1
+  ld    (PlayerFacingRight?),a	
+	ld		hl,RStanding
+	ld		(PlayerSpriteStand),hl
+	ld		hl,PlayerSpriteData_Char_RightStand
+	ld		(standchar),hl
+
+  ld    a,(ShootArrowWhileJump?)
+  or    a
+  jr    z,.EndCheckShootArrowWhileJump
+  xor   a
+  ld    (ShootArrowWhileJump?),a
+	ld		hl,RShootArrow
+	ld		(PlayerSpriteStand),hl
+  .EndCheckShootArrowWhileJump:
+
+  ld    a,(ShootMagicWhileJump?)                                ;check if player was shooting magic weapon while jumping
+  or    a
+  ret   z
+  xor   a
+  ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
+
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a  
+
+  ld    a,(CurrentMagicWeapon)                                  ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
+  cp    5
+  jp    z,.Fireball
+  cp    7
+  jp    z,.Ice
+  cp    8
+  jp    z,.Earth
+  cp    9
+  jp    z,.Water
+  ret
+
+  .Fireball:
+  ld    a,(FireballActive?)                                     ;check if fireball is already being shot
+  or    a
+  ret   nz
+	ld		hl,RShootFireball
+  jr    .SetMagicShootingStand
+
+  .Ice:
+  ld    a,(IceWeaponActive?)                                     ;check if fireball is already being shot
+  or    a
+  ret   nz
+	ld		hl,RShootIce
+  jr    .SetMagicShootingStand
+
+  .Earth:
+  ld    a,(EarthWeaponActive?)                                     ;check if fireball is already being shot
+  or    a
+  ret   nz
+	ld		hl,RShootEarth
+  jr    .SetMagicShootingStand
+
+  .Water:
+  ld    a,(WaterWeaponActive?)                                     ;check if fireball is already being shot
+  or    a
+  ret   nz
+	ld		hl,RShootWater
 	.SetMagicShootingStand:
 	ld		(PlayerSpriteStand),hl
   xor   a
