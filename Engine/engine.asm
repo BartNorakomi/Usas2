@@ -39,8 +39,8 @@ LevelEngine:
   call  RestoreBackground         ;remove all vdp copies/software sprites that were put in screen last frame
   
   ;DEZE ROUTINE KAN INDIEN NODIG HELEMAAL NAAR MovementPatternsFixedPage1.asm
-  call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
   call  HandlePlayerWeapons       ;arrow, fireball, iceweapon, earthweapon, waterweapon
+  call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
   call  BackdropBlack
 
   xor   a
@@ -3569,8 +3569,9 @@ PrimaryWeaponSX_RightSide:  db  229       ;(ix+5)
 PrimaryWeaponSX_LeftSide:   db  000+00    ;(ix+6)
 PrimaryWeaponNY:            db  005       ;(ix+7)
 PrimaryWeaponNX:            db  009       ;(ix+8)
-PrimaryWeaponSubX:          db  000       ;(ix+9)
-PrimaryWeaponAddY:          db  000       ;(ix+10)
+
+;PrimaryWeaponSubX:          db  000       ;(ix+9)
+;PrimaryWeaponAddY:          db  000       ;(ix+10)
 
 HandlePlayerWeapons:
   ld    a,(ArrowActive?)
@@ -3603,6 +3604,10 @@ HandlePlayerWeapons:
   ret
 
   PrimaryWeapon:
+  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  or    a
+  ret   z                     ;no software sprites needed for punching
+
   ld    ix,PrimaryWeaponActive?
   ;ice weapon animation
 ;  ld    a,229               ;sx of first ice weapon going right
@@ -3735,7 +3740,7 @@ HandlePlayerWeapons:
   ld    (MagicWeaponDuration),a
   jp    z,.RemoveWeapon
 
-  .skipDurationCheck:
+  .skipDurationCheck:  
   ld    a,(ix+4)          ;sy  
   ld    (CopyPlayerProjectile+sy),a
   ld    a,(ix+7)          ;ny
@@ -4018,6 +4023,7 @@ playermovementspeed:    db  2
 PlayerFacingRight?:     db  1
 PlayerInvulnerable?:    db  0
 CurrentMagicWeapon:     db  10 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
+CurrentPrimaryWeapon:   db  1 ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
 
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
@@ -4121,9 +4127,10 @@ XaddLeftPlayer:           equ 00 - 8
 XaddRightPlayer:          equ 15 - 8
 KickWhileJumpDuration:    equ 10
 
-KickWhileJump?:         db  1
-ShootMagicWhileJump?:   db  0
-ShootArrowWhileJump?:   db  0
+;PrimaryAttackWhileJump?:  db  1
+KickWhileJump?:           db  1
+ShootMagicWhileJump?:     db  0
+ShootArrowWhileJump?:     db  0
 
    
 Lsitting:
@@ -4161,7 +4168,13 @@ Lsitting:
 ;
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
-	jp		nz,Set_L_SitPunch
+
+  .PrimaryWeaponLeftSelfModifyingJump:
+  nop | nop | nop     ;e.g.   jp		nz,Set_R_attack
+;	jp		nz,Set_L_SitPunch
+	
+	
+	
 	bit		5,a           ;'M' pressed ?
   .MagicWeaponLeftSelfModifyingJump:
   nop | nop | nop
@@ -4224,7 +4237,13 @@ Rsitting:
 ;
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
-	jp		nz,Set_R_SitPunch
+
+  .PrimaryWeaponRightSelfModifyingJump:
+  nop | nop | nop     ;e.g.   jp		nz,Set_R_attack
+;	jp		nz,Set_R_SitPunch
+	
+	
+	
 	bit		5,a           ;'M' pressed ?
   .MagicWeaponRightSelfModifyingJump:
   nop | nop | nop
@@ -4647,7 +4666,11 @@ Lrunning:
 	bit		0,a           ;cursor up pressed ?
 	jr		nz,.UpPressed
 	bit		4,a           ;space pressed ?
-	jp		nz,Set_L_attack
+  .PrimaryWeaponLeftSelfModifyingJump:
+  nop | nop | nop     ;e.g.   jp		nz,Set_R_attack
+;	jp		nz,Set_L_attack
+	
+	
 	bit		5,a           ;'M' pressed ?
   .MagicWeaponLeftSelfModifyingJump:
   nop | nop | nop
@@ -4708,7 +4731,10 @@ Rrunning:
 ;	bit		2,a           ;cursor left pressed ?
 ;	jp		nz,.Set_L_run_andcheckpunch
 	bit		4,a           ;space pressed ?
-	jp		nz,Set_R_attack
+  .PrimaryWeaponRightSelfModifyingJump:
+  nop | nop | nop     ;e.g.   jp		nz,Set_R_attack
+;	jp		nz,Set_R_attack
+
 	bit		5,a           ;'M' pressed ?
   .MagicWeaponRightSelfModifyingJump:
   nop | nop | nop
@@ -4796,10 +4822,10 @@ Lstanding:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
   .PrimaryWeaponLeftSelfModifyingJump:
-;  nop | nop | nop     ;e.g.   jp		nz,Set_L_attack
+  nop | nop | nop     ;e.g.   jp		nz,Set_L_attack
   
 ;	jp		nz,Set_L_attack
-	jp		nz,Set_L_Dagger_attack
+;	jp		nz,Set_L_Dagger_attack
 
 
 
@@ -4866,10 +4892,10 @@ Rstanding:
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
   .PrimaryWeaponRightSelfModifyingJump:
-;  nop | nop | nop     ;e.g.   jp		nz,Set_R_attack
+  nop | nop | nop     ;e.g.   jp		nz,Set_R_attack
   
 ;	jp		nz,Set_R_attack
-	jp		nz,Set_R_Dagger_attack
+;	jp		nz,Set_R_Dagger_attack
 	
 	bit		5,a           ;'M' pressed ?
   .MagicWeaponRightSelfModifyingJump:
@@ -5187,6 +5213,28 @@ Set_R_attack:
   ld    (PlayerAniCount),hl
   ret
 
+Set_L_Sword_attack:
+	ld		hl,LSwordAttack
+	ld		(PlayerSpriteStand),hl
+
+  xor   a
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_R_Sword_attack:
+	ld		hl,RSwordAttack
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
 Set_L_Dagger_attack:
 	ld		hl,LDaggerAttack
 	ld		(PlayerSpriteStand),hl
@@ -5209,6 +5257,50 @@ Set_R_Dagger_attack:
   ld    (PlayerAniCount),hl
   ret
 
+Set_L_Axe_attack:
+	ld		hl,LAxeAttack
+	ld		(PlayerSpriteStand),hl
+
+  xor   a
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_R_Axe_attack:
+	ld		hl,RAxeAttack
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_L_Spear_attack:
+	ld		hl,LSpearAttack
+	ld		(PlayerSpriteStand),hl
+
+  xor   a
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+
+Set_R_Spear_attack:
+	ld		hl,RSpearAttack
+	ld		(PlayerSpriteStand),hl
+
+  ld    a,1
+  ld    (PlayerFacingRight?),a
+
+  ld    hl,0 
+  ld    (PlayerAniCount),hl
+  ret
+  
 Set_L_Attack:
   ld    a,(AttackRotator)
   inc   a
@@ -5592,8 +5684,8 @@ Set_L_BeingHit:
   xor   a
   ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
-  ld    a,1
-  ld    (KickWhileJump?),a  
+;  ld    a,1
+;  ld    (KickWhileJump?),a  
 
 ;  ld    a,1
 ;  ld    (PlayerFacingRight?),a                    ;since we move right, but face left, let's pretend we actually face right. This way the camera moves accordingly
@@ -5618,8 +5710,8 @@ Set_R_BeingHit:
   xor   a
   ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
-  ld    a,1
-  ld    (KickWhileJump?),a  
+;  ld    a,1
+;  ld    (KickWhileJump?),a  
   
 ;  ld    (PlayerFacingRight?),a                    ;since we move left, but face right, let's pretend we actually face left. This way the camera moves accordingly
   ld    a,(RunningTablePointer)

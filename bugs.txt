@@ -1,3 +1,5 @@
+areasigns zijn bugged als je naar F1 menu gaat.. what about bosses ?
+
 stairs lopen - het scherm uit gaat niet goed. Van D6 naar D8 een keer (2x al gebeurd)
 waarschijnlijk wordt er 2x gechecked:
 ga je 'normaal' het scherm uit aan de onderkant EN 

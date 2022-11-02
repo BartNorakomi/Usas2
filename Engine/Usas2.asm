@@ -3701,9 +3701,19 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
+;
+; block $9d - $9e
+;
+PrimaryWeaponSelectGraphicsBlock:  equ   $9d
+phase	$4000
+  incbin "..\grapx\F1Menu\PrimaryWeaponSelectScreen.SC5",7,212 * 128      ;212 lines
+	ds		$c000-$,$ff
+dephase
 
-; block $9d - $c4
-  ds  $4000 * $28
+
+
+; block $9f - $c4
+  ds  $4000 * $26
 
 
 
