@@ -249,6 +249,11 @@ FreeToUseFastCopy:                    ;freely usable anywhere
   db    004,000,004,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
 
+FreeToUseFastCopyF1Menu:               ;freely usable in F1 menu
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,074,000   ;dx,--,dy,dpage
+  db    004,000,004,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
 
 CheckF1Menu:                        ;check if F1 is pressed and the menu can be entered
 ;
@@ -3510,6 +3515,7 @@ ArrowNX:                db  016       ;(ix+8)
 
 MagicWeaponDurationValue: equ 29
 MagicWeaponDuration:    db  MagicWeaponDurationValue
+DaggerRandomizer:       db  0
 
 FireballSpeed:         equ 4
 FireballActive?:       db  0         ;(ix+0)
@@ -3759,12 +3765,13 @@ HandlePlayerWeapons:
   ld    a,(ix+1)            ;FireballY
   add   a,16 + 2
 
-  call  checktile.XandYset  ;out z=collision found with wall  
-  jp    z,.RemoveWeapon
-  inc   hl                  ;also check next tile
-  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
-  dec   a                   ;1 = wall
-  jp    z,.RemoveWeapon
+  ;collision check
+;  call  checktile.XandYset  ;out z=collision found with wall  
+;  jp    z,.RemoveWeapon
+;  inc   hl                  ;also check next tile
+;  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+;  dec   a                   ;1 = wall
+;  jp    z,.RemoveWeapon
 
   ld    iy,CleanPlayerProjectile
 
@@ -3839,7 +3846,7 @@ HandlePlayerWeapons:
 
   ld    a,(ix+2)            ;FireballX
   cp    10
-  jr    c,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+;  jr    c,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
 
   ld    a,(CopyPlayerProjectile+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side
   cp    20
@@ -3938,68 +3945,55 @@ HandlePlayerWeapons:
   ret
 
 PlayerWeaponSf2Engine:  
-  ld    a,(ix+5)          ;SX right side
+  ld    a,(ix+5)                      ;SX right side
   ld    (CopyPlayerProjectile+sx),a  
-  ld    a,%0000 0000      ;set copy direction. Copy from left to right
+  ld    a,%0000 0000                  ;set copy direction. Copy from left to right
   ld    (iy+copydirection),a
   ld    (CopyPlayerProjectile+copydirection),a  
 
-  ;set pages to copy to and to clean from
-;  ld    a,(PageOnNextVblank)
-;  cp    0*32+31           ;x*32+31 (x=page)
-;  ld    b,0               ;copy to page 0
-;  jp    z,.pagefoundright
-
-;  cp    1*32+31           ;x*32+31 (x=page)
-;  ld    b,1               ;copy to page 1
-;  jp    z,.pagefoundright
-;  ld    b,2               ;copy to page 2
-;  .pagefoundright:
-
   ld    a,(screenpage)
-;  ld    b,a
-
-;  ld    a,b               ;copy object to vram page
   ld    (CopyPlayerProjectile+dpage),a  
   ld    (iy+dpage),a
-  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
+  ld    a,3                           ;clean object from vram data in page 3 (buffer page)
   ld    (iy+spage),a
 
 ;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ix+1)            ;FireballY
+  ld    a,(ix+1)                      ;y
   ld    (iy+sy),a
   ld    (iy+dy),a
   ld    (CopyPlayerProjectile+dy),a
   
-  ld    a,(ix+2)            ;FireballX
+  ld    a,(ix+2)                      ;x
   ld    (CopyPlayerProjectile+dx),a
   ld    (iy+dx),a
   ld    (iy+sx),a
 
-  ld    a,(ix+2)            ;FireballX
+  ;move object
+;  ld    a,(ix+2)            ;FireballX
 ;  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
-  ld    (ix+2),a            ;FireballX
+;  ld    (ix+2),a            ;FireballX
 
-  ld    a,(ix+2)            ;FireballX
-  cp    10
-  jr    c,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
-  cp    256-10
-  jr    nc,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+  ;remove object at endges of screen
+;  ld    a,(ix+2)            ;FireballX
+;  cp    10
+;  jr    c,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+;  cp    256-10
+;  jr    nc,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
 
-  ;put arrow
+  ;put object
   ld    hl,CopyPlayerProjectile
   call  docopy
-  
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
+  ;remove object at start of next frame
+  ld    a,1                           ;all background restores should be done simultaneously at start of frame (after vblank)
   ld    (CleanPlayerProjectile+restorebackground?),a   
   ret
 
-  .RemoveWeapon:
-  ld    a,MagicWeaponDurationValue
-  ld    (MagicWeaponDuration),a  
+;  .RemoveWeapon:
+;  ld    a,MagicWeaponDurationValue
+;  ld    (MagicWeaponDuration),a  
   
-  ld    (ix+0),0
-  ret
+;  ld    (ix+0),0
+;  ret
   
  
   db    0                 ;restorebackground?
@@ -5236,6 +5230,9 @@ Set_R_Sword_attack:
   ret
 
 Set_L_Dagger_attack:
+  ld    a,r
+  ld    (DaggerRandomizer),a
+
 	ld		hl,LDaggerAttack
 	ld		(PlayerSpriteStand),hl
 
@@ -5247,6 +5244,9 @@ Set_L_Dagger_attack:
   ret
 
 Set_R_Dagger_attack:
+  ld    a,r
+  ld    (DaggerRandomizer),a
+
 	ld		hl,RDaggerAttack
 	ld		(PlayerSpriteStand),hl
 

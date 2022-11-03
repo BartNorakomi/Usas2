@@ -7,7 +7,9 @@ F1MenuRoutine:
 PrimaryWeaponSelect:  
   call  ScreenOff
   call  DisableLineint	
+
   call  BackupPage0InRam              ;store Vram data of page 0 in ram
+
 ;  call  CameraEngine304x216.setR18R19R23andPage  
   call  putPrimaryWeaponSelectGraphicsInScreen
   ld    a,0*32 + 31                   ;a->x*32+31 (x=page)
@@ -120,7 +122,7 @@ SetElementalWeaponInVram:
   djnz  .loop
   ret
 
-;FreeToUseFastCopy:                    ;freely usable anywhere
+;FreeToUseFastCopyF1Menu:                    ;freely usable anywhere
 ;  db    000,000,000,000   ;sx,--,sy,spage
 ;  db    000,000,074,000   ;dx,--,dy,dpage
 ;  db    004,000,004,000   ;nx,--,ny,--
@@ -128,13 +130,13 @@ SetElementalWeaponInVram:
 
 EraseWeaponBox:
   xor   a
-  ld    (FreeToUseFastCopy+sx),a
-  ld    (FreeToUseFastCopy+sy),a
-  ld    (FreeToUseFastCopy+sPage),a
-  ld    (FreeToUseFastCopy+dPage),a
+  ld    (FreeToUseFastCopyF1Menu+sx),a
+  ld    (FreeToUseFastCopyF1Menu+sy),a
+  ld    (FreeToUseFastCopyF1Menu+sPage),a
+  ld    (FreeToUseFastCopyF1Menu+dPage),a
   ld    a,4
-  ld    (FreeToUseFastCopy+ny),a
-  ld    (FreeToUseFastCopy+nx),a
+  ld    (FreeToUseFastCopyF1Menu+ny),a
+  ld    (FreeToUseFastCopyF1Menu+nx),a
   
   ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
   sub   7
@@ -149,21 +151,21 @@ EraseWeaponBox:
   add   a,a                           ;*32
   add   a,b                           ;*36
   add   a,18
-  ld    (FreeToUseFastCopy+dx),a
+  ld    (FreeToUseFastCopyF1Menu+dx),a
   
-  ld    hl,FreeToUseFastCopy
+  ld    hl,FreeToUseFastCopyF1Menu
   call  docopy
   ret
 
 EraseWeaponBoxPrimary:
   xor   a
-  ld    (FreeToUseFastCopy+sx),a
-  ld    (FreeToUseFastCopy+sy),a
-  ld    (FreeToUseFastCopy+sPage),a
-  ld    (FreeToUseFastCopy+dPage),a
+  ld    (FreeToUseFastCopyF1Menu+sx),a
+  ld    (FreeToUseFastCopyF1Menu+sy),a
+  ld    (FreeToUseFastCopyF1Menu+sPage),a
+  ld    (FreeToUseFastCopyF1Menu+dPage),a
   ld    a,4
-  ld    (FreeToUseFastCopy+ny),a
-  ld    (FreeToUseFastCopy+nx),a
+  ld    (FreeToUseFastCopyF1Menu+ny),a
+  ld    (FreeToUseFastCopyF1Menu+nx),a
   
   ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
   sub   7
@@ -178,17 +180,17 @@ EraseWeaponBoxPrimary:
   add   a,a                           ;*32
   add   a,b                           ;*36
   add   a,18
-  ld    (FreeToUseFastCopy+dx),a
+  ld    (FreeToUseFastCopyF1Menu+dx),a
   
-  ld    hl,FreeToUseFastCopy
+  ld    hl,FreeToUseFastCopyF1Menu
   call  docopy
   ret
 
 SetWeaponBox:
   ld    a,210
-  ld    (FreeToUseFastCopy+sx),a
+  ld    (FreeToUseFastCopyF1Menu+sx),a
   ld    a,49
-  ld    (FreeToUseFastCopy+sy),a
+  ld    (FreeToUseFastCopyF1Menu+sy),a
   
   ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
   sub   7
@@ -205,19 +207,19 @@ SetWeaponBox:
   add   a,a                           ;*32
   add   a,b                           ;*36
   add   a,18
-  ld    (FreeToUseFastCopy+dx),a
+  ld    (FreeToUseFastCopyF1Menu+dx),a
   ld    a,d
-  ld    (FreeToUseFastCopy+dy),a
-  
-  ld    hl,FreeToUseFastCopy
+  ld    (FreeToUseFastCopyF1Menu+dy),a
+
+  ld    hl,FreeToUseFastCopyF1Menu
   call  docopy
   ret
 
 SetWeaponBoxPrimary:
   ld    a,210
-  ld    (FreeToUseFastCopy+sx),a
+  ld    (FreeToUseFastCopyF1Menu+sx),a
   ld    a,49
-  ld    (FreeToUseFastCopy+sy),a
+  ld    (FreeToUseFastCopyF1Menu+sy),a
   
   ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
   sub   7
@@ -234,11 +236,11 @@ SetWeaponBoxPrimary:
   add   a,a                           ;*32
   add   a,b                           ;*36
   add   a,18
-  ld    (FreeToUseFastCopy+dx),a
+  ld    (FreeToUseFastCopyF1Menu+dx),a
   ld    a,d
-  ld    (FreeToUseFastCopy+dy),a
+  ld    (FreeToUseFastCopyF1Menu+dy),a
   
-  ld    hl,FreeToUseFastCopy
+  ld    hl,FreeToUseFastCopyF1Menu
   call  docopy
   ret
 

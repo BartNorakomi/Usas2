@@ -1918,12 +1918,12 @@ LeftSwordAttackAnimation:               ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_LeftPunch2d | db 002,042+50,009,012,216+10,100
   dw  PlayerSpriteData_Char_LeftPunch2d | db 002,042+50,009,012,216+10,100
 
-  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,027+50,005,007,216+24,134
-  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,027+50,005,007,216+24,134
-  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,027+50,005,007,216+24,134
+  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,028+50,005,007,216+24,134
+  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,028+50,005,007,216+24,134
+  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,028+50,005,007,216+24,134
 
 ;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 10*8, 0                        
+  db  1, 11*8, 0                        
                                         ;positioning for the SW sprites:
 LeftDaggerVersion1AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030+50,005,009,216+24,203
@@ -1931,6 +1931,7 @@ LeftDaggerVersion1AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030+50,005,009,216+24,203
   dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030+50,005,009,216+24,203
 
+  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203
   dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203
   dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203 
   dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203
@@ -1996,29 +1997,6 @@ LeftAxeAttackAnimation:                 ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_LeftCharge7 | db 004,031+50,010,010,216+30,083
   dw  PlayerSpriteData_Char_LeftCharge7 | db 004,031+50,010,010,216+30,083
 
-LDaggerAttack:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,Set_L_Stand
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
-  .EndCheckEdgesOfScreenLeft:
-
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),-1             ;active? / movement speed+direction
-
-;Animate
-  ld    hl,LeftDaggerVersion1AttackAnimation-3
-  ld    hl,LeftDaggerVersion2AttackAnimation-3
-  call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
-  jp    SWspriteSetNYNXSYSX
-
 SWspriteSetNYNXSYSX:
   ;set ny,nx,sy,sx and store addy and addx
   inc   hl                  ;addy
@@ -2049,8 +2027,9 @@ SWspriteSetNYNXSYSX:
   ld    a,(scrollEngine)    ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   jr    z,.engineFound
-  ld    a,-16               ;in the SF2 engine, we move all objects 16 pixels more to the left
-  .engineFound:
+  ld    a,-17               ;in the SF2 engine, we move all objects 16 pixels more to the left
+  .engineFound:  
+  inc   a
   add   a,e                 ;SubX
   ld    d,0
   ld    e,a
@@ -2112,16 +2091,46 @@ AnimatePlayerStopAtEnd:           ;animates player, when end of table is reached
 	ld		(standchar),de
   ret	
 
+AnimatePrimaryAttackWhileJumping: ;animates player, when end of table is reached, player goes to stand or sit pose
+  ld    a,(framecounter)          ;animate every 4 frames
+  and   (hl)                      ;animate every x frames
+  ex    af,af'
 
+  inc   hl                        ;amount of frames * 2  
+  ld    b,(hl)
+  inc   hl                        ;left(0) or right(1)
+  ld    c,(hl)  
+  inc   hl                        ;start sprite data
 
+  ld    a,(PlayerAniCount)
+  call  .SetPlayerCharacter
 
+  ex    af,af'
+  ret   nz
+  
+  ld    a,(PlayerAniCount)
+  add   a,8                       ;8 bytes used for pointer to sprite frame address
+  ld    (PlayerAniCount),a
+  cp    b                         ;amount of frames * 2
+  ret   nz
 
-
-
-
-
-
-
+  .end:
+  xor   a
+  ld    (PrimaryWeaponActive?),a    
+  ld    (PlayerAniCount),a     
+  ret
+  
+  .SetPlayerCharacter:  
+  ld    d,0
+  ld    e,a
+  add   hl,de
+    
+  ld    e,(hl)
+  inc   hl
+  ld    d,(hl)
+    
+	ld		(standchar),de
+  ret	
 
 ;animate every x frames, amount of frames * 2, left(0) or right(1)
   db  1, 12*8, 1
@@ -2135,16 +2144,16 @@ RightSwordAttackAnimation:               ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_RightPunch2c | db 002,003+50,010,016,216+00,100
   dw  PlayerSpriteData_Char_RightPunch2c | db 002,003+50,010,016,216+00,100
 
-  dw  PlayerSpriteData_Char_RightPunch2d | db 002,001+50,009,012,216+00,116
-  dw  PlayerSpriteData_Char_RightPunch2d | db 002,001+50,009,012,216+00,116
-  dw  PlayerSpriteData_Char_RightPunch2d | db 002,001+50,009,012,216+00,116
+  dw  PlayerSpriteData_Char_RightPunch2d | db 002,002+50,009,012,216+00,116
+  dw  PlayerSpriteData_Char_RightPunch2d | db 002,002+50,009,012,216+00,116
+  dw  PlayerSpriteData_Char_RightPunch2d | db 002,002+50,009,012,216+00,116
 
   dw  PlayerSpriteData_Char_RightPunch2a | db 003,011+50,005,007,216+24,128
   dw  PlayerSpriteData_Char_RightPunch2a | db 003,011+50,005,007,216+24,128
   dw  PlayerSpriteData_Char_RightPunch2a | db 003,011+50,005,007,216+24,128
 
 ;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 10*8, 1                        
+  db  1, 11*8, 1                        
                                         ;positioning for the SW sprites:
 RightDaggerVersion1AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_RightPunch3a | db 004,011+50,005,009,216+24,229
@@ -2154,6 +2163,7 @@ RightDaggerVersion1AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
 
   dw  PlayerSpriteData_Char_RightPunch3c | db 004,006+50,005,009,216+24,229
   dw  PlayerSpriteData_Char_RightPunch3c | db 004,006+50,005,009,216+24,229 
+  dw  PlayerSpriteData_Char_RightPunch3c | db 004,006+50,005,009,216+24,229
   dw  PlayerSpriteData_Char_RightPunch3c | db 004,006+50,005,009,216+24,229
 
   dw  PlayerSpriteData_Char_RightPunch3b | db 004,008+50,005,009,216+24,229
@@ -2217,167 +2227,135 @@ RightAxeAttackAnimation:                 ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_RightCharge7 | db 004,012+50,010,010,216+30,073
   dw  PlayerSpriteData_Char_RightCharge7 | db 004,012+50,010,010,216+30,073
 
-RDaggerAttack:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot and move to the right
-  ld    de,11
+CheckPrimaryWeaponEdgesFacingLeft:
+  ld    a,(scrollEngine)                       ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
+
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
   xor   a
   sbc   hl,de
-  jp    c,BruteForceMovementRight
-
+  jr    c,.Set_L_Stand
   ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37-12
+  xor   a
+  sbc   hl,bc
+  jr    nc,.BruteForceMovementLeft
+  .skipBorderCheck:
+  ld    ix,PrimaryWeaponActive?
+  ld    (ix),1              ;active?
+  ret
+  .BruteForceMovementLeft:
+  pop     af                  ;pop the call
+  jp    BruteForceMovementLeft
+  .Set_L_Stand:
+  pop     af                  ;pop the call
+  jp    Set_L_Stand
+
+CheckPrimaryWeaponEdgesFacingRight:
+  ld    a,(scrollEngine)                       ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
+
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
   xor   a
   sbc   hl,de
-  jp    nc,Set_R_Stand
-
+  jr    c,.BruteForceMovementRight
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  xor   a
+  sbc   hl,bc
+  jr    nc,.Set_R_Stand
+  .skipBorderCheck:
   ld    ix,PrimaryWeaponActive?
-  ld    (ix),-1             ;active? / movement speed+direction
+  ld    (ix),1              ;active?
+  ret
+  .BruteForceMovementRight:
+  pop     af                  ;pop the call
+  jp    BruteForceMovementRight
+  .Set_R_Stand:
+  pop     af                  ;pop the call
+  jp    Set_R_Stand
 
+LDaggerAttack:
+  ld    de,38                 ;left edge
+  ld    bc,280                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingLeft
 ;Animate
+  ld    a,(DaggerRandomizer)
+	rrca                        ;check bit 0
+  ld    hl,LeftDaggerVersion1AttackAnimation-3
+  jr    c,.goAnimate
+  ld    hl,LeftDaggerVersion2AttackAnimation-3
+  .goAnimate:
+  call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
+  jp    SWspriteSetNYNXSYSX
+  
+RDaggerAttack:
+  ld    de,06                 ;left edge
+  ld    bc,265                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingRight
+;Animate
+  ld    a,(DaggerRandomizer)
+	rrca                        ;check bit 0
   ld    hl,RightDaggerVersion1AttackAnimation-3
+  jr    c,.goAnimate
   ld    hl,RightDaggerVersion2AttackAnimation-3
+  .goAnimate:
   call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
   jp    SWspriteSetNYNXSYSX
 
 LSwordAttack:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,Set_L_Stand
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
-  .EndCheckEdgesOfScreenLeft:
-
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),-1             ;active? / movement speed+direction
-
+  ld    de,46                 ;left edge
+  ld    bc,282                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingLeft
 ;Animate
   ld    hl,LeftSwordAttackAnimation-3
   call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
   jp    SWspriteSetNYNXSYSX
   
 RSwordAttack:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot and move to the right
-  ld    de,11
-  xor   a
-  sbc   hl,de
-  jp    c,BruteForceMovementRight
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37-12
-  xor   a
-  sbc   hl,de
-  jp    nc,Set_R_Stand
-
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),-1             ;active? / movement speed+direction
-
+  ld    de,11                 ;left edge
+  ld    bc,255                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingRight
 ;Animate
   ld    hl,RightSwordAttackAnimation-3
   call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
   jp    SWspriteSetNYNXSYSX
 
 LAxeAttack:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,Set_L_Stand
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
-  .EndCheckEdgesOfScreenLeft:
-
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),-1             ;active? / movement speed+direction
-
+  ld    de,40                 ;left edge
+  ld    bc,268                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingLeft
 ;Animate
   ld    hl,LeftAxeAttackAnimation-3
   call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
   jp    SWspriteSetNYNXSYSX
   
 RAxeAttack:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot and move to the right
-  ld    de,11
-  xor   a
-  sbc   hl,de
-  jp    c,BruteForceMovementRight
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37-12
-  xor   a
-  sbc   hl,de
-  jp    nc,Set_R_Stand
-
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),-1             ;active? / movement speed+direction
-
+  ld    de,36                 ;left edge
+  ld    bc,267                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingRight
 ;Animate
   ld    hl,RightAxeAttackAnimation-3
   call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
   jp    SWspriteSetNYNXSYSX
   
 LSpearAttack:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,Set_L_Stand
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
-  .EndCheckEdgesOfScreenLeft:
-
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),-1             ;active? / movement speed+direction
-
+  ld    de,52                 ;left edge
+  ld    bc,294                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingLeft
 ;Animate
   ld    hl,LeftSpearAttackAnimation-3
   call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
   jp    SWspriteSetNYNXSYSX
   
 RSpearAttack:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot and move to the right
-  ld    de,11
-  xor   a
-  sbc   hl,de
-  jp    c,BruteForceMovementRight
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37-12
-  xor   a
-  sbc   hl,de
-  jp    nc,Set_R_Stand
-
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),-1             ;active? / movement speed+direction
-
+  ld    de,15                 ;left edge
+  ld    bc,255                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingRight
 ;Animate
   ld    hl,RightSpearAttackAnimation-3
   call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
   jp    SWspriteSetNYNXSYSX
-  
-
-
-
-
-
-
-
-
-
-
 
 RAttack:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
@@ -3605,35 +3583,32 @@ AnimateWhileJump:
   ret
 
 .PrimaryAttackWhileJumpRight:
-  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)                ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
   or    a
   jr    z,.HandleKickWhileJumpAnimation
   dec   a
   jr    z,.HandleSwordAttackWhileJumpAnimation
 
   .HandleSwordAttackWhileJumpAnimation:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot and move to the right
+  ld    hl,(clesx)                              ;check if player is standing on the left edge of the screen, if so, dont shoot and move to the right
   ld    de,11
   xor   a
   sbc   hl,de
   jp    c,BruteForceMovementRight
 
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    hl,(clesx)                              ;check if player is standing on the right edge of the screen, if so, dont shoot
   ld    de,304-37-12
   xor   a
   sbc   hl,de
   jp    nc,Set_R_Stand
 
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),-1             ;active? / movement speed+direction
-
   ;Animate
   ld    hl,RightSwordAttackAnimation-3
-  call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
+  call  AnimatePrimaryAttackWhileJumping        ;animates player, when end of table is reached -> PrimaryWeaponActive?=0
   jp    SWspriteSetNYNXSYSX
 
   .HandleKickWhileJumpAnimation:
-  ld    a,(PrimaryWeaponActive?)    ;kicking while jumping has a certain duration. If PrimaryWeaponActive? reaches 0 the kick ends
+  ld    a,(PrimaryWeaponActive?)                ;kicking while jumping has a certain duration. If PrimaryWeaponActive? reaches 0 the kick ends
   dec   a
   ld    (PrimaryWeaponActive?),a
 
@@ -3649,11 +3624,11 @@ AnimateWhileJump:
   ret
 
 .ShootMagicWhileJumpRight:
-;  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
+;  ld    a,(scrollEngine)                       ;1= 304x216 engine  2=256x216 SF2 engine
 ;  dec   a
 ;  jr    nz,.EndCheckEdgesOfScreen
 
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
+  ld    hl,(clesx)                              ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,11
   xor   a
   sbc   hl,de
@@ -4276,8 +4251,12 @@ Jump:
   jr    z,.SetSwordAttack
 
   .SetSwordAttack:
+ret
   ld    a,1
   ld    (PrimaryWeaponActive?),a
+  xor   a
+  ld    (PlayerAniCount),a
+  jp    AnimateWhileJump
   ret
 
   .SetKickAttack:
@@ -4614,6 +4593,10 @@ ret
   ld    a,(ShootMagicWhileJump?)  ;don't allow double jump when shooting magic mid air
   or    a
   jr    z,.EndCheckShootMagicWhileJump
+;  ld    a,(PrimaryWeaponActive?)  ;don't allow double jump when primary attack is active
+;  or    a
+;  jr    z,.EndCheckShootMagicWhileJump
+
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
