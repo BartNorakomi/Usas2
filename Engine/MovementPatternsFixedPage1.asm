@@ -13,10 +13,7 @@
 ;checkFacingPlayer
 ;CheckPlayerPunchesEnemyOnlySitting
 ;CheckArrowHitsEnemy
-;CheckFireballHitsEnemy
-;CheckIceWeaponHitsEnemy
-;CheckEarthWeaponHitsEnemy
-;CheckWaterWeaponHitsEnemy
+;CheckSecundaryWeaponHitsEnemy
 ;CheckPlayerPunchesBoss
 ;CheckPlayerPunchesEnemyDemon
 ;CheckPlayerPunchesEnemy
@@ -298,191 +295,53 @@ CheckArrowHitsEnemy:
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
   ret
+
+CheckSecundaryWeaponHitsEnemy:
+;check if enemy/object collides with hitbox arrow left side
+  ld    hl,(SecundaryWeaponX)                      ;hl = x hitbox
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    bc,46                               ;normal engine
+  jr    z,.engineFound
+  ld    bc,46 - 18                          ;sf2 engine
+  .engineFound:
+
+  add   hl,bc
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  sbc   hl,de
+  ret   c
+
+;check if enemy/object collides with hitbox arrow right side
+  ld    c,(ix+enemies_and_objects.nx)       ;width object
+  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
+  add   a,c
+  ld    c,a
+  sbc   hl,bc  
+  ret   nc
+
+;check if enemy/object collides with hitbox arrow top side
+  ld    a,(SecundaryWeaponY)                       ;a = y hitbox
+  sub   (ix+enemies_and_objects.y)
+  ret   c  
+
+;check if enemy/object collides with hitbox arrow bottom side
+  sub   a,(ix+enemies_and_objects.ny)       ;width object
+  ret   nc
+
+  ;Enemy hit                                ;blink white for 31 frames when hit
+  xor   a
+  ld    (SecundaryWeaponActive?),a                    ;remove arrow when enemy is hit
+
+  ld    a,MagicWeaponDurationValue
+  ld    (MagicWeaponDuration),a  
+    
+  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
+  dec   (ix+enemies_and_objects.life)
+  jp    z,CheckPlayerPunchesEnemy.EnemyDied
+  ret
   
-CheckFireballHitsEnemy:
-;check if enemy/object collides with hitbox arrow left side
-  ld    hl,(FireballX)                      ;hl = x hitbox
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    bc,46                               ;normal engine
-  jr    z,.engineFound
-  ld    bc,46 - 18                          ;sf2 engine
-  .engineFound:
-
-  add   hl,bc
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox arrow right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
-  add   a,c
-  ld    c,a
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox arrow top side
-  ld    a,(FireballY)                       ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c  
-
-;check if enemy/object collides with hitbox arrow bottom side
-  sub   a,(ix+enemies_and_objects.ny)       ;width object
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  xor   a
-  ld    (FireballActive?),a                    ;remove arrow when enemy is hit
-
-  ld    a,MagicWeaponDurationValue
-  ld    (MagicWeaponDuration),a  
-    
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jp    z,CheckPlayerPunchesEnemy.EnemyDied
-  ret
-
-CheckIceWeaponHitsEnemy:
-;check if enemy/object collides with hitbox arrow left side
-  ld    hl,(IceWeaponX)                      ;hl = x hitbox
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    bc,46                               ;normal engine
-  jr    z,.engineFound
-  ld    bc,46 - 18                          ;sf2 engine
-  .engineFound:
-
-  add   hl,bc
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox arrow right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
-  add   a,c
-  ld    c,a
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox arrow top side
-  ld    a,(IceWeaponY)                       ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c  
-
-;check if enemy/object collides with hitbox arrow bottom side
-  sub   a,(ix+enemies_and_objects.ny)       ;width object
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  xor   a
-  ld    (IceWeaponActive?),a                    ;remove arrow when enemy is hit
-
-  ld    a,MagicWeaponDurationValue
-  ld    (MagicWeaponDuration),a  
-    
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jp    z,CheckPlayerPunchesEnemy.EnemyDied
-  ret
-
-CheckEarthWeaponHitsEnemy:
-;check if enemy/object collides with hitbox arrow left side
-  ld    hl,(EarthWeaponX)                      ;hl = x hitbox
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    bc,46                               ;normal engine
-  jr    z,.engineFound
-  ld    bc,46 - 18                          ;sf2 engine
-  .engineFound:
-
-  add   hl,bc
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox arrow right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
-  add   a,c
-  ld    c,a
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox arrow top side
-  ld    a,(EarthWeaponY)                       ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c  
-
-;check if enemy/object collides with hitbox arrow bottom side
-  sub   a,(ix+enemies_and_objects.ny)       ;width object
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  xor   a
-  ld    (EarthWeaponActive?),a                    ;remove arrow when enemy is hit
-
-  ld    a,MagicWeaponDurationValue
-  ld    (MagicWeaponDuration),a  
-    
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jp    z,CheckPlayerPunchesEnemy.EnemyDied
-  ret
-
-CheckWaterWeaponHitsEnemy:
-;check if enemy/object collides with hitbox arrow left side
-  ld    hl,(WaterWeaponX)                      ;hl = x hitbox
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    bc,46                               ;normal engine
-  jr    z,.engineFound
-  ld    bc,46 - 18                          ;sf2 engine
-  .engineFound:
-
-  add   hl,bc
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox arrow right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
-  add   a,c
-  ld    c,a
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox arrow top side
-  ld    a,(WaterWeaponY)                       ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c  
-
-;check if enemy/object collides with hitbox arrow bottom side
-  sub   a,(ix+enemies_and_objects.ny)       ;width object
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  xor   a
-  ld    (WaterWeaponActive?),a                    ;remove arrow when enemy is hit
-
-  ld    a,MagicWeaponDurationValue
-  ld    (MagicWeaponDuration),a  
-    
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jp    z,CheckPlayerPunchesEnemy.EnemyDied
-  ret
-
 CheckPlayerPunchesBoss:
 CheckPlayerPunchesEnemyDemon:
   ld    hl,(ClesX)
@@ -505,37 +364,19 @@ CheckPlayerPunchesEnemyDemon:
   add   a,17 - 6 - 60
   ld    (HitBoxSY),a
   
-  ld    a,(FireballY)                       ;a = y hitbox
+  ld    a,(SecundaryWeaponY)                       ;a = y hitbox
   sub   a,60
-  ld    (FireballY),a                       ;a = y hitbox
+  ld    (SecundaryWeaponY),a                       ;a = y hitbox
   ld    a,(ArrowY)                          ;a = y hitbox
   sub   a,60
   ld    (ArrowY),a                          ;a = y hitbox
-  ld    a,(IceWeaponY)                          ;a = y hitbox
-  sub   a,60
-  ld    (IceWeaponY),a                          ;a = y hitbox
-  ld    a,(EarthWeaponY)                          ;a = y hitbox
-  sub   a,60
-  ld    (EarthWeaponY),a                          ;a = y hitbox
-  ld    a,(WaterWeaponY)                          ;a = y hitbox
-  sub   a,60
-  ld    (WaterWeaponY),a                          ;a = y hitbox
   call  CheckPlayerPunchesEnemy
-  ld    a,(FireballY)                       ;a = y hitbox
+  ld    a,(SecundaryWeaponY)                       ;a = y hitbox
   add   a,60
-  ld    (FireballY),a                       ;a = y hitbox
+  ld    (SecundaryWeaponY),a                       ;a = y hitbox
   ld    a,(ArrowY)                          ;a = y hitbox
   add   a,60
   ld    (ArrowY),a                          ;a = y hitbox
-  ld    a,(IceWeaponY)                          ;a = y hitbox
-  add   a,60
-  ld    (IceWeaponY),a                          ;a = y hitbox
-  ld    a,(EarthWeaponY)                          ;a = y hitbox
-  add   a,60
-  ld    (EarthWeaponY),a                          ;a = y hitbox
-  ld    a,(WaterWeaponY)                          ;a = y hitbox
-  add   a,60
-  ld    (WaterWeaponY),a                          ;a = y hitbox
   ret
 ;  jp    CheckPlayerPunchesEnemy
 
@@ -552,21 +393,9 @@ CheckPlayerPunchesEnemy:
   or    a
   call  nz,CheckArrowHitsEnemy
 
-  ld    a,(FireballActive?)
+  ld    a,(SecundaryWeaponActive?)
   or    a
-  call  nz,CheckFireballHitsEnemy
-  
-  ld    a,(IceWeaponActive?)
-  or    a
-  call  nz,CheckIceWeaponHitsEnemy
-
-  ld    a,(EarthWeaponActive?)
-  or    a
-  call  nz,CheckEarthWeaponHitsEnemy
-
-  ld    a,(WaterWeaponActive?)
-  or    a
-  call  nz,CheckWaterWeaponHitsEnemy
+  call  nz,CheckSecundaryWeaponHitsEnemy
     
   ld    a,(EnableHitbox?)
   or    a

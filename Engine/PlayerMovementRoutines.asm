@@ -34,7 +34,7 @@ LShootWater:
   .engineFound:
 
   ld    a,-WaterWeaponSpeed
-  ld    (WaterWeaponActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    hl,(ClesX)
   add   hl,de                 ;adjust x starting placement projectile
   ld    a,l
@@ -42,9 +42,9 @@ LShootWater:
   jr    z,.SetX
   ld    a,255
   .SetX:
-  ld    (WaterWeaponX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (WaterWeaponY),a
+  ld    (SecundaryWeaponY),a
   ret
   
 RShootWater:
@@ -79,16 +79,16 @@ RShootWater:
   .engineFound:
 
   ld    a,WaterWeaponSpeed
-  ld    (WaterWeaponActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,b                   ;adjust x starting placement projectile
     
   jr    nc,.SetX
   xor   a
   .SetX:
-  ld    (WaterWeaponX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (WaterWeaponY),a
+  ld    (SecundaryWeaponY),a
   ret
   
 LShootEarth:
@@ -123,7 +123,7 @@ LShootEarth:
   .engineFound:
 
   ld    a,-EarthWeaponSpeed
-  ld    (EarthWeaponActive?),a
+  ld    (SecundaryWeaponActive?),a
 ;  ld    a,(ClesX)
 ;  sub   a,26
   ld    hl,(ClesX)
@@ -135,9 +135,9 @@ LShootEarth:
   jr    z,.SetX
   ld    a,255
   .SetX:
-  ld    (EarthWeaponX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (EarthWeaponY),a
+  ld    (SecundaryWeaponY),a
   ret
   
 RShootEarth:
@@ -172,16 +172,16 @@ RShootEarth:
   .engineFound:
 
   ld    a,EarthWeaponSpeed
-  ld    (EarthWeaponActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,b                   ;adjust x starting placement projectile
     
   jr    nc,.SetX
   xor   a
   .SetX:
-  ld    (EarthWeaponX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (EarthWeaponY),a
+  ld    (SecundaryWeaponY),a
   ret
 
 LShootIce:
@@ -216,7 +216,7 @@ LShootIce:
   .engineFound:
 
   ld    a,-IceWeaponSpeed
-  ld    (IceWeaponActive?),a
+  ld    (SecundaryWeaponActive?),a
 ;  ld    a,(ClesX)
 ;  sub   a,26
   ld    hl,(ClesX)
@@ -228,9 +228,9 @@ LShootIce:
   jr    z,.SetX
   ld    a,255
   .SetX:
-  ld    (IceWeaponX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (IceWeaponY),a
+  ld    (SecundaryWeaponY),a
   ret
   
 RShootIce:
@@ -265,16 +265,16 @@ RShootIce:
   .engineFound:
 
   ld    a,IceWeaponSpeed
-  ld    (IceWeaponActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,b                   ;adjust x starting placement projectile
     
   jr    nc,.SetX
   xor   a
   .SetX:
-  ld    (IceWeaponX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (IceWeaponY),a
+  ld    (SecundaryWeaponY),a
   ret
 
 LShootFireball:
@@ -309,7 +309,7 @@ LShootFireball:
   .engineFound:
 
   ld    a,-FireballSpeed
-  ld    (FireballActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    hl,(ClesX)
   add   hl,de                 ;adjust x starting placement projectile
   ld    a,l
@@ -317,9 +317,9 @@ LShootFireball:
   jr    z,.SetX
   ld    a,255
   .SetX:
-  ld    (FireballX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (FireballY),a
+  ld    (SecundaryWeaponY),a
   ret
 
 RShootFireball:
@@ -355,7 +355,7 @@ RShootFireball:
 
 
   ld    a,FireballSpeed
-  ld    (FireballActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,b                   ;adjust x starting placement projectile
   
@@ -363,9 +363,9 @@ RShootFireball:
   jr    nc,.SetX
   xor   a
   .SetX:
-  ld    (FireballX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (FireballY),a
+  ld    (SecundaryWeaponY),a
   ret
 
 AnimateShootFireball:
@@ -2069,12 +2069,18 @@ AnimatePlayerStopAtEnd:           ;animates player, when end of table is reached
   cp    b                         ;amount of frames * 2
   ret   nz
 
-  .end:
-;  xor   a
-;  ld    (PrimaryWeaponActive?),a    
-;  ret
+  xor   a
+  ld    (PrimaryWeaponActive?),a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PlayerAniCount),a
+
+	ld		hl,(PlayerSpriteStand)
+	ld		de,Jump
+  xor   a
+  sbc   hl,de
+  ret   z                         ;return at this point when jumping
   
-  ld    a,c
+  ld    a,c                       ;when not jumping switch to stand pose
   or    a
   jp    z,Set_L_Stand
   jp    Set_R_Stand
@@ -2228,6 +2234,12 @@ RightAxeAttackAnimation:                 ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_RightCharge7 | db 004,012+50,010,010,216+30,073
 
 CheckPrimaryWeaponEdgesFacingLeft:
+  ld    a,(ClesY)
+  cp    200
+  jr    nc,.Set_L_Stand       ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+  cp    20
+  jr    c,.Set_L_Stand        ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+
   ld    a,(scrollEngine)                       ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
@@ -2249,10 +2261,23 @@ CheckPrimaryWeaponEdgesFacingLeft:
   jp    BruteForceMovementLeft
   .Set_L_Stand:
   pop     af                  ;pop the call
-  jp    Set_L_Stand
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)
+  or    a
+  jp    z,Set_L_Stand         ;if you were standing, go back to standing pose
+  xor   a                     ;if you were jumping, dont change pose, but stop primary weapon
+  ld    (PrimaryWeaponActivatedWhileJumping?),a	
+  ld    (PrimaryWeaponActive?),a	
+  ld    (PlayerAniCount),a
+  ret
 
 CheckPrimaryWeaponEdgesFacingRight:
-  ld    a,(scrollEngine)                       ;1= 304x216 engine  2=256x216 SF2 engine
+  ld    a,(ClesY)
+  cp    200
+  jr    nc,.Set_R_Stand       ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+  cp    20
+  jr    c,.Set_R_Stand        ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
 
@@ -2273,7 +2298,14 @@ CheckPrimaryWeaponEdgesFacingRight:
   jp    BruteForceMovementRight
   .Set_R_Stand:
   pop     af                  ;pop the call
-  jp    Set_R_Stand
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)
+  or    a
+  jp    z,Set_R_Stand         ;if you were standing, go back to standing pose
+  xor   a                     ;if you were jumping, dont change pose, but stop primary weapon
+  ld    (PrimaryWeaponActivatedWhileJumping?),a	
+  ld    (PrimaryWeaponActive?),a
+  ld    (PlayerAniCount),a  
+  ret
 
 LDaggerAttack:
   ld    de,38                 ;left edge
@@ -3560,10 +3592,9 @@ AnimateWhileJump:
   or    a
   jp    nz,.ShootMagicWhileJumpRight
 
-  ld    a,(PrimaryWeaponActive?)
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)
   or    a
   jp    nz,.PrimaryAttackWhileJumpRight
-  .returnWhenNotKicking:
 
   ld    a,(DoubleJumpAvailable?)
   or    a
@@ -3585,32 +3616,20 @@ AnimateWhileJump:
 .PrimaryAttackWhileJumpRight:
   ld    a,(CurrentPrimaryWeapon)                ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
   or    a
-  jr    z,.HandleKickWhileJumpAnimation
+  jr    z,.HandleKickWhileJumpRightAnimation
   dec   a
-  jr    z,.HandleSwordAttackWhileJumpAnimation
-
-  .HandleSwordAttackWhileJumpAnimation:
-  ld    hl,(clesx)                              ;check if player is standing on the left edge of the screen, if so, dont shoot and move to the right
-  ld    de,11
-  xor   a
-  sbc   hl,de
-  jp    c,BruteForceMovementRight
-
-  ld    hl,(clesx)                              ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37-12
-  xor   a
-  sbc   hl,de
-  jp    nc,Set_R_Stand
-
-  ;Animate
-  ld    hl,RightSwordAttackAnimation-3
-  call  AnimatePrimaryAttackWhileJumping        ;animates player, when end of table is reached -> PrimaryWeaponActive?=0
-  jp    SWspriteSetNYNXSYSX
-
-  .HandleKickWhileJumpAnimation:
-  ld    a,(PrimaryWeaponActive?)                ;kicking while jumping has a certain duration. If PrimaryWeaponActive? reaches 0 the kick ends
+  jp    z,RSwordAttack
   dec   a
-  ld    (PrimaryWeaponActive?),a
+  jp    z,RDaggerAttack
+  dec   a
+  jp    z,RAxeAttack
+  dec   a
+  jp    z,RSpearAttack
+  
+  .HandleKickWhileJumpRightAnimation:
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)                ;kicking while jumping has a certain duration. If PrimaryWeaponActive? reaches 0 the kick ends
+  dec   a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
 
   sub   KickWhileJumpDuration-2                 ;only set kicking pose once, so it doesn't change from highkick to lowkick mid air
   ret   nz
@@ -3687,14 +3706,14 @@ AnimateWhileJump:
   or    a
   jp    nz,.ShootMagicWhileJumpLeft
 
-  ld    a,(KickWhileJump?)
-  dec   a
-  jp    nz,.KickWhileJumpLeft
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)
+  or    a
+  jp    nz,.PrimaryAttackWhileJumpLeft
 
   ld    a,(DoubleJumpAvailable?)
   or    a
   jp    z,.RollingJumpLeft
-  
+
   ld    a,(JumpSpeed)
   add   a,2
 	ld		hl,PlayerSpriteData_Char_LeftJump1
@@ -3707,6 +3726,48 @@ AnimateWhileJump:
 	.SetLeftJumpAnimationFrame:
 	ld		(standchar),hl
   ret
+
+.PrimaryAttackWhileJumpLeft:
+  ld    a,(CurrentPrimaryWeapon)                ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  or    a
+  jr    z,.HandleKickWhileJumpLeftAnimation
+  dec   a
+  jp    z,LSwordAttack
+  dec   a
+  jp    z,LDaggerAttack
+  dec   a
+  jp    z,LAxeAttack
+  dec   a
+  jp    z,LSpearAttack
+  
+  .HandleKickWhileJumpLeftAnimation:
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)                ;kicking while jumping has a certain duration. If PrimaryWeaponActive? reaches 0 the kick ends
+  dec   a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+
+  sub   KickWhileJumpDuration-2                 ;only set kicking pose once, so it doesn't change from highkick to lowkick mid air
+  ret   nz
+  ld    a,(JumpSpeed)
+  or    a
+	ld		hl,PlayerSpriteData_Char_LeftHighKick
+	jp    m,.GoKickLeft
+	ld		hl,PlayerSpriteData_Char_LeftLowKick	
+	.GoKickLeft:
+	ld		(standchar),hl
+  ret
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .ShootMagicWhileJumpLeft:
 ;  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
@@ -3761,19 +3822,6 @@ AnimateWhileJump:
 
   ld    hl,LeftRollingAnimation
   jp    AnimateRolling  
-
-.KickWhileJumpLeft:
-  sub   KickWhileJumpDuration-2                 ;only change kicking pose 1, so it doesn't change from highkick to lowkick mid air
-  ret   nz
-  
-  ld    a,(JumpSpeed)
-  or    a
-	ld		hl,PlayerSpriteData_Char_LeftHighKick
-	jp    m,.GoKickLeft
-	ld		hl,PlayerSpriteData_Char_LeftLowKick
-	.GoKickLeft:
-	ld		(standchar),hl
-  ret
 
 ShootArrowWhileJumpLeftSf2Engine:
 ;Animate
@@ -4223,7 +4271,7 @@ Jump:
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
-  call  .HandlePrimaryAttackHitboxWhileJump        ;if player kicks in the air, enable hitbox and set hixbox coordinates
+;  call  .HandlePrimaryAttackHitboxWhileJump        ;if player kicks in the air, enable hitbox and set hixbox coordinates
   call  AnimateWhileJump
   call  MoveHorizontallyWhileJump
 	ld		a,(Controls)
@@ -4243,32 +4291,18 @@ Jump:
 	jp    nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
   ret
 
-.SetPrimaryAttackWhileJump:
-  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+.SetPrimaryAttackWhileJump:             ;trigger a pressed
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)
   or    a
-  jr    z,.SetKickAttack
-  dec   a
-  jr    z,.SetSwordAttack
+  ret   nz                              ;wait for previous primary attack to end
 
-  .SetSwordAttack:
-ret
-  ld    a,1
-  ld    (PrimaryWeaponActive?),a
+  ld    a,KickWhileJumpDuration         ;this is only used in case kicking, otherwise a=1 is sufficient
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
   xor   a
   ld    (PlayerAniCount),a
-  jp    AnimateWhileJump
   ret
 
-  .SetKickAttack:
-;  ld    a,1
-;  ld    (PrimaryWeaponActive?),a
-  
-  ld    a,KickWhileJumpDuration
-;  ld    (KickWhileJump?),a  
-  ld    (PrimaryWeaponActive?),a
-  ret
-
-.HandlePrimaryAttackHitboxWhileJump:
+  .HandlePrimaryAttackHitboxWhileJump:
   ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
   or    a
   jr    z,.HandleKickAttack
@@ -4276,12 +4310,8 @@ ret
   jr    z,.HandleSwordAttack
 
   .HandleSwordAttack:
-  ret
 
   .HandleKickAttack:
-ret
-
-  
   xor   a
   ld    (EnableHitbox?),a   ;turn hitbox off when not kicking
   ld    a,(KickWhileJump?)

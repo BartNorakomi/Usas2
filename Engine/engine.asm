@@ -3499,114 +3499,63 @@ checktile:                  ;in b->add y to check, de->add x to check
   jp    .EntryOutOfScreenLeft
 
 
-;  xor   a                   ;reset carry
-;  dec   a                   ;1 = wall
-;  ret
+PrimaryWeaponActivatedWhileJumping?:  db  0
+MagicWeaponDurationValue:     equ 29
+MagicWeaponDuration:          db  MagicWeaponDurationValue
+DaggerRandomizer:             db  0
+CurrentMagicWeapon:           db  10 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
+CurrentPrimaryWeapon:         db  1 ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
 
-ArrowSpeed:             equ 6
-ArrowActive?:           db  0
-ArrowY:                 db  100
-ArrowX:                 dw  100
-ArrowSY:                db  216+16    ;(ix+4)
-ArrowSX_RightSide:      db  030       ;(ix+5)
-ArrowSX_LeftSide:       db  030+15    ;(ix+6)
-ArrowNY:                db  001       ;(ix+7)
-ArrowNX:                db  016       ;(ix+8)
+ArrowSpeed:                   equ 6
+ArrowActive?:                 db  0
+ArrowY:                       db  100
+ArrowX:                       dw  100
+ArrowSY:                      db  216+16    ;(ix+4)
+ArrowSX_RightSide:            db  030       ;(ix+5)
+ArrowSX_LeftSide:             db  030+15    ;(ix+6)
+ArrowNY:                      db  001       ;(ix+7)
+ArrowNX:                      db  016       ;(ix+8)
 
-MagicWeaponDurationValue: equ 29
-MagicWeaponDuration:    db  MagicWeaponDurationValue
-DaggerRandomizer:       db  0
+FireballSpeed:                equ 4
+IceWeaponSpeed:               equ 4
+EarthWeaponSpeed:             equ 3
+WaterWeaponSpeed:             equ 3
+KineticWeaponSpeed:           equ 3
 
-FireballSpeed:         equ 4
-FireballActive?:       db  0         ;(ix+0)
-FireballY:             db  100       ;(ix+1)
-FireballX:             dw  100       ;(ix+2)
-FireballSY:            db  216+29    ;(ix+4)
-FireballSX_RightSide:  db  000       ;(ix+5)
-FireballSX_LeftSide:   db  000+10    ;(ix+6)
-FireballNY:            db  011       ;(ix+7)
-FireballNX:            db  016       ;(ix+8)
+PrimaryWeaponActive?:         db  0         ;(ix+0)
+PrimaryWeaponY:               db  000       ;(ix+1)
+PrimaryWeaponX:               dw  000       ;(ix+2)
+PrimaryWeaponSY:              db  216+24    ;(ix+4)
+PrimaryWeaponSX_RightSide:    db  229       ;(ix+5) 
+PrimaryWeaponSX_LeftSide:     db  000+00    ;(ix+6)
+PrimaryWeaponNY:              db  005       ;(ix+7)
+PrimaryWeaponNX:              db  009       ;(ix+8)
 
-IceWeaponSpeed:         equ 4
-IceWeaponActive?:       db  0         ;(ix+0)
-IceWeaponY:             db  100       ;(ix+1)
-IceWeaponX:             dw  100       ;(ix+2)
-IceWeaponSY:            db  216+29    ;(ix+4)
-IceWeaponSX_RightSide:  db  000       ;(ix+5)
-IceWeaponSX_LeftSide:   db  000+10    ;(ix+6)
-IceWeaponNY:            db  011       ;(ix+7)
-IceWeaponNX:            db  016       ;(ix+8)
-
-EarthWeaponSpeed:         equ 3
-EarthWeaponActive?:       db  0         ;(ix+0)
-EarthWeaponY:             db  100       ;(ix+1)
-EarthWeaponX:             dw  100       ;(ix+2)
-EarthWeaponSY:            db  216+29    ;(ix+4)
-EarthWeaponSX_RightSide:  db  000       ;(ix+5)
-EarthWeaponSX_LeftSide:   db  000+10    ;(ix+6)
-EarthWeaponNY:            db  011       ;(ix+7)
-EarthWeaponNX:            db  016       ;(ix+8)
-
-WaterWeaponSpeed:         equ 3
-WaterWeaponActive?:       db  0         ;(ix+0)
-WaterWeaponY:             db  100       ;(ix+1)
-WaterWeaponX:             dw  100       ;(ix+2)
-WaterWeaponSY:            db  216+29    ;(ix+4)
-WaterWeaponSX_RightSide:  db  000       ;(ix+5)
-WaterWeaponSX_LeftSide:   db  000+10    ;(ix+6)
-WaterWeaponNY:            db  011       ;(ix+7)
-WaterWeaponNX:            db  016       ;(ix+8)
-
-KineticWeaponSpeed:       equ 3
-KineticWeaponActive?:     db  0         ;(ix+0)
-KineticWeaponY:           db  100       ;(ix+1)
-KineticWeaponX:           dw  100       ;(ix+2)
-KineticWeaponSY:          db  216+29    ;(ix+4)
-KineticWeaponSX_RightSide:db  000       ;(ix+5)
-KineticWeaponSX_LeftSide: db  000+10    ;(ix+6)
-KineticWeaponNY:          db  011       ;(ix+7)
-KineticWeaponNX:          db  016       ;(ix+8)
-
-PrimaryWeaponActive?:       db  0         ;(ix+0)
-PrimaryWeaponY:             db  000       ;(ix+1)
-PrimaryWeaponX:             dw  000       ;(ix+2)
-PrimaryWeaponSY:            db  216+24    ;(ix+4)
-PrimaryWeaponSX_RightSide:  db  229       ;(ix+5) 
-PrimaryWeaponSX_LeftSide:   db  000+00    ;(ix+6)
-PrimaryWeaponNY:            db  005       ;(ix+7)
-PrimaryWeaponNX:            db  009       ;(ix+8)
-
-;PrimaryWeaponSubX:          db  000       ;(ix+9)
-;PrimaryWeaponAddY:          db  000       ;(ix+10)
+SecundaryWeaponActive?:       db  0         ;(ix+0)
+SecundaryWeaponY:             db  100       ;(ix+1)
+SecundaryWeaponX:             dw  100       ;(ix+2)
+SecundaryWeaponSY:            db  216+29    ;(ix+4)
+SecundaryWeaponSX_RightSide:  db  000       ;(ix+5)
+SecundaryWeaponSX_LeftSide:   db  000+10    ;(ix+6)
+SecundaryWeaponNY:            db  011       ;(ix+7)
+SecundaryWeaponNX:            db  016       ;(ix+8)
 
 HandlePlayerWeapons:
   ld    a,(ArrowActive?)
   or    a
   jp    nz,Arrow2
 
-  ld    a,(FireballActive?)
-  or    a
-  jp    nz,Fireball
-
-  ld    a,(IceWeaponActive?)
-  or    a
-  jp    nz,IceWeapon
-
-  ld    a,(EarthWeaponActive?)
-  or    a
-  jp    nz,EarthWeapon
-
-  ld    a,(WaterWeaponActive?)
-  or    a
-  jp    nz,WaterWeapon
-
-  ld    a,(KineticWeaponActive?)
-  or    a
-  jp    nz,KineticWeapon
+;  ld    a,(KineticWeaponActive?)
+;  or    a
+;  jp    nz,KineticWeapon
 
   ld    a,(PrimaryWeaponActive?)
   or    a
   jp    nz,PrimaryWeapon
+
+  ld    a,(SecundaryWeaponActive?)
+  or    a
+  jp    nz,SecundaryWeapon
   ret
 
   PrimaryWeapon:
@@ -3615,21 +3564,11 @@ HandlePlayerWeapons:
   ret   z                     ;no software sprites needed for punching
 
   ld    ix,PrimaryWeaponActive?
-  ;ice weapon animation
-;  ld    a,229               ;sx of first ice weapon going right
-;  jp    p,.DirectionFound
-;  ld    a,203               ;sx of first ice weapon going left 
-;  .DirectionFound:
-;  ld    (ix+5),a            ;IceWeaponSX_RightSide
-;  add   a,(ix+8)            ;add nx to determine at what point we should copy when copying from right to left
-;  dec   a                   ;add nx - 1
-;  ld    (ix+6),a            ;IceWeaponSX_LeftSide
-  ;/ice weapon animation
   jp    GoHandlePlayerWeapon.skipDurationCheck
 
-  KineticWeapon:
-  ld    ix,KineticWeaponActive?
-  ;ice weapon animation
+  SecundaryWeapon:
+  ld    ix,SecundaryWeaponActive?
+  ;SecundaryWeapon animation
   ld    b,128               ;sx of first ice weapon going right
   jp    p,.DirectionFound
   ld    b,192               ;sx of first ice weapon going left 
@@ -3644,68 +3583,14 @@ HandlePlayerWeapons:
   ld    (ix+5),a            ;IceWeaponSX_RightSide
   add   a,15
   ld    (ix+6),a            ;IceWeaponSX_LeftSide
-  ;/ice weapon animation
-  jp    GoHandlePlayerWeapon  
+  ;/SecundaryWeapon animation
+  call  GoHandlePlayerWeapon  
 
-  WaterWeapon:
-  ld    ix,WaterWeaponActive?
-  ;ice weapon animation
-  ld    b,128               ;sx of first ice weapon going right
-  jp    p,.DirectionFound
-  ld    b,192               ;sx of first ice weapon going left 
-  .DirectionFound:
-  ld    a,(framecounter)
-  and   7
-  and   %0000 0110          ;0, 2, 4 or 6
-  add   a,a                 ;*2
-  add   a,a                 ;*4
-  add   a,a                 ;*8 (0, 16, 32, 48)    
-  add   a,b
-  ld    (ix+5),a            ;IceWeaponSX_RightSide
-  add   a,15
-  ld    (ix+6),a            ;IceWeaponSX_LeftSide
-  ;/ice weapon animation
-  jp    GoHandlePlayerWeapon  
-
-  EarthWeapon:
-  ld    ix,EarthWeaponActive?
-  ;ice weapon animation
-  ld    b,128               ;sx of first ice weapon going right
-  jp    p,.DirectionFound
-  ld    b,192               ;sx of first ice weapon going left 
-  .DirectionFound:
-  ld    a,(framecounter)
-  and   7
-  and   %0000 0110          ;0, 2, 4 or 6
-  add   a,a                 ;*2
-  add   a,a                 ;*4
-  add   a,a                 ;*8 (0, 16, 32, 48)    
-  add   a,b
-  ld    (ix+5),a            ;IceWeaponSX_RightSide
-  add   a,15
-  ld    (ix+6),a            ;IceWeaponSX_LeftSide
-  ;/ice weapon animation
-  jp    GoHandlePlayerWeapon  
-
-  IceWeapon:
-  ld    ix,IceWeaponActive?
-  ;ice weapon animation
-  ld    b,128               ;sx of first ice weapon going right
-  jp    p,.DirectionFound
-  ld    b,192               ;sx of first ice weapon going left 
-  .DirectionFound:
-  ld    a,(framecounter)
-  and   7
-  and   %0000 0110          ;0, 2, 4 or 6
-  add   a,a                 ;*2
-  add   a,a                 ;*4
-  add   a,a                 ;*8 (0, 16, 32, 48)    
-  add   a,b
-  ld    (ix+5),a            ;IceWeaponSX_RightSide
-  add   a,15
-  ld    (ix+6),a            ;IceWeaponSX_LeftSide
-  ;/ice weapon animation
-  jp    GoHandlePlayerWeapon  
+  ;move
+  ld    a,(ix+2)            ;FireballX
+  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
+  ld    (ix+2),a            ;FireballX
+  ret
 
   Arrow2:
   ld    ix,ArrowActive?
@@ -3715,30 +3600,6 @@ HandlePlayerWeapons:
   .DirectionFound:
   ld    (ix+4),a            ;sy
   jp    GoHandlePlayerWeapon.skipDurationCheck
-
-  Fireball:
-  ld    ix,FireballActive?
-  ;ice weapon animation
-  ld    b,128               ;sx of first ice weapon going right
-  jp    p,.DirectionFound
-  ld    b,192               ;sx of first ice weapon going left 
-  .DirectionFound:
-  ld    a,(framecounter)
-  and   7
-  and   %0000 0110          ;0, 2, 4 or 6
-  add   a,a                 ;*2
-  add   a,a                 ;*4
-  add   a,a                 ;*8 (0, 16, 32, 48)    
-  add   a,b
-  ld    (ix+5),a            ;IceWeaponSX_RightSide
-  add   a,15
-  ld    (ix+6),a            ;IceWeaponSX_LeftSide
-  ;/ice weapon animation
-;  jp    GoHandlePlayerWeapon  
-  
-  
-  
-  
   
   GoHandlePlayerWeapon:
   ld    a,(MagicWeaponDuration)
@@ -4016,8 +3877,6 @@ CopyPlayerProjectile:                                        ;copy any object in
 playermovementspeed:    db  2
 PlayerFacingRight?:     db  1
 PlayerInvulnerable?:    db  0
-CurrentMagicWeapon:     db  10 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
-CurrentPrimaryWeapon:   db  1 ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
 
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
@@ -4058,7 +3917,7 @@ RShootKineticEnergy:
   .engineFound:
 
   ld    a,-KineticWeaponSpeed
-  ld    (KineticWeaponActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    hl,(ClesX)
   add   hl,de                 ;adjust x starting placement projectile
   ld    a,l
@@ -4066,9 +3925,9 @@ RShootKineticEnergy:
   jr    z,.SetX
   ld    a,255
   .SetX:
-  ld    (KineticWeaponX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (KineticWeaponY),a
+  ld    (SecundaryWeaponY),a
 
 
 jp Set_Fall
@@ -5186,6 +5045,8 @@ Set_Charging:
 Set_Dying:
 	ld		hl,Dying
 	ld		(PlayerSpriteStand),hl
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a  
   ret
 
 Set_R_attack:
@@ -5355,6 +5216,8 @@ Set_Stairs_Climb_RightUp:
   ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a  
   ret
 
 Set_Stairs_Climb_LeftUp:
@@ -5370,6 +5233,8 @@ Set_Stairs_Climb_LeftUp:
   ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a  
   ret
 
 Set_ClimbDown:
@@ -5384,6 +5249,8 @@ Set_ClimbDown:
   ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a  
   
   ld    hl,0 
   ld    (PlayerAniCount),hl
@@ -5404,6 +5271,8 @@ Set_ClimbUp:
   ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a  
       
   ld    hl,0 
   ld    (PlayerAniCount),hl
@@ -5424,6 +5293,8 @@ Set_Climb_AndResetAniCount:
   ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a  
 
 	ld		hl,PlayerSpriteData_Char_Climbing1
 	ld		(standchar),hl	
@@ -5446,11 +5317,15 @@ Set_jump:
 	ld		hl,Jump
 	ld		(PlayerSpriteStand),hl
 
-  ld    hl,0
-	ld		(PlayerAniCount),hl
-;	ld    a,StartingJumpSpeed
 	ld    a,(StartingJumpSpeed)
 	ld		(JumpSpeed),a
+
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)  
+  or    a
+  ret   nz                                                      ;don't reset PlayerAnicount if we initiate a double jump while primary attack is used
+
+  ld    hl,0
+	ld		(PlayerAniCount),hl
   ret
 
 Set_Fall: 
@@ -5513,14 +5388,10 @@ Set_L_stand:
 
   xor   a
   ld    (EnableHitbox?),a
-  ld    (PrimaryWeaponActive?),a
-;  ld    (ShootArrowWhileJump?),a
+  xor   a
   ld    (PlayerFacingRight?),a	
-	ld		hl,LStanding
-	ld		(PlayerSpriteStand),hl
-	ld		hl,PlayerSpriteData_Char_LeftStand
-	ld		(standchar),hl
 
+  ;check bow and arrow weapon active while landing
   ld    a,(ShootArrowWhileJump?)
   or    a
   jr    z,.EndCheckShootArrowWhileJump
@@ -5531,9 +5402,34 @@ Set_L_stand:
 	ret
   .EndCheckShootArrowWhileJump:
 
+  ;check primary weapon active while landing
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)
+  or    a
+  jr    z,.EndCheckPrimaryWeaponWhileJump
+
+  ld    a,(CurrentPrimaryWeapon)                                ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
+  or    a
+  jr    z,.EndCheckPrimaryWeaponWhileJump  
+  dec   a
+	ld		hl,LSwordAttack
+  jr    z,.setPrimaryAttack
+  dec   a
+	ld		hl,LDaggerAttack
+  jr    z,.setPrimaryAttack
+  dec   a
+	ld		hl,LAxeAttack
+  jr    z,.setPrimaryAttack
+  dec   a
+	ld		hl,LSpearAttack
+  .setPrimaryAttack:
+	ld		(PlayerSpriteStand),hl
+	ret
+  .EndCheckPrimaryWeaponWhileJump:
+
+  ;check secondary weapon active while landing
   ld    a,(ShootMagicWhileJump?)                                ;check if player was shooting magic weapon while jumping
   or    a
-  ret   z
+  jr    z,.EndCheckSecundaryWeaponWhileJump
   xor   a
   ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
 
@@ -5552,28 +5448,28 @@ Set_L_stand:
   ret
 
   .Fireball:
-  ld    a,(FireballActive?)                                     ;check if fireball is already being shot
+  ld    a,(SecundaryWeaponActive?)                                     ;check if fireball is already being shot
   or    a
   ret   nz
 	ld		hl,LShootFireball
   jr    .SetMagicShootingStand
 
   .Ice:
-  ld    a,(IceWeaponActive?)                                     ;check if fireball is already being shot
+  ld    a,(SecundaryWeaponActive?)                                     ;check if fireball is already being shot
   or    a
   ret   nz
 	ld		hl,LShootIce
   jr    .SetMagicShootingStand
 
   .Earth:
-  ld    a,(EarthWeaponActive?)                                     ;check if fireball is already being shot
+  ld    a,(SecundaryWeaponActive?)                                     ;check if fireball is already being shot
   or    a
   ret   nz
 	ld		hl,LShootEarth
   jr    .SetMagicShootingStand
 
   .Water:
-  ld    a,(WaterWeaponActive?)                                     ;check if fireball is already being shot
+  ld    a,(SecundaryWeaponActive?)                                     ;check if fireball is already being shot
   or    a
   ret   nz
 	ld		hl,LShootWater
@@ -5584,21 +5480,26 @@ Set_L_stand:
   ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
   ret
 
+  .EndCheckSecundaryWeaponWhileJump:
+	ld		hl,PlayerSpriteData_Char_LeftStand
+	ld		(standchar),hl
+	ld		hl,LStanding
+	ld		(PlayerSpriteStand),hl	
+  xor   a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a  
+  ret
+
 Set_R_stand:
   ld    a,CollisionSYStanding
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
 
   xor   a
   ld    (EnableHitbox?),a
-  ld    (PrimaryWeaponActive?),a  
-;  ld    (ShootArrowWhileJump?),a
   ld    a,1
   ld    (PlayerFacingRight?),a	
-	ld		hl,RStanding
-	ld		(PlayerSpriteStand),hl
-	ld		hl,PlayerSpriteData_Char_RightStand
-	ld		(standchar),hl
 
+  ;check bow and arrow weapon active while landing
   ld    a,(ShootArrowWhileJump?)
   or    a
   jr    z,.EndCheckShootArrowWhileJump
@@ -5606,11 +5507,37 @@ Set_R_stand:
   ld    (ShootArrowWhileJump?),a
 	ld		hl,RShootArrow
 	ld		(PlayerSpriteStand),hl
+	ret
   .EndCheckShootArrowWhileJump:
 
+  ;check primary weapon active while landing
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)
+  or    a
+  jr    z,.EndCheckPrimaryWeaponWhileJump
+
+  ld    a,(CurrentPrimaryWeapon)                                ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
+  or    a
+  jr    z,.EndCheckPrimaryWeaponWhileJump  
+  dec   a
+	ld		hl,RSwordAttack
+  jr    z,.setPrimaryAttack
+  dec   a
+	ld		hl,RDaggerAttack
+  jr    z,.setPrimaryAttack
+  dec   a
+	ld		hl,RAxeAttack
+  jr    z,.setPrimaryAttack
+  dec   a
+	ld		hl,RSpearAttack
+  .setPrimaryAttack:
+	ld		(PlayerSpriteStand),hl
+	ret
+  .EndCheckPrimaryWeaponWhileJump:
+
+  ;check secondary weapon active while landing
   ld    a,(ShootMagicWhileJump?)                                ;check if player was shooting magic weapon while jumping
   or    a
-  ret   z
+  jr    z,.EndCheckSecundaryWeaponWhileJump
   xor   a
   ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
 
@@ -5629,28 +5556,28 @@ Set_R_stand:
   ret
 
   .Fireball:
-  ld    a,(FireballActive?)                                     ;check if fireball is already being shot
+  ld    a,(SecundaryWeaponActive?)                                     ;check if fireball is already being shot
   or    a
   ret   nz
 	ld		hl,RShootFireball
   jr    .SetMagicShootingStand
 
   .Ice:
-  ld    a,(IceWeaponActive?)                                     ;check if fireball is already being shot
+  ld    a,(SecundaryWeaponActive?)                                     ;check if fireball is already being shot
   or    a
   ret   nz
 	ld		hl,RShootIce
   jr    .SetMagicShootingStand
 
   .Earth:
-  ld    a,(EarthWeaponActive?)                                     ;check if fireball is already being shot
+  ld    a,(SecundaryWeaponActive?)                                     ;check if fireball is already being shot
   or    a
   ret   nz
 	ld		hl,RShootEarth
   jr    .SetMagicShootingStand
 
   .Water:
-  ld    a,(WaterWeaponActive?)                                     ;check if fireball is already being shot
+  ld    a,(SecundaryWeaponActive?)                                     ;check if fireball is already being shot
   or    a
   ret   nz
 	ld		hl,RShootWater
@@ -5659,6 +5586,16 @@ Set_R_stand:
   xor   a
 ;  ld    (PlayerAniCount),a  
   ld    (ShootMagicWhileJump?),a                                ;end shoot magic while jumping. commence shoot magic when standing
+  ret
+
+  .EndCheckSecundaryWeaponWhileJump:
+	ld		hl,PlayerSpriteData_Char_RightStand
+	ld		(standchar),hl
+	ld		hl,RStanding
+	ld		(PlayerSpriteStand),hl	
+  xor   a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a  
+  ld    (PrimaryWeaponActive?),a
   ret
 
 Set_L_Push:
@@ -5686,6 +5623,8 @@ Set_L_BeingHit:
   ld    (ShootArrowWhileJump?),a
 ;  ld    a,1
 ;  ld    (KickWhileJump?),a  
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a  
 
 ;  ld    a,1
 ;  ld    (PlayerFacingRight?),a                    ;since we move right, but face left, let's pretend we actually face right. This way the camera moves accordingly
@@ -5712,6 +5651,8 @@ Set_R_BeingHit:
   ld    (ShootArrowWhileJump?),a
 ;  ld    a,1
 ;  ld    (KickWhileJump?),a  
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a  
   
 ;  ld    (PlayerFacingRight?),a                    ;since we move left, but face right, let's pretend we actually face left. This way the camera moves accordingly
   ld    a,(RunningTablePointer)

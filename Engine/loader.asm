@@ -404,7 +404,16 @@ ReSetVariables:
   ld    (ShakeScreen?),a
   ld    (PlayerDead?),a
   ld    (ArrowActive?),a              ;remove arrow weapon  
-  ld    (FireballActive?),a              ;remove arrow weapon  
+  ld    (SecundaryWeaponActive?),a              ;remove arrow weapon  
+
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)
+  or    a
+  ret   z                              ;wait for previous primary attack to end
+  xor   a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a   
+  ld    hl,0
+  ld    (PlayerAnicount),hl 
   ret  
 
 .NormalRunningTable:

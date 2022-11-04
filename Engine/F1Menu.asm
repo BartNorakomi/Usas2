@@ -398,18 +398,9 @@ CheckIfF1MenuIsAccessable:
   ld    a,(ArrowActive?)
   or    a
   ret   nz
-  ld    a,(FireballActive?)
+  ld    a,(SecundaryWeaponActive?)
   or    a
   ret   nz
-  ld    a,(IceWeaponActive?)
-  or    a
-  ret   nz  
-  ld    a,(EarthWeaponActive?)
-  or    a
-  ret   nz 
-  ld    a,(WaterWeaponActive?)
-  or    a
-  ret   nz   
   ld    a,(ShootArrowWhileJump?)
   or    a
   ret   nz

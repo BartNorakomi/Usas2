@@ -41,7 +41,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapA04Data      ;Area Sign
 ;WorldMapPointer:  dw  MapD12Data      ;pit
 ;WorldMapPointer:  dw  MapA06Data      ;
-WorldMapPointer:  dw  MapB04Data      ;
+WorldMapPointer:  dw  MapB06Data      ;
 
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
