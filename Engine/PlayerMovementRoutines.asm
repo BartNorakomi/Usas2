@@ -25,27 +25,9 @@ LShootWater:
   cp    2 * 10
   ret   nz
 
-  .EntranceWhileJumping:
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    de,-26                ;normal engine
-  jr    z,.engineFound
-  ld    de,-21                ;SF2 engine  
-  .engineFound:
+  ld    b,-WaterWeaponSpeed
+  jp    SetLShootElementalWeapon
 
-  ld    a,-WaterWeaponSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    hl,(ClesX)
-  add   hl,de                 ;adjust x starting placement projectile
-  ld    a,l
-  bit   0,h
-  jr    z,.SetX
-  ld    a,255
-  .SetX:
-  ld    (SecundaryWeaponX),a
-  ld    a,(ClesY)
-  ld    (SecundaryWeaponY),a
-  ret
   
 RShootWater:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
@@ -70,26 +52,8 @@ RShootWater:
   cp    2 * 10
   ret   nz
 
-  .EntranceWhileJumping:
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    b,20                  ;normal engine
-  jr    z,.engineFound
-  ld    b,04                  ;SF2 engine 
-  .engineFound:
-
-  ld    a,WaterWeaponSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    a,(ClesX)
-  sub   a,b                   ;adjust x starting placement projectile
-    
-  jr    nc,.SetX
-  xor   a
-  .SetX:
-  ld    (SecundaryWeaponX),a
-  ld    a,(ClesY)
-  ld    (SecundaryWeaponY),a
-  ret
+  ld    b,WaterWeaponSpeed
+  jp    SetRShootElementalWeapon
   
 LShootEarth:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
@@ -114,31 +78,8 @@ LShootEarth:
   cp    2 * 10
   ret   nz
 
-  .EntranceWhileJumping:
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    de,-26                ;normal engine
-  jr    z,.engineFound
-  ld    de,-21                ;SF2 engine  
-  .engineFound:
-
-  ld    a,-EarthWeaponSpeed
-  ld    (SecundaryWeaponActive?),a
-;  ld    a,(ClesX)
-;  sub   a,26
-  ld    hl,(ClesX)
-;  ld    de,-26               ;normal engine
-;  ld    de,-21                ;SF2 engine  
-  add   hl,de                 ;adjust x starting placement projectile
-  ld    a,l
-  bit   0,h
-  jr    z,.SetX
-  ld    a,255
-  .SetX:
-  ld    (SecundaryWeaponX),a
-  ld    a,(ClesY)
-  ld    (SecundaryWeaponY),a
-  ret
+  ld    b,-EarthWeaponSpeed
+  jp    SetLShootElementalWeapon
   
 RShootEarth:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
@@ -163,27 +104,9 @@ RShootEarth:
   cp    2 * 10
   ret   nz
 
-  .EntranceWhileJumping:
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    b,20                  ;normal engine
-  jr    z,.engineFound
-  ld    b,04                  ;SF2 engine 
-  .engineFound:
-
-  ld    a,EarthWeaponSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    a,(ClesX)
-  sub   a,b                   ;adjust x starting placement projectile
-    
-  jr    nc,.SetX
-  xor   a
-  .SetX:
-  ld    (SecundaryWeaponX),a
-  ld    a,(ClesY)
-  ld    (SecundaryWeaponY),a
-  ret
-
+  ld    b,EarthWeaponSpeed
+  jp    SetRShootElementalWeapon
+  
 LShootIce:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,38
@@ -207,31 +130,8 @@ LShootIce:
   cp    2 * 10
   ret   nz
 
-  .EntranceWhileJumping:
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    de,-26                ;normal engine
-  jr    z,.engineFound
-  ld    de,-21                ;SF2 engine  
-  .engineFound:
-
-  ld    a,-IceWeaponSpeed
-  ld    (SecundaryWeaponActive?),a
-;  ld    a,(ClesX)
-;  sub   a,26
-  ld    hl,(ClesX)
-;  ld    de,-26               ;normal engine
-;  ld    de,-21                ;SF2 engine  
-  add   hl,de                 ;adjust x starting placement projectile
-  ld    a,l
-  bit   0,h
-  jr    z,.SetX
-  ld    a,255
-  .SetX:
-  ld    (SecundaryWeaponX),a
-  ld    a,(ClesY)
-  ld    (SecundaryWeaponY),a
-  ret
+  ld    b,-IceWeaponSpeed
+  jp    SetLShootElementalWeapon
   
 RShootIce:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
@@ -256,26 +156,8 @@ RShootIce:
   cp    2 * 10
   ret   nz
 
-  .EntranceWhileJumping:
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    b,20                  ;normal engine
-  jr    z,.engineFound
-  ld    b,04                  ;SF2 engine 
-  .engineFound:
-
-  ld    a,IceWeaponSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    a,(ClesX)
-  sub   a,b                   ;adjust x starting placement projectile
-    
-  jr    nc,.SetX
-  xor   a
-  .SetX:
-  ld    (SecundaryWeaponX),a
-  ld    a,(ClesY)
-  ld    (SecundaryWeaponY),a
-  ret
+  ld    b,IceWeaponSpeed
+  jp    SetRShootElementalWeapon
 
 LShootFireball:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
@@ -300,27 +182,8 @@ LShootFireball:
   cp    2 * 10
   ret   nz
 
-  .EntranceWhileJumping:
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    de,-26                ;normal engine
-  jr    z,.engineFound
-  ld    de,-21                ;SF2 engine  
-  .engineFound:
-
-  ld    a,-FireballSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    hl,(ClesX)
-  add   hl,de                 ;adjust x starting placement projectile
-  ld    a,l
-  bit   0,h
-  jr    z,.SetX
-  ld    a,255
-  .SetX:
-  ld    (SecundaryWeaponX),a
-  ld    a,(ClesY)
-  ld    (SecundaryWeaponY),a
-  ret
+  ld    b,-FireballSpeed
+  jp    SetLShootElementalWeapon
 
 RShootFireball:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
@@ -345,27 +208,60 @@ RShootFireball:
   cp    2 * 10
   ret   nz
 
-  .EntranceWhileJumping:
+  ld    b,FireballSpeed
+  jp    SetRShootElementalWeapon
+
+SetLShootElementalWeapon:
+  ld    a,b
+  ld    (SecundaryWeaponActive?),a
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    de,-26                ;normal engine
+  jr    z,.engineFound
+  ld    de,-21                ;SF2 engine  
+  .engineFound:
+
+  ld    hl,(ClesX)
+  add   hl,de                 ;adjust x starting placement projectile
+  ld    a,l
+  bit   0,h
+  jr    z,.SetX
+  ld    a,255
+  .SetX:
+  ld    (SecundaryWeaponX),a
+  ld    a,(ClesY)
+  ld    (SecundaryWeaponY),a
+    
+  ld    a,11
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+29
+  ld    (SecundaryWeaponSY),a
+  ret
+
+SetRShootElementalWeapon:
+  ld    a,b
+  ld    (SecundaryWeaponActive?),a
+
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   ld    b,20                  ;normal engine
   jr    z,.engineFound
   ld    b,04                  ;SF2 engine 
   .engineFound:
-
-
-  ld    a,FireballSpeed
-  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,b                   ;adjust x starting placement projectile
-  
-  
   jr    nc,.SetX
   xor   a
   .SetX:
   ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   ld    (SecundaryWeaponY),a
+    
+  ld    a,11
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+29
+  ld    (SecundaryWeaponSY),a
   ret
 
 AnimateShootFireball:
@@ -463,12 +359,21 @@ lSitShootArrowSf2Engine:
   ld    a,(ClesX)
   sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
   jp    c,Set_L_Sit  
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,-ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesY)
   add   a,7
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
+
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+17
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_L_Sit  
 
 LSitShootArrow:
@@ -576,13 +481,22 @@ LSitShootArrow:
   ret   nz
 
   ld    a,-ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,38
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   add   a,7
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
+  
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+16
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_L_Sit 
 
 RSitShootArrowSf2Engine:
@@ -635,13 +549,22 @@ RSitShootArrowSf2Engine:
   ret   nz
 
   ld    a,ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,-3                  ;old value= 8, but we had to move the start x of arrow more to the right, otherwise arrow cant be shot when standing at the furthest left in screen
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   add   a,7
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
+  
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+16
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_R_Sit    
 
 BruteForceMovementLeft:
@@ -769,13 +692,22 @@ RSitShootArrow:
   ret   nz
 
   ld    a,ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,11
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   add   a,7
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
+  
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+16
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_R_Sit  
 
 LShootArrowSf2Engine:
@@ -832,12 +764,21 @@ LShootArrowSf2Engine:
   ld    a,(ClesX)
   sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
   jp    c,Set_L_Stand    
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,-ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesY)
   inc   a
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
+
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+17
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_L_Stand  
 
 LShootArrow:
@@ -947,13 +888,22 @@ LShootArrow:
   ret   nz
 
   ld    a,-ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,38
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   inc   a
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
+  
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+17
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_L_Stand  
 
 RShootArrowSf2Engine:
@@ -1008,15 +958,24 @@ RShootArrowSf2Engine:
   ret   nz
 
   ld    a,ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,-3                  ;old value= 8, but we had to move the start x of arrow more to the right, otherwise arrow cant be shot when standing at the furthest left in screen
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   inc   a
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
+  
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+16
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_R_Stand  
-    
+
 RShootArrow:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
@@ -1124,13 +1083,22 @@ RShootArrow:
   ret   nz
 
   ld    a,ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,11
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   inc   a
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
+  
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+16
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_R_Stand  
 
 RSilhouetteKickAnimateTable:
@@ -2234,6 +2202,14 @@ RightAxeAttackAnimation:                 ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_RightCharge7 | db 004,012+50,010,010,216+30,073
 
 CheckPrimaryWeaponEdgesFacingLeft:
+  ld    a,(SecundaryWeaponActive?)
+  or    a
+  jr    nz,.Set_L_Stand       ;don't user primary weapon when secundary weapon is active
+
+  ld    a,(ShootMagicWhileJump?)      ;don't shoot if already shooting
+  or    a
+  jr    nz,.Set_L_Stand       ;don't user primary weapon when secundary weapon is active
+  
   ld    a,(ClesY)
   cp    200
   jr    nc,.Set_L_Stand       ;don't user primary weapon when y>199 or scoreboard graphics can be erased
@@ -2271,6 +2247,14 @@ CheckPrimaryWeaponEdgesFacingLeft:
   ret
 
 CheckPrimaryWeaponEdgesFacingRight:
+  ld    a,(SecundaryWeaponActive?)
+  or    a
+  jr    nz,.Set_R_Stand       ;don't user primary weapon when secundary weapon is active
+
+  ld    a,(ShootMagicWhileJump?)      ;don't shoot if already shooting
+  or    a
+  jr    nz,.Set_R_Stand       ;don't user primary weapon when secundary weapon is active
+
   ld    a,(ClesY)
   cp    200
   jr    nc,.Set_R_Stand       ;don't user primary weapon when y>199 or scoreboard graphics can be erased
@@ -2344,7 +2328,7 @@ LSwordAttack:
   call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
   jp    SWspriteSetNYNXSYSX
   
-RSwordAttack:
+RSwordAttack:  
   ld    de,11                 ;left edge
   ld    bc,255                ;right edge
   call  CheckPrimaryWeaponEdgesFacingRight
@@ -3679,14 +3663,34 @@ AnimateWhileJump:
   .Rshootmagic:
   ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
   cp    5
-  jp    z,RShootFireball.EntranceWhileJumping
+  ld    b,FireballSpeed
+  jp    z,SetRShootElementalWeapon
   cp    7
-  jp    z,RShootIce.EntranceWhileJumping
+  ld    b,IceWeaponSpeed
+  jp    z,SetRShootElementalWeapon
   cp    8
-  jp    z,RShootEarth.EntranceWhileJumping
+  ld    b,EarthWeaponSpeed
+  jp    z,SetRShootElementalWeapon
   cp    9
-  jp    z,RShootWater.EntranceWhileJumping
+  ld    b,WaterWeaponSpeed
+  jp    z,SetRShootElementalWeapon
   ret
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
 .RollingJumpRight:
   ld    a,(JumpSpeed)
@@ -3806,14 +3810,20 @@ AnimateWhileJump:
   .Lshootmagic:
   ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
   cp    5
-  jp    z,LShootFireball.EntranceWhileJumping
+  ld    b,-FireballSpeed
+  jp    z,SetLShootElementalWeapon
   cp    7
-  jp    z,LShootIce.EntranceWhileJumping
+  ld    b,-IceWeaponSpeed
+  jp    z,SetLShootElementalWeapon
   cp    8
-  jp    z,LShootEarth.EntranceWhileJumping
+  ld    b,-EarthWeaponSpeed
+  jp    z,SetLShootElementalWeapon
   cp    9
-  jp    z,LShootWater.EntranceWhileJumping
+  ld    b,-WaterWeaponSpeed
+  jp    z,SetLShootElementalWeapon
   ret
+
+
 
 .RollingJumpLeft:
   ld    a,(JumpSpeed)
@@ -3875,11 +3885,20 @@ ShootArrowWhileJumpLeftSf2Engine:
   ld    a,(ClesX)
   sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
   jr    c,.endShootArrowWhileJump
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,-ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesY)
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
+
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+17
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
 
   .endShootArrowWhileJump:
   xor   a
@@ -3991,12 +4010,21 @@ ShootArrowWhileJumpLeft:
   ret   nz
   
   ld    a,-ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,38
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
+
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+17
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
 
   .endShootArrowWhileJump:
   xor   a
@@ -4053,12 +4081,21 @@ ShootArrowWhileJumpRightSf2Engine:
   ret   nz
   
   ld    a,ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,-3                  ;old value= 8, but we had to move the start x of arrow more to the right, otherwise arrow cant be shot when standing at the furthest left in screen
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
+
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+16
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
 
   .endShootArrowWhileJump:
   xor   a
@@ -4170,13 +4207,22 @@ ShootArrowWhileJumpRight:
   ret   nz
   
   ld    a,ArrowSpeed
-  ld    (ArrowActive?),a
+  ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
   sub   a,11
-  ld    (ArrowX),a
+  ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
-  ld    (ArrowY),a
+  ld    (SecundaryWeaponY),a
 
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+16
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
+  
   .endShootArrowWhileJump:
   xor   a
   ld    (ShootArrowWhileJump?),a
@@ -4296,6 +4342,14 @@ Jump:
   or    a
   ret   nz                              ;wait for previous primary attack to end
 
+  ld    a,(SecundaryWeaponActive?)      ;wait for secundary weapon to end
+  or    a
+  ret   nz
+
+  ld    a,(ShootMagicWhileJump?)      ;don't shoot if already shooting
+  or    a
+  ret   nz
+
   ld    a,KickWhileJumpDuration         ;this is only used in case kicking, otherwise a=1 is sufficient
   ld    (PrimaryWeaponActivatedWhileJumping?),a
   xor   a
@@ -4348,6 +4402,10 @@ Jump:
   ret
 
 .SetShootMagicWhileJump:
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)
+  or    a
+  ret   nz                              ;don't shoot secundary attack when primary attack is busy
+
   ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
   cp    4
   jr    z,.Arrow

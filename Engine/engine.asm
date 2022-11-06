@@ -3498,7 +3498,6 @@ checktile:                  ;in b->add y to check, de->add x to check
   ld    hl,0
   jp    .EntryOutOfScreenLeft
 
-
 PrimaryWeaponActivatedWhileJumping?:  db  0
 MagicWeaponDurationValue:     equ 29
 MagicWeaponDuration:          db  MagicWeaponDurationValue
@@ -3507,15 +3506,6 @@ CurrentMagicWeapon:           db  10 ;0=nothing, 1=rolling, 2=charging, 3=medita
 CurrentPrimaryWeapon:         db  1 ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
 
 ArrowSpeed:                   equ 6
-ArrowActive?:                 db  0
-ArrowY:                       db  100
-ArrowX:                       dw  100
-ArrowSY:                      db  216+16    ;(ix+4)
-ArrowSX_RightSide:            db  030       ;(ix+5)
-ArrowSX_LeftSide:             db  030+15    ;(ix+6)
-ArrowNY:                      db  001       ;(ix+7)
-ArrowNX:                      db  016       ;(ix+8)
-
 FireballSpeed:                equ 4
 IceWeaponSpeed:               equ 4
 EarthWeaponSpeed:             equ 3
@@ -3541,14 +3531,6 @@ SecundaryWeaponNY:            db  011       ;(ix+7)
 SecundaryWeaponNX:            db  016       ;(ix+8)
 
 HandlePlayerWeapons:
-  ld    a,(ArrowActive?)
-  or    a
-  jp    nz,Arrow2
-
-;  ld    a,(KineticWeaponActive?)
-;  or    a
-;  jp    nz,KineticWeapon
-
   ld    a,(PrimaryWeaponActive?)
   or    a
   jp    nz,PrimaryWeapon
@@ -3562,17 +3544,22 @@ HandlePlayerWeapons:
   ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
   or    a
   ret   z                     ;no software sprites needed for punching
-
   ld    ix,PrimaryWeaponActive?
-  jp    GoHandlePlayerWeapon.skipDurationCheck
-
+  jp    GoHandlePlayerWeapon
+  
   SecundaryWeapon:
   ld    ix,SecundaryWeaponActive?
+    
   ;SecundaryWeapon animation
   ld    b,128               ;sx of first ice weapon going right
   jp    p,.DirectionFound
   ld    b,192               ;sx of first ice weapon going left 
   .DirectionFound:
+
+  ld    a,(SecundaryWeaponNY)
+  dec   a                   ;check if NY=1 (arrow)
+  jr    z,.CollisionCheck   ;skip elementary weapon animation and duration if we are using arrow
+
   ld    a,(framecounter)
   and   7
   and   %0000 0110          ;0, 2, 4 or 6
@@ -3584,6 +3571,28 @@ HandlePlayerWeapons:
   add   a,15
   ld    (ix+6),a            ;IceWeaponSX_LeftSide
   ;/SecundaryWeapon animation
+
+  ld    a,(MagicWeaponDuration)
+  dec   a
+  ld    (MagicWeaponDuration),a
+  jp    z,GoHandlePlayerWeapon.RemoveWeapon
+
+  .CollisionCheck:
+  ld    l,(ix+2)            ;FireballX
+  ld    h,(ix+3)            ;FireballX
+  ld    de,20
+  add   hl,de  
+  ld    a,(ix+1)            ;FireballY
+  add   a,16 + 2
+
+  ;collision check
+  call  checktile.XandYset  ;out z=collision found with wall  
+  jp    z,GoHandlePlayerWeapon.RemoveWeapon
+  inc   hl                  ;also check next tile
+  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+  dec   a                   ;1 = wall
+  jp    z,GoHandlePlayerWeapon.RemoveWeapon
+
   call  GoHandlePlayerWeapon  
 
   ;move
@@ -3591,23 +3600,8 @@ HandlePlayerWeapons:
   add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
   ld    (ix+2),a            ;FireballX
   ret
-
-  Arrow2:
-  ld    ix,ArrowActive?
-  ld    a,216+16            ;sy of arrow going right
-  jp    p,.DirectionFound
-  ld    a,216+17            ;sy of arrow going left
-  .DirectionFound:
-  ld    (ix+4),a            ;sy
-  jp    GoHandlePlayerWeapon.skipDurationCheck
   
   GoHandlePlayerWeapon:
-  ld    a,(MagicWeaponDuration)
-  dec   a
-  ld    (MagicWeaponDuration),a
-  jp    z,.RemoveWeapon
-
-  .skipDurationCheck:  
   ld    a,(ix+4)          ;sy  
   ld    (CopyPlayerProjectile+sy),a
   ld    a,(ix+7)          ;ny
@@ -3617,23 +3611,6 @@ HandlePlayerWeapons:
   ld    (CopyPlayerProjectile+nx),a
   ld    (CleanPlayerProjectile+nx),a
   
-  ld    l,(ix+2)            ;FireballX
-  ld    h,(ix+3)            ;FireballX
-  add   a,4
-  ld    d,0
-  ld    e,a
-  add   hl,de  
-  ld    a,(ix+1)            ;FireballY
-  add   a,16 + 2
-
-  ;collision check
-;  call  checktile.XandYset  ;out z=collision found with wall  
-;  jp    z,.RemoveWeapon
-;  inc   hl                  ;also check next tile
-;  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
-;  dec   a                   ;1 = wall
-;  jp    z,.RemoveWeapon
-
   ld    iy,CleanPlayerProjectile
 
   ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
@@ -3702,12 +3679,8 @@ HandlePlayerWeapons:
   ld    (iy+sx),a
 
   ld    a,(ix+2)            ;FireballX
-;  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
-  ld    (ix+2),a            ;FireballX
-
-  ld    a,(ix+2)            ;FireballX
   cp    10
-;  jr    c,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+  jr    c,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
 
   ld    a,(CopyPlayerProjectile+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side
   cp    20
@@ -3779,9 +3752,6 @@ HandlePlayerWeapons:
   ld    (CopyPlayerProjectile+dy),a
 
   ld    a,(ix+2)            ;FireballX
-;  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
-  ld    (ix+2),a            ;FireballX
-  
   add   a,d
   add   a,(ix+8)            ;nx
   ld    (CopyPlayerProjectile+dx),a
@@ -3789,9 +3759,13 @@ HandlePlayerWeapons:
   add   a,e
   ld    (iy+sx),a
 
+  ld    a,(PrimaryWeaponActive?)
+  or    a
+  jr    nz,.SkipSecundaryWeaponOutOfScreenLeft
   ld    a,(ix+2)            ;FireballX
-  cp    255-10
-  jr    nc,.RemoveWeapon         ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+  cp    8
+  jp    c,.RemoveWeapon         ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+  .SkipSecundaryWeaponOutOfScreenLeft:
 
   ld    a,(CopyPlayerProjectile+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side
   cp    255-20
@@ -3829,18 +3803,6 @@ PlayerWeaponSf2Engine:
   ld    (iy+dx),a
   ld    (iy+sx),a
 
-  ;move object
-;  ld    a,(ix+2)            ;FireballX
-;  add   a,(ix+0)            ;Weapon active?/ movement speed. move arrow with arrow speed (which is set in ArrowActive?)
-;  ld    (ix+2),a            ;FireballX
-
-  ;remove object at endges of screen
-;  ld    a,(ix+2)            ;FireballX
-;  cp    10
-;  jr    c,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
-;  cp    256-10
-;  jr    nc,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
-
   ;put object
   ld    hl,CopyPlayerProjectile
   call  docopy
@@ -3848,14 +3810,6 @@ PlayerWeaponSf2Engine:
   ld    a,1                           ;all background restores should be done simultaneously at start of frame (after vblank)
   ld    (CleanPlayerProjectile+restorebackground?),a   
   ret
-
-;  .RemoveWeapon:
-;  ld    a,MagicWeaponDurationValue
-;  ld    (MagicWeaponDuration),a  
-  
-;  ld    (ix+0),0
-;  ret
-  
  
   db    0                 ;restorebackground?
 CleanPlayerProjectile:                                       ;this is used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)

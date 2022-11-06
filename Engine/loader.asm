@@ -403,7 +403,6 @@ ReSetVariables:
   xor   a
   ld    (ShakeScreen?),a
   ld    (PlayerDead?),a
-  ld    (ArrowActive?),a              ;remove arrow weapon  
   ld    (SecundaryWeaponActive?),a              ;remove arrow weapon  
 
   ld    a,(PrimaryWeaponActivatedWhileJumping?)

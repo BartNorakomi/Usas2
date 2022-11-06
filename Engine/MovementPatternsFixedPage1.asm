@@ -12,7 +12,6 @@
 ;distancecheck
 ;checkFacingPlayer
 ;CheckPlayerPunchesEnemyOnlySitting
-;CheckArrowHitsEnemy
 ;CheckSecundaryWeaponHitsEnemy
 ;CheckPlayerPunchesBoss
 ;CheckPlayerPunchesEnemyDemon
@@ -253,49 +252,6 @@ CheckPlayerPunchesEnemyOnlySitting:
   ld    (HitBoxSY),a                        ;a = y hitbox
   ret
 
-CheckArrowHitsEnemy:
-;check if enemy/object collides with hitbox arrow left side
-  ld    hl,(ArrowX)                         ;hl = x hitbox
-
-  ld    a,(scrollEngine)                    ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    bc,46                               ;normal engine
-  jr    z,.engineFound
-  ld    bc,46 - 14                          ;sf2 engine
-  .engineFound:
-
-  add   hl,bc
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox arrow right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-  ld    a,16                                ;reduce this value to reduce the hitbox size (on the right side)
-  add   a,c
-  ld    c,a
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox arrow top side
-  ld    a,(ArrowY)                          ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c  
-
-;check if enemy/object collides with hitbox arrow bottom side
-  sub   a,(ix+enemies_and_objects.ny)       ;width object
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  xor   a
-  ld    (ArrowActive?),a                    ;remove arrow when enemy is hit
-  
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jp    z,CheckPlayerPunchesEnemy.EnemyDied
-  ret
-
 CheckSecundaryWeaponHitsEnemy:
 ;check if enemy/object collides with hitbox arrow left side
   ld    hl,(SecundaryWeaponX)                      ;hl = x hitbox
@@ -304,7 +260,7 @@ CheckSecundaryWeaponHitsEnemy:
   dec   a
   ld    bc,46                               ;normal engine
   jr    z,.engineFound
-  ld    bc,46 - 18                          ;sf2 engine
+  ld    bc,46 - 18                          ;sf2 engine (46 - 14 for arrows)
   .engineFound:
 
   add   hl,bc
@@ -315,7 +271,7 @@ CheckSecundaryWeaponHitsEnemy:
 
 ;check if enemy/object collides with hitbox arrow right side
   ld    c,(ix+enemies_and_objects.nx)       ;width object
-  ld    a,11                                ;reduce this value to reduce the hitbox size (on the right side)
+  ld    a,11    ;16 for arrows              ;reduce this value to reduce the hitbox size (on the right side)
   add   a,c
   ld    c,a
   sbc   hl,bc  
@@ -367,16 +323,10 @@ CheckPlayerPunchesEnemyDemon:
   ld    a,(SecundaryWeaponY)                       ;a = y hitbox
   sub   a,60
   ld    (SecundaryWeaponY),a                       ;a = y hitbox
-  ld    a,(ArrowY)                          ;a = y hitbox
-  sub   a,60
-  ld    (ArrowY),a                          ;a = y hitbox
   call  CheckPlayerPunchesEnemy
   ld    a,(SecundaryWeaponY)                       ;a = y hitbox
   add   a,60
   ld    (SecundaryWeaponY),a                       ;a = y hitbox
-  ld    a,(ArrowY)                          ;a = y hitbox
-  add   a,60
-  ld    (ArrowY),a                          ;a = y hitbox
   ret
 ;  jp    CheckPlayerPunchesEnemy
 
@@ -389,9 +339,9 @@ CheckPlayerPunchesEnemy:
   ret                                       ;if enemy is  already hit, don't check if it's hit again
   .EndReduceHitTimer:
   
-  ld    a,(ArrowActive?)
-  or    a
-  call  nz,CheckArrowHitsEnemy
+;  ld    a,(ArrowActive?)
+;  or    a
+;  call  nz,CheckArrowHitsEnemy
 
   ld    a,(SecundaryWeaponActive?)
   or    a

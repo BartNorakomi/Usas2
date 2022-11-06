@@ -395,9 +395,6 @@ putF1MenuGraphicsInScreen:
   jp    copyGraphicsToScreen.loop1   
 
 CheckIfF1MenuIsAccessable:
-  ld    a,(ArrowActive?)
-  or    a
-  ret   nz
   ld    a,(SecundaryWeaponActive?)
   or    a
   ret   nz
