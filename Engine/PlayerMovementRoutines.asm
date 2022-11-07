@@ -307,266 +307,6 @@ RightShootFireballAnimation:
   dw  PlayerSpriteData_Char_RightCharge5
   dw  PlayerSpriteData_Char_RightCharge5
 
-lSitShootArrowSf2Engine:
-;Animate
-  ld    a,(PlayerAniCount)
-  inc   a
-  ld    (PlayerAniCount),a
-  cp    4
-  ld    de,PlayerSpriteData_Char_LeftSitShootArrow1
-  ld    h,-9               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_LeftSitShootArrow2
-  ld    h,-11               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_LeftSitShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_LeftSitShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
-
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,(screenpage)
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  add   a,2
-  ld    (CopyPlayerWeapon+dy),a
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-
-  ld    a,(ClesX)
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  ld    (iy+sx),a
-  
-  ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(PlayerAniCount)
-  cp    15
-  ret   nz
-
-  ld    a,(ClesX)
-  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
-  jp    c,Set_L_Sit  
-  ld    (SecundaryWeaponX),a
-  ld    a,-ArrowSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    a,(ClesY)
-  add   a,7
-  ld    (SecundaryWeaponY),a
-
-  ld    a,1
-  ld    (SecundaryWeaponNY),a
-  ld    a,216+17
-  ld    (SecundaryWeaponSY),a
-  ld    a,030
-  ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
-  ld    (SecundaryWeaponSX_LeftSide),a
-  jp    Set_L_Sit  
-
-LSitShootArrow:
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
-
-  ld    a,028
-  ld    (CopyPlayerWeapon+sx),a  
-
-  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  jp    nz,LSitShootArrowSf2Engine
-
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,Set_L_Sit
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
-  
-;Animate
-  ld    a,(PlayerAniCount)
-  inc   a
-  ld    (PlayerAniCount),a
-  cp    4
-  ld    de,PlayerSpriteData_Char_LeftSitShootArrow1
-  ld    h,-13-1               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_LeftSitShootArrow2
-  ld    h,-13-3               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_LeftSitShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_LeftSitShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
-
-;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048+05         ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-.pagefound:
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,b
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,c
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  add   a,2
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-  ld    (CopyPlayerWeapon+dy),a
-
-  ld    a,(ClesX)
-  add   a,d
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  add   a,e
-  ld    (iy+sx),a
-  
-  ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(PlayerAniCount)
-  cp    15
-  ret   nz
-
-  ld    a,-ArrowSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    a,(ClesX)
-  sub   a,38
-  ld    (SecundaryWeaponX),a
-  ld    a,(ClesY)
-  add   a,7
-  ld    (SecundaryWeaponY),a
-  
-  ld    a,1
-  ld    (SecundaryWeaponNY),a
-  ld    a,216+16
-  ld    (SecundaryWeaponSY),a
-  ld    a,030
-  ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
-  ld    (SecundaryWeaponSX_LeftSide),a
-  jp    Set_L_Sit 
-
-RSitShootArrowSf2Engine:
-;Animate
-  ld    a,(PlayerAniCount)
-  inc   a
-  ld    (PlayerAniCount),a
-  cp    4
-  ld    de,PlayerSpriteData_Char_RightSitShootArrow1
-  ld    h,6               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_RightSitShootArrow2
-  ld    h,8               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_RightSitShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_RightSitShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
-
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,(screenpage)
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  add   a,2
-  ld    (CopyPlayerWeapon+dy),a
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-
-  ld    a,(ClesX)
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  ld    (iy+sx),a
-  
-  ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(PlayerAniCount)
-  cp    15
-  ret   nz
-
-  ld    a,ArrowSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    a,(ClesX)
-  sub   a,-3                  ;old value= 8, but we had to move the start x of arrow more to the right, otherwise arrow cant be shot when standing at the furthest left in screen
-  ld    (SecundaryWeaponX),a
-  ld    a,(ClesY)
-  add   a,7
-  ld    (SecundaryWeaponY),a
-  
-  ld    a,1
-  ld    (SecundaryWeaponNY),a
-  ld    a,216+16
-  ld    (SecundaryWeaponSY),a
-  ld    a,030
-  ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
-  ld    (SecundaryWeaponSX_LeftSide),a
-  jp    Set_R_Sit    
-
 BruteForceMovementLeft:
 	ld		hl,PlayerSpriteData_Char_LeftStand
 	ld		(standchar),hl
@@ -586,111 +326,80 @@ BruteForceMovementRight:
   add   hl,de
   ld    (clesx),hl
   ret
-  	
-RSitShootArrow:
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
 
-  ld    a,028+2
-  ld    (CopyPlayerWeapon+sx),a  
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  3, 4*8, 0
+                                                   ;positioning for the SW sprites:
+LeftSittingPresentBowAnimation:                   ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftSitShootArrow1 | db 002,012+63,013,003,216+19,028
+  dw  PlayerSpriteData_Char_LeftSitShootArrow2 | db 002,014+63,013,003,216+19,028
+  dw  PlayerSpriteData_Char_LeftSitShootArrow3 | db 002,014+63,013,003,216+19,028
+  dw  PlayerSpriteData_Char_LeftSitShootArrow4 | db 002,014+63,013,003,216+19,028
 
-  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  jp    nz,RSitShootArrowSf2Engine
+LSitShootArrow:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+  ld    de,30                 ;left edge
+  ld    bc,284                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingLeftWhenSitting
+;Animate
+  ld    hl,LeftSittingPresentBowAnimation-3
+  call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
+
+  ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
+  or    a
+  jp    nz,SWspriteSetNYNXSYSX
+  jp    SetLSitShootArrow
+
+SetLSitShootArrow:
+  ;put weapon
+  ld    a,-ArrowSpeed
+  ld    (SecundaryWeaponActive?),a
+  ld    a,(ClesX)
+  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
+  jp    c,Set_L_Sit
+  ld    (SecundaryWeaponX),a
+  ld    a,(ClesY)
+  add   a,7
+  ld    (SecundaryWeaponY),a
   
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,11
-  xor   a
-  sbc   hl,de
-  jp    c,BruteForceMovementRight
+  ld    a,1
+  ld    (SecundaryWeaponNY),a
+  ld    a,216+17
+  ld    (SecundaryWeaponSY),a
+  ld    a,030
+  ld    (SecundaryWeaponSX_RightSide),a
+  ld    a,030+15
+  ld    (SecundaryWeaponSX_LeftSide),a
+  jp    Set_L_Sit 
 
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37
-  xor   a
-  sbc   hl,de
-  jp    nc,Set_R_Sit
+;animate every x frames, amount of frames * 2, left(0) or Left(1)
+  db  3, 4*8, 1
+                                                   ;positioning for the SW sprites:
+RightSittingPresentBowAnimation:                   ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_RightSitShootArrow1 | db 002,010+50,013,003,216+19,030
+  dw  PlayerSpriteData_Char_RightSitShootArrow2 | db 002,008+50,013,003,216+19,030
+  dw  PlayerSpriteData_Char_RightSitShootArrow3 | db 002,008+50,013,003,216+19,030
+  dw  PlayerSpriteData_Char_RightSitShootArrow4 | db 002,008+50,013,003,216+19,030
+
+RSitShootArrow:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+  ld    de,11                 ;left edge
+  ld    bc,264                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingRightWhenSitting
   
 ;Animate
-  ld    a,(PlayerAniCount)
-  inc   a
-  ld    (PlayerAniCount),a
-  cp    4
-  ld    de,PlayerSpriteData_Char_RightSitShootArrow1
-  ld    h,1               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_RightSitShootArrow2
-  ld    h,3               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_RightSitShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_RightSitShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
+  ld    hl,RightSittingPresentBowAnimation-3
+  call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
 
-;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
+  ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
+  or    a
+  jp    nz,SWspriteSetNYNXSYSX
+  jp    SetRSitShootArrow
 
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048+05         ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-.pagefound:
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,b
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,c
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  add   a,2
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-  ld    (CopyPlayerWeapon+dy),a
-
-  ld    a,(ClesX)
-  add   a,d
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  add   a,e
-  ld    (iy+sx),a
-  
+SetRSitShootArrow:
   ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(PlayerAniCount)
-  cp    15
-  ret   nz
-
   ld    a,ArrowSpeed
   ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
@@ -710,187 +419,37 @@ RSitShootArrow:
   ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_R_Sit  
 
-LShootArrowSf2Engine:
-  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
-
-;Animate
-  ld    a,(PlayerAniCount)
-  inc   a
-  ld    (PlayerAniCount),a
-  cp    4
-  ld    de,PlayerSpriteData_Char_LeftShootArrow1
-  ld    h,-8               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_LeftShootArrow2
-  ld    h,-11               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_LeftShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_LeftShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
-
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,(screenpage)
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  sub   a,4
-  ld    (CopyPlayerWeapon+dy),a
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-
-  ld    a,(ClesX)
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  ld    (iy+sx),a
-  
-  ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(PlayerAniCount)
-  cp    15
-  ret   nz
-
-  ld    a,(ClesX)
-  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
-  jp    c,Set_L_Stand    
-  ld    (SecundaryWeaponX),a
-  ld    a,-ArrowSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    a,(ClesY)
-  inc   a
-  ld    (SecundaryWeaponY),a
-
-  ld    a,1
-  ld    (SecundaryWeaponNY),a
-  ld    a,216+17
-  ld    (SecundaryWeaponSY),a
-  ld    a,030
-  ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
-  ld    (SecundaryWeaponSX_LeftSide),a
-  jp    Set_L_Stand  
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  3, 4*8, 0
+                                        ;positioning for the SW sprites:
+LeftPresentBowAnimation:                       ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftShootArrow1 | db -04,011+63,013,003,216+19,028
+  dw  PlayerSpriteData_Char_LeftShootArrow2 | db -04,014+63,013,003,216+19,028
+  dw  PlayerSpriteData_Char_LeftShootArrow3 | db -04,014+63,013,003,216+19,028
+  dw  PlayerSpriteData_Char_LeftShootArrow4 | db -04,014+63,013,003,216+19,028
 
 LShootArrow:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
-
-  ld    a,028
-  ld    (CopyPlayerWeapon+sx),a  
-
-  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  jp    nz,LShootArrowSf2Engine
-
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,Set_L_Stand
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
-  
+  ld    de,30                 ;left edge
+  ld    bc,284                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingLeft
 ;Animate
-  ld    a,(PlayerAniCount)
-  inc   a
-  ld    (PlayerAniCount),a
-  cp    4
-  ld    de,PlayerSpriteData_Char_LeftShootArrow1
-  ld    h,-13               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_LeftShootArrow2
-  ld    h,-13-3               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_LeftShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_LeftShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
+  ld    hl,LeftPresentBowAnimation-3
+  call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
 
-;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
+  ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
+  or    a
+  jp    nz,SWspriteSetNYNXSYSX
+  jp    SetLShootArrow
 
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048+05         ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-.pagefound:
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,b
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,c
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  sub   a,4
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-  ld    (CopyPlayerWeapon+dy),a
-
-  ld    a,(ClesX)
-  add   a,d
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  add   a,e
-  ld    (iy+sx),a
-  
+SetLShootArrow:
   ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(PlayerAniCount)
-  cp    15
-  ret   nz
-
   ld    a,-ArrowSpeed
   ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
-  sub   a,38
+  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
+  jp    c,Set_L_Stand    
   ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   inc   a
@@ -906,182 +465,33 @@ LShootArrow:
   ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_L_Stand  
 
-RShootArrowSf2Engine:
-  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
-
-;Animate
-  ld    a,(PlayerAniCount)
-  inc   a
-  ld    (PlayerAniCount),a
-  cp    4
-  ld    de,PlayerSpriteData_Char_RightShootArrow1
-  ld    h,6               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_RightShootArrow2
-  ld    h,8               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_RightShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_RightShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
-
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,(screenpage)
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  sub   a,4
-  ld    (CopyPlayerWeapon+dy),a
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-
-  ld    a,(ClesX)
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  ld    (iy+sx),a
-  
-  ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(PlayerAniCount)
-  cp    15
-  ret   nz
-
-  ld    a,ArrowSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    a,(ClesX)
-  sub   a,-3                  ;old value= 8, but we had to move the start x of arrow more to the right, otherwise arrow cant be shot when standing at the furthest left in screen
-  ld    (SecundaryWeaponX),a
-  ld    a,(ClesY)
-  inc   a
-  ld    (SecundaryWeaponY),a
-  
-  ld    a,1
-  ld    (SecundaryWeaponNY),a
-  ld    a,216+16
-  ld    (SecundaryWeaponSY),a
-  ld    a,030
-  ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
-  ld    (SecundaryWeaponSX_LeftSide),a
-  jp    Set_R_Stand  
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  3, 4*8, 1
+                                        ;positioning for the SW sprites:
+RightPresentBowAnimation:                       ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_RightShootArrow1 | db -04,011+50,013,003,216+19,030
+  dw  PlayerSpriteData_Char_RightShootArrow2 | db -04,008+50,013,003,216+19,030
+  dw  PlayerSpriteData_Char_RightShootArrow3 | db -04,008+50,013,003,216+19,030
+  dw  PlayerSpriteData_Char_RightShootArrow4 | db -04,008+50,013,003,216+19,030
 
 RShootArrow:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
-
-  ld    a,028+2
-  ld    (CopyPlayerWeapon+sx),a  
-
-  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  jp    nz,RShootArrowSf2Engine
-
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,11
-  xor   a
-  sbc   hl,de
-  jp    c,BruteForceMovementRight
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37
-  xor   a
-  sbc   hl,de
-  jp    nc,Set_R_Stand
-
+;RSwordAttack:  
+  ld    de,11                 ;left edge
+  ld    bc,264                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingRight
 ;Animate
-  ld    a,(PlayerAniCount)
-  inc   a
-  ld    (PlayerAniCount),a
-  cp    4
-  ld    de,PlayerSpriteData_Char_RightShootArrow1
-  ld    h,0               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_RightShootArrow2
-  ld    h,3               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_RightShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_RightShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
+  ld    hl,RightPresentBowAnimation-3
+  call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
 
-;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
+  ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
+  or    a
+  jp    nz,SWspriteSetNYNXSYSX
+  jp    SetRShootArrow
 
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032+05         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048+05         ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-.pagefound:
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,b
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,c
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  sub   a,4
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-  ld    (CopyPlayerWeapon+dy),a
-
-  ld    a,(ClesX)
-  add   a,d
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  add   a,e
-  ld    (iy+sx),a
-  
+SetRShootArrow:
   ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(PlayerAniCount)
-  cp    15
-  ret   nz
-
   ld    a,ArrowSpeed
   ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
@@ -2201,6 +1611,51 @@ RightAxeAttackAnimation:                 ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_RightCharge7 | db 004,012+50,010,010,216+30,073
   dw  PlayerSpriteData_Char_RightCharge7 | db 004,012+50,010,010,216+30,073
 
+CheckPrimaryWeaponEdgesFacingLeftWhenSitting:
+  ld    a,(SecundaryWeaponActive?)
+  or    a
+  jr    nz,.Set_L_Sit         ;don't user primary weapon when secundary weapon is active
+
+  ld    a,(ShootMagicWhileJump?)      ;don't shoot if already shooting
+  or    a
+  jr    nz,.Set_L_Sit         ;don't user primary weapon when secundary weapon is active
+  
+  ld    a,(ClesY)
+  cp    200
+  jr    nc,.Set_L_Sit         ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+  cp    20
+  jr    c,.Set_L_Sit          ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
+
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
+  xor   a
+  sbc   hl,de
+  jr    c,.Set_L_Sit
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  xor   a
+  sbc   hl,bc
+  jr    nc,.BruteForceMovementLeft
+  .skipBorderCheck:
+  ld    ix,PrimaryWeaponActive?
+  ld    (ix),1                ;active?
+  ret
+  .BruteForceMovementLeft:
+  pop     af                  ;pop the call
+  jp    BruteForceMovementLeft
+  .Set_L_Sit:
+  pop     af                  ;pop the call
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)
+  or    a
+  jp    z,Set_L_Sit           ;if you were standing, go back to standing pose
+  xor   a                     ;if you were jumping, dont change pose, but stop primary weapon
+  ld    (PrimaryWeaponActivatedWhileJumping?),a	
+  ld    (PrimaryWeaponActive?),a	
+  ld    (PlayerAniCount),a
+  ret
+  
 CheckPrimaryWeaponEdgesFacingLeft:
   ld    a,(SecundaryWeaponActive?)
   or    a
@@ -2216,7 +1671,7 @@ CheckPrimaryWeaponEdgesFacingLeft:
   cp    20
   jr    c,.Set_L_Stand        ;don't user primary weapon when y>199 or scoreboard graphics can be erased
 
-  ld    a,(scrollEngine)                       ;1= 304x216 engine  2=256x216 SF2 engine
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
 
@@ -2230,7 +1685,7 @@ CheckPrimaryWeaponEdgesFacingLeft:
   jr    nc,.BruteForceMovementLeft
   .skipBorderCheck:
   ld    ix,PrimaryWeaponActive?
-  ld    (ix),1              ;active?
+  ld    (ix),1                ;active?
   ret
   .BruteForceMovementLeft:
   pop     af                  ;pop the call
@@ -2246,6 +1701,51 @@ CheckPrimaryWeaponEdgesFacingLeft:
   ld    (PlayerAniCount),a
   ret
 
+CheckPrimaryWeaponEdgesFacingRightWhenSitting:
+  ld    a,(SecundaryWeaponActive?)
+  or    a
+  jr    nz,.Set_R_Sit         ;don't user primary weapon when secundary weapon is active
+
+  ld    a,(ShootMagicWhileJump?)      ;don't shoot if already shooting
+  or    a
+  jr    nz,.Set_R_Sit         ;don't user primary weapon when secundary weapon is active
+
+  ld    a,(ClesY)
+  cp    200
+  jr    nc,.Set_R_Sit         ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+  cp    20
+  jr    c,.Set_R_Sit          ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
+
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
+  xor   a
+  sbc   hl,de
+  jr    c,.BruteForceMovementRight
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  xor   a
+  sbc   hl,bc
+  jr    nc,.Set_R_Sit
+  .skipBorderCheck:
+  ld    ix,PrimaryWeaponActive?
+  ld    (ix),1                ;active?
+  ret
+  .BruteForceMovementRight:
+  pop     af                  ;pop the call
+  jp    BruteForceMovementRight
+  .Set_R_Sit:
+  pop     af                  ;pop the call
+  ld    a,(PrimaryWeaponActivatedWhileJumping?)
+  or    a
+  jp    z,Set_R_Sit           ;if you were standing, go back to standing pose
+  xor   a                     ;if you were jumping, dont change pose, but stop primary weapon
+  ld    (PrimaryWeaponActivatedWhileJumping?),a	
+  ld    (PrimaryWeaponActive?),a
+  ld    (PlayerAniCount),a  
+  ret
+  
 CheckPrimaryWeaponEdgesFacingRight:
   ld    a,(SecundaryWeaponActive?)
   or    a
@@ -2275,7 +1775,7 @@ CheckPrimaryWeaponEdgesFacingRight:
   jr    nc,.Set_R_Stand
   .skipBorderCheck:
   ld    ix,PrimaryWeaponActive?
-  ld    (ix),1              ;active?
+  ld    (ix),1                ;active?
   ret
   .BruteForceMovementRight:
   pop     af                  ;pop the call
@@ -2306,7 +1806,7 @@ LDaggerAttack:
   jp    SWspriteSetNYNXSYSX
   
 RDaggerAttack:
-  ld    de,06                 ;left edge
+  ld    de,12                 ;left edge
   ld    bc,265                ;right edge
   call  CheckPrimaryWeaponEdgesFacingRight
 ;Animate
@@ -3823,8 +3323,6 @@ AnimateWhileJump:
   jp    z,SetLShootElementalWeapon
   ret
 
-
-
 .RollingJumpLeft:
   ld    a,(JumpSpeed)
   sub   a,5
@@ -3833,190 +3331,42 @@ AnimateWhileJump:
   ld    hl,LeftRollingAnimation
   jp    AnimateRolling  
 
-ShootArrowWhileJumpLeftSf2Engine:
-;Animate
-  ld    a,(ShootArrowWhileJump?)
-  inc   a
-  ld    (ShootArrowWhileJump?),a  
-  cp    4
-  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow1
-  ld    h,-8               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow2
-  ld    h,-11               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
 
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,(screenpage)
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  sub   a,5
-  ld    (CopyPlayerWeapon+dy),a
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-
-  ld    a,(ClesX)
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  ld    (iy+sx),a
   
-  ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(ShootArrowWhileJump?)
-  cp    15
-  ret   nz
-  
-  ld    a,(ClesX)
-  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
-  jr    c,.endShootArrowWhileJump
-  ld    (SecundaryWeaponX),a
-  ld    a,-ArrowSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    a,(ClesY)
-  ld    (SecundaryWeaponY),a
-
-  ld    a,1
-  ld    (SecundaryWeaponNY),a
-  ld    a,216+17
-  ld    (SecundaryWeaponSY),a
-  ld    a,030
-  ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
-  ld    (SecundaryWeaponSX_LeftSide),a
-
-  .endShootArrowWhileJump:
-  xor   a
-  ld    (ShootArrowWhileJump?),a
-  ret
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  3, 4*8, 0
+                                                    ;positioning for the SW sprites:
+LeftJumpingPresentBowAnimation:                    ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftJumpShootArrow1 | db -04,011+63,013,003,216+19,028
+  dw  PlayerSpriteData_Char_LeftJumpShootArrow2 | db -04,014+63,013,003,216+19,028
+  dw  PlayerSpriteData_Char_LeftJumpShootArrow3 | db -04,014+63,013,003,216+19,028
+  dw  PlayerSpriteData_Char_LeftJumpShootArrow4 | db -04,014+63,013,003,216+19,028  
   
 ShootArrowWhileJumpLeft:
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
-
-  ld    a,028
-  ld    (CopyPlayerWeapon+sx),a  
-
-  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  jp    nz,ShootArrowWhileJumpLeftSf2Engine
-
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,.endShootArrowWhileJump
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
-
+  ld    de,30                 ;left edge
+  ld    bc,284                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingLeft
 ;Animate
-  ld    a,(ShootArrowWhileJump?)
-  inc   a
-  ld    (ShootArrowWhileJump?),a  
-  cp    4
-  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow1
-  ld    h,-12               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow2
-  ld    h,-12-3               ;move software sprite h pixels to the Left
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_LeftJumpShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
+  ld    hl,LeftJumpingPresentBowAnimation-3
+  call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
 
-;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+04         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
+  ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
+  or    a
+  jp    nz,SWspriteSetNYNXSYSX
+  jp    SetLShootArrowWhenJumping
 
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016+04         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032+04         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048+04         ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-.pagefound:
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,b
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,c
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  sub   a,5
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-  ld    (CopyPlayerWeapon+dy),a
-
-  ld    a,(ClesX)
-  add   a,d
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  add   a,e
-  ld    (iy+sx),a
-  
+SetLShootArrowWhenJumping:
   ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(ShootArrowWhileJump?)
-  cp    15
-  ret   nz
-  
   ld    a,-ArrowSpeed
   ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
-  sub   a,38
+  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
+  jp    c,.end
   ld    (SecundaryWeaponX),a
+
   ld    a,(ClesY)
   ld    (SecundaryWeaponY),a
-
+  
   ld    a,1
   ld    (SecundaryWeaponNY),a
   ld    a,216+17
@@ -4025,187 +3375,46 @@ ShootArrowWhileJumpLeft:
   ld    (SecundaryWeaponSX_RightSide),a
   ld    a,030+15
   ld    (SecundaryWeaponSX_LeftSide),a
-
-  .endShootArrowWhileJump:
+  .end:
   xor   a
   ld    (ShootArrowWhileJump?),a
-  ret
-
-ShootArrowWhileJumpRightSf2Engine:
-;Animate
-  ld    a,(ShootArrowWhileJump?)
-  inc   a
-  ld    (ShootArrowWhileJump?),a  
-  cp    4
-  ld    de,PlayerSpriteData_Char_RightJumpShootArrow1
-  ld    h,5               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_RightJumpShootArrow2
-  ld    h,8               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_RightJumpShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_RightJumpShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
-
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,(screenpage)
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,3                 ;clean object from vram data in page 3 (buffer page)
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  sub   a,5
-  ld    (CopyPlayerWeapon+dy),a
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-
-  ld    a,(ClesX)
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  ld    (iy+sx),a
+  ret  
   
-  ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(ShootArrowWhileJump?)
-  cp    15
-  ret   nz
   
-  ld    a,ArrowSpeed
-  ld    (SecundaryWeaponActive?),a
-  ld    a,(ClesX)
-  sub   a,-3                  ;old value= 8, but we had to move the start x of arrow more to the right, otherwise arrow cant be shot when standing at the furthest left in screen
-  ld    (SecundaryWeaponX),a
-  ld    a,(ClesY)
-  ld    (SecundaryWeaponY),a
-
-  ld    a,1
-  ld    (SecundaryWeaponNY),a
-  ld    a,216+16
-  ld    (SecundaryWeaponSY),a
-  ld    a,030
-  ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
-  ld    (SecundaryWeaponSX_LeftSide),a
-
-  .endShootArrowWhileJump:
-  xor   a
-  ld    (ShootArrowWhileJump?),a
-  ret
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  3, 4*8, 1
+                                                    ;positioning for the SW sprites:
+RightJumpingPresentBowAnimation:                    ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_RightJumpShootArrow1 | db -05,011+50,013,003,216+19,030
+  dw  PlayerSpriteData_Char_RightJumpShootArrow2 | db -05,008+50,013,003,216+19,030
+  dw  PlayerSpriteData_Char_RightJumpShootArrow3 | db -05,008+50,013,003,216+19,030
+  dw  PlayerSpriteData_Char_RightJumpShootArrow4 | db -05,008+50,013,003,216+19,030  
   
 ShootArrowWhileJumpRight:
-  ld    a,1                   ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    (CleanPlayerWeapon+restorebackground?),a 
-
-  ld    a,028+2
-  ld    (CopyPlayerWeapon+sx),a  
-
-  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  jp    nz,ShootArrowWhileJumpRightSf2Engine
-
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,11
-  xor   a
-  sbc   hl,de
-  jp    c,BruteForceMovementRight
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37
-  xor   a
-  sbc   hl,de
-  jp    nc,.endShootArrowWhileJump
-  
+  ld    de,11                 ;left edge
+  ld    bc,264                ;right edge
+  call  CheckPrimaryWeaponEdgesFacingRight
 ;Animate
-  ld    a,(ShootArrowWhileJump?)
-  inc   a
-  ld    (ShootArrowWhileJump?),a  
-  cp    4
-  ld    de,PlayerSpriteData_Char_RightJumpShootArrow1
-  ld    h,1               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    8
-  ld    de,PlayerSpriteData_Char_RightJumpShootArrow2
-  ld    h,3+1               ;move software sprite h pixels to the right
-  jr    c,.SetStandChar
-  cp    12
-  ld    de,PlayerSpriteData_Char_RightJumpShootArrow3
-  jr    c,.SetStandChar
-  ld    de,PlayerSpriteData_Char_RightJumpShootArrow4
-  .SetStandChar:
-	ld		(standchar),de
+  ld    hl,RightJumpingPresentBowAnimation-3
+  call  AnimatePlayerStopAtEnd      ;animates player, when end of table is reached, player goes to stand or sit pose
 
-;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+04         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
+  ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
+  or    a
+  jp    nz,SWspriteSetNYNXSYSX
+  jp    SetRShootArrowWhenJumping
 
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016+04         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032+04         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048+04         ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-.pagefound:
-  ld    iy,CleanPlayerWeapon
-
-  ld    a,b
-  ld    (CopyPlayerWeapon+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,c
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ClesY)
-  sub   a,5
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-  ld    (CopyPlayerWeapon+dy),a
-
-  ld    a,(ClesX)
-  add   a,d
-  add   a,h
-  ld    (CopyPlayerWeapon+dx),a
-  ld    (iy+dx),a
-  add   a,e
-  ld    (iy+sx),a
-  
+SetRShootArrowWhenJumping:
   ;put weapon
-  ld    hl,CopyPlayerWeapon
-  call  docopy
-
-  ld    a,(ShootArrowWhileJump?)
-  cp    15
-  ret   nz
-  
   ld    a,ArrowSpeed
   ld    (SecundaryWeaponActive?),a
   ld    a,(ClesX)
@@ -4213,7 +3422,7 @@ ShootArrowWhileJumpRight:
   ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   ld    (SecundaryWeaponY),a
-
+  
   ld    a,1
   ld    (SecundaryWeaponNY),a
   ld    a,216+16
@@ -4222,12 +3431,11 @@ ShootArrowWhileJumpRight:
   ld    (SecundaryWeaponSX_RightSide),a
   ld    a,030+15
   ld    (SecundaryWeaponSX_LeftSide),a
-  
-  .endShootArrowWhileJump:
+
   xor   a
   ld    (ShootArrowWhileJump?),a
   ret
-
+  
 CheckSnapToStairsWhileJump:
 ;check if there are stairs when pressing up, if so climb the stairs.
 ;[Check ladder going Right UP]
@@ -4430,8 +3638,13 @@ Jump:
   .Arrow:
   ld    a,(ShootArrowWhileJump?)
   or    a
-  ret   nz                            ;don't shoot if already shooting
-  
+  ret   nz                            ;don't shoot if already presenting bow
+  ld    a,(SecundaryWeaponActive?)
+  or    a
+  ret   nz                            ;don't shoot if arrow is already in play
+
+  xor   a
+  ld    (PlayerAniCount),a    
   ld    a,1
   ld    (ShootArrowWhileJump?),a
   ret
@@ -4677,14 +3890,15 @@ Jump:
   ld    a,(DoubleJumpAvailable?)
   or    a
   ret   z
-  
+
+  ld    a,(ShootArrowWhileJump?)
+  or    a
+  jr    nz,.DontAllowDoubleJump   ;don't allow double jump when already presenting bow  
   ld    a,(ShootMagicWhileJump?)  ;don't allow double jump when shooting magic mid air
   or    a
   jr    z,.EndCheckShootMagicWhileJump
-;  ld    a,(PrimaryWeaponActive?)  ;don't allow double jump when primary attack is active
-;  or    a
-;  jr    z,.EndCheckShootMagicWhileJump
 
+  .DontAllowDoubleJump:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)

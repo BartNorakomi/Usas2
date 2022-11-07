@@ -39,13 +39,12 @@ LevelEngine:
   call  RestoreBackground         ;remove all vdp copies/software sprites that were put in screen last frame
   
   ;DEZE ROUTINE KAN INDIEN NODIG HELEMAAL NAAR MovementPatternsFixedPage1.asm
-  call  HandlePlayerWeapons       ;arrow, fireball, iceweapon, earthweapon, waterweapon
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
+  call  HandlePlayerWeapons       ;arrow, fireball, iceweapon, earthweapon, waterweapon
   call  BackdropBlack
 
   xor   a
   ld    (SnapToPlatForm?),a
-
 
   call  BackdropOrange
 	call	handle_enemies_and_objects  ;handle software sprites
@@ -3503,7 +3502,7 @@ MagicWeaponDurationValue:     equ 29
 MagicWeaponDuration:          db  MagicWeaponDurationValue
 DaggerRandomizer:             db  0
 CurrentMagicWeapon:           db  10 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
-CurrentPrimaryWeapon:         db  1 ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
+CurrentPrimaryWeapon:         db  4 ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
 
 ArrowSpeed:                   equ 6
 FireballSpeed:                equ 4
@@ -3678,14 +3677,32 @@ HandlePlayerWeapons:
   add   a,e
   ld    (iy+sx),a
 
+
+
+
+
+
+  ld    a,(PrimaryWeaponActive?)
+  or    a
+  jr    nz,.GoPutWeaponRightSideScreen
+  
+  ld    a,(ix+0)            ;SecundaryWeaponActive? / movement speed
+  or    a
+  jp    p,.movingRight1
+   
+  ;at this point in the right side of the screen, a secundary weapon is moving to the left 
+  .movingLeft1:
   ld    a,(ix+2)            ;FireballX
-  cp    10
-  jr    c,.RemoveWeapon       ;if arrow went through the edge of the map (on the right side) remove the arrow from play
-
+  cp    16
+  ret   c                   ;if arrow went through the edge of the map (on the right side) remove the arrow from play
+  jr    .GoPutWeaponRightSideScreen
+  ;at this point in the right side of the screen, a secundary weapon is moving to the right
+  .movingRight1:
   ld    a,(CopyPlayerProjectile+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side
-  cp    20
-  ret   c
+  cp    255-40
+  jp    nc,.RemoveWeapon         ;if arrow went through the edge of the map (on the right side) remove the arrow from play
 
+  .GoPutWeaponRightSideScreen:
   ;put arrow
   ld    hl,CopyPlayerProjectile
   call  docopy
@@ -3761,16 +3778,25 @@ HandlePlayerWeapons:
 
   ld    a,(PrimaryWeaponActive?)
   or    a
-  jr    nz,.SkipSecundaryWeaponOutOfScreenLeft
+  jr    nz,.GoPutWeaponLeftSideScreen
+  
+  ld    a,(ix+0)            ;SecundaryWeaponActive? / movement speed
+  or    a
+  jp    p,.movingRight2
+   
+  ;at this point in the left side of the screen, a secundary weapon is moving to the left 
+  .movingLeft2:
   ld    a,(ix+2)            ;FireballX
-  cp    8
+  cp    16
   jp    c,.RemoveWeapon         ;if arrow went through the edge of the map (on the right side) remove the arrow from play
-  .SkipSecundaryWeaponOutOfScreenLeft:
-
+  jr    .GoPutWeaponLeftSideScreen
+  ;at this point in the left side of the screen, a secundary weapon is moving to the right
+  .movingRight2:
   ld    a,(CopyPlayerProjectile+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side
   cp    255-20
   ret   nc
   
+  .GoPutWeaponLeftSideScreen:
   ;put arrow
   ld    hl,CopyPlayerProjectile
   call  docopy
@@ -5324,6 +5350,9 @@ Set_R_sit:
   ld    (EnableHitbox?),a
 	ld		hl,RSitting
 	ld		(PlayerSpriteStand),hl
+
+	ld		hl,PlayerSpriteData_Char_RightSitting
+	ld		(standchar),hl	
   ret
 
 Set_L_sit:	
@@ -5334,6 +5363,9 @@ Set_L_sit:
   ld    (EnableHitbox?),a
 	ld		hl,LSitting
 	ld		(PlayerSpriteStand),hl
+
+	ld		hl,PlayerSpriteData_Char_LeftSitting
+	ld		(standchar),hl		
   ret
 
 Set_L_stand:
