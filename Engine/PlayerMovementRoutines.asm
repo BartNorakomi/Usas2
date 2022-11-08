@@ -3,174 +3,47 @@
 ;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing, LSwordAttack, RSwordAttack, LDaggerAttack, RDaggerAttack, LAxeAttack, RAxeAttack, LSpearAttack, RSpearAttack
 
 LShootWater:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,Set_L_Stand
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
-
-;Animate
-  ld    hl,LeftShootFireballAnimation
-  call  AnimateShootFireball  ;animate
-
-  ld    a,(PlayerAniCount)
-  cp    2 * 14
-  jp    z,Set_L_Stand  
-  cp    2 * 10
-  ret   nz
-
   ld    b,-WaterWeaponSpeed
-  jp    SetLShootElementalWeapon
-
+  jp    LShootElementalWeapon
   
 RShootWater:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,11
-  xor   a
-  sbc   hl,de
-  jp    c,BruteForceMovementRight
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37-12
-  xor   a
-  sbc   hl,de
-  jp    nc,Set_R_Stand
-
-;Animate
-  ld    hl,RightShootFireballAnimation
-  call  AnimateShootFireball             ;animate
-
-  ld    a,(PlayerAniCount)
-  cp    2 * 14
-  jp    z,Set_R_Stand  
-  cp    2 * 10
-  ret   nz
-
   ld    b,WaterWeaponSpeed
-  jp    SetRShootElementalWeapon
+  jp    RShootElementalWeapon
   
 LShootEarth:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,Set_L_Stand
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
-
-;Animate
-  ld    hl,LeftShootFireballAnimation
-  call  AnimateShootFireball  ;animate
-
-  ld    a,(PlayerAniCount)
-  cp    2 * 14
-  jp    z,Set_L_Stand  
-  cp    2 * 10
-  ret   nz
-
   ld    b,-EarthWeaponSpeed
-  jp    SetLShootElementalWeapon
+  jp    LShootElementalWeapon
   
 RShootEarth:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,11
-  xor   a
-  sbc   hl,de
-  jp    c,BruteForceMovementRight
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37-12
-  xor   a
-  sbc   hl,de
-  jp    nc,Set_R_Stand
-
-;Animate
-  ld    hl,RightShootFireballAnimation
-  call  AnimateShootFireball             ;animate
-
-  ld    a,(PlayerAniCount)
-  cp    2 * 14
-  jp    z,Set_R_Stand  
-  cp    2 * 10
-  ret   nz
-
   ld    b,EarthWeaponSpeed
-  jp    SetRShootElementalWeapon
+  jp    RShootElementalWeapon
   
 LShootIce:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,Set_L_Stand
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
-
-;Animate
-  ld    hl,LeftShootFireballAnimation
-  call  AnimateShootFireball  ;animate
-
-  ld    a,(PlayerAniCount)
-  cp    2 * 14
-  jp    z,Set_L_Stand  
-  cp    2 * 10
-  ret   nz
-
   ld    b,-IceWeaponSpeed
-  jp    SetLShootElementalWeapon
+  jp    LShootElementalWeapon
   
 RShootIce:
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,11
-  xor   a
-  sbc   hl,de
-  jp    c,BruteForceMovementRight
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37-12
-  xor   a
-  sbc   hl,de
-  jp    nc,Set_R_Stand
-
-;Animate
-  ld    hl,RightShootFireballAnimation
-  call  AnimateShootFireball             ;animate
-
-  ld    a,(PlayerAniCount)
-  cp    2 * 14
-  jp    z,Set_R_Stand  
-  cp    2 * 10
-  ret   nz
-
   ld    b,IceWeaponSpeed
-  jp    SetRShootElementalWeapon
+  jp    RShootElementalWeapon
 
 LShootFireball:
+  ld    b,-FireballSpeed
+  jp    LShootElementalWeapon
+
+RShootFireball:
+  ld    b,FireballSpeed
+  jp    RShootElementalWeapon
+    
+LShootElementalWeapon:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,Set_L_Stand
+  ld    de,-38
+  add   hl,de
+  jp    nc,Set_L_Stand
 
   ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
+  ld    de,-294
+  add   hl,de
+  jp    c,BruteForceMovementLeft
 
 ;Animate
   ld    hl,LeftShootFireballAnimation
@@ -182,10 +55,13 @@ LShootFireball:
   cp    2 * 10
   ret   nz
 
-  ld    b,-FireballSpeed
+  ld    a,(framecounter)          ;animate every 4 frames
+  and   1
+  ret   nz
+
   jp    SetLShootElementalWeapon
 
-RShootFireball:
+RShootElementalWeapon:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,11
   xor   a
@@ -208,7 +84,10 @@ RShootFireball:
   cp    2 * 10
   ret   nz
 
-  ld    b,FireballSpeed
+  ld    a,(framecounter)          ;animate every 4 frames
+  and   1
+  ret   nz
+
   jp    SetRShootElementalWeapon
 
 SetLShootElementalWeapon:
@@ -232,6 +111,8 @@ SetLShootElementalWeapon:
   ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   ld    (SecundaryWeaponY),a
+  add   a,11
+  ld    (SecundaryWeaponYBottom),a
     
   ld    a,11
   ld    (SecundaryWeaponNY),a
@@ -257,6 +138,8 @@ SetRShootElementalWeapon:
   ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   ld    (SecundaryWeaponY),a
+  add   a,11
+  ld    (SecundaryWeaponYBottom),a
     
   ld    a,11
   ld    (SecundaryWeaponNY),a
@@ -355,14 +238,23 @@ SetLSitShootArrow:
   ;put weapon
   ld    a,-ArrowSpeed
   ld    (SecundaryWeaponActive?),a
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,-29                ;normal engine
+  jr    z,.engineFound
+  ld    b,-24                ;SF2 engine  
+  .engineFound:
+  
   ld    a,(ClesX)
-  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
-  jp    c,Set_L_Sit
+  add   a,b
   ld    (SecundaryWeaponX),a
+  
   ld    a,(ClesY)
   add   a,7
   ld    (SecundaryWeaponY),a
-  
+  ld    (SecundaryWeaponYBottom),a
+    
   ld    a,1
   ld    (SecundaryWeaponNY),a
   ld    a,216+17
@@ -402,13 +294,23 @@ SetRSitShootArrow:
   ;put weapon
   ld    a,ArrowSpeed
   ld    (SecundaryWeaponActive?),a
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,-11                ;normal engine
+  jr    z,.engineFound
+  ld    b,-06                ;SF2 engine  
+  .engineFound:
+  
   ld    a,(ClesX)
-  sub   a,11
+  add   a,b
   ld    (SecundaryWeaponX),a
+  
   ld    a,(ClesY)
   add   a,7
   ld    (SecundaryWeaponY),a
-  
+  ld    (SecundaryWeaponYBottom),a
+    
   ld    a,1
   ld    (SecundaryWeaponNY),a
   ld    a,216+16
@@ -447,14 +349,22 @@ SetLShootArrow:
   ;put weapon
   ld    a,-ArrowSpeed
   ld    (SecundaryWeaponActive?),a
+  
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,-29                ;normal engine
+  jr    z,.engineFound
+  ld    b,-24                ;SF2 engine  
+  .engineFound:
+  
   ld    a,(ClesX)
-  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
-  jp    c,Set_L_Stand    
+  add   a,b
   ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   inc   a
   ld    (SecundaryWeaponY),a
-  
+  ld    (SecundaryWeaponYBottom),a
+
   ld    a,1
   ld    (SecundaryWeaponNY),a
   ld    a,216+17
@@ -494,13 +404,22 @@ SetRShootArrow:
   ;put weapon
   ld    a,ArrowSpeed
   ld    (SecundaryWeaponActive?),a
+  
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,-11                ;normal engine
+  jr    z,.engineFound
+  ld    b,-06                ;SF2 engine  
+  .engineFound:
+  
   ld    a,(ClesX)
-  sub   a,11
+  add   a,b
   ld    (SecundaryWeaponX),a
   ld    a,(ClesY)
   inc   a
   ld    (SecundaryWeaponY),a
-  
+  ld    (SecundaryWeaponYBottom),a
+    
   ld    a,1
   ld    (SecundaryWeaponNY),a
   ld    a,216+16
@@ -1381,25 +1300,38 @@ SWspriteSetNYNXSYSX:
   ;set y
   ld    a,(ClesY)
   add   a,(hl)              ;Addy
-  ld    (ix+1),a            ;y
-
+;  ld    (ix+1),a            ;y
+  ld    (PrimaryWeaponY),a  ;y
+  ld    b,a
+  ;set y
+  
   inc   hl                  ;subx
   ld    e,(hl)              ;subx
   inc   hl                  ;ny
   ld    a,(hl)
-  ld    (ix+7),a            ;ny
+;  ld    (ix+7),a            ;ny
+  ld    (PrimaryWeaponNY),a ;ny
+  add   a,b  
+  ld    (PrimaryWeaponYBottom),a
+  
   inc   hl                  ;nx
   ld    a,(hl)
-  ld    (ix+8),a            ;nx
+;  ld    (ix+8),a            ;nx
+  ld    (PrimaryWeaponNX),a ;nx
+  ld    b,a
   inc   hl                  ;sy
   ld    a,(hl)
-  ld    (ix+4),a            ;sy  
+;  ld    (ix+4),a            ;sy  
+  ld    (PrimaryWeaponSY),a ;sy
   inc   hl                  ;sx
   ld    a,(hl)
-  ld    (ix+5),a            ;IceWeaponSX_RightSide
-  add   a,(ix+8)            ;add nx to determine at what point we should copy when copying from right to left
+;  ld    (ix+5),a            ;IceWeaponSX_RightSide
+  ld    (PrimaryWeaponSX_RightSide),a ;WeaponSX_RightSide
+;  add   a,(ix+8)            ;add nx to determine at what point we should copy when copying from right to left
+  add   a,b                 ;add nx to determine at what point we should copy when copying from right to left
   dec   a                   ;add nx - 1
-  ld    (ix+6),a            ;IceWeaponSX_LeftSide
+;  ld    (ix+6),a            ;IceWeaponSX_LeftSide
+  ld    (PrimaryWeaponSX_LeftSide),a ;WeaponSX_LeftSide
 
   ;set x
   ld    a,(scrollEngine)    ;1= 304x216 engine  2=256x216 SF2 engine
@@ -1421,7 +1353,10 @@ SWspriteSetNYNXSYSX:
   jr    z,.SetX
   ld    a,255
   .SetX:
-  ld    (ix+2),a            ;x
+;  ld    (ix+2),a            ;x
+  ld    (PrimaryWeaponX),a  ;x  
+  add   a,b                 ;add nx to determine the right side
+  ld    (PrimaryWeaponXRightSide),a  ;x  
   ret
 
 AnimatePlayerStopAtEnd:           ;animates player, when end of table is reached, player goes to stand or sit pose
@@ -1684,8 +1619,8 @@ CheckPrimaryWeaponEdgesFacingLeft:
   sbc   hl,bc
   jr    nc,.BruteForceMovementLeft
   .skipBorderCheck:
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),1                ;active?
+  ld    a,1                   ;activate primary weapon
+  ld    (PrimaryWeaponActive?),a	  
   ret
   .BruteForceMovementLeft:
   pop     af                  ;pop the call
@@ -1729,8 +1664,8 @@ CheckPrimaryWeaponEdgesFacingRightWhenSitting:
   sbc   hl,bc
   jr    nc,.Set_R_Sit
   .skipBorderCheck:
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),1                ;active?
+  ld    a,1                   ;activate primary weapon
+  ld    (PrimaryWeaponActive?),a	  
   ret
   .BruteForceMovementRight:
   pop     af                  ;pop the call
@@ -1792,6 +1727,9 @@ CheckPrimaryWeaponEdgesFacingRight:
   ret
 
 LDaggerAttack:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+  .skipEndMovePlayer:
+
   ld    de,38                 ;left edge
   ld    bc,280                ;right edge
   call  CheckPrimaryWeaponEdgesFacingLeft
@@ -1806,6 +1744,9 @@ LDaggerAttack:
   jp    SWspriteSetNYNXSYSX
   
 RDaggerAttack:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+  .skipEndMovePlayer:
+
   ld    de,12                 ;left edge
   ld    bc,265                ;right edge
   call  CheckPrimaryWeaponEdgesFacingRight
@@ -1820,6 +1761,9 @@ RDaggerAttack:
   jp    SWspriteSetNYNXSYSX
 
 LSwordAttack:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+  .skipEndMovePlayer:
+
   ld    de,46                 ;left edge
   ld    bc,282                ;right edge
   call  CheckPrimaryWeaponEdgesFacingLeft
@@ -1829,6 +1773,9 @@ LSwordAttack:
   jp    SWspriteSetNYNXSYSX
   
 RSwordAttack:  
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+  .skipEndMovePlayer:
+
   ld    de,11                 ;left edge
   ld    bc,255                ;right edge
   call  CheckPrimaryWeaponEdgesFacingRight
@@ -1838,6 +1785,9 @@ RSwordAttack:
   jp    SWspriteSetNYNXSYSX
 
 LAxeAttack:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+  .skipEndMovePlayer:
+
   ld    de,40                 ;left edge
   ld    bc,268                ;right edge
   call  CheckPrimaryWeaponEdgesFacingLeft
@@ -1847,6 +1797,9 @@ LAxeAttack:
   jp    SWspriteSetNYNXSYSX
   
 RAxeAttack:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+  .skipEndMovePlayer:
+
   ld    de,36                 ;left edge
   ld    bc,267                ;right edge
   call  CheckPrimaryWeaponEdgesFacingRight
@@ -1856,6 +1809,9 @@ RAxeAttack:
   jp    SWspriteSetNYNXSYSX
   
 LSpearAttack:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+  .skipEndMovePlayer:
+
   ld    de,52                 ;left edge
   ld    bc,294                ;right edge
   call  CheckPrimaryWeaponEdgesFacingLeft
@@ -1865,6 +1821,9 @@ LSpearAttack:
   jp    SWspriteSetNYNXSYSX
   
 RSpearAttack:
+  call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+  .skipEndMovePlayer:
+
   ld    de,15                 ;left edge
   ld    bc,255                ;right edge
   call  CheckPrimaryWeaponEdgesFacingRight
@@ -3102,15 +3061,52 @@ AnimateWhileJump:
   or    a
   jr    z,.HandleKickWhileJumpRightAnimation
   dec   a
-  jp    z,RSwordAttack
+  jp    z,RSwordAttack.skipEndMovePlayer
   dec   a
-  jp    z,RDaggerAttack
+  jp    z,RDaggerAttack.skipEndMovePlayer
   dec   a
-  jp    z,RAxeAttack
+  jp    z,RAxeAttack.skipEndMovePlayer
   dec   a
-  jp    z,RSpearAttack
+  jp    z,RSpearAttack.skipEndMovePlayer
   
   .HandleKickWhileJumpRightAnimation:
+
+
+
+
+
+  ;activate primary weapon - which enables it's hitbox detection with enemies
+  ld    a,1
+  ld    (PrimaryWeaponActive?),a
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,20                  ;normal engine
+  jr    z,.engineFound
+  ld    b,04                  ;SF2 engine 
+  .engineFound:
+  ld    a,(ClesX)
+  sub   a,b                   ;adjust x starting placement projectile
+  jr    nc,.SetX
+  xor   a
+  .SetX:
+  ld    (PrimaryWeaponX),a
+  add   a,16
+  ld    (PrimaryWeaponXRightSide),a
+  ld    a,(ClesY)
+  ld    (PrimaryWeaponY),a
+  add   a,16
+  ld    (PrimaryWeaponYBottom),a
+    
+  ld    a,16
+  ld    (PrimaryWeaponNY),a
+  ld    a,16
+  ld    (PrimaryWeaponNx),a
+  
+
+
+
+
   ld    a,(PrimaryWeaponActivatedWhileJumping?)                ;kicking while jumping has a certain duration. If PrimaryWeaponActive? reaches 0 the kick ends
   dec   a
   ld    (PrimaryWeaponActivatedWhileJumping?),a
@@ -3236,15 +3232,57 @@ AnimateWhileJump:
   or    a
   jr    z,.HandleKickWhileJumpLeftAnimation
   dec   a
-  jp    z,LSwordAttack
+  jp    z,LSwordAttack.skipEndMovePlayer
   dec   a
-  jp    z,LDaggerAttack
+  jp    z,LDaggerAttack.skipEndMovePlayer
   dec   a
-  jp    z,LAxeAttack
+  jp    z,LAxeAttack.skipEndMovePlayer
   dec   a
-  jp    z,LSpearAttack
+  jp    z,LSpearAttack.skipEndMovePlayer
   
   .HandleKickWhileJumpLeftAnimation:
+
+
+
+
+
+
+  ;activate primary weapon - which enables it's hitbox detection with enemies
+  ld    a,1
+  ld    (PrimaryWeaponActive?),a
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ;we check 12 pixels further to the left when the player is facing left
+  ld    b,20 +12                  ;normal engine
+  jr    z,.engineFound2
+  ld    b,04 +12                 ;SF2 engine 
+  .engineFound2:
+  ld    a,(ClesX)
+  sub   a,b                   ;adjust x starting placement projectile
+  jr    nc,.SetXLeft
+  xor   a
+  .SetXLeft:
+  ld    (PrimaryWeaponX),a
+  add   a,16
+  ld    (PrimaryWeaponXRightSide),a
+  ld    a,(ClesY)
+  ld    (PrimaryWeaponY),a
+  add   a,16
+  ld    (PrimaryWeaponYBottom),a
+    
+  ld    a,16
+  ld    (PrimaryWeaponNY),a
+  ld    a,16
+  ld    (PrimaryWeaponNx),a
+
+
+
+
+
+
+
+
   ld    a,(PrimaryWeaponActivatedWhileJumping?)                ;kicking while jumping has a certain duration. If PrimaryWeaponActive? reaches 0 the kick ends
   dec   a
   ld    (PrimaryWeaponActivatedWhileJumping?),a
@@ -3274,6 +3312,11 @@ AnimateWhileJump:
 
 
 .ShootMagicWhileJumpLeft:
+
+  jp    LShootWater
+  
+
+
 ;  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
 ;  dec   a
 ;  jp    nz,.EndCheckEdgesOfScreenLeft
@@ -3359,14 +3402,22 @@ SetLShootArrowWhenJumping:
   ;put weapon
   ld    a,-ArrowSpeed
   ld    (SecundaryWeaponActive?),a
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,-29                ;normal engine
+  jr    z,.engineFound
+  ld    b,-24                ;SF2 engine  
+  .engineFound:
+  
   ld    a,(ClesX)
-  sub   a,21                  ;old value= 9, but we had to move the start x of arrow more to the left, otherwise arrow cant be shot when standing at the furthest right side of the screen
-  jp    c,.end
+  add   a,b
   ld    (SecundaryWeaponX),a
 
   ld    a,(ClesY)
   ld    (SecundaryWeaponY),a
-  
+  ld    (SecundaryWeaponYBottom),a
+    
   ld    a,1
   ld    (SecundaryWeaponNY),a
   ld    a,216+17
@@ -3417,12 +3468,22 @@ SetRShootArrowWhenJumping:
   ;put weapon
   ld    a,ArrowSpeed
   ld    (SecundaryWeaponActive?),a
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,-11                ;normal engine
+  jr    z,.engineFound
+  ld    b,-06                ;SF2 engine  
+  .engineFound:
+  
   ld    a,(ClesX)
-  sub   a,11
+  add   a,b
   ld    (SecundaryWeaponX),a
+  
   ld    a,(ClesY)
   ld    (SecundaryWeaponY),a
-  
+  ld    (SecundaryWeaponYBottom),a
+    
   ld    a,1
   ld    (SecundaryWeaponNY),a
   ld    a,216+16
@@ -3550,9 +3611,14 @@ Jump:
   or    a
   ret   nz                              ;wait for previous primary attack to end
 
+  ld    a,(CurrentPrimaryWeapon)        ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
+  or    a
+  jr    z,.SkipCheckSecundaryWeaponActive
+
   ld    a,(SecundaryWeaponActive?)      ;wait for secundary weapon to end
   or    a
   ret   nz
+  .SkipCheckSecundaryWeaponActive:
 
   ld    a,(ShootMagicWhileJump?)      ;don't shoot if already shooting
   or    a

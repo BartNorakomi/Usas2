@@ -1,6 +1,6 @@
 phase	$c000
 
-MusicOn?:   equ 0
+MusicOn?:   equ 1
 LogoOn?:    equ 0
 
 WorldMapData:
@@ -40,8 +40,9 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapA07Data      ;Retarded Zombies
 ;WorldMapPointer:  dw  MapA04Data      ;Area Sign
 ;WorldMapPointer:  dw  MapD12Data      ;pit
-;WorldMapPointer:  dw  MapA06Data      ;
-WorldMapPointer:  dw  MapB07Data      ;
+WorldMapPointer:  dw  MapA06Data      ;
+;WorldMapPointer:  dw  MapB07Data      ;
+;WorldMapPointer:  dw  MapC08Data      ;
 
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it

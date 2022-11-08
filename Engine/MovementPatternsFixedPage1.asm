@@ -252,10 +252,79 @@ CheckPlayerPunchesEnemyOnlySitting:
   ld    (HitBoxSY),a                        ;a = y hitbox
   ret
 
+CheckPrimaryWeaponHitsEnemy:
+;if the bottom of the weapon is above the top of the enemy = no hit
+  ld    a,(PrimaryWeaponYBottom)
+  sub   (ix+enemies_and_objects.y)
+  ret   c  
+
+;if the top of the weapon is below the bottom of the enemy = no hit
+  ld    a,(PrimaryWeaponY)
+  ld    b,a
+  ld    a,(ix+enemies_and_objects.y)
+  add   a,(ix+enemies_and_objects.ny)       ;y+ny=bottom of enemy
+  sub   a,b
+  ret   c
+
+;if the right side of the weapon is left from the left side of the enemy = no hit
+  ld    hl,(PrimaryWeaponXRightSide)        ;hl = x hitbox
+  ld    bc,32
+  add   hl,bc                               ;right side of primary weapon (inclusing offset)
+  
+;Moet deze code er misschien TOCH in voor de SF2 engine ?
+;  ld    a,(scrollEngine)                    ;1= 304x216 engine  2=256x216 SF2 engine
+;  dec   a
+;  ld    bc,46                               ;normal engine
+;  jr    z,.engineFound
+;  ld    bc,46 - 16                          ;sf2 engine (46 - 14 for arrows)
+;  .engineFound:
+;  add   hl,bc                               ;right side of primary weapon (inclusing offset)
+  
+  ld    e,(ix+enemies_and_objects.x)  
+  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+  sbc   hl,de
+  ret   c
+
+;if the left side of the weapon is right from the right side of the enemy = no hit
+  ld    h,0
+  ld    l,(ix+enemies_and_objects.nx)       ;width object
+  add   hl,de                               ;de: right side of enemy/object 
+  ex    de,hl
+
+  ld    hl,(PrimaryWeaponX)                 ;hl = x hitbox 
+  add   hl,bc                               ;left side of primary weapon (inclusing weird)
+
+;  ld    a,(scrollEngine)                    ;1= 304x216 engine  2=256x216 SF2 engine
+;  dec   a
+;  ld    bc,46                               ;normal engine
+;  jr    z,.engineFound2
+;  ld    bc,46 - 16                          ;sf2 engine (46 - 14 for arrows)
+;  .engineFound2:
+;  add   hl,bc                               ;left side of primary weapon (inclusing offset for engine type)
+
+  sbc   hl,de
+  ret   nc
+  
+  
+  jp    CheckSecundaryWeaponHitsEnemy.hit
+
+
 CheckSecundaryWeaponHitsEnemy:
+;if the bottom of the weapon is above the top of the enemy = no hit
+  ld    a,(SecundaryWeaponYBottom)
+  sub   (ix+enemies_and_objects.y)
+  ret   c  
+
+;if the top of the weapon is below the bottom of the enemy = no hit
+  ld    a,(SecundaryWeaponY)
+  ld    b,a
+  ld    a,(ix+enemies_and_objects.y)
+  add   a,(ix+enemies_and_objects.ny)       ;y+ny=bottom of enemy
+  sub   a,b
+  ret   c
+
 ;check if enemy/object collides with hitbox arrow left side
   ld    hl,(SecundaryWeaponX)                      ;hl = x hitbox
-
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   ld    bc,46                               ;normal engine
@@ -277,22 +346,14 @@ CheckSecundaryWeaponHitsEnemy:
   sbc   hl,bc  
   ret   nc
 
-;check if enemy/object collides with hitbox arrow top side
-  ld    a,(SecundaryWeaponY)                       ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c  
-
-;check if enemy/object collides with hitbox arrow bottom side
-  sub   a,(ix+enemies_and_objects.ny)       ;width object
-  ret   nc
-
   ;Enemy hit                                ;blink white for 31 frames when hit
   xor   a
   ld    (SecundaryWeaponActive?),a                    ;remove arrow when enemy is hit
 
   ld    a,MagicWeaponDurationValue
   ld    (MagicWeaponDuration),a  
-    
+  
+  .hit:  
   ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
@@ -338,15 +399,15 @@ CheckPlayerPunchesEnemy:
   ld    (ix+enemies_and_objects.hit?),a
   ret                                       ;if enemy is  already hit, don't check if it's hit again
   .EndReduceHitTimer:
-  
-;  ld    a,(ArrowActive?)
-;  or    a
-;  call  nz,CheckArrowHitsEnemy
-
+ 
   ld    a,(SecundaryWeaponActive?)
   or    a
   call  nz,CheckSecundaryWeaponHitsEnemy
-    
+
+  ld    a,(PrimaryWeaponActive?)
+  or    a
+  call  nz,CheckPrimaryWeaponHitsEnemy
+
   ld    a,(EnableHitbox?)
   or    a
   ret   z

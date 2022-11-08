@@ -3501,8 +3501,8 @@ PrimaryWeaponActivatedWhileJumping?:  db  0
 MagicWeaponDurationValue:     equ 29
 MagicWeaponDuration:          db  MagicWeaponDurationValue
 DaggerRandomizer:             db  0
-CurrentMagicWeapon:           db  10 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
-CurrentPrimaryWeapon:         db  4 ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
+CurrentMagicWeapon:           db  0 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
+CurrentPrimaryWeapon:         db  1 ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
 
 ArrowSpeed:                   equ 6
 FireballSpeed:                equ 4
@@ -3520,6 +3520,9 @@ PrimaryWeaponSX_LeftSide:     db  000+00    ;(ix+6)
 PrimaryWeaponNY:              db  005       ;(ix+7)
 PrimaryWeaponNX:              db  009       ;(ix+8)
 
+PrimaryWeaponXRightSide:      dw  000       ;(ix+9)
+PrimaryWeaponYBottom:         db  000       ;(ix+11)
+
 SecundaryWeaponActive?:       db  0         ;(ix+0)
 SecundaryWeaponY:             db  100       ;(ix+1)
 SecundaryWeaponX:             dw  100       ;(ix+2)
@@ -3528,6 +3531,8 @@ SecundaryWeaponSX_RightSide:  db  000       ;(ix+5)
 SecundaryWeaponSX_LeftSide:   db  000+10    ;(ix+6)
 SecundaryWeaponNY:            db  011       ;(ix+7)
 SecundaryWeaponNX:            db  016       ;(ix+8)
+
+SecundaryWeaponYBottom:       db  000       ;(ix+9)
 
 HandlePlayerWeapons:
   ld    a,(PrimaryWeaponActive?)
@@ -3685,7 +3690,8 @@ HandlePlayerWeapons:
   ld    a,(PrimaryWeaponActive?)
   or    a
   jr    nz,.GoPutWeaponRightSideScreen
-  
+
+ 
   ld    a,(ix+0)            ;SecundaryWeaponActive? / movement speed
   or    a
   jp    p,.movingRight1
