@@ -12,6 +12,7 @@
 ;distancecheck
 ;checkFacingPlayer
 ;CheckPlayerPunchesEnemyOnlySitting
+;CheckPrimaryWeaponHitsEnemy
 ;CheckSecundaryWeaponHitsEnemy
 ;CheckPlayerPunchesBoss
 ;CheckPlayerPunchesEnemyDemon
@@ -253,6 +254,9 @@ CheckPlayerPunchesEnemyOnlySitting:
   ret
 
 CheckPrimaryWeaponHitsEnemy:
+  cp    128                                 ;presenting bow
+  ret   z
+
 ;if the bottom of the weapon is above the top of the enemy = no hit
   ld    a,(PrimaryWeaponYBottom)
   sub   (ix+enemies_and_objects.y)

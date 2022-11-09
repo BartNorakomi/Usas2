@@ -1,5 +1,3 @@
-areasigns zijn bugged als je naar F1 menu gaat.. what about bosses ?
-
 stairs lopen - het scherm uit gaat niet goed. Van D6 naar D8 een keer (2x al gebeurd)
 waarschijnlijk wordt er 2x gechecked:
 ga je 'normaal' het scherm uit aan de onderkant EN 
@@ -8,3 +6,5 @@ ga je via de ladder het scherm uit aan de onderkant ???
 When you walk right it only starts scrolling when the center of the player is about 50 pixels from the left edge 
 of the screen. So when you get bumped to the left while facing right, I would expect it to scroll to the left 
 (despite facing right) in order to keep at least those same 50 pixels margin visible.
+
+de force move into screen bij axe kan ertoe leiden dat je in een muur geduwd wordt

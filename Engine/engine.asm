@@ -3535,21 +3535,26 @@ SecundaryWeaponNX:            db  016       ;(ix+8)
 SecundaryWeaponYBottom:       db  000       ;(ix+9)
 
 HandlePlayerWeapons:
-  ld    a,(PrimaryWeaponActive?)
-  or    a
-  jp    nz,PrimaryWeapon
-
   ld    a,(SecundaryWeaponActive?)
   or    a
   jp    nz,SecundaryWeapon
+
+  ld    a,(PrimaryWeaponActive?)
+  or    a
+  jp    nz,PrimaryWeapon
   ret
 
   PrimaryWeapon:
-  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
-  or    a
-  ret   z                     ;no software sprites needed for punching
   ld    ix,PrimaryWeaponActive?
-  jp    GoHandlePlayerWeapon
+
+  ld    a,(CurrentPrimaryWeapon)    ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
+  or    a
+  jp    nz,GoHandlePlayerWeapon     ;if primary weapon is NOT punch/kick, then put software sprite weapon in display
+
+  ld    a,(PrimaryWeaponActive?)    ;if PrimaryWeaponActive?=128 bow animation should be put in screen
+  cp    128
+  jp    z,GoHandlePlayerWeapon
+  ret
   
   SecundaryWeapon:
   ld    ix,SecundaryWeaponActive?
@@ -5031,6 +5036,7 @@ Set_Charging:
 Set_Dying:
 	ld		hl,Dying
 	ld		(PlayerSpriteStand),hl
+	xor   a
   ld    (PrimaryWeaponActivatedWhileJumping?),a
   ld    (PrimaryWeaponActive?),a  
   ret

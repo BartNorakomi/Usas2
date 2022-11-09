@@ -38,7 +38,7 @@ LShootElementalWeapon:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,-38
   add   hl,de
-  jp    nc,Set_L_Stand
+  jp    nc,.Set_L_Stand
 
   ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
   ld    de,-294
@@ -51,16 +51,26 @@ LShootElementalWeapon:
 
   ld    a,(PlayerAniCount)
   cp    2 * 14
-  jp    z,Set_L_Stand  
+  jp    z,.Set_L_Stand  
   cp    2 * 10
   ret   nz
 
   ld    a,(framecounter)          ;animate every 4 frames
   and   1
   ret   nz
-
   jp    SetLShootElementalWeapon
 
+  .Set_L_Stand:
+	ld		hl,(PlayerSpriteStand)
+	ld		de,Jump
+  xor   a
+  sbc   hl,de
+  jp    nz,Set_L_Stand         ;if you were standing, go back to standing pose  
+  xor   a
+  ld    (ShootMagicWhileJump?),a
+  ld    (PlayerAniCount),a
+  ret  
+  
 RShootElementalWeapon:
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,11
@@ -72,7 +82,7 @@ RShootElementalWeapon:
   ld    de,304-37-12
   xor   a
   sbc   hl,de
-  jp    nc,Set_R_Stand
+  jp    nc,.Set_R_Stand
 
 ;Animate
   ld    hl,RightShootFireballAnimation
@@ -80,15 +90,25 @@ RShootElementalWeapon:
 
   ld    a,(PlayerAniCount)
   cp    2 * 14
-  jp    z,Set_R_Stand  
+  jp    z,.Set_R_Stand  
   cp    2 * 10
   ret   nz
 
   ld    a,(framecounter)          ;animate every 4 frames
   and   1
   ret   nz
-
   jp    SetRShootElementalWeapon
+
+  .Set_R_Stand:
+	ld		hl,(PlayerSpriteStand)
+	ld		de,Jump
+  xor   a
+  sbc   hl,de
+  jp    nz,Set_R_Stand         ;if you were standing, go back to standing pose  
+  xor   a
+  ld    (ShootMagicWhileJump?),a
+  ld    (PlayerAniCount),a
+  ret  
 
 SetLShootElementalWeapon:
   ld    a,b
@@ -231,8 +251,14 @@ LSitShootArrow:
 
   ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
   or    a
-  jp    nz,SWspriteSetNYNXSYSX
-  jp    SetLSitShootArrow
+  jp    z,SetLSitShootArrow
+  
+  ;little hackjob here, set PrimaryWeaponActive to 128 for the bow animation (not to conflict with punch on HandlePlayerWeapons:) 
+  ld    a,128
+  ld    (PrimaryWeaponActive?),a    ;check if bow animation ended, if so, shoot arrow
+  jp    SWspriteSetNYNXSYSX
+
+
 
 SetLSitShootArrow:
   ;put weapon
@@ -287,8 +313,12 @@ RSitShootArrow:
 
   ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
   or    a
-  jp    nz,SWspriteSetNYNXSYSX
-  jp    SetRSitShootArrow
+  jp    z,SetRSitShootArrow
+  
+  ;little hackjob here, set PrimaryWeaponActive to 128 for the bow animation (not to conflict with punch on HandlePlayerWeapons:) 
+  ld    a,128
+  ld    (PrimaryWeaponActive?),a    ;check if bow animation ended, if so, shoot arrow
+  jp    SWspriteSetNYNXSYSX
 
 SetRSitShootArrow:
   ;put weapon
@@ -342,8 +372,12 @@ LShootArrow:
 
   ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
   or    a
-  jp    nz,SWspriteSetNYNXSYSX
-  jp    SetLShootArrow
+  jp    z,SetLShootArrow
+  
+  ;little hackjob here, set PrimaryWeaponActive to 128 for the bow animation (not to conflict with punch on HandlePlayerWeapons:) 
+  ld    a,128
+  ld    (PrimaryWeaponActive?),a    ;check if bow animation ended, if so, shoot arrow
+  jp    SWspriteSetNYNXSYSX
 
 SetLShootArrow:
   ;put weapon
@@ -386,8 +420,7 @@ RightPresentBowAnimation:                       ;  addy,subx, ny ,nx ,sy   ,sx
 
 RShootArrow:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
-
-;RSwordAttack:  
+ 
   ld    de,11                 ;left edge
   ld    bc,264                ;right edge
   call  CheckPrimaryWeaponEdgesFacingRight
@@ -397,8 +430,12 @@ RShootArrow:
 
   ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
   or    a
-  jp    nz,SWspriteSetNYNXSYSX
-  jp    SetRShootArrow
+  jp    z,SetRShootArrow
+  
+  ;little hackjob here, set PrimaryWeaponActive to 128 for the bow animation (not to conflict with punch on HandlePlayerWeapons:) 
+  ld    a,128                       ;bow animation
+  ld    (PrimaryWeaponActive?),a    ;check if bow animation ended, if so, shoot arrow
+  jp    SWspriteSetNYNXSYSX
 
 SetRShootArrow:
   ;put weapon
@@ -1545,52 +1582,7 @@ RightAxeAttackAnimation:                 ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_RightCharge7 | db 004,012+50,010,010,216+30,073
   dw  PlayerSpriteData_Char_RightCharge7 | db 004,012+50,010,010,216+30,073
   dw  PlayerSpriteData_Char_RightCharge7 | db 004,012+50,010,010,216+30,073
-
-CheckPrimaryWeaponEdgesFacingLeftWhenSitting:
-  ld    a,(SecundaryWeaponActive?)
-  or    a
-  jr    nz,.Set_L_Sit         ;don't user primary weapon when secundary weapon is active
-
-  ld    a,(ShootMagicWhileJump?)      ;don't shoot if already shooting
-  or    a
-  jr    nz,.Set_L_Sit         ;don't user primary weapon when secundary weapon is active
-  
-  ld    a,(ClesY)
-  cp    200
-  jr    nc,.Set_L_Sit         ;don't user primary weapon when y>199 or scoreboard graphics can be erased
-  cp    20
-  jr    c,.Set_L_Sit          ;don't user primary weapon when y>199 or scoreboard graphics can be erased
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
-
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
-  xor   a
-  sbc   hl,de
-  jr    c,.Set_L_Sit
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  xor   a
-  sbc   hl,bc
-  jr    nc,.BruteForceMovementLeft
-  .skipBorderCheck:
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),1                ;active?
-  ret
-  .BruteForceMovementLeft:
-  pop     af                  ;pop the call
-  jp    BruteForceMovementLeft
-  .Set_L_Sit:
-  pop     af                  ;pop the call
-  ld    a,(PrimaryWeaponActivatedWhileJumping?)
-  or    a
-  jp    z,Set_L_Sit           ;if you were standing, go back to standing pose
-  xor   a                     ;if you were jumping, dont change pose, but stop primary weapon
-  ld    (PrimaryWeaponActivatedWhileJumping?),a	
-  ld    (PrimaryWeaponActive?),a	
-  ld    (PlayerAniCount),a
-  ret
-  
+ 
 CheckPrimaryWeaponEdgesFacingLeft:
   ld    a,(SecundaryWeaponActive?)
   or    a
@@ -1627,9 +1619,116 @@ CheckPrimaryWeaponEdgesFacingLeft:
   jp    BruteForceMovementLeft
   .Set_L_Stand:
   pop     af                  ;pop the call
+;  ld    a,(PrimaryWeaponActivatedWhileJumping?)
+;  or    a
+;  jp    z,Set_L_Stand         ;if you were standing, go back to standing pose
+
+	ld		hl,(PlayerSpriteStand)
+	ld		de,Jump
+  xor   a
+  sbc   hl,de
+  jp    nz,Set_L_Stand         ;if you were standing, go back to standing pose
+  
+  xor   a                     ;if you were jumping, dont change pose, but stop primary weapon
+  ld    (ShootArrowWhileJump?),a	
+  ld    (PrimaryWeaponActivatedWhileJumping?),a	
+  ld    (PrimaryWeaponActive?),a	
+  ld    (PlayerAniCount),a
+  ret
+
+CheckPrimaryWeaponEdgesFacingRight:
+  ld    a,(SecundaryWeaponActive?)
+  or    a
+  jr    nz,.Set_R_Stand       ;don't user primary weapon when secundary weapon is active
+
+  ld    a,(ShootMagicWhileJump?)      ;don't shoot if already shooting
+  or    a
+  jr    nz,.Set_R_Stand       ;don't user primary weapon when secundary weapon is active
+
+  ld    a,(ClesY)
+  cp    200
+  jr    nc,.Set_R_Stand       ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+  cp    20
+  jr    c,.Set_R_Stand        ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
+
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
+  xor   a
+  sbc   hl,de
+  jr    c,.BruteForceMovementRight
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  xor   a
+  sbc   hl,bc
+  jr    nc,.Set_R_Stand
+  .skipBorderCheck:
+  ld    a,1                   ;activate primary weapon
+  ld    (PrimaryWeaponActive?),a	  
+  ret
+  .BruteForceMovementRight:
+  pop     af                  ;pop the call
+  jp    BruteForceMovementRight
+  .Set_R_Stand:
+  pop     af                  ;pop the call
+
+;  ld    a,(PrimaryWeaponActivatedWhileJumping?)
+;  or    a
+;  jp    z,Set_R_Stand         ;if you were standing, go back to standing pose
+
+	ld		hl,(PlayerSpriteStand)
+	ld		de,Jump
+  xor   a
+  sbc   hl,de
+  jp    nz,Set_R_Stand         ;if you were standing, go back to standing pose
+
+  xor   a                     ;if you were jumping, dont change pose, but stop primary weapon
+  ld    (ShootArrowWhileJump?),a	
+  ld    (PrimaryWeaponActivatedWhileJumping?),a	
+  ld    (PrimaryWeaponActive?),a
+  ld    (PlayerAniCount),a  
+  ret
+
+CheckPrimaryWeaponEdgesFacingLeftWhenSitting:
+  ld    a,(SecundaryWeaponActive?)
+  or    a
+  jr    nz,.Set_L_Sit         ;don't user primary weapon when secundary weapon is active
+
+  ld    a,(ShootMagicWhileJump?)      ;don't shoot if already shooting
+  or    a
+  jr    nz,.Set_L_Sit         ;don't user primary weapon when secundary weapon is active
+  
+  ld    a,(ClesY)
+  cp    200
+  jr    nc,.Set_L_Sit         ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+  cp    20
+  jr    c,.Set_L_Sit          ;don't user primary weapon when y>199 or scoreboard graphics can be erased
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
+
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
+  xor   a
+  sbc   hl,de
+  jr    c,.Set_L_Sit
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  xor   a
+  sbc   hl,bc
+  jr    nc,.BruteForceMovementLeft
+  .skipBorderCheck:
+  ld    a,1                   ;activate primary weapon
+  ld    (PrimaryWeaponActive?),a	  
+  ret
+  .BruteForceMovementLeft:
+  pop     af                  ;pop the call
+  jp    BruteForceMovementLeft
+  .Set_L_Sit:
+  pop     af                  ;pop the call
   ld    a,(PrimaryWeaponActivatedWhileJumping?)
   or    a
-  jp    z,Set_L_Stand         ;if you were standing, go back to standing pose
+  jp    z,Set_L_Sit           ;if you were standing, go back to standing pose
   xor   a                     ;if you were jumping, dont change pose, but stop primary weapon
   ld    (PrimaryWeaponActivatedWhileJumping?),a	
   ld    (PrimaryWeaponActive?),a	
@@ -1681,50 +1780,21 @@ CheckPrimaryWeaponEdgesFacingRightWhenSitting:
   ld    (PlayerAniCount),a  
   ret
   
-CheckPrimaryWeaponEdgesFacingRight:
-  ld    a,(SecundaryWeaponActive?)
-  or    a
-  jr    nz,.Set_R_Stand       ;don't user primary weapon when secundary weapon is active
 
-  ld    a,(ShootMagicWhileJump?)      ;don't shoot if already shooting
-  or    a
-  jr    nz,.Set_R_Stand       ;don't user primary weapon when secundary weapon is active
 
-  ld    a,(ClesY)
-  cp    200
-  jr    nc,.Set_R_Stand       ;don't user primary weapon when y>199 or scoreboard graphics can be erased
-  cp    20
-  jr    c,.Set_R_Stand        ;don't user primary weapon when y>199 or scoreboard graphics can be erased
 
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
 
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
-  xor   a
-  sbc   hl,de
-  jr    c,.BruteForceMovementRight
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  xor   a
-  sbc   hl,bc
-  jr    nc,.Set_R_Stand
-  .skipBorderCheck:
-  ld    ix,PrimaryWeaponActive?
-  ld    (ix),1                ;active?
-  ret
-  .BruteForceMovementRight:
-  pop     af                  ;pop the call
-  jp    BruteForceMovementRight
-  .Set_R_Stand:
-  pop     af                  ;pop the call
-  ld    a,(PrimaryWeaponActivatedWhileJumping?)
-  or    a
-  jp    z,Set_R_Stand         ;if you were standing, go back to standing pose
-  xor   a                     ;if you were jumping, dont change pose, but stop primary weapon
-  ld    (PrimaryWeaponActivatedWhileJumping?),a	
-  ld    (PrimaryWeaponActive?),a
-  ld    (PlayerAniCount),a  
-  ret
+
+
+  
+
+
+
+
+
+
+
+
 
 LDaggerAttack:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
@@ -3395,8 +3465,12 @@ ShootArrowWhileJumpLeft:
 
   ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
   or    a
-  jp    nz,SWspriteSetNYNXSYSX
-  jp    SetLShootArrowWhenJumping
+  jp    z,SetLShootArrowWhenJumping
+  
+  ;little hackjob here, set PrimaryWeaponActive to 128 for the bow animation (not to conflict with punch on HandlePlayerWeapons:) 
+  ld    a,128
+  ld    (PrimaryWeaponActive?),a    ;check if bow animation ended, if so, shoot arrow
+  jp    SWspriteSetNYNXSYSX
 
 SetLShootArrowWhenJumping:
   ;put weapon
@@ -3461,8 +3535,13 @@ ShootArrowWhileJumpRight:
 
   ld    a,(PrimaryWeaponActive?)    ;check if bow animation ended, if so, shoot arrow
   or    a
-  jp    nz,SWspriteSetNYNXSYSX
-  jp    SetRShootArrowWhenJumping
+  jp    z,SetRShootArrowWhenJumping
+  
+  ;little hackjob here, set PrimaryWeaponActive to 128 for the bow animation (not to conflict with punch on HandlePlayerWeapons:) 
+  ld    a,128
+  ld    (PrimaryWeaponActive?),a    ;check if bow animation ended, if so, shoot arrow
+  jp    SWspriteSetNYNXSYSX
+
 
 SetRShootArrowWhenJumping:
   ;put weapon

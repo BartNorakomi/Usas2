@@ -33,7 +33,7 @@ PrimaryWeaponSelect:
   jr    z,.F1MenuLoop
 
   call  ScreenOff
-  call  SetElementalWeaponInVram      ;if an elemental weapon is selected, load it's graphics into Vram
+;  call  SetElementalWeaponInVram      ;if an elemental weapon is selected, load it's graphics into Vram
   call  SpritesOn
   call  RestorePage0InVram            ;restore the vram data the was stored in ram earlier
   call  SetInterruptHandler           ;set Lineint and Vblank  
