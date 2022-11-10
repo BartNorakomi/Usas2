@@ -3544,7 +3544,9 @@ MapG11:
 MapG12:
   incbin "..\maps\g12.map.pck"  | .amountofobjects: db  0
 MapG13:
-  incbin "..\maps\g13.map.pck"  | .amountofobjects: db  0  
+  incbin "..\maps\g13.map.pck"  | .amountofobjects: db  1
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 2,       0|dw BossGoat             |db  064|dw 8*14|db 70,56|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+30, 0|db 020,movepatblo2| ds fill-1  
 	ds		$c000-$,$ff
 dephase
 
@@ -3571,9 +3573,19 @@ phase	$4000
 	ds		$8000-$,$ff
 dephase
 
+;
+; block $6a
+;
+movementpatterns2block:  equ   $6a
+movepatblo2:  equ   $6a
+phase	$8000
+  include "MovementPatterns2.asm"
+	ds		$c000-$,$ff
+dephase
 
-; block $6a - $86
-  ds  $4000 * $1d
+
+; block $6b - $86
+  ds  $4000 * $1c
 
 
 
@@ -3710,10 +3722,18 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
+;
+; block $9f - $a0
+;
+IceTempleTilesBlock:  equ   $9f
+phase	$4000
+  incbin "..\grapx\tilesheets\sIceTemple.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sIceTempleBottom48Lines.SC5",7,48 * 128 ;48 lines
+	ds		$c000-$,$ff
+dephase
 
-
-; block $9f - $c4
-  ds  $4000 * $26
+; block $a1 - $c4
+  ds  $4000 * $24
 
 
 
@@ -3899,11 +3919,26 @@ dephase
 
 
 
+; block $df
+BossGoatIdleframelistblock:            equ $df
+phase	$8000
+  include "..\grapx\BossGoat\Idle\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $e0
+BossGoatIdlespritedatablock:           equ $e0
+phase	$0000
+  incbin "..\grapx\BossGoat\Idle\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+
+
 
 ;
 ; block $df -----------------> Music
 ;
-usas2repBlock:  equ   $df
+usas2repBlock:  equ   $e1
   incbin "usas2.rep"
 
 

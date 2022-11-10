@@ -192,6 +192,9 @@ SetMapPalette:
   dec   a
   ld    hl,BossAreaPalette            ;6
   jr    z,.goSetPalette
+  dec   a
+  ld    hl,IceTemplePalette           ;7
+  jr    z,.goSetPalette
 
   .goSetPalette:
   
@@ -225,6 +228,8 @@ BurialPalette:
   incbin "..\grapx\tilesheets\sBurialPalette.PL" ;file palette 
 BossAreaPalette:
   incbin "..\grapx\tilesheets\sBossAreaPalette.PL" ;file palette 
+IceTemplePalette:
+  incbin "..\grapx\tilesheets\sIceTemplePalette.PL" ;file palette 
   
 SetTilesInVram:  
 ;set tiles in Vram
@@ -249,6 +254,9 @@ SetTilesInVram:
   jr    z,.settiles
   dec   a
   ld    d,BossAreaTilesBlock          ;6
+  jr    z,.settiles
+  dec   a
+  ld    d,IceTempleTilesBlock         ;7
   jr    z,.settiles
 
   .settiles:

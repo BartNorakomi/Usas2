@@ -66,7 +66,7 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 30 ;$19 ;230 ;250 ;210
+ClesX:      dw 50 ;$19 ;230 ;250 ;210
 ClesY:      db 60 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
@@ -1448,6 +1448,28 @@ restoreBackgroundObject3:
   ld    hl,RestoreBackgroundObject3Page1
   jp    DoCopy
 
+restoreBackgroundObject4:
+  ld    a,(screenpage)
+  or    a                     ;if current page =0 then restore page 2
+  ld    hl,RestoreBackgroundObject4Page2
+  jp    z,DoCopy
+  dec   a                     ;if current page =1 then restore page 0
+  ld    hl,RestoreBackgroundObject4Page0
+  jp    z,DoCopy         ;if current page =2 then restore page 1
+  ld    hl,RestoreBackgroundObject4Page1
+  jp    DoCopy
+
+restoreBackgroundObject5:
+  ld    a,(screenpage)
+  or    a                     ;if current page =0 then restore page 2
+  ld    hl,RestoreBackgroundObject5Page2
+  jp    z,DoCopy
+  dec   a                     ;if current page =1 then restore page 0
+  ld    hl,RestoreBackgroundObject5Page0
+  jp    z,DoCopy         ;if current page =2 then restore page 1
+  ld    hl,RestoreBackgroundObject5Page1
+  jp    DoCopy
+  
 RestoreBackgroundObject1Page0:
 	db    0,0,0,3
 	db    0,0,0,0
@@ -1496,6 +1518,38 @@ RestoreBackgroundObject3Page2:
 	db    $02,0,$02,0
 	db    0,0,$d0  
 	
+RestoreBackgroundObject4Page0:
+	db    0,0,0,3
+	db    0,0,0,0
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject4Page1:
+	db    0,0,0,3
+	db    0,0,0,1
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject4Page2:
+	db    0,0,0,3
+	db    0,0,0,2
+	db    $02,0,$02,0
+	db    0,0,$d0  
+	
+RestoreBackgroundObject5Page0:
+	db    0,0,0,3
+	db    0,0,0,0
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject5Page1:
+	db    0,0,0,3
+	db    0,0,0,1
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject5Page2:
+	db    0,0,0,3
+	db    0,0,0,2
+	db    $02,0,$02,0
+	db    0,0,$d0  
+			
 HugeObjectFrame:  db  -1
 
 
@@ -1575,6 +1629,28 @@ PutSF2Object3:                ;in b->framelistblock, c->spritedatablock
   ld    ix,RestoreBackgroundObject3Page2
   jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
   ld    ix,RestoreBackgroundObject3Page0
+  jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+
+PutSF2Object4:                ;in b->framelistblock, c->spritedatablock
+  ld    a,(screenpage)
+  or    a                     ;if current page =0 then que page 1 to be restored
+  ld    ix,RestoreBackgroundObject4Page1
+  jp    z,PutSF2Object.startsetupque
+  dec   a                     ;if current page =1 then que page 2 to be restored
+  ld    ix,RestoreBackgroundObject4Page2
+  jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+  ld    ix,RestoreBackgroundObject4Page0
+  jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+
+PutSF2Object5:                ;in b->framelistblock, c->spritedatablock
+  ld    a,(screenpage)
+  or    a                     ;if current page =0 then que page 1 to be restored
+  ld    ix,RestoreBackgroundObject5Page1
+  jp    z,PutSF2Object.startsetupque
+  dec   a                     ;if current page =1 then que page 2 to be restored
+  ld    ix,RestoreBackgroundObject5Page2
+  jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+  ld    ix,RestoreBackgroundObject5Page0
   jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
 
 

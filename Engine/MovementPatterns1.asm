@@ -182,10 +182,6 @@ TemplateBoss:
   ld    (Bossframecounter),a
   ret
 
-
-
-
-
 ;0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying
 ;Idle sitting
 BossZombieCaterpillarIdle00:   dw ZombieCaterpillarIdleframe000 | db BossZombieCaterpillarIdleframelistblock, BossZombieCaterpillarIdlespritedatablock
