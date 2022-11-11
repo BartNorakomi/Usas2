@@ -19,40 +19,74 @@ PutSf2Object5Frames:
 
   .Part5:
   call  restoreBackgroundObject5
-  ld    a,(ix+enemies_and_objects.v7)
-  add   a,4
-  call  SetFrameBoss
+  call  v7x5
+  inc   hl
+  inc   hl
+  inc   hl
+  inc   hl
+  call  SetFrameBossGoat
   call  PutSF2Object5                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
   jp    switchpageSF2Engine
 
   .Part4:
   call  restoreBackgroundObject4
-  ld    a,(ix+enemies_and_objects.v7)
-  add   a,3
-  call  SetFrameBoss
+  call  v7x5
+  inc   hl
+  inc   hl
+  inc   hl
+  call  SetFrameBossGoat
   jp    PutSF2Object4                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
   
   .Part3:
   call  restoreBackgroundObject3
-  ld    a,(ix+enemies_and_objects.v7)
-  add   a,2
-  call  SetFrameBoss
+  call  v7x5
+  inc   hl
+  inc   hl
+  call  SetFrameBossGoat
   jp    PutSF2Object3                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
   
   .Part2:
   call  restoreBackgroundObject2
-  ld    a,(ix+enemies_and_objects.v7)
-;  add   a,1
-  inc   a
-  call  SetFrameBoss
+  call  v7x5
+  inc   hl
+  call  SetFrameBossGoat
   jp    PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
   
   .Part1:
   call  restoreBackgroundObject1
-  ld    a,(ix+enemies_and_objects.v7)
-;  add   a,0
-  call  SetFrameBoss
+  call  v7x5
+  call  SetFrameBossGoat
   jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+v7x5:
+  ld    a,(ix+enemies_and_objects.v7)
+  ld    b,0
+  ld    c,a
+  add   a,a                                 ;*2
+
+  ld    h,0
+  ld    l,a
+
+  add   hl,hl                                 ;*4
+  add   hl,bc                                ;*5
+  ret
+
+SetFrameBossGoat:
+  add   hl,hl                               ;*2
+  add   hl,hl                               ;*4
+  add   hl,de                               ;frame * 12 + frame address
+
+  .SetFrameSF2Object:
+  ld    a,(hl)
+  ld    (Player1Frame),a
+  inc   hl
+  ld    a,(hl)
+  ld    (Player1Frame+1),a
+  inc   hl
+  ld    b,(hl)                              ;frame list block
+  inc   hl
+  ld    c,(hl)                              ;sprite data block
+  ret
 
 
 PutSf2Object4Frames:
@@ -99,6 +133,74 @@ PutSf2Object4Frames:
   call  SetFrameBoss
   jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
 
+BossGoat:
+;v1-1=
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+;v7=sprite frame
+;v8=phase
+;v9=timer until attack
+;  call  CheckPlayerHitByZombieCaterpillar   ;Check if player gets hit by boss
+  ;Check if boss gets hit by player
+;  call  ZombieCaterpillarCheckIfHit         ;call gets popped if hit. Check if boss is hit, and if so set being hit phase
+  ;Check if boss is dead
+;  call  ZombieCaterpillarCheckIfDead        ;Check if boss is dead, and if so set dying phase
+  
+  call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+
+  ld    de,BossGoatIdleAndWalk00
+  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+
+  .HandlePhase:                            ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+  ld    a,(HugeObjectFrame)
+  cp    4
+  ret   nz
+  
+  ld    a,(Bossframecounter)
+  inc   a
+  ld    (Bossframecounter),a
+
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  or    a
+  jp    z,BossGoatIdle                      ;0=attack
+  dec   a
+  ret
+  
+  BossGoatIdle:
+;  ld    a,(Bossframecounter)
+;  rrca
+;  ret   c  
+
+  call  .animate
+
+
+
+;  ld    (ix+enemies_and_objects.v7),255/5       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+
+
+;  dec   (ix+enemies_and_objects.v9)         ;v9=timer until attack
+;  ret   nz
+;  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+;  ld    (ix+enemies_and_objects.v7),18      ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret
+  
+  .animate:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  inc   a                                   ;amount of frames per animation step
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  cp    300/5                                  ;(0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret   nz
+  ld    (ix+enemies_and_objects.v7),0/5       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ret  
+  
+  
 ;Idle 
 BossGoatIdleAndWalk00:   dw GoatIdleAndWalkframe000 | db BossGoatIdleAndWalkframelistblock, BossGoatIdleAndWalkspritedatablock
 BossGoatIdleAndWalk01:   dw GoatIdleAndWalkframe001 | db BossGoatIdleAndWalkframelistblock, BossGoatIdleAndWalkspritedatablock
@@ -270,272 +372,198 @@ BossGoatWalkAndAttack137:   dw GoatWalkAndAttackframe037 | db BossGoatWalkAndAtt
 BossGoatWalkAndAttack138:   dw GoatWalkAndAttackframe038 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
 BossGoatWalkAndAttack139:   dw GoatWalkAndAttackframe039 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
 
-BossGoatWalkAndAttack145:   dw GoatWalkAndAttackframe040 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
-BossGoatWalkAndAttack146:   dw GoatWalkAndAttackframe041 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
-BossGoatWalkAndAttack147:   dw GoatWalkAndAttackframe042 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
-BossGoatWalkAndAttack148:   dw GoatWalkAndAttackframe043 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
-BossGoatWalkAndAttack149:   dw GoatWalkAndAttackframe044 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
+BossGoatWalkAndAttack140:   dw GoatWalkAndAttackframe040 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
+BossGoatWalkAndAttack141:   dw GoatWalkAndAttackframe041 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
+BossGoatWalkAndAttack142:   dw GoatWalkAndAttackframe042 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
+BossGoatWalkAndAttack143:   dw GoatWalkAndAttackframe043 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
+BossGoatWalkAndAttack144:   dw GoatWalkAndAttackframe044 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
 
-BossGoatAttack150:   dw GoatAttackframe000 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack151:   dw GoatAttackframe001 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack152:   dw GoatAttackframe002 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack153:   dw GoatAttackframe003 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack154:   dw GoatAttackframe004 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack145:   dw GoatAttackframe000 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack146:   dw GoatAttackframe001 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack147:   dw GoatAttackframe002 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack148:   dw GoatAttackframe003 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack149:   dw GoatAttackframe004 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 
-BossGoatAttack155:   dw GoatAttackframe005 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack156:   dw GoatAttackframe005 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack157:   dw GoatAttackframe006 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack158:   dw GoatAttackframe007 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack159:   dw GoatAttackframe008 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack150:   dw GoatAttackframe005 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack151:   dw GoatAttackframe005 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack152:   dw GoatAttackframe006 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack153:   dw GoatAttackframe007 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack154:   dw GoatAttackframe008 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 
-BossGoatAttack160:   dw GoatAttackframe009 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack161:   dw GoatAttackframe009 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack162:   dw GoatAttackframe009 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack163:   dw GoatAttackframe010 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack164:   dw GoatAttackframe011 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack155:   dw GoatAttackframe009 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack156:   dw GoatAttackframe009 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack157:   dw GoatAttackframe010 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack158:   dw GoatAttackframe011 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack159:   dw GoatAttackframe024 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 
-BossGoatAttack165:   dw GoatAttackframe012 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack166:   dw GoatAttackframe012 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack167:   dw GoatAttackframe012 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack168:   dw GoatAttackframe013 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack169:   dw GoatAttackframe014 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack160:   dw GoatAttackframe012 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack161:   dw GoatAttackframe012 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack162:   dw GoatAttackframe013 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack163:   dw GoatAttackframe014 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack164:   dw GoatAttackframe025 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 
-BossGoatAttack170:   dw GoatAttackframe015 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack171:   dw GoatAttackframe015 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack172:   dw GoatAttackframe015 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack173:   dw GoatAttackframe016 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack174:   dw GoatAttackframe017 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack165:   dw GoatAttackframe015 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack166:   dw GoatAttackframe015 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack167:   dw GoatAttackframe015 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack168:   dw GoatAttackframe016 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack169:   dw GoatAttackframe017 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 
-BossGoatAttack175:   dw GoatAttackframe018 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack176:   dw GoatAttackframe018 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack177:   dw GoatAttackframe018 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack178:   dw GoatAttackframe019 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack179:   dw GoatAttackframe020 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack170:   dw GoatAttackframe018 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack171:   dw GoatAttackframe018 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack172:   dw GoatAttackframe018 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack173:   dw GoatAttackframe019 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack174:   dw GoatAttackframe020 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 
-BossGoatAttack180:   dw GoatAttackframe021 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack181:   dw GoatAttackframe021 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack182:   dw GoatAttackframe021 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack183:   dw GoatAttackframe022 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack184:   dw GoatAttackframe023 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack175:   dw GoatAttackframe021 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack176:   dw GoatAttackframe021 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack177:   dw GoatAttackframe021 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack178:   dw GoatAttackframe022 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack179:   dw GoatAttackframe023 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 
-BossGoatAttack2185:   dw GoatAttack2frame000 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2186:   dw GoatAttack2frame000 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2187:   dw GoatAttack2frame001 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2188:   dw GoatAttack2frame002 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2189:   dw GoatAttack2frame003 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2180:   dw GoatAttack2frame000 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2181:   dw GoatAttack2frame000 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2182:   dw GoatAttack2frame001 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2183:   dw GoatAttack2frame002 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2184:   dw GoatAttack2frame003 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
 
-BossGoatAttack2190:   dw GoatAttack2frame004 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2191:   dw GoatAttack2frame004 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2192:   dw GoatAttack2frame005 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2193:   dw GoatAttack2frame006 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2194:   dw GoatAttack2frame007 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2185:   dw GoatAttack2frame004 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2186:   dw GoatAttack2frame004 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2187:   dw GoatAttack2frame005 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2188:   dw GoatAttack2frame006 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2189:   dw GoatAttack2frame007 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
 
-BossGoatAttack2195:   dw GoatAttack2frame008 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2196:   dw GoatAttack2frame009 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2197:   dw GoatAttack2frame010 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2198:   dw GoatAttack2frame011 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2199:   dw GoatAttack2frame012 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2190:   dw GoatAttack2frame008 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2191:   dw GoatAttack2frame009 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2192:   dw GoatAttack2frame010 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2193:   dw GoatAttack2frame011 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2194:   dw GoatAttack2frame012 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
 
-BossGoatAttack2200:   dw GoatAttack2frame013 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2201:   dw GoatAttack2frame014 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2202:   dw GoatAttack2frame015 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2203:   dw GoatAttack2frame016 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2204:   dw GoatAttack2frame017 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2195:   dw GoatAttack2frame013 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2196:   dw GoatAttack2frame014 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2197:   dw GoatAttack2frame015 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2198:   dw GoatAttack2frame016 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2199:   dw GoatAttack2frame017 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
 
-BossGoatAttack2205:   dw GoatAttack2frame018 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2206:   dw GoatAttack2frame019 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2207:   dw GoatAttack2frame020 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2208:   dw GoatAttack2frame021 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2209:   dw GoatAttack2frame022 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2200:   dw GoatAttack2frame018 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2201:   dw GoatAttack2frame019 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2202:   dw GoatAttack2frame020 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2203:   dw GoatAttack2frame021 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2204:   dw GoatAttack2frame022 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
 
-BossGoatAttack2210:   dw GoatAttack2frame023 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2211:   dw GoatAttack2frame023 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2212:   dw GoatAttack2frame024 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2213:   dw GoatAttack2frame025 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
-BossGoatAttack2214:   dw GoatAttack2frame026 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2205:   dw GoatAttack2frame023 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2206:   dw GoatAttack2frame023 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2207:   dw GoatAttack2frame024 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2208:   dw GoatAttack2frame025 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
+BossGoatAttack2209:   dw GoatAttack2frame026 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
 
-BossGoatAttackAndHit215:   dw GoatAttackAndHitframe000 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit216:   dw GoatAttackAndHitframe001 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit217:   dw GoatAttackAndHitframe002 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit218:   dw GoatAttackAndHitframe003 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit219:   dw GoatAttackAndHitframe004 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit210:   dw GoatAttackAndHitframe000 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit211:   dw GoatAttackAndHitframe001 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit212:   dw GoatAttackAndHitframe002 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit213:   dw GoatAttackAndHitframe003 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit214:   dw GoatAttackAndHitframe004 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
 
 ;Hit
-BossGoatAttackAndHit220:   dw GoatAttackAndHitframe005 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit221:   dw GoatAttackAndHitframe006 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit222:   dw GoatAttackAndHitframe007 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit223:   dw GoatAttackAndHitframe008 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit224:   dw GoatAttackAndHitframe009 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit215:   dw GoatAttackAndHitframe005 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit216:   dw GoatAttackAndHitframe006 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit217:   dw GoatAttackAndHitframe007 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit218:   dw GoatAttackAndHitframe008 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit219:   dw GoatAttackAndHitframe009 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
 
-BossGoatAttackAndHit225:   dw GoatAttackAndHitframe010 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit226:   dw GoatAttackAndHitframe011 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit227:   dw GoatAttackAndHitframe012 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit228:   dw GoatAttackAndHitframe013 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit229:   dw GoatAttackAndHitframe014 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit220:   dw GoatAttackAndHitframe010 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit221:   dw GoatAttackAndHitframe011 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit222:   dw GoatAttackAndHitframe012 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit223:   dw GoatAttackAndHitframe013 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit224:   dw GoatAttackAndHitframe014 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
 
-BossGoatAttackAndHit230:   dw GoatAttackAndHitframe015 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit231:   dw GoatAttackAndHitframe016 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit232:   dw GoatAttackAndHitframe017 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit233:   dw GoatAttackAndHitframe018 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit234:   dw GoatAttackAndHitframe019 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit225:   dw GoatAttackAndHitframe015 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit226:   dw GoatAttackAndHitframe016 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit227:   dw GoatAttackAndHitframe017 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit228:   dw GoatAttackAndHitframe018 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit229:   dw GoatAttackAndHitframe019 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
 
-BossGoatAttackAndHit235:   dw GoatAttackAndHitframe020 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit236:   dw GoatAttackAndHitframe021 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit237:   dw GoatAttackAndHitframe022 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit238:   dw GoatAttackAndHitframe023 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit239:   dw GoatAttackAndHitframe024 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit230:   dw GoatAttackAndHitframe020 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit231:   dw GoatAttackAndHitframe021 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit232:   dw GoatAttackAndHitframe022 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit233:   dw GoatAttackAndHitframe023 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit234:   dw GoatAttackAndHitframe024 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
 
-BossGoatAttackAndHit240:   dw GoatAttackAndHitframe025 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit241:   dw GoatAttackAndHitframe026 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit242:   dw GoatAttackAndHitframe027 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit243:   dw GoatAttackAndHitframe028 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit244:   dw GoatAttackAndHitframe029 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit235:   dw GoatAttackAndHitframe025 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit236:   dw GoatAttackAndHitframe026 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit237:   dw GoatAttackAndHitframe027 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit238:   dw GoatAttackAndHitframe028 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit239:   dw GoatAttackAndHitframe029 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+              ;This frame is last frame of hit, but ALSO first frame of Dying
+BossGoatAttackAndHit240:   dw GoatAttackAndHitframe030 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit241:   dw GoatAttackAndHitframe031 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit242:   dw GoatAttackAndHitframe032 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit243:   dw GoatAttackAndHitframe033 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+BossGoatAttackAndHit244:   dw GoatAttackAndHitframe034 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
 
-BossGoatAttackAndHit245:   dw GoatAttackAndHitframe030 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit246:   dw GoatAttackAndHitframe031 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit247:   dw GoatAttackAndHitframe032 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit248:   dw GoatAttackAndHitframe033 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
-BossGoatAttackAndHit249:   dw GoatAttackAndHitframe034 | db BossGoatAttackAndHitframelistblock, BossGoatAttackAndHitspritedatablock
+;Dying (actually 2nd frame)
+BossGoatDying245:   dw GoatDyingframe000 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying246:   dw GoatDyingframe001 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying247:   dw GoatDyingframe002 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying248:   dw GoatDyingframe003 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying249:   dw GoatDyingframe004 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
 
-;Dying
-BossGoatDying250:   dw GoatDyingframe000 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying251:   dw GoatDyingframe001 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying252:   dw GoatDyingframe002 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying253:   dw GoatDyingframe003 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying254:   dw GoatDyingframe004 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying250:   dw GoatDyingframe005 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying251:   dw GoatDyingframe006 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying252:   dw GoatDyingframe007 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying253:   dw GoatDyingframe008 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying254:   dw GoatDyingframe009 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
 
-BossGoatDying255:   dw GoatDyingframe005 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying256:   dw GoatDyingframe006 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying257:   dw GoatDyingframe007 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying258:   dw GoatDyingframe008 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying259:   dw GoatDyingframe009 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying255:   dw GoatDyingframe010 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying256:   dw GoatDyingframe011 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying257:   dw GoatDyingframe012 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying258:   dw GoatDyingframe013 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying259:   dw GoatDyingframe014 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
 
-BossGoatDying260:   dw GoatDyingframe010 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying261:   dw GoatDyingframe011 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying262:   dw GoatDyingframe012 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying263:   dw GoatDyingframe013 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying264:   dw GoatDyingframe014 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying260:   dw GoatDyingframe015 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying261:   dw GoatDyingframe016 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying262:   dw GoatDyingframe017 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying263:   dw GoatDyingframe018 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying264:   dw GoatDyingframe019 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+;--------------------------------------------------------------------------------------------------------;
+BossGoatDying2265:   dw GoatDying2frame000 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2266:   dw GoatDying2frame001 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2267:   dw GoatDying2frame002 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2268:   dw GoatDying2frame003 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2269:   dw GoatDying2frame004 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
 
-BossGoatDying265:   dw GoatDyingframe015 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying266:   dw GoatDyingframe016 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying267:   dw GoatDyingframe017 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying268:   dw GoatDyingframe018 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
-BossGoatDying269:   dw GoatDyingframe019 | db BossGoatDyingframelistblock, BossGoatDyingspritedatablock
+BossGoatDying2270:   dw GoatDying2frame005 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2271:   dw GoatDying2frame005 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2272:   dw GoatDying2frame006 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2273:   dw GoatDying2frame007 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2274:   dw GoatDying2frame008 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
 
-BossGoatDying2270:   dw GoatDying2frame000 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2271:   dw GoatDying2frame001 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2272:   dw GoatDying2frame002 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2273:   dw GoatDying2frame003 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2274:   dw GoatDying2frame004 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2275:   dw GoatDying2frame009 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2276:   dw GoatDying2frame009 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2277:   dw GoatDying2frame009 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2278:   dw GoatDying2frame009 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2279:   dw GoatDying2frame010 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
 
-BossGoatDying2275:   dw GoatDying2frame005 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2276:   dw GoatDying2frame005 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2277:   dw GoatDying2frame006 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2278:   dw GoatDying2frame007 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2279:   dw GoatDying2frame008 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2280:   dw GoatDying2frame011 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2281:   dw GoatDying2frame011 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2282:   dw GoatDying2frame011 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2283:   dw GoatDying2frame011 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2284:   dw GoatDying2frame012 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
 
-BossGoatDying2280:   dw GoatDying2frame009 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2281:   dw GoatDying2frame009 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2282:   dw GoatDying2frame009 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2283:   dw GoatDying2frame009 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2284:   dw GoatDying2frame010 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2285:   dw GoatDying2frame013 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2286:   dw GoatDying2frame013 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2287:   dw GoatDying2frame013 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2288:   dw GoatDying2frame013 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2289:   dw GoatDying2frame014 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
 
-BossGoatDying2285:   dw GoatDying2frame011 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2286:   dw GoatDying2frame011 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2287:   dw GoatDying2frame011 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2288:   dw GoatDying2frame011 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2289:   dw GoatDying2frame012 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2290:   dw GoatDying2frame015 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2291:   dw GoatDying2frame015 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2292:   dw GoatDying2frame015 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2293:   dw GoatDying2frame015 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2294:   dw GoatDying2frame016 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
 
-BossGoatDying2290:   dw GoatDying2frame013 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2291:   dw GoatDying2frame013 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2292:   dw GoatDying2frame013 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2293:   dw GoatDying2frame013 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2294:   dw GoatDying2frame014 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2295:   dw GoatDying2frame017 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2296:   dw GoatDying2frame017 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2297:   dw GoatDying2frame017 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2298:   dw GoatDying2frame017 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
+BossGoatDying2299:   dw GoatDying2frame018 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
 
-BossGoatDying2295:   dw GoatDying2frame015 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2296:   dw GoatDying2frame015 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2297:   dw GoatDying2frame015 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2298:   dw GoatDying2frame015 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2299:   dw GoatDying2frame016 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-
-BossGoatDying2300:   dw GoatDying2frame017 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2301:   dw GoatDying2frame017 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2302:   dw GoatDying2frame017 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2303:   dw GoatDying2frame017 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-BossGoatDying2304:   dw GoatDying2frame018 | db BossGoatDying2framelistblock, BossGoatDying2spritedatablock
-
-
-
-
-
-
-
-
-
-
-
-
-BossGoat:
-;v1-1=
-;v1=repeating steps
-;v2=pointer to movement table
-;v3=Vertical Movement
-;v4=Horizontal Movement
-;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
-;v6=active on which frame ?  
-;v7=sprite frame
-;v8=phase
-;v9=timer until attack
-;  call  CheckPlayerHitByZombieCaterpillar   ;Check if player gets hit by boss
-  ;Check if boss gets hit by player
-;  call  ZombieCaterpillarCheckIfHit         ;call gets popped if hit. Check if boss is hit, and if so set being hit phase
-  ;Check if boss is dead
-;  call  ZombieCaterpillarCheckIfDead        ;Check if boss is dead, and if so set dying phase
-  
-  call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
-
-  ld    de,BossGoatIdleAndWalk00
-  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
-
-  .HandlePhase:                            ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
-  ld    de,NonMovingObjectMovementTable
-  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
-
-  ld    a,(HugeObjectFrame)
-  cp    4
-  ret   nz
-  
-  ld    a,(Bossframecounter)
-  inc   a
-  ld    (Bossframecounter),a
-
-  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
-  or    a
-  jp    z,BossGoatIdle                      ;0=attack
-  dec   a
-  ret
-  
-  BossGoatIdle:
-;  ld    a,(Bossframecounter)
-;  rrca
-;  ret   c  
-
-  call  .animate
-
-;  dec   (ix+enemies_and_objects.v9)         ;v9=timer until attack
-;  ret   nz
-;  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
-;  ld    (ix+enemies_and_objects.v7),18      ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
-  ret
-  
-  .animate:
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
-  add   a,5                                 ;amount of frames per animation step
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
-  cp    220                                  ;(0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
-  ret   nz
-  ld    (ix+enemies_and_objects.v7),110       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
-  ret  
-  
-  
 

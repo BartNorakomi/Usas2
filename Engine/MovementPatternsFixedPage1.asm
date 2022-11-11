@@ -73,7 +73,7 @@ PutSf2Object3Frames:
 
 SetFrameBoss:
   ld    l,a                                 ;v7=sprite frame
-  ld    h,0
+  ld    h,0                                  ;hl=sprite frame
   add   hl,hl                               ;*2
   add   hl,hl                               ;*4
   add   hl,de                               ;frame * 12 + frame address
