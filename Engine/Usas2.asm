@@ -3546,7 +3546,7 @@ MapG12:
 MapG13:
   incbin "..\maps\g13.map.pck"  | .amountofobjects: db  1
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object1: db 2,       0|dw BossGoat             |db  064|dw 8*14|db 70,56|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+30, 0|db 020,movepatblo2| ds fill-1  
+.object1: db 2,       0|dw BossGoat             |db  064|dw 8*18|db 70,56|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+30, 0|db 020,movepatblo2| ds fill-1  
 	ds		$c000-$,$ff
 dephase
 
@@ -3920,25 +3920,100 @@ dephase
 
 
 ; block $df
-BossGoatIdleframelistblock:            equ $df
+BossGoatIdleAndWalkframelistblock:            equ $df
 phase	$8000
-  include "..\grapx\BossGoat\Idle\frames.lst" 
+  include "..\grapx\BossGoat\IdleAndWalk\frames.lst" 
 	ds		$c000-$,$ff
 
 ; block $e0
-BossGoatIdlespritedatablock:           equ $e0
+BossGoatIdleAndWalkspritedatablock:           equ $e0
 phase	$0000
-  incbin "..\grapx\BossGoat\Idle\frames.dat"
+  incbin "..\grapx\BossGoat\IdleAndWalk\frames.dat"
 	ds		$4000-$,$ff
 dephase
 
+; block $e1
+BossGoatWalkAndAttackframelistblock:            equ $e1
+phase	$8000
+  include "..\grapx\BossGoat\WalkAndAttack\frames.lst" 
+	ds		$c000-$,$ff
 
+; block $e2
+BossGoatWalkAndAttackspritedatablock:           equ $e2
+phase	$0000
+  incbin "..\grapx\BossGoat\WalkAndAttack\frames.dat"
+	ds		$4000-$,$ff
+dephase
 
+; block $e3
+BossGoatAttackframelistblock:            equ $e3
+phase	$8000
+  include "..\grapx\BossGoat\Attack\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $e4
+BossGoatAttackspritedatablock:           equ $e4
+phase	$0000
+  incbin "..\grapx\BossGoat\Attack\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+; block $e5
+BossGoatAttack2framelistblock:            equ $e5
+phase	$8000
+  include "..\grapx\BossGoat\Attack2\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $e6
+BossGoatAttack2spritedatablock:           equ $e6
+phase	$0000
+  incbin "..\grapx\BossGoat\Attack2\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+; block $e7
+BossGoatAttackAndHitframelistblock:            equ $e7
+phase	$8000
+  include "..\grapx\BossGoat\AttackAndHit\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $e8
+BossGoatAttackAndHitspritedatablock:           equ $e8
+phase	$0000
+  incbin "..\grapx\BossGoat\AttackAndHit\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+; block $e9
+BossGoatDyingframelistblock:            equ $e9
+phase	$8000
+  include "..\grapx\BossGoat\Dying\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $ea
+BossGoatDyingspritedatablock:           equ $ea
+phase	$0000
+  incbin "..\grapx\BossGoat\Dying\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+; block $eb
+BossGoatDying2framelistblock:            equ $eb
+phase	$8000
+  include "..\grapx\BossGoat\Dying2\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $ec
+BossGoatDying2spritedatablock:           equ $ec
+phase	$0000
+  incbin "..\grapx\BossGoat\Dying2\frames.dat"
+	ds		$4000-$,$ff
+dephase
 
 ;
-; block $df -----------------> Music
+; block $ed -----------------> Music
 ;
-usas2repBlock:  equ   $e1
+usas2repBlock:  equ   $ed
   incbin "usas2.rep"
 
 

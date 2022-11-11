@@ -28,6 +28,116 @@
 ;InitiatlizeSwitch
 ;checktileObject
 ;AnimateSprite
+;MoveObjectWithStepTable
+;SetFrameBoss
+;PutSf2Object3Frames
+;NonMovingObjectMovementTable
+
+NonMovingObjectMovementTable:
+  db    127,0,0, 128
+
+PutSf2Object3Frames:
+  ld    a,(HugeObjectFrame)
+  inc   a
+  cp    3
+  jr    nz,.SetFrame
+  xor   a
+  .SetFrame:
+  ld    (HugeObjectFrame),a
+
+  or    a  
+  jr    z,.Top
+  dec   a
+  jr    z,.Middle
+
+  .Bottom:
+  call  restoreBackgroundObject3
+  ld    a,(ix+enemies_and_objects.v7)
+  add   a,2
+  call  SetFrameBoss
+  call  PutSF2Object3                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  jp    switchpageSF2Engine
+  
+  .Middle:
+  call  restoreBackgroundObject2
+  ld    a,(ix+enemies_and_objects.v7)
+  inc   a
+  call  SetFrameBoss
+  jp    PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  
+  .Top:
+  call  restoreBackgroundObject1
+  ld    a,(ix+enemies_and_objects.v7)
+  call  SetFrameBoss
+  jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+SetFrameBoss:
+  ld    l,a                                 ;v7=sprite frame
+  ld    h,0
+  add   hl,hl                               ;*2
+  add   hl,hl                               ;*4
+  add   hl,de                               ;frame * 12 + frame address
+
+  .SetFrameSF2Object:
+  ld    a,(hl)
+  ld    (Player1Frame),a
+  inc   hl
+  ld    a,(hl)
+  ld    (Player1Frame+1),a
+  inc   hl
+  ld    b,(hl)                              ;frame list block
+  inc   hl
+  ld    c,(hl)                              ;sprite data block
+  ret
+
+MoveObjectWithStepTable:
+  ;if repeating steps are not 0, go to movement object
+;  ld    a,(ix+enemies_and_objects.v1)         ;repeating steps
+;  dec   a
+;  ld    (ix+enemies_and_objects.v1),a         ;repeating steps
+  dec   (ix+enemies_and_objects.v1)           ;repeating steps
+  jp    p,.moveObject
+  
+  .NextStep:
+  ld    a,(ix+enemies_and_objects.v2)         ;pointer to movement table
+  ld    h,0
+  ld    l,a
+  add   hl,de
+  add   a,3
+  ld    (ix+enemies_and_objects.v2),a         ;pointer to movement table
+  
+  ld    a,(hl)                                ;repeating steps(128 = end table/repeat)
+  cp    128
+  jr    nz,.EndCheckEndTable
+  ld    (ix+enemies_and_objects.v2),+3        ;pointer to movement table
+  ex    de,hl
+  ld    a,(hl)
+
+  .EndCheckEndTable:
+  ld    (ix+enemies_and_objects.v1),a         ;repeating steps
+  inc   hl
+  ld    a,(hl)                                ;y movement
+  ld    (ix+enemies_and_objects.v3),a         ;v3=y movement
+  inc   hl
+  ld    a,(hl)                                ;x movement
+  ld    (ix+enemies_and_objects.v4),a         ;v4=x movement
+
+  .moveObject:
+  ld    a,(ix+enemies_and_objects.y)          ;y object
+  add   a,(ix+enemies_and_objects.v3)         ;add y movement to y
+  ld    (ix+enemies_and_objects.y),a          ;y object
+  ld    (Object1y),a
+
+  ld    a,(ix+enemies_and_objects.x)          ;x object
+  add   a,(ix+enemies_and_objects.v4)         ;add x movement to x
+  ld    (ix+enemies_and_objects.x),a          ;x object
+  ld    (Object1x),a
+
+  ;Move player along with object if standing on it
+  ld    a,(ix+enemies_and_objects.SnapPlayer?)         ;x movement
+;  ld    a,(SnapToPlatform?)
+  or    a
+  ret   z
 
 AnimateSprite:
   ld    a,(framecounter)                    ;animate every x frames

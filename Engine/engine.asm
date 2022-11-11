@@ -1599,9 +1599,10 @@ PutSF2Object:                 ;in b->framelistblock, c->spritedatablock
 ;edit: general movement pattern block is not required anymore at this point
   ;set the general movement pattern block at address $4000 in page 1
   di
-;  ld    a,MovementPatternsFixedPage1block
-;	ld		(memblocks.1),a
-;	ld		($6000),a
+  ld    a,MovementPatternsFixedPage1block
+	ld		(memblocks.1),a
+	ld		($6000),a
+  ;*** LITTLE CORRECTION for PutSf2Object3Frames when using   jp    switchpageSF2Engine after putting SF2 object
   ;set the movement pattern block of this enemy/object at address $8000 in page 2 
 	pop   af                    ;recall movement pattern block of current object
 	ld		(memblocks.2),a
