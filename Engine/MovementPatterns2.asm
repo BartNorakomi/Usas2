@@ -1,4 +1,6 @@
 ;BossGoat
+;PutSf2Object5Frames
+;PutSf2Object4Frames
 
 PutSf2Object5Frames:
   ld    a,(HugeObjectFrame)
@@ -18,7 +20,8 @@ PutSf2Object5Frames:
   jr    z,.Part4
 
   .Part5:
-  call  restoreBackgroundObject5
+  call  .move
+  call  restoreBackgroundObject5  
   call  v7x5
   inc   hl
   inc   hl
@@ -52,11 +55,20 @@ PutSf2Object5Frames:
   call  SetFrameBossGoat
   jp    PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
   
-  .Part1:
+  .Part1:  
   call  restoreBackgroundObject1
   call  v7x5
   call  SetFrameBossGoat
   jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+  .move:
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  dec   a
+  ret   nz                                  ;1=walking  
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  add   a,(ix+enemies_and_objects.v6)       ;v6=Movement Direction  
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ret
 
 v7x5:
   ld    a,(ix+enemies_and_objects.v7)
@@ -133,29 +145,100 @@ PutSf2Object4Frames:
   call  SetFrameBoss
   jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
 
+CheckPlayerHitByGoat:
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  cp    4
+  ret   z                                   ;don't check if boss is dead
+  cp    3
+  ret   z                                   ;don't check if boss is hit
+  cp    2
+  jr    z,.attacking
+
+  .idleAndWalking:
+  ld    (ix+enemies_and_objects.nx),52      ;nx
+  xor   a
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ld    bc,30                               ;reduction to hitbox sx (left side)
+  jp    CollisionEnemyPlayer.ObjectEntry
+
+  .attacking:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  cp    145/5
+  jr    z,.IcePeakAttack
+  jr    .idleAndWalking
+
+  .IcePeakAttack:
+  ld    (ix+enemies_and_objects.nx),82      ;nx
+  ld    a,15                                ;add to sy
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ld    bc,110                               ;reduction to hitbox sx (left side)
+  jp    CollisionEnemyPlayer.ObjectEntry
+
+GoatCheckIfHit:
+  ld    a,(ix+enemies_and_objects.hit?)
+  cp    BlinkDurationWhenHit                ;Check if Boss was hit previous frame
+  jr    z,.JustHit
+ 
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  cp    4
+  ret   z                                   ;don't check if boss is dead
+  cp    3
+  ret   z                                   ;don't check if boss is hit
+
+  jp    CheckPlayerPunchesBoss              ;Check if player hit's enemy
+  
+  .JustHit:
+  ld    a,(HugeObjectFrame)
+  cp    4
+  ret   nz                                  ;wait for all 5 parts of the boss to be build up
+
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v1-1),a     ;backup v7=sprite frame
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v1-2),a     ;backup v7=sprite frame
+
+  dec   (ix+enemies_and_objects.hit?)
+  ld    (ix+enemies_and_objects.v7),210/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ret
+
+GoatCheckIfDead:
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  cp    4
+  ret   z                                   ;don't check if boss is already dead
+
+  ld    a,(ix+enemies_and_objects.life)
+  dec   a
+  ret   nz
+
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v7),240/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  ret
+  
 BossGoat:
-;v1-1=
+;v1-2=backup v8 phase
+;v1-1=backup v7 sprite frame
 ;v1=repeating steps
 ;v2=pointer to movement table
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
-;v6=active on which frame ?  
+;v6=Movement Direction  
 ;v7=sprite frame
 ;v8=phase
-;v9=timer until attack
-;  call  CheckPlayerHitByZombieCaterpillar   ;Check if player gets hit by boss
+;v9=timer until next phase
+  call  CheckPlayerHitByGoat                ;Check if player gets hit by boss
   ;Check if boss gets hit by player
-;  call  ZombieCaterpillarCheckIfHit         ;call gets popped if hit. Check if boss is hit, and if so set being hit phase
+  call  GoatCheckIfHit                      ;call gets popped if hit. Check if boss is hit, and if so set being hit phase
   ;Check if boss is dead
-;  call  ZombieCaterpillarCheckIfDead        ;Check if boss is dead, and if so set dying phase
+  call  GoatCheckIfDead                     ;Check if boss is dead, and if so set dying phase
   
-  call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  call  .HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
 
   ld    de,BossGoatIdleAndWalk00
   jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
-  .HandlePhase:                            ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  .HandlePhase:
   ld    de,NonMovingObjectMovementTable
   call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
 
@@ -167,39 +250,163 @@ BossGoat:
   inc   a
   ld    (Bossframecounter),a
 
-  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
   or    a
   jp    z,BossGoatIdle                      ;0=attack
   dec   a
+  jp    z,BossGoatWalking                   ;1=walking
+  dec   a
+  jp    z,BossGoatAttacking                 ;2=attacking
+  dec   a
+  jp    z,BossGoatHit                       ;3=hit
+  dec   a
+  jp    z,BossGoatDead                      ;3=dead
+  ret
+
+  BossGoatDead:
+  .animate:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  inc   a                                   ;amount of frames per animation step
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  cp    280/5
+  jr    z,.ShakeWhenDead
+  cp    300/5
+  ret   nz  
+  ld    (ix+enemies_and_objects.v7),295/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  ret  
+  .ShakeWhenDead:
+  ld    a,30
+  ld    (ShakeScreen?),a
+  ret  
+    
+
+  BossGoatHit:    
+  .animate:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  inc   a                                   ;amount of frames per animation step
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  cp    245/5                               
+  ret   nz
+
+  ;when the hit animation is finished, restore v7 and v8 as they were, to continue with previous phase
+  ld    a,(ix+enemies_and_objects.v1-1)     ;backup v7=sprite frame
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ld    a,(ix+enemies_and_objects.v1-2)     ;backup v8 phase
+  ld    (ix+enemies_and_objects.v8),a       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+
+  cp    2                                   ;small exception when goat was attacking
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  cp    140/5
+  ret   c                                   ;if goat was at the past part of the attack, then cancel the attack and go Idle
+
+  ld    (ix+enemies_and_objects.v8),0       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v7),000/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  ld    (ix+enemies_and_objects.v9),020     ;v9=timer until next phase
+  ret  
+  
+  BossGoatAttacking:
+  call  .animate
+  
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  cp    145/5
+  ret   nz
+  ld    a,30
+  ld    (ShakeScreen?),a
+  jp    DamagePlayerIfNotJumping
+  
+  .animate:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  inc   a                                   ;amount of frames per animation step
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  cp    215/5                               
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),0       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v7),000/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  ld    (ix+enemies_and_objects.v9),020     ;v9=timer until next phase
+  ret  
+  
+  BossGoatWalking:
+  call  .animate
+
+  dec   (ix+enemies_and_objects.v9)         ;v9=timer until next phase
+  ret   nz
+  .endWalking:
+  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v7),110/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  ld    (ix+enemies_and_objects.v9),020     ;v9=timer until next phase
   ret
   
+  .animate:
+  bit   7,(ix+enemies_and_objects.v6)       ;v6=Movement Direction    
+  jr    z,.MoveRight
+
+  .MoveLeft:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  inc   a                                   ;amount of frames per animation step
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  cp    110/5                               
+  ret   nz
+  ld    (ix+enemies_and_objects.v7),050/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  ret  
+
+  .MoveRight:
+  ld    a,(ix+enemies_and_objects.life)
+  cp    10
+  jr    nc,.skipBoundaryRightSideException
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  cp    140
+  jr    nc,.endWalkingTurnAround
+  .skipBoundaryRightSideException:
+  
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  dec   a                                   ;amount of frames per animation step
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  cp    045/5                               
+  ret   nz
+  ld    (ix+enemies_and_objects.v7),105/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  ret  
+
+  .endWalkingTurnAround:
+  ld    a,(ix+enemies_and_objects.v6)       ;v6=Movement Direction    
+  neg
+  ld    (ix+enemies_and_objects.v6),a       ;v6=Movement Direction
+  jr    .endWalking
+  
+
   BossGoatIdle:
 ;  ld    a,(Bossframecounter)
 ;  rrca
 ;  ret   c  
 
   call  .animate
+  dec   (ix+enemies_and_objects.v9)         ;v9=timer until next phase
+  ret   nz
+  ld    (ix+enemies_and_objects.v7),105/5   ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v9),020     ;v9=timer until next phase
 
-
-
-;  ld    (ix+enemies_and_objects.v7),255/5       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
-
-
-;  dec   (ix+enemies_and_objects.v9)         ;v9=timer until attack
-;  ret   nz
-;  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
-;  ld    (ix+enemies_and_objects.v7),18      ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  cp    120
+  jr    c,.MoveRight
+  cp    160
+  ret   c
+  ld    (ix+enemies_and_objects.v6),-2      ;v6=Movement Direction    
   ret
+
+  .MoveRight:
+  ld    (ix+enemies_and_objects.v6),+2      ;v6=Movement Direction  
+  ret
+
   
   .animate:
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
   inc   a                                   ;amount of frames per animation step
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
-  cp    300/5                                  ;(0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  cp    050/5                               
   ret   nz
-  ld    (ix+enemies_and_objects.v7),0/5       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
+  ld    (ix+enemies_and_objects.v7),000/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
   ret  
-  
   
 ;Idle 
 BossGoatIdleAndWalk00:   dw GoatIdleAndWalkframe000 | db BossGoatIdleAndWalkframelistblock, BossGoatIdleAndWalkspritedatablock

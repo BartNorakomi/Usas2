@@ -32,6 +32,16 @@
 ;SetFrameBoss
 ;PutSf2Object3Frames
 ;NonMovingObjectMovementTable
+;DamagePlayerIfNotJumping
+
+DamagePlayerIfNotJumping:
+	ld		hl,Jump
+	ld		de,(PlayerSpriteStand)
+  xor   a
+  sbc   hl,de
+  ret   z
+  jp    CollisionEnemyPlayer.PlayerIsHit
+
 
 NonMovingObjectMovementTable:
   db    127,0,0, 128

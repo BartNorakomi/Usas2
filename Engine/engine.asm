@@ -3804,6 +3804,9 @@ HandlePlayerWeapons:
 
   ld    a,MagicWeaponDurationValue
   ld    (MagicWeaponDuration),a  
+  
+  xor   a
+  ld    (SecundaryWeaponActive?),a  
   ret
   
   .ObjectOnLeftSideOfScreen:
@@ -3916,7 +3919,13 @@ PlayerWeaponSf2Engine:
   ld    (CopyPlayerProjectile+dx),a
   ld    (iy+dx),a
   ld    (iy+sx),a
-
+  ;remove weapon when going out of screen
+  ld    a,(ix+2)                      ;x
+  cp    7
+  jp    c,GoHandlePlayerWeapon.RemoveWeapon
+  cp    255-7
+  jp    nc,GoHandlePlayerWeapon.RemoveWeapon
+  
   ;put object
   ld    hl,CopyPlayerProjectile
   call  docopy

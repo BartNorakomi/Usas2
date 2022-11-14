@@ -19,7 +19,7 @@
   dw GoatDying2frame018
 
 GoatDying2frame000:
-  db 060h,00Bh,050h,011h
+  db 066h,017h,04Eh,011h
   db 064h
   db 000h,000h,0EFh,000h,000h
   db 000h,000h
@@ -37,13 +37,7 @@ GoatDying2frame000:
   dw 0277Bh,base+01C27h
   dw 02C7Eh,base+019E4h
   dw 02E7Fh,base+018A8h
-  dw 03000h,base+01759h
-
-GoatDying2frame001:
-  db 07Ah,01Bh,03Ah,01Ch
-  db 050h
-  db 000h,000h,0E4h,000h,000h
-  db 000h,000h
+  dw 03080h,base+01759h
   dw 03080h,base+01789h
   dw 0307Fh,base+017B9h
   dw 03180h,base+016C6h
@@ -58,7 +52,13 @@ GoatDying2frame001:
   dw 02380h,base+02089h
   dw 02381h,base+020ACh
   dw 02281h,base+0222Dh
-  dw 02180h,base+022D7h
+  dw 02100h,base+022D7h
+
+GoatDying2frame001:
+  db 07Ch,015h,03Ah,028h
+  db 072h
+  db 000h,000h,0D8h,000h,000h
+  db 000h,000h
   dw 02181h,base+022F8h
   dw 02081h,base+0237Ch
   dw 01A1Ch,base+027B3h
@@ -87,13 +87,7 @@ GoatDying2frame001:
   dw 01E1Fh,base+02537h
   dw 0044Bh,base+01430h
   dw 00615h,base+02E6Ch
-  dw 02500h,base+01DF5h
-
-GoatDying2frame002:
-  db 09Ch,01Bh,03Ah,037h
-  db 03Ah
-  db 000h,000h,0C9h,000h,000h
-  db 000h,000h
+  dw 0256Bh,base+01DF5h
   dw 00714h,base+02DA4h
   dw 0276Dh,base+01C4Eh
   dw 0070Eh,base+02DABh
@@ -102,7 +96,13 @@ GoatDying2frame002:
   dw 03C80h,base+00A84h
   dw 03C81h,base+00AC0h
   dw 03C80h,base+00AFCh
-  dw 03C80h,base+00B38h
+  dw 03C00h,base+00B38h
+
+GoatDying2frame002:
+  db 098h,015h,03Eh,03Dh
+  db 03Eh
+  db 000h,000h,0C3h,000h,000h
+  db 000h,000h
   dw 03D81h,base+008D9h
   dw 03E80h,base+007E1h
   dw 04081h,base+007A1h
@@ -203,7 +203,7 @@ GoatDying2frame004:
   dw 00400h,base+0005Ch
 
 GoatDying2frame005:
-  db 060h,00Bh,052h,02Ch
+  db 066h,014h,050h,02Ch
   db 066h
   db 000h,000h,0D4h,000h,000h
   db 000h,000h
@@ -221,13 +221,7 @@ GoatDying2frame005:
   dw 0277Bh,base+01C27h
   dw 02C7Eh,base+019E4h
   dw 02E7Fh,base+018A8h
-  dw 03000h,base+01759h
-
-GoatDying2frame006:
-  db 07Ch,01Bh,03Ah,037h
-  db 052h
-  db 000h,000h,0C9h,000h,000h
-  db 000h,000h
+  dw 03080h,base+01759h
   dw 03080h,base+017E9h
   dw 0307Fh,base+01819h
   dw 03180h,base+016F7h
@@ -239,7 +233,13 @@ GoatDying2frame006:
   dw 0060Eh,base+02E66h
   dw 02472h,base+0201Eh
   dw 0040Fh,base+02190h
-  dw 02366h,base+0215Bh
+  dw 02300h,base+0215Bh
+
+GoatDying2frame006:
+  db 07Ch,014h,03Ah,040h
+  db 03Ch
+  db 000h,000h,0C0h,000h,000h
+  db 000h,000h
   dw 0031Ah,base+00049h
   dw 02366h,base+0217Eh
   dw 0041Bh,base+01B5Ch
@@ -278,15 +278,15 @@ GoatDying2frame006:
   dw 03681h,base+01150h
   dw 03580h,base+01300h
   dw 03581h,base+01335h
-  dw 03600h,base+01186h
+  dw 03680h,base+01186h
+  dw 03881h,base+00F5Ch
+  dw 03800h,base+00F94h
 
 GoatDying2frame007:
-  db 096h,01Bh,042h,052h
-  db 042h
-  db 000h,000h,0AEh,000h,000h
+  db 088h,017h,04Eh,054h
+  db 04Eh
+  db 000h,000h,0ACh,000h,000h
   db 000h,000h
-  dw 03881h,base+00F5Ch
-  dw 03885h,base+00F94h
   dw 03481h,base+0139Fh
   dw 03381h,base+01407h
   dw 03381h,base+0143Ah
@@ -315,17 +315,17 @@ GoatDying2frame007:
   dw 02635h,base+01D5Dh
   dw 00B4Ch,base+02CA9h
   dw 02536h,base+01E64h
-  dw 00949h,base+02CDFh
+  dw 00900h,base+02CDFh
+
+GoatDying2frame008:
+  db 09Ah,016h,046h,06Bh
+  db 056h
+  db 000h,000h,095h,000h,000h
+  db 000h,000h
   dw 02538h,base+01E89h
   dw 00848h,base+02D0Ch
   dw 02539h,base+01EAEh
-  dw 00800h,base+02D14h
-
-GoatDying2frame008:
-  db 09Ah,014h,046h,06Dh
-  db 056h
-  db 000h,000h,093h,000h,000h
-  db 000h,000h
+  dw 00847h,base+02D14h
   dw 02439h,base+02042h
   dw 00846h,base+02D1Ch
   dw 0253Bh,base+01ED3h
@@ -378,7 +378,7 @@ GoatDying2frame008:
   dw 00200h,base+00049h
 
 GoatDying2frame009:
-  db 07Ch,011h,056h,05Ch
+  db 088h,018h,04Ah,05Ch
   db 072h
   db 000h,000h,0A4h,000h,000h
   db 000h,000h
@@ -413,13 +413,7 @@ GoatDying2frame009:
   dw 0182Eh,base+028CCh
   dw 00648h,base+02E7Eh
   dw 02338h,base+021C4h
-  dw 00600h,base+02E84h
-
-GoatDying2frame010:
-  db 088h,01Bh,04Ah,06Dh
-  db 056h
-  db 000h,000h,093h,000h,000h
-  db 000h,000h
+  dw 00648h,base+02E84h
   dw 02337h,base+021E7h
   dw 00748h,base+02DFFh
   dw 02538h,base+01F42h
@@ -434,7 +428,13 @@ GoatDying2frame010:
   dw 02C3Ch,base+01A3Ch
   dw 00844h,base+02D54h
   dw 02D3Ch,base+018D6h
-  dw 00844h,base+02D5Ch
+  dw 00800h,base+02D5Ch
+
+GoatDying2frame010:
+  db 086h,014h,04Ah,074h
+  db 04Ah
+  db 000h,000h,08Ch,000h,000h
+  db 000h,000h
   dw 02D3Ch,base+01903h
   dw 00744h,base+02E1Bh
   dw 02D3Bh,base+01930h
@@ -465,7 +465,7 @@ GoatDying2frame010:
   dw 02400h,base+0037Fh
 
 GoatDying2frame011:
-  db 070h,00Dh,068h,060h
+  db 074h,014h,064h,060h
   db 07Ah
   db 000h,000h,0A0h,000h,000h
   db 000h,000h
@@ -486,13 +486,7 @@ GoatDying2frame011:
   dw 01830h,base+028E4h
   dw 0064Fh,base+02E60h
   dw 01A30h,base+02801h
-  dw 00800h,base+02C9Eh
-
-GoatDying2frame012:
-  db 08Eh,01Bh,04Ah,06Dh
-  db 068h
-  db 000h,000h,093h,000h,000h
-  db 000h,000h
+  dw 00850h,base+02C9Eh
   dw 01A30h,base+0281Bh
   dw 00850h,base+02C9Eh
   dw 01B30h,base+0277Dh
@@ -506,7 +500,13 @@ GoatDying2frame012:
   dw 01F33h,base+024DBh
   dw 0074Dh,base+02E37h
   dw 02033h,base+023FCh
-  dw 00749h,base+02E3Eh
+  dw 00700h,base+02E3Eh
+
+GoatDying2frame012:
+  db 08Eh,014h,04Ah,074h
+  db 05Ch
+  db 000h,000h,08Ch,000h,000h
+  db 000h,000h
   dw 00304h,base+00049h
   dw 02033h,base+0241Ch
   dw 00742h,base+02E45h
@@ -547,7 +547,7 @@ GoatDying2frame012:
   dw 03700h,base+0037Fh
 
 GoatDying2frame013:
-  db 034h,00Dh,068h,060h
+  db 040h,014h,064h,060h
   db 07Ah
   db 000h,000h,0A0h,000h,000h
   db 000h,000h
@@ -563,20 +563,20 @@ GoatDying2frame013:
   dw 0137Fh,base+02AB4h
   dw 01780h,base+0292Bh
   dw 0187Fh,base+028FCh
-  dw 01A00h,base+02835h
-
-GoatDying2frame014:
-  db 0A6h,01Bh,046h,06Dh
-  db 068h
-  db 000h,000h,093h,000h,000h
-  db 000h,000h
+  dw 01A80h,base+02835h
   dw 01A80h,base+0284Fh
   dw 01B7Fh,base+02798h
   dw 01C80h,base+02746h
   dw 01D80h,base+026D5h
   dw 01E7Fh,base+02609h
   dw 01F80h,base+024FAh
-  dw 02080h,base+0243Ch
+  dw 02000h,base+0243Ch
+
+GoatDying2frame014:
+  db 0A6h,014h,046h,074h
+  db 064h
+  db 000h,000h,08Ch,000h,000h
+  db 000h,000h
   dw 02080h,base+0245Ch
   dw 02080h,base+0247Ch
   dw 02080h,base+0249Ch
@@ -603,7 +603,7 @@ GoatDying2frame014:
   dw 05000h,base+00380h
 
 GoatDying2frame015:
-  db 034h,00Dh,068h,060h
+  db 040h,014h,064h,060h
   db 07Ah
   db 000h,000h,0A0h,000h,000h
   db 000h,000h
@@ -619,20 +619,20 @@ GoatDying2frame015:
   dw 0137Fh,base+02AB4h
   dw 01780h,base+0292Bh
   dw 0187Fh,base+028FCh
-  dw 01A00h,base+02835h
-
-GoatDying2frame016:
-  db 0A4h,01Bh,046h,06Dh
-  db 068h
-  db 000h,000h,093h,000h,000h
-  db 000h,000h
+  dw 01A80h,base+02835h
   dw 01A80h,base+0284Fh
   dw 01B7Fh,base+02798h
   dw 01C80h,base+02746h
   dw 01D80h,base+026D5h
   dw 01E7Fh,base+02609h
   dw 01F80h,base+024FAh
-  dw 02080h,base+0243Ch
+  dw 02000h,base+0243Ch
+
+GoatDying2frame016:
+  db 0A4h,014h,046h,074h
+  db 064h
+  db 000h,000h,08Ch,000h,000h
+  db 000h,000h
   dw 02080h,base+0245Ch
   dw 02080h,base+0247Ch
   dw 02080h,base+0249Ch
@@ -662,7 +662,7 @@ GoatDying2frame016:
   dw 04E00h,base+0037Fh
 
 GoatDying2frame017:
-  db 034h,00Dh,068h,060h
+  db 040h,014h,064h,060h
   db 07Ah
   db 000h,000h,0A0h,000h,000h
   db 000h,000h
@@ -678,20 +678,20 @@ GoatDying2frame017:
   dw 0137Fh,base+02AB4h
   dw 01780h,base+0292Bh
   dw 0187Fh,base+028FCh
-  dw 01A00h,base+02835h
-
-GoatDying2frame018:
-  db 0A4h,01Bh,046h,06Dh
-  db 068h
-  db 000h,000h,093h,000h,000h
-  db 000h,000h
+  dw 01A80h,base+02835h
   dw 01A80h,base+0284Fh
   dw 01B7Fh,base+02798h
   dw 01C80h,base+02746h
   dw 01D80h,base+026D5h
   dw 01E7Fh,base+02609h
   dw 01F80h,base+024FAh
-  dw 02080h,base+0243Ch
+  dw 02000h,base+0243Ch
+
+GoatDying2frame018:
+  db 0A4h,014h,046h,074h
+  db 064h
+  db 000h,000h,08Ch,000h,000h
+  db 000h,000h
   dw 02080h,base+0245Ch
   dw 02080h,base+0247Ch
   dw 02080h,base+0249Ch

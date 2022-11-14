@@ -882,6 +882,8 @@ VoodooWaspCheckIfHit:
   ret
 
 BossVoodooWasp:
+;v1-2=backup v8 phase
+;v1-1=backup v7 sprite frame
 ;v1=repeating steps
 ;v2=pointer to movement table
 ;v3=Vertical Movement
@@ -4540,16 +4542,7 @@ HugeBlob:
   ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking, 1=Jumping)
   ld    a,30
   ld    (ShakeScreen?),a 
-  call  .DamagePlayerIfNotJumping
-  ret    
-
-  .DamagePlayerIfNotJumping:
-	ld		hl,Jump
-	ld		de,(PlayerSpriteStand)
-  xor   a
-  sbc   hl,de
-  ret   z
-  jp    CollisionEnemyPlayer.PlayerIsHit
+  jp    DamagePlayerIfNotJumping
 
   .Gravity:
   ld    a,(ix+enemies_and_objects.v6)       ;v6=Gravity timer

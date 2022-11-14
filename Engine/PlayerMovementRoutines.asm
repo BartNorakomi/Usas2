@@ -329,7 +329,7 @@ SetRSitShootArrow:
   dec   a
   ld    b,-11                ;normal engine
   jr    z,.engineFound
-  ld    b,-06                ;SF2 engine  
+  ld    b,7                   ;SF2 engine. If this value is lower than 7, an arrow is not put in screen when standing on the left edge of the screen
   .engineFound:
   
   ld    a,(ClesX)
@@ -446,7 +446,7 @@ SetRShootArrow:
   dec   a
   ld    b,-11                ;normal engine
   jr    z,.engineFound
-  ld    b,-06                ;SF2 engine  
+  ld    b,7                   ;SF2 engine. If this value is lower than 7, an arrow is not put in screen when standing on the left edge of the screen
   .engineFound:
   
   ld    a,(ClesX)
@@ -3552,7 +3552,7 @@ SetRShootArrowWhenJumping:
   dec   a
   ld    b,-11                ;normal engine
   jr    z,.engineFound
-  ld    b,-06                ;SF2 engine  
+  ld    b,7                   ;SF2 engine. If this value is lower than 7, an arrow is not put in screen when standing on the left edge of the screen
   .engineFound:
   
   ld    a,(ClesX)

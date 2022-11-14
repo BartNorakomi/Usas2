@@ -3482,7 +3482,7 @@ MapF02:
 MapF03:
   incbin "..\maps\f03.map.pck"  | .amountofobjects: db  1
   
-  ;Player Reflection 
+;Player Reflection 
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1  
 
@@ -3521,7 +3521,7 @@ MapG02:
 MapG03:
   incbin "..\maps\g03.map.pck"  | .amountofobjects: db  1
   
-  ;Player Reflection 
+;Player Reflection 
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .object1:db -1,        1|dw PlayerReflection    |db 8*14|dw 8*10|db 32,16|dw 12*16,spat+(12*2)|db 72-(03*6),03  ,03*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1  
 
@@ -3545,8 +3545,9 @@ MapG12:
   incbin "..\maps\g12.map.pck"  | .amountofobjects: db  0
 MapG13:
   incbin "..\maps\g13.map.pck"  | .amountofobjects: db  1
+;BossGoat
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object1: db 2,       0|dw BossGoat             |db  064|dw 8*18|db 70,56|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+30, 0|db 020,movepatblo2| ds fill-1  
+.object1: db 2,       0|dw BossGoat             |db  064|dw 8*22|db 124,82|dw 0000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,-02,+00,+00,+20, 0|db 030,movepatblo2| ds fill-1  
 	ds		$c000-$,$ff
 dephase
 
