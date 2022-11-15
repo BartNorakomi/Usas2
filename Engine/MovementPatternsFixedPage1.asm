@@ -429,9 +429,23 @@ CheckPrimaryWeaponHitsEnemy:
   sbc   hl,de
   ret   nc
   
-  
-  jp    CheckSecundaryWeaponHitsEnemy.hit
+  .hit:  
+  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
+  dec   (ix+enemies_and_objects.life)
+  jp    z,CheckPlayerPunchesEnemy.EnemyDied
 
+	ld		de,(PlayerSpriteStand)
+	ld		hl,Charging
+  xor   a
+  sbc   hl,de
+  ret   nz
+
+  ;At this point you hit an enemy with a charge attack, but enemy didn't die. Player now bounces backwards.
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jp    nz,Set_R_BouncingBack
+  jp    Set_L_BouncingBack
+  ret
 
 CheckSecundaryWeaponHitsEnemy:
 ;if the bottom of the weapon is above the top of the enemy = no hit
@@ -485,33 +499,33 @@ CheckSecundaryWeaponHitsEnemy:
   
 CheckPlayerPunchesBoss:
 CheckPlayerPunchesEnemyDemon:
-  ld    hl,(ClesX)
+;  ld    hl,(ClesX)
   
   ;adjust hitbox when facing left or right (this only applies to bossfights)
-  ld    a,(PlayerFacingRight?)
-  or    a
-  ld    de,43
-  jr    nz,.PlayerFacingDirectionFound
-  ld    de,43-34  
-  .PlayerFacingDirectionFound:
+;  ld    a,(PlayerFacingRight?)
+;  or    a
+;  ld    de,43
+;  jr    nz,.PlayerFacingDirectionFound
+;  ld    de,43-34  
+;  .PlayerFacingDirectionFound:
   
-  add   hl,de
-  ld    (HitBoxSX),hl
+;  add   hl,de
+;  ld    (HitBoxSX),hl
 ;  ld    a,16
 ;  ld    (HitBoxNX),a
 ;  ld    a,12
 ;  ld    (HitBoxNY),a
-  ld    a,(ClesY)
-  add   a,17 - 6 - 60
-  ld    (HitBoxSY),a
+;  ld    a,(ClesY)
+;  add   a,17 - 6 - 60
+;  ld    (HitBoxSY),a
   
-  ld    a,(SecundaryWeaponY)                       ;a = y hitbox
-  sub   a,60
-  ld    (SecundaryWeaponY),a                       ;a = y hitbox
+;  ld    a,(SecundaryWeaponY)                       ;a = y hitbox
+;  sub   a,60
+;  ld    (SecundaryWeaponY),a                       ;a = y hitbox
   call  CheckPlayerPunchesEnemy
-  ld    a,(SecundaryWeaponY)                       ;a = y hitbox
-  add   a,60
-  ld    (SecundaryWeaponY),a                       ;a = y hitbox
+;  ld    a,(SecundaryWeaponY)                       ;a = y hitbox
+;  add   a,60
+;  ld    (SecundaryWeaponY),a                       ;a = y hitbox
   ret
 ;  jp    CheckPlayerPunchesEnemy
 
@@ -532,9 +546,14 @@ CheckPlayerPunchesEnemy:
   or    a
   call  nz,CheckPrimaryWeaponHitsEnemy
 
+ret
+
   ld    a,(EnableHitbox?)
   or    a
   ret   z
+
+;jp CheckPrimaryWeaponHitsEnemy
+
 
 ;check if enemy/object collides with hitbox left side
   ld    hl,(HitBoxSX)                       ;hl = x hitbox
@@ -548,7 +567,7 @@ CheckPlayerPunchesEnemy:
 
 ld a,09-4 ;nx + 10                          ;reduce this value to reduce the hitbox size (on the right side)
 add a,c
-ld c,a
+ld c,a 
 ld b,0
 
   sbc   hl,bc  

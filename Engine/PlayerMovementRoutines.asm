@@ -949,6 +949,38 @@ LSitPunch:
 	jp		Set_L_Attack
 
 .SetAttackHitBox:
+
+  ;activate primary weapon - which enables it's hitbox detection with enemies
+  ld    a,1
+  ld    (PrimaryWeaponActive?),a
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ;we check 12 pixels further to the left when the player is facing left
+  ld    b,20 +12                  ;normal engine
+  jr    z,.engineFound2
+  ld    b,04 +12                 ;SF2 engine 
+  .engineFound2:
+  ld    a,(ClesX)
+  sub   a,b                   ;adjust x starting placement projectile
+  jr    nc,.SetXLeft
+  xor   a
+  .SetXLeft:
+  ld    (PrimaryWeaponX),a
+  add   a,16
+  ld    (PrimaryWeaponXRightSide),a
+  ld    a,(ClesY)
+  add   a,6
+  ld    (PrimaryWeaponY),a
+  add   a,16
+  ld    (PrimaryWeaponYBottom),a
+    
+  ld    a,16
+  ld    (PrimaryWeaponNY),a
+  ld    a,16
+  ld    (PrimaryWeaponNx),a
+  ret
+
   ld    a,1
   ld    (EnableHitbox?),a
   ld    hl,(ClesX)
@@ -1038,6 +1070,39 @@ RSitPunch:
 	jp		Set_R_Attack
     
 .SetAttackHitBox:
+
+;activate primary weapon - which enables it's hitbox detection with enemies
+  ld    a,1
+  ld    (PrimaryWeaponActive?),a
+  
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,20                  ;normal engine
+  jr    z,.engineFound
+  ld    b,04                  ;SF2 engine 
+  .engineFound:
+  ld    a,(ClesX)
+  sub   a,b                   ;adjust x starting placement projectile
+  jr    nc,.SetX
+  xor   a
+  .SetX:
+  ld    (PrimaryWeaponX),a
+  add   a,16
+  ld    (PrimaryWeaponXRightSide),a
+  ld    a,(ClesY)
+  add   a,6
+  ld    (PrimaryWeaponY),a
+  add   a,16
+  ld    (PrimaryWeaponYBottom),a
+    
+  ld    a,16
+  ld    (PrimaryWeaponNY),a
+  ld    a,16
+  ld    (PrimaryWeaponNx),a
+  ret
+
+
+
   ld    a,1
   ld    (EnableHitbox?),a
   ld    hl,(ClesX)
@@ -1097,6 +1162,38 @@ LAttack:
   jp    LAttack3
 
 .SetAttackHitBox:
+  ;activate primary weapon - which enables it's hitbox detection with enemies
+  ld    a,1
+  ld    (PrimaryWeaponActive?),a
+
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ;we check 12 pixels further to the left when the player is facing left
+  ld    b,20 +12                  ;normal engine
+  jr    z,.engineFound2
+  ld    b,04 +12                 ;SF2 engine 
+  .engineFound2:
+  ld    a,(ClesX)
+  sub   a,b                   ;adjust x starting placement projectile
+  jr    nc,.SetXLeft
+  xor   a
+  .SetXLeft:
+  ld    (PrimaryWeaponX),a
+  add   a,16
+  ld    (PrimaryWeaponXRightSide),a
+  ld    a,(ClesY)
+  ld    (PrimaryWeaponY),a
+  add   a,16
+  ld    (PrimaryWeaponYBottom),a
+    
+  ld    a,16
+  ld    (PrimaryWeaponNY),a
+  ld    a,16
+  ld    (PrimaryWeaponNx),a
+  ret
+  
+  
+  
   ld    a,1
   ld    (EnableHitbox?),a
   ld    hl,(ClesX)
@@ -1948,6 +2045,43 @@ RAttack:
   jp    RAttack3
 
 .SetAttackHitBox:
+
+
+  ;activate primary weapon - which enables it's hitbox detection with enemies
+  ld    a,1
+  ld    (PrimaryWeaponActive?),a
+  
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    b,20                  ;normal engine
+  jr    z,.engineFound
+  ld    b,04                  ;SF2 engine 
+  .engineFound:
+  ld    a,(ClesX)
+  sub   a,b                   ;adjust x starting placement projectile
+  jr    nc,.SetX
+  xor   a
+  .SetX:
+  ld    (PrimaryWeaponX),a
+  add   a,16
+  ld    (PrimaryWeaponXRightSide),a
+  ld    a,(ClesY)
+  ld    (PrimaryWeaponY),a
+  add   a,16
+  ld    (PrimaryWeaponYBottom),a
+    
+  ld    a,16
+  ld    (PrimaryWeaponNY),a
+  ld    a,16
+  ld    (PrimaryWeaponNx),a
+  ret
+
+
+
+
+
+
+
   ld    a,1
   ld    (EnableHitbox?),a
   ld    hl,(ClesX)
@@ -2202,7 +2336,8 @@ RBeingHit:
   ret
 
 RRolling:
-  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
+  call  RSitPunch.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
+;  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
 
   ld    a,(PlayerAniCount+1)
   inc   a
@@ -2333,7 +2468,8 @@ RRolling:
   ret  
 
 LRolling:
-  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
+  call  LSitPunch.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
+;  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
 
   ld    a,(PlayerAniCount+1)
   inc   a
@@ -3127,9 +3263,9 @@ AnimateWhileJump:
   ret
 
 .PrimaryAttackWhileJumpRight:
-  ld    a,(CurrentPrimaryWeapon)                ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)                ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
   or    a
-  jr    z,.HandleKickWhileJumpRightAnimation
+  jp    z,RSpearAttack.skipEndMovePlayer
   dec   a
   jp    z,RSwordAttack.skipEndMovePlayer
   dec   a
@@ -3137,17 +3273,14 @@ AnimateWhileJump:
   dec   a
   jp    z,RAxeAttack.skipEndMovePlayer
   dec   a
-  jp    z,RSpearAttack.skipEndMovePlayer
+  jr    z,.HandleKickWhileJumpRightAnimation
   
   .HandleKickWhileJumpRightAnimation:
-
-
-
-
-
   ;activate primary weapon - which enables it's hitbox detection with enemies
   ld    a,1
   ld    (PrimaryWeaponActive?),a
+
+
 
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
@@ -3298,9 +3431,9 @@ AnimateWhileJump:
   ret
 
 .PrimaryAttackWhileJumpLeft:
-  ld    a,(CurrentPrimaryWeapon)                ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)                ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
   or    a
-  jr    z,.HandleKickWhileJumpLeftAnimation
+  jp    z,LSpearAttack.skipEndMovePlayer
   dec   a
   jp    z,LSwordAttack.skipEndMovePlayer
   dec   a
@@ -3308,7 +3441,7 @@ AnimateWhileJump:
   dec   a
   jp    z,LAxeAttack.skipEndMovePlayer
   dec   a
-  jp    z,LSpearAttack.skipEndMovePlayer
+  jr    z,.HandleKickWhileJumpLeftAnimation
   
   .HandleKickWhileJumpLeftAnimation:
 

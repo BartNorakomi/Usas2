@@ -2,7 +2,9 @@
 F1MenuRoutine:
   jp    CheckIfF1MenuIsAccessable
   F1MenuIsAccessable:
+  call  PrimaryWeaponSelect
   call  SecundaryWeaponSelect
+  ret
   
 PrimaryWeaponSelect:  
   call  ScreenOff
@@ -167,7 +169,7 @@ EraseWeaponBoxPrimary:
   ld    (FreeToUseFastCopyF1Menu+ny),a
   ld    (FreeToUseFastCopyF1Menu+nx),a
   
-  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)        ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
   sub   7
   jr    nc,.NotCarry
   add   a,7
@@ -221,7 +223,7 @@ SetWeaponBoxPrimary:
   ld    a,49
   ld    (FreeToUseFastCopyF1Menu+sy),a
   
-  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)        ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
   sub   7
   ld    d,074+56                      ;dy
   jr    nc,.NotCarry
@@ -460,24 +462,24 @@ SelectWeaponPrimary:
 	bit		0,a           ;up pressed ?
   jr    nz,.Up
 
-  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)        ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
   jr    .EndTableCheck                ;just set the current weapon
 
 .Up:
-  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)        ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
   sub   a,7
   ret   c
   jr    .EndTableCheck
 
 .Down:
-  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)        ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
   add   a,7
   cp    14
   ret   nc
   jr    .EndTableCheck
 
 .Left:
-  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)        ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
   dec   a
   cp    255  
   ret   z
@@ -486,7 +488,7 @@ SelectWeaponPrimary:
   jr    .EndTableCheck
   
 .Right:
-  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)        ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
   inc   a
   cp    7
   ret   z
@@ -549,14 +551,14 @@ SelectWeaponPrimary:
   ret
 
 .JumpTablePrimaryWeaponLeftStanding:
-  jp		nz,Set_L_Attack               ;primary weapon 0 (punch/kick)
+  jp		nz,Set_L_Spear_attack         ;primary weapon 0 (spear)
   jp		nz,Set_L_Sword_attack         ;primary weapon 1 (sword)
   jp		nz,Set_L_Dagger_attack        ;primary weapon 2 (dagger)
   jp		nz,Set_L_Axe_attack           ;primary weapon 3 (axe)
-  jp		nz,Set_L_Spear_attack         ;primary weapon 4 (dagger)
-  nop | nop | nop                     ;magic 5 (nothing)
-  nop | nop | nop                     ;magic 6 (nothing)
-  nop | nop | nop                     ;magic 7 (nothing)
+  jp		nz,Set_L_Attack               ;primary weapon 4 (punch/kick)
+  jp		nz,Set_Charging               ;primary weapon 5 (charging)
+  jp		nz,Set_L_SilhouetteKick       ;primary weapon 6 (silhouette kick)
+  jp		nz,Set_L_Rolling              ;primary weapon 7 (rolling)
   nop | nop | nop                     ;magic 8 (nothing)
   nop | nop | nop                     ;magic 9 (nothing)
   nop | nop | nop                     ;magic 10 (nothing)
@@ -565,14 +567,14 @@ SelectWeaponPrimary:
   nop | nop | nop                     ;magic 13 (nothing)
   
 .JumpTablePrimaryWeaponRightStanding:
-  jp		nz,Set_R_Attack               ;primary weapon 0 (punch/kick)
+  jp		nz,Set_R_Spear_attack         ;primary weapon 0 (spear)
   jp		nz,Set_R_Sword_attack         ;primary weapon 1 (sword)
   jp		nz,Set_R_Dagger_attack        ;primary weapon 2 (dagger)
   jp		nz,Set_R_Axe_attack           ;primary weapon 3 (axe)
-  jp		nz,Set_R_Spear_attack         ;primary weapon 4 (dagger)
-  nop | nop | nop                     ;magic 5 (nothing)
-  nop | nop | nop                     ;magic 6 (nothing)
-  nop | nop | nop                     ;magic 7 (nothing)
+  jp		nz,Set_R_Attack               ;primary weapon 4 (punch/kick)
+  jp		nz,Set_Charging               ;primary weapon 5 (charging)
+  jp		nz,Set_R_SilhouetteKick       ;primary weapon 6 (silhouette kick)
+  jp		nz,Set_R_Rolling              ;primary weapon 7 (rolling)
   nop | nop | nop                     ;magic 8 (nothing)
   nop | nop | nop                     ;magic 9 (nothing)
   nop | nop | nop                     ;magic 10 (nothing)
@@ -581,14 +583,14 @@ SelectWeaponPrimary:
   nop | nop | nop                     ;magic 13 (nothing)
 
 .JumpTablePrimaryWeaponLeftSitting:
-  jp		nz,Set_L_SitPunch             ;primary weapon 0 (punch/kick)
+  jp		nz,Set_L_Spear_attack         ;primary weapon 0 (spear)
   jp		nz,Set_L_Sword_attack         ;primary weapon 1 (sword)
   jp		nz,Set_L_Dagger_attack        ;primary weapon 2 (dagger)
   jp		nz,Set_L_Axe_attack           ;primary weapon 3 (axe)
-  jp		nz,Set_L_Spear_attack         ;primary weapon 4 (dagger)
-  nop | nop | nop                     ;magic 5 (nothing)
-  nop | nop | nop                     ;magic 6 (nothing)
-  nop | nop | nop                     ;magic 7 (nothing)
+  jp		nz,Set_L_SitPunch             ;primary weapon 4 (punch/kick)
+  jp		nz,Set_Charging               ;primary weapon 5 (charging)
+  jp		nz,Set_L_SilhouetteKick       ;primary weapon 6 (silhouette kick)
+  jp		nz,Set_L_Rolling              ;primary weapon 7 (rolling)
   nop | nop | nop                     ;magic 8 (nothing)
   nop | nop | nop                     ;magic 9 (nothing)
   nop | nop | nop                     ;magic 10 (nothing)
@@ -597,14 +599,14 @@ SelectWeaponPrimary:
   nop | nop | nop                     ;magic 13 (nothing)
 
 .JumpTablePrimaryWeaponRightSitting:
-  jp		nz,Set_R_SitPunch             ;primary weapon 0 (punch/kick)
+  jp		nz,Set_R_Spear_attack         ;primary weapon 0 (spear)
   jp		nz,Set_R_Sword_attack         ;primary weapon 1 (sword)
   jp		nz,Set_R_Dagger_attack        ;primary weapon 2 (dagger)
   jp		nz,Set_R_Axe_attack           ;primary weapon 3 (axe)
-  jp		nz,Set_R_Spear_attack         ;primary weapon 4 (dagger)
-  nop | nop | nop                     ;magic 5 (nothing)
-  nop | nop | nop                     ;magic 6 (nothing)
-  nop | nop | nop                     ;magic 7 (nothing)
+  jp		nz,Set_R_SitPunch             ;primary weapon 4 (punch/kick)
+  jp		nz,Set_Charging               ;primary weapon 5 (charging)
+  jp		nz,Set_R_SilhouetteKick       ;primary weapon 6 (silhouette kick)
+  jp		nz,Set_R_Rolling              ;primary weapon 7 (rolling)
   nop | nop | nop                     ;magic 8 (nothing)
   nop | nop | nop                     ;magic 9 (nothing)
   nop | nop | nop                     ;magic 10 (nothing)
@@ -718,12 +720,12 @@ SelectWeapon:                         ;just set the next magic weapon
 
 .JumpTableMagicSkillsLeftStanding:
   nop | nop | nop                     ;magic 0 (nothing)
-  jp		nz,Set_L_Rolling              ;magic 1 rolling)
-  jp		nz,Set_Charging               ;magic 2 (charging)
+  nop | nop | nop                     ;magic 1 (nothing)
+  nop | nop | nop                     ;magic 2 (nothing)
   jp		nz,Set_L_Meditate             ;magic 3 (meditate)
   jp		nz,Set_L_ShootArrow           ;magic 4 (shoot arrow)
   jp		nz,Set_L_ShootFireball        ;magic 5 (shoot fireball)
-  jp		nz,Set_L_SilhouetteKick       ;magic 6 (silhouette kick)
+  nop | nop | nop                     ;magic 6 (nothing)
   jp		nz,Set_L_ShootIce             ;magic 7 (shoot ice)
   jp		nz,Set_L_ShootEarth           ;magic 8 (shoot earth)
   jp		nz,Set_L_ShootWater           ;magic 9 (shoot water)
@@ -734,12 +736,12 @@ SelectWeapon:                         ;just set the next magic weapon
   
 .JumpTableMagicSkillsRightStanding:
   nop | nop | nop                     ;magic 0 (nothing)
-  jp		nz,Set_R_Rolling              ;magic 1 rolling)
-  jp		nz,Set_Charging               ;magic 2 (charging)
+  nop | nop | nop                     ;magic 1 (nothing)
+  nop | nop | nop                     ;magic 2 (nothing)
   jp		nz,Set_R_Meditate             ;magic 3 (meditate)
   jp		nz,Set_R_ShootArrow           ;magic 4 (shoot arrow)
   jp		nz,Set_R_ShootFireball        ;magic 5 (shoot fireball)
-  jp		nz,Set_R_SilhouetteKick       ;magic 6 (silhouette kick)
+  nop | nop | nop                     ;magic 6 (nothing)
   jp		nz,Set_R_ShootIce             ;magic 7 (shoot ice)
   jp		nz,Set_R_ShootEarth           ;magic 8 (shoot earth)
   jp		nz,Set_R_ShootWater           ;magic 9 (shoot water)
@@ -750,12 +752,12 @@ SelectWeapon:                         ;just set the next magic weapon
 
 .JumpTableMagicSkillsLeftSitting:
   nop | nop | nop                     ;magic 0 (nothing)
-  jp		nz,Set_L_Rolling              ;magic 1 rolling)
-  jp		nz,Set_Charging               ;magic 2 (charging)
+  nop | nop | nop                     ;magic 1 (nothing)
+  nop | nop | nop                     ;magic 2 (nothing)
   jp		nz,Set_L_Meditate             ;magic 3 (meditate)
   jp		nz,Set_L_SitShootArrow        ;magic 4 (shoot arrow)
   jp		nz,Set_L_ShootFireball        ;magic 5 (shoot fireball)
-  jp		nz,Set_L_SilhouetteKick       ;magic 6 (silhouette kick)
+  nop | nop | nop                     ;magic 6 (nothing)
   jp		nz,Set_L_ShootIce             ;magic 7 (shoot ice)
   jp		nz,Set_L_ShootEarth           ;magic 8 (shoot earth)
   jp		nz,Set_L_ShootWater           ;magic 9 (shoot water)
@@ -766,12 +768,12 @@ SelectWeapon:                         ;just set the next magic weapon
 
 .JumpTableMagicSkillRightSitting:
   nop | nop | nop                     ;magic 0 (nothing)
-  jp		nz,Set_R_Rolling              ;magic 1 rolling)
-  jp		nz,Set_Charging               ;magic 2 (charging)
+  nop | nop | nop                     ;magic 1 (nothing)
+  nop | nop | nop                     ;magic 2 (nothing)
   jp		nz,Set_R_Meditate             ;magic 3 (meditate)
   jp		nz,Set_R_SitShootArrow        ;magic 4 (shoot arrow)
   jp		nz,Set_R_ShootFireball        ;magic 5 (shoot fireball)
-  jp		nz,Set_R_SilhouetteKick       ;magic 6 (silhouette kick)
+  nop | nop | nop                     ;magic 6 (nothing)
   jp		nz,Set_R_ShootIce             ;magic 7 (shoot ice)
   jp		nz,Set_R_ShootEarth           ;magic 8 (shoot earth)
   jp		nz,Set_R_ShootWater           ;magic 9 (shoot water)

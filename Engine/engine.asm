@@ -3579,7 +3579,7 @@ MagicWeaponDurationValue:     equ 29
 MagicWeaponDuration:          db  MagicWeaponDurationValue
 DaggerRandomizer:             db  0
 CurrentMagicWeapon:           db  0 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
-CurrentPrimaryWeapon:         db  1 ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
+CurrentPrimaryWeapon:         db  0 ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
 
 ArrowSpeed:                   equ 6
 FireballSpeed:                equ 4
@@ -3624,9 +3624,9 @@ HandlePlayerWeapons:
   PrimaryWeapon:
   ld    ix,PrimaryWeaponActive?
 
-  ld    a,(CurrentPrimaryWeapon)    ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
-  or    a
-  jp    nz,GoHandlePlayerWeapon     ;if primary weapon is NOT punch/kick, then put software sprite weapon in display
+  ld    a,(CurrentPrimaryWeapon)    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+  cp    4
+  jp    c,GoHandlePlayerWeapon      ;if primary weapon uses a software sprite, then put software sprite weapon in display
 
   ld    a,(PrimaryWeaponActive?)    ;if PrimaryWeaponActive?=128 bow animation should be put in screen
   cp    128

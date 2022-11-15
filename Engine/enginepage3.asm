@@ -1,6 +1,6 @@
 phase	$c000
 
-MusicOn?:   equ 0
+MusicOn?:   equ 1
 LogoOn?:    equ 0
 
 WorldMapData:

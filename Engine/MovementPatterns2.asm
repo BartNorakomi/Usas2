@@ -149,13 +149,24 @@ CheckPlayerHitByGoat:
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
   cp    4
   ret   z                                   ;don't check if boss is dead
-  cp    3
-  ret   z                                   ;don't check if boss is hit
+;  cp    3
+;  ret   z                                   ;don't check if boss is hit
   cp    2
   jr    z,.attacking
 
-  .idleAndWalking:
+  .CheckArms:                               ;when Goat is idle and walking, check arms and body separately
+  ;check arms
+  ld    (ix+enemies_and_objects.nx),106     ;nx
+  ld    (ix+enemies_and_objects.ny),080     ;ny
+  xor   a
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ld    bc,50                               ;reduction to hitbox sx (left side)
+  call  CollisionEnemyPlayer.ObjectEntry
+
+  .CheckBody:                               ;when Goat is idle and walking, check arms and body separately
+  ;check body
   ld    (ix+enemies_and_objects.nx),52      ;nx
+  ld    (ix+enemies_and_objects.ny),124     ;ny
   xor   a
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
   ld    bc,30                               ;reduction to hitbox sx (left side)
@@ -164,14 +175,13 @@ CheckPlayerHitByGoat:
   .attacking:
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
   cp    145/5
-  jr    z,.IcePeakAttack
-  jr    .idleAndWalking
+  jr    nz,.CheckArms
 
-  .IcePeakAttack:
+  .IcePeakAttack:                           ;there is one frame when Ice Peak Hits the ground in which hitbox extends far to the left
   ld    (ix+enemies_and_objects.nx),82      ;nx
   ld    a,15                                ;add to sy
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
-  ld    bc,110                               ;reduction to hitbox sx (left side)
+  ld    bc,110                              ;reduction to hitbox sx (left side)
   jp    CollisionEnemyPlayer.ObjectEntry
 
 GoatCheckIfHit:
@@ -185,8 +195,59 @@ GoatCheckIfHit:
   cp    3
   ret   z                                   ;don't check if boss is hit
 
-  jp    CheckPlayerPunchesBoss              ;Check if player hit's enemy
-  
+  ld    a,(framecounter)
+  rrca
+  jp    c,.CheckTorso                       ;Check if player hit's enemy
+
+  ;check arms
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  add   a,30
+  ld    (ix+enemies_and_objects.y),a        ;y
+
+  ld    (ix+enemies_and_objects.ny),060     ;ny  
+  ld    (ix+enemies_and_objects.nx),110     ;nx
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  sub   a,26
+  ld    (ix+enemies_and_objects.x),a        ;x
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  sub   a,30
+  ld    (ix+enemies_and_objects.y),a        ;y
+
+  ld    (ix+enemies_and_objects.ny),124     ;ny
+  ld    (ix+enemies_and_objects.nx),082     ;nx
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  add   a,26
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ret
+
+  ;check torso
+  .CheckTorso:  
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  add   a,06
+  ld    (ix+enemies_and_objects.y),a        ;y
+
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  sub   a,04
+  ld    (ix+enemies_and_objects.x),a        ;x
+
+  ld    (ix+enemies_and_objects.ny),134     ;ny
+  ld    (ix+enemies_and_objects.nx),078     ;nx
+  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  sub   a,06
+  ld    (ix+enemies_and_objects.y),a        ;y
+
+  ld    (ix+enemies_and_objects.ny),124     ;ny
+  ld    (ix+enemies_and_objects.nx),082     ;nx
+
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  add   a,04
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ret
+
+
   .JustHit:
   ld    a,(HugeObjectFrame)
   cp    4
