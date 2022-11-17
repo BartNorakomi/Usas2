@@ -3,7 +3,7 @@
  <editorsettings>
   <export target="../../../GameMakerStudio2/Usas2/rooms/Room2B6/Room2B6.yy" format="yy"/>
  </editorsettings>
- <tileset firstgid="1" source="tsKarniMata.tsx"/>
+ <tileset firstgid="1" source="tilesheets/tsKarniMata.tsx"/>
  <layer id="1" name="Tile Layer 1" width="38" height="27">
   <data encoding="csv">
 169,162,163,164,161,162,163,164,161,162,163,172,201,194,195,204,425,457,425,803,804,457,169,162,163,164,161,162,163,172,19,20,234,227,228,225,226,235,

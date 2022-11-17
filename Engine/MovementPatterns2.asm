@@ -21,7 +21,9 @@ PutSf2Object5Frames:
 
   .Part5:
   call  .move
-  call  restoreBackgroundObject5  
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject5
   call  v7x5
   inc   hl
   inc   hl
@@ -32,7 +34,9 @@ PutSf2Object5Frames:
   jp    switchpageSF2Engine
 
   .Part4:
-  call  restoreBackgroundObject4
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject4
   call  v7x5
   inc   hl
   inc   hl
@@ -41,7 +45,9 @@ PutSf2Object5Frames:
   jp    PutSF2Object4                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
   
   .Part3:
-  call  restoreBackgroundObject3
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject3
   call  v7x5
   inc   hl
   inc   hl
@@ -49,14 +55,18 @@ PutSf2Object5Frames:
   jp    PutSF2Object3                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
   
   .Part2:
-  call  restoreBackgroundObject2
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject2
   call  v7x5
   inc   hl
   call  SetFrameBossGoat
   jp    PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
   
   .Part1:  
-  call  restoreBackgroundObject1
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject1
   call  v7x5
   call  SetFrameBossGoat
   jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
@@ -272,8 +282,9 @@ GoatCheckIfDead:
   dec   a
   ret   nz
 
-  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ld    (ix+enemies_and_objects.v7),240/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
+  ld    (ix+enemies_and_objects.v9),008     ;v9=timer until next phase
   ret
   
 BossGoat:
@@ -334,7 +345,11 @@ BossGoat:
   cp    300/5
   ret   nz  
   ld    (ix+enemies_and_objects.v7),295/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
-  ret  
+
+  ;as soon as boss is dead, and no longer moving or changing frame, stop restoring background during 3 frames, so boss will be visible in all pages. After that put Boss ALSO (for 1 frame) in page 3
+  ;after that put boss (for 3 frames) normally again
+  jp    BossBlendingIntoBackgroundOnDeath   ;blending into background (MovementPatternsFixedPage1.asm) in: v9=008
+  
   .ShakeWhenDead:
   ld    a,30
   ld    (ShakeScreen?),a

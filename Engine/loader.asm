@@ -406,6 +406,11 @@ ReSetVariables:
   ld    bc,RunningTableLenght
   ldir
 
+  xor   a                              ;restore variables to put SF2 objects in play
+  ld    (PutObjectInPage3?),a
+  ld    a,1
+  ld    (RestoreBackgroundSF2Object?),a
+
   ld    a,-1
   ld    (HugeObjectFrame),a           ;Reset this value by setting it to -1
   xor   a
@@ -420,7 +425,7 @@ ReSetVariables:
   ld    (PrimaryWeaponActivatedWhileJumping?),a
   ld    (PrimaryWeaponActive?),a   
   ld    hl,0
-  ld    (PlayerAnicount),hl 
+  ld    (PlayerAnicount),hl   
   ret  
 
 .NormalRunningTable:

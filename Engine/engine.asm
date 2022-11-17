@@ -1737,6 +1737,9 @@ PutSpriteRightSideOfScreen:
   jp    c,putplayer_clipright
   jp    putplayer_noclip
 
+
+PutObjectInPage3?:            db  0
+RestoreBackgroundSF2Object?:  db  1
   
 PutSpriteleftSideOfScreen:
   ;Set up restore background que player
@@ -1778,6 +1781,7 @@ PutSpriteleftSideOfScreen:
   jp    nc,putplayer_clipleft
   ;/clipping check
 
+
 putplayer_noclip:
   ld    a,(bc)                ;player x
   add   a,(hl)                ;add offset x  for first line to destination x
@@ -1787,6 +1791,10 @@ putplayer_noclip:
   ld    bc,8 ;10
   add   hl,bc  
 ;  inc   hl                    ;lenght + increment first spriteline
+
+  ld    a,(PutObjectInPage3?)
+  or    a
+  jr    nz,.not3
 
   ;if screenpage=0 then blit in page 1
   ;if screenpage=1 then blit in page 2
@@ -5487,9 +5495,10 @@ Set_L_stand:
   or    a
   jr    z,.EndCheckPrimaryWeaponWhileJump
 
-  ld    a,(CurrentPrimaryWeapon)                                ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)                                ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
   or    a
-  jr    z,.EndCheckPrimaryWeaponWhileJump  
+	ld		hl,LSpearAttack
+  jr    z,.setPrimaryAttack
   dec   a
 	ld		hl,LSwordAttack
   jr    z,.setPrimaryAttack
@@ -5498,9 +5507,8 @@ Set_L_stand:
   jr    z,.setPrimaryAttack
   dec   a
 	ld		hl,LAxeAttack
-  jr    z,.setPrimaryAttack
-  dec   a
-	ld		hl,LSpearAttack
+  jr    nz,.EndCheckPrimaryWeaponWhileJump
+
   .setPrimaryAttack:
 	ld		(PlayerSpriteStand),hl
 	ret
@@ -5595,9 +5603,10 @@ Set_R_stand:
   or    a
   jr    z,.EndCheckPrimaryWeaponWhileJump
 
-  ld    a,(CurrentPrimaryWeapon)                                ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
+  ld    a,(CurrentPrimaryWeapon)                                ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
   or    a
-  jr    z,.EndCheckPrimaryWeaponWhileJump  
+	ld		hl,RSpearAttack
+  jr    z,.setPrimaryAttack
   dec   a
 	ld		hl,RSwordAttack
   jr    z,.setPrimaryAttack
@@ -5606,9 +5615,8 @@ Set_R_stand:
   jr    z,.setPrimaryAttack
   dec   a
 	ld		hl,RAxeAttack
-  jr    z,.setPrimaryAttack
-  dec   a
-	ld		hl,RSpearAttack
+  jr    nz,.EndCheckPrimaryWeaponWhileJump
+
   .setPrimaryAttack:
 	ld		(PlayerSpriteStand),hl
 	ret

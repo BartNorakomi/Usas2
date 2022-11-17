@@ -33,15 +33,48 @@
 ;PutSf2Object3Frames
 ;NonMovingObjectMovementTable
 ;DamagePlayerIfNotJumping
+;BossBlendingIntoBackgroundOnDeath
 
+BossBlendingIntoBackgroundOnDeath:          ;blending into background (MovementPatternsFixedPage1.asm) in: v9=008
+  ;as soon as boss is dead, and no longer moving or changing frame, stop restoring background during 3 frames, so boss will be visible in all pages. After that put Boss ALSO (for 1 frame) in page 3
+  ;after that put boss (for 3 frames) normally again
+  xor   a
+  ld    (RestoreBackgroundSF2Object?),a
+
+  ld    a,(ix+enemies_and_objects.v9)       ;v9=timer until next phase
+  dec   a                                   ;amount of frames per animation step
+  ld    (ix+enemies_and_objects.v9),a       ;v9=timer until next phase
+  jr    z,.RemoveObject
+  cp    4
+  ld    a,3
+  jr    z,.putBoss
+  xor   a                                   ;put boss normally
+  .putBoss:
+  ld    (PutObjectInPage3?),a               ;the last frame before we remove boss, put boss in page 3, so boss now becomes a part of the background.
+  ret  
+  .RemoveObject:
+  ld    (ix+enemies_and_objects.Alive?),0   ;remove object
+  ret  
+  
 DamagePlayerIfNotJumping:
 	ld		hl,Jump
 	ld		de,(PlayerSpriteStand)
   xor   a
   sbc   hl,de
   ret   z
-  jp    CollisionEnemyPlayer.PlayerIsHit
 
+	ld		hl,LMeditate
+	ld		de,(PlayerSpriteStand)
+  xor   a
+  sbc   hl,de
+  ret   z
+
+	ld		hl,RMeditate
+	ld		de,(PlayerSpriteStand)
+  xor   a
+  sbc   hl,de
+  ret   z
+  jp    CollisionEnemyPlayer.PlayerIsHit
 
 NonMovingObjectMovementTable:
   db    127,0,0, 128
@@ -61,7 +94,9 @@ PutSf2Object3Frames:
   jr    z,.Middle
 
   .Bottom:
-  call  restoreBackgroundObject3
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject3
   ld    a,(ix+enemies_and_objects.v7)
   add   a,2
   call  SetFrameBoss
@@ -69,14 +104,18 @@ PutSf2Object3Frames:
   jp    switchpageSF2Engine
   
   .Middle:
-  call  restoreBackgroundObject2
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject2
   ld    a,(ix+enemies_and_objects.v7)
   inc   a
   call  SetFrameBoss
   jp    PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
   
   .Top:
-  call  restoreBackgroundObject1
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject1
   ld    a,(ix+enemies_and_objects.v7)
   call  SetFrameBoss
   jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
@@ -495,6 +534,40 @@ CheckSecundaryWeaponHitsEnemy:
   ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
+  ret
+
+CheckPlayerPunchesBossWithYOffset:                ;in b=Y offset
+  ld    a,(PrimaryWeaponY)                        ;a = y top phitbox
+  add   a,b
+  ld    (PrimaryWeaponY),a                        ;a = y top phitbox
+  ld    a,(PrimaryWeaponYBottom)                  ;a = y bot hitbox
+  add   a,b
+  ld    (PrimaryWeaponYBottom),a                  ;a = y bot hitbox
+  
+  ld    a,(SecundaryWeaponY)                      ;a = y top hitbox
+  add   a,b
+  ld    (SecundaryWeaponY),a                      ;a = y top hitbox
+  ld    a,(SecundaryWeaponYBottom)                ;a = y bot hitbox
+  add   a,b
+  ld    (SecundaryWeaponYBottom),a                ;a = y bot hitbox
+
+  push  bc
+  call  CheckPlayerPunchesEnemy
+  pop   bc
+
+  ld    a,(PrimaryWeaponY)                        ;a = y top phitbox
+  sub   a,b
+  ld    (PrimaryWeaponY),a                        ;a = y top phitbox
+  ld    a,(PrimaryWeaponYBottom)                  ;a = y bot hitbox
+  sub   a,b
+  ld    (PrimaryWeaponYBottom),a                  ;a = y bot hitbox
+  
+  ld    a,(SecundaryWeaponY)                      ;a = y top hitbox
+  sub   a,b
+  ld    (SecundaryWeaponY),a                      ;a = y top hitbox
+  ld    a,(SecundaryWeaponYBottom)                ;a = y bot hitbox
+  sub   a,b
+  ld    (SecundaryWeaponYBottom),a                ;a = y bot hitbox
   ret
   
 CheckPlayerPunchesBoss:

@@ -44,269 +44,269 @@ ZombieCaterpillarAttackframe000:
   db 000h,000h,0CFh,000h,000h
   db 000h,000h
   dw 0017Fh,base+001D9h
-  dw 0067Eh,base+03D45h
-  dw 0087Eh,base+03D08h
-  dw 00D7Fh,base+03C3Ch
-  dw 00E80h,base+03C04h
-  dw 00F7Fh,base+03B9Bh
-  dw 01080h,base+03A0Bh
-  dw 0107Fh,base+03A1Bh
-  dw 01180h,base+03620h
-  dw 01180h,base+03631h
-  dw 01180h,base+03642h
-  dw 01280h,base+03350h
-  dw 0137Fh,base+030F0h
-  dw 01580h,base+02BF5h
-  dw 01680h,base+0268Bh
-  dw 01780h,base+02297h
-  dw 01880h,base+01CAFh
-  dw 01880h,base+01CC7h
-  dw 01980h,base+01737h
-  dw 01980h,base+01750h
-  dw 01A81h,base+011BBh
-  dw 01980h,base+01769h
-  dw 01A00h,base+011D5h
+  dw 0067Eh,base+03A60h
+  dw 0087Eh,base+03A23h
+  dw 00D7Fh,base+03961h
+  dw 00E80h,base+03929h
+  dw 00F7Fh,base+038C0h
+  dw 01080h,base+036E0h
+  dw 0107Fh,base+036F0h
+  dw 01180h,base+032F5h
+  dw 01180h,base+03306h
+  dw 01180h,base+03317h
+  dw 01280h,base+03025h
+  dw 0137Fh,base+02D9Fh
+  dw 01580h,base+02973h
+  dw 01680h,base+02619h
+  dw 01780h,base+022AFh
+  dw 01880h,base+01D0Fh
+  dw 01880h,base+01D27h
+  dw 01980h,base+01797h
+  dw 01980h,base+017B0h
+  dw 01A81h,base+01235h
+  dw 01980h,base+017C9h
+  dw 01A00h,base+0124Fh
 
 ZombieCaterpillarAttackframe001:
   db 058h,020h,046h,048h
   db 046h
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01A80h,base+011EFh
-  dw 01A80h,base+01209h
-  dw 01A81h,base+01223h
-  dw 01B80h,base+00D68h
-  dw 01C81h,base+00A90h
-  dw 01C80h,base+00AACh
-  dw 01D81h,base+0067Ch
-  dw 01D80h,base+00699h
-  dw 01D81h,base+006B6h
-  dw 01D80h,base+006D3h
-  dw 01D81h,base+006F0h
-  dw 01D82h,base+0070Dh
-  dw 01B82h,base+00D83h
-  dw 01980h,base+01782h
-  dw 01980h,base+0179Bh
-  dw 01A80h,base+0123Dh
-  dw 01A81h,base+01257h
-  dw 01A80h,base+01271h
-  dw 01B81h,base+00D9Eh
-  dw 01B80h,base+00DB9h
-  dw 01C81h,base+00AC8h
-  dw 01B80h,base+00DD4h
-  dw 01C81h,base+00AE4h
-  dw 01B81h,base+00DEFh
-  dw 01B81h,base+00E0Ah
-  dw 01B82h,base+00E25h
-  dw 01A80h,base+0128Bh
-  dw 01A80h,base+012A5h
-  dw 01A81h,base+012BFh
-  dw 01A80h,base+012D9h
-  dw 01A80h,base+012F3h
-  dw 01A00h,base+0130Dh
+  dw 01A80h,base+01269h
+  dw 01A80h,base+01283h
+  dw 01A81h,base+0129Dh
+  dw 01B80h,base+00DE2h
+  dw 01C81h,base+00B0Ah
+  dw 01C80h,base+00B26h
+  dw 01D81h,base+006F6h
+  dw 01D80h,base+00713h
+  dw 01D81h,base+00730h
+  dw 01D80h,base+0074Dh
+  dw 01D81h,base+0076Ah
+  dw 01D82h,base+00787h
+  dw 01B82h,base+00DFDh
+  dw 01980h,base+017E2h
+  dw 01980h,base+017FBh
+  dw 01A80h,base+012B7h
+  dw 01A81h,base+012D1h
+  dw 01A80h,base+012EBh
+  dw 01B81h,base+00E18h
+  dw 01B80h,base+00E33h
+  dw 01C81h,base+00B42h
+  dw 01B80h,base+00E4Eh
+  dw 01C81h,base+00B5Eh
+  dw 01B81h,base+00E69h
+  dw 01B81h,base+00E84h
+  dw 01B82h,base+00E9Fh
+  dw 01A80h,base+01305h
+  dw 01A80h,base+0131Fh
+  dw 01A81h,base+01339h
+  dw 01A80h,base+01353h
+  dw 01A80h,base+0136Dh
+  dw 01A00h,base+01387h
 
 ZombieCaterpillarAttackframe002:
   db 03Eh,010h,06Ch,068h
   db 06Ch
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 01980h,base+017B4h
-  dw 01981h,base+017CDh
-  dw 01981h,base+017E6h
-  dw 01881h,base+01CDFh
-  dw 01781h,base+022AEh
-  dw 01681h,base+026A1h
-  dw 01581h,base+02C0Ah
-  dw 01480h,base+02ED4h
-  dw 0147Fh,base+02EE8h
-  dw 01680h,base+026B7h
-  dw 01680h,base+026CDh
-  dw 01680h,base+026E3h
-  dw 01680h,base+026F9h
-  dw 0167Dh,base+0270Fh
-  dw 01B7Fh,base+00442h
-  dw 01E00h,base+00442h
+  dw 01980h,base+01814h
+  dw 01981h,base+0182Dh
+  dw 01981h,base+01846h
+  dw 01881h,base+01D3Fh
+  dw 01781h,base+022C6h
+  dw 01681h,base+0262Fh
+  dw 01581h,base+02988h
+  dw 01480h,base+02BBFh
+  dw 0147Fh,base+02BD3h
+  dw 01680h,base+02645h
+  dw 01680h,base+0265Bh
+  dw 01680h,base+02671h
+  dw 01680h,base+02687h
+  dw 0167Dh,base+0269Dh
+  dw 01B7Fh,base+00462h
+  dw 01E00h,base+00462h
 
 ZombieCaterpillarAttackframe003:
   db 038h,018h,042h,030h
   db 054h
   db 000h,000h,0D0h,000h,000h
   db 000h,000h
-  dw 00280h,base+03D5Ah
-  dw 00203h,base+00C96h
+  dw 00280h,base+03A75h
+  dw 00203h,base+00D10h
   dw 0027Bh,base+001F8h
-  dw 0087Eh,base+03D10h
-  dw 00C7Fh,base+03C7Dh
-  dw 00E7Fh,base+03C12h
-  dw 00F80h,base+03BAAh
-  dw 00F7Fh,base+03BB9h
-  dw 01080h,base+03A2Bh
-  dw 01180h,base+03653h
-  dw 0127Fh,base+03362h
-  dw 01480h,base+02EFCh
-  dw 01580h,base+02C1Fh
-  dw 01580h,base+02C34h
-  dw 01680h,base+02725h
-  dw 01680h,base+0273Bh
-  dw 0177Fh,base+022C5h
-  dw 01880h,base+01CF7h
-  dw 01980h,base+017FFh
-  dw 01981h,base+01818h
-  dw 01880h,base+01D0Fh
-  dw 01880h,base+01D27h
-  dw 01980h,base+013C3h
-  dw 01A80h,base+01327h
-  dw 01B00h,base+00E40h
+  dw 0087Eh,base+03A2Bh
+  dw 00C7Fh,base+039A2h
+  dw 00E7Fh,base+03937h
+  dw 00F80h,base+038CFh
+  dw 00F7Fh,base+038DEh
+  dw 01080h,base+03700h
+  dw 01180h,base+03328h
+  dw 0127Fh,base+03037h
+  dw 01480h,base+02BE7h
+  dw 01580h,base+0299Dh
+  dw 01580h,base+029B2h
+  dw 01680h,base+026B3h
+  dw 01680h,base+026C9h
+  dw 0177Fh,base+022DDh
+  dw 01880h,base+01D57h
+  dw 01980h,base+0185Fh
+  dw 01981h,base+01878h
+  dw 01880h,base+01D6Fh
+  dw 01880h,base+01D87h
+  dw 01980h,base+0143Dh
+  dw 01A80h,base+013A1h
+  dw 01B00h,base+00EBAh
 
 ZombieCaterpillarAttackframe004:
   db 054h,020h,046h,048h
   db 046h
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01C80h,base+00B00h
-  dw 01D80h,base+0072Ah
-  dw 01D81h,base+00747h
-  dw 01D80h,base+00764h
-  dw 01D81h,base+00781h
-  dw 01D80h,base+0079Eh
-  dw 01D81h,base+007BBh
-  dw 01C80h,base+00B1Ch
-  dw 01D81h,base+007D8h
-  dw 01C81h,base+00B38h
-  dw 01B81h,base+00E5Bh
-  dw 01A81h,base+01341h
-  dw 01A81h,base+0135Bh
-  dw 01A80h,base+01375h
-  dw 01B81h,base+00E76h
-  dw 01B80h,base+00E91h
-  dw 01B81h,base+00EACh
-  dw 01B80h,base+00EC7h
-  dw 01B81h,base+00EE2h
-  dw 01B82h,base+00EFDh
-  dw 01982h,base+01831h
-  dw 01780h,base+022DCh
-  dw 01780h,base+022F3h
-  dw 01880h,base+01D3Fh
-  dw 01880h,base+01D57h
-  dw 01981h,base+0184Ah
-  dw 01980h,base+01863h
-  dw 01981h,base+0187Ch
-  dw 01980h,base+01895h
-  dw 01981h,base+018AEh
-  dw 01881h,base+01D6Fh
-  dw 01700h,base+0230Ah
+  dw 01C80h,base+00B7Ah
+  dw 01D80h,base+007A4h
+  dw 01D81h,base+007C1h
+  dw 01D80h,base+007DEh
+  dw 01D81h,base+007FBh
+  dw 01D80h,base+00818h
+  dw 01D81h,base+00835h
+  dw 01C80h,base+00B96h
+  dw 01D81h,base+00852h
+  dw 01C81h,base+00BB2h
+  dw 01B81h,base+00ED5h
+  dw 01A81h,base+013BBh
+  dw 01A81h,base+013D5h
+  dw 01A80h,base+013EFh
+  dw 01B81h,base+00EF0h
+  dw 01B80h,base+00F0Bh
+  dw 01B81h,base+00F26h
+  dw 01B80h,base+00F41h
+  dw 01B81h,base+00F5Ch
+  dw 01B82h,base+00F77h
+  dw 01982h,base+01891h
+  dw 01780h,base+022F4h
+  dw 01780h,base+0230Bh
+  dw 01880h,base+01D9Fh
+  dw 01880h,base+01DB7h
+  dw 01981h,base+018AAh
+  dw 01980h,base+018C3h
+  dw 01981h,base+018DCh
+  dw 01980h,base+018F5h
+  dw 01981h,base+0190Eh
+  dw 01881h,base+01DCFh
+  dw 01700h,base+02322h
 
 ZombieCaterpillarAttackframe005:
   db 03Ch,010h,068h,068h
   db 06Eh
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 01781h,base+02321h
-  dw 01682h,base+02751h
-  dw 01480h,base+02F10h
-  dw 01480h,base+02F24h
-  dw 01481h,base+02F38h
-  dw 0137Eh,base+03103h
-  dw 0167Eh,base+02767h
-  dw 01880h,base+01D87h
-  dw 0187Fh,base+01D9Fh
-  dw 01980h,base+018C7h
-  dw 0187Fh,base+01DB7h
-  dw 01A80h,base+0138Fh
-  dw 01A80h,base+013A9h
-  dw 01B7Fh,base+00F18h
-  dw 01D80h,base+007F5h
-  dw 01E00h,base+00460h
+  dw 01781h,base+02339h
+  dw 01682h,base+026DFh
+  dw 01480h,base+02BFBh
+  dw 01480h,base+02C0Fh
+  dw 01481h,base+02C23h
+  dw 0137Eh,base+02DB2h
+  dw 0167Eh,base+026F5h
+  dw 01880h,base+01DE7h
+  dw 0187Fh,base+01DFFh
+  dw 01980h,base+01927h
+  dw 0187Fh,base+01E17h
+  dw 01A80h,base+01409h
+  dw 01A80h,base+01423h
+  dw 01B7Fh,base+00F92h
+  dw 01D80h,base+0086Fh
+  dw 01E00h,base+00480h
 
 ZombieCaterpillarAttackframe006:
   db 03Ah,018h,042h,030h
   db 054h
   db 000h,000h,0D0h,000h,000h
   db 000h,000h
-  dw 00280h,base+03D5Ah
-  dw 00203h,base+00C96h
+  dw 00280h,base+03A75h
+  dw 00203h,base+00D10h
   dw 0027Bh,base+001F8h
-  dw 0087Eh,base+03D10h
-  dw 00C7Fh,base+03C7Dh
-  dw 00E7Fh,base+03C12h
-  dw 00F80h,base+03BAAh
-  dw 00F7Fh,base+03BB9h
-  dw 01080h,base+03A2Bh
-  dw 01180h,base+03653h
-  dw 0127Fh,base+03362h
-  dw 01480h,base+02EFCh
-  dw 01580h,base+02C1Fh
-  dw 01580h,base+02C34h
-  dw 01680h,base+02725h
-  dw 01680h,base+0273Bh
-  dw 0177Fh,base+022C5h
-  dw 01880h,base+01CF7h
-  dw 01980h,base+017FFh
-  dw 01981h,base+01818h
-  dw 01880h,base+01D0Fh
-  dw 01880h,base+01D27h
-  dw 01A80h,base+013C3h
-  dw 01B80h,base+00F33h
-  dw 01C00h,base+00B54h
+  dw 0087Eh,base+03A2Bh
+  dw 00C7Fh,base+039A2h
+  dw 00E7Fh,base+03937h
+  dw 00F80h,base+038CFh
+  dw 00F7Fh,base+038DEh
+  dw 01080h,base+03700h
+  dw 01180h,base+03328h
+  dw 0127Fh,base+03037h
+  dw 01480h,base+02BE7h
+  dw 01580h,base+0299Dh
+  dw 01580h,base+029B2h
+  dw 01680h,base+026B3h
+  dw 01680h,base+026C9h
+  dw 0177Fh,base+022DDh
+  dw 01880h,base+01D57h
+  dw 01980h,base+0185Fh
+  dw 01981h,base+01878h
+  dw 01880h,base+01D6Fh
+  dw 01880h,base+01D87h
+  dw 01A80h,base+0143Dh
+  dw 01B80h,base+00FADh
+  dw 01C00h,base+00BCEh
 
 ZombieCaterpillarAttackframe007:
   db 054h,020h,046h,048h
   db 046h
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01C80h,base+00B70h
-  dw 01D80h,base+00812h
-  dw 01D81h,base+0082Fh
-  dw 01D80h,base+00764h
-  dw 01D81h,base+0084Ch
-  dw 01D80h,base+00869h
-  dw 01D81h,base+00886h
-  dw 01C80h,base+00B8Ch
-  dw 01C81h,base+00BA8h
-  dw 01C81h,base+00BC4h
-  dw 01C81h,base+00BE0h
-  dw 01C81h,base+00BFCh
-  dw 01C81h,base+00C18h
-  dw 01B80h,base+00F4Eh
-  dw 01C81h,base+00C34h
-  dw 01B80h,base+00F69h
-  dw 01C81h,base+00C50h
-  dw 01B80h,base+00F84h
-  dw 01B81h,base+00F9Fh
-  dw 01B82h,base+00FBAh
-  dw 01981h,base+018E0h
-  dw 01880h,base+01DCFh
-  dw 01881h,base+01DE7h
-  dw 01880h,base+01DFFh
-  dw 01880h,base+01E17h
-  dw 01981h,base+018F9h
-  dw 01980h,base+01912h
-  dw 01981h,base+0192Bh
-  dw 01981h,base+01944h
-  dw 01881h,base+01E2Fh
-  dw 01781h,base+02338h
-  dw 01600h,base+0277Dh
+  dw 01C80h,base+00BEAh
+  dw 01D80h,base+0088Ch
+  dw 01D81h,base+008A9h
+  dw 01D80h,base+007DEh
+  dw 01D81h,base+008C6h
+  dw 01D80h,base+008E3h
+  dw 01D81h,base+00900h
+  dw 01C80h,base+00C06h
+  dw 01C81h,base+00C22h
+  dw 01C81h,base+00C3Eh
+  dw 01C81h,base+00C5Ah
+  dw 01C81h,base+00C76h
+  dw 01C81h,base+00C92h
+  dw 01B80h,base+00FC8h
+  dw 01C81h,base+00CAEh
+  dw 01B80h,base+00FE3h
+  dw 01C81h,base+00CCAh
+  dw 01B80h,base+00FFEh
+  dw 01B81h,base+01019h
+  dw 01B82h,base+01034h
+  dw 01981h,base+01940h
+  dw 01880h,base+01E2Fh
+  dw 01881h,base+01E47h
+  dw 01880h,base+01E5Fh
+  dw 01880h,base+01E77h
+  dw 01981h,base+01959h
+  dw 01980h,base+01972h
+  dw 01981h,base+0198Bh
+  dw 01981h,base+019A4h
+  dw 01881h,base+01E8Fh
+  dw 01781h,base+02350h
+  dw 01600h,base+0270Bh
 
 ZombieCaterpillarAttackframe008:
   db 03Eh,010h,062h,068h
   db 070h
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 01681h,base+02793h
-  dw 01580h,base+02C49h
-  dw 0157Fh,base+02C5Eh
-  dw 0167Fh,base+027A9h
-  dw 01780h,base+0234Fh
-  dw 0177Fh,base+02366h
-  dw 01980h,base+0195Dh
-  dw 0197Fh,base+01976h
-  dw 01A80h,base+013DDh
-  dw 01A80h,base+013F7h
-  dw 01980h,base+0198Fh
-  dw 0197Fh,base+019A8h
-  dw 01A80h,base+01411h
-  dw 01A7Eh,base+0142Bh
-  dw 01D7Fh,base+008A3h
+  dw 01681h,base+02721h
+  dw 01580h,base+029C7h
+  dw 0157Fh,base+029DCh
+  dw 0167Fh,base+02737h
+  dw 01780h,base+02367h
+  dw 0177Fh,base+0237Eh
+  dw 01980h,base+019BDh
+  dw 0197Fh,base+019D6h
+  dw 01A80h,base+01457h
+  dw 01A80h,base+01471h
+  dw 01980h,base+019EFh
+  dw 0197Fh,base+01A08h
+  dw 01A80h,base+0148Bh
+  dw 01A7Eh,base+014A5h
+  dw 01D7Fh,base+0091Dh
   dw 01F00h,base+00000h
 
 ZombieCaterpillarAttackframe009:
@@ -314,38 +314,38 @@ ZombieCaterpillarAttackframe009:
   db 05Ch
   db 000h,000h,0CBh,000h,000h
   db 000h,000h
-  dw 0037Dh,base+03D45h
-  dw 0067Fh,base+03D4Bh
-  dw 0077Eh,base+03D30h
-  dw 00A80h,base+03CE2h
-  dw 00B80h,base+03C95h
-  dw 00B7Fh,base+03CA0h
-  dw 00D80h,base+03C49h
-  dw 00D7Fh,base+03C56h
-  dw 00F80h,base+03BC8h
-  dw 0107Fh,base+03A3Bh
-  dw 01280h,base+03374h
-  dw 0137Fh,base+03116h
-  dw 01580h,base+02C73h
-  dw 01580h,base+02C88h
-  dw 01680h,base+027BFh
-  dw 0187Fh,base+01E47h
-  dw 01A80h,base+01445h
-  dw 01C80h,base+00C6Ch
-  dw 01D00h,base+008C0h
+  dw 0037Dh,base+03A60h
+  dw 0067Fh,base+03A66h
+  dw 0077Eh,base+03A4Bh
+  dw 00A80h,base+03A07h
+  dw 00B80h,base+039BAh
+  dw 00B7Fh,base+039C5h
+  dw 00D80h,base+0396Eh
+  dw 00D7Fh,base+0397Bh
+  dw 00F80h,base+038EDh
+  dw 0107Fh,base+03710h
+  dw 01280h,base+03049h
+  dw 0137Fh,base+02DC5h
+  dw 01580h,base+029F1h
+  dw 01580h,base+02A06h
+  dw 01680h,base+0274Dh
+  dw 0187Fh,base+01EA7h
+  dw 01A80h,base+014BFh
+  dw 01C80h,base+00CE6h
+  dw 01D00h,base+0093Ah
 
 ZombieCaterpillarAttackframe010:
   db 054h,020h,046h,048h
   db 046h
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01D81h,base+008DDh
-  dw 01D80h,base+008FAh
-  dw 01D80h,base+00917h
-  dw 01E80h,base+0047Eh
-  dw 01E80h,base+0049Ch
-  dw 01F80h,base+00369h
-  dw 01F80h,base+00388h
+  dw 01D81h,base+00957h
+  dw 01D80h,base+00974h
+  dw 01D80h,base+00991h
+  dw 01E80h,base+0049Eh
+  dw 01E80h,base+004BCh
+  dw 01F80h,base+00389h
+  dw 01F80h,base+003A8h
   dw 02080h,base+000E9h
   dw 02081h,base+00109h
   dw 02080h,base+00129h
@@ -355,43 +355,43 @@ ZombieCaterpillarAttackframe010:
   dw 02080h,base+00189h
   dw 02181h,base+00044h
   dw 02082h,base+001A9h
-  dw 01F82h,base+003A7h
-  dw 01D82h,base+00934h
-  dw 01B82h,base+00FD5h
-  dw 01A83h,base+0145Fh
-  dw 01781h,base+0237Dh
-  dw 01680h,base+027D5h
-  dw 01781h,base+02394h
-  dw 01684h,base+027EBh
-  dw 01281h,base+03386h
-  dw 01180h,base+03664h
-  dw 01280h,base+03398h
-  dw 01281h,base+033AAh
-  dw 01280h,base+033BCh
-  dw 01281h,base+033CEh
-  dw 01180h,base+03675h
-  dw 01100h,base+03686h
+  dw 01F82h,base+003C7h
+  dw 01D82h,base+009AEh
+  dw 01B82h,base+0104Fh
+  dw 01A83h,base+014D9h
+  dw 01781h,base+02395h
+  dw 01680h,base+02763h
+  dw 01781h,base+023ACh
+  dw 01684h,base+02779h
+  dw 01281h,base+0305Bh
+  dw 01180h,base+03339h
+  dw 01280h,base+0306Dh
+  dw 01281h,base+0307Fh
+  dw 01280h,base+03091h
+  dw 01281h,base+030A3h
+  dw 01180h,base+0334Ah
+  dw 01100h,base+0335Bh
 
 ZombieCaterpillarAttackframe011:
   db 03Eh,010h,062h,068h
   db 072h
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 0157Fh,base+02C9Dh
-  dw 0167Fh,base+02801h
-  dw 01780h,base+023ABh
-  dw 0177Fh,base+023C2h
-  dw 01880h,base+01E5Fh
-  dw 0187Fh,base+01E77h
-  dw 01A80h,base+01479h
-  dw 01A80h,base+01493h
-  dw 01A80h,base+014ADh
-  dw 01A7Fh,base+014C7h
-  dw 01A80h,base+014E1h
-  dw 01A80h,base+014FBh
-  dw 01A80h,base+01515h
-  dw 01A7Eh,base+0152Fh
-  dw 01D7Fh,base+008A3h
+  dw 0157Fh,base+02A1Bh
+  dw 0167Fh,base+0278Fh
+  dw 01780h,base+023C3h
+  dw 0177Fh,base+023DAh
+  dw 01880h,base+01EBFh
+  dw 0187Fh,base+01ED7h
+  dw 01A80h,base+014F3h
+  dw 01A80h,base+0150Dh
+  dw 01A80h,base+01527h
+  dw 01A7Fh,base+01541h
+  dw 01A80h,base+0155Bh
+  dw 01A80h,base+01575h
+  dw 01A80h,base+0158Fh
+  dw 01A7Eh,base+015A9h
+  dw 01D7Fh,base+0091Dh
   dw 01F00h,base+00000h
 
 ZombieCaterpillarAttackframe012:
@@ -399,31 +399,31 @@ ZombieCaterpillarAttackframe012:
   db 062h
   db 000h,000h,0C8h,000h,000h
   db 000h,000h
-  dw 00306h,base+03D57h
+  dw 00306h,base+03A72h
   dw 00577h,base+00069h
-  dw 00F80h,base+03BD7h
-  dw 01080h,base+03A4Bh
-  dw 0117Fh,base+03697h
-  dw 0127Eh,base+033E0h
-  dw 01580h,base+02CB2h
-  dw 01580h,base+02CC7h
-  dw 01680h,base+02817h
-  dw 0187Fh,base+01E8Fh
-  dw 01A80h,base+01549h
-  dw 01B7Fh,base+00FF0h
-  dw 01C80h,base+00C88h
-  dw 01D7Fh,base+00951h
-  dw 01E80h,base+004BAh
-  dw 01F80h,base+003C6h
-  dw 01F00h,base+003E5h
+  dw 00F80h,base+038FCh
+  dw 01080h,base+03720h
+  dw 0117Fh,base+0336Ch
+  dw 0127Eh,base+030B5h
+  dw 01580h,base+02A30h
+  dw 01580h,base+02A45h
+  dw 01680h,base+027A5h
+  dw 0187Fh,base+01EEFh
+  dw 01A80h,base+015C3h
+  dw 01B7Fh,base+0106Ah
+  dw 01C80h,base+00D02h
+  dw 01D7Fh,base+009CBh
+  dw 01E80h,base+004DAh
+  dw 01F80h,base+003E6h
+  dw 01F00h,base+00405h
 
 ZombieCaterpillarAttackframe013:
   db 04Ah,020h,050h,048h
   db 050h
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01F80h,base+00404h
-  dw 01F80h,base+00423h
+  dw 01F80h,base+00424h
+  dw 01F80h,base+00443h
   dw 02080h,base+001C9h
   dw 02080h,base+001E9h
   dw 02080h,base+00209h
@@ -438,47 +438,47 @@ ZombieCaterpillarAttackframe013:
   dw 02081h,base+002A9h
   dw 02080h,base+002C9h
   dw 02081h,base+002E9h
-  dw 00C0Dh,base+03C89h
-  dw 01274h,base+033F2h
-  dw 00B0Ch,base+03CABh
-  dw 01376h,base+03129h
-  dw 0080Bh,base+03D18h
-  dw 01277h,base+03404h
+  dw 00C0Dh,base+039AEh
+  dw 01274h,base+030C7h
+  dw 00B0Ch,base+039D0h
+  dw 01376h,base+02DD8h
+  dw 0080Bh,base+03A33h
+  dw 01277h,base+030D9h
   dw 00409h,base+00069h
-  dw 01280h,base+03416h
-  dw 01280h,base+03428h
-  dw 01381h,base+0313Ch
-  dw 01280h,base+0343Ah
-  dw 01281h,base+0344Ch
-  dw 01180h,base+036A8h
-  dw 01180h,base+036B9h
-  dw 01180h,base+036CAh
-  dw 01280h,base+0345Eh
-  dw 01280h,base+03470h
-  dw 01280h,base+03482h
-  dw 0127Eh,base+03494h
-  dw 01400h,base+02F4Ch
+  dw 01280h,base+030EBh
+  dw 01280h,base+030FDh
+  dw 01381h,base+02DEBh
+  dw 01280h,base+0310Fh
+  dw 01281h,base+03121h
+  dw 01180h,base+0337Dh
+  dw 01180h,base+0338Eh
+  dw 01180h,base+0339Fh
+  dw 01280h,base+03133h
+  dw 01280h,base+03145h
+  dw 01280h,base+03157h
+  dw 0127Eh,base+03169h
+  dw 01400h,base+02C37h
 
 ZombieCaterpillarAttackframe014:
   db 046h,010h,05Eh,068h
   db 070h
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 0157Fh,base+02CDCh
-  dw 01680h,base+0282Dh
-  dw 0157Fh,base+02CF1h
-  dw 01680h,base+02843h
-  dw 0157Fh,base+02D06h
-  dw 01580h,base+02D1Bh
-  dw 01680h,base+02859h
-  dw 01780h,base+023D9h
-  dw 0177Fh,base+023F0h
-  dw 01980h,base+019C1h
-  dw 01980h,base+019DAh
-  dw 01A80h,base+01563h
-  dw 01A80h,base+0157Dh
-  dw 01B7Dh,base+0100Bh
-  dw 01E7Eh,base+004D8h
+  dw 0157Fh,base+02A5Ah
+  dw 01680h,base+027BBh
+  dw 0157Fh,base+02A6Fh
+  dw 01680h,base+027D1h
+  dw 0157Fh,base+02A84h
+  dw 01580h,base+02A99h
+  dw 01680h,base+027E7h
+  dw 01780h,base+023F1h
+  dw 0177Fh,base+02408h
+  dw 01980h,base+01A21h
+  dw 01980h,base+01A3Ah
+  dw 01A80h,base+015DDh
+  dw 01A80h,base+015F7h
+  dw 01B7Dh,base+01085h
+  dw 01E7Eh,base+004F8h
   dw 02300h,base+00000h
 
 ZombieCaterpillarAttackframe015:
@@ -486,85 +486,85 @@ ZombieCaterpillarAttackframe015:
   db 074h
   db 000h,000h,0CDh,000h,000h
   db 000h,000h
-  dw 0037Dh,base+0269Bh
-  dw 0067Fh,base+03D51h
-  dw 00880h,base+03D20h
-  dw 0097Fh,base+03CF6h
-  dw 00B7Fh,base+03CB6h
-  dw 00D80h,base+03C63h
-  dw 01080h,base+03A5Bh
-  dw 0117Fh,base+036DBh
-  dw 01380h,base+0314Fh
-  dw 0147Fh,base+02F60h
-  dw 01580h,base+02D30h
-  dw 0167Fh,base+0286Fh
-  dw 01780h,base+02407h
-  dw 01780h,base+0241Eh
-  dw 0187Fh,base+01EA7h
-  dw 01980h,base+019F3h
-  dw 01980h,base+01A0Ch
-  dw 01980h,base+01A25h
-  dw 01980h,base+01A3Eh
-  dw 01980h,base+01A57h
-  dw 01A00h,base+01597h
+  dw 0037Dh,base+02629h
+  dw 0067Fh,base+03A6Ch
+  dw 00880h,base+03A3Bh
+  dw 0097Fh,base+03A11h
+  dw 00B7Fh,base+039DBh
+  dw 00D80h,base+03988h
+  dw 01080h,base+03730h
+  dw 0117Fh,base+033B0h
+  dw 01380h,base+02DFEh
+  dw 0147Fh,base+02C4Bh
+  dw 01580h,base+02AAEh
+  dw 0167Fh,base+027FDh
+  dw 01780h,base+0241Fh
+  dw 01780h,base+02436h
+  dw 0187Fh,base+01F07h
+  dw 01980h,base+01A53h
+  dw 01980h,base+01A6Ch
+  dw 01980h,base+01A85h
+  dw 01980h,base+01A9Eh
+  dw 01980h,base+01AB7h
+  dw 01A00h,base+01611h
 
 ZombieCaterpillarAttackframe016:
   db 03Ch,020h,060h,048h
   db 060h
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01B80h,base+01026h
-  dw 01B81h,base+01041h
-  dw 01B80h,base+0105Ch
-  dw 01B80h,base+01077h
-  dw 01B80h,base+01092h
-  dw 01B80h,base+010ADh
-  dw 01C80h,base+00CA4h
-  dw 01C81h,base+00CC0h
-  dw 01B80h,base+010C8h
-  dw 01B81h,base+010E3h
-  dw 01A81h,base+015B1h
-  dw 01980h,base+01A70h
-  dw 01982h,base+01A89h
-  dw 01883h,base+01EBFh
-  dw 01584h,base+02D45h
-  dw 01180h,base+036ECh
-  dw 01180h,base+036FDh
-  dw 01180h,base+0370Eh
-  dw 01180h,base+0371Fh
-  dw 01180h,base+03730h
-  dw 01180h,base+02B76h
-  dw 01080h,base+03A6Bh
-  dw 01080h,base+02BA3h
-  dw 01080h,base+03A7Bh
-  dw 0107Fh,base+03A8Bh
-  dw 01080h,base+03A9Bh
-  dw 0107Dh,base+03AABh
-  dw 0137Fh,base+03162h
-  dw 0147Fh,base+02F74h
-  dw 01580h,base+02D5Ah
-  dw 0157Fh,base+02D6Fh
-  dw 01600h,base+02885h
+  dw 01B80h,base+010A0h
+  dw 01B81h,base+010BBh
+  dw 01B80h,base+010D6h
+  dw 01B80h,base+010F1h
+  dw 01B80h,base+0110Ch
+  dw 01B80h,base+01127h
+  dw 01C80h,base+00D1Eh
+  dw 01C81h,base+00D3Ah
+  dw 01B80h,base+01142h
+  dw 01B81h,base+0115Dh
+  dw 01A81h,base+0162Bh
+  dw 01980h,base+01AD0h
+  dw 01982h,base+01AE9h
+  dw 01883h,base+01F1Fh
+  dw 01584h,base+02AC3h
+  dw 01180h,base+033C1h
+  dw 01180h,base+033D2h
+  dw 01180h,base+033E3h
+  dw 01180h,base+033F4h
+  dw 01180h,base+03405h
+  dw 01180h,base+03416h
+  dw 01080h,base+03740h
+  dw 01080h,base+03750h
+  dw 01080h,base+03760h
+  dw 0107Fh,base+03770h
+  dw 01080h,base+03780h
+  dw 0107Dh,base+03790h
+  dw 0137Fh,base+02E11h
+  dw 0147Fh,base+02C5Fh
+  dw 01580h,base+02AD8h
+  dw 0157Fh,base+02AEDh
+  dw 01600h,base+02813h
 
 ZombieCaterpillarAttackframe017:
   db 046h,010h,05Eh,068h
   db 06Ch
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 0167Fh,base+0289Bh
-  dw 01780h,base+02435h
-  dw 01780h,base+0244Ch
-  dw 01780h,base+02463h
-  dw 0177Fh,base+0247Ah
-  dw 01980h,base+01AA2h
-  dw 0197Fh,base+01ABBh
-  dw 01B80h,base+010FEh
-  dw 01B80h,base+01119h
-  dw 01C80h,base+00CDCh
-  dw 01C80h,base+00CF8h
-  dw 01D80h,base+0096Eh
-  dw 01D80h,base+0098Bh
-  dw 01D7Eh,base+009A8h
+  dw 0167Fh,base+02829h
+  dw 01780h,base+0244Dh
+  dw 01780h,base+02464h
+  dw 01780h,base+0247Bh
+  dw 0177Fh,base+02492h
+  dw 01980h,base+01B02h
+  dw 0197Fh,base+01B1Bh
+  dw 01B80h,base+01178h
+  dw 01B80h,base+01193h
+  dw 01C80h,base+00D56h
+  dw 01C80h,base+00D72h
+  dw 01D80h,base+009E8h
+  dw 01D80h,base+00A05h
+  dw 01D7Eh,base+00A22h
   dw 0207Eh,base+00309h
   dw 02300h,base+00000h
 
@@ -573,89 +573,89 @@ ZombieCaterpillarAttackframe018:
   db 076h
   db 000h,000h,0D1h,000h,000h
   db 000h,000h
-  dw 0037Dh,base+0269Bh
-  dw 0067Fh,base+03D51h
-  dw 00880h,base+03D20h
-  dw 0097Fh,base+03CF6h
-  dw 00B7Fh,base+03CB6h
-  dw 00D80h,base+03C63h
-  dw 00E80h,base+03A5Bh
-  dw 00F7Fh,base+036DBh
-  dw 01080h,base+0314Fh
-  dw 0107Fh,base+02F60h
-  dw 01280h,base+02D30h
-  dw 0127Fh,base+0286Fh
-  dw 01480h,base+02F88h
-  dw 01580h,base+02D84h
-  dw 0157Fh,base+02D99h
-  dw 01780h,base+02491h
-  dw 01780h,base+024A8h
-  dw 01880h,base+01ED7h
-  dw 01880h,base+01EEFh
-  dw 01880h,base+01F07h
-  dw 01880h,base+01F1Fh
-  dw 01980h,base+01AD4h
-  dw 01981h,base+01AEDh
+  dw 0037Dh,base+02629h
+  dw 0067Fh,base+03A6Ch
+  dw 00880h,base+03A3Bh
+  dw 0097Fh,base+03A11h
+  dw 00B7Fh,base+039DBh
+  dw 00D80h,base+03988h
+  dw 00E80h,base+03730h
+  dw 00F7Fh,base+033B0h
+  dw 01080h,base+02DFEh
+  dw 0107Fh,base+02C4Bh
+  dw 01280h,base+02AAEh
+  dw 0127Fh,base+027FDh
+  dw 01480h,base+02C73h
+  dw 01580h,base+02B02h
+  dw 0157Fh,base+02B17h
+  dw 01780h,base+024A9h
+  dw 01780h,base+024C0h
   dw 01880h,base+01F37h
-  dw 01800h,base+01F4Fh
+  dw 01880h,base+01F4Fh
+  dw 01880h,base+01F67h
+  dw 01880h,base+01F7Fh
+  dw 01980h,base+01B34h
+  dw 01981h,base+01B4Dh
+  dw 01880h,base+01F97h
+  dw 01800h,base+01FAFh
 
 ZombieCaterpillarAttackframe019:
   db 038h,020h,064h,048h
   db 064h
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01980h,base+01B06h
-  dw 01980h,base+01B1Fh
-  dw 01A80h,base+015CBh
-  dw 01A81h,base+015E5h
-  dw 01A80h,base+015FFh
-  dw 01A81h,base+01619h
-  dw 01981h,base+01B38h
-  dw 01880h,base+01F67h
-  dw 01882h,base+01F7Fh
-  dw 01683h,base+028B1h
-  dw 01481h,base+02F9Ch
-  dw 01380h,base+03175h
-  dw 01381h,base+03188h
-  dw 01281h,base+034A6h
-  dw 01180h,base+03741h
-  dw 01180h,base+03752h
-  dw 01180h,base+03763h
-  dw 01180h,base+03774h
-  dw 01180h,base+03785h
-  dw 01180h,base+03796h
-  dw 01180h,base+037A7h
-  dw 01180h,base+02EC3h
-  dw 01181h,base+02BB8h
-  dw 0107Bh,base+021DFh
-  dw 0147Fh,base+02FB0h
-  dw 0157Fh,base+02DAEh
-  dw 01680h,base+028C7h
-  dw 0157Fh,base+02DC3h
-  dw 01680h,base+028DDh
-  dw 0177Fh,base+024BFh
-  dw 01880h,base+01F97h
-  dw 01800h,base+01FAFh
+  dw 01980h,base+01B66h
+  dw 01980h,base+01B7Fh
+  dw 01A80h,base+01645h
+  dw 01A81h,base+0165Fh
+  dw 01A80h,base+01679h
+  dw 01A81h,base+01693h
+  dw 01981h,base+01B98h
+  dw 01880h,base+01FC7h
+  dw 01882h,base+01FDFh
+  dw 01683h,base+0283Fh
+  dw 01481h,base+02C87h
+  dw 01380h,base+02E24h
+  dw 01381h,base+02E37h
+  dw 01281h,base+0317Bh
+  dw 01180h,base+03427h
+  dw 01180h,base+03438h
+  dw 01180h,base+03449h
+  dw 01180h,base+0345Ah
+  dw 01180h,base+0346Bh
+  dw 01180h,base+0347Ch
+  dw 01180h,base+0348Dh
+  dw 01180h,base+02BAEh
+  dw 01181h,base+02936h
+  dw 0107Bh,base+02568h
+  dw 0147Fh,base+02C9Bh
+  dw 0157Fh,base+02B2Ch
+  dw 01680h,base+02855h
+  dw 0157Fh,base+02B41h
+  dw 01680h,base+0286Bh
+  dw 0177Fh,base+024D7h
+  dw 01880h,base+01FF7h
+  dw 01800h,base+0200Fh
 
 ZombieCaterpillarAttackframe020:
   db 046h,010h,05Eh,068h
   db 06Ah
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 01880h,base+01FC7h
-  dw 0187Fh,base+01FDFh
-  dw 01980h,base+01B51h
-  dw 01980h,base+01B6Ah
-  dw 01A80h,base+01633h
-  dw 01A80h,base+0164Dh
-  dw 01B7Fh,base+01134h
-  dw 01C80h,base+00D14h
-  dw 01D80h,base+009C5h
-  dw 01D80h,base+009E2h
-  dw 01D80h,base+009FFh
-  dw 01E80h,base+004F6h
-  dw 01E80h,base+00514h
-  dw 01E7Eh,base+00532h
+  dw 01880h,base+02027h
+  dw 0187Fh,base+0203Fh
+  dw 01980h,base+01BB1h
+  dw 01980h,base+01BCAh
+  dw 01A80h,base+016ADh
+  dw 01A80h,base+016C7h
+  dw 01B7Fh,base+011AEh
+  dw 01C80h,base+00D8Eh
+  dw 01D80h,base+00A3Fh
+  dw 01D80h,base+00A5Ch
+  dw 01D80h,base+00A79h
+  dw 01E80h,base+00516h
+  dw 01E80h,base+00534h
+  dw 01E7Eh,base+00552h
   dw 0207Eh,base+00329h
   dw 02300h,base+00000h
 
@@ -664,89 +664,89 @@ ZombieCaterpillarAttackframe021:
   db 078h
   db 000h,000h,0D1h,000h,000h
   db 000h,000h
-  dw 0037Dh,base+0269Bh
-  dw 0067Fh,base+03D51h
-  dw 00880h,base+03D20h
-  dw 0097Fh,base+03CF6h
-  dw 00B7Fh,base+03CB6h
-  dw 00D80h,base+03C63h
-  dw 00E80h,base+03A5Bh
-  dw 00F7Fh,base+036DBh
-  dw 01080h,base+0314Fh
-  dw 0107Fh,base+02F60h
-  dw 01380h,base+0319Bh
-  dw 0147Fh,base+02FC4h
-  dw 01580h,base+02DD8h
-  dw 01680h,base+028F3h
-  dw 0167Fh,base+02909h
-  dw 01880h,base+01FF7h
-  dw 01880h,base+0200Fh
-  dw 01880h,base+02027h
-  dw 01880h,base+0203Fh
-  dw 01980h,base+01B83h
-  dw 01980h,base+01B9Ch
-  dw 01980h,base+01BB5h
-  dw 01981h,base+01BCEh
-  dw 01880h,base+0105Ch
-  dw 01800h,base+02057h
+  dw 0037Dh,base+02629h
+  dw 0067Fh,base+03A6Ch
+  dw 00880h,base+03A3Bh
+  dw 0097Fh,base+03A11h
+  dw 00B7Fh,base+039DBh
+  dw 00D80h,base+03988h
+  dw 00E80h,base+03730h
+  dw 00F7Fh,base+033B0h
+  dw 01080h,base+02DFEh
+  dw 0107Fh,base+02C4Bh
+  dw 01380h,base+02E4Ah
+  dw 0147Fh,base+02CAFh
+  dw 01580h,base+02B56h
+  dw 01680h,base+02881h
+  dw 0167Fh,base+02897h
+  dw 01880h,base+02057h
+  dw 01880h,base+0206Fh
+  dw 01880h,base+02087h
+  dw 01880h,base+0209Fh
+  dw 01980h,base+01BE3h
+  dw 01980h,base+01BFCh
+  dw 01980h,base+01C15h
+  dw 01981h,base+01C2Eh
+  dw 01880h,base+010D6h
+  dw 01800h,base+020B7h
 
 ZombieCaterpillarAttackframe022:
   db 036h,020h,066h,048h
   db 066h
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01880h,base+0206Fh
-  dw 01980h,base+01BE7h
-  dw 01980h,base+01C00h
-  dw 01A81h,base+01667h
-  dw 01980h,base+01C19h
-  dw 01981h,base+01C32h
-  dw 01881h,base+02087h
-  dw 01780h,base+024D6h
-  dw 01782h,base+024EDh
-  dw 01683h,base+0291Fh
-  dw 01382h,base+031AEh
-  dw 01181h,base+037B8h
-  dw 01080h,base+03ABBh
-  dw 0107Fh,base+03ACBh
-  dw 01180h,base+037C9h
-  dw 01180h,base+03763h
-  dw 01180h,base+03774h
-  dw 01180h,base+03785h
-  dw 01180h,base+03796h
-  dw 01180h,base+037A7h
-  dw 01180h,base+02EC3h
-  dw 0117Ch,base+02BB8h
-  dw 0157Fh,base+02DEDh
-  dw 0157Fh,base+02E02h
-  dw 01680h,base+02935h
-  dw 0167Fh,base+0294Bh
-  dw 01680h,base+02961h
-  dw 0167Fh,base+02977h
-  dw 01780h,base+02504h
-  dw 01880h,base+0209Fh
-  dw 01880h,base+020B7h
-  dw 01800h,base+020CFh
+  dw 01880h,base+020CFh
+  dw 01980h,base+01C47h
+  dw 01980h,base+01C60h
+  dw 01A81h,base+016E1h
+  dw 01980h,base+01C79h
+  dw 01981h,base+01C92h
+  dw 01881h,base+020E7h
+  dw 01780h,base+024EEh
+  dw 01782h,base+02505h
+  dw 01683h,base+028ADh
+  dw 01382h,base+02E5Dh
+  dw 01181h,base+0349Eh
+  dw 01080h,base+037A0h
+  dw 0107Fh,base+037B0h
+  dw 01180h,base+034AFh
+  dw 01180h,base+03449h
+  dw 01180h,base+0345Ah
+  dw 01180h,base+0346Bh
+  dw 01180h,base+0347Ch
+  dw 01180h,base+0348Dh
+  dw 01180h,base+02BAEh
+  dw 0117Ch,base+02936h
+  dw 0157Fh,base+02B6Bh
+  dw 0157Fh,base+02B80h
+  dw 01680h,base+028C3h
+  dw 0167Fh,base+028D9h
+  dw 01680h,base+028EFh
+  dw 0167Fh,base+02905h
+  dw 01780h,base+0251Ch
+  dw 01880h,base+020FFh
+  dw 01880h,base+02117h
+  dw 01800h,base+0212Fh
 
 ZombieCaterpillarAttackframe023:
   db 046h,010h,05Eh,068h
   db 068h
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 01980h,base+01C4Bh
-  dw 01980h,base+01C64h
-  dw 01A80h,base+01681h
-  dw 01A80h,base+0169Bh
-  dw 01B80h,base+0114Fh
-  dw 01B80h,base+0116Ah
-  dw 01C7Fh,base+00D30h
-  dw 01D80h,base+00A1Ch
-  dw 01D80h,base+00A39h
-  dw 01E80h,base+00550h
-  dw 01E80h,base+0056Eh
-  dw 01E80h,base+0058Ch
-  dw 01E80h,base+005AAh
-  dw 01E7Eh,base+005C8h
+  dw 01980h,base+01CABh
+  dw 01980h,base+01CC4h
+  dw 01A80h,base+016FBh
+  dw 01A80h,base+01715h
+  dw 01B80h,base+011C9h
+  dw 01B80h,base+011E4h
+  dw 01C7Fh,base+00DAAh
+  dw 01D80h,base+00A96h
+  dw 01D80h,base+00AB3h
+  dw 01E80h,base+00570h
+  dw 01E80h,base+0058Eh
+  dw 01E80h,base+005ACh
+  dw 01E80h,base+005CAh
+  dw 01E7Eh,base+005E8h
   dw 0207Eh,base+00349h
   dw 02300h,base+00000h
 
@@ -755,93 +755,92 @@ ZombieCaterpillarAttackframe024:
   db 07Eh
   db 000h,000h,0D3h,000h,000h
   db 000h,000h
-  dw 0037Dh,base+0269Bh
-  dw 0067Fh,base+03D51h
-  dw 00880h,base+03D20h
-  dw 0097Fh,base+03CF6h
-  dw 00B7Fh,base+03CB6h
-  dw 00D80h,base+03C63h
-  dw 00E80h,base+03A5Bh
-  dw 00F7Fh,base+036DBh
-  dw 01080h,base+0314Fh
-  dw 0107Fh,base+02F60h
-  dw 01280h,base+02D30h
-  dw 0127Fh,base+0286Fh
-  dw 01380h,base+02407h
-  dw 01380h,base+0241Eh
-  dw 0137Fh,base+02909h
-  dw 01480h,base+019F3h
-  dw 01480h,base+01A0Ch
-  dw 01580h,base+02E17h
-  dw 01580h,base+02E2Ch
-  dw 01680h,base+0298Dh
-  dw 01680h,base+029A3h
-  dw 01680h,base+029B9h
-  dw 01781h,base+0251Bh
-  dw 01680h,base+029CFh
-  dw 01680h,base+029E5h
-  dw 01680h,base+029FBh
-  dw 01600h,base+02A11h
+  dw 0037Dh,base+00621h
+  dw 0067Fh,base+00383h
+  dw 00880h,base+00606h
+  dw 0097Fh,base+00606h
+  dw 00B7Fh,base+00606h
+  dw 00D80h,base+00607h
+  dw 00E80h,base+00607h
+  dw 00F7Fh,base+00615h
+  dw 01080h,base+00606h
+  dw 0107Fh,base+00607h
+  dw 01280h,base+0318Dh
+  dw 0127Fh,base+00612h
+  dw 01380h,base+02E70h
+  dw 01380h,base+00607h
+  dw 0137Fh,base+00607h
+  dw 01480h,base+00606h
+  dw 01480h,base+00606h
+  dw 01580h,base+02B95h
+  dw 01580h,base+00606h
+  dw 01680h,base+0291Bh
+  dw 01680h,base+00606h
+  dw 01680h,base+00606h
+  dw 01781h,base+02533h
+  dw 01680h,base+0060Eh
+  dw 01680h,base+00607h
+  dw 01680h,base+00607h
+  dw 01600h,base+00606h
 
 ZombieCaterpillarAttackframe025:
-  db 038h,020h,064h,048h
+  db 032h,020h,06Ah,048h
   db 06Ch
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01680h,base+02A27h
-  dw 01681h,base+02A3Dh
-  dw 01580h,base+02E41h
-  dw 01681h,base+02A53h
-  dw 01581h,base+02E56h
-  dw 01480h,base+02FD8h
-  dw 01482h,base+02FECh
-  dw 01282h,base+034B8h
-  dw 01080h,base+03ADBh
-  dw 01180h,base+037DAh
-  dw 01180h,base+037EBh
-  dw 01180h,base+037FCh
-  dw 01175h,base+0380Dh
-  dw 00A0Bh,base+03CECh
-  dw 01177h,base+0381Eh
-  dw 01A83h,base+016B5h
-  dw 01786h,base+02532h
-  dw 01180h,base+0382Fh
-  dw 01180h,base+03840h
-  dw 01180h,base+03851h
-  dw 01180h,base+03862h
-  dw 01180h,base+03873h
-  dw 0117Ch,base+03884h
-  dw 0157Fh,base+02E6Bh
-  dw 0157Fh,base+02E80h
-  dw 01680h,base+02A69h
-  dw 0167Fh,base+02A7Fh
-  dw 01680h,base+02A95h
-  dw 0167Fh,base+02AABh
-  dw 01780h,base+02549h
-  dw 01880h,base+020E7h
-  dw 01880h,base+020FFh
-  dw 01800h,base+02117h
+  dw 01680h,base+00606h
+  dw 01681h,base+00606h
+  dw 01580h,base+00607h
+  dw 01681h,base+0291Bh
+  dw 01581h,base+0060Fh
+  dw 01480h,base+00610h
+  dw 01482h,base+00606h
+  dw 01282h,base+00606h
+  dw 01080h,base+00606h
+  dw 01180h,base+034C0h
+  dw 01180h,base+034C0h
+  dw 01181h,base+034C0h
+  dw 01080h,base+00614h
+  dw 0107Fh,base+00607h
+  dw 01180h,base+00606h
+  dw 01180h,base+00606h
+  dw 01180h,base+00606h
+  dw 01180h,base+00606h
+  dw 01180h,base+00606h
+  dw 01180h,base+00606h
+  dw 01180h,base+00606h
+  dw 0117Ch,base+034C0h
+  dw 0157Fh,base+02B95h
+  dw 0157Fh,base+00607h
+  dw 01680h,base+00606h
+  dw 0167Fh,base+0060Eh
+  dw 01680h,base+00606h
+  dw 0167Fh,base+00607h
+  dw 01780h,base+00606h
+  dw 01880h,base+02147h
+  dw 01880h,base+0060Ch
+  dw 01800h,base+0060Ch
 
 ZombieCaterpillarAttackframe026:
   db 046h,010h,05Eh,068h
   db 068h
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 01980h,base+01C7Dh
-  dw 01980h,base+01C64h
-  dw 01A80h,base+01681h
-  dw 01A80h,base+0169Bh
-  dw 01B80h,base+0114Fh
-  dw 01B80h,base+0116Ah
-  dw 01C7Fh,base+00D30h
-  dw 01D80h,base+00A1Ch
-  dw 01D80h,base+00A39h
-  dw 01E80h,base+00550h
-  dw 01E80h,base+0056Eh
-  dw 01E80h,base+0058Ch
-  dw 01E80h,base+005AAh
-  dw 01E7Eh,base+005C8h
-  dw 0207Eh,base+00349h
+  dw 01980h,base+01CDDh
+  dw 01980h,base+00606h
+  dw 01A80h,base+0060Ah
+  dw 01A80h,base+00607h
+  dw 01B80h,base+00609h
+  dw 01B80h,base+00607h
+  dw 01C7Fh,base+00608h
+  dw 01D80h,base+00606h
+  dw 01D80h,base+00606h
+  dw 01E80h,base+00606h
+  dw 01E80h,base+00624h
+  dw 01E80h,base+00642h
+  dw 01E80h,base+00642h
+  dw 01E7Eh,base+00642h
+  dw 0207Eh,base+00369h
   dw 02300h,base+00000h
 
 ZombieCaterpillarAttackframe027:
@@ -849,203 +848,187 @@ ZombieCaterpillarAttackframe027:
   db 08Ch
   db 000h,000h,0D5h,000h,000h
   db 000h,000h
-  dw 0037Dh,base+0269Bh
-  dw 0067Fh,base+03D51h
-  dw 00880h,base+03D20h
-  dw 0097Fh,base+03CF6h
-  dw 00B7Fh,base+03CB6h
-  dw 00D80h,base+03C63h
-  dw 00E80h,base+03A5Bh
-  dw 00F7Fh,base+036DBh
-  dw 01080h,base+0314Fh
-  dw 0107Fh,base+02F60h
-  dw 01280h,base+02D30h
-  dw 0127Fh,base+0286Fh
-  dw 01380h,base+02407h
-  dw 01380h,base+0241Eh
-  dw 0137Fh,base+02909h
-  dw 01480h,base+019F3h
-  dw 01480h,base+01A0Ch
-  dw 01480h,base+02027h
-  dw 01480h,base+01A3Eh
-  dw 01480h,base+03000h
-  dw 01480h,base+03014h
-  dw 01480h,base+03028h
-  dw 01381h,base+01BCEh
-  dw 01280h,base+0105Ch
-  dw 01280h,base+01F4Fh
-  dw 01280h,base+034CAh
-  dw 01380h,base+031C1h
-  dw 01380h,base+031D4h
-  dw 01300h,base+031E7h
+  dw 0037Dh,base+02629h
+  dw 0067Fh,base+03A6Ch
+  dw 00880h,base+03A3Bh
+  dw 0097Fh,base+03A11h
+  dw 00B7Fh,base+039DBh
+  dw 00D80h,base+03988h
+  dw 00E80h,base+03730h
+  dw 00F7Fh,base+033B0h
+  dw 01080h,base+02DFEh
+  dw 0107Fh,base+02C4Bh
+  dw 01280h,base+02AAEh
+  dw 0127Fh,base+027FDh
+  dw 01380h,base+0241Fh
+  dw 01380h,base+02436h
+  dw 0137Fh,base+02897h
+  dw 01480h,base+01A53h
+  dw 01480h,base+01A6Ch
+  dw 01480h,base+02087h
+  dw 01480h,base+01A9Eh
+  dw 01480h,base+02CC3h
+  dw 01480h,base+02CD7h
+  dw 01480h,base+02CEBh
+  dw 01381h,base+01C2Eh
+  dw 01280h,base+010D6h
+  dw 01280h,base+01FAFh
+  dw 01280h,base+0319Fh
+  dw 01380h,base+02E83h
+  dw 01380h,base+02E96h
+  dw 01300h,base+02EA9h
 
 ZombieCaterpillarAttackframe028:
   db 036h,020h,06Ah,048h
   db 07Ch
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01280h,base+034DCh
-  dw 01281h,base+034EEh
-  dw 01181h,base+03895h
-  dw 0107Fh,base+03AEBh
-  dw 0117Eh,base+038A6h
-  dw 0137Eh,base+031FAh
-  dw 0157Fh,base+02E95h
-  dw 01680h,base+02AC1h
-  dw 01680h,base+02AD7h
-  dw 01680h,base+02AEDh
-  dw 01680h,base+02B03h
-  dw 01680h,base+02B19h
-  dw 0167Fh,base+02B2Fh
-  dw 01780h,base+02560h
-  dw 01780h,base+02577h
-  dw 01780h,base+0258Eh
-  dw 01780h,base+025A5h
-  dw 01781h,base+025BCh
-  dw 01680h,base+02B45h
-  dw 01680h,base+02B5Bh
-  dw 01680h,base+02B71h
-  dw 0167Fh,base+02B87h
-  dw 0167Fh,base+02B9Dh
-  dw 0177Fh,base+025D3h
-  dw 01880h,base+0212Fh
-  dw 0187Fh,base+02147h
+  dw 01280h,base+031B1h
+  dw 01281h,base+031C3h
+  dw 01181h,base+034D1h
+  dw 0107Fh,base+037C0h
+  dw 01180h,base+034E2h
+  dw 01180h,base+034F3h
+  dw 01180h,base+03504h
+  dw 01181h,base+03515h
+  dw 01080h,base+037D0h
+  dw 01080h,base+037E0h
+  dw 01080h,base+037F0h
+  dw 01080h,base+03800h
+  dw 0107Fh,base+03810h
+  dw 01180h,base+03526h
+  dw 01180h,base+03537h
+  dw 01180h,base+03548h
+  dw 01180h,base+03559h
+  dw 01180h,base+0356Ah
+  dw 01180h,base+0357Bh
+  dw 01180h,base+0358Ch
+  dw 01180h,base+03416h
+  dw 0117Ah,base+0359Dh
+  dw 00506h,base+00069h
+  dw 01079h,base+03750h
+  dw 0177Fh,base+0254Ah
   dw 01880h,base+0215Fh
   dw 0187Fh,base+02177h
-  dw 01980h,base+01C96h
   dw 01880h,base+0218Fh
-  dw 01880h,base+021A7h
-  dw 01800h,base+021BFh
+  dw 0187Fh,base+021A7h
+  dw 01980h,base+01CF6h
+  dw 01880h,base+021BFh
+  dw 01880h,base+021D7h
+  dw 01800h,base+021EFh
 
 ZombieCaterpillarAttackframe029:
   db 046h,010h,05Eh,068h
   db 068h
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 01A80h,base+016CFh
-  dw 01A80h,base+016E9h
-  dw 01A80h,base+01703h
-  dw 01A80h,base+0171Dh
-  dw 01B80h,base+01185h
-  dw 01B80h,base+011A0h
-  dw 01C7Fh,base+00D4Ch
-  dw 01D80h,base+00A56h
-  dw 01D80h,base+00A73h
-  dw 01E80h,base+005E6h
-  dw 01E80h,base+00604h
-  dw 01E80h,base+00622h
-  dw 01E80h,base+00640h
-  dw 01E7Eh,base+0065Eh
+  dw 01A80h,base+0172Fh
+  dw 01A80h,base+01749h
+  dw 01A80h,base+01763h
+  dw 01A80h,base+0177Dh
+  dw 01B80h,base+011FFh
+  dw 01B80h,base+0121Ah
+  dw 01C7Fh,base+00DC6h
+  dw 01D80h,base+00AD0h
+  dw 01D80h,base+00AEDh
+  dw 01E80h,base+00660h
+  dw 01E80h,base+0067Eh
+  dw 01E80h,base+0069Ch
+  dw 01E80h,base+006BAh
+  dw 01E7Eh,base+006D8h
   dw 0207Eh,base+00349h
   dw 02300h,base+00000h
 
 ZombieCaterpillarAttackframe030:
-  db 038h,01Bh,070h,02Dh
+  db 028h,01Bh,080h,02Dh
   db 090h
   db 000h,000h,0D3h,000h,000h
   db 000h,000h
-  dw 0037Fh,base+0269Bh
-  dw 0077Fh,base+03D37h
-  dw 0087Fh,base+03D28h
-  dw 0097Fh,base+03CFFh
-  dw 00B7Fh,base+03CC1h
-  dw 00E7Fh,base+03C20h
-  dw 00F80h,base+03BE6h
-  dw 00F7Fh,base+03BF5h
-  dw 01080h,base+03AFBh
-  dw 01180h,base+038B7h
-  dw 01180h,base+038C8h
-  dw 01280h,base+03500h
-  dw 0127Fh,base+03512h
-  dw 01480h,base+0303Ch
-  dw 01480h,base+03050h
-  dw 01480h,base+03064h
-  dw 01480h,base+03078h
-  dw 0147Ch,base+0308Ch
-  dw 00304h,base+016B6h
-  dw 0147Ah,base+030A0h
-  dw 00205h,base+016B5h
-  dw 0157Bh,base+02EAAh
-  dw 00106h,base+016B6h
-  dw 01479h,base+030B4h
-  dw 00208h,base+021D7h
-  dw 01377h,base+0320Dh
-  dw 00209h,base+016B5h
-  dw 01377h,base+03220h
-  dw 00209h,base+03D5Ch
-  dw 01377h,base+03233h
-  dw 00208h,base+03D5Ch
-  dw 01478h,base+030C8h
-  dw 00108h,base+016B5h
-  dw 01480h,base+030DCh
-  dw 01300h,base+03246h
+  dw 0037Fh,base+02629h
+  dw 0077Fh,base+03A52h
+  dw 0087Fh,base+03A43h
+  dw 0097Fh,base+03A1Ah
+  dw 00B7Fh,base+039E6h
+  dw 00E7Fh,base+03945h
+  dw 00F80h,base+0390Bh
+  dw 00F7Fh,base+0391Ah
+  dw 01080h,base+03820h
+  dw 01180h,base+035AEh
+  dw 01180h,base+035BFh
+  dw 01280h,base+031D5h
+  dw 0127Fh,base+031E7h
+  dw 01480h,base+02CFFh
+  dw 01480h,base+02D13h
+  dw 01480h,base+02D27h
+  dw 01480h,base+02D3Bh
+  dw 01480h,base+02D4Fh
+  dw 01481h,base+02D63h
+  dw 01380h,base+02EBCh
+  dw 01380h,base+02ECFh
+  dw 01380h,base+02EE2h
+  dw 01380h,base+02EF5h
+  dw 0137Fh,base+02F08h
+  dw 01480h,base+02D77h
+  dw 01480h,base+02D8Bh
+  dw 01300h,base+02F1Bh
 
 ZombieCaterpillarAttackframe031:
   db 03Ch,020h,06Ah,048h
   db 080h
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01380h,base+03259h
-  dw 01380h,base+0326Ch
-  dw 01380h,base+0327Fh
-  dw 01280h,base+03524h
-  dw 01280h,base+03536h
-  dw 01180h,base+038D9h
-  dw 01180h,base+038EAh
-  dw 0117Fh,base+038FBh
-  dw 01180h,base+0390Ch
-  dw 01180h,base+0391Dh
-  dw 01080h,base+03B0Bh
-  dw 01080h,base+03B1Bh
-  dw 01080h,base+03B2Bh
-  dw 01076h,base+03B3Bh
-  dw 0010Ah,base+021D8h
-  dw 01076h,base+03B4Bh
-  dw 00109h,base+016B6h
-  dw 01177h,base+0392Eh
-  dw 00109h,base+016B5h
-  dw 01177h,base+0393Fh
-  dw 00109h,base+016B5h
-  dw 01177h,base+03950h
-  dw 00209h,base+03D5Ch
-  dw 01178h,base+03785h
-  dw 00108h,base+021D8h
-  dw 01178h,base+03796h
-  dw 00108h,base+016B5h
-  dw 01178h,base+037A7h
-  dw 00208h,base+03D5Ch
-  dw 01178h,base+02EC3h
-  dw 00203h,base+016B5h
-  dw 0167Eh,base+02BB3h
-  dw 01880h,base+021D7h
-  dw 01780h,base+025EAh
-  dw 0177Fh,base+02601h
-  dw 01880h,base+021EFh
-  dw 0177Fh,base+02618h
+  dw 01380h,base+02F2Eh
+  dw 01380h,base+02F41h
+  dw 01380h,base+02F54h
+  dw 01280h,base+031F9h
+  dw 01280h,base+0320Bh
+  dw 01180h,base+035D0h
+  dw 01180h,base+035E1h
+  dw 0117Fh,base+035F2h
+  dw 01180h,base+03603h
+  dw 01180h,base+03614h
+  dw 01080h,base+03830h
+  dw 01080h,base+03840h
+  dw 01080h,base+03850h
+  dw 01080h,base+03860h
+  dw 0107Fh,base+03870h
+  dw 01180h,base+03625h
+  dw 01180h,base+03449h
+  dw 01180h,base+0345Ah
+  dw 01180h,base+0346Bh
+  dw 01180h,base+0347Ch
+  dw 01180h,base+0348Dh
+  dw 0117Bh,base+02BAEh
+  dw 0167Fh,base+02931h
+  dw 0177Fh,base+02561h
+  dw 01780h,base+02578h
+  dw 0177Fh,base+0258Fh
   dw 01880h,base+02207h
+  dw 0177Fh,base+025A6h
   dw 01880h,base+0221Fh
   dw 01880h,base+02237h
-  dw 01800h,base+020CFh
+  dw 01880h,base+0224Fh
+  dw 01800h,base+0212Fh
 
 ZombieCaterpillarAttackframe032:
   db 046h,010h,05Eh,068h
   db 068h
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 01980h,base+01C4Bh
-  dw 01980h,base+01C64h
-  dw 01A80h,base+01681h
-  dw 01A80h,base+0169Bh
-  dw 01B80h,base+0114Fh
-  dw 01B80h,base+0116Ah
-  dw 01C7Fh,base+00D30h
-  dw 01D80h,base+00A1Ch
-  dw 01D80h,base+00A39h
-  dw 01E80h,base+00550h
-  dw 01E80h,base+0056Eh
-  dw 01E80h,base+0058Ch
-  dw 01E80h,base+005AAh
-  dw 01E7Eh,base+005C8h
+  dw 01980h,base+01CABh
+  dw 01980h,base+01CC4h
+  dw 01A80h,base+016FBh
+  dw 01A80h,base+01715h
+  dw 01B80h,base+011C9h
+  dw 01B80h,base+011E4h
+  dw 01C7Fh,base+00DAAh
+  dw 01D80h,base+00A96h
+  dw 01D80h,base+00AB3h
+  dw 01E80h,base+00570h
+  dw 01E80h,base+0058Eh
+  dw 01E80h,base+005ACh
+  dw 01E80h,base+005CAh
+  dw 01E7Eh,base+005E8h
   dw 0207Eh,base+00349h
   dw 02300h,base+00000h
 
@@ -1054,86 +1037,86 @@ ZombieCaterpillarAttackframe033:
   db 086h
   db 000h,000h,0CEh,000h,000h
   db 000h,000h
-  dw 00380h,base+0269Bh
-  dw 0037Dh,base+0095Eh
-  dw 0077Fh,base+03D3Eh
-  dw 00B80h,base+03CCCh
-  dw 00B7Fh,base+03CD7h
-  dw 00D7Fh,base+03C70h
-  dw 00E7Fh,base+03C2Eh
-  dw 01080h,base+03B5Bh
-  dw 0107Fh,base+03B6Bh
-  dw 01180h,base+03961h
-  dw 01280h,base+03548h
-  dw 01280h,base+0355Ah
-  dw 01280h,base+0356Ch
-  dw 0127Fh,base+0357Eh
-  dw 01380h,base+03292h
-  dw 01380h,base+032A5h
-  dw 01380h,base+032B8h
-  dw 01380h,base+032CBh
-  dw 01380h,base+032DEh
-  dw 01380h,base+032F1h
-  dw 01380h,base+03304h
-  dw 01300h,base+03317h
+  dw 00380h,base+02629h
+  dw 0037Dh,base+009D8h
+  dw 0077Fh,base+03A59h
+  dw 00B80h,base+039F1h
+  dw 00B7Fh,base+039FCh
+  dw 00D7Fh,base+03995h
+  dw 00E7Fh,base+03953h
+  dw 01080h,base+03880h
+  dw 0107Fh,base+03890h
+  dw 01180h,base+03636h
+  dw 01280h,base+0321Dh
+  dw 01280h,base+0322Fh
+  dw 01280h,base+03241h
+  dw 0127Fh,base+03253h
+  dw 01380h,base+02F67h
+  dw 01380h,base+02F7Ah
+  dw 01380h,base+02F8Dh
+  dw 01380h,base+02FA0h
+  dw 01380h,base+02FB3h
+  dw 01380h,base+02FC6h
+  dw 01380h,base+02FD9h
+  dw 01300h,base+02FECh
 
 ZombieCaterpillarAttackframe034:
   db 032h,020h,06Ah,048h
   db 076h
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01280h,base+03590h
-  dw 01280h,base+035A2h
-  dw 01280h,base+035B4h
-  dw 01280h,base+035C6h
-  dw 01380h,base+0332Ah
-  dw 01381h,base+0333Dh
-  dw 01280h,base+035D8h
-  dw 01280h,base+035EAh
-  dw 01280h,base+035FCh
-  dw 01281h,base+0360Eh
-  dw 01180h,base+03972h
-  dw 01180h,base+03983h
-  dw 01180h,base+03994h
-  dw 01181h,base+039A5h
-  dw 01080h,base+03B7Bh
-  dw 0107Fh,base+03B8Bh
-  dw 01180h,base+039B6h
-  dw 01180h,base+039C7h
-  dw 01180h,base+039D8h
-  dw 01180h,base+039E9h
-  dw 01180h,base+039FAh
-  dw 0117Ch,base+037A7h
-  dw 0157Fh,base+02EBFh
-  dw 0167Fh,base+02BC9h
-  dw 01780h,base+0262Fh
-  dw 0167Fh,base+02BDFh
-  dw 01780h,base+02646h
-  dw 0177Fh,base+0265Dh
-  dw 01780h,base+02674h
-  dw 01880h,base+0224Fh
+  dw 01280h,base+03265h
+  dw 01280h,base+03277h
+  dw 01280h,base+03289h
+  dw 01280h,base+0329Bh
+  dw 01380h,base+02FFFh
+  dw 01381h,base+03012h
+  dw 01280h,base+032ADh
+  dw 01280h,base+032BFh
+  dw 01280h,base+032D1h
+  dw 01281h,base+032E3h
+  dw 01180h,base+03647h
+  dw 01180h,base+03658h
+  dw 01180h,base+03669h
+  dw 01181h,base+0367Ah
+  dw 01080h,base+038A0h
+  dw 0107Fh,base+038B0h
+  dw 01180h,base+0368Bh
+  dw 01180h,base+0369Ch
+  dw 01180h,base+036ADh
+  dw 01180h,base+036BEh
+  dw 01180h,base+036CFh
+  dw 0117Ch,base+0348Dh
+  dw 0157Fh,base+02BAAh
+  dw 0167Fh,base+02947h
+  dw 01780h,base+025BDh
+  dw 0167Fh,base+0295Dh
+  dw 01780h,base+025D4h
+  dw 0177Fh,base+025EBh
+  dw 01780h,base+02602h
   dw 01880h,base+02267h
-  dw 01800h,base+0227Fh
+  dw 01880h,base+0227Fh
+  dw 01800h,base+02297h
 
 ZombieCaterpillarAttackframe035:
   db 046h,010h,05Eh,068h
   db 068h
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 01980h,base+01C4Bh
-  dw 01980h,base+01C64h
-  dw 01A80h,base+01681h
-  dw 01A80h,base+0169Bh
-  dw 01B80h,base+0114Fh
-  dw 01B80h,base+0116Ah
-  dw 01C7Fh,base+00D30h
-  dw 01D80h,base+00A1Ch
-  dw 01D80h,base+00A39h
-  dw 01E80h,base+00550h
-  dw 01E80h,base+0056Eh
-  dw 01E80h,base+0058Ch
-  dw 01E80h,base+005AAh
-  dw 01E7Eh,base+005C8h
+  dw 01980h,base+01CABh
+  dw 01980h,base+01CC4h
+  dw 01A80h,base+016FBh
+  dw 01A80h,base+01715h
+  dw 01B80h,base+011C9h
+  dw 01B80h,base+011E4h
+  dw 01C7Fh,base+00DAAh
+  dw 01D80h,base+00A96h
+  dw 01D80h,base+00AB3h
+  dw 01E80h,base+00570h
+  dw 01E80h,base+0058Eh
+  dw 01E80h,base+005ACh
+  dw 01E80h,base+005CAh
+  dw 01E7Eh,base+005E8h
   dw 0207Eh,base+00349h
   dw 02300h,base+00000h
 
@@ -1142,89 +1125,89 @@ ZombieCaterpillarAttackframe036:
   db 078h
   db 000h,000h,0D1h,000h,000h
   db 000h,000h
-  dw 0037Dh,base+0269Bh
-  dw 0067Fh,base+03D51h
-  dw 00880h,base+03D20h
-  dw 0097Fh,base+03CF6h
-  dw 00B7Fh,base+03CB6h
-  dw 00D80h,base+03C63h
-  dw 00E80h,base+03A5Bh
-  dw 00F7Fh,base+036DBh
-  dw 01080h,base+0314Fh
-  dw 0107Fh,base+02F60h
-  dw 01380h,base+0319Bh
-  dw 0147Fh,base+02FC4h
-  dw 01580h,base+02DD8h
-  dw 01680h,base+028F3h
-  dw 0167Fh,base+02909h
-  dw 01880h,base+01FF7h
-  dw 01880h,base+0200Fh
-  dw 01880h,base+02027h
-  dw 01880h,base+0203Fh
-  dw 01980h,base+01B83h
-  dw 01980h,base+01B9Ch
-  dw 01980h,base+01BB5h
-  dw 01981h,base+01BCEh
-  dw 01880h,base+0105Ch
-  dw 01800h,base+02057h
+  dw 0037Dh,base+02629h
+  dw 0067Fh,base+03A6Ch
+  dw 00880h,base+03A3Bh
+  dw 0097Fh,base+03A11h
+  dw 00B7Fh,base+039DBh
+  dw 00D80h,base+03988h
+  dw 00E80h,base+03730h
+  dw 00F7Fh,base+033B0h
+  dw 01080h,base+02DFEh
+  dw 0107Fh,base+02C4Bh
+  dw 01380h,base+02E4Ah
+  dw 0147Fh,base+02CAFh
+  dw 01580h,base+02B56h
+  dw 01680h,base+02881h
+  dw 0167Fh,base+02897h
+  dw 01880h,base+02057h
+  dw 01880h,base+0206Fh
+  dw 01880h,base+02087h
+  dw 01880h,base+0209Fh
+  dw 01980h,base+01BE3h
+  dw 01980h,base+01BFCh
+  dw 01980h,base+01C15h
+  dw 01981h,base+01C2Eh
+  dw 01880h,base+010D6h
+  dw 01800h,base+020B7h
 
 ZombieCaterpillarAttackframe037:
   db 036h,020h,066h,048h
   db 066h
   db 000h,000h,0B8h,000h,000h
   db 000h,000h
-  dw 01880h,base+0206Fh
-  dw 01980h,base+01BE7h
-  dw 01980h,base+01C00h
-  dw 01A81h,base+01667h
-  dw 01980h,base+01C19h
-  dw 01981h,base+01C32h
-  dw 01881h,base+02087h
-  dw 01780h,base+024D6h
-  dw 01782h,base+024EDh
-  dw 01683h,base+0291Fh
-  dw 01382h,base+031AEh
-  dw 01181h,base+037B8h
-  dw 01080h,base+03ABBh
-  dw 0107Fh,base+03ACBh
-  dw 01180h,base+037C9h
-  dw 01180h,base+03763h
-  dw 01180h,base+03774h
-  dw 01180h,base+03785h
-  dw 01180h,base+03796h
-  dw 01180h,base+037A7h
-  dw 01180h,base+02EC3h
-  dw 0117Ch,base+02BB8h
-  dw 0157Fh,base+02DEDh
-  dw 0157Fh,base+02E02h
-  dw 01680h,base+02935h
-  dw 0167Fh,base+0294Bh
-  dw 01680h,base+02961h
-  dw 0167Fh,base+02977h
-  dw 01780h,base+02504h
-  dw 01880h,base+0209Fh
-  dw 01880h,base+020B7h
-  dw 01800h,base+020CFh
+  dw 01880h,base+020CFh
+  dw 01980h,base+01C47h
+  dw 01980h,base+01C60h
+  dw 01A81h,base+016E1h
+  dw 01980h,base+01C79h
+  dw 01981h,base+01C92h
+  dw 01881h,base+020E7h
+  dw 01780h,base+024EEh
+  dw 01782h,base+02505h
+  dw 01683h,base+028ADh
+  dw 01382h,base+02E5Dh
+  dw 01181h,base+0349Eh
+  dw 01080h,base+037A0h
+  dw 0107Fh,base+037B0h
+  dw 01180h,base+034AFh
+  dw 01180h,base+03449h
+  dw 01180h,base+0345Ah
+  dw 01180h,base+0346Bh
+  dw 01180h,base+0347Ch
+  dw 01180h,base+0348Dh
+  dw 01180h,base+02BAEh
+  dw 0117Ch,base+02936h
+  dw 0157Fh,base+02B6Bh
+  dw 0157Fh,base+02B80h
+  dw 01680h,base+028C3h
+  dw 0167Fh,base+028D9h
+  dw 01680h,base+028EFh
+  dw 0167Fh,base+02905h
+  dw 01780h,base+0251Ch
+  dw 01880h,base+020FFh
+  dw 01880h,base+02117h
+  dw 01800h,base+0212Fh
 
 ZombieCaterpillarAttackframe038:
   db 046h,010h,05Eh,068h
   db 068h
   db 000h,000h,098h,000h,000h
   db 000h,000h
-  dw 01980h,base+01C4Bh
-  dw 01980h,base+01C64h
-  dw 01A80h,base+01681h
-  dw 01A80h,base+0169Bh
-  dw 01B80h,base+0114Fh
-  dw 01B80h,base+0116Ah
-  dw 01C7Fh,base+00D30h
-  dw 01D80h,base+00A1Ch
-  dw 01D80h,base+00A39h
-  dw 01E80h,base+00550h
-  dw 01E80h,base+0056Eh
-  dw 01E80h,base+0058Ch
-  dw 01E80h,base+005AAh
-  dw 01E7Eh,base+005C8h
+  dw 01980h,base+01CABh
+  dw 01980h,base+01CC4h
+  dw 01A80h,base+016FBh
+  dw 01A80h,base+01715h
+  dw 01B80h,base+011C9h
+  dw 01B80h,base+011E4h
+  dw 01C7Fh,base+00DAAh
+  dw 01D80h,base+00A96h
+  dw 01D80h,base+00AB3h
+  dw 01E80h,base+00570h
+  dw 01E80h,base+0058Eh
+  dw 01E80h,base+005ACh
+  dw 01E80h,base+005CAh
+  dw 01E7Eh,base+005E8h
   dw 0207Eh,base+00349h
   dw 02300h,base+00000h
 
