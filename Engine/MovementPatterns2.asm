@@ -284,7 +284,7 @@ GoatCheckIfDead:
 
   ld    (ix+enemies_and_objects.v7),240/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
   ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
-  ld    (ix+enemies_and_objects.v9),008     ;v9=timer until next phase
+  ld    (ix+enemies_and_objects.v9),011     ;blending into background (MovementPatternsFixedPage1.asm) in: v9=008
   ret
   
 BossGoat:

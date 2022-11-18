@@ -485,7 +485,7 @@ BossZombieCaterpillar:
   dec   a
   jp    z,BossZombieCaterpillarDead         ;5=dead
   dec   a
-  jp    z,BossBlendingIntoBackgroundOnDeath ;6=blending into background (MovementPatternsFixedPage1.asm) in: v9=008
+  jp    z,BossBlendingIntoBackgroundOnDeath ;6=blending into background (MovementPatternsFixedPage1.asm) in: v9=01
   ret
 
   BossZombieCaterpillarDead:
@@ -500,7 +500,7 @@ BossZombieCaterpillar:
   cp    180                                 ;(0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
   ret   c
   ld    (ix+enemies_and_objects.v8),6       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead, 6=blending into background)
-  ld    (ix+enemies_and_objects.v9),008     ;v9=timer until next phase  
+  ld    (ix+enemies_and_objects.v9),011     ;v9=timer until next phase  
   ret  
     
   BossZombieCaterpillarHit:
@@ -654,7 +654,7 @@ ZombieCaterpillarCheckIfDead:
  
 CheckPlayerHitByZombieCaterpillar:
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=attack, 1=Idle, 2=diving underground, 3=moving underground towards player, 4=hit, 5=dead)
-  cp    3m
+  cp    3
   ret   nc                                  ;don't check for collision when boss is hit or dying or moving underground towards player
 
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 18=diving underground, 54=attacking, 96=hit, 111 = dying)
@@ -861,7 +861,7 @@ BossCheckIfDead:
   call  ResetV1andV2  
   ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
   ld    (ix+enemies_and_objects.v7),69      ;v7=sprite frame
-  ld    (ix+enemies_and_objects.v9),008     ;v8=blending into background (MovementPatternsFixedPage1.asm) in: v9=008
+  ld    (ix+enemies_and_objects.v9),011     ;v8=blending into background (MovementPatternsFixedPage1.asm) in: v9=011
   ret
 
 CheckPlayerHitByBoss:
@@ -880,7 +880,7 @@ VoodooWaspCheckIfHit:
   cp    4
   ret   z                                   ;don't check if boss is dead
 
-  ld    b,-40
+  ld    b,-55
   call  CheckPlayerPunchesBossWithYOffset   ;Check if player hit's enemy. in b=Y offset
   
   ld    a,(ix+enemies_and_objects.hit?)

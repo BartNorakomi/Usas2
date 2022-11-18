@@ -38,12 +38,19 @@
 BossBlendingIntoBackgroundOnDeath:          ;blending into background (MovementPatternsFixedPage1.asm) in: v9=008
   ;as soon as boss is dead, and no longer moving or changing frame, stop restoring background during 3 frames, so boss will be visible in all pages. After that put Boss ALSO (for 1 frame) in page 3
   ;after that put boss (for 3 frames) normally again
+  ld    a,(ix+enemies_and_objects.v9)       ;v9=timer until next phase
+  dec   a                                   ;amount of frames per animation step
+  ld    (ix+enemies_and_objects.v9),a       ;v9=timer until next phase
+  cp    8
+  ret   nc
+
   xor   a
   ld    (RestoreBackgroundSF2Object?),a
 
   ld    a,(ix+enemies_and_objects.v9)       ;v9=timer until next phase
-  dec   a                                   ;amount of frames per animation step
-  ld    (ix+enemies_and_objects.v9),a       ;v9=timer until next phase
+  or    a
+;  dec   a                                   ;amount of frames per animation step
+;  ld    (ix+enemies_and_objects.v9),a       ;v9=timer until next phase
   jr    z,.RemoveObject
   cp    4
   ld    a,3

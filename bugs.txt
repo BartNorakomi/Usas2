@@ -8,3 +8,4 @@ of the screen. So when you get bumped to the left while facing right, I would ex
 (despite facing right) in order to keep at least those same 50 pixels margin visible.
 
 de force move into screen bij axe kan ertoe leiden dat je in een muur geduwd wordt
+

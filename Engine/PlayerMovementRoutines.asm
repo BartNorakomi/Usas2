@@ -2,6 +2,134 @@
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
 ;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing, LSwordAttack, RSwordAttack, LDaggerAttack, RDaggerAttack, LAxeAttack, RAxeAttack, LSpearAttack, RSpearAttack
 
+;SetPrimaryWeaponHitBoxLeftSitting,SetPrimaryWeaponHitBoxRightSitting,SetPrimaryWeaponHitBoxLeftStanding,SetPrimaryWeaponHitBoxRightStanding
+
+SetPrimaryWeaponHitBoxLeftSitting:
+  ;activate primary weapon - which enables it's hitbox detection with enemies
+  ld    a,1
+  ld    (PrimaryWeaponActive?),a
+  
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    bc,20+12              ;normal engine
+  jr    z,.engineFound
+  ld    bc,04+12              ;SF2 engine 
+  .engineFound:
+  ld    hl,(ClesX)
+  sbc   hl,bc                 ;adjust x starting placement projectile
+  jr    nc,.SetX
+  ld    hl,0
+  .SetX:
+  ld    (PrimaryWeaponX),hl
+  ld    bc,16
+  add   hl,bc
+  ld    (PrimaryWeaponXRightSide),hl
+  ld    a,(ClesY)
+  add   a,6
+  ld    (PrimaryWeaponY),a
+  add   a,16
+  ld    (PrimaryWeaponYBottom),a
+    
+  ld    a,16
+  ld    (PrimaryWeaponNY),a
+  ld    a,16
+  ld    (PrimaryWeaponNx),a
+  ret
+
+SetPrimaryWeaponHitBoxRightSitting:
+  ;activate primary weapon - which enables it's hitbox detection with enemies
+  ld    a,1
+  ld    (PrimaryWeaponActive?),a
+  
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    bc,20                 ;normal engine
+  jr    z,.engineFound
+  ld    bc,04                 ;SF2 engine 
+  .engineFound:
+  ld    hl,(ClesX)
+  sbc   hl,bc                 ;adjust x starting placement projectile
+  jr    nc,.SetX
+  ld    hl,0
+  .SetX:
+  ld    (PrimaryWeaponX),hl
+  ld    bc,16
+  add   hl,bc
+  ld    (PrimaryWeaponXRightSide),hl
+  ld    a,(ClesY)
+  add   a,6
+  ld    (PrimaryWeaponY),a
+  add   a,16
+  ld    (PrimaryWeaponYBottom),a
+    
+  ld    a,16
+  ld    (PrimaryWeaponNY),a
+  ld    a,16
+  ld    (PrimaryWeaponNx),a
+  ret
+
+SetPrimaryWeaponHitBoxLeftStanding:
+  ;activate primary weapon - which enables it's hitbox detection with enemies
+  ld    a,1
+  ld    (PrimaryWeaponActive?),a
+  
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    bc,20+12              ;normal engine
+  jr    z,.engineFound
+  ld    bc,04+12              ;SF2 engine 
+  .engineFound:
+  ld    hl,(ClesX)
+  sbc   hl,bc                 ;adjust x starting placement projectile
+  jr    nc,.SetX
+  ld    hl,0
+  .SetX:
+  ld    (PrimaryWeaponX),hl
+  ld    bc,16
+  add   hl,bc
+  ld    (PrimaryWeaponXRightSide),hl
+  ld    a,(ClesY)
+  ld    (PrimaryWeaponY),a
+  add   a,16
+  ld    (PrimaryWeaponYBottom),a
+    
+  ld    a,16
+  ld    (PrimaryWeaponNY),a
+  ld    a,16
+  ld    (PrimaryWeaponNx),a
+  ret
+
+SetPrimaryWeaponHitBoxRightStanding:
+  ;activate primary weapon - which enables it's hitbox detection with enemies
+  ld    a,1
+  ld    (PrimaryWeaponActive?),a
+  
+  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    bc,20                 ;normal engine
+  jr    z,.engineFound
+  ld    bc,04                 ;SF2 engine 
+  .engineFound:
+  ld    hl,(ClesX)
+  sbc   hl,bc                 ;adjust x starting placement projectile
+  jr    nc,.SetX
+  ld    hl,0
+  .SetX:
+  ld    (PrimaryWeaponX),hl
+  ld    bc,16
+  add   hl,bc
+  ld    (PrimaryWeaponXRightSide),hl
+  ld    a,(ClesY)
+  ld    (PrimaryWeaponY),a
+  add   a,16
+  ld    (PrimaryWeaponYBottom),a
+    
+  ld    a,16
+  ld    (PrimaryWeaponNY),a
+  ld    a,16
+  ld    (PrimaryWeaponNx),a
+  ret
+
 LShootWater:
   ld    b,-WaterWeaponSpeed
   jp    LShootElementalWeapon
@@ -474,7 +602,7 @@ RSilhouetteKickAnimateTable:
 
 LSilhouetteKick:
   call  .CheckPassThroughWall       ;if there is a wall in front of player and player would be able to end up at the other side, then set PlayerAniCount+1 to 255
-  call  LSitPunch.SetAttackHitBox     ;set the hitbox coordinates and enable hitbox
+  call  SetPrimaryWeaponHitBoxLeftStanding
   call  .Animate
   
   ;horizontal movement    
@@ -565,7 +693,7 @@ LSilhouetteKick:
 
 RSilhouetteKick:
   call  .CheckPassThroughWall       ;if there is a wall in front of player and player would be able to end up at the other side, then set PlayerAniCount+1 to 255
-  call  RSitPunch.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
+  call  SetPrimaryWeaponHitBoxRightStanding
   call  .Animate
   
   ;horizontal movement    
@@ -791,7 +919,7 @@ Charging:
   cp    2 * 11                      ;check 10th frame
   jr    z,endChargeLeft             ;at end of charge change to L_Stand
 
-  call  LSitPunch.SetAttackHitBox     ;set the hitbox coordinates and enable hitbox
+  call  SetPrimaryWeaponHitBoxLeftStanding
   
   ;horizontal movement
   ld    a,(PlayerAniCount)
@@ -810,7 +938,7 @@ Charging:
   cp    2 * 11                      ;check 10th frame
   jp    z,endChargeRight            ;at end of charge change to R_Stand
 
-  call  RSitPunch.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
+  call  SetPrimaryWeaponHitBoxRightStanding
   
   ;horizontal movement
   ld    a,(PlayerAniCount)
@@ -890,7 +1018,7 @@ LSitPunch:
   jp    c,Set_Fall
   ..EndCheckSnapToPlatform:
     
-  call  .SetAttackHitBox
+  call  SetPrimaryWeaponHitBoxLeftSitting
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -947,54 +1075,6 @@ LSitPunch:
 	bit		1,a           ;cursor down pressed ?
 	jp		nz,Set_L_SitPunch
 	jp		Set_L_Attack
-
-.SetAttackHitBox:
-
-  ;activate primary weapon - which enables it's hitbox detection with enemies
-  ld    a,1
-  ld    (PrimaryWeaponActive?),a
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ;we check 12 pixels further to the left when the player is facing left
-  ld    b,20 +12                  ;normal engine
-  jr    z,.engineFound2
-  ld    b,04 +12                 ;SF2 engine 
-  .engineFound2:
-  ld    a,(ClesX)
-  sub   a,b                   ;adjust x starting placement projectile
-  jr    nc,.SetXLeft
-  xor   a
-  .SetXLeft:
-  ld    (PrimaryWeaponX),a
-  add   a,16
-  ld    (PrimaryWeaponXRightSide),a
-  ld    a,(ClesY)
-  add   a,6
-  ld    (PrimaryWeaponY),a
-  add   a,16
-  ld    (PrimaryWeaponYBottom),a
-    
-  ld    a,16
-  ld    (PrimaryWeaponNY),a
-  ld    a,16
-  ld    (PrimaryWeaponNx),a
-  ret
-
-  ld    a,1
-  ld    (EnableHitbox?),a
-  ld    hl,(ClesX)
-  ld    de,-14  + 19
-  add   hl,de
-  ld    (HitBoxSX),hl
-;  ld    a,16
-;  ld    (HitBoxNX),a
-;  ld    a,12
-;  ld    (HitBoxNY),a
-  ld    a,(ClesY)
-  add   a,17 - 6
-  ld    (HitBoxSY),a
-  ret
   
 RSitPunch:
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
@@ -1011,7 +1091,7 @@ RSitPunch:
   jp    c,Set_Fall
   ..EndCheckSnapToPlatform:
   
-  call  .SetAttackHitBox
+  call  SetPrimaryWeaponHitBoxRightSitting
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -1068,55 +1148,6 @@ RSitPunch:
 	bit		1,a           ;cursor down pressed ?
 	jp		nz,Set_R_SitPunch
 	jp		Set_R_Attack
-    
-.SetAttackHitBox:
-
-;activate primary weapon - which enables it's hitbox detection with enemies
-  ld    a,1
-  ld    (PrimaryWeaponActive?),a
-  
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    b,20                  ;normal engine
-  jr    z,.engineFound
-  ld    b,04                  ;SF2 engine 
-  .engineFound:
-  ld    a,(ClesX)
-  sub   a,b                   ;adjust x starting placement projectile
-  jr    nc,.SetX
-  xor   a
-  .SetX:
-  ld    (PrimaryWeaponX),a
-  add   a,16
-  ld    (PrimaryWeaponXRightSide),a
-  ld    a,(ClesY)
-  add   a,6
-  ld    (PrimaryWeaponY),a
-  add   a,16
-  ld    (PrimaryWeaponYBottom),a
-    
-  ld    a,16
-  ld    (PrimaryWeaponNY),a
-  ld    a,16
-  ld    (PrimaryWeaponNx),a
-  ret
-
-
-
-  ld    a,1
-  ld    (EnableHitbox?),a
-  ld    hl,(ClesX)
-  ld    de,+14  + 19
-  add   hl,de
-  ld    (HitBoxSX),hl
-;  ld    a,16
-;  ld    (HitBoxNX),a
-;  ld    a,12
-;  ld    (HitBoxNY),a
-  ld    a,(ClesY)
-  add   a,17 - 6
-  ld    (HitBoxSY),a    
-  ret
 
 LAttack:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
@@ -1134,7 +1165,7 @@ LAttack:
   jp    c,Set_Fall
   ..EndCheckSnapToPlatform:
   
-  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
+  call  SetPrimaryWeaponHitBoxLeftStanding
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -1160,72 +1191,6 @@ LAttack:
   dec   a
   jp    z,LAttack2
   jp    LAttack3
-
-.SetAttackHitBox:
-  ;activate primary weapon - which enables it's hitbox detection with enemies
-  ld    a,1
-  ld    (PrimaryWeaponActive?),a
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ;we check 12 pixels further to the left when the player is facing left
-  ld    b,20 +12                  ;normal engine
-  jr    z,.engineFound2
-  ld    b,04 +12                 ;SF2 engine 
-  .engineFound2:
-  ld    a,(ClesX)
-  sub   a,b                   ;adjust x starting placement projectile
-  jr    nc,.SetXLeft
-  xor   a
-  .SetXLeft:
-  ld    (PrimaryWeaponX),a
-  add   a,16
-  ld    (PrimaryWeaponXRightSide),a
-  ld    a,(ClesY)
-  ld    (PrimaryWeaponY),a
-  add   a,16
-  ld    (PrimaryWeaponYBottom),a
-    
-  ld    a,16
-  ld    (PrimaryWeaponNY),a
-  ld    a,16
-  ld    (PrimaryWeaponNx),a
-  ret
-  
-  
-  
-  ld    a,1
-  ld    (EnableHitbox?),a
-  ld    hl,(ClesX)
-  ld    de,-14  + 19
-  add   hl,de
-  ld    (HitBoxSX),hl
-;  ld    a,16
-;  ld    (HitBoxNX),a
-;  ld    a,12
-;  ld    (HitBoxNY),a
-  ld    a,(ClesY)
-  add   a,17 - 8
-  ld    (HitBoxSY),a
-  ret
-
-;LAttack4:
-;  ld    a,(PlayerAniCount)
-;  inc   a
-;  ld    (PlayerAniCount),a
-;  ld    hl,PlayerSpriteData_Char_LeftPunch3a
-;  cp    3
-;  jr    c,.setSprite
-;  cp    7
-;  ld    hl,PlayerSpriteData_Char_LeftPunch3b
-;  jr    c,.setSprite  
-;  ld    hl,PlayerSpriteData_Char_LeftPunch3c
-;  .setSprite:
-;	ld		(standchar),hl
-	
-;	cp    15
-;	ret   nz
-;  jp    Set_L_Stand
 
 LAttack3:
   ld    a,(PlayerAniCount)
@@ -1452,7 +1417,7 @@ SWspriteSetNYNXSYSX:
   ld    a,(hl)
 ;  ld    (ix+8),a            ;nx
   ld    (PrimaryWeaponNX),a ;nx
-  ld    b,a
+  ld    c,a
   inc   hl                  ;sy
   ld    a,(hl)
 ;  ld    (ix+4),a            ;sy  
@@ -1462,7 +1427,7 @@ SWspriteSetNYNXSYSX:
 ;  ld    (ix+5),a            ;IceWeaponSX_RightSide
   ld    (PrimaryWeaponSX_RightSide),a ;WeaponSX_RightSide
 ;  add   a,(ix+8)            ;add nx to determine at what point we should copy when copying from right to left
-  add   a,b                 ;add nx to determine at what point we should copy when copying from right to left
+  add   a,c                 ;add nx to determine at what point we should copy when copying from right to left
   dec   a                   ;add nx - 1
 ;  ld    (ix+6),a            ;IceWeaponSX_LeftSide
   ld    (PrimaryWeaponSX_LeftSide),a ;WeaponSX_LeftSide
@@ -1482,15 +1447,15 @@ SWspriteSetNYNXSYSX:
   sbc   hl,de               ;adjust x starting placement projectile
   ld    e,50
   add   hl,de               ;move 50 pixels to the right
-  ld    a,l
-  bit   0,h
-  jr    z,.SetX
-  ld    a,255
+;  ld    a,l
+;  bit   0,h
+;  jr    z,.SetX
+;  ld    a,255
   .SetX:
-;  ld    (ix+2),a            ;x
-  ld    (PrimaryWeaponX),a  ;x  
-  add   a,b                 ;add nx to determine the right side
-  ld    (PrimaryWeaponXRightSide),a  ;x  
+  ld    (PrimaryWeaponX),hl ;x
+  ld    b,0
+  add   hl,bc               ;add nx to determine the right side
+  ld    (PrimaryWeaponXRightSide),hl ;x  
   ret
 
 AnimatePlayerStopAtEnd:           ;animates player, when end of table is reached, player goes to stand or sit pose
@@ -1697,7 +1662,7 @@ CheckPrimaryWeaponEdgesFacingLeft:
 
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
-  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
+  jr    nz,.SF2Engine         ;minimal border check in the SF2 engine
 
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
   xor   a
@@ -1707,7 +1672,7 @@ CheckPrimaryWeaponEdgesFacingLeft:
   xor   a
   sbc   hl,bc
   jr    nc,.BruteForceMovementLeft
-  .skipBorderCheck:
+  .setPrimaryWeaponActive:
   ld    a,1                   ;activate primary weapon
   ld    (PrimaryWeaponActive?),a	  
   ret
@@ -1733,6 +1698,13 @@ CheckPrimaryWeaponEdgesFacingLeft:
   ld    (PlayerAniCount),a
   ret
 
+  .SF2Engine:                 ;this little routine is added, cuz otherwise when standing on the edge of the screen, the primary weapon can go through the edge and appear on the other side of the screen
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
+  ld    de,20
+  sbc   hl,de
+  jr    c,.Set_L_Stand
+  jp    .setPrimaryWeaponActive
+
 CheckPrimaryWeaponEdgesFacingRight:
   ld    a,(SecundaryWeaponActive?)
   or    a
@@ -1750,7 +1722,7 @@ CheckPrimaryWeaponEdgesFacingRight:
 
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
-  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
+  jr    nz,.SF2Engine         ;minimal border check in the SF2 engine
 
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
   xor   a
@@ -1760,7 +1732,7 @@ CheckPrimaryWeaponEdgesFacingRight:
   xor   a
   sbc   hl,bc
   jr    nc,.Set_R_Stand
-  .skipBorderCheck:
+  .setPrimaryWeaponActive:
   ld    a,1                   ;activate primary weapon
   ld    (PrimaryWeaponActive?),a	  
   ret
@@ -1769,10 +1741,6 @@ CheckPrimaryWeaponEdgesFacingRight:
   jp    BruteForceMovementRight
   .Set_R_Stand:
   pop     af                  ;pop the call
-
-;  ld    a,(PrimaryWeaponActivatedWhileJumping?)
-;  or    a
-;  jp    z,Set_R_Stand         ;if you were standing, go back to standing pose
 
 	ld		hl,(PlayerSpriteStand)
 	ld		de,Jump
@@ -1786,6 +1754,13 @@ CheckPrimaryWeaponEdgesFacingRight:
   ld    (PrimaryWeaponActive?),a
   ld    (PlayerAniCount),a  
   ret
+
+  .SF2Engine:                 ;this little routine is added, cuz otherwise when standing on the edge of the screen, the primary weapon can go through the edge and appear on the other side of the screen
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    bc,240                ;right edge
+  sbc   hl,bc
+  jr    nc,.Set_R_Stand
+  jp    .setPrimaryWeaponActive
 
 CheckPrimaryWeaponEdgesFacingLeftWhenSitting:
   ld    a,(SecundaryWeaponActive?)
@@ -1804,7 +1779,7 @@ CheckPrimaryWeaponEdgesFacingLeftWhenSitting:
 
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
-  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
+  jr    nz,.SF2Engine         ;minimal border check in the SF2 engine
 
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
   xor   a
@@ -1814,7 +1789,7 @@ CheckPrimaryWeaponEdgesFacingLeftWhenSitting:
   xor   a
   sbc   hl,bc
   jr    nc,.BruteForceMovementLeft
-  .skipBorderCheck:
+  .setPrimaryWeaponActive:
   ld    a,1                   ;activate primary weapon
   ld    (PrimaryWeaponActive?),a	  
   ret
@@ -1831,6 +1806,13 @@ CheckPrimaryWeaponEdgesFacingLeftWhenSitting:
   ld    (PrimaryWeaponActive?),a	
   ld    (PlayerAniCount),a
   ret
+
+  .SF2Engine:                 ;this little routine is added, cuz otherwise when standing on the edge of the screen, the primary weapon can go through the edge and appear on the other side of the screen
+  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
+  ld    de,20
+  sbc   hl,de
+  jr    c,.Set_L_Sit
+  jp    .setPrimaryWeaponActive
 
 CheckPrimaryWeaponEdgesFacingRightWhenSitting:
   ld    a,(SecundaryWeaponActive?)
@@ -1849,7 +1831,7 @@ CheckPrimaryWeaponEdgesFacingRightWhenSitting:
 
   ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
-  jr    nz,.skipBorderCheck   ;skip border check in the SF2 engine
+  jr    nz,.SF2Engine         ;minimal border check in the SF2 engine
 
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont use weapon
   xor   a
@@ -1859,7 +1841,7 @@ CheckPrimaryWeaponEdgesFacingRightWhenSitting:
   xor   a
   sbc   hl,bc
   jr    nc,.Set_R_Sit
-  .skipBorderCheck:
+  .setPrimaryWeaponActive:
   ld    a,1                   ;activate primary weapon
   ld    (PrimaryWeaponActive?),a	  
   ret
@@ -1877,7 +1859,12 @@ CheckPrimaryWeaponEdgesFacingRightWhenSitting:
   ld    (PlayerAniCount),a  
   ret
   
-
+  .SF2Engine:                 ;this little routine is added, cuz otherwise when standing on the edge of the screen, the primary weapon can go through the edge and appear on the other side of the screen
+  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
+  ld    bc,240                ;right edge
+  sbc   hl,bc
+  jr    nc,.Set_R_Sit
+  jp    .setPrimaryWeaponActive
 
 
 
@@ -2015,7 +2002,7 @@ RAttack:
   jp    c,Set_Fall
   ..EndCheckSnapToPlatform:
   
-  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
+  call  SetPrimaryWeaponHitBoxRightStanding
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -2043,77 +2030,6 @@ RAttack:
   dec   a
   jp    z,RAttack2
   jp    RAttack3
-
-.SetAttackHitBox:
-
-
-  ;activate primary weapon - which enables it's hitbox detection with enemies
-  ld    a,1
-  ld    (PrimaryWeaponActive?),a
-  
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    b,20                  ;normal engine
-  jr    z,.engineFound
-  ld    b,04                  ;SF2 engine 
-  .engineFound:
-  ld    a,(ClesX)
-  sub   a,b                   ;adjust x starting placement projectile
-  jr    nc,.SetX
-  xor   a
-  .SetX:
-  ld    (PrimaryWeaponX),a
-  add   a,16
-  ld    (PrimaryWeaponXRightSide),a
-  ld    a,(ClesY)
-  ld    (PrimaryWeaponY),a
-  add   a,16
-  ld    (PrimaryWeaponYBottom),a
-    
-  ld    a,16
-  ld    (PrimaryWeaponNY),a
-  ld    a,16
-  ld    (PrimaryWeaponNx),a
-  ret
-
-
-
-
-
-
-
-  ld    a,1
-  ld    (EnableHitbox?),a
-  ld    hl,(ClesX)
-  ld    de,14  + 19
-  add   hl,de
-  ld    (HitBoxSX),hl
-;  ld    a,16
-;  ld    (HitBoxNX),a
-;  ld    a,12
-;  ld    (HitBoxNY),a
-  ld    a,(ClesY)
-  add   a,17 - 8
-  ld    (HitBoxSY),a
-  ret
-
-;RAttack4:
-;  ld    a,(PlayerAniCount)
-;  inc   a
-;  ld    (PlayerAniCount),a
-;  ld    hl,PlayerSpriteData_Char_RightPunch3a
-;  cp    3
-;  jr    c,.setSprite
-;  cp    7
-;  ld    hl,PlayerSpriteData_Char_RightPunch3b
-;  jr    c,.setSprite  
-;  ld    hl,PlayerSpriteData_Char_RightPunch3c
-;  .setSprite:
-;	ld		(standchar),hl
-	
-;	cp    15
-;	ret   nz
-;  jp    Set_R_Stand
 
 RAttack3:
   ld    a,(PlayerAniCount)
@@ -2336,8 +2252,7 @@ RBeingHit:
   ret
 
 RRolling:
-  call  RSitPunch.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
-;  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
+  call  SetPrimaryWeaponHitBoxRightSitting
 
   ld    a,(PlayerAniCount+1)
   inc   a
@@ -2409,6 +2324,8 @@ RRolling:
   dec   a                   ;1 = wall
   ret   z
 
+  xor   a                             ;deactivate hitbox that rolling uses if you jump while rolling
+  ld    (PrimaryWeaponActive?),a    
 	call  Set_jump
   call  CheckClimbLadderUp	
 	jp    CheckClimbStairsUp    
@@ -2451,25 +2368,8 @@ RRolling:
   ld    (clesx),hl  
   jp    Set_Fall
 
-.SetAttackHitBox:
-  ld    a,1
-  ld    (EnableHitbox?),a
-  ld    hl,(ClesX)
-  ld    de,+05  + 19
-  add   hl,de
-  ld    (HitBoxSX),hl
-;  ld    a,16
-;  ld    (HitBoxNX),a
-;  ld    a,12
-;  ld    (HitBoxNY),a
-  ld    a,(ClesY)
-  add   a,17 - 7
-  ld    (HitBoxSY),a
-  ret  
-
 LRolling:
-  call  LSitPunch.SetAttackHitBox   ;set the hitbox coordinates and enable hitbox
-;  call  .SetAttackHitBox            ;set the hitbox coordinates and enable hitbox
+  call  SetPrimaryWeaponHitBoxLeftSitting
 
   ld    a,(PlayerAniCount+1)
   inc   a
@@ -2539,14 +2439,12 @@ LRolling:
   ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
   dec   a                   ;1 = wall
   ret   z
-  
-  
-  
-  
+
+  xor   a                             ;deactivate hitbox that rolling uses if you jump while rolling
+  ld    (PrimaryWeaponActive?),a  
 	call  Set_jump
   call  CheckClimbLadderUp	
 	jp    CheckClimbStairsUp    
-
 
   .sit:
   ld    de,PlayerSpriteData_Char_LeftSitting  
@@ -2588,22 +2486,6 @@ LRolling:
   dec   hl    
   ld    (clesx),hl  
   jp    Set_Fall
-
-.SetAttackHitBox:
-  ld    a,1
-  ld    (EnableHitbox?),a
-  ld    hl,(ClesX)
-  ld    de,-05  + 19
-  add   hl,de
-  ld    (HitBoxSX),hl
-;  ld    a,16
-;  ld    (HitBoxNX),a
-;  ld    a,12
-;  ld    (HitBoxNY),a
-  ld    a,(ClesY)
-  add   a,17 - 7
-  ld    (HitBoxSY),a
-  ret  
       
 LeftRollingAnimation:          ;xoffset sprite top, xoffset sprite bottom
   dw  PlayerSpriteData_Char_LeftRolling1 
@@ -3239,7 +3121,7 @@ AnimateWhileJump:
 
   ld    a,(ShootMagicWhileJump?)
   or    a
-  jp    nz,.ShootMagicWhileJumpRight
+  jp    nz,RShootWater
 
   ld    a,(PrimaryWeaponActivatedWhileJumping?)
   or    a
@@ -3276,39 +3158,8 @@ AnimateWhileJump:
   jr    z,.HandleKickWhileJumpRightAnimation
   
   .HandleKickWhileJumpRightAnimation:
-  ;activate primary weapon - which enables it's hitbox detection with enemies
-  ld    a,1
-  ld    (PrimaryWeaponActive?),a
-
-
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ld    b,20                  ;normal engine
-  jr    z,.engineFound
-  ld    b,04                  ;SF2 engine 
-  .engineFound:
-  ld    a,(ClesX)
-  sub   a,b                   ;adjust x starting placement projectile
-  jr    nc,.SetX
-  xor   a
-  .SetX:
-  ld    (PrimaryWeaponX),a
-  add   a,16
-  ld    (PrimaryWeaponXRightSide),a
-  ld    a,(ClesY)
-  ld    (PrimaryWeaponY),a
-  add   a,16
-  ld    (PrimaryWeaponYBottom),a
-    
-  ld    a,16
-  ld    (PrimaryWeaponNY),a
-  ld    a,16
-  ld    (PrimaryWeaponNx),a
-  
-
-
-
+  ;activate primary weapon, enable it's hitbox detection with enemies
+  call  SetPrimaryWeaponHitBoxRightStanding
 
   ld    a,(PrimaryWeaponActivatedWhileJumping?)                ;kicking while jumping has a certain duration. If PrimaryWeaponActive? reaches 0 the kick ends
   dec   a
@@ -3324,73 +3175,7 @@ AnimateWhileJump:
 	.GoKickRight:
 	ld		(standchar),hl
   ret
-
-.ShootMagicWhileJumpRight:
-;  ld    a,(scrollEngine)                       ;1= 304x216 engine  2=256x216 SF2 engine
-;  dec   a
-;  jr    nz,.EndCheckEdgesOfScreen
-
-  ld    hl,(clesx)                              ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,11
-  xor   a
-  sbc   hl,de
-  jp    c,BruteForceMovementRight
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-37-12
-  xor   a
-  sbc   hl,de
-  jp    nc,.end
-  .EndCheckEdgesOfScreen:
-
-;Animate
-  ld    hl,RightShootFireballAnimation
-  call  AnimateShootFireball                    ;animate  
-
-  ld    a,(PlayerAniCount)
-  cp    2 * 10
-  jp    z,.Rshootmagic
-  cp    2 * 14
-  ret   nz
-
-  .end:
-  xor   a
-  ld    (ShootMagicWhileJump?),a
-  ld    (PlayerAniCount),a
-  ret
-
-  .Rshootmagic:
-  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
-  cp    5
-  ld    b,FireballSpeed
-  jp    z,SetRShootElementalWeapon
-  cp    7
-  ld    b,IceWeaponSpeed
-  jp    z,SetRShootElementalWeapon
-  cp    8
-  ld    b,EarthWeaponSpeed
-  jp    z,SetRShootElementalWeapon
-  cp    9
-  ld    b,WaterWeaponSpeed
-  jp    z,SetRShootElementalWeapon
-  ret
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
+ 
 .RollingJumpRight:
   ld    a,(JumpSpeed)
   sub   a,5
@@ -3407,7 +3192,7 @@ AnimateWhileJump:
 
   ld    a,(ShootMagicWhileJump?)
   or    a
-  jp    nz,.ShootMagicWhileJumpLeft
+  jp    nz,LShootWater
 
   ld    a,(PrimaryWeaponActivatedWhileJumping?)
   or    a
@@ -3444,47 +3229,8 @@ AnimateWhileJump:
   jr    z,.HandleKickWhileJumpLeftAnimation
   
   .HandleKickWhileJumpLeftAnimation:
-
-
-
-
-
-
-  ;activate primary weapon - which enables it's hitbox detection with enemies
-  ld    a,1
-  ld    (PrimaryWeaponActive?),a
-
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ;we check 12 pixels further to the left when the player is facing left
-  ld    b,20 +12                  ;normal engine
-  jr    z,.engineFound2
-  ld    b,04 +12                 ;SF2 engine 
-  .engineFound2:
-  ld    a,(ClesX)
-  sub   a,b                   ;adjust x starting placement projectile
-  jr    nc,.SetXLeft
-  xor   a
-  .SetXLeft:
-  ld    (PrimaryWeaponX),a
-  add   a,16
-  ld    (PrimaryWeaponXRightSide),a
-  ld    a,(ClesY)
-  ld    (PrimaryWeaponY),a
-  add   a,16
-  ld    (PrimaryWeaponYBottom),a
-    
-  ld    a,16
-  ld    (PrimaryWeaponNY),a
-  ld    a,16
-  ld    (PrimaryWeaponNx),a
-
-
-
-
-
-
-
+  ;activate primary weapon, enable it's hitbox detection with enemies  
+  call  SetPrimaryWeaponHitBoxLeftStanding
 
   ld    a,(PrimaryWeaponActivatedWhileJumping?)                ;kicking while jumping has a certain duration. If PrimaryWeaponActive? reaches 0 the kick ends
   dec   a
@@ -3500,75 +3246,7 @@ AnimateWhileJump:
 	.GoKickLeft:
 	ld		(standchar),hl
   ret
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.ShootMagicWhileJumpLeft:
-
-  jp    LShootWater
   
-
-
-;  ld    a,(scrollEngine)                ;1= 304x216 engine  2=256x216 SF2 engine
-;  dec   a
-;  jp    nz,.EndCheckEdgesOfScreenLeft
-
-  ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
-  ld    de,38
-  xor   a
-  sbc   hl,de
-  jp    c,.endLeft
-
-  ld    hl,(clesx)            ;check if player is standing on the right edge of the screen, if so, dont shoot
-  ld    de,304-10
-  xor   a
-  sbc   hl,de
-  jp    nc,BruteForceMovementLeft
-  .EndCheckEdgesOfScreenLeft:
-
-;Animate
-  ld    hl,LeftShootFireballAnimation
-  call  AnimateShootFireball                    ;animate  
-
-  ld    a,(PlayerAniCount)
-  cp    2 * 10
-  jp    z,.Lshootmagic
-  cp    2 * 14
-  ret   nz
-  
-  .endLeft:
-  xor   a
-  ld    (ShootMagicWhileJump?),a
-  ld    (PlayerAniCount),a
-  ret
-
-  .Lshootmagic:
-  ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water
-  cp    5
-  ld    b,-FireballSpeed
-  jp    z,SetLShootElementalWeapon
-  cp    7
-  ld    b,-IceWeaponSpeed
-  jp    z,SetLShootElementalWeapon
-  cp    8
-  ld    b,-EarthWeaponSpeed
-  jp    z,SetLShootElementalWeapon
-  cp    9
-  ld    b,-WaterWeaponSpeed
-  jp    z,SetLShootElementalWeapon
-  ret
-
 .RollingJumpLeft:
   ld    a,(JumpSpeed)
   sub   a,5
@@ -3577,8 +3255,6 @@ AnimateWhileJump:
   ld    hl,LeftRollingAnimation
   jp    AnimateRolling  
 
-
-  
 ;animate every x frames, amount of frames * 2, left(0) or right(1)
   db  3, 4*8, 0
                                                     ;positioning for the SW sprites:
@@ -3840,51 +3516,6 @@ Jump:
   ld    (PrimaryWeaponActivatedWhileJumping?),a
   xor   a
   ld    (PlayerAniCount),a
-  ret
-
-  .HandlePrimaryAttackHitboxWhileJump:
-  ld    a,(CurrentPrimaryWeapon)        ;0=nothing, 1=sword, 2=dagger, 3=axe, 4=spear
-  or    a
-  jr    z,.HandleKickAttack
-  dec   a
-  jr    z,.HandleSwordAttack
-
-  .HandleSwordAttack:
-
-  .HandleKickAttack:
-  xor   a
-  ld    (EnableHitbox?),a   ;turn hitbox off when not kicking
-  ld    a,(KickWhileJump?)
-  dec   a
-  ret   z
-  ld    (KickWhileJump?),a
-  ;.SetAttackHitBox:
-  ld    a,1
-  ld    (EnableHitbox?),a   ;turn hitbox back on if player kicks mid air
-  ld    hl,(ClesX)
-  ld    a,(PlayerFacingRight?)
-  or    a
-  ld    de,-12  + 19        ;12 + 19 when kicking right, -12 + 19 when kicking left
-  jp    z,.setSX
-  ld    de,+12  + 19        ;12 + 19 when kicking right, -12 + 19 when kicking left
-  .setSX:
-  add   hl,de
-  ld    (HitBoxSX),hl
-;  ld    a,16
-;  ld    (HitBoxNX),a
-;  ld    a,12
-;  ld    (HitBoxNY),a
-  ld    a,(JumpSpeed)
-  or    a
-  ld    b,26 - 8
-	jp    m,.setSY
-  cp    3
-  jr    c,.setSY
-  ld    b,46 - 8
-  .setSY:
-  ld    a,(ClesY)
-  add   a,b                 ;36 - 8 when kicking up, 46 - 8 when kicking down
-  ld    (HitBoxSY),a    
   ret
 
 .SetShootMagicWhileJump:

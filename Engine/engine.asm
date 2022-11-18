@@ -1890,6 +1890,10 @@ putplayer_clipright:
   add   hl,bc  
 ;  inc   hl                    ;lenght + increment first spriteline
 
+  ld    a,(PutObjectInPage3?)
+  or    a
+  jr    nz,.not3
+
   ;if screenpage=0 then blit in page 1
   ;if screenpage=1 then blit in page 2
   ;if screenpage=2 then blit in page 0
@@ -1999,6 +2003,10 @@ putplayer_clipleft:
   ld    bc,8 ;10
   add   hl,bc  
 ;  inc   hl                    ;lenght + increment first spriteline
+
+  ld    a,(PutObjectInPage3?)
+  or    a
+  jr    nz,.not3
 
   ;if screenpage=0 then blit in page 1
   ;if screenpage=1 then blit in page 2
@@ -5045,6 +5053,8 @@ Set_R_Meditate:
 Set_L_BouncingBack:
   xor   a
   ld    (EnableHitbox?),a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a  
+  ld    (PrimaryWeaponActive?),a
   
 	ld		hl,LBouncingBack
 	ld		(PlayerSpriteStand),hl
@@ -5061,7 +5071,9 @@ Set_L_BouncingBack:
 Set_R_BouncingBack:
   xor   a
   ld    (EnableHitbox?),a
-  
+  ld    (PrimaryWeaponActivatedWhileJumping?),a  
+  ld    (PrimaryWeaponActive?),a
+    
 	ld		hl,RBouncingBack
 	ld		(PlayerSpriteStand),hl
 
