@@ -1901,7 +1901,7 @@ RDaggerAttack:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   .skipEndMovePlayer:
 
-  ld    de,12                 ;left edge
+  ld    de,16                 ;left edge
   ld    bc,265                ;right edge
   call  CheckPrimaryWeaponEdgesFacingRight
 ;Animate
@@ -1978,7 +1978,7 @@ RSpearAttack:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   .skipEndMovePlayer:
 
-  ld    de,15                 ;left edge
+  ld    de,26                 ;left edge
   ld    bc,255                ;right edge
   call  CheckPrimaryWeaponEdgesFacingRight
 ;Animate
@@ -3747,8 +3747,8 @@ Jump:
 
 ;  ld    a,1                 ;reset kicking while jumping
 ;  ld    (KickWhileJump?),a  
-  xor   a
-  ld    (EnableHitbox?),a 
+;  xor   a
+;  ld    (EnableHitbox?),a 
  
   pop   af                  ;pop the call to .VerticalMovement, this way no further checks are done
  

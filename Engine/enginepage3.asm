@@ -43,10 +43,10 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapA04Data      ;Area Sign
 ;WorldMapPointer:  dw  MapD12Data      ;pit
 ;WorldMapPointer:  dw  MapA06Data      ;
-;WorldMapPointer:  dw  MapB07Data      ;
+WorldMapPointer:  dw  MapB04Data      ;
 ;WorldMapPointer:  dw  MapC08Data      ;
 ;WorldMapPointer:  dw  MapE09Data      ;lava
-WorldMapPointer:  dw  MapG13Data      ;Boss Goat (iceboss)
+;WorldMapPointer:  dw  MapF13Data      ;Boss Goat (iceboss)
 ;WorldMapPointer:  dw  MapB01_017Data      ;Huge Blob
 
 PlayLogo:

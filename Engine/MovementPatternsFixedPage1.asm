@@ -194,6 +194,7 @@ MoveObjectWithStepTable:
 ;  ld    a,(SnapToPlatform?)
   or    a
   ret   z
+  ret ;????????????????????????????????????????????????
 
 AnimateSprite:
   ld    a,(framecounter)                    ;animate every x frames
@@ -409,15 +410,15 @@ checkFacingPlayer:                          ;out: c = object/enemy is facing pla
   scf
   ret
   
-CheckPlayerPunchesEnemyOnlySitting:
-  ld    a,(HitBoxSY)                        ;a = y hitbox
-  push  af
-  sub   a,9
-  ld    (HitBoxSY),a                        ;a = y hitbox
-  call  CheckPlayerPunchesEnemy
-  pop   af
-  ld    (HitBoxSY),a                        ;a = y hitbox
-  ret
+;CheckPlayerPunchesEnemyOnlySitting:
+;  ld    a,(HitBoxSY)                        ;a = y hitbox
+;  push  af
+;  sub   a,9
+;  ld    (HitBoxSY),a                        ;a = y hitbox
+;  call  CheckPlayerPunchesEnemy
+;  pop   af
+;  ld    (HitBoxSY),a                        ;a = y hitbox
+;  ret
 
 CheckPrimaryWeaponHitsEnemy:
   cp    128                                 ;presenting bow
@@ -508,8 +509,8 @@ CheckSecundaryWeaponHitsEnemy:
   ret   c
 
 ;check if enemy/object collides with hitbox arrow left side
-  ld    hl,(SecundaryWeaponX)                      ;hl = x hitbox
-  ld    a,(scrollEngine)      ;1= 304x216 engine  2=256x216 SF2 engine
+  ld    hl,(SecundaryWeaponX)               ;hl = x hitbox
+  ld    a,(scrollEngine)                    ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
   ld    bc,46                               ;normal engine
   jr    z,.engineFound
@@ -532,7 +533,7 @@ CheckSecundaryWeaponHitsEnemy:
 
   ;Enemy hit                                ;blink white for 31 frames when hit
   xor   a
-  ld    (SecundaryWeaponActive?),a                    ;remove arrow when enemy is hit
+  ld    (SecundaryWeaponActive?),a          ;remove arrow when enemy is hit
 
   ld    a,MagicWeaponDurationValue
   ld    (MagicWeaponDuration),a  
@@ -624,68 +625,8 @@ CheckPlayerPunchesEnemy:
 
   ld    a,(PrimaryWeaponActive?)
   or    a
-  call  nz,CheckPrimaryWeaponHitsEnemy
-
-ret
-
-  ld    a,(EnableHitbox?)
-  or    a
-  ret   z
-
-;jp CheckPrimaryWeaponHitsEnemy
-
-
-;check if enemy/object collides with hitbox left side
-  ld    hl,(HitBoxSX)                       ;hl = x hitbox
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de
-  ret   c
-
-;check if enemy/object collides with hitbox right side
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-
-ld a,09-4 ;nx + 10                          ;reduce this value to reduce the hitbox size (on the right side)
-add a,c
-ld c,a 
-ld b,0
-
-  sbc   hl,bc  
-  ret   nc
-
-;check if enemy/object collides with hitbox top side
-  ld    a,(HitBoxSY)                        ;a = y hitbox
-  sub   (ix+enemies_and_objects.y)
-  ret   c
-
-;check if enemy/object collides with hitbox bottom side
-  ld    c,(ix+enemies_and_objects.ny)       ;width object
-
-ld e,a ;store a
-ld a,20-4 ;ny + 20   ;if this is 20-8 it would be same reduction top as bottom, but at the bottom its better if there is less reduction                         ;reduce this value to reduce the hitbox size (on the left side)
-add a,c
-ld c,a
-ld a,e
-
-  sub   a,c
-  ret   nc
-
-  ;Enemy hit                                ;blink white for 31 frames when hit
-  ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
-  dec   (ix+enemies_and_objects.life)
-  jr    z,.EnemyDied
-  
-	ld		de,(PlayerSpriteStand)
-	ld		hl,Charging
-  xor   a
-  sbc   hl,de
-  ret   nz
-
-  ;At this point you hit an enemy with a charge attack, but enemy didn't die. Player now bounces backwards.
-  ld    a,(PlayerFacingRight?)
-  or    a
-  jp    nz,Set_R_BouncingBack
-  jp    Set_L_BouncingBack
+  jp    nz,CheckPrimaryWeaponHitsEnemy
+  ret
   
   .EnemyDied:
   ld    (ix+enemies_and_objects.hit?),00    ;stop blinking white when dead

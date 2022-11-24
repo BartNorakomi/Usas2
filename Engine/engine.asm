@@ -4047,9 +4047,9 @@ CleanPlayerWeapon:                                       ;this is used in the no
 AttackRotator:  db 0
 
 ;For now all hitboxes are 16x16, so we only need SX and SY
-EnableHitbox?:  db  0
-HitBoxSX:       dw  0
-HitBoxSY:       db  0
+;EnableHitbox?:  db  0
+;HitBoxSX:       dw  0
+;HitBoxSY:       db  0
 ;HitBoxNX:       db  0
 ;HitBoxNY:       db  0
 
@@ -5052,7 +5052,7 @@ Set_R_Meditate:
 
 Set_L_BouncingBack:
   xor   a
-  ld    (EnableHitbox?),a
+;  ld    (EnableHitbox?),a
   ld    (PrimaryWeaponActivatedWhileJumping?),a  
   ld    (PrimaryWeaponActive?),a
   
@@ -5070,7 +5070,7 @@ Set_L_BouncingBack:
   
 Set_R_BouncingBack:
   xor   a
-  ld    (EnableHitbox?),a
+;  ld    (EnableHitbox?),a
   ld    (PrimaryWeaponActivatedWhileJumping?),a  
   ld    (PrimaryWeaponActive?),a
     
@@ -5307,7 +5307,7 @@ Set_Stairs_Climb_RightUp:
   xor   a
 	ld		(PlayerAniCount),a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
-  ld    (EnableHitbox?),a
+;  ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
   ld    (PrimaryWeaponActivatedWhileJumping?),a
@@ -5324,7 +5324,7 @@ Set_Stairs_Climb_LeftUp:
   xor   a
 	ld		(PlayerAniCount),a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
-  ld    (EnableHitbox?),a
+;  ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
   ld    (PrimaryWeaponActivatedWhileJumping?),a
@@ -5340,7 +5340,7 @@ Set_ClimbDown:
 
   xor   a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
-  ld    (EnableHitbox?),a
+;  ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
   ld    (PrimaryWeaponActivatedWhileJumping?),a
@@ -5362,7 +5362,7 @@ Set_ClimbUp:
 
   xor   a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
-  ld    (EnableHitbox?),a
+;  ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
   ld    (PrimaryWeaponActivatedWhileJumping?),a
@@ -5384,7 +5384,7 @@ Set_Climb_AndResetAniCount:
 
   xor   a
   ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
-  ld    (EnableHitbox?),a
+;  ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
   ld    (PrimaryWeaponActivatedWhileJumping?),a
@@ -5401,8 +5401,8 @@ Set_jump:
   ld    a,CollisionSYStanding
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
   
-  xor   a
-  ld    (EnableHitbox?),a
+;  xor   a
+;  ld    (EnableHitbox?),a
   
   ld    a,1
   ld    (DoubleJumpAvailable?),a
@@ -5427,7 +5427,7 @@ Set_Fall:
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
   
   xor   a
-  ld    (EnableHitbox?),a
+;  ld    (EnableHitbox?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before getting hit
       
   ld    a,1
@@ -5460,8 +5460,8 @@ Set_R_sit:
   ld    a,CollisionSYSitting
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
   
-  xor   a
-  ld    (EnableHitbox?),a
+;  xor   a
+;  ld    (EnableHitbox?),a
 	ld		hl,RSitting
 	ld		(PlayerSpriteStand),hl
 
@@ -5473,8 +5473,8 @@ Set_L_sit:
   ld    a,CollisionSYSitting
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
 
-  xor   a
-  ld    (EnableHitbox?),a
+;  xor   a
+;  ld    (EnableHitbox?),a
 	ld		hl,LSitting
 	ld		(PlayerSpriteStand),hl
 
@@ -5486,8 +5486,8 @@ Set_L_stand:
   ld    a,CollisionSYStanding
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
 
-  xor   a
-  ld    (EnableHitbox?),a
+;  xor   a
+;  ld    (EnableHitbox?),a
   xor   a
   ld    (PlayerFacingRight?),a	
 
@@ -5523,6 +5523,8 @@ Set_L_stand:
 
   .setPrimaryAttack:
 	ld		(PlayerSpriteStand),hl
+  xor   a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a	
 	ret
   .EndCheckPrimaryWeaponWhileJump:
 
@@ -5594,8 +5596,8 @@ Set_R_stand:
   ld    a,CollisionSYStanding
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
 
-  xor   a
-  ld    (EnableHitbox?),a
+;  xor   a
+;  ld    (EnableHitbox?),a
   ld    a,1
   ld    (PlayerFacingRight?),a	
 
@@ -5631,6 +5633,8 @@ Set_R_stand:
 
   .setPrimaryAttack:
 	ld		(PlayerSpriteStand),hl
+  xor   a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
 	ret
   .EndCheckPrimaryWeaponWhileJump:
 
@@ -5719,7 +5723,7 @@ Set_L_BeingHit:
 	ld		hl,LBeingHit
 	ld		(PlayerSpriteStand),hl
   xor   a
-  ld    (EnableHitbox?),a
+;  ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
 ;  ld    a,1
 ;  ld    (KickWhileJump?),a  
@@ -5747,7 +5751,7 @@ Set_R_BeingHit:
 	ld		hl,RBeingHit
 	ld		(PlayerSpriteStand),hl
   xor   a
-  ld    (EnableHitbox?),a
+;  ld    (EnableHitbox?),a
   ld    (ShootArrowWhileJump?),a
 ;  ld    a,1
 ;  ld    (KickWhileJump?),a  
