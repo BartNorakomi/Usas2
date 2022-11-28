@@ -2874,7 +2874,7 @@ dephase
 Graphicsblock5:  equ   $62 / 2
 phase	$8000
 scoreboard:
-  incbin "..\grapx\scoreboard.SC5",7,$1000  ;skip header
+  incbin "..\grapx\scoreboard.SC5",7,39*128  ;skip header
 itemsKarniMata:
   incbin "..\grapx\itemsKarniMata.SC5",7,$1400  ;skip header
 ElementalWeapons:
@@ -3528,7 +3528,12 @@ MapG03:
 MapG04:
   incbin "..\maps\g04.map.pck"  | .amountofobjects: db  0
 MapG05:
-  incbin "..\maps\g05.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\g05.map.pck"  | .amountofobjects: db  1
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 2,        0|dw SDMika              |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo2| ds fill-1
+  
+  
+  
 MapG06:
   incbin "..\maps\g06.map.pck"  | .amountofobjects: db  0
 MapG07:
@@ -4011,10 +4016,32 @@ phase	$0000
 	ds		$4000-$,$ff
 dephase
 
+
+
+
+
+; block $ed
+CharacterFacesframelistblock:            equ $ed
+phase	$8000
+  include "..\grapx\CharacterFaces\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $ee
+CharacterFacesspritedatablock:           equ $ee
+phase	$0000
+  incbin "..\grapx\CharacterFaces\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+
+
+
+
+
 ;
-; block $ed -----------------> Music
+; block $ef -----------------> Music
 ;
-usas2repBlock:  equ   $ed
+usas2repBlock:  equ   $ef
   incbin "usas2.rep"
 
 

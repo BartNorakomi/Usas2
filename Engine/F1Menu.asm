@@ -38,6 +38,7 @@ PrimaryWeaponSelect:
 ;  call  SetElementalWeaponInVram      ;if an elemental weapon is selected, load it's graphics into Vram
   call  SpritesOn
   call  RestorePage0InVram            ;restore the vram data the was stored in ram earlier
+  call  SetR14ValueTo5                ;register 14 sets VRAM address to read/write to/from. This value is only set once per frame ingame, we assume it's set to $05 at all times, so set it back when going back to the game
   call  SetInterruptHandler           ;set Lineint and Vblank  
   call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank | if normal engine: wait for lineint
   call  ScreenOn
@@ -73,10 +74,21 @@ SecundaryWeaponSelect:
   call  SetElementalWeaponInVram      ;if an elemental weapon is selected, load it's graphics into Vram
   call  SpritesOn
   call  RestorePage0InVram            ;restore the vram data the was stored in ram earlier
+  call  SetR14ValueTo5                ;register 14 sets VRAM address to read/write to/from. This value is only set once per frame ingame, we assume it's set to $05 at all times, so set it back when going back to the game
   call  SetInterruptHandler           ;set Lineint and Vblank  
   call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank | if normal engine: wait for lineint
   call  ScreenOn
   ret
+
+SetR14ValueTo5:
+  di                                  ;register 14 sets VRAM address to read/write to/from. This value is only set once per frame ingame, we assume it's set to $05 at all times, so set it back when going back to the game
+  ld    a,$05
+	out   ($99),a       ;set bits 15-17
+	ld    a,14+128
+  ei
+	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
+  ret
+
 
 SetElementalWeaponInVram:
   ld    a,(CurrentMagicWeapon)        ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water

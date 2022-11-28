@@ -341,7 +341,16 @@ RightShootFireballAnimation:
 BruteForceMovementLeft:
 	ld		hl,PlayerSpriteData_Char_LeftStand
 	ld		(standchar),hl
-	
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+  and   %1111 0011                  ;reset left or right pressed
+	ld		(Controls),a
+
   ld    hl,(clesx)
   ld    de,-2
   add   hl,de
@@ -351,9 +360,18 @@ BruteForceMovementLeft:
 BruteForceMovementRight:
 	ld		hl,PlayerSpriteData_Char_RightStand
 	ld		(standchar),hl
-	
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+  and   %1111 0011                  ;reset left or right pressed
+	ld		(Controls),a	
+
   ld    hl,(clesx)
-  ld    de,2
+  ld    de,+2
   add   hl,de
   ld    (clesx),hl
   ret

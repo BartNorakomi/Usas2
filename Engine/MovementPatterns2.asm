@@ -1,6 +1,38 @@
 ;BossGoat
 ;PutSf2Object5Frames
 ;PutSf2Object4Frames
+;SDMika
+
+PutSf2Object2Frames:
+  ld    a,(HugeObjectFrame)
+  inc   a
+  cp    2
+  jr    nz,.SetFrame
+  xor   a
+  .SetFrame:
+  ld    (HugeObjectFrame),a
+  or    a
+  jr    z,.Part1
+;  dec   a
+;  jr    z,.Part2
+  
+  .Part2:
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject2
+  ld    a,(ix+enemies_and_objects.v7)
+  inc   a
+  call  SetFrameBoss
+  call  PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  jp    switchpageSF2Engine
+
+  .Part1:
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject1
+  ld    a,(ix+enemies_and_objects.v7)
+  call  SetFrameBoss
+  jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
 
 PutSf2Object5Frames:
   ld    a,(HugeObjectFrame)
@@ -285,6 +317,54 @@ GoatCheckIfDead:
   ld    (ix+enemies_and_objects.v7),240/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
   ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ld    (ix+enemies_and_objects.v9),011     ;blending into background (MovementPatternsFixedPage1.asm) in: v9=008
+  ret
+
+;Idle 
+SDMika00:   dw CharacterFacesframe000 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+SDMika01:   dw CharacterFacesframe001 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+
+
+SDMika:
+;v1-2=backup v8 phase
+;v1-1=backup v7 sprite frame
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=Movement Direction  
+;v7=sprite frame
+;v8=phase
+;v9=timer until next phase
+;  call  CheckPlayerHitByGoat                ;Check if player gets hit by boss
+  ;Check if boss gets hit by player
+;  call  GoatCheckIfHit                      ;call gets popped if hit. Check if boss is hit, and if so set being hit phase
+  ;Check if boss is dead
+;  call  GoatCheckIfDead                     ;Check if boss is dead, and if so set dying phase
+  
+  call  .HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+
+  ld    de,SDMika00
+  jp    PutSf2Object2Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+
+  .HandlePhase:
+  ld    de,NonMovingObjectMovementTable
+  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle)
+  or    a
+  jp    z,SDMikaIdle                        ;0=attack
+  ret
+  
+  SDMikaIdle:
+
+  .DistanceCheck:
+  ld    (ix+enemies_and_objects.x),090      ;x
+  ld    b,60                                ;b-> x distance
+  ld    c,140                               ;c-> y distance
+  call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
+  ret   c
+  ld    (ix+enemies_and_objects.x),000      ;x  
   ret
   
 BossGoat:

@@ -156,7 +156,7 @@ copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
   ld    hl,FillBottomPartScoreBoard
   call  docopy  
 
-  ld    hl,$6C00                      ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
+  ld    hl,$6C00+128                      ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
   ld    a,Graphicsblock5              ;block to copy from
   call  block34
   
@@ -164,10 +164,13 @@ copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
 	call	SetVdp_Write	
 	ld		hl,scoreboard
   ld    c,$98
-  ld    a,32/2                        ;copy 32 lines..
+  ld    a,38/2                        ;copy 38 lines..
   ld    b,0
-  jp    copyGraphicsToScreen.loop1    
-
+  call  copyGraphicsToScreen.loop1
+  ld    b,128
+  otir                                ;copy last line, 39 in total
+  ret
+  
 SetMapPalette:
 ;set palette
   ld    a,(ix+5)                      ;palette

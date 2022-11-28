@@ -1,0 +1,76 @@
+  dw CharacterFacesframe000
+  dw CharacterFacesframe001
+
+CharacterFacesframe000:
+  db 038h,01Dh,048h,028h
+  db 048h
+  db 000h,000h,0D8h,000h,000h
+  db 000h,000h
+  dw 01C80h,base+00000h
+  dw 01C80h,base+0001Ch
+  dw 01C80h,base+0001Ch
+  dw 01C80h,base+00038h
+  dw 01C80h,base+00054h
+  dw 01C80h,base+00070h
+  dw 01C80h,base+0008Ch
+  dw 01C80h,base+000A8h
+  dw 01C80h,base+000C4h
+  dw 01C80h,base+000E0h
+  dw 01C80h,base+000FCh
+  dw 01C80h,base+00118h
+  dw 01C80h,base+00134h
+  dw 01C80h,base+00150h
+  dw 01C80h,base+0016Ch
+  dw 01C80h,base+00188h
+  dw 01C80h,base+001A4h
+  dw 01C80h,base+001C0h
+  dw 01C80h,base+001DCh
+  dw 01C80h,base+001F8h
+  dw 01C80h,base+00214h
+  dw 01C80h,base+00230h
+  dw 01C80h,base+0024Ch
+  dw 01C80h,base+00268h
+  dw 01C80h,base+00284h
+  dw 01C80h,base+002A0h
+  dw 01C80h,base+002BCh
+  dw 01C80h,base+002D8h
+  dw 01C00h,base+002F4h
+
+CharacterFacesframe001:
+  db 038h,01Bh,048h,045h
+  db 048h
+  db 000h,000h,0BBh,000h,000h
+  db 000h,000h
+  dw 01C80h,base+00310h
+  dw 01C80h,base+0032Ch
+  dw 01C80h,base+00348h
+  dw 01C80h,base+00364h
+  dw 01C80h,base+00380h
+  dw 00A0Bh,base+005B0h
+  dw 00607h,base+005D8h
+  dw 00A6Eh,base+005BAh
+  dw 00A0Ch,base+005C4h
+  dw 00406h,base+0028Dh
+  dw 00A6Eh,base+005CEh
+  dw 01C80h,base+0039Ch
+  dw 01C80h,base+003B8h
+  dw 01C80h,base+003D4h
+  dw 01C80h,base+003F0h
+  dw 01C80h,base+0040Ch
+  dw 01C80h,base+00428h
+  dw 01C80h,base+00444h
+  dw 01C80h,base+00460h
+  dw 01C80h,base+0047Ch
+  dw 01C80h,base+00498h
+  dw 01C80h,base+004B4h
+  dw 01C80h,base+004D0h
+  dw 01C80h,base+004ECh
+  dw 01C80h,base+00508h
+  dw 01C80h,base+00524h
+  dw 01C80h,base+00540h
+  dw 01C80h,base+0055Ch
+  dw 01C80h,base+00578h
+  dw 01C80h,base+00594h
+  dw 01C00h,base+00000h
+
+
