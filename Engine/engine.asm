@@ -296,7 +296,7 @@ RestoreBackground:                  ;all background restores should be done simu
   .Restore:
   ld    (hl),0
   inc   hl
-  jp    docopy  
+  jp    DoCopy  
   
 
 switchpageSF2Engine:
@@ -1376,13 +1376,13 @@ Sf2EngineObjects:
 ;  ld    a,movepatblo1 ; (movementpatternsblock)
 ;	call	block1234			                                ;at address $4000 / page 1+2
 
-
-  
   ld    de,enemies_and_objects+(0*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
   ld    a,(de) | cp 2 | call z,.docheck
   ld    de,enemies_and_objects+(1*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
   ld    a,(de) | cp 2 | call z,.docheck
   ld    de,enemies_and_objects+(2*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
+  ld    a,(de) | cp 2 | call z,.docheck
+  ld    de,enemies_and_objects+(3*lenghtenemytable)   ;if alive?=2 (SF2 engine) object is found                                    
   ld    a,(de) | cp 2 | call z,.docheck
 
 	ld		a,(slot.ram)	      ;back to full RAM

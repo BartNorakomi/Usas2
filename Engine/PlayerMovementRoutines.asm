@@ -1316,100 +1316,6 @@ LAttack2:
 
 
 
-;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 12*8, 0
-                                        ;positioning for the SW sprites:
-LeftSwordAttackAnimation:               ;  addy,subx, ny ,nx ,sy   ,sx
-  dw  PlayerSpriteData_Char_LeftPunch2b | db 008,040+50,006,012,216+34,106
-  dw  PlayerSpriteData_Char_LeftPunch2b | db 008,040+50,006,012,216+34,106
-  dw  PlayerSpriteData_Char_LeftPunch2b | db 008,040+50,006,012,216+34,106
-  
-  dw  PlayerSpriteData_Char_LeftPunch2c | db 002,045+50,010,016,216+09,112
-  dw  PlayerSpriteData_Char_LeftPunch2c | db 002,045+50,010,016,216+09,112
-  dw  PlayerSpriteData_Char_LeftPunch2c | db 002,045+50,010,016,216+09,112
-
-  dw  PlayerSpriteData_Char_LeftPunch2d | db 002,042+50,009,012,216+10,100
-  dw  PlayerSpriteData_Char_LeftPunch2d | db 002,042+50,009,012,216+10,100
-  dw  PlayerSpriteData_Char_LeftPunch2d | db 002,042+50,009,012,216+10,100
-
-  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,028+50,005,007,216+24,134
-  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,028+50,005,007,216+24,134
-  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,028+50,005,007,216+24,134
-
-;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 11*8, 0                        
-                                        ;positioning for the SW sprites:
-LeftDaggerVersion1AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
-  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030+50,005,009,216+24,203
-
-  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203 
-  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203
-
-  dw  PlayerSpriteData_Char_LeftPunch3b | db 004,033+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch3b | db 004,033+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch3b | db 004,033+50,005,009,216+24,203
-
-;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 10*8, 0
-                                        ;positioning for the SW sprites:  
-LeftDaggerVersion2AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
-  dw  PlayerSpriteData_Char_LeftPunch1h | db 007,025+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch1h | db 007,025+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch1h | db 007,025+50,005,009,216+24,203
-  
-  dw  PlayerSpriteData_Char_LeftPunch1e | db 003,036+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch1e | db 003,036+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch1e | db 003,036+50,005,009,216+24,203
-
-  dw  PlayerSpriteData_Char_LeftPunch1f | db 005,034+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch1f | db 005,034+50,005,009,216+24,203
-
-  dw  PlayerSpriteData_Char_LeftPunch1g | db 006,029+50,005,009,216+24,203
-  dw  PlayerSpriteData_Char_LeftPunch1g | db 006,029+50,005,009,216+24,203
-
-;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 11*8, 0
-                                             ;positioning for the SW sprites:  
-LeftSpearAttackAnimation:                    ;  addy,subx, ny ,nx ,sy   ,sx
-  dw  PlayerSpriteData_Char_LeftSpearAttack1 | db 002,037+50,005,013,216+24,172
-  dw  PlayerSpriteData_Char_LeftSpearAttack2 | db 003,039+50,005,015,216+24,172
-  dw  PlayerSpriteData_Char_LeftSpearAttack3 | db 004,043+50,005,019,216+24,172
-  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
-  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
-  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
-  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
-  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
-  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
-  dw  PlayerSpriteData_Char_LeftSpearAttack1 | db 002,037+50,005,013,216+24,172
-  dw  PlayerSpriteData_Char_LeftSpearAttack1 | db 002,037+50,005,013,216+24,172
-
-;animate every x frames, amount of frames * 2, left(0) or right(1)
-  db  1, 14*8, 0
-                                        ;positioning for the SW sprites:  
-LeftAxeAttackAnimation:                 ;  addy,subx, ny ,nx ,sy   ,sx
-  dw  PlayerSpriteData_Char_LeftCharge7 | db 006,011+50,009,012,216+21,084 
-  dw  PlayerSpriteData_Char_LeftCharge7 | db 006,011+50,009,012,216+21,084
-  dw  PlayerSpriteData_Char_LeftCharge7 | db 006,011+50,009,012,216+21,084
-   
-  dw  PlayerSpriteData_Char_LeftCharge4 | db -15,016+50,010,012,216+21,116
-  dw  PlayerSpriteData_Char_LeftCharge4 | db -15,016+50,010,012,216+21,116
-
-  dw  PlayerSpriteData_Char_LeftCharge3 | db -15,033+50,013,012,216+21,107
-  dw  PlayerSpriteData_Char_LeftCharge3 | db -15,033+50,013,012,216+21,107
-
-  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036+50,010,012,216+30,093
-  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036+50,010,012,216+30,093
-  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036+50,010,012,216+30,093
-  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036+50,010,012,216+30,093
-
-  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,031+50,010,010,216+30,083
-  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,031+50,010,010,216+30,083
-  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,031+50,010,010,216+30,083
 
 SWspriteSetNYNXSYSX:
   ;set ny,nx,sy,sx and store addy and addx
@@ -1567,6 +1473,106 @@ AnimatePrimaryAttackWhileJumping: ;animates player, when end of table is reached
     
 	ld		(standchar),de
   ret	
+
+
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 12*8, 0
+                                        ;positioning for the SW sprites:
+LeftSwordAttackAnimation:               ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftPunch2b | db 008,040+50,006,012,216+34,106
+  dw  PlayerSpriteData_Char_LeftPunch2b | db 008,040+50,006,012,216+34,106
+  dw  PlayerSpriteData_Char_LeftPunch2b | db 008,040+50,006,012,216+34,106
+  
+  dw  PlayerSpriteData_Char_LeftPunch2c | db 002,045+50,010,016,216+09,112
+  dw  PlayerSpriteData_Char_LeftPunch2c | db 002,045+50,010,016,216+09,112
+  dw  PlayerSpriteData_Char_LeftPunch2c | db 002,045+50,010,016,216+09,112
+
+  dw  PlayerSpriteData_Char_LeftPunch2d | db 002,042+50,009,012,216+10,100
+  dw  PlayerSpriteData_Char_LeftPunch2d | db 002,042+50,009,012,216+10,100
+  dw  PlayerSpriteData_Char_LeftPunch2d | db 002,042+50,009,012,216+10,100
+
+  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,028+50,005,007,216+24,134
+  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,028+50,005,007,216+24,134
+  dw  PlayerSpriteData_Char_LeftPunch2a | db 003,028+50,005,007,216+24,134
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 11*8, 0                        
+                                        ;positioning for the SW sprites:
+LeftDaggerVersion1AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3a | db 004,030+50,005,009,216+24,203
+
+  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203 
+  dw  PlayerSpriteData_Char_LeftPunch3c | db 004,035+50,005,009,216+24,203
+
+  dw  PlayerSpriteData_Char_LeftPunch3b | db 004,033+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3b | db 004,033+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch3b | db 004,033+50,005,009,216+24,203
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 10*8, 0
+                                        ;positioning for the SW sprites:  
+LeftDaggerVersion2AttackAnimation:      ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftPunch1h | db 007,025+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1h | db 007,025+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1h | db 007,025+50,005,009,216+24,203
+  
+  dw  PlayerSpriteData_Char_LeftPunch1e | db 003,036+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1e | db 003,036+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1e | db 003,036+50,005,009,216+24,203
+
+  dw  PlayerSpriteData_Char_LeftPunch1f | db 005,034+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1f | db 005,034+50,005,009,216+24,203
+
+  dw  PlayerSpriteData_Char_LeftPunch1g | db 006,029+50,005,009,216+24,203
+  dw  PlayerSpriteData_Char_LeftPunch1g | db 006,029+50,005,009,216+24,203
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 11*8, 0
+                                             ;positioning for the SW sprites:  
+LeftSpearAttackAnimation:                    ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftSpearAttack1 | db 002,037+50,005,013,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack2 | db 003,039+50,005,015,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack3 | db 004,043+50,005,019,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack4 | db 002,050+50,005,026,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack1 | db 002,037+50,005,013,216+24,172
+  dw  PlayerSpriteData_Char_LeftSpearAttack1 | db 002,037+50,005,013,216+24,172
+
+;animate every x frames, amount of frames * 2, left(0) or right(1)
+  db  1, 14*8, 0
+                                        ;positioning for the SW sprites:  
+LeftAxeAttackAnimation:                 ;  addy,subx, ny ,nx ,sy   ,sx
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 006,011+50,009,012,216+21,084 
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 006,011+50,009,012,216+21,084
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 006,011+50,009,012,216+21,084
+   
+  dw  PlayerSpriteData_Char_LeftCharge4 | db -15,016+50,010,012,216+21,116
+  dw  PlayerSpriteData_Char_LeftCharge4 | db -15,016+50,010,012,216+21,116
+
+  dw  PlayerSpriteData_Char_LeftCharge3 | db -15,033+50,013,012,216+21,107
+  dw  PlayerSpriteData_Char_LeftCharge3 | db -15,033+50,013,012,216+21,107
+
+  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036+50,010,012,216+30,093
+  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036+50,010,012,216+30,093
+  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036+50,010,012,216+30,093
+  dw  PlayerSpriteData_Char_LeftCharge5 | db 001,036+50,010,012,216+30,093
+
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,031+50,010,010,216+30,083
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,031+50,010,010,216+30,083
+  dw  PlayerSpriteData_Char_LeftCharge7 | db 004,031+50,010,010,216+30,083
+
+
+
 
 ;animate every x frames, amount of frames * 2, left(0) or right(1)
   db  1, 12*8, 1

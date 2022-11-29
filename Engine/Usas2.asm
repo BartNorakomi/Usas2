@@ -3528,9 +3528,12 @@ MapG03:
 MapG04:
   incbin "..\maps\g04.map.pck"  | .amountofobjects: db  0
 MapG05:
-  incbin "..\maps\g05.map.pck"  | .amountofobjects: db  1
+  incbin "..\maps\g05.map.pck"  | .amountofobjects: db  4
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .object1: db 2,        0|dw SDMika              |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo2| ds fill-1
+.object2: db 2,        0|dw BackupScoreBoard    |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,217, 0|db 000,movepatblo2| ds fill-1
+.object3: db 2,        0|dw RemoveScoreBoard    |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,217, 0|db 000,movepatblo2| ds fill-1
+.object4: db 2,        0|dw RestoreScoreBoard   |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,100, 0|db 000,movepatblo2| ds fill-1
   
   
   
@@ -3672,7 +3675,7 @@ dephase
 Graphicsblock4:  equ   $93
 phase	$8000
 itemsKarniMataPage3:
-  incbin "..\grapx\itemsKarniMataPage3.SC5",7,$1400  ;skip header
+  incbin "..\grapx\itemsKarniMataPage3.SC5",7,128 * 40 ;skip header, 40 lines
 	ds		$c000-$,$ff
 dephase
 

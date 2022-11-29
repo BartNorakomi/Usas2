@@ -311,26 +311,7 @@ BackupPage0InRam:                     ;store Vram data of page 0 in ram:
   jp    nz,.loop2
   ret
 
-;
-;Set VDP port #98 to start reading at address AHL (17-bit)
-;
-SetVdp_Read:  rlc     h
-              rla
-              rlc     h
-              rla
-              srl     h
-              srl     h
-              di
-              out     ($99),a         ;set bits 15-17
-              ld      a,14+128
-              out     ($99),a
-              ld      a,l             ;set bits 0-7
-              nop
-              out     ($99),a
-              ld      a,h             ;set bits 8-14
-              ei                      ; + read access
-              out     ($99),a
-              ret
+
 
 RestorePage0InVram:                   ;restore the vram data the was stored in ram earlier
   ld    a,(slot.page1rom)             ;all RAM except page 1

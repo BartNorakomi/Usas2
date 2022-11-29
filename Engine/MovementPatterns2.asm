@@ -2,6 +2,93 @@
 ;PutSf2Object5Frames
 ;PutSf2Object4Frames
 ;SDMika
+;RemoveScoreBoard
+;BackupScoreBoard
+;RestoreScoreBoard
+
+RestoreScoreBoard:
+  ld    a,(ix+enemies_and_objects.v9)       ;v9 wait x frames
+  dec   a
+  jr    z,.go
+  ld    (ix+enemies_and_objects.v9),a       ;v9 wait x frames
+  ret
+  .go:
+
+  ld    hl,RestoreScoreboard1Line
+  call  DoCopy
+
+  ld    a,(RestoreScoreboard1Line+sy)       ;sy
+  inc   a
+  ld    (RestoreScoreboard1Line+sy),a       ;sy
+
+  ld    a,(RestoreScoreboard1Line+dy)       ;sy
+  inc   a
+  ld    (RestoreScoreboard1Line+dy),a       ;sy
+  ret   nz
+  jp    RemoveSprite
+
+BackupScoreBoard:
+  ld    hl,BackupScoreboard1Line
+  call  DoCopy
+
+  ld    a,(BackupScoreboard1Line+sy)       ;sy
+  add   a,10
+  ld    (BackupScoreboard1Line+sy),a       ;sy
+
+  ld    a,(BackupScoreboard1Line+dy)       ;sy
+  add   a,10
+  ld    (BackupScoreboard1Line+dy),a       ;sy
+  cp    40
+  jp    nc,RemoveSprite
+  ret
+
+BackupScoreBoardToRam:
+	ld		a,(slot.page2rom)	                  ; all RAM except page 2
+	out		($a8),a	
+
+;bank 1 at $4000
+  ld		a,1
+  out   ($fd),a          	                  ;$ff = page 0 ($c000-$ffff) | $fe = page 1 ($8000-$bfff) | $fd = page 2 ($4000-$7fff) | $fc = page 3 ($0000-$3fff) 
+
+  ld    hl,218*128                          ;page 0 - screen 5 start at y=218
+	xor   a
+;	call	SetVdp_Read	
+;  ld    hl,$8000
+;  ld    c,$98
+;  ld    a,128/2                       ;backup 128 lines..
+;  ld    b,0
+;.loop:
+;  inir
+;  dec   a
+;  jp    nz,.loop
+
+;bank 2 at $8000
+;  ld		a,2
+;  out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) | $fe = page 1 ($8000-$bfff) | $fd = page 2 ($4000-$7fff) | $fc = page 3 ($0000-$3fff) 
+
+;  ld    hl,$8000
+;  ld    c,$98
+;  ld    a,084/2                       ;backup remaining 84 lines..
+;  ld    b,0
+;.loop2:
+;  inir
+;  dec   a
+;  jp    nz,.loop2
+;  ret
+	
+	ld		a,(slot.page12rom)	                ; all RAM except page 1+2
+	out		($a8),a	
+  ret
+
+RemoveScoreBoard:
+  ld    a,(ix+enemies_and_objects.v9)       ;y black line
+  inc   a
+  cp    255
+  jp    nc,RemoveSprite
+  ld    (ix+enemies_and_objects.v9),a       ;y black line 
+  ld    (RemoveScoreBoard1Line+dy),a  
+  ld    hl,RemoveScoreBoard1Line
+  jp    DoCopy
 
 PutSf2Object2Frames:
   ld    a,(HugeObjectFrame)

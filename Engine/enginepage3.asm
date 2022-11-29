@@ -42,11 +42,11 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapA07Data      ;Retarded Zombies
 ;WorldMapPointer:  dw  MapA04Data      ;Area Sign
 ;WorldMapPointer:  dw  MapD12Data      ;pit
-;WorldMapPointer:  dw  MapA06Data      ;
-WorldMapPointer:  dw  MapG05Data      ;
+;WorldMapPointer:  dw  MapA05Data      ;
+WorldMapPointer:  dw  MapG05Data      ;NPC interaction
 ;WorldMapPointer:  dw  MapC08Data      ;
 ;WorldMapPointer:  dw  MapE09Data      ;lava
-;WorldMapPointer:  dw  MapF13Data      ;Boss Goat (iceboss)
+;WorldMapPointer:  dw  MapG13Data      ;Boss Goat (iceboss)
 ;WorldMapPointer:  dw  MapB01_017Data      ;Huge Blob
 
 PlayLogo:
@@ -64,11 +64,12 @@ loadGraphics:
   call  UnpackMapdata_SetObjects      ;unpacks packed map to $4000 in ram and sets objects.                                       ;ends with: all RAM except page 2
   call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
   call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
-
+;This can be removed after we optimised the BuildUpMap routine
+  halt | halt | halt                  ;this is instead of a call waitvdpready. copy instructions need to finish before we put vramobjects in page1and3
   ld    a,(slot.page12rom)            ;all RAM except page 12
   out   ($a8),a       
   call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
-  call  CopyItemsKarniMata            ;copy items to page 1 - screen 5 - bottom 40 pixels (scoreboard) |loader|
+  call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
   call  RemoveSpritesFromScreen       ;|loader|
   call  SwapSpatColAndCharTable
   call  PutSpatToVramSlow
@@ -76,7 +77,7 @@ loadGraphics:
   call  PutSpatToVramSlow
   call  initiatebordermaskingsprites  ;|loader|
 
-;	di
+;  di                                  ;register 14 sets VRAM address to read/write to/from. This value is only set once per frame ingame, we assume it's set to $05 at all times, so set it back when going back to the game
 ;  ld    a,$05
 ;	out   ($99),a       ;set bits 15-17
 ;	ld    a,14+128
@@ -888,13 +889,29 @@ copyGraphicsToScreen:
   jp    nz,.loop1
   ret
 
+RestoreScoreboard1Line:                             ;this is used to backup the scoreboard from (0,216) - (255,255) page 0 to (0,0) page 1
+  db    000,000,000,001   ;sx,--,sy,spage
+  db    000,000,216,000   ;dx,--,dy,dpage
+  db    000,001,001,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from left to right
 
+BackupScoreboard1Line:                             ;this is used to backup the scoreboard from (0,216) - (255,255) page 0 to (0,0) page 1
+  db    000,000,216,000   ;sx,--,sy,spage
+  db    000,000,000,001   ;dx,--,dy,dpage
+  db    000,001,010,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from left to right
 
-FillBottomPartScoreBoard:
+RemoveScoreBoard1Line:
   db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,248,000   ;dx,--,dy,dpage
-  db    000,001,008,000   ;nx,--,ny,--
+  db    002,000,219,000   ;dx,--,dy,dpage
+  db    252,000,001,000   ;nx,--,ny,--
   db    %1111 1111,000,$C0       ;fill 
+
+;FillBottomPartScoreBoard:
+;  db    000,000,000,000   ;sx,--,sy,spage
+;  db    000,000,248,000   ;dx,--,dy,dpage
+;  db    000,001,008,000   ;nx,--,ny,--
+;  db    %1111 1111,000,$C0       ;fill 
 
 
 
@@ -921,6 +938,27 @@ SetPalette:
 	ei
 	ret
 
+;
+;Set VDP port #98 to start reading at address AHL (17-bit)
+;
+SetVdp_Read:  rlc     h
+              rla
+              rlc     h
+              rla
+              srl     h
+              srl     h
+              di
+              out     ($99),a         ;set bits 15-17
+              ld      a,14+128
+              out     ($99),a
+              ld      a,l             ;set bits 0-7
+;              nop
+              out     ($99),a
+              ld      a,h             ;set bits 8-14
+              ei                      ; + read access
+              out     ($99),a
+              ret
+              
 ;
 ;Set VDP port #98 to start writing at address AHL (17-bit)
 ;
