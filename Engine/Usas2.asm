@@ -3530,10 +3530,10 @@ MapG04:
 MapG05:
   incbin "..\maps\g05.map.pck"  | .amountofobjects: db  4
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object1: db 2,        0|dw SDMika              |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo2| ds fill-1
-.object2: db 2,        0|dw BackupScoreBoard    |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,217, 0|db 000,movepatblo2| ds fill-1
-.object3: db 2,        0|dw RemoveScoreBoard    |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,217, 0|db 000,movepatblo2| ds fill-1
-.object4: db 2,        0|dw RestoreScoreBoard   |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,100, 0|db 000,movepatblo2| ds fill-1
+.object1: db 2,        0|dw SDMika              |db 8*13|dw 8*04|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo2| ds fill-1
+.object2: db 0,        0|dw BackupScoreBoard    |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,217, 0|db 000,movepatblo2| ds fill-1
+.object3: db 0,        0|dw RemoveScoreBoard    |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,217, 0|db 000,movepatblo2| ds fill-1
+.object4: db 0,        0|dw RestoreScoreBoard   |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,100, 0|db 000,movepatblo2| ds fill-1
   
   
   
@@ -3741,8 +3741,19 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
-; block $a1 - $c4
-  ds  $4000 * $24
+;
+; block $a1
+;
+NPCDialogueFontBlock:  equ   $a1
+phase	$4000
+NPCDialogueFontAddress:
+  incbin "..\grapx\font\NPCDialogueFont.SC5",7,016 * 128      ;016 lines
+	ds		$8000-$,$ff
+dephase
+
+
+; block $a2 - $b4
+  ds  $4000 * $13
 
 
 
@@ -3752,6 +3763,119 @@ dephase
 
 
 
+
+
+; block $b5
+BossGoatIdleAndWalkframelistblock:            equ $b5
+phase	$8000
+  include "..\grapx\BossGoat\IdleAndWalk\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $b6
+BossGoatIdleAndWalkspritedatablock:           equ $b6
+phase	$0000
+  incbin "..\grapx\BossGoat\IdleAndWalk\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+; block $b7
+BossGoatWalkAndAttackframelistblock:            equ $b7
+phase	$8000
+  include "..\grapx\BossGoat\WalkAndAttack\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $b8
+BossGoatWalkAndAttackspritedatablock:           equ $b8
+phase	$0000
+  incbin "..\grapx\BossGoat\WalkAndAttack\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+; block $b9
+BossGoatAttackframelistblock:            equ $b9
+phase	$8000
+  include "..\grapx\BossGoat\Attack\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $ba
+BossGoatAttackspritedatablock:           equ $ba
+phase	$0000
+  incbin "..\grapx\BossGoat\Attack\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+; block $bb
+BossGoatAttack2framelistblock:            equ $bb
+phase	$8000
+  include "..\grapx\BossGoat\Attack2\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $bc
+BossGoatAttack2spritedatablock:           equ $bc
+phase	$0000
+  incbin "..\grapx\BossGoat\Attack2\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+; block $bd
+BossGoatAttackAndHitframelistblock:            equ $bd
+phase	$8000
+  include "..\grapx\BossGoat\AttackAndHit\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $be
+BossGoatAttackAndHitspritedatablock:           equ $be
+phase	$0000
+  incbin "..\grapx\BossGoat\AttackAndHit\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+
+
+
+
+; block $bf
+BossGoatDyingframelistblock:            equ $bf
+phase	$8000
+  include "..\grapx\BossGoat\Dying\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $c0
+BossGoatDyingspritedatablock:           equ $c0
+phase	$0000
+  incbin "..\grapx\BossGoat\Dying\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+; block $c1
+BossGoatDying2framelistblock:            equ $c1
+phase	$8000
+  include "..\grapx\BossGoat\Dying2\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $c2
+BossGoatDying2spritedatablock:           equ $c2
+phase	$0000
+  incbin "..\grapx\BossGoat\Dying2\frames.dat"
+	ds		$4000-$,$ff
+dephase
+
+
+
+
+
+; block $c3
+CharacterFacesframelistblock:            equ $c3
+phase	$8000
+  include "..\grapx\CharacterFaces\frames.lst" 
+	ds		$c000-$,$ff
+
+; block $c4
+CharacterFacesspritedatablock:           equ $c4
+phase	$0000
+  incbin "..\grapx\CharacterFaces\frames.dat"
+	ds		$4000-$,$ff
+dephase
 
 ; block $c5
 ryuframelistblock:            equ $c5
@@ -3928,123 +4052,14 @@ dephase
 
 
 
-; block $df
-BossGoatIdleAndWalkframelistblock:            equ $df
-phase	$8000
-  include "..\grapx\BossGoat\IdleAndWalk\frames.lst" 
-	ds		$c000-$,$ff
-
-; block $e0
-BossGoatIdleAndWalkspritedatablock:           equ $e0
-phase	$0000
-  incbin "..\grapx\BossGoat\IdleAndWalk\frames.dat"
-	ds		$4000-$,$ff
-dephase
-
-; block $e1
-BossGoatWalkAndAttackframelistblock:            equ $e1
-phase	$8000
-  include "..\grapx\BossGoat\WalkAndAttack\frames.lst" 
-	ds		$c000-$,$ff
-
-; block $e2
-BossGoatWalkAndAttackspritedatablock:           equ $e2
-phase	$0000
-  incbin "..\grapx\BossGoat\WalkAndAttack\frames.dat"
-	ds		$4000-$,$ff
-dephase
-
-; block $e3
-BossGoatAttackframelistblock:            equ $e3
-phase	$8000
-  include "..\grapx\BossGoat\Attack\frames.lst" 
-	ds		$c000-$,$ff
-
-; block $e4
-BossGoatAttackspritedatablock:           equ $e4
-phase	$0000
-  incbin "..\grapx\BossGoat\Attack\frames.dat"
-	ds		$4000-$,$ff
-dephase
-
-; block $e5
-BossGoatAttack2framelistblock:            equ $e5
-phase	$8000
-  include "..\grapx\BossGoat\Attack2\frames.lst" 
-	ds		$c000-$,$ff
-
-; block $e6
-BossGoatAttack2spritedatablock:           equ $e6
-phase	$0000
-  incbin "..\grapx\BossGoat\Attack2\frames.dat"
-	ds		$4000-$,$ff
-dephase
-
-; block $e7
-BossGoatAttackAndHitframelistblock:            equ $e7
-phase	$8000
-  include "..\grapx\BossGoat\AttackAndHit\frames.lst" 
-	ds		$c000-$,$ff
-
-; block $e8
-BossGoatAttackAndHitspritedatablock:           equ $e8
-phase	$0000
-  incbin "..\grapx\BossGoat\AttackAndHit\frames.dat"
-	ds		$4000-$,$ff
-dephase
-
-; block $e9
-BossGoatDyingframelistblock:            equ $e9
-phase	$8000
-  include "..\grapx\BossGoat\Dying\frames.lst" 
-	ds		$c000-$,$ff
-
-; block $ea
-BossGoatDyingspritedatablock:           equ $ea
-phase	$0000
-  incbin "..\grapx\BossGoat\Dying\frames.dat"
-	ds		$4000-$,$ff
-dephase
-
-; block $eb
-BossGoatDying2framelistblock:            equ $eb
-phase	$8000
-  include "..\grapx\BossGoat\Dying2\frames.lst" 
-	ds		$c000-$,$ff
-
-; block $ec
-BossGoatDying2spritedatablock:           equ $ec
-phase	$0000
-  incbin "..\grapx\BossGoat\Dying2\frames.dat"
-	ds		$4000-$,$ff
-dephase
-
-
-
-
-
-; block $ed
-CharacterFacesframelistblock:            equ $ed
-phase	$8000
-  include "..\grapx\CharacterFaces\frames.lst" 
-	ds		$c000-$,$ff
-
-; block $ee
-CharacterFacesspritedatablock:           equ $ee
-phase	$0000
-  incbin "..\grapx\CharacterFaces\frames.dat"
-	ds		$4000-$,$ff
-dephase
-
-
 
 
 
 
 ;
-; block $ef -----------------> Music
+; block $df -----------------> Music
 ;
-usas2repBlock:  equ   $ef
+usas2repBlock:  equ   $df
   incbin "usas2.rep"
 
 

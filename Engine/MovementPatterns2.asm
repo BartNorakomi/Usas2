@@ -418,18 +418,18 @@ SDMika:
 ;v2=pointer to movement table
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
-;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
-;v6=Movement Direction  
+;v5=add to dx character
+;v6=pointer to character 
 ;v7=sprite frame
 ;v8=phase
-;v9=timer until next phase
+;v9=y black line 
 ;  call  CheckPlayerHitByGoat                ;Check if player gets hit by boss
   ;Check if boss gets hit by player
 ;  call  GoatCheckIfHit                      ;call gets popped if hit. Check if boss is hit, and if so set being hit phase
   ;Check if boss is dead
 ;  call  GoatCheckIfDead                     ;Check if boss is dead, and if so set dying phase
   
-  call  .HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  call  .HandlePhase                        ;v8=Phase (0=waiting player, 1=walking, 2=attacking, 3=hit, 4=dead)
 
   ld    de,SDMika00
   jp    PutSf2Object2Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
@@ -438,22 +438,228 @@ SDMika:
   ld    de,NonMovingObjectMovementTable
   call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
 
-  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle)
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
   or    a
-  jp    z,SDMikaIdle                        ;0=attack
+  jp    z,SDMikaWaitingPlayerNear           ;0=waiting player
+  dec   a
+  jp    z,SDMikaBackupScoreBoard            ;1=backup scoreboard
+  dec   a 
+  jp    z,SDMikaRemoveScoreBoard            ;2=remove scoreboard
+  dec   a
+  jp    z,SDMikaPutText                     ;3=put text
+  dec   a
+  jp    z,SDMikaRestoreScoreBoard           ;4=restore scoreboard
+  dec   a
+  jp    z,SDMikaRestoreBackground           ;5=restore scoreboard
+  ret
+
+  SDMikaRestoreBackground:
+  ld    hl,RestoreBackgroundScoreboard1Line
+  call  DoCopy
+
+  ld    a,(RestoreBackgroundScoreboard1Line+sy)        ;sy
+  inc   a
+  ld    (RestoreBackgroundScoreboard1Line+sy),a        ;sy
+
+  ld    a,(RestoreBackgroundScoreboard1Line+dy)        ;sy
+  inc   a
+  ld    (RestoreBackgroundScoreboard1Line+dy),a        ;sy
+  cp    40
+  ret   c
+  xor   a
+  ld    (freezecontrols?),a  
+  ld    (ix+enemies_and_objects.v8),0       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ret
+
+  SDMikaRestoreScoreBoard:                  ;3=restore scoreboard
+  ld    hl,RestoreScoreboard1Line
+  call  DoCopy
+
+  ld    a,(RestoreScoreboard1Line+sy)       ;sy
+  inc   a
+  ld    (RestoreScoreboard1Line+sy),a       ;sy
+
+  ld    a,(RestoreScoreboard1Line+dy)       ;sy
+  inc   a
+  ld    (RestoreScoreboard1Line+dy),a       ;sy
+  ret   nz
+  xor   a
+  ld    (RestoreBackgroundScoreboard1Line+sy),a        ;sy
+  ld    (RestoreBackgroundScoreboard1Line+dy),a        ;sy  
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ret
+
+  SDMikaPutText:
+  ld    hl,NPCDialogueText1
+  call  NPCDialogueputText
+  ret
+
+NPCDialogueputText:
+  ;set fontdata in page 1 in rom ($4000 - $7fff)
+	ld    a,NPCDialogueFontBlock
+  call	block12
+    
+  ld    e,(ix+enemies_and_objects.v6)       ;v6=pointer to character  
+  ld    d,0
+  add   hl,de
+  inc   (ix+enemies_and_objects.v6)         ;v6=pointer to character  
+  ld    a,(hl)
+  
+  cp    $20                                 ;space
+  jr    nz,.EndCheckSpace
+  ld    a,$61 + 26
+  .EndCheckSpace:
+
+  cp    $3a                                 ;colon
+  jr    nz,.EndCheckColon
+  ld    a,$61 + 27
+  .EndCheckColon:
+
+  cp    255
+  jp    z,.RemoveSprite
+  sub   $61
+  add   a,a                                 ;*2
+  ld    d,0
+  ld    e,a
+  ld    hl,NPCDialogueCharacterData
+  add   hl,de
+
+  ld    c,(hl)                              ;Character Start X
+  ld    b,0  
+  inc   hl
+  ld    d,(hl)                              ;font lenght in bytes (1 byte is 2 pixels)
+
+  ld    hl,NPCDialogueFontAddress           ;writing from this address in ROM
+  add   hl,bc
+  
+  exx
+  ld    hl,$6C00+128+128+1280+2             ;write to page 0 - screen 5 - bottom 40 pixels (scoreboard)  
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.v5)       ;v5=add to dx character
+  add   hl,de
+
+  call  NPCDialoguePutCharacter
+
+  ;set the general movement pattern block at address $4000 in page 1
+	ld    a,MovementPatternsFixedPage1block
+  call	block12
+  ret
+
+  .RemoveSprite:
+  ;set the general movement pattern block at address $4000 in page 1
+	ld    a,MovementPatternsFixedPage1block
+  call	block12
+
+  call  RemoveSprite  
+  ret
+
+NPCDialogueText1:  
+  db "mika: my name is mika",255
+;Character Start X, Lenght   A     B     C     D     E     F     G     H     I     J     K     L     M     N     O     P     Q     R     S     T     U     V     W     X     Y     Z     Space :
+NPCDialogueCharacterData: db 000,4,004,4,008,4,012,4,016,4,020,4,024,4,028,4,032,2,034,4,038,4,042,4,046,4,050,4,054,4,058,4,062,4,066,4,070,4,074,4,078,4,082,4,086,4,090,4,094,4,098,4,102,3,105,2
+NPCDialoguePutCharacter:
+  ld    b,8                                 ;font height
+
+  .loop:
+  push  hl
+	xor   a
+	call	SetVdp_Write	
+  pop   hl
+  ld    de,128
+  add   hl,de
+
+  exx
+  ld    c,$98
+  ld    b,d                                 ;font lenght in bytes (1 byte is 2 pixels)
+  push  hl
+  otir                                      ;copy line
+  pop   hl
+  ld    bc,128
+  add   hl,bc
+  exx
+
+  djnz  .loop
+  
+  exx
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=add to dx character
+  add   a,d                                 ;add font lenght
+  ld    (ix+enemies_and_objects.v5),a       ;v5=add to dx character
+  ret
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  SDMikaRemoveScoreBoard:                   ;2=remove scoreboard
+  ld    a,(ix+enemies_and_objects.v9)       ;y black line
+  inc   a
+  cp    255
+  jp    nc,.EndRemoveScoreBoard
+  ld    (ix+enemies_and_objects.v9),a       ;y black line 
+  ld    (RemoveScoreBoard1Line+dy),a  
+  ld    hl,RemoveScoreBoard1Line
+  jp    DoCopy
+  .EndRemoveScoreBoard:
+  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
   ret
   
-  SDMikaIdle:
+  SDMikaBackupScoreBoard:                   ;1=backup scoreboard
+  ld    hl,BackupScoreboard1Line
+  call  DoCopy
 
-  .DistanceCheck:
-  ld    (ix+enemies_and_objects.x),090      ;x
-  ld    b,60                                ;b-> x distance
+  ld    a,(BackupScoreboard1Line+sy)        ;sy
+  inc   a
+  ld    (BackupScoreboard1Line+sy),a        ;sy
+
+  ld    a,(BackupScoreboard1Line+dy)        ;sy
+  inc   a
+  ld    (BackupScoreboard1Line+dy),a        ;sy
+  cp    40
+  ret   c
+  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ld    (ix+enemies_and_objects.v9),217     ;y black line 
+  ret
+
+  SDMikaWaitingPlayerNear:  
+  ld    (ix+enemies_and_objects.x),000      ;x character portrait (move out of screen)
+  ld    b,90                                ;b-> x distance
   ld    c,140                               ;c-> y distance
   call  distancecheck16wide                 ;in: b,c->x,y distance between player and object,  out: carry->object within distance
-  ret   c
-  ld    (ix+enemies_and_objects.x),000      ;x  
-  ret
+  ret   nc
   
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)	
+	bit		4,a           ;space pressed ?
+  ret   z
+  
+  ld    (ix+enemies_and_objects.x),090      ;x character portrait (move into screen)
+  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ld    a,1
+  ld    (freezecontrols?),a
+
+  ld    a,216
+  ld    (BackupScoreboard1Line+sy),a        ;sy  
+  ld    (RestoreScoreboard1Line+dy),a       ;sy
+  xor   a
+  ld    (BackupScoreboard1Line+dy),a        ;sy
+  ld    (RestoreScoreboard1Line+sy),a       ;sy  
+  ret
+
 BossGoat:
 ;v1-2=backup v8 phase
 ;v1-1=backup v7 sprite frame

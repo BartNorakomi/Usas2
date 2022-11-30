@@ -889,6 +889,12 @@ copyGraphicsToScreen:
   jp    nz,.loop1
   ret
 
+RestoreBackgroundScoreboard1Line:                    ;this is used to clean up the scoreboard which is backed up to (0,0) page 1
+  db    000,000,000,003   ;sx,--,sy,spage
+  db    000,000,000,001   ;dx,--,dy,dpage
+  db    000,001,001,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from left to right
+
 RestoreScoreboard1Line:                             ;this is used to backup the scoreboard from (0,216) - (255,255) page 0 to (0,0) page 1
   db    000,000,000,001   ;sx,--,sy,spage
   db    000,000,216,000   ;dx,--,dy,dpage
@@ -898,7 +904,7 @@ RestoreScoreboard1Line:                             ;this is used to backup the 
 BackupScoreboard1Line:                             ;this is used to backup the scoreboard from (0,216) - (255,255) page 0 to (0,0) page 1
   db    000,000,216,000   ;sx,--,sy,spage
   db    000,000,000,001   ;dx,--,dy,dpage
-  db    000,001,010,000   ;nx,--,ny,--
+  db    000,001,001,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy -> Copy from left to right
 
 RemoveScoreBoard1Line:
