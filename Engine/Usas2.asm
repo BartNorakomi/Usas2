@@ -3530,7 +3530,7 @@ MapG04:
 MapG05:
   incbin "..\maps\g05.map.pck"  | .amountofobjects: db  4
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object1: db 2,        0|dw SDMika              |db 8*13|dw 8*04|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo2| ds fill-1
+.object1: db 2,        0|dw SDMika              |db 8*13|dw 8*00|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo2| ds fill-1
 .object2: db 0,        0|dw BackupScoreBoard    |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,217, 0|db 000,movepatblo2| ds fill-1
 .object3: db 0,        0|dw RemoveScoreBoard    |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,217, 0|db 000,movepatblo2| ds fill-1
 .object4: db 0,        0|dw RestoreScoreBoard   |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,100, 0|db 000,movepatblo2| ds fill-1

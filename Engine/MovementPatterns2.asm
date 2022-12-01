@@ -418,11 +418,12 @@ SDMika:
 ;v2=pointer to movement table
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
-;v5=add to dx character
-;v6=pointer to character 
+;v5=add to dx character (text to screen)
+;v6=pointer to character (text to screen) 
 ;v7=sprite frame
 ;v8=phase
-;v9=y black line 
+;v9=y black line
+;v10=add to dy character (text to screen)
 ;  call  CheckPlayerHitByGoat                ;Check if player gets hit by boss
   ;Check if boss gets hit by player
 ;  call  GoatCheckIfHit                      ;call gets popped if hit. Check if boss is hit, and if so set being hit phase
@@ -469,6 +470,11 @@ SDMika:
   xor   a
   ld    (freezecontrols?),a  
   ld    (ix+enemies_and_objects.v8),0       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+
+  ld    a,(ix+enemies_and_objects.v11)
+  inc   a
+  and   3
+  ld    (ix+enemies_and_objects.v11),a  
   ret
 
   SDMikaRestoreScoreBoard:                  ;3=restore scoreboard
@@ -486,120 +492,48 @@ SDMika:
   xor   a
   ld    (RestoreBackgroundScoreboard1Line+sy),a        ;sy
   ld    (RestoreBackgroundScoreboard1Line+dy),a        ;sy  
-  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ld    (ix+enemies_and_objects.v8),5       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
   ret
 
   SDMikaPutText:
+  ld    a,(ix+enemies_and_objects.v11)
+  or    a  
   ld    hl,NPCDialogueText1
+  jr    z,.go
+  dec   a
+  ld    hl,NPCDialogueText2
+  jr    z,.go
+  dec   a
+  ld    hl,NPCDialogueText3
+  jr    z,.go
+  ld    hl,NPCDialogueText4
+  .go:
   call  NPCDialogueputText
+
+  cp    255                                 ;end text ?
+  ret   nz
+
+  xor   a                                   ;unfreeze controls
+  ld    (freezecontrols?),a
+  call  PopulateControls                    
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)	
+	bit		4,a                                 ;space pressed ?
+
+  ld    a,0                                 ;reset and freeze controls again
+  ld    (Controls),a
+  ld    (NewPrContr),a
+  ld    a,1
+  ld    (freezecontrols?),a
+
+  ret   z                                   ;check if space is pressed
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
   ret
-
-NPCDialogueputText:
-  ;set fontdata in page 1 in rom ($4000 - $7fff)
-	ld    a,NPCDialogueFontBlock
-  call	block12
-    
-  ld    e,(ix+enemies_and_objects.v6)       ;v6=pointer to character  
-  ld    d,0
-  add   hl,de
-  inc   (ix+enemies_and_objects.v6)         ;v6=pointer to character  
-  ld    a,(hl)
-  
-  cp    $20                                 ;space
-  jr    nz,.EndCheckSpace
-  ld    a,$61 + 26
-  .EndCheckSpace:
-
-  cp    $3a                                 ;colon
-  jr    nz,.EndCheckColon
-  ld    a,$61 + 27
-  .EndCheckColon:
-
-  cp    255
-  jp    z,.RemoveSprite
-  sub   $61
-  add   a,a                                 ;*2
-  ld    d,0
-  ld    e,a
-  ld    hl,NPCDialogueCharacterData
-  add   hl,de
-
-  ld    c,(hl)                              ;Character Start X
-  ld    b,0  
-  inc   hl
-  ld    d,(hl)                              ;font lenght in bytes (1 byte is 2 pixels)
-
-  ld    hl,NPCDialogueFontAddress           ;writing from this address in ROM
-  add   hl,bc
-  
-  exx
-  ld    hl,$6C00+128+128+1280+2             ;write to page 0 - screen 5 - bottom 40 pixels (scoreboard)  
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.v5)       ;v5=add to dx character
-  add   hl,de
-
-  call  NPCDialoguePutCharacter
-
-  ;set the general movement pattern block at address $4000 in page 1
-	ld    a,MovementPatternsFixedPage1block
-  call	block12
-  ret
-
-  .RemoveSprite:
-  ;set the general movement pattern block at address $4000 in page 1
-	ld    a,MovementPatternsFixedPage1block
-  call	block12
-
-  call  RemoveSprite  
-  ret
-
-NPCDialogueText1:  
-  db "mika: my name is mika",255
-;Character Start X, Lenght   A     B     C     D     E     F     G     H     I     J     K     L     M     N     O     P     Q     R     S     T     U     V     W     X     Y     Z     Space :
-NPCDialogueCharacterData: db 000,4,004,4,008,4,012,4,016,4,020,4,024,4,028,4,032,2,034,4,038,4,042,4,046,4,050,4,054,4,058,4,062,4,066,4,070,4,074,4,078,4,082,4,086,4,090,4,094,4,098,4,102,3,105,2
-NPCDialoguePutCharacter:
-  ld    b,8                                 ;font height
-
-  .loop:
-  push  hl
-	xor   a
-	call	SetVdp_Write	
-  pop   hl
-  ld    de,128
-  add   hl,de
-
-  exx
-  ld    c,$98
-  ld    b,d                                 ;font lenght in bytes (1 byte is 2 pixels)
-  push  hl
-  otir                                      ;copy line
-  pop   hl
-  ld    bc,128
-  add   hl,bc
-  exx
-
-  djnz  .loop
-  
-  exx
-  ld    a,(ix+enemies_and_objects.v5)       ;v5=add to dx character
-  add   a,d                                 ;add font lenght
-  ld    (ix+enemies_and_objects.v5),a       ;v5=add to dx character
-  ret
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   SDMikaRemoveScoreBoard:                   ;2=remove scoreboard
   ld    a,(ix+enemies_and_objects.v9)       ;y black line
@@ -611,9 +545,12 @@ NPCDialoguePutCharacter:
   ld    hl,RemoveScoreBoard1Line
   jp    DoCopy
   .EndRemoveScoreBoard:
+  ld    (ix+enemies_and_objects.v5),0       ;v5=add to dx character (text to screen)
+  ld    (ix+enemies_and_objects.v10),0      ;v10=add to dy character (text to screen)
+  ld    (ix+enemies_and_objects.v6),0       ;v6=pointer to character (text to screen) 
   ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
   ret
-  
+
   SDMikaBackupScoreBoard:                   ;1=backup scoreboard
   ld    hl,BackupScoreboard1Line
   call  DoCopy
@@ -659,6 +596,148 @@ NPCDialoguePutCharacter:
   ld    (BackupScoreboard1Line+dy),a        ;sy
   ld    (RestoreScoreboard1Line+sy),a       ;sy  
   ret
+
+NPCDialogueputText:
+  ;set fontdata in page 1 in rom ($4000 - $7fff)
+	ld    a,NPCDialogueFontBlock
+  call	block12
+    
+  ld    e,(ix+enemies_and_objects.v6)       ;v6=pointer to character  
+  ld    d,0
+  add   hl,de
+  ld    a,(hl)
+  
+  cp    $20                                 ;space
+  jr    nz,.EndCheckSpace
+  ld    a,$61 + 26
+  .EndCheckSpace:
+
+  cp    $3a                                 ;colon
+  jr    nz,.EndCheckColon
+  ld    a,$61 + 27
+  .EndCheckColon:
+
+  cp    $21                                 ;exclamation mark
+  jr    nz,.EndCheckExclamationMark
+  ld    a,$61 + 28
+  .EndCheckExclamationMark:
+
+  cp    $3f                                 ;question mark
+  jr    nz,.EndCheckQuestionMark
+  ld    a,$61 + 29
+  .EndCheckQuestionMark:
+
+  cp    $2c                                 ;comma
+  jr    nz,.EndCheckComma
+  ld    a,$61 + 30
+  .EndCheckComma:
+
+  cp    $2e                                 ;period
+  jr    nz,.EndCheckPeriod
+  ld    a,$61 + 31
+  .EndCheckPeriod:
+
+  cp    255                                 ;end text
+  jr    z,.End
+
+  cp    254                                 ;next line
+  jr    nz,.EndCheckNextLine
+  ld    (ix+enemies_and_objects.v5),0       ;v5=add to dx character
+  ld    a,(ix+enemies_and_objects.v10)      ;v10=add to dy character (text to screen)
+  add   a,5
+  ld    (ix+enemies_and_objects.v10),a      ;v10=add to dy character (text to screen)  
+  inc   (ix+enemies_and_objects.v6)         ;v6=pointer to character  
+  inc   hl
+  ld    a,(hl)
+  .EndCheckNextLine:
+  
+  inc   (ix+enemies_and_objects.v6)         ;v6=pointer to character  
+
+  sub   $61
+  add   a,a                                 ;*2
+  ld    d,0
+  ld    e,a
+  ld    hl,NPCDialogueCharacterData
+  add   hl,de
+
+  ld    c,(hl)                              ;Character Start X
+  ld    b,0  
+  inc   hl 
+  ld    d,(hl)                              ;font lenght in bytes (1 byte is 2 pixels)
+
+  ld    hl,NPCDialogueFontAddress           ;writing from this address in ROM
+  add   hl,bc
+  
+  exx
+  ld    hl,$6C00+896+2                     ;write to page 0 - screen 5 - bottom 40 pixels (scoreboard)  
+  ld    d,(ix+enemies_and_objects.v10)      ;v10=add to dy character (text to screen)
+  ld    e,(ix+enemies_and_objects.v5)       ;v5=add to dx character
+  add   hl,de
+
+  call  NPCDialoguePutCharacter
+
+  ;set the general movement pattern block at address $4000 in page 1
+	ld    a,MovementPatternsFixedPage1block
+  call	block12
+  ret
+
+  .End:
+  ;set the general movement pattern block at address $4000 in page 1
+	ld    a,MovementPatternsFixedPage1block
+  call	block12
+  ld    a,255                               ;end
+  ret
+
+NPCDialogueText1:  
+  db "mika: my name is mika",254
+  db "i dont belong in this game",254
+  db "but i dont give a shit",255
+
+NPCDialogueText2:  
+  db "mika: ehhhhhh",254
+  db "can you fucking stop",254
+  db "harrassing me buddy?",255
+
+NPCDialogueText3:  
+  db "mika: you think",254
+  db "this is funny bro!?",255
+
+NPCDialogueText4:  
+  db "mika: thats it",254
+  db "im calling the police.",254
+  db "you freak",255  
+  
+;Character Start X, Lenght   A     B     C     D     E     F     G     H     I     J     K     L     M     N     O     P     Q     R     S     T     U     V     W     X     Y     Z     Space :     !     ?     ,     .
+NPCDialogueCharacterData: db 000,4,004,4,008,4,012,4,016,4,020,4,024,4,028,4,032,2,034,4,038,4,042,4,046,4,050,4,054,4,058,4,062,4,066,4,070,4,074,4,078,4,082,4,086,4,090,4,094,4,098,4,102,3,105,2,107,2,109,4,113,2,115,2
+NPCDialoguePutCharacter:
+  ld    b,8                                 ;font height
+  .loop:
+  push  hl
+	xor   a
+	call	SetVdp_Write	
+  pop   hl
+  ld    de,128
+  add   hl,de
+
+  exx
+  ld    c,$98
+  ld    b,d                                 ;font lenght in bytes (1 byte is 2 pixels)
+  push  hl
+  otir                                      ;copy line
+  pop   hl
+  ld    bc,128
+  add   hl,bc
+  exx
+
+  djnz  .loop
+  
+  exx
+  ld    a,(ix+enemies_and_objects.v5)       ;v5=add to dx character
+  add   a,d                                 ;add font lenght
+  ld    (ix+enemies_and_objects.v5),a       ;v5=add to dx character
+  ret
+
+
 
 BossGoat:
 ;v1-2=backup v8 phase
