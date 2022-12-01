@@ -911,7 +911,7 @@ RemoveScoreBoard1Line:
   db    000,000,000,000   ;sx,--,sy,spage
   db    002,000,219,000   ;dx,--,dy,dpage
   db    252,000,001,000   ;nx,--,ny,--
-  db    %1111 1111,000,$C0       ;fill 
+  db    %1011 1011,000,$C0       ;fill 
 
 ;FillBottomPartScoreBoard:
 ;  db    000,000,000,000   ;sx,--,sy,spage
