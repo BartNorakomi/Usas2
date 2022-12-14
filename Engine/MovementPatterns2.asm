@@ -409,9 +409,57 @@ GoatCheckIfDead:
 ;Idle 
 SDMika00:   dw CharacterFacesframe000 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
 SDMika01:   dw CharacterFacesframe001 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+SDMika02:   dw CharacterFacesframe002 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+SDMika03:   dw CharacterFacesframe003 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+SDMika04:   dw CharacterFacesframe004 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+SDMika05:   dw CharacterFacesframe005 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+SDMika06:   dw CharacterFacesframe006 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+SDMika07:   dw CharacterFacesframe007 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+
+
+
+
+
+
+;PutSf2Object2Frames:
+  ld    a,(HugeObjectFrame)
+  inc   a
+  cp    2
+  jr    nz,.SetFrame
+  xor   a
+  .SetFrame:
+  ld    (HugeObjectFrame),a
+  or    a
+  jr    z,.Part1
+  
+  .Part2:
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject2
+  ld    a,(ix+enemies_and_objects.v7)
+  inc   a
+  call  SetFrameBoss
+  call  PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  jp    switchpageSF2Engine
+
+  .Part1:
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject1
+  ld    a,(ix+enemies_and_objects.v7)
+  call  SetFrameBoss
+  jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+
+
+
+
+
 
 
 SDMika:
+;v1-4=ScoreBoardVanishInward001 step 
+;v1-3=sy and dy copy font and textbackground
 ;v1-2=backup v8 phase
 ;v1-1=backup v7 sprite frame
 ;v1=repeating steps
@@ -433,19 +481,44 @@ SDMika:
   call  .HandlePhase                        ;v8=Phase (0=waiting player, 1=walking, 2=attacking, 3=hit, 4=dead)
 
   ld    de,SDMika00
+ret
   jp    PutSf2Object2Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
+
+
+
+;  xor   a
+;  ld    (screenpage),a                    ;set screen 0, so object gets put in page 1
+
+;  push  ix
+;  call  PutSF2Object                      ;in: b=frame list block, c=sprite data block. CHANGES IX 
+;  pop   ix
+
+;  ld    a,1
+;  ld    (screenpage),a                    ;set screen 1, so player's weapons get put in page 1
+
+
+
+
+
+
+
+
+
   .HandlePhase:
+  ld    a,1
+  call  switchpageSF2Engine.SetPage         ;force page 1 to be the active page at all times
+
   ld    de,NonMovingObjectMovementTable
   call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
 
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
   or    a
-  jp    z,SDMikaWaitingPlayerNear           ;0=waiting player
+  jp    z,SetFontAndBackground              ;0=set font and text background at (0,0) page 0
   dec   a
-  jp    z,SDMikaBackupScoreBoard            ;1=backup scoreboard
+  jp    z,SDMikaWaitingPlayerNear           ;1=waiting player near and pressing trig-a
   dec   a 
-  jp    z,SDMikaRemoveScoreBoard            ;2=remove scoreboard
+  jp    z,SDMikaSwitchToTextBackground      ;2=remove scoreboard and show text background
   dec   a
   jp    z,SDMikaPutText                     ;3=put text
   dec   a
@@ -453,6 +526,113 @@ SDMika:
   dec   a
   jp    z,SDMikaRestoreBackground           ;5=restore scoreboard
   ret
+
+SDMikaSwitchToTextBackground:
+  ld    hl,LineIntNPCInteractions
+  ld    (InterruptHandler.SelfmodyfyingLineIntRoutine),hl
+
+  ld    a,(ix+enemies_and_objects.nx)       ;in/out scoreboard/text background timer
+  inc   a
+  ld    (ix+enemies_and_objects.nx),a       ;in/out scoreboard/text background timer
+  cp    050  
+  ld    b,+1                                ;vanish inward
+  ld    c,00                                ;scoreboard
+  jr    c,.set
+  cp    100  
+  ld    b,-1                                ;appear from the inside out
+  ld    c,39                                ;text background
+  jr    c,.set
+  cp    150  
+  ld    b,+1                                ;vanish inward
+  ld    c,39                                ;text background
+  jr    c,.set
+  cp    200  
+  ld    b,-1                                ;appear from the inside out
+  ld    c,00                                ;scoreboard
+  jr    c,.set
+
+  .set:
+  call  ScoreBoardTextBackgroundTransition  ;in: b=+1 (vanish inward), b=-1 (appear from the inside out), c=0 (vanish scoreboard), c=39 (vanish text background)
+  ret
+  
+ScoreBoardTextBackgroundTransition:  
+  ld    a,(ix+enemies_and_objects.v1-4)     ;ScoreBoardVanishInward001 step 
+  add   a,b
+  jr    nz,.EndCheckEndLeft
+  ld    a,1
+  .EndCheckEndLeft:
+  cp    25
+  jr    nz,.EndCheckEndRight
+  ld    a,24
+  .EndCheckEndRight:
+    
+  ld    (ix+enemies_and_objects.v1-4),a     ;ScoreBoardVanishInward001 step 
+  ld    b,a                                 ;step in b
+
+  ld    hl,ScoreBoardVanishInward001-39     ;scoreboard + 39*step
+  ld    de,39
+  .loop1:
+  add   hl,de
+  djnz  .loop1
+
+  ld    de,NPCtableForR23
+  ld    b,39                                ;39 lines
+  .loop2:
+  ld    a,(hl)
+      
+  cp    44+20
+  jr    nc,.go
+  add   a,c
+  .go:
+  
+  ld    (de),a
+  inc   hl
+  inc   de
+  inc   de
+  djnz  .loop2  
+  ret
+
+SetFontAndBackground:
+  ;set the font and text background block at address $4000 in page 1
+	ld    a,NPCDialogueFontBlock
+  call	block12
+
+	xor   a
+  ld    b,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
+	ld    hl,0 - 128
+  ld    de,128
+  .loop:
+  add   hl,de
+  djnz  .loop
+
+	call	SetVdp_Write                        ;write font and background to (0,0) in page 0
+
+  ld    b,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
+  ld    hl,NPCDialogueFontAndBackgroundAddress  - 128
+  ld    de,128
+  .loop2:
+  add   hl,de
+  djnz  .loop2
+
+  ld    c,$98
+  ld    b,128                               ;128 bytes = 1 line
+  otir                                      ;copy line
+
+  ld    a,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
+  inc   a
+  ld    (ix+enemies_and_objects.v1-3),a     ;v1-3=sy and dy copy font and textbackground
+  cp    56                                  ;total height font and textbackground
+  jr    nz,.EndCheckLastLineCopied
+  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  .EndCheckLastLineCopied:
+
+  ;set the general movement pattern block at address $4000 in page 1
+	ld    a,MovementPatternsFixedPage1block
+  call	block12
+  ret
+
+
+
 
   SDMikaRestoreBackground:
   ld    hl,RestoreBackgroundScoreboard1Line
@@ -475,6 +655,16 @@ SDMika:
   inc   a
   and   3
   ld    (ix+enemies_and_objects.v11),a  
+  
+  
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+  add   a,2
+  cp    8
+  jr    nz,.go
+  xor   a
+  .go:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+    
   ret
 
   SDMikaRestoreScoreBoard:                  ;3=restore scoreboard
@@ -536,6 +726,7 @@ SDMika:
   ret
 
   SDMikaRemoveScoreBoard:                   ;2=remove scoreboard
+ret
   ld    a,(ix+enemies_and_objects.v9)       ;y black line
   inc   a
   cp    255
@@ -568,7 +759,7 @@ SDMika:
   ld    (ix+enemies_and_objects.v9),217     ;y black line 
   ret
 
-  SDMikaWaitingPlayerNear:  
+  SDMikaWaitingPlayerNear:    
   ld    (ix+enemies_and_objects.x),000      ;x character portrait (move out of screen)
   ld    b,90                                ;b-> x distance
   ld    c,140                               ;c-> y distance
@@ -584,17 +775,10 @@ SDMika:
 	bit		4,a           ;space pressed ?
   ret   z
   
-  ld    (ix+enemies_and_objects.x),090      ;x character portrait (move into screen)
-  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+;  ld    (ix+enemies_and_objects.x),090      ;x character portrait (move into screen)
+  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
   ld    a,1
   ld    (freezecontrols?),a
-
-  ld    a,216
-  ld    (BackupScoreboard1Line+sy),a        ;sy  
-  ld    (RestoreScoreboard1Line+dy),a       ;sy
-  xor   a
-  ld    (BackupScoreboard1Line+dy),a        ;sy
-  ld    (RestoreScoreboard1Line+sy),a       ;sy  
   ret
 
 NPCDialogueputText:
@@ -736,6 +920,255 @@ NPCDialoguePutCharacter:
   add   a,d                                 ;add font lenght
   ld    (ix+enemies_and_objects.v5),a       ;v5=add to dx character
   ret
+
+Transition001:
+  db    +082-000,+082-002,+082-004,+082-006,+082-008,+082-010,+082-012,+082-014,+082-016,+082-018
+  db    +082-020,+082-022,+082-024,+082-026,+082-028,+082-030,+082-032,+082-034,+082-036,+082-038
+  db    +082-040,+082-042,+082-044,+082-046,+082-048,+082-050,+082-052,+082-054,+082-056,+082-058
+  db    +082-060,+082-062,+082-064,+082-066,+082-068,+082-070,+082-072,+082-074,+082-076
+
+Transition002:
+;normal scoreboard
+  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+
+Transition003:
+;normal text background
+  db    +083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000
+  db    +083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000
+  db    +083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000
+  db    +083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000
+
+Transition004:
+;black background line everywhere
+  db    +083+039,+083+038,+083+037,+083+036,+083+035,+083+034,+083+033,+083+032,+083+031,+083+030
+  db    +083+029,+083+028,+083+027,+083+026,+083+025,+083+024,+083+023,+083+022,+083+021,+083+020
+  db    +083+019,+083+018,+083+017,+083+016,+083+015,+083+014,+083+013,+083+012,+083+011,+083+010
+  db    +083+009,+083+008,+083+007,+083+006,+083+005,+083+004,+083+003,+083+002,+083+001
+
+blackL01: equ +083+039
+blackL02: equ +083+038
+blackL03: equ +083+037
+blackL04: equ +083+036
+blackL05: equ +083+035
+blackL06: equ +083+034
+blackL07: equ +083+033
+blackL08: equ +083+032
+blackL09: equ +083+031
+blackL10: equ +083+030
+blackL11: equ +083+029
+blackL12: equ +083+028
+blackL13: equ +083+027
+blackL14: equ +083+026
+blackL15: equ +083+025
+blackL16: equ +083+024
+blackL17: equ +083+023
+blackL18: equ +083+022
+blackL19: equ +083+021
+blackL20: equ +083+020
+blackL21: equ +083+019
+blackL22: equ +083+018
+blackL23: equ +083+017
+blackL24: equ +083+016
+blackL25: equ +083+015
+blackL26: equ +083+014
+blackL27: equ +083+013
+blackL28: equ +083+012
+blackL29: equ +083+011
+blackL30: equ +083+010
+blackL31: equ +083+009
+blackL32: equ +083+008
+blackL33: equ +083+007
+blackL34: equ +083+006
+blackL35: equ +083+005
+blackL36: equ +083+004
+blackL37: equ +083+003
+blackL38: equ +083+002
+blackL39: equ +083+001
+
+ScoreBoardVanishInward001:
+;normal scoreboard
+  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+
+ScoreBoardVanishInward002:
+;normal scoreboard 001 pix inward
+  db    blackL01,+044-001,+044-001,+044-001,+044-001,+044-001,+044-001,+044-001,+044-001,+044-001
+  db    +044-001,+044-001,+044-001,+044-001,+044-001,+044-001,+044-001,+044-001,+044-001
+  db    +044+001,+044+001,+044+001,+044+001,+044+001,+044+001,+044+001,+044+001,+044+001,+044+001
+  db    +044+001,+044+001,+044+001,+044+001,+044+001,+044+001,+044+001,+044+001,+044+001,blackL39
+
+ScoreBoardVanishInward003:
+;normal scoreboard 002 pix inward
+  db    blackL01,blackL02,+044-002,+044-002,+044-002,+044-002,+044-002,+044-002,+044-002,+044-002
+  db    +044-002,+044-002,+044-002,+044-002,+044-002,+044-002,+044-002,+044-002,+044-002
+  db    +044+002,+044+002,+044+002,+044+002,+044+002,+044+002,+044+002,+044+002,+044+002,+044+002
+  db    +044+002,+044+002,+044+002,+044+002,+044+002,+044+002,+044+002,+044+002,blackL38,blackL39
+
+ScoreBoardVanishInward004:
+;normal scoreboard 003 pix inward
+  db    blackL01,blackL02,blackL03,+044-003,+044-003,+044-003,+044-003,+044-003,+044-003,+044-003
+  db    +044-003,+044-003,+044-003,+044-003,+044-003,+044-003,+044-003,+044-003,+044-003
+  db    +044+003,+044+003,+044+003,+044+003,+044+003,+044+003,+044+003,+044+003,+044+003,+044+003
+  db    +044+003,+044+003,+044+003,+044+003,+044+003,+044+003,+044+003,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward005:
+;normal scoreboard 004 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,+044-004,+044-004,+044-004,+044-004,+044-004,+044-004
+  db    +044-004,+044-004,+044-004,+044-004,+044-004,+044-004,+044-004,+044-004,+044-004
+  db    +044+004,+044+004,+044+004,+044+004,+044+004,+044+004,+044+004,+044+004,+044+004,+044+004
+  db    +044+004,+044+004,+044+004,+044+004,+044+004,+044+004,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward006:
+;normal scoreboard 005 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,+044-005,+044-005,+044-005,+044-005,+044-005
+  db    +044-005,+044-005,+044-005,+044-005,+044-005,+044-005,+044-005,+044-005,+044-005
+  db    +044+005,+044+005,+044+005,+044+005,+044+005,+044+005,+044+005,+044+005,+044+005,+044+005
+  db    +044+005,+044+005,+044+005,+044+005,+044+005,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward007:
+;normal scoreboard 006 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,+044-006,+044-006,+044-006,+044-006
+  db    +044-006,+044-006,+044-006,+044-006,+044-006,+044-006,+044-006,+044-006,+044-006
+  db    +044+006,+044+006,+044+006,+044+006,+044+006,+044+006,+044+006,+044+006,+044+006,+044+006
+  db    +044+006,+044+006,+044+006,+044+006,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward008:
+;normal scoreboard 007 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,+044-007,+044-007,+044-007
+  db    +044-007,+044-007,+044-007,+044-007,+044-007,+044-007,+044-007,+044-007,+044-007
+  db    +044+007,+044+007,+044+007,+044+007,+044+007,+044+007,+044+007,+044+007,+044+007,+044+007
+  db    +044+007,+044+007,+044+007,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward009:
+;normal scoreboard 008 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,+044-008,+044-008
+  db    +044-008,+044-008,+044-008,+044-008,+044-008,+044-008,+044-008,+044-008,+044-008
+  db    +044+008,+044+008,+044+008,+044+008,+044+008,+044+008,+044+008,+044+008,+044+008,+044+008
+  db    +044+008,+044+008,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward010:
+;normal scoreboard 009 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,+044-009
+  db    +044-009,+044-009,+044-009,+044-009,+044-009,+044-009,+044-009,+044-009,+044-009
+  db    +044+009,+044+009,+044+009,+044+009,+044+009,+044+009,+044+009,+044+009,+044+009,+044+009
+  db    +044+009,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward011:
+;normal scoreboard 010 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    +044-010,+044-010,+044-010,+044-010,+044-010,+044-010,+044-010,+044-010,+044-010
+  db    +044+010,+044+010,+044+010,+044+010,+044+010,+044+010,+044+010,+044+010,+044+010,+044+010
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward012:
+;normal scoreboard 011 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,+044-011,+044-011,+044-011,+044-011,+044-011,+044-011,+044-011,+044-011
+  db    +044+011,+044+011,+044+011,+044+011,+044+011,+044+011,+044+011,+044+011,+044+011,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward013:
+;normal scoreboard 012 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,+044-012,+044-012,+044-012,+044-012,+044-012,+044-012,+044-012
+  db    +044+012,+044+012,+044+012,+044+012,+044+012,+044+012,+044+012,+044+012,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward014:
+;normal scoreboard 013 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,blackL13,+044-013,+044-013,+044-013,+044-013,+044-013,+044-013
+  db    +044+013,+044+013,+044+013,+044+013,+044+013,+044+013,+044+013,blackL27,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward015:
+;normal scoreboard 014 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,blackL13,blackL14,+044-014,+044-014,+044-014,+044-014,+044-014
+  db    +044+014,+044+014,+044+014,+044+014,+044+014,+044+014,blackL26,blackL27,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward016:
+;normal scoreboard 015 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,blackL13,blackL14,blackL15,+044-015,+044-015,+044-015,+044-015
+  db    +044+015,+044+015,+044+015,+044+015,+044+015,blackL25,blackL26,blackL27,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward017:
+;normal scoreboard 016 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,blackL13,blackL14,blackL15,blackL16,+044-016,+044-016,+044-016
+  db    +044+016,+044+016,+044+016,+044+016,blackL24,blackL25,blackL26,blackL27,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward018:
+;normal scoreboard 017 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,blackL13,blackL14,blackL15,blackL16,blackL17,+044-017,+044-017
+  db    +044+017,+044+017,+044+017,blackL23,blackL24,blackL25,blackL26,blackL27,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward019:
+;normal scoreboard 018 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,blackL13,blackL14,blackL15,blackL16,blackL17,blackL18,+044-018
+  db    +044+018,+044+018,blackL22,blackL23,blackL24,blackL25,blackL26,blackL27,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward020:
+;normal scoreboard 019 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,blackL13,blackL14,blackL15,blackL16,blackL17,blackL18,blackL19
+  db    +044+019,blackL21,blackL22,blackL23,blackL24,blackL25,blackL26,blackL27,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward021:  ;part where the white line becomes smaller
+;normal scoreboard 019 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,blackL13,blackL14,blackL15,blackL16,blackL17,blackL18,blackL19
+  db  blackL20+1,blackL21,blackL22,blackL23,blackL24,blackL25,blackL26,blackL27,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward022:
+;normal scoreboard 019 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,blackL13,blackL14,blackL15,blackL16,blackL17,blackL18,blackL19
+  db  blackL20+2,blackL21,blackL22,blackL23,blackL24,blackL25,blackL26,blackL27,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward023:
+;normal scoreboard 019 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,blackL13,blackL14,blackL15,blackL16,blackL17,blackL18,blackL19
+  db  blackL20+3,blackL21,blackL22,blackL23,blackL24,blackL25,blackL26,blackL27,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+ScoreBoardVanishInward024:  ;totally black part
+;normal scoreboard 020 pix inward
+  db    blackL01,blackL02,blackL03,blackL04,blackL05,blackL06,blackL07,blackL08,blackL09,blackL10
+  db    blackL11,blackL12,blackL13,blackL14,blackL15,blackL16,blackL17,blackL18,blackL19
+  db    blackL20,blackL21,blackL22,blackL23,blackL24,blackL25,blackL26,blackL27,blackL28,blackL29
+  db    blackL30,blackL31,blackL32,blackL33,blackL34,blackL35,blackL36,blackL37,blackL38,blackL39
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,0 +1,64 @@
+M-T: How did the idea of this great super production come about?
+
+nothing special, just a sc4 omnidirectional scroll that I wrote
+and the desire for fast paced action.
+
+M-T: The process was long, but necessary. Games of this magnitude 
+require hundreds of hours of work. Are you satisfied with the result?
+
+More than. It's above my expectation. We got amazing responses and
+this is so inspiring.
+
+M-T: The game was mainly produced by Bart and you, although other 
+people Kai Magazine and John Hassink have also appeared. What part 
+of the project was Norakomi involved in?
+
+coding: demoengine & gameengine
+sfx
+
+M-T: Years ago I had the opportunity to see a primitive version of the 
+first screen of the game. At that time I had the perception of an 
+arcade reminiscent of the arcade Strider. Was the goal always to 
+make an action/exploration RPG type of game?
+
+Yeah totally, I honestly love playing this (type of) game.
+It's fast action, yet keeps you interested throughout the entire game,
+due to the amazing sceneries, fantasticly designed maps and 
+the beautiful music in the game.
+
+M-T: The action in the game is incredibly fast. Had more enemies 
+been added on the screen, could the gameplay have suffered?
+
+The maximum amount of sprites the vdp can display is 32.
+The player and enemies are very big sprites.
+The player is already 12 sprites. There is often no option to put 
+more enemies in screen.
+A spritesplit could have been a consideration if more people would
+have brought this up, but no one seemed to have been bothered 
+by the amount of enemies in the maps.
+
+M-T: In other games we have seen that when adding FM music, the 
+resources for the game decrease, eating up FPS or space. How did we
+manage to put MSX-Music, MSX Audio and OPL4 on without the game 
+suffering in the slightest?
+
+the game runs on 30 fps.
+That's basically the reason we can run all these components together.
+We have 2x more time to do everything than a game that runs on 60 fps.
+
+MT: Holland never really disappeared from the MSX community. But if
+we are witnessing a relay in terms of production of the Spanish 
+community that has lasted more than a decade. Are we witnessing in 
+recent times the return of Holland?
+
+I don't know. We are just having fun creating some freaky shit.
+
+M-T: Can you tell us about any new project you have planned?
+
+Holy shit....... well, it's a metroidvania in the making.
+but really, it borders more toward an art project.
+Everyone involved is constantly polishing every little detail, 
+and it's just jaw dropping. I hope it will be well received. 
+
+Let's hope for more games from you soon and that the Dutch 
+community will continue to flow for a long time to come. Thanks.

@@ -266,7 +266,7 @@ init:
 	ld 		a,5			    ;switch to screen 5
 	call 	$5f
 
-	ld		a,(VDP_8+1)
+	ld		a,(VDP_8+1)	
 	and		%1111 1101	;set 60 hertz
 	or		%1000 0000	;screen height 212
 	ld		(VDP_8+1),a
@@ -3528,14 +3528,9 @@ MapG03:
 MapG04:
   incbin "..\maps\g04.map.pck"  | .amountofobjects: db  0
 MapG05:
-  incbin "..\maps\g05.map.pck"  | .amountofobjects: db  4
+  incbin "..\maps\g05.map.pck"  | .amountofobjects: db  1
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object1: db 2,        0|dw SDMika              |db 8*13|dw 8*00|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo2| ds fill-1
-.object2: db 0,        0|dw BackupScoreBoard    |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,217, 0|db 000,movepatblo2| ds fill-1
-.object3: db 0,        0|dw RemoveScoreBoard    |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,217, 0|db 000,movepatblo2| ds fill-1
-.object4: db 0,        0|dw RestoreScoreBoard   |db 8*00|dw 8*10|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,100, 0|db 000,movepatblo2| ds fill-1
-  
-  
+.object1: db 2,        0|dw SDMika              |db 8*13|dw 8*00|db 00,00|dw 00000000,0 db 1,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo2| ds fill-1
   
 MapG06:
   incbin "..\maps\g06.map.pck"  | .amountofobjects: db  0
@@ -3748,6 +3743,8 @@ NPCDialogueFontBlock:  equ   $a1
 phase	$4000
 NPCDialogueFontAddress:
   incbin "..\grapx\font\NPCDialogueFont.SC5",7,016 * 128      ;016 lines
+NPCDialogueFontAndBackgroundAddress:
+  incbin "..\grapx\font\FontAndBackground.SC5",7,056 * 128      ;056 lines
 	ds		$8000-$,$ff
 dephase
 

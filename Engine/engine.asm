@@ -304,9 +304,9 @@ switchpageSF2Engine:
   ld    a,(screenpage)
   inc   a
   cp    3
-  jr    nz,.not3
+  jr    nz,.SetPage
   xor   a
-.not3:  
+  .SetPage:  
   ld    (screenpage),a
 
   add   a,a                   ;x32
@@ -2731,6 +2731,7 @@ InterruptHandler:
   out   ($99),a
   in    a,($99)           ;check and acknowledge line interrupt
   rrca
+  .SelfmodyfyingLineIntRoutine:  equ $+1
   jp    c,lineint         ;ScoreboardSplit/BorderMaskingSplit
   
   xor   a                 ;set s#0
@@ -2775,6 +2776,8 @@ vblank:
   sub   a,94
   .SetSplitLine:
   
+;  ld    (r19),a
+  
   out   ($99),a
   ld    a,19+128
   out   ($99),a
@@ -2800,6 +2803,8 @@ vblank:
   pop   af 
   ei
   ret
+
+;r19: ds 1
 
 lineintBorderMaskingSplit:
   push  bc
@@ -2863,7 +2868,126 @@ lineintBorderMaskingSplit:
   ret  
 BorderMaskingSpat:  db  0,0,0,0,0
 
+LineIntNPCInteractions:
+;  ld    a,(SpriteSplitAtY100?)
+;  or    a
+;  jp    nz,lineintBorderMaskingSplit
 
+;on the lineint we turn the screen off at the end of the line using polling for HR
+;then we switch page
+;we set horizontal and vertical adjust
+;and we turn screen on again at the end of the line
+;and set s#0 again
+;LineIntAtScoreboard:
+;  call  BackdropBlack
+
+  ;screen always gets turned on/off at the END of the line
+  ld    a,(VDP_0+1)       ;screen off
+  and   %1011 1111
+  out   ($99),a
+  ld    a,1+128
+  out   ($99),a
+ ;so after turning off the screen wait till the end of HBLANK, then perform actions
+
+  ld    a,2               ;Set Status register #2
+  out   ($99),a
+  ld    a,15+128          ;we are about to check for HR
+  out   ($99),a
+ 
+.Waitline:                ;wait until end of HBLANK
+  in    a,($99)           ;Read Status register #2
+  and   %0010 0000        ;bit to check for HBlank detection
+  jr    z,.Waitline
+  
+  ld    a,0*32+31         ;set page 0
+  out   ($99),a
+  ld    a,2+128
+  out   ($99),a
+
+  xor   a                  ;set horizontal screen adjust
+  out   ($99),a
+  ld    a,18+128
+  out   ($99),a
+
+  push  hl
+  ld    hl,NPCtableForR23
+  ld    a,(hl)
+
+;  ld    a,-40 ;44+39             ;set vertical screen adjust  
+  out   ($99),a
+  ld    a,23+128
+  out   ($99),a
+
+  ld    a,(VDP_8)         ;sprites off
+  or    %00000010
+  ld    (VDP_8),a
+  out   ($99),a
+  ld    a,8+128
+  out   ($99),a
+
+  ld    a,(VDP_0+1)       ;screen on
+  or    %0100 0000
+  out   ($99),a
+  ld    a,1+128
+  out   ($99),a
+
+  push  bc
+  push  de
+
+;  ld    b,38*3
+  ld    b,39*1
+  ld    c,$99
+
+  .loop:
+  ld    d,(hl)
+  inc   hl
+  ld    e,(hl)
+  inc   hl
+
+;  .Waitline1:
+;  in    a,($99)           ;Read Status register #2
+;  and   %0010 0000        ;bit to check for HBlank detection
+;  jr    nz,.Waitline1
+  .Waitline2:
+nop |nop |nop |nop |nop |nop |nop |nop |nop |nop |nop |
+nop |nop |nop |nop |nop |nop |nop |nop |nop |
+
+
+  out   (c),d
+  out   (c),e
+
+
+  .Waitline1:
+  in    a,($99)           ;Read Status register #2
+  and   %0010 0000        ;bit to check for HBlank detection
+  jr    nz,.Waitline1
+
+
+  djnz  .loop
+
+  xor   a                 ;set s#0
+  out   ($99),a
+  ld    a,15+128
+  out   ($99),a
+
+  ld    (lineintflag),a   ;lineine flag gets set
+
+  pop   de
+  pop   bc
+  pop   hl
+  pop   af 
+  ei
+  ret  
+
+NPCtableForR23:
+  db    +082-000,23+128,+082-002,23+128,+082-004,23+128,+082-006,23+128,+082-008,23+128,+082-010,23+128,+082-012,23+128,+082-014,23+128,+082-016,23+128,+082-018,23+128
+  db    +082-020,23+128,+082-022,23+128,+082-024,23+128,+082-026,23+128,+082-028,23+128,+082-030,23+128,+082-032,23+128,+082-034,23+128,+082-036,23+128,+082-038,23+128
+  db    +082-040,23+128,+082-042,23+128,+082-044,23+128,+082-046,23+128,+082-048,23+128,+082-050,23+128,+082-052,23+128,+082-054,23+128,+082-056,23+128,+082-058,23+128
+  db    +082-060,23+128,+082-062,23+128,+082-064,23+128,+082-066,23+128,+082-068,23+128,+082-070,23+128,+082-072,23+128,+082-074,23+128,+082-076,23+128
+
+
+
+  
 LineInt:
   ld    a,(SpriteSplitAtY100?)
   or    a
@@ -2874,7 +2998,7 @@ LineInt:
 ;we set horizontal and vertical adjust
 ;and we turn screen on again at the end of the line
 ;and set s#0 again
-LineIntAtScoreboard:
+;LineIntAtScoreboard:
 ;  call  BackdropBlack
 
   ;screen always gets turned on/off at the END of the line
