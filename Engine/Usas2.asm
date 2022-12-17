@@ -3527,11 +3527,17 @@ MapG03:
 
 MapG04:
   incbin "..\maps\g04.map.pck"  | .amountofobjects: db  0
+  
 MapG05:
-  incbin "..\maps\g05.map.pck"  | .amountofobjects: db  1
+  incbin "..\maps\g05.map.pck"  | .amountofobjects: db  3
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .object1: db 2,        0|dw SDMika              |db 8*13|dw 8*00|db 00,00|dw 00000000,0 db 1,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo2| ds fill-1
-  
+;Grinder
+.object2:db -1,        1|dw Grinder             |db 8*22|dw 8*16|db 32,32|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005,movepatblo1| ds fill-1  
+;Spider Grey ;v6=Green Spider(0) / Grey Spider(1)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3:db -1,        1|dw GreenSpider         |db 8*19|dw 8*28|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+01,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+    
 MapG06:
   incbin "..\maps\g06.map.pck"  | .amountofobjects: db  0
 MapG07:
@@ -3744,7 +3750,7 @@ phase	$4000
 NPCDialogueFontAddress:
   incbin "..\grapx\font\NPCDialogueFont.SC5",7,016 * 128      ;016 lines
 NPCDialogueFontAndBackgroundAddress:
-  incbin "..\grapx\font\FontAndBackground.SC5",7,056 * 128      ;056 lines
+  incbin "..\grapx\font\FontAndBackground.SC5",7,068 * 128      ;068 lines
 	ds		$8000-$,$ff
 dephase
 

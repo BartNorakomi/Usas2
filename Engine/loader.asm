@@ -420,6 +420,9 @@ ReSetVariables:
   ld    (PlayerDead?),a
   ld    (SecundaryWeaponActive?),a              ;remove arrow weapon  
 
+  ld    hl,lineint
+  ld    (InterruptHandler.SelfmodyfyingLineIntRoutine),hl
+
   ld    a,(PrimaryWeaponActivatedWhileJumping?)
   or    a
   ret   z                              ;wait for previous primary attack to end
@@ -427,7 +430,7 @@ ReSetVariables:
   ld    (PrimaryWeaponActivatedWhileJumping?),a
   ld    (PrimaryWeaponActive?),a   
   ld    hl,0
-  ld    (PlayerAnicount),hl   
+  ld    (PlayerAnicount),hl     
   ret  
 
 .NormalRunningTable:

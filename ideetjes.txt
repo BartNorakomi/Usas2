@@ -1,3 +1,6 @@
+je kunt een pilaar uit Burial in de SF2 engine door de grond laten zakken,
+bij het verslaan van x beesten of zo.... (met earthquake effect)
+
 magic wapen dat een blok van de achtergrond kopieert en rond laat draaien op z'n plaats als je op m drukt.
 evt. kun je langzaam lopen hierbij ?
 

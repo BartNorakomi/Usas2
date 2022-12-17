@@ -2869,9 +2869,9 @@ lineintBorderMaskingSplit:
 BorderMaskingSpat:  db  0,0,0,0,0
 
 LineIntNPCInteractions:
-;  ld    a,(SpriteSplitAtY100?)
-;  or    a
-;  jp    nz,lineintBorderMaskingSplit
+  ld    a,(SpriteSplitAtY100?)
+  or    a
+  jp    nz,lineintBorderMaskingSplit
 
 ;on the lineint we turn the screen off at the end of the line using polling for HR
 ;then we switch page
@@ -4085,7 +4085,11 @@ CopyPlayerProjectile:                                        ;copy any object in
   db    000,%0000 0000,$98       ;fast copy command -> Copy from left to right
 ;  db    000,%0000 0100,$98       ;slow transparant copy -> Copy from right to left
 
-
+CopyCharacter:            ;used for the NPC interactions
+  db    000,000,044,000   ;sx,--,sy,spage
+  db    003,000,003,000   ;dx,--,dy,dpage
+  db    006,000,009,000   ;nx,--,ny,--
+  db    000,%0000 0000,$98       ;fast copy command -> Copy from left to right
 
 playermovementspeed:    db  2
 PlayerFacingRight?:     db  1

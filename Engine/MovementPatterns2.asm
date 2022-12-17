@@ -478,11 +478,11 @@ SDMika:
   ;Check if boss is dead
 ;  call  GoatCheckIfDead                     ;Check if boss is dead, and if so set dying phase
   
-  call  .HandlePhase                        ;v8=Phase (0=waiting player, 1=walking, 2=attacking, 3=hit, 4=dead)
+;  call  .HandlePhase                        ;v8=Phase (0=waiting player, 1=walking, 2=attacking, 3=hit, 4=dead)
 
-  ld    de,SDMika00
-ret
-  jp    PutSf2Object2Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+;  ld    de,SDMika00
+;ret
+;  jp    PutSf2Object2Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
 
 
@@ -509,12 +509,12 @@ ret
   ld    a,1
   call  switchpageSF2Engine.SetPage         ;force page 1 to be the active page at all times
 
-  ld    de,NonMovingObjectMovementTable
-  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+;  ld    de,NonMovingObjectMovementTable
+;  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
 
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
   or    a
-  jp    z,SetFontAndBackground              ;0=set font and text background at (0,0) page 0
+  jp    z,SetFontAndBackground              ;0=set text background and font at (0,0) page 0, and copy of the text background at (0,66)
   dec   a
   jp    z,SDMikaWaitingPlayerNear           ;1=waiting player near and pressing trig-a
   dec   a 
@@ -522,12 +522,81 @@ ret
   dec   a
   jp    z,SDMikaPutText                     ;3=put text
   dec   a
-  jp    z,SDMikaRestoreScoreBoard           ;4=restore scoreboard
-  dec   a
-  jp    z,SDMikaRestoreBackground           ;5=restore scoreboard
+  jp    z,SDMikaSwitchToScoreboard          ;4=restore scoreboard
   ret
 
-SDMikaSwitchToTextBackground:
+CopyEmptyTextbackgroundOverNormalTextBackground:
+  db    002,000,068,000   ;sx,--,sy,spage
+  db    002,000,002,000   ;dx,--,dy,dpage
+  db    252,000,036,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
+
+  SDMikaSwitchToScoreboard:                 ;3=restore scoreboard  
+  ld    a,(ix+enemies_and_objects.nx)       ;in/out scoreboard/text background timer
+  inc   a
+  ld    (ix+enemies_and_objects.nx),a       ;in/out scoreboard/text background timer
+  cp    150  
+  ld    b,+1                                ;vanish inward
+  ld    c,39                                ;text background
+  jp    c,ScoreBoardTextBackgroundTransition
+  cp    200  
+  ld    b,-1                                ;appear from the inside out
+  ld    c,00                                ;scoreboard
+  jp    c,ScoreBoardTextBackgroundTransition
+
+  xor   a
+  ld    (freezecontrols?),a  
+  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ld    (ix+enemies_and_objects.nx),0       ;in/out scoreboard/text background timer
+
+  ld    a,(ix+enemies_and_objects.v11)
+  inc   a
+  and   7
+  ld    (ix+enemies_and_objects.v11),a    
+
+  ld    hl,CopyEmptyTextbackgroundOverNormalTextBackground
+  call  DoCopy
+
+  ld    a,3
+  ld    (CopyCharacter+dx),a
+  ld    (CopyCharacter+dy),a
+  ld    (ix+enemies_and_objects.v6),0       ;v6=pointer to character  
+  ret  
+
+  SDMikaPutText:
+  call  CheckVdpReady                       ;out: c=vdp busy, nc=vdp ready
+  ret   c
+  
+  call  ShowNormalTextBackground
+  
+  ld    a,(ix+enemies_and_objects.v11)
+  or    a  
+  ld    hl,NPCDialogueText1
+  jr    z,.go
+  dec   a
+  ld    hl,NPCDialogueText2
+  jr    z,.go
+  dec   a
+  ld    hl,NPCDialogueText3
+  jr    z,.go
+  dec   a
+  ld    hl,NPCDialogueText4
+  jr    z,.go
+  dec   a
+  ld    hl,NPCDialogueText5
+  jr    z,.go
+  dec   a
+  ld    hl,NPCDialogueText6
+  jr    z,.go
+  dec   a
+  ld    hl,NPCDialogueText7
+  jr    z,.go
+  ld    hl,NPCDialogueText8
+  .go:
+  call  NPCDialogueputText
+  ret
+
+  SDMikaSwitchToTextBackground:
   ld    hl,LineIntNPCInteractions
   ld    (InterruptHandler.SelfmodyfyingLineIntRoutine),hl
 
@@ -537,25 +606,15 @@ SDMikaSwitchToTextBackground:
   cp    050  
   ld    b,+1                                ;vanish inward
   ld    c,00                                ;scoreboard
-  jr    c,.set
-  cp    100  
+  jr    c,ScoreBoardTextBackgroundTransition
+  cp    090  
   ld    b,-1                                ;appear from the inside out
   ld    c,39                                ;text background
-  jr    c,.set
-  cp    150  
-  ld    b,+1                                ;vanish inward
-  ld    c,39                                ;text background
-  jr    c,.set
-  cp    200  
-  ld    b,-1                                ;appear from the inside out
-  ld    c,00                                ;scoreboard
-  jr    c,.set
-
-  .set:
-  call  ScoreBoardTextBackgroundTransition  ;in: b=+1 (vanish inward), b=-1 (appear from the inside out), c=0 (vanish scoreboard), c=39 (vanish text background)
+  jr    c,ScoreBoardTextBackgroundTransition
+  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
   ret
   
-ScoreBoardTextBackgroundTransition:  
+  ScoreBoardTextBackgroundTransition:  
   ld    a,(ix+enemies_and_objects.v1-4)     ;ScoreBoardVanishInward001 step 
   add   a,b
   jr    nz,.EndCheckEndLeft
@@ -592,22 +651,31 @@ ScoreBoardTextBackgroundTransition:
   djnz  .loop2  
   ret
 
-SetFontAndBackground:
-  ;set the font and text background block at address $4000 in page 1
+  SetFontAndBackground:                     ;set text background and font at (0,0) page 0, and copy of the text background at (0,66)
 	ld    a,NPCDialogueFontBlock
   call	block12
 
-	xor   a
+  ;set dy
   ld    b,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
+	xor   a
 	ld    hl,0 - 128
   ld    de,128
   .loop:
   add   hl,de
   djnz  .loop
-
 	call	SetVdp_Write                        ;write font and background to (0,0) in page 0
 
+  ;set sy
+  ;add the extra text background below all the rest
   ld    b,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
+  ld    a,b
+  cp    67
+  jr    c,.go
+  sub   66
+  ld    b,a
+  .go:
+  ;/add the extra text background below all the rest
+
   ld    hl,NPCDialogueFontAndBackgroundAddress  - 128
   ld    de,128
   .loop2:
@@ -621,7 +689,7 @@ SetFontAndBackground:
   ld    a,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
   inc   a
   ld    (ix+enemies_and_objects.v1-3),a     ;v1-3=sy and dy copy font and textbackground
-  cp    56                                  ;total height font and textbackground
+  cp    67+39                               ;total height font and text-background
   jr    nz,.EndCheckLastLineCopied
   ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
   .EndCheckLastLineCopied:
@@ -629,134 +697,6 @@ SetFontAndBackground:
   ;set the general movement pattern block at address $4000 in page 1
 	ld    a,MovementPatternsFixedPage1block
   call	block12
-  ret
-
-
-
-
-  SDMikaRestoreBackground:
-  ld    hl,RestoreBackgroundScoreboard1Line
-  call  DoCopy
-
-  ld    a,(RestoreBackgroundScoreboard1Line+sy)        ;sy
-  inc   a
-  ld    (RestoreBackgroundScoreboard1Line+sy),a        ;sy
-
-  ld    a,(RestoreBackgroundScoreboard1Line+dy)        ;sy
-  inc   a
-  ld    (RestoreBackgroundScoreboard1Line+dy),a        ;sy
-  cp    40
-  ret   c
-  xor   a
-  ld    (freezecontrols?),a  
-  ld    (ix+enemies_and_objects.v8),0       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
-
-  ld    a,(ix+enemies_and_objects.v11)
-  inc   a
-  and   3
-  ld    (ix+enemies_and_objects.v11),a  
-  
-  
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
-  add   a,2
-  cp    8
-  jr    nz,.go
-  xor   a
-  .go:
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
-    
-  ret
-
-  SDMikaRestoreScoreBoard:                  ;3=restore scoreboard
-  ld    hl,RestoreScoreboard1Line
-  call  DoCopy
-
-  ld    a,(RestoreScoreboard1Line+sy)       ;sy
-  inc   a
-  ld    (RestoreScoreboard1Line+sy),a       ;sy
-
-  ld    a,(RestoreScoreboard1Line+dy)       ;sy
-  inc   a
-  ld    (RestoreScoreboard1Line+dy),a       ;sy
-  ret   nz
-  xor   a
-  ld    (RestoreBackgroundScoreboard1Line+sy),a        ;sy
-  ld    (RestoreBackgroundScoreboard1Line+dy),a        ;sy  
-  ld    (ix+enemies_and_objects.v8),5       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
-  ret
-
-  SDMikaPutText:
-  ld    a,(ix+enemies_and_objects.v11)
-  or    a  
-  ld    hl,NPCDialogueText1
-  jr    z,.go
-  dec   a
-  ld    hl,NPCDialogueText2
-  jr    z,.go
-  dec   a
-  ld    hl,NPCDialogueText3
-  jr    z,.go
-  ld    hl,NPCDialogueText4
-  .go:
-  call  NPCDialogueputText
-
-  cp    255                                 ;end text ?
-  ret   nz
-
-  xor   a                                   ;unfreeze controls
-  ld    (freezecontrols?),a
-  call  PopulateControls                    
-
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-  ld    a,(NewPrContr)	
-	bit		4,a                                 ;space pressed ?
-
-  ld    a,0                                 ;reset and freeze controls again
-  ld    (Controls),a
-  ld    (NewPrContr),a
-  ld    a,1
-  ld    (freezecontrols?),a
-
-  ret   z                                   ;check if space is pressed
-  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
-  ret
-
-  SDMikaRemoveScoreBoard:                   ;2=remove scoreboard
-ret
-  ld    a,(ix+enemies_and_objects.v9)       ;y black line
-  inc   a
-  cp    255
-  jp    nc,.EndRemoveScoreBoard
-  ld    (ix+enemies_and_objects.v9),a       ;y black line 
-  ld    (RemoveScoreBoard1Line+dy),a  
-  ld    hl,RemoveScoreBoard1Line
-  jp    DoCopy
-  .EndRemoveScoreBoard:
-  ld    (ix+enemies_and_objects.v5),0       ;v5=add to dx character (text to screen)
-  ld    (ix+enemies_and_objects.v10),0      ;v10=add to dy character (text to screen)
-  ld    (ix+enemies_and_objects.v6),0       ;v6=pointer to character (text to screen) 
-  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
-  ret
-
-  SDMikaBackupScoreBoard:                   ;1=backup scoreboard
-  ld    hl,BackupScoreboard1Line
-  call  DoCopy
-
-  ld    a,(BackupScoreboard1Line+sy)        ;sy
-  inc   a
-  ld    (BackupScoreboard1Line+sy),a        ;sy
-
-  ld    a,(BackupScoreboard1Line+dy)        ;sy
-  inc   a
-  ld    (BackupScoreboard1Line+dy),a        ;sy
-  cp    40
-  ret   c
-  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
-  ld    (ix+enemies_and_objects.v9),217     ;y black line 
   ret
 
   SDMikaWaitingPlayerNear:    
@@ -781,11 +721,34 @@ ret
   ld    (freezecontrols?),a
   ret
 
-NPCDialogueputText:
-  ;set fontdata in page 1 in rom ($4000 - $7fff)
-	ld    a,NPCDialogueFontBlock
-  call	block12
-    
+CheckVdpReady:
+  ld    a,32
+  di
+  out   ($99),a
+  ld    a,17+128
+  ei
+  out   ($99),a
+  ld    c,$9b
+
+  ld    a,2
+  di
+  out   ($99),a
+  ld    a,15+128
+  out   ($99),a
+  in    a,($99)
+  rra
+  ld    a,0
+  out   ($99),a
+  ld    a,15+128
+  ei
+  out   ($99),a
+  ret
+  
+;                  SX,NX:    A     B     C     D     E     F     G     H     I     J     K     L     M     N     O     P     Q     R     S     T     U     V     W     X     Y     Z
+NPCDialogueCharacDataBig: db 000,6,005,6,011,6,017,6,023,6,029,6,035,6,041,6,045,2,047,6,053,6,059,6,065,6,071,6,077,6,083,6,089,6,095,6,101,6,107,6,113,6,119,6,125,6,131,6,137,6,143,6
+;                  SX,NX:    a     b     c     d     e     f     g     h     i     j     k     l     m     n     o     p     q     r     s     t     u     v     w     x     y     z     Space :     !     ?     ,     .     ;     '     "
+NPCDialogueCharDataSmall: db 000,6,006,6,011,6,017,6,023,6,029,6,035,6,041,6,004,2,047,5,052,6,052,2,058,6,064,6,070,6,076,6,081,6,087,6,093,6,099,6,105,6,111,6,117,6,123,6,129,6,135,6,233,4,215,2,231,2,225,6,212,3,210,2,217,3,220,2,222,3
+NPCDialogueputText:                         ;in: HL -> NPCDialogueText1    
   ld    e,(ix+enemies_and_objects.v6)       ;v6=pointer to character  
   ld    d,0
   add   hl,de
@@ -821,78 +784,248 @@ NPCDialogueputText:
   ld    a,$61 + 31
   .EndCheckPeriod:
 
+  cp    $3b                                 ;semi colon
+  jr    nz,.EndCheckSemiColon
+  ld    a,$61 + 32
+  .EndCheckSemiColon:
+
+  cp    $27                                 ;quotation mark
+  jr    nz,.EndCheckQuotationMark
+  ld    a,$61 + 33
+  .EndCheckQuotationMark:
+
   cp    255                                 ;end text
-  jr    z,.End
+  jp    nz,.EndCheckInteractionFinished
+  call  .CheckTriggerA                      ;check if space is pressed. out: nz if pressed
+  jp    z,ShowButton
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+
+  ld    hl,RemovebuttonPressed
+  call  DoCopy
+  ret
+  .EndCheckInteractionFinished:
 
   cp    254                                 ;next line
-  jr    nz,.EndCheckNextLine
-  ld    (ix+enemies_and_objects.v5),0       ;v5=add to dx character
-  ld    a,(ix+enemies_and_objects.v10)      ;v10=add to dy character (text to screen)
-  add   a,5
-  ld    (ix+enemies_and_objects.v10),a      ;v10=add to dy character (text to screen)  
+  jp    nz,.EndCheckNextLine
+  ld    a,(CopyCharacter+dy)                ;prepare dx+dy for next line
+  add   a,11
+  ld    (CopyCharacter+dy),a
+  ld    a,3
+  ld    (CopyCharacter+dx),a
   inc   (ix+enemies_and_objects.v6)         ;v6=pointer to character  
   inc   hl
   ld    a,(hl)
   .EndCheckNextLine:
+
+  cp    253                                 ;clear text field
+  jr    nz,.EndCheckClearText
+  call  .CheckTriggerA                      ;check if space is pressed. out: nz if pressed
+  jp    z,ShowButton
+  ret   z
+  ld    a,3                                 ;set dx and dy for new text to come
+  ld    (CopyCharacter+dx),a
+  ld    (CopyCharacter+dy),a
+  inc   (ix+enemies_and_objects.v6)         ;v6=pointer to character  
+  push  hl
+  ld    hl,CopyEmptyTextbackgroundOverNormalTextBackground
+  call  DoCopy
+  call  ShowEmptyTextBackground  
+  pop   hl  
+  ret
+  .EndCheckClearText:
   
   inc   (ix+enemies_and_objects.v6)         ;v6=pointer to character  
 
+  cp    $61
+  jr    nc,.EndCheckCapitalLetters
+  ;Capital letters
+  sub   $41
+  add   a,a                                 ;*2
+  ld    d,0
+  ld    e,a
+  ld    hl,NPCDialogueCharacDataBig
+  add   hl,de
+  ld    a,044
+  ld    (CopyCharacter+sy),a  
+  ld    a,009
+  ld    (CopyCharacter+ny),a  
+  jr    .go
+  .EndCheckCapitalLetters:
+
+  cp    $61 + 26
+  jr    c,.EndCheckSymbols
+  ;Symbols
   sub   $61
   add   a,a                                 ;*2
   ld    d,0
   ld    e,a
-  ld    hl,NPCDialogueCharacterData
+  ld    hl,NPCDialogueCharDataSmall
   add   hl,de
+  ld    a,044
+  ld    (CopyCharacter+sy),a  
+  ld    a,009
+  ld    (CopyCharacter+ny),a  
+  jr    .go 
+  .EndCheckSymbols:
 
-  ld    c,(hl)                              ;Character Start X
-  ld    b,0  
+  ;Small letters
+  sub   $61
+  add   a,a                                 ;*2
+  ld    d,0
+  ld    e,a
+  ld    hl,NPCDialogueCharDataSmall
+  add   hl,de
+  ld    a,044+9
+  ld    (CopyCharacter+sy),a  
+  ld    a,013
+  ld    (CopyCharacter+ny),a  
+
+  .go:
+  ld    a,(hl)                              ;Character Start X
+  ld    (CopyCharacter+sx),a
   inc   hl 
-  ld    d,(hl)                              ;font lenght in bytes (1 byte is 2 pixels)
+  ld    a,(hl)                              ;nx
+  ld    (CopyCharacter+nx),a
 
-  ld    hl,NPCDialogueFontAddress           ;writing from this address in ROM
-  add   hl,bc
+  ld    hl,CopyCharacter
+  call  DoCopy
+
+  ld    a,(CopyCharacter+nx)                ;prepare dx for next character
+  inc   a
+  ld    b,a                                 ;nx + 1
+  ld    a,(CopyCharacter+dx)
+  add   a,b
+  ld    (CopyCharacter+dx),a
+  ret
+
+  .CheckTriggerA:                           ;check if space is pressed. out: nz if pressed
+  push  de
+  push  hl
   
-  exx
-  ld    hl,$6C00+896+2                     ;write to page 0 - screen 5 - bottom 40 pixels (scoreboard)  
-  ld    d,(ix+enemies_and_objects.v10)      ;v10=add to dy character (text to screen)
-  ld    e,(ix+enemies_and_objects.v5)       ;v5=add to dx character
-  add   hl,de
+  xor   a                                   ;unfreeze controls
+  ld    (freezecontrols?),a
+  call  PopulateControls                    
 
-  call  NPCDialoguePutCharacter
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)	
+	bit		4,a                                 ;space pressed ?
 
-  ;set the general movement pattern block at address $4000 in page 1
-	ld    a,MovementPatternsFixedPage1block
-  call	block12
+  ld    a,0                                 ;reset and freeze controls again
+  ld    (Controls),a
+  ld    (NewPrContr),a
+  ld    a,1
+  ld    (freezecontrols?),a
+
+  pop   hl
+  pop   de
   ret
 
-  .End:
-  ;set the general movement pattern block at address $4000 in page 1
-	ld    a,MovementPatternsFixedPage1block
-  call	block12
-  ld    a,255                               ;end
+ShowNormalTextBackground:
+  ld    hl,NormalTextBackground             ;show normal Text Background
+  jr    ShowEmptyTextBackground.entry
+
+ShowEmptyTextBackground:
+  ;show empty Text Background
+  ld    hl,EmptyTextBackground              ;show empty Text Background
+  .entry:
+  ld    de,NPCtableForR23
+  ld    b,39
+  .loop:
+  ld    a,(hl)  
+  ld    (de),a
+  inc   hl
+  inc   de
+  inc   de
+  djnz  .loop
   ret
 
+ShowButton:
+  ld    a,(framecounter)
+  and   31
+  ld    hl,ShowbuttonUnPressed
+  cp    25
+  jr    c,.go
+  ld    hl,ShowbuttonPressed
+  .go:
+  call  DoCopy
+  ret
+
+
+ShowbuttonPressed:
+  db    182,000,053,000   ;sx,--,sy,spage
+  db    240,000,027,000   ;dx,--,dy,dpage
+  db    012,000,011,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
+
+ShowbuttonUnPressed:
+  db    194,000,053,000   ;sx,--,sy,spage
+  db    240,000,027,000   ;dx,--,dy,dpage
+  db    012,000,011,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
+
+RemovebuttonPressed:
+  db    240,000,027+066,000   ;sx,--,sy,spage
+  db    240,000,027,000   ;dx,--,dy,dpage
+  db    012,000,011,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
+ 
+;253=clear screen, 254 = next line, 255=end
 NPCDialogueText1:  
-  db "mika: my name is mika",254
-  db "i dont belong in this game",254
-  db "but i dont give a shit",255
+  db "STOP... TOUCHING ME!!",254
+  db "HELP!!!",254
+  db "What's wrong with you?",253
+
+  db "You: Oh sorry. I thought you",254
+  db "were someone else; some hot chick",253
+
+  db "Mika: My name is Mika.",254
+  db "I dont belong in this game,",254
+  db "but i dont give a shit!",253
+
+  db "Little test here. All OK",254
+  db "Terminating NPC INTERACTION",255
 
 NPCDialogueText2:  
-  db "mika: ehhhhhh",254
+  db "Mika: ehhhhhh",254
   db "can you fucking stop",254
   db "harrassing me buddy?",255
 
 NPCDialogueText3:  
-  db "mika: you think",254
+  db "Mika: you think",254
   db "this is funny bro!?",255
 
 NPCDialogueText4:  
-  db "mika: thats it",254
+  db "Mika: thats it",254
   db "im calling the police.",254
   db "you freak",255  
+
+NPCDialogueText5:  
+  db "Mika: 'STOP TOUCHING ME!!'",254
+  db "You:  'grrrr...'",254
+  db "Mika: 'what's wrong with you?'",255
+
+NPCDialogueText6:  
+  db "Mika: ''Buddy, listen.''",254
+  db "Who the fuck are you ?",253
+
+  db "You: I'm your worst nightmare",254
+  db "and I will never stop tormenting you!",254
+  db "hahahahahahhaah   ",253
+
+  db "Mika: Dude, get a life",254
+  db "idiot....",255
+
+NPCDialogueText7:  
+  db "Mika: Wanna buy some guns?",255
+
+NPCDialogueText8:  
+  db "Is your name: Robert, Maarten, Rieks,",254
+  db "Ritchie, Bart or Laurens ?",255
   
-;Character Start X, Lenght   A     B     C     D     E     F     G     H     I     J     K     L     M     N     O     P     Q     R     S     T     U     V     W     X     Y     Z     Space :     !     ?     ,     .
-NPCDialogueCharacterData: db 000,4,004,4,008,4,012,4,016,4,020,4,024,4,028,4,032,2,034,4,038,4,042,4,046,4,050,4,054,4,058,4,062,4,066,4,070,4,074,4,078,4,082,4,086,4,090,4,094,4,098,4,102,3,105,2,107,2,109,4,113,2,115,2
 NPCDialoguePutCharacter:
   ld    b,8                                 ;font height
   .loop:
@@ -921,32 +1054,39 @@ NPCDialoguePutCharacter:
   ld    (ix+enemies_and_objects.v5),a       ;v5=add to dx character
   ret
 
-Transition001:
-  db    +082-000,+082-002,+082-004,+082-006,+082-008,+082-010,+082-012,+082-014,+082-016,+082-018
-  db    +082-020,+082-022,+082-024,+082-026,+082-028,+082-030,+082-032,+082-034,+082-036,+082-038
-  db    +082-040,+082-042,+082-044,+082-046,+082-048,+082-050,+082-052,+082-054,+082-056,+082-058
-  db    +082-060,+082-062,+082-064,+082-066,+082-068,+082-070,+082-072,+082-074,+082-076
+;Transition001:
+;  db    +082-000,+082-002,+082-004,+082-006,+082-008,+082-010,+082-012,+082-014,+082-016,+082-018
+;  db    +082-020,+082-022,+082-024,+082-026,+082-028,+082-030,+082-032,+082-034,+082-036,+082-038
+;  db    +082-040,+082-042,+082-044,+082-046,+082-048,+082-050,+082-052,+082-054,+082-056,+082-058
+;  db    +082-060,+082-062,+082-064,+082-066,+082-068,+082-070,+082-072,+082-074,+082-076
 
-Transition002:
+;Transition002:
 ;normal scoreboard
-  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
-  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
-  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
-  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+;  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+;  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+;  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
+;  db    +044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000,+044+000
 
-Transition003:
+;Transition004:
+;black background line everywhere
+;  db    +083+039,+083+038,+083+037,+083+036,+083+035,+083+034,+083+033,+083+032,+083+031,+083+030
+;  db    +083+029,+083+028,+083+027,+083+026,+083+025,+083+024,+083+023,+083+022,+083+021,+083+020
+;  db    +083+019,+083+018,+083+017,+083+016,+083+015,+083+014,+083+013,+083+012,+083+011,+083+010
+;  db    +083+009,+083+008,+083+007,+083+006,+083+005,+083+004,+083+003,+083+002,+083+001
+
+NormalTextBackground:
 ;normal text background
   db    +083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000
   db    +083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000
   db    +083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000
   db    +083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000,+083+000
 
-Transition004:
-;black background line everywhere
-  db    +083+039,+083+038,+083+037,+083+036,+083+035,+083+034,+083+033,+083+032,+083+031,+083+030
-  db    +083+029,+083+028,+083+027,+083+026,+083+025,+083+024,+083+023,+083+022,+083+021,+083+020
-  db    +083+019,+083+018,+083+017,+083+016,+083+015,+083+014,+083+013,+083+012,+083+011,+083+010
-  db    +083+009,+083+008,+083+007,+083+006,+083+005,+083+004,+083+003,+083+002,+083+001
+EmptyTextBackground:
+;empty text background
+  db    +083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066
+  db    +083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066
+  db    +083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066
+  db    +083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066
 
 blackL01: equ +083+039
 blackL02: equ +083+038
