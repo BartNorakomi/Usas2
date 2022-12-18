@@ -2874,7 +2874,7 @@ dephase
 Graphicsblock5:  equ   $62 / 2
 phase	$8000
 scoreboard:
-  incbin "..\grapx\scoreboard.SC5",7,39*128  ;skip header
+  incbin "..\grapx\scoreboard\scoreboard.SC5",7,39*128  ;skip header
 itemsKarniMata:
   incbin "..\grapx\itemsKarniMata.SC5",7,$1400  ;skip header
 ElementalWeapons:

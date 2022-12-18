@@ -946,13 +946,75 @@ ShowEmptyTextBackground:
 ShowButton:
   ld    a,(framecounter)
   and   31
-  ld    hl,ShowbuttonUnPressed
-  cp    25
+  ld    hl,ShowYellowButton1
+  cp    4
   jr    c,.go
-  ld    hl,ShowbuttonPressed
+  ld    hl,ShowYellowButton2
+  cp    8
+  jr    c,.go
+  ld    hl,ShowYellowButton3
+  cp    12
+  jr    c,.go
+  ld    hl,ShowYellowButton4
+  cp    16
+  jr    c,.go
+  ld    hl,ShowYellowButton5
+  cp    20
+  jr    c,.go
+  ld    hl,ShowYellowButton4
+  cp    24
+  jr    c,.go
+  ld    hl,ShowYellowButton3
+  cp    28
+  jr    c,.go
+  ld    hl,ShowYellowButton2
   .go:
+
+
+
+
+
+
+;  ld    a,(framecounter)
+;  and   31
+;  ld    hl,ShowbuttonUnPressed
+;  cp    25
+;  jr    c,.go
+;  ld    hl,ShowbuttonPressed
+;  .go:
   call  DoCopy
   ret
+
+ShowYellowButton1:
+  db    142,000,053,000   ;sx,--,sy,spage
+  db    240,000,027,000   ;dx,--,dy,dpage
+  db    008,000,007,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
+
+ShowYellowButton2:
+  db    142+8,000,053,000   ;sx,--,sy,spage
+  db    240,000,027,000   ;dx,--,dy,dpage
+  db    008,000,007,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
+
+ShowYellowButton3:
+  db    142+16,000,053,000   ;sx,--,sy,spage
+  db    240,000,027,000   ;dx,--,dy,dpage
+  db    008,000,007,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
+
+ShowYellowButton4:
+  db    142+24,000,053,000   ;sx,--,sy,spage
+  db    240,000,027,000   ;dx,--,dy,dpage
+  db    008,000,007,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
+
+ShowYellowButton5:
+  db    142+32,000,053,000   ;sx,--,sy,spage
+  db    240,000,027,000   ;dx,--,dy,dpage
+  db    008,000,007,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
+
 
 
 ShowbuttonPressed:
