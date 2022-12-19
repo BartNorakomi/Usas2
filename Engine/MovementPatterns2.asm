@@ -456,73 +456,376 @@ SDMika07:   dw CharacterFacesframe007 | db CharacterFacesframelistblock, Charact
 
 
 
-
+Y_Portrait_Mika: equ 048
+X_Portrait_Mika: equ 074
 SDMika:
 ;v1-4=ScoreBoardVanishInward001 step 
 ;v1-3=sy and dy copy font and textbackground
-;v1-2=backup v8 phase
-;v1-1=backup v7 sprite frame
-;v1=repeating steps
-;v2=pointer to movement table
-;v3=Vertical Movement
-;v4=Horizontal Movement
+;v1-2=x white line dissapearing inward left side
+;v1-1=x white line dissapearing inward right side
+;v1=dy top part of white line
+;v2=dy bottom part of white line
+;v3=top border of portrait backdrop
+;v4=Character Portrait Buildup Phase (0=set variables, 1=show white line outward, 2=stretch out white line up and down, 3=fill in character block by block)  
 ;v5=add to dx character (text to screen)
 ;v6=pointer to character (text to screen) 
-;v7=sprite frame
+;v7=pointer to WhiteSquareOutlines table
 ;v8=phase
 ;v9=y black line
 ;v10=add to dy character (text to screen)
-;  call  CheckPlayerHitByGoat                ;Check if player gets hit by boss
-  ;Check if boss gets hit by player
-;  call  GoatCheckIfHit                      ;call gets popped if hit. Check if boss is hit, and if so set being hit phase
-  ;Check if boss is dead
-;  call  GoatCheckIfDead                     ;Check if boss is dead, and if so set dying phase
-  
-;  call  .HandlePhase                        ;v8=Phase (0=waiting player, 1=walking, 2=attacking, 3=hit, 4=dead)
-
-;  ld    de,SDMika00
-;ret
-;  jp    PutSf2Object2Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
-
-
-
-
-;  xor   a
-;  ld    (screenpage),a                    ;set screen 0, so object gets put in page 1
-
-;  push  ix
-;  call  PutSF2Object                      ;in: b=frame list block, c=sprite data block. CHANGES IX 
-;  pop   ix
-
-;  ld    a,1
-;  ld    (screenpage),a                    ;set screen 1, so player's weapons get put in page 1
-
-
-
-
-
-
-
-
-
   .HandlePhase:
   ld    a,1
   call  switchpageSF2Engine.SetPage         ;force page 1 to be the active page at all times
 
-;  ld    de,NonMovingObjectMovementTable
-;  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
-
-  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=set text background and font, 1=set character portrait, 2=wait player, 3=show text backdrop, 4=put text, 5=restore scoreboard)
   or    a
-  jp    z,SetFontAndBackground              ;0=set text background and font at (0,0) page 0, and copy of the text background at (0,66)
+  jp    z,SetFontAndBackground              ;0=set text background and font at (0,0) page 0, and copy of the empty text background at (0,66)
   dec   a
-  jp    z,SDMikaWaitingPlayerNear           ;1=waiting player near and pressing trig-a
+  jp    z,SetCharacterPortraits             ;1=set the character portrait at (0,105)
+  dec   a
+  jp    z,SDMikaWaitingPlayerNear           ;2=waiting player near and pressing trig-a
   dec   a 
-  jp    z,SDMikaSwitchToTextBackground      ;2=remove scoreboard and show text background
+  jp    z,SDMikaSwitchToTextBackground      ;3=remove scoreboard and show text background AND ***** DisplayCharacterPortrait *****
   dec   a
-  jp    z,SDMikaPutText                     ;3=put text
+  jp    z,SDMikaPutText                     ;4=put text
   dec   a
-  jp    z,SDMikaSwitchToScoreboard          ;4=restore scoreboard
+  jp    z,SDMikaSwitchToScoreboard          ;5=restore scoreboard AND ***** RemoveCharacterPortrait *****
+  ret
+
+FillCharacter8x8Block:
+  db    000,000,105,000   ;sx,--,sy,spage
+  db    050,000,048,001   ;dx,--,dy,dpage
+  db    056,000,056,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
+
+FillCharacter8x8BlockWhiteOutline:
+  db    056,000,048+105,000   ;sx,--,sy,spage
+  db    050,000,048,001   ;dx,--,dy,dpage
+  db    008,000,008,000   ;nx,--,ny,--
+  db    000,%0000 0000,$98       ;fast copy -> Copy from right to left     
+
+RemoveCharacterPortrait:                    ;this routine is executed during SDMikaSwitchToScoreboard
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Character Portrait Buildup Phase (0=set variables, 1=show white line outward, 2=stretch out white line up and down, 3=fill in character block by block)
+  sub   4
+  jp    z,.WhiteLineVerticallyInward        ;4 
+  dec   a
+  jp    z,.WhiteLineHorizontallyInward      ;5 
+  ret
+
+.WhiteLineVerticallyInward:
+;from top to middle
+  ;first put the white line
+  ld    a,002
+  ld    (FreeToUseFastCopy+sx),a
+  ld    a,000
+  ld    (FreeToUseFastCopy+sy),a
+
+;  ld    a,(ix+enemies_and_objects.v2)       ;dy bottom part of white line
+  ld    a,(ix+enemies_and_objects.v1)       ;dy top part of white line
+  inc   a
+  ld    (FreeToUseFastCopy+dy),a
+
+  ld    a,001
+  ld    (FreeToUseFastCopy+ny),a
+  ld    a,56
+  ld    (FreeToUseFastCopy+nx),a
+  ld    a,0
+  ld    (FreeToUseFastCopy+sPage),a
+
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+
+  ;then recover the line above the white line
+  ld    a,(FreeToUseFastCopy+dx)
+  ld    (FreeToUseFastCopy+sx),a
+
+  ld    a,(ix+enemies_and_objects.v1)       ;v1=dy top part of white line
+  ld    (FreeToUseFastCopy+dy),a
+  ld    (FreeToUseFastCopy+sy),a
+  ld    a,2
+  ld    (FreeToUseFastCopy+sPage),a
+
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+  
+  ld    a,(ix+enemies_and_objects.v1)       ;dy
+  inc   a
+  ld    (ix+enemies_and_objects.v1),a       ;dy
+  
+;from bottom to middle
+  ;first put the white line
+  ld    a,002
+  ld    (FreeToUseFastCopy+sx),a
+  ld    a,000
+  ld    (FreeToUseFastCopy+sy),a
+
+  ld    a,(ix+enemies_and_objects.v2)       ;v1=dy top part of white line
+  ld    (FreeToUseFastCopy+dy),a
+
+  ld    a,0
+  ld    (FreeToUseFastCopy+sPage),a
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+
+  ;then recover the line below the white line
+  ld    a,(FreeToUseFastCopy+dx)
+  ld    (FreeToUseFastCopy+sx),a
+
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=dy bottom part of white line
+  inc   a
+  ld    (FreeToUseFastCopy+dy),a
+  ld    (FreeToUseFastCopy+sy),a
+  ld    a,2
+  ld    (FreeToUseFastCopy+sPage),a
+
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+  
+  ld    a,(ix+enemies_and_objects.v2)       ;dy
+  dec   a
+  ld    (ix+enemies_and_objects.v2),a       ;dy
+
+  cp    Y_Portrait_Mika+26
+  ret   nz
+  ld    (ix+enemies_and_objects.v4),5       ;v4=Character Portrait Buildup Phase (0=set variables, 1=show white line outward, 2=stretch out white line up and down, 3=fill in character block by block)
+
+  ld    a,(FreeToUseFastCopy+dx)
+  ld    (ix+enemies_and_objects.v1-2),a     ;v1-2=x white line dissapearing inward left side
+  add   a,56-8
+  ld    (ix+enemies_and_objects.v1-1),a     ;v1-1=x white line dissapearing inward right side
+  ret
+
+.WhiteLineHorizontallyInward:
+  ;then recover 8 pixels left side
+  ld    a,8
+  ld    (FreeToUseFastCopy+nx),a
+
+  ld    a,(ix+enemies_and_objects.v1-2)     ;v1-2=x white line dissapearing inward left side
+  ld    (FreeToUseFastCopy+sx),a
+  ld    (FreeToUseFastCopy+dx),a
+
+  ld    a,(ix+enemies_and_objects.v2)       ;dy bottom part of white line
+  inc   a
+  ld    (FreeToUseFastCopy+dy),a
+  ld    (FreeToUseFastCopy+sy),a
+  ld    a,2
+  ld    (FreeToUseFastCopy+sPage),a
+
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+
+  ;then recover 8 pixels right side
+  ld    a,(ix+enemies_and_objects.v1-1)     ;v1-1=x white line dissapearing inward right side
+  ld    (FreeToUseFastCopy+sx),a
+  ld    (FreeToUseFastCopy+dx),a
+
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+
+  ld    a,(ix+enemies_and_objects.v1-2)     ;v1-2=x white line dissapearing inward left side
+  add   a,3
+  ld    (ix+enemies_and_objects.v1-2),a     ;v1-2=x white line dissapearing inward left side
+  ld    a,(ix+enemies_and_objects.v1-1)     ;v1-1=x white line dissapearing inward right side
+  sub   a,3
+  ld    (ix+enemies_and_objects.v1-1),a     ;v1-1=x white line dissapearing inward right side
+  ret
+
+DisplayCharacterPortrait:                   ;this routine is executed during SDMikaSwitchToTextBackground
+  xor   a
+  ld    (FreeToUseFastCopy+sPage),a
+  ld    a,1
+  ld    (FreeToUseFastCopy+dPage),a
+
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Character Portrait Buildup Phase (0=set variables, 1=show white line outward, 2=stretch out white line up and down, 3=fill in character block by block)
+  or    a
+  jp    z,.SetVariables                     ;0 SetVariables
+  dec   a
+  jp    z,.WhiteLine                        ;1 WhiteLine
+  dec   a
+  jp    z,.StretchWhiteLine                 ;2 StretchWhiteLine up and down
+  dec   a
+  jp    z,.FillCharacter                    ;3 FillCharacter
+  ret
+  
+  .FillCharacter:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=pointer to WhiteSquareOutlines table
+  add   a,2
+  ld    (ix+enemies_and_objects.v7),a       ;v7=pointer to WhiteSquareOutlines table
+ 
+;set 8x8 character portrait
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=pointer to WhiteSquareOutlines table
+  ld    d,0
+  ld    e,a
+  ld    hl,.dydxtable-2
+  add   hl,de                               ;dy
+  ld    a,105
+  add   a,(hl)
+  ld    (FreeToUseFastCopy+sy),a
+  inc   hl                                  ;dx
+  ld    a,(hl)
+  ld    (FreeToUseFastCopy+sx),a
+
+  ld    a,(ix+enemies_and_objects.v1)       ;dy top part of white line
+  inc   a
+  ld    (FreeToUseFastCopy+dy),a
+  ld    a,008
+  ld    (FreeToUseFastCopy+ny),a
+  ld    (FreeToUseFastCopy+nx),a
+
+  ld    a,074-28
+  ld    (FreeToUseFastCopy+dx),a
+
+  ld    d,0
+  ld    e,(ix+enemies_and_objects.v7)       ;v7=pointer to WhiteSquareOutlines table
+  ld    hl,.dydxtable-2
+  add   hl,de                               ;dy
+  ld    a,(FreeToUseFastCopy+dy)
+  add   a,(hl)
+  ld    (FreeToUseFastCopy+dy),a
+  inc   hl                                  ;dx
+  ld    a,(FreeToUseFastCopy+dx)
+  add   a,(hl)
+  ld    (FreeToUseFastCopy+dx),a
+
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=pointer to WhiteSquareOutlines table
+  cp    49*2
+  jr    c,.go
+  ld    (ix+enemies_and_objects.v4),4       ;v4=Character Portrait Buildup Phase (0=set variables, 1=show white line outward, 2=stretch out white line up and down, 3=fill in character block by block)
+
+  ld    a,(FreeToUseFastCopy+dx)
+  sub   a,56-8
+  ld    (FreeToUseFastCopy+dx),a
+  ret
+  .go:
+
+;set 8x8 white quare outline
+  ld    a,056
+  ld    (FreeToUseFastCopy+sx),a
+  ld    a,048+105
+  ld    (FreeToUseFastCopy+sy),a
+
+  ld    a,(ix+enemies_and_objects.v1)       ;dy top part of white line
+  inc   a
+  ld    (FreeToUseFastCopy+dy),a
+  ld    a,008
+  ld    (FreeToUseFastCopy+ny),a
+  ld    (FreeToUseFastCopy+nx),a
+
+  ld    a,074-28
+  ld    (FreeToUseFastCopy+dx),a
+
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=pointer to WhiteSquareOutlines table
+  ld    d,0
+  ld    e,a
+  ld    hl,.dydxtable
+  add   hl,de                               ;dy
+  ld    a,(FreeToUseFastCopy+dy)
+  add   a,(hl)
+  ld    (FreeToUseFastCopy+dy),a
+  inc   hl                                  ;dx
+  ld    a,(FreeToUseFastCopy+dx)
+  add   a,(hl)
+  ld    (FreeToUseFastCopy+dx),a
+
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+  ret
+  
+  .dydxtable: ;destination y, destination x
+  db  000,000, 000,008, 000,016, 000,024, 000,032, 000,040, 000,048 
+  db  008,000, 008,008, 008,016, 008,024, 008,032, 008,040, 008,048 
+  db  016,000, 016,008, 016,016, 016,024, 016,032, 016,040, 016,048 
+  db  024,000, 024,008, 024,016, 024,024, 024,032, 024,040, 024,048 
+  db  032,000, 032,008, 032,016, 032,024, 032,032, 032,040, 032,048 
+  db  040,000, 040,008, 040,016, 040,024, 040,032, 040,040, 040,048 
+  db  048,000, 048,008, 048,016, 048,024, 048,032, 048,040, 048,048, 048,048    
+  
+  .StretchWhiteLine:
+  ;start by creating the portrait backdrop. From the middle outward up
+  ld    a,105
+  ld    (FreeToUseFastCopy+sy),a
+
+  ld    a,(ix+enemies_and_objects.v1)       ;dy top part of white line
+  ld    (FreeToUseFastCopy+dy),a
+
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+
+  ld    a,(ix+enemies_and_objects.v1)       ;dy top part of white line
+  dec   a
+  ld    (ix+enemies_and_objects.v1),a       ;dy top part of white line
+
+  ;now from the middle outward down
+  ld    a,105 + 54
+  ld    (FreeToUseFastCopy+sy),a
+
+  ld    a,(ix+enemies_and_objects.v2)       ;dy bottom part of white line
+  ld    (FreeToUseFastCopy+dy),a
+
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+    
+  ld    a,(ix+enemies_and_objects.v2)       ;dy bottom part of white line
+  inc   a
+  ld    (ix+enemies_and_objects.v2),a       ;dy bottom part of white line
+
+  ld    a,(ix+enemies_and_objects.v1)       ;dy top part of white line
+  cp    (ix+enemies_and_objects.v3)         ;v3=top border of portrait backdrop
+  ret   nz
+  ld    (ix+enemies_and_objects.v4),3       ;v4=Character Portrait Buildup Phase (0=set variables, 1=show white line outward, 2=stretch out white line up and down, 3=fill in character block by block)  
+  ret
+
+  .WhiteLine:
+  ld    a,002
+  ld    (FreeToUseFastCopy+sx),a
+  ld    a,000
+  ld    (FreeToUseFastCopy+sy),a
+
+  ld    a,(ix+enemies_and_objects.v1)       ;dy
+  ld    (FreeToUseFastCopy+dy),a
+  ld    a,001
+  ld    (FreeToUseFastCopy+ny),a
+
+  ld    a,(FreeToUseFastCopy+dx)
+  sub   a,4
+  ld    (FreeToUseFastCopy+dx),a
+  ld    a,(FreeToUseFastCopy+nx)
+  add   a,8
+  ld    (FreeToUseFastCopy+nx),a
+
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy  
+
+  ld    a,(FreeToUseFastCopy+nx)
+  cp    56
+  ret   nz
+  ld    (ix+enemies_and_objects.v4),2       ;v4=Character Portrait Buildup Phase (0=set variables, 1=show white line outward, 2=stretch out white line up and down, 3=fill in character block by block) 
+
+  xor   a
+  ld    (FreeToUseFastCopy+sx),a
+  ld    a,056
+  ld    (FreeToUseFastCopy+nx),a
+  ld    a,002
+  ld    (FreeToUseFastCopy+ny),a
+
+  ld    a,(ix+enemies_and_objects.v1)       ;dy top part of white line
+  ld    (ix+enemies_and_objects.v2),a       ;dy bottom part of white line
+  dec   (ix+enemies_and_objects.v1)         ;dy top part of white line
+  dec   (ix+enemies_and_objects.v1)         ;dy top part of white line
+  sub   29
+  ld    (ix+enemies_and_objects.v3),a       ;top border of portrait backdrop
+  ret
+
+  .SetVariables:
+  ld    (ix+enemies_and_objects.v1),Y_Portrait_Mika+28     ;dy middle of portrait backdrop
+  ld    a,X_Portrait_Mika
+  ld    (FreeToUseFastCopy+dx),a            ;dx middle of portrait backdrop
+  ld    a,000
+  ld    (FreeToUseFastCopy+nx),a
+  ld    (ix+enemies_and_objects.v4),1       ;v4=Character Portrait Buildup Phase (0=set variables, 1=show white line outward, 2=stretch out white line up and down, 3=fill in character block by block)
   ret
 
 CopyEmptyTextbackgroundOverNormalTextBackground:
@@ -532,6 +835,8 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
   db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
 
   SDMikaSwitchToScoreboard:                 ;3=restore scoreboard  
+  call  RemoveCharacterPortrait
+
   ld    a,(ix+enemies_and_objects.nx)       ;in/out scoreboard/text background timer
   inc   a
   ld    (ix+enemies_and_objects.nx),a       ;in/out scoreboard/text background timer
@@ -546,7 +851,7 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
 
   xor   a
   ld    (freezecontrols?),a  
-  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=set text background and font, 1=set character portrait, 2=wait player, 3=show text backdrop, 4=put text, 5=restore scoreboard)
   ld    (ix+enemies_and_objects.nx),0       ;in/out scoreboard/text background timer
 
   ld    a,(ix+enemies_and_objects.v11)
@@ -597,6 +902,8 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
   ret
 
   SDMikaSwitchToTextBackground:
+  call  DisplayCharacterPortrait
+  
   ld    hl,LineIntNPCInteractions
   ld    (InterruptHandler.SelfmodyfyingLineIntRoutine),hl
 
@@ -611,7 +918,7 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
   ld    b,-1                                ;appear from the inside out
   ld    c,39                                ;text background
   jr    c,ScoreBoardTextBackgroundTransition
-  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=set text background and font, 1=set character portrait, 2=wait player, 3=show text backdrop, 4=put text, 5=restore scoreboard)
   ret
   
   ScoreBoardTextBackgroundTransition:  
@@ -651,6 +958,46 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
   djnz  .loop2  
   ret
 
+  SetCharacterPortraits:                    ;set the character portrait at (0,105)
+	ld    a,CharacterPortraitsBlock
+  call	block12
+
+  ;set dy
+  ld    b,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
+	xor   a
+	ld    hl,128 * 105 - 128
+  ld    de,128
+  .loop:
+  add   hl,de
+  djnz  .loop
+	call	SetVdp_Write                        ;write font and background to (0,0) in page 0
+
+  ;set sy
+  ;add the extra text background below all the rest
+  ld    b,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
+  ld    hl,CharacterPortraits  - 128
+  ld    de,128
+  .loop2:
+  add   hl,de
+  djnz  .loop2
+
+  ld    c,$98
+  ld    b,128                               ;128 bytes = 1 line
+  otir                                      ;copy line
+
+  ld    a,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
+  inc   a
+  ld    (ix+enemies_and_objects.v1-3),a     ;v1-3=sy and dy copy font and textbackground
+  cp    56+1                                ;total height font character portraits
+  jr    nz,.EndCheckLastLineCopied
+  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=set text background and font, 1=set character portrait, 2=wait player, 3=show text backdrop, 4=put text, 5=restore scoreboard)
+  .EndCheckLastLineCopied:
+
+  ;set the general movement pattern block at address $4000 in page 1
+	ld    a,MovementPatternsFixedPage1block
+  call	block12
+  ret
+  
   SetFontAndBackground:                     ;set text background and font at (0,0) page 0, and copy of the text background at (0,66)
 	ld    a,NPCDialogueFontBlock
   call	block12
@@ -691,7 +1038,8 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
   ld    (ix+enemies_and_objects.v1-3),a     ;v1-3=sy and dy copy font and textbackground
   cp    67+39                               ;total height font and text-background
   jr    nz,.EndCheckLastLineCopied
-  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=set text background and font, 1=set character portrait, 2=wait player, 3=show text backdrop, 4=put text, 5=restore scoreboard)
+  ld    (ix+enemies_and_objects.v1-3),1     ;v1-3=sy and dy copy font and textbackground
   .EndCheckLastLineCopied:
 
   ;set the general movement pattern block at address $4000 in page 1
@@ -699,7 +1047,7 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
   call	block12
   ret
 
-  SDMikaWaitingPlayerNear:    
+  SDMikaWaitingPlayerNear:
   ld    (ix+enemies_and_objects.x),000      ;x character portrait (move out of screen)
   ld    b,90                                ;b-> x distance
   ld    c,140                               ;c-> y distance
@@ -715,8 +1063,9 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
 	bit		4,a           ;space pressed ?
   ret   z
   
-;  ld    (ix+enemies_and_objects.x),090      ;x character portrait (move into screen)
-  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=set text background and font, 1=set character portrait, 2=wait player, 3=show text backdrop, 4=put text, 5=restore scoreboard)
+  ld    (ix+enemies_and_objects.v4),0       ;v4
+  ld    (ix+enemies_and_objects.v7),-2      ;v7
   ld    a,1
   ld    (freezecontrols?),a
   ret
@@ -798,7 +1147,7 @@ NPCDialogueputText:                         ;in: HL -> NPCDialogueText1
   jp    nz,.EndCheckInteractionFinished
   call  .CheckTriggerA                      ;check if space is pressed. out: nz if pressed
   jp    z,ShowButton
-  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=waiting player, 1=backup scoreboard, 2=remove scoreboard, 3=put text, 4=restore scoreboard, 5=restore background)
+  ld    (ix+enemies_and_objects.v8),5       ;v8=Phase (0=set text background and font, 1=set character portrait, 2=wait player, 3=show text backdrop, 4=put text, 5=restore scoreboard)
 
   ld    hl,RemovebuttonPressed
   call  DoCopy
@@ -1036,7 +1385,7 @@ RemovebuttonPressed:
   db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
  
 ;253=clear screen, 254 = next line, 255=end
-NPCDialogueText1:  
+NPCDialogueText2:  
   db "STOP... TOUCHING ME!!",254
   db "HELP!!!",254
   db "What's wrong with you?",253
@@ -1051,7 +1400,7 @@ NPCDialogueText1:
   db "Little test here. All OK",254
   db "Terminating NPC INTERACTION",255
 
-NPCDialogueText2:  
+NPCDialogueText1:  
   db "Mika: ehhhhhh",254
   db "can you fucking stop",254
   db "harrassing me buddy?",255
