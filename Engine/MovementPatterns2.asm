@@ -456,9 +456,85 @@ SDMika07:   dw CharacterFacesframe007 | db CharacterFacesframelistblock, Charact
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Y_Portrait_Mika: equ 048
 X_Portrait_Mika: equ 074
 SDMika:
+;v1-5=pointer for button rotator
 ;v1-4=ScoreBoardVanishInward001 step 
 ;v1-3=sy and dy copy font and textbackground
 ;v1-2=x white line dissapearing inward left side
@@ -481,13 +557,13 @@ SDMika:
   or    a
   jp    z,SetFontAndBackground              ;0=set text background and font at (0,0) page 0, and copy of the empty text background at (0,66)
   dec   a
-  jp    z,SetCharacterPortraits             ;1=set the character portrait at (0,105)
+  jp    z,SetCharacterPortraits             ;1=set the character portrait at (0,114)
   dec   a
   jp    z,SDMikaWaitingPlayerNear           ;2=waiting player near and pressing trig-a
   dec   a 
   jp    z,SDMikaSwitchToTextBackground      ;3=remove scoreboard and show text background AND ***** DisplayCharacterPortrait *****
   dec   a
-  jp    z,SDMikaPutText                     ;4=put text
+  jp    z,SDMikaPutText                     ;4=put text AND *** MouthMovement and EyesMovement
   dec   a
   jp    z,SDMikaSwitchToScoreboard          ;5=restore scoreboard AND ***** RemoveCharacterPortrait *****
   ret
@@ -648,27 +724,38 @@ DisplayCharacterPortrait:                   ;this routine is executed during SDM
   ret
   
   .FillCharacter:
+  call  .RepeatThisRoutine
+  call  .RepeatThisRoutine
+  call  .RepeatThisRoutine
+  call  .RepeatThisRoutine
+  call  .RepeatThisRoutine
+  call  .RepeatThisRoutine
+  call  .RepeatThisRoutine
+  
+  .RepeatThisRoutine:
   ld    a,(ix+enemies_and_objects.v7)       ;v7=pointer to WhiteSquareOutlines table
-  add   a,2
+  inc   a
   ld    (ix+enemies_and_objects.v7),a       ;v7=pointer to WhiteSquareOutlines table
  
-;set 8x8 character portrait
+;set character portrait in 4x4 blocks
   ld    a,(ix+enemies_and_objects.v7)       ;v7=pointer to WhiteSquareOutlines table
   ld    d,0
   ld    e,a
   ld    hl,.dydxtable-2
-  add   hl,de                               ;dy
-  ld    a,105
-  add   a,(hl)
+  add   hl,de                               
+  add   hl,de   
+  ld    a,114                               ;add to sy; character portrait is in page 0 at (0,114)
+  add   a,(hl)                              ;add to relative dy
+;  inc   a
   ld    (FreeToUseFastCopy+sy),a
-  inc   hl                                  ;dx
+  inc   hl                                  ;relative dx
   ld    a,(hl)
   ld    (FreeToUseFastCopy+sx),a
 
   ld    a,(ix+enemies_and_objects.v1)       ;dy top part of white line
   inc   a
   ld    (FreeToUseFastCopy+dy),a
-  ld    a,008
+  ld    a,004
   ld    (FreeToUseFastCopy+ny),a
   ld    (FreeToUseFastCopy+nx),a
 
@@ -679,6 +766,7 @@ DisplayCharacterPortrait:                   ;this routine is executed during SDM
   ld    e,(ix+enemies_and_objects.v7)       ;v7=pointer to WhiteSquareOutlines table
   ld    hl,.dydxtable-2
   add   hl,de                               ;dy
+  add   hl,de                               
   ld    a,(FreeToUseFastCopy+dy)
   add   a,(hl)
   ld    (FreeToUseFastCopy+dy),a
@@ -691,62 +779,65 @@ DisplayCharacterPortrait:                   ;this routine is executed during SDM
   call  DoCopy
 
   ld    a,(ix+enemies_and_objects.v7)       ;v7=pointer to WhiteSquareOutlines table
-  cp    49*2
-  jr    c,.go
+  cp    193
+  ret   c
   ld    (ix+enemies_and_objects.v4),4       ;v4=Character Portrait Buildup Phase (0=set variables, 1=show white line outward, 2=stretch out white line up and down, 3=fill in character block by block)
 
-  ld    a,(FreeToUseFastCopy+dx)
-  sub   a,56-8
-  ld    (FreeToUseFastCopy+dx),a
-  ret
-  .go:
-
-;set 8x8 white quare outline
-  ld    a,056
-  ld    (FreeToUseFastCopy+sx),a
-  ld    a,048+105
-  ld    (FreeToUseFastCopy+sy),a
-
-  ld    a,(ix+enemies_and_objects.v1)       ;dy top part of white line
-  inc   a
-  ld    (FreeToUseFastCopy+dy),a
-  ld    a,008
-  ld    (FreeToUseFastCopy+ny),a
-  ld    (FreeToUseFastCopy+nx),a
-
-  ld    a,074-28
-  ld    (FreeToUseFastCopy+dx),a
-
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=pointer to WhiteSquareOutlines table
-  ld    d,0
-  ld    e,a
-  ld    hl,.dydxtable
-  add   hl,de                               ;dy
-  ld    a,(FreeToUseFastCopy+dy)
-  add   a,(hl)
-  ld    (FreeToUseFastCopy+dy),a
-  inc   hl                                  ;dx
-  ld    a,(FreeToUseFastCopy+dx)
-  add   a,(hl)
-  ld    (FreeToUseFastCopy+dx),a
-
-  ld    hl,FreeToUseFastCopy
-  call  DoCopy
+;  ld    a,(FreeToUseFastCopy+dx)
+;  sub   a,52
+;  ld    (FreeToUseFastCopy+dx),a
   ret
   
-  .dydxtable: ;destination y, destination x
-  db  000,000, 000,008, 000,016, 000,024, 000,032, 000,040, 000,048 
-  db  008,000, 008,008, 008,016, 008,024, 008,032, 008,040, 008,048 
-  db  016,000, 016,008, 016,016, 016,024, 016,032, 016,040, 016,048 
-  db  024,000, 024,008, 024,016, 024,024, 024,032, 024,040, 024,048 
-  db  032,000, 032,008, 032,016, 032,024, 032,032, 032,040, 032,048 
-  db  040,000, 040,008, 040,016, 040,024, 040,032, 040,040, 040,048 
-  db  048,000, 048,008, 048,016, 048,024, 048,032, 048,040, 048,048, 048,048    
-  
+  .dydxtable: ;relative y, relative x
+;circular appearance of character portrait
+  db  024,024, 024,028, 028,024, 028,028, 024,024, 024,028, 028,024, 028,028
+  db  020,024, 020,028, 032,024, 032,028, 024,020, 024,032, 028,020, 028,032
+  db  020,020, 016,024, 016,028, 020,032, 032,020, 032,032, 036,024, 036,028
+  db  012,024, 016,032, 024,036, 032,036, 040,028, 036,020, 028,016, 020,016
+  db  012,028, 020,036, 028,036, 036,032, 040,024, 032,016, 024,016, 016,020
+  db  008,028, 016,036, 024,040, 032,040, 040,032, 044,024, 036,016, 028,012
+  db  012,032, 020,040, 028,040, 036,036, 044,028, 040,020, 032,012, 024,012
+  db  020,012, 008,024, 008,032, 020,044, 032,044, 044,032, 044,020, 032,008
+  db  016,016, 012,020, 012,036, 024,044, 036,040, 048,028, 040,016, 024,008
+  db  004,028, 016,040, 028,044, 040,036, 048,024, 036,012, 028,008, 020,008
+  db  016,012, 008,020, 008,036, 024,048, 040,040, 052,024, 036,008, 020,004
+  db  012,016, 004,024, 012,040, 028,048, 044,036, 048,020, 032,004, 016,008
+  db  000,028, 016,044, 032,048, 048,032, 044,016, 028,004, 012,012, 004,020
+  db  004,032, 020,048, 036,044, 052,028, 040,012, 024,004, 008,016, 000,024
+  db  000,032, 012,044, 024,052, 036,048, 048,036, 048,016, 036,004, 024,000
+  db  004,036, 016,048, 028,052, 040,044, 052,032, 044,012, 032,000, 020,000
+  db  008,040, 020,052, 032,052, 044,040, 052,020, 040,008, 028,000, 016,004
+  db  012,008, 008,012, 004,016, 000,020, 000,036, 016,052, 048,040, 044,008
+  db  004,040, 036,052, 052,036, 040,004, 012,004, 000,040, 040,052, 052,012
+  db  008,044, 040,048, 052,016, 036,000, 008,008, 004,044, 044,048, 048,008
+  db  012,048, 044,044, 048,012, 016,000, 004,012, 008,048, 048,044, 044,004
+  db  012,052, 052,040, 040,000, 008,004, 000,016, 000,044, 048,048, 044,000
+  db  012,000, 004,008, 000,012, 004,048, 052,044, 008,000, 000,048, 052,048
+  db  008,052, 052,008, 004,004, 004,052, 052,004, 004,000, 000,052, 052,000
+  db  044,052, 048,004, 000,008, 048,052, 048,000, 000,004, 052,052, 000,000
+    
+;line by line top down appearance of character portrait
+;  db  000,000, 000,004, 000,008, 000,012, 000,016, 000,020, 000,024, 000,028, 000,032, 000,036, 000,040, 000,044, 000,048, 000,052 
+;  db  004,000, 004,004, 004,008, 004,012, 004,016, 004,020, 004,024, 004,028, 004,032, 004,036, 004,040, 004,044, 004,048, 004,052 
+;  db  008,000, 008,004, 008,008, 008,012, 008,016, 008,020, 008,024, 008,028, 008,032, 008,036, 008,040, 008,044, 008,048, 008,052 
+;  db  012,000, 012,004, 012,008, 012,012, 012,016, 012,020, 012,024, 012,028, 012,032, 012,036, 012,040, 012,044, 012,048, 012,052 
+;  db  016,000, 016,004, 016,008, 016,012, 016,016, 016,020, 016,024, 016,028, 016,032, 016,036, 016,040, 016,044, 016,048, 016,052 
+;  db  020,000, 020,004, 020,008, 020,012, 020,016, 020,020, 020,024, 020,028, 020,032, 020,036, 020,040, 020,044, 020,048, 020,052 
+;  db  024,000, 024,004, 024,008, 024,012, 024,016, 024,020, 024,024, 024,028, 024,032, 024,036, 024,040, 024,044, 024,048, 024,052 
+;  db  028,000, 028,004, 028,008, 028,012, 028,016, 028,020, 028,024, 028,028, 028,032, 028,036, 028,040, 028,044, 028,048, 028,052 
+;  db  032,000, 032,004, 032,008, 032,012, 032,016, 032,020, 032,024, 032,028, 032,032, 032,036, 032,040, 032,044, 032,048, 032,052 
+;  db  036,000, 036,004, 036,008, 036,012, 036,016, 036,020, 036,024, 036,028, 036,032, 036,036, 036,040, 036,044, 036,048, 036,052 
+;  db  040,000, 040,004, 040,008, 040,012, 040,016, 040,020, 040,024, 040,028, 040,032, 040,036, 040,040, 040,044, 040,048, 040,052 
+;  db  044,000, 044,004, 044,008, 044,012, 044,016, 044,020, 044,024, 044,028, 044,032, 044,036, 044,040, 044,044, 044,048, 044,052 
+;  db  048,000, 048,004, 048,008, 048,012, 048,016, 048,020, 048,024, 048,028, 048,032, 048,036, 048,040, 048,044, 048,048, 048,052 
+;  db  052,000, 052,004, 052,008, 052,012, 052,016, 052,020, 052,024, 052,028, 052,032, 052,036, 052,040, 052,044, 052,048, 052,052, 052,040, 052,044, 052,048, 052,052
+
   .StretchWhiteLine:
   ;start by creating the portrait backdrop. From the middle outward up
-  ld    a,105
+  ld    a,054
   ld    (FreeToUseFastCopy+sy),a
+  ld    a,142
+  ld    (FreeToUseFastCopy+sx),a
 
   ld    a,(ix+enemies_and_objects.v1)       ;dy top part of white line
   ld    (FreeToUseFastCopy+dy),a
@@ -759,7 +850,7 @@ DisplayCharacterPortrait:                   ;this routine is executed during SDM
   ld    (ix+enemies_and_objects.v1),a       ;dy top part of white line
 
   ;now from the middle outward down
-  ld    a,105 + 54
+  ld    a,053
   ld    (FreeToUseFastCopy+sy),a
 
   ld    a,(ix+enemies_and_objects.v2)       ;dy bottom part of white line
@@ -829,7 +920,7 @@ DisplayCharacterPortrait:                   ;this routine is executed during SDM
   ret
 
 CopyEmptyTextbackgroundOverNormalTextBackground:
-  db    002,000,068,000   ;sx,--,sy,spage
+  db    002,000,075+2,000   ;sx,--,sy,spage
   db    002,000,002,000   ;dx,--,dy,dpage
   db    252,000,036,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
@@ -899,6 +990,7 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
   ld    hl,NPCDialogueText8
   .go:
   call  NPCDialogueputText
+  call  EyesMovement
   ret
 
   SDMikaSwitchToTextBackground:
@@ -958,14 +1050,14 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
   djnz  .loop2  
   ret
 
-  SetCharacterPortraits:                    ;set the character portrait at (0,105)
+  SetCharacterPortraits:                    ;set the character portrait at (0,114)
 	ld    a,CharacterPortraitsBlock
   call	block12
 
   ;set dy
   ld    b,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
 	xor   a
-	ld    hl,128 * 105 - 128
+	ld    hl,128 * 114 - 128
   ld    de,128
   .loop:
   add   hl,de
@@ -1016,9 +1108,9 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
   ;add the extra text background below all the rest
   ld    b,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
   ld    a,b
-  cp    67
+  cp    67+9
   jr    c,.go
-  sub   66
+  sub   66+9
   ld    b,a
   .go:
   ;/add the extra text background below all the rest
@@ -1036,7 +1128,7 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
   ld    a,(ix+enemies_and_objects.v1-3)     ;v1-3=sy and dy copy font and textbackground
   inc   a
   ld    (ix+enemies_and_objects.v1-3),a     ;v1-3=sy and dy copy font and textbackground
-  cp    67+39                               ;total height font and text-background
+  cp    67+39+9                             ;total height font and text-background
   jr    nz,.EndCheckLastLineCopied
   ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=set text background and font, 1=set character portrait, 2=wait player, 3=show text backdrop, 4=put text, 5=restore scoreboard)
   ld    (ix+enemies_and_objects.v1-3),1     ;v1-3=sy and dy copy font and textbackground
@@ -1065,7 +1157,7 @@ CopyEmptyTextbackgroundOverNormalTextBackground:
   
   ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=set text background and font, 1=set character portrait, 2=wait player, 3=show text backdrop, 4=put text, 5=restore scoreboard)
   ld    (ix+enemies_and_objects.v4),0       ;v4
-  ld    (ix+enemies_and_objects.v7),-2      ;v7
+  ld    (ix+enemies_and_objects.v7),0       ;v7
   ld    a,1
   ld    (freezecontrols?),a
   ret
@@ -1145,6 +1237,7 @@ NPCDialogueputText:                         ;in: HL -> NPCDialogueText1
 
   cp    255                                 ;end text
   jp    nz,.EndCheckInteractionFinished
+  call  CloseMouth
   call  .CheckTriggerA                      ;check if space is pressed. out: nz if pressed
   jp    z,ShowButton
   ld    (ix+enemies_and_objects.v8),5       ;v8=Phase (0=set text background and font, 1=set character portrait, 2=wait player, 3=show text backdrop, 4=put text, 5=restore scoreboard)
@@ -1168,6 +1261,7 @@ NPCDialogueputText:                         ;in: HL -> NPCDialogueText1
 
   cp    253                                 ;clear text field
   jr    nz,.EndCheckClearText
+  call  CloseMouth
   call  .CheckTriggerA                      ;check if space is pressed. out: nz if pressed
   jp    z,ShowButton
   ret   z
@@ -1245,6 +1339,8 @@ NPCDialogueputText:                         ;in: HL -> NPCDialogueText1
   ld    a,(CopyCharacter+dx)
   add   a,b
   ld    (CopyCharacter+dx),a
+
+  call  MouthMovement
   ret
 
   .CheckTriggerA:                           ;check if space is pressed. out: nz if pressed
@@ -1273,6 +1369,105 @@ NPCDialogueputText:                         ;in: HL -> NPCDialogueText1
   pop   de
   ret
 
+EyesMovement:
+  ld    hl,FreeToUseFastCopy2
+
+  xor   a
+  ld    (FreeToUseFastCopy2+sPage),a
+  ld    a,1
+  ld    (FreeToUseFastCopy2+dPage),a
+
+  ld    a,Y_Portrait_Mika
+  add   a,31
+  ld    (FreeToUseFastCopy2+dy),a
+  
+  ld    a,X_Portrait_Mika
+  add   a,-12
+  ld    (FreeToUseFastCopy2+dx),a
+
+  ld    a,022
+  ld    (FreeToUseFastCopy2+nx),a
+  ld    a,006
+  ld    (FreeToUseFastCopy2+ny),a
+  ld    a,056
+  ld    (FreeToUseFastCopy2+sx),a
+
+  ld    a,105+9                             ;sy closed eyes
+  ld    (FreeToUseFastCopy2+sy),a
+
+  ld    a,(framecounter)
+  cp    1
+  jp    z,DoCopy
+  cp    8
+  ld    a,111+9                             ;sy open eyes
+  ld    (FreeToUseFastCopy2+sy),a
+  jp    z,DoCopy
+  ret
+
+MouthMovement:
+  ld    hl,FreeToUseFastCopy2
+
+  xor   a
+  ld    (FreeToUseFastCopy2+sPage),a
+  ld    a,1
+  ld    (FreeToUseFastCopy2+dPage),a
+
+  ld    a,Y_Portrait_Mika
+  add   a,42
+  ld    (FreeToUseFastCopy2+dy),a
+  
+  ld    a,X_Portrait_Mika
+  add   a,-04
+  ld    (FreeToUseFastCopy2+dx),a
+
+  ld    a,006
+  ld    (FreeToUseFastCopy2+nx),a
+  ld    a,006
+  ld    (FreeToUseFastCopy2+ny),a
+  ld    a,117+9
+  ld    (FreeToUseFastCopy2+sy),a
+
+  ld    a,056                               ;sx mouth open
+  ld    (FreeToUseFastCopy2+sx),a
+  ld    a,(framecounter)
+  and   7
+  cp    4
+  jp    c,DoCopy
+  ld    a,062                               ;sx mouth closed
+  ld    (FreeToUseFastCopy2+sx),a
+  jp    DoCopy
+
+CloseMouth:
+  ld    hl,FreeToUseFastCopy2
+
+  xor   a
+  ld    (FreeToUseFastCopy2+sPage),a
+  ld    a,1
+  ld    (FreeToUseFastCopy2+dPage),a
+
+  ld    a,Y_Portrait_Mika
+  add   a,42
+  ld    (FreeToUseFastCopy2+dy),a
+  
+  ld    a,X_Portrait_Mika
+  add   a,-04
+  ld    (FreeToUseFastCopy2+dx),a
+
+  ld    a,006
+  ld    (FreeToUseFastCopy2+nx),a
+  ld    a,006
+  ld    (FreeToUseFastCopy2+ny),a
+  ld    a,117+9
+  ld    (FreeToUseFastCopy2+sy),a
+
+  ld    a,062                               ;sx mouth closed
+  ld    (FreeToUseFastCopy2+sx),a
+  jp    DoCopy
+
+;Y_Portrait_Mika: equ 048
+;X_Portrait_Mika: equ 074
+
+
 ShowNormalTextBackground:
   ld    hl,NormalTextBackground             ;show normal Text Background
   jr    ShowEmptyTextBackground.entry
@@ -1294,44 +1489,64 @@ ShowEmptyTextBackground:
 
 ShowButton:
   ld    a,(framecounter)
-  and   31
-  ld    hl,ShowYellowButton1
-  cp    4
-  jr    c,.go
-  ld    hl,ShowYellowButton2
-  cp    8
-  jr    c,.go
-  ld    hl,ShowYellowButton3
-  cp    12
-  jr    c,.go
-  ld    hl,ShowYellowButton4
-  cp    16
-  jr    c,.go
-  ld    hl,ShowYellowButton5
-  cp    20
-  jr    c,.go
-  ld    hl,ShowYellowButton4
-  cp    24
-  jr    c,.go
-  ld    hl,ShowYellowButton3
+  and   1
+  ret   nz
+
+  ld    a,(ix+enemies_and_objects.v1-5)     ;v1-5=pointer for button rotator
+  inc   a
   cp    28
-  jr    c,.go
-  ld    hl,ShowYellowButton2
+  jr    nz,.SetPointer
+  xor   a
+  .SetPointer:
+  ld    (ix+enemies_and_objects.v1-5),a     ;v1-5=pointer for button rotator
+  cp    9
+  jr    c,.Top
+  .Bottom:  
+  sub   a,9
+  ld    b,a                                 ;*1
+  add   a,a                                 ;*2
+  add   a,a                                 ;*4
+  ld    c,a
+  add   a,a                                 ;*8
+  add   a,c                                 ;*12
+  add   a,b                                 ;*13
+  ld    (FreeToUseFastCopy2+sx),a  
+  ld    a,066
+  ld    (FreeToUseFastCopy2+sy),a
+  jr    .go
+
+  .Top:
+  ld    b,a                                 ;*1
+  add   a,a                                 ;*2
+  add   a,a                                 ;*4
+  ld    c,a
+  add   a,a                                 ;*8
+  add   a,c                                 ;*12
+  add   a,b                                 ;*13
+  add   a,141
+  ld    (FreeToUseFastCopy2+sx),a  
+  ld    a,057
+  ld    (FreeToUseFastCopy2+sy),a
+  
   .go:
+  ld    a,027
+  ld    (FreeToUseFastCopy2+dy),a
+  ld    a,240
+  ld    (FreeToUseFastCopy2+dx),a
+  ld    a,009
+  ld    (FreeToUseFastCopy2+ny),a
+  ld    a,013
+  ld    (FreeToUseFastCopy2+nx),a  
+  xor   a
+  ld    (FreeToUseFastCopy2+sPage),a
+  ld    (FreeToUseFastCopy2+dPage),a
 
-
-
-
-
-
-;  ld    a,(framecounter)
-;  and   31
-;  ld    hl,ShowbuttonUnPressed
-;  cp    25
-;  jr    c,.go
-;  ld    hl,ShowbuttonPressed
-;  .go:
+  ld    a,$90
+  ld    (FreeToUseFastCopy2+copytype),a
+  ld    hl,FreeToUseFastCopy2
   call  DoCopy
+  ld    a,$D0
+  ld    (FreeToUseFastCopy2+copytype),a
   ret
 
 ShowYellowButton1:
@@ -1363,8 +1578,6 @@ ShowYellowButton5:
   db    240,000,027,000   ;dx,--,dy,dpage
   db    008,000,007,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
-
-
 
 ShowbuttonPressed:
   db    182,000,053,000   ;sx,--,sy,spage
@@ -1494,10 +1707,10 @@ NormalTextBackground:
 
 EmptyTextBackground:
 ;empty text background
-  db    +083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066
-  db    +083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066
-  db    +083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066
-  db    +083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066,+083+066
+  db    +092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066
+  db    +092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066
+  db    +092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066
+  db    +092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066,+092+066
 
 blackL01: equ +083+039
 blackL02: equ +083+038

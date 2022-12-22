@@ -244,6 +244,18 @@ FreeToUseFastCopy:                    ;freely usable anywhere
   db    004,000,004,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
 
+FreeToUseFastCopy2:                   ;freely usable anywhere
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
+
+FreeToUseFastCopy3:                   ;freely usable anywhere
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    000,000,000,000   ;nx,--,ny,--
+  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
+  
 FreeToUseFastCopyF1Menu:               ;freely usable in F1 menu
   db    000,000,000,000   ;sx,--,sy,spage
   db    000,000,074,000   ;dx,--,dy,dpage
