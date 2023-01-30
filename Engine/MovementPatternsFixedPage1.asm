@@ -1274,7 +1274,7 @@ MoveObject:                                 ;adds v3 to y, adds v4 to x. x+y are
   ld    (ix+enemies_and_objects.x),a        ;x object
   ret
   
-SetCoordinatesPuzzlePushingStones:
+SetCoordinatesPuzzlePushingStones:          ;if v7=0 then set coordinates
   ld    (ix+enemies_and_objects.v7),1       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
 
   ld    l,(ix+enemies_and_objects.coordinates)
@@ -1286,8 +1286,13 @@ SetCoordinatesPuzzlePushingStones:
   ld    a,(hl)
   ld    (ix+enemies_and_objects.x),a        ;x object
   ret
-
-StoreCoordinatesPuzzlePushingStones:
+  
+PushingStone:
+  ld    a,(ix+enemies_and_objects.v7)       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
+  dec   a
+  jr    nz,SetCoordinatesPuzzlePushingStones
+      
+  ;Store Coordinates Puzzle Pushing Stones
   ld    l,(ix+enemies_and_objects.coordinates)
   ld    h,(ix+enemies_and_objects.coordinates+1)
   
@@ -1296,15 +1301,7 @@ StoreCoordinatesPuzzlePushingStones:
   inc   hl
   ld    a,(ix+enemies_and_objects.x)        ;x object
   ld    (hl),a
-  ret
-  
-PushingStone:
-  ld    a,(ix+enemies_and_objects.v7)       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
-  or    a
-  jp    z,SetCoordinatesPuzzlePushingStones
-  ld    a,(ix+enemies_and_objects.v7)       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
-  dec   a
-  call  z,StoreCoordinatesPuzzlePushingStones
+  ;/Store Coordinates Puzzle Pushing Stones
 
   ld    a,(ix+enemies_and_objects.v2)       ;falling stone?
   or    a
@@ -1319,6 +1316,27 @@ PushingStone:
   jp    z,.CollisionRightSide               ;if you collide with a pushing stone from the right side and you are running, then change to pushing pose; if you are pushing, then move stone
   inc   b 
   jp    z,.CollisionLeftSide                ;if you collide with a pushing stone from the left side and you are running, then change to pushing pose; if you are pushing, then move stone
+  ;at this point there is no collision
+  ld    a,(ix+enemies_and_objects.v4)       ;if there is no collision set horizontal movement to 0
+  or    a
+  ret   z
+
+  ld    a,(framecounter)
+  and   1
+  ret   z
+  ld    (ix+enemies_and_objects.v4),+0      ;if there is no collision set horizontal movement to 0
+
+  ld    a,(PlayerFacingRight?)          ;is player facing right ?
+  or    a
+  jr    nz,.right
+  
+  .left:
+  dec   (ix+enemies_and_objects.x)
+  set   0,(ix+enemies_and_objects.x)
+  ret
+  
+  .right:
+  set   0,(ix+enemies_and_objects.x)
   ret
 
   .CollisionRightSide:
@@ -1381,7 +1399,6 @@ PushingStone:
 
 ;When Stone is not moving set x coordinate to odd. The reason we do that is that when copying the block x coordinate is even, and we then can use a fast copy instruction
 SetOddX:
-  set   0,(ix+enemies_and_objects.x)
   ret
 
 MoveStoneWhenPushed:
@@ -1390,10 +1407,8 @@ MoveStoneWhenPushed:
   ret   nz
 
   ld    a,(ix+enemies_and_objects.v4)       ;v4=horizontal movement. Return if 0
-  ld    (ix+enemies_and_objects.v4),+0    
   or    a
-  jp    z,SetOddX
-;  ret   z
+  ret   z
   
 	ld		hl,Rpushing                         ;check if we are pushing Right
 	ld		de,(PlayerSpriteStand)
@@ -1671,6 +1686,7 @@ checktileObject:                            ;same as checktile for player, but n
   ld    h,0
   add   hl,de
   ld    a,(ix+enemies_and_objects.y)        ;y object
+  add   a,b
   jp    CheckTile.XandYset
 
   

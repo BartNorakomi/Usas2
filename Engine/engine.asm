@@ -916,8 +916,8 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   ld    e,(ix+enemies_and_objects.nx)
   add   hl,de
   
-  ld    b,255                       ;collision right side of object detected (used for the pushing blocks)            
-    
+;  ld    b,255                       ;collision right side of object detected (used for the pushing blocks)            
+
   ld    a,(PlayerDead?)
   or    a
   ret   nz
@@ -942,6 +942,8 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   ld    de,XaddRightPlayer-4  ;add 0 to x to check left side of player for collision (player moved left)
   call  checktile           ;out z=collision found with wall
   jp    z,Set_Dying
+
+  ld    b,255                       ;collision right side of object detected (used for the pushing blocks)            
   ret
     
 .CollisionLeftOfObject:
@@ -951,7 +953,7 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   ld    h,0
   ld    l,a
 
-  ld    b,254                       ;collision leftside of object detected (used for the pushing blocks)            
+;  ld    b,254                       ;collision leftside of object detected (used for the pushing blocks)            
 
   ld    a,(PlayerDead?)
   or    a
@@ -965,6 +967,8 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   ld    de,XaddLeftPlayer+4   ;add 0 to x to check left side of player for collision (player moved left)
   call  checktile           ;out z=collision found with wall
   jp    z,Set_Dying
+
+  ld    b,254                       ;collision leftside of object detected (used for the pushing blocks)            
   ret
 
 .CollisionTopOfObject:

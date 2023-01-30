@@ -496,33 +496,56 @@ dephase
 ;
 ; block $1e - &1f
 ;
-MapsBlock01:  equ   $1e
+MapsBlock01:  equ   $1e / 2
 phase	$8000
 MapA01_001:   ;EngineType, graphics, palette,
   incbin "..\maps\A01-001.map.pck"  | .amountofobjects: db  14
        ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, v6, v7   coordinates                            ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
 ;Pushing Stones
-.object1: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks13Y| db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-.object2: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb2|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks14Y| db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-.object3: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb3|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks15Y| db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-;Pushing stone Puzzle Pieces overview       x backup                                   total,setnr?
-.object4: db 1,        0|dw PushingPuzzlOverview|db 06*8,12*8,12*8,0,     00,       00,+00,+00,+00,+00,+00,+07,+00|dw PuzzleSwitchTable2|db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+
+
+
+;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v1-2= coordinates
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
+.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks13Y| db  112,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks14Y| db  112,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks15Y| db  112,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+;Pushing stone Puzzle Pieces overview                          x,x backup, v6=total pieces,v7=current piece to put
+.object4: db 1,        0|dw PushingPuzzlOverview|db 8*06|db 8*12,8*12,0,0|dw 00000000,0 db 0|dw PuzzleSwitchTable2|db  +00,+00,+00,+00,+00,+07,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
+.object5: db 1,        0|dw PushingPuzzleSwitch |db 8*13|dw 8*10|db 00,00|db 0,0,0| dw PuzzleSwitchTable2,PuzzleSwitch15On?|db +01,+02,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object6: db 1,        0|dw PushingPuzzleSwitch |db 8*13|dw 8*12|db 00,00|db 0,0,0| dw PuzzleSwitchTable2,PuzzleSwitch16On?|db +01,+01,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object7: db 1,        0|dw PushingPuzzleSwitch |db 8*13|dw 8*24|db 00,00|db 0,0,0| dw PuzzleSwitchTable2,PuzzleSwitch19On?|db +01,+03,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object8: db 1,        0|dw PushingPuzzleSwitch |db 8*13|dw 8*26|db 00,00|db 0,0,0| dw PuzzleSwitchTable2,PuzzleSwitch20On?|db +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+.object9: db 1,        0|dw PushingPuzzleSwitch |db 8*19|dw 8*10|db 00,00|db 0,0,0| dw PuzzleSwitchTable2,PuzzleSwitch21On?|db +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object10: db 1,       0|dw PushingPuzzleSwitch |db 8*19|dw 8*26|db 00,00|db 0,0,0| dw PuzzleSwitchTable2,PuzzleSwitch26On?|db +01,+03,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+.object11: db 1,       0|dw PushingPuzzleSwitch |db 8*25|dw 8*10|db 00,00|db 0,0,0| dw PuzzleSwitchTable2,PuzzleSwitch27On?|db +01,+03,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object12: db 1,       0|dw PushingPuzzleSwitch |db 8*25|dw 8*12|db 00,00|db 0,0,0| dw PuzzleSwitchTable2,PuzzleSwitch28On?|db +01,+02,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object13: db 1,       0|dw PushingPuzzleSwitch |db 8*25|dw 8*24|db 00,00|db 0,0,0| dw PuzzleSwitchTable2,PuzzleSwitch31On?|db +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object14: db 1,       0|dw PushingPuzzleSwitch |db 8*25|dw 8*26|db 00,00|db 0,0,0| dw PuzzleSwitchTable2,PuzzleSwitch32On?|db +01,+01,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+
+
 ;Pushing stone Puzzle Switch                                       init?,#nr,on?,act,snap
-.object5: db 1,        0|dw PushingPuzzleSwitch |db 13*8,10*8,16,16,      00,       00,+01,+02,+00,+00,+00,+00,+00 |dw PuzzleSwitch15On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-.object6: db 1,        0|dw PushingPuzzleSwitch |db 13*8,12*8,16,16,      00,       00,+01,+01,+00,+00,+00,+00,+00 |dw PuzzleSwitch16On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-.object7: db 1,        0|dw PushingPuzzleSwitch |db 13*8,24*8,16,16,      00,       00,+01,+03,+00,+00,+00,+00,+00 |dw PuzzleSwitch19On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-.object08:db 1,        0|dw PushingPuzzleSwitch |db 13*8,26*8,16,16,      00,       00,+01,+00,+00,+00,+00,+00,+00 |dw PuzzleSwitch20On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object5: db 1,        0|dw PushingPuzzleSwitch |db 13*8,10*8,16,16,      00,       00,+01,+02,+00,+00,+00,+00,+00 |dw PuzzleSwitch15On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object6: db 1,        0|dw PushingPuzzleSwitch |db 13*8,12*8,16,16,      00,       00,+01,+01,+00,+00,+00,+00,+00 |dw PuzzleSwitch16On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object7: db 1,        0|dw PushingPuzzleSwitch |db 13*8,24*8,16,16,      00,       00,+01,+03,+00,+00,+00,+00,+00 |dw PuzzleSwitch19On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object08:db 1,        0|dw PushingPuzzleSwitch |db 13*8,26*8,16,16,      00,       00,+01,+00,+00,+00,+00,+00,+00 |dw PuzzleSwitch20On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 
-.object09:db 1,        0|dw PushingPuzzleSwitch |db 19*8,10*8,16,16,      00,       00,+01,+00,+00,+00,+00,+00,+00 |dw PuzzleSwitch21On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-.object10:db 1,        0|dw PushingPuzzleSwitch |db 19*8,26*8,16,16,      00,       00,+01,+03,+00,+00,+00,+00,+00 |dw PuzzleSwitch26On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object09:db 1,        0|dw PushingPuzzleSwitch |db 19*8,10*8,16,16,      00,       00,+01,+00,+00,+00,+00,+00,+00 |dw PuzzleSwitch21On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object10:db 1,        0|dw PushingPuzzleSwitch |db 19*8,26*8,16,16,      00,       00,+01,+03,+00,+00,+00,+00,+00 |dw PuzzleSwitch26On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 
-.object11:db 1,        0|dw PushingPuzzleSwitch |db 25*8,10*8,16,16,      00,       00,+01,+03,+00,+00,+00,+00,+00 |dw PuzzleSwitch27On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-.object12:db 1,        0|dw PushingPuzzleSwitch |db 25*8,12*8,16,16,      00,       00,+01,+02,+00,+00,+00,+00,+00 |dw PuzzleSwitch28On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-.object13:db 1,        0|dw PushingPuzzleSwitch |db 25*8,24*8,16,16,      00,       00,+01,+00,+00,+00,+00,+00,+00 |dw PuzzleSwitch31On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
-.object14:db 1,        0|dw PushingPuzzleSwitch |db 25*8,26*8,16,16,      00,       00,+01,+01,+00,+00,+00,+00,+00 |dw PuzzleSwitch32On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object11:db 1,        0|dw PushingPuzzleSwitch |db 25*8,10*8,16,16,      00,       00,+01,+03,+00,+00,+00,+00,+00 |dw PuzzleSwitch27On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object12:db 1,        0|dw PushingPuzzleSwitch |db 25*8,12*8,16,16,      00,       00,+01,+02,+00,+00,+00,+00,+00 |dw PuzzleSwitch28On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object13:db 1,        0|dw PushingPuzzleSwitch |db 25*8,24*8,16,16,      00,       00,+01,+00,+00,+00,+00,+00,+00 |dw PuzzleSwitch31On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
+;.object14:db 1,        0|dw PushingPuzzleSwitch |db 25*8,26*8,16,16,      00,       00,+01,+01,+00,+00,+00,+00,+00 |dw PuzzleSwitch32On?,PuzzleSwitchTable2|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 
 MapA01_002:
-  incbin "..\maps\A01-002.map.pck"  | .amountofobjects: db  7
+  incbin "..\maps\A01-002.map.pck"  | .amountofobjects: db  0
        ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, v6, v7   coordinates                            ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
 ;Pushing Stones
 .object1: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks1Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
@@ -535,7 +558,7 @@ MapA01_002:
 .object7: db 1,        0|dw PushingPuzzleSwitch |db 19*8,26*8,16,16,      00,       00,+01,+02,+00,+00,+00,+00,+00 | dw PuzzleSwitch4On?,PuzzleSwitchTable1|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 
 MapA01_003:
-  incbin "..\maps\A01-003.map.pck"  | .amountofobjects: db  7
+  incbin "..\maps\A01-003.map.pck"  | .amountofobjects: db  0
 ;Pushing Stones
 .object1: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks19Y| db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 .object2: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb2|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks20Y| db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
@@ -550,7 +573,7 @@ MapA01_003:
 
 
 MapA01_004:
-  incbin "..\maps\A01-004.map.pck"  | .amountofobjects: db  2
+  incbin "..\maps\A01-004.map.pck"  | .amountofobjects: db  0
 ;Pushing stone Puzzle Pieces overview       x backup                                   total,setnr?
 .object1: db 1,        0|dw PushingPuzzlOverview|db 03*8,07*8,07*8,0,     00,       00,+00,+00,+00,+00,+00,+10,+00|dw PuzzleSwitchTable1|db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 ;Pushing stone Puzzle Switch                                       init?,#nr,on?,act,snap
@@ -558,7 +581,7 @@ MapA01_004:
 ;.object5: db 1,        0|dw PushingPuzzlOverview|db 14*8,15*8,16,16,      00,       00,+01,+03,+00,+00,+00,+00,+00 | dw PuzzleSwitch2On?|db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 
 MapA01_005:
-  incbin "..\maps\A01-005.map.pck"  | .amountofobjects: db  8
+  incbin "..\maps\A01-005.map.pck"  | .amountofobjects: db  0
        ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, v6, v7   coordinates                            ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
 ;Pushing Stones
 .object1: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks4Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
@@ -572,7 +595,7 @@ MapA01_005:
 
 
 MapA01_006:
-  incbin "..\maps\A01-006.map.pck"  | .amountofobjects: db  8
+  incbin "..\maps\A01-006.map.pck"  | .amountofobjects: db  0
 ;Pushing Stones
 .object1: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks21Y| db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 .object2: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb2|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks22Y| db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
@@ -587,7 +610,7 @@ MapA01_006:
   
   
 MapA01_007:
-  incbin "..\maps\A01-007.map.pck"  | .amountofobjects: db  9
+  incbin "..\maps\A01-007.map.pck"  | .amountofobjects: db  0
 ;Pushing Stones
 .object1: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks16Y| db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 .object2: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb2|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks17Y| db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
@@ -602,7 +625,7 @@ MapA01_007:
 .object9: db 1,        0|dw PushingPuzzlOverview|db 07*8,15*8,15*8,0,     00,       00,+00,+00,+00,+00,+00,+04,+00|dw PuzzleSwitchTable3|db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 
 MapA01_008:
-  incbin "..\maps\A01-008.map.pck"  | .amountofobjects: db  8
+  incbin "..\maps\A01-008.map.pck"  | .amountofobjects: db  0
        ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, v6, v7   coordinates                            ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
 ;Pushing Stones
 .object1: db 1,        0|dw PushingStone        |db 000,000,16,16|dw CleanOb1|      db 112,+00,+01,+00,+00,+00,+00 | dw PuzzleBlocks7Y | db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
@@ -616,7 +639,7 @@ MapA01_008:
 .object8: db 1,        0|dw PushingPuzzleSwitch |db 19*8,30*8,16,16,      00,       00,+01,+03,+00,+00,+00,+00,+00 |dw PuzzleSwitch13On?,PuzzleSwitchTable1|db 4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 
 MapA01_009:
-  incbin "..\maps\A01-009.map.pck"  | .amountofobjects: db  1
+  incbin "..\maps\A01-009.map.pck"  | .amountofobjects: db  0
 ;Pushing stone Puzzle Pieces overview       x backup                                   total,setnr?
 .object1: db 1,        0|dw PushingPuzzlOverview|db 10*8,12*8,12*8,0,     00,       00,+00,+00,+00,+00,+00,+05,+00|dw PuzzleSwitchTable4|db 4,16,4, 16,20,16,20, 32,4,32,4,  32,20,32,20, 1,-2, 0, 0, 0,      0,               1|dw 300|db 0, 1      
 
@@ -3879,15 +3902,15 @@ dephase
 
 
 ; block $c3
-CharacterFacesframelistblock:            equ $c3
+;CharacterFacesframelistblock:            equ $c3
 phase	$8000
-  include "..\grapx\CharacterFaces\frames.lst" 
+;  include "..\grapx\CharacterFaces\frames.lst" 
 	ds		$c000-$,$ff
 
 ; block $c4
-CharacterFacesspritedatablock:           equ $c4
+;CharacterFacesspritedatablock:           equ $c4
 phase	$0000
-  incbin "..\grapx\CharacterFaces\frames.dat"
+;  incbin "..\grapx\CharacterFaces\frames.dat"
 	ds		$4000-$,$ff
 dephase
 

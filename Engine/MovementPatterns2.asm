@@ -407,14 +407,14 @@ GoatCheckIfDead:
   ret
 
 ;Idle 
-SDMika00:   dw CharacterFacesframe000 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
-SDMika01:   dw CharacterFacesframe001 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
-SDMika02:   dw CharacterFacesframe002 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
-SDMika03:   dw CharacterFacesframe003 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
-SDMika04:   dw CharacterFacesframe004 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
-SDMika05:   dw CharacterFacesframe005 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
-SDMika06:   dw CharacterFacesframe006 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
-SDMika07:   dw CharacterFacesframe007 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+;SDMika00:   dw CharacterFacesframe000 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+;SDMika01:   dw CharacterFacesframe001 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+;SDMika02:   dw CharacterFacesframe002 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+;SDMika03:   dw CharacterFacesframe003 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+;SDMika04:   dw CharacterFacesframe004 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+;SDMika05:   dw CharacterFacesframe005 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+;SDMika06:   dw CharacterFacesframe006 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
+;SDMika07:   dw CharacterFacesframe007 | db CharacterFacesframelistblock, CharacterFacesspritedatablock
 
 
 
@@ -1489,7 +1489,7 @@ ShowEmptyTextBackground:
 
 ShowButton:
   ld    a,(framecounter)
-  and   1
+  and   3
   ret   nz
 
   ld    a,(ix+enemies_and_objects.v1-5)     ;v1-5=pointer for button rotator
@@ -1549,53 +1549,53 @@ ShowButton:
   ld    (FreeToUseFastCopy2+copytype),a
   ret
 
-ShowYellowButton1:
-  db    142,000,053,000   ;sx,--,sy,spage
-  db    240,000,027,000   ;dx,--,dy,dpage
-  db    008,000,007,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
+;ShowYellowButton1:
+;  db    142,000,053,000   ;sx,--,sy,spage
+;  db    240,000,027,000   ;dx,--,dy,dpage
+;  db    008,000,007,000   ;nx,--,ny,--
+;  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
 
-ShowYellowButton2:
-  db    142+8,000,053,000   ;sx,--,sy,spage
-  db    240,000,027,000   ;dx,--,dy,dpage
-  db    008,000,007,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
+;ShowYellowButton2:
+;  db    142+8,000,053,000   ;sx,--,sy,spage
+;  db    240,000,027,000   ;dx,--,dy,dpage
+;  db    008,000,007,000   ;nx,--,ny,--
+;  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
 
-ShowYellowButton3:
-  db    142+16,000,053,000   ;sx,--,sy,spage
-  db    240,000,027,000   ;dx,--,dy,dpage
-  db    008,000,007,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
+;ShowYellowButton3:
+;  db    142+16,000,053,000   ;sx,--,sy,spage
+;  db    240,000,027,000   ;dx,--,dy,dpage
+;  db    008,000,007,000   ;nx,--,ny,--
+;  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
 
-ShowYellowButton4:
-  db    142+24,000,053,000   ;sx,--,sy,spage
-  db    240,000,027,000   ;dx,--,dy,dpage
-  db    008,000,007,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
+;ShowYellowButton4:
+;  db    142+24,000,053,000   ;sx,--,sy,spage
+;  db    240,000,027,000   ;dx,--,dy,dpage
+;  db    008,000,007,000   ;nx,--,ny,--
+;  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
 
-ShowYellowButton5:
-  db    142+32,000,053,000   ;sx,--,sy,spage
-  db    240,000,027,000   ;dx,--,dy,dpage
-  db    008,000,007,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
+;ShowYellowButton5:
+;  db    142+32,000,053,000   ;sx,--,sy,spage
+;  db    240,000,027,000   ;dx,--,dy,dpage
+;  db    008,000,007,000   ;nx,--,ny,--
+;  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left   
 
-ShowbuttonPressed:
-  db    182,000,053,000   ;sx,--,sy,spage
-  db    240,000,027,000   ;dx,--,dy,dpage
-  db    012,000,011,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
+;ShowbuttonPressed:
+;  db    182,000,053,000   ;sx,--,sy,spage
+;  db    240,000,027,000   ;dx,--,dy,dpage
+;  db    012,000,011,000   ;nx,--,ny,--
+;  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
 
-ShowbuttonUnPressed:
-  db    194,000,053,000   ;sx,--,sy,spage
-  db    240,000,027,000   ;dx,--,dy,dpage
-  db    012,000,011,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
+;ShowbuttonUnPressed:
+;  db    194,000,053,000   ;sx,--,sy,spage
+;  db    240,000,027,000   ;dx,--,dy,dpage
+;  db    012,000,011,000   ;nx,--,ny,--
+;  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
 
 RemovebuttonPressed:
   db    240,000,027+066,000   ;sx,--,sy,spage
   db    240,000,027,000   ;dx,--,dy,dpage
-  db    012,000,011,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
+  db    013,000,009,000   ;nx,--,ny,--
+  db    000,%0000 0000,$90       ;fast copy -> Copy from right to left     
  
 ;253=clear screen, 254 = next line, 255=end
 NPCDialogueText2:  

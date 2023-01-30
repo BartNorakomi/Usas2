@@ -7768,10 +7768,9 @@ MoveSF2Object3:
 PushingPuzzlOverview:
   ld    a,(ShowOverView?)
   or    a
-  jr    nz,InitiatlizeOverview              ;when entering screen turn switches on or off
-  ret
+  ret   z
 
-InitiatlizeOverview:
+;InitiatlizeOverview:
 ;When player enters screen show all switches in the overview that are on/off
  
   ld    l,(ix+enemies_and_objects.coordinates)
@@ -8029,8 +8028,8 @@ CheckPlayerOrStoneOnSwitch:
 
   ;at this point Player or stone no longer stands on switch. From the right to the left, find this switch nr which is on in the PuzzleSwitchTable and turn it off
 
-  ld    l,(ix+enemies_and_objects.coordinates+2)
-  ld    h,(ix+enemies_and_objects.coordinates+3)
+  ld    l,(ix+enemies_and_objects.coordinates-2)
+  ld    h,(ix+enemies_and_objects.coordinates-1)
   ld    de,9
   add   hl,de
 ;  ld    hl,PuzzleSwitchTable2+9
@@ -8048,7 +8047,7 @@ CheckPlayerOrStoneOnSwitch:
   res   7,(hl)                              ;this switch in the PuzzleSwitchTable is now on
   
   ld    (ix+enemies_and_objects.v3),0       ;switch on?
-  ld    l,(ix+enemies_and_objects.coordinates)
+  ld    l,(ix+enemies_and_objects.coordinates+0)
   ld    h,(ix+enemies_and_objects.coordinates+1)
   ld    (hl),0  
   
@@ -8068,8 +8067,8 @@ PlayerOrStoneOnSwitch:
   ret   nz
 
   ;at this point Player stands on switch. If this is the next free switch in the table, turn on switch.
-  ld    l,(ix+enemies_and_objects.coordinates+2)
-  ld    h,(ix+enemies_and_objects.coordinates+3)
+  ld    l,(ix+enemies_and_objects.coordinates-2)
+  ld    h,(ix+enemies_and_objects.coordinates-1)
 ;  ld    hl,PuzzleSwitchTable2
   ld    b,10                                ;10 entries in table
   .loop:
@@ -8090,7 +8089,7 @@ PlayerOrStoneOnSwitch:
   ld    (ix+enemies_and_objects.v3),1       ;switch on?
   ld    (ix+enemies_and_objects.v4),1       ;activate switch to turn on  or off
 
-  ld    l,(ix+enemies_and_objects.coordinates)
+  ld    l,(ix+enemies_and_objects.coordinates+0)
   ld    h,(ix+enemies_and_objects.coordinates+1)
   ld    (hl),1
 
