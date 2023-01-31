@@ -7882,10 +7882,10 @@ PushingPuzzleSwitch:
   jp    nz,InitiatlizeSwitch                ;when entering screen turn switch on or off
 
   call  CheckPlayerOrStoneOnSwitch          ;Check if player or stone are on switch, if yes, then turn switch on, if no, then turn switch off
-  call  CheckActivateSwitch                 ;check if a switch needs to be (de)activated
-  ret
+;  call  CheckActivateSwitch                 ;check if a switch needs to be (de)activated
+;  ret
 
-CheckActivateSwitch:
+;CheckActivateSwitch:
   ld    a,(ix+enemies_and_objects.v4)       ;activate switch to turn on or off
   or    a
   ret   z

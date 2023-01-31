@@ -66,7 +66,7 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 50 ;$19 ;230 ;250 ;210
+ClesX:      dw 150 ;$19 ;230 ;250 ;210
 ClesY:      db 60 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
@@ -733,9 +733,9 @@ PuzzleBlocks3Y: db  120 | PuzzleBlocks3X: db  171
 PuzzleBlocks4Y: db  024 | PuzzleBlocks4X: db  063
 PuzzleBlocks5Y: db  024 | PuzzleBlocks5X: db  199
 PuzzleBlocks6Y: db  096 | PuzzleBlocks6X: db  157
-PuzzleBlocks7Y: db  024 | PuzzleBlocks7X: db  127
-PuzzleBlocks8Y: db  024 | PuzzleBlocks8X: db  175
-PuzzleBlocks9Y: db  072 | PuzzleBlocks9X: db  103
+PuzzleBlocks7Y: db  026 | PuzzleBlocks7X: db  127
+PuzzleBlocks8Y: db  026 | PuzzleBlocks8X: db  175
+PuzzleBlocks9Y: db  074 | PuzzleBlocks9X: db  103
 PuzzleBlocks10Y:db  032 | PuzzleBlocks10X:db  039
 PuzzleBlocks11Y:db  032 | PuzzleBlocks11X:db  081
 PuzzleBlocks12Y:db  032 | PuzzleBlocks12X:db  161

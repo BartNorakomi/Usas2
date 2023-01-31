@@ -48,7 +48,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapE09Data      ;lava
 ;WorldMapPointer:  dw  MapG13Data      ;Boss Goat (iceboss)
 ;WorldMapPointer:  dw  MapB01_017Data      ;Huge Blob
-WorldMapPointer:  dw  MapA01_001Data      ;Puzzle 1
+WorldMapPointer:  dw  MapA01_009Data      ;Puzzle
 
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
