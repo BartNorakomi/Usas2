@@ -7971,8 +7971,11 @@ CheckPlayerOrStoneOnSwitch:
 
   .CheckStone1:
 ;check stone 2 on switch right side
+  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.v9)
+  ld    b,a
   ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  sub   a,14
+  sub   a,b
+;  sub   a,14
   cp    (ix+enemies_and_objects.x)
   jp    nc,.CheckStone2
 ;check stone 2 on switch left side
@@ -7988,8 +7991,11 @@ CheckPlayerOrStoneOnSwitch:
 
   .CheckStone2:
 ;check stone 2 on switch right side
+  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.v9)
+  ld    b,a
   ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  sub   a,14
+  sub   a,b
+;  sub   a,14
   cp    (ix+enemies_and_objects.x)
   jp    nc,.CheckStone3
 ;check stone 2 on switch left side
@@ -8005,8 +8011,11 @@ CheckPlayerOrStoneOnSwitch:
   
   .CheckStone3:
 ;check stone 3 on switch right side
+  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.v9)
+  ld    b,a
   ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  sub   a,14
+  sub   a,b
+;  sub   a,14
   cp    (ix+enemies_and_objects.x)
   jp    nc,.NotOnSwitch
 ;check stone 3 on switch left side

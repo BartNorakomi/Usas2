@@ -67,7 +67,7 @@ LevelEngine:
   jp    LevelEngine
 
 ClesX:      dw 150 ;$19 ;230 ;250 ;210
-ClesY:      db 60 ;144-1
+ClesY:      db 160 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -704,9 +704,11 @@ CleanOb6:
   db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
-PuzzleSwitchTable2: db  0,1,2,3,1,3,0, 0,0,0
-PuzzleSwitchTable3: db  0,1,2,3 ,0,0,0,0,0,0
-PuzzleSwitchTable4: db  3,1,3,2,0 ,0,0,0,0,0
+PuzzleSwitchTable2: db  0,1,2,3,1,3,0,   0,0,0
+PuzzleSwitchTable3: db  0,1,2,3   ,0,0,0,0,0,0
+PuzzleSwitchTable4: db  3,1,3,2,0   ,0,0,0,0,0
+PuzzleSwitchTable5: db  2,3,3,   0,0,0,0,0,0,0
+PuzzleSwitchTable6: db  0,3,2,1,   0,0,0,0,0,0
 ShowOverView?:  db  1
 
 CopySwitch1:
@@ -752,6 +754,8 @@ PuzzleBlocks19Y:db  04*8 | PuzzleBlocks19X:db  09*8-1
 PuzzleBlocks20Y:db  04*8 | PuzzleBlocks20X:db  13*8+1
 PuzzleBlocks21Y:db  04*8 | PuzzleBlocks21X:db  18*8+1
 PuzzleBlocks22Y:db  10*8 | PuzzleBlocks22X:db  10*8+1
+
+PuzzleBlocks23Y:db  15*8 | PuzzleBlocks23X:db  25*8+1
 
 PuzzleBlocksEmpty:db  00*8 | PuzzleBlocksEmptyX:db  00*8+1
 
@@ -803,6 +807,16 @@ PuzzleSwitch42On?:db  000
 PuzzleSwitch43On?:db  000
 PuzzleSwitch44On?:db  000
 PuzzleSwitch45On?:db  000
+
+PuzzleSwitch46On?:db  000
+PuzzleSwitch47On?:db  000
+PuzzleSwitch48On?:db  000
+
+PuzzleSwitch49On?:db  000
+PuzzleSwitch50On?:db  000
+PuzzleSwitch51On?:db  000
+PuzzleSwitch52On?:db  000
+
 
 SnapToPlatform?:  db  0
 CheckCollisionObjectPlayer:               ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object

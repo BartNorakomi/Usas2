@@ -10,6 +10,8 @@ WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
 MapA01_001Data: db MapsBlock01 | dw MapA01_001 | db 1,3,3                  | MapA01_002Data: db MapsBlock01 | dw MapA01_002 | db 1,3,3                  | MapA01_003Data: db MapsBlock01 | dw MapA01_003 | db 1,3,3
 MapA01_004Data: db MapsBlock01 | dw MapA01_004 | db 1,3,3                  | MapA01_005Data: db MapsBlock01 | dw MapA01_005 | db 1,3,3                  | MapA01_006Data: db MapsBlock01 | dw MapA01_006 | db 1,3,3
 MapA01_007Data: db MapsBlock01 | dw MapA01_007 | db 1,3,3                  | MapA01_008Data: db MapsBlock01 | dw MapA01_008 | db 1,3,3                  | MapA01_009Data: db MapsBlock01 | dw MapA01_009 | db 1,3,3
+MapA01_010Data: db MapsBlock01 | dw MapA01_010 | db 1,3,3                  | MapA01_011Data: db MapsBlock01 | dw MapA01_011 | db 1,3,3                  | MapA01_012Data: db MapsBlock01 | dw MapA01_012 | db 1,3,3
+MapA01_013Data: db MapsBlock01 | dw MapA01_013 | db 1,3,3                  | MapA01_014Data: db MapsBlock01 | dw MapA01_014 | db 1,3,3                  | MapA01_015Data: db MapsBlock01 | dw MapA01_015 | db 1,3,3
 
 MapB01_001Data: db MapsBlock02 | dw MapB01_001 | db 2,3,3                  | MapB01_002Data: db MapsBlock02 | dw MapB01_002 | db 1,3,3                  | MapB01_003Data: db MapsBlock02 | dw MapB01_003 | db 1,3,3
 MapB01_004Data: db MapsBlock02 | dw MapB01_004 | db 1,3,3                  | MapB01_005Data: db MapsBlock02 | dw MapB01_005 | db 1,3,3                  | MapB01_006Data: db MapsBlock02 | dw MapB01_006 | db 1,3,3
@@ -48,7 +50,7 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapE09Data      ;lava
 ;WorldMapPointer:  dw  MapG13Data      ;Boss Goat (iceboss)
 ;WorldMapPointer:  dw  MapB01_017Data      ;Huge Blob
-WorldMapPointer:  dw  MapA01_009Data      ;Puzzle
+WorldMapPointer:  dw  MapA01_011Data      ;Puzzle
 
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
