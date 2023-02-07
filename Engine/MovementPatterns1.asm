@@ -58,7 +58,6 @@
 ;AreaSign
 ;HugeSpiderBody
 ;HugeSpiderLegs
-;KonarkPaletteObject
 ;BossDemon1
 ;BossDemon2
 ;BossDemon3
@@ -66,10 +65,7 @@
 ;Altar2
 ;BossVoodooWasp
 ;BossZombieCaterpillar
-
-
-
-
+;PlatformOmniDirectionally
 
 ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer
@@ -2188,65 +2184,6 @@ BossDemon3:
   call  SetFrameBossDemon
   call  PutSF2Object3 ;CHANGES IX 
   jp    switchpageSF2Engine
-
-KonarkPaletteObject:
-  ld    a,(ix+enemies_and_objects.v1)     ;v1 = speed
-  inc   a
-  and   3
-  ld    (ix+enemies_and_objects.v1),a     ;v1 = speed
-  ret   nz
-
-  ld    a,(ix+enemies_and_objects.v2)     ;v2 = amount of steps
-  inc   a
-  and   15
-  ld    (ix+enemies_and_objects.v2),a     ;v2 = amount of steps
-  
-  
-  ld    hl,KonarkBrighterPalette1
-  jp    z,setpalette
-
-  dec   a
-  ld    hl,KonarkBrighterPalette2
-  jp    z,setpalette
-
-  dec   a
-  ld    hl,KonarkBrighterPalette2
-  jp    z,setpalette
-
-  dec   a
-  ld    hl,KonarkBrighterPalette3
-  jp    z,setpalette
-
-  dec   a
-  ld    hl,KonarkBrighterPalette3
-  jp    z,setpalette
-
-  dec   a
-  ld    hl,KonarkBrighterPalette3
-  jp    z,setpalette
-
-  dec   a
-  ld    hl,KonarkBrighterPalette2
-  jp    z,setpalette
-
-  dec   a
-  ld    hl,KonarkBrighterPalette2
-  jp    z,setpalette
-
-  dec   a
-  ld    hl,KonarkBrighterPalette1
-  jp    z,setpalette
-
-  dec   a
-  ld    hl,KonarkBrighterPalette1
-  jp    z,setpalette
-
-  dec   a
-  ld    hl,KonarkBrighterPalette1
-  jp    z,setpalette
-  
-  ld    hl,KonarkPalette
-  jp    setpalette
 
 HugeSpiderLegs:
 ;v1=Animation Counter
@@ -7742,8 +7679,33 @@ MoveSF2Object3:
   ret
 
 
+MovePlayerAlongWithObjectVertically:
+  ld    a,(PlayerDead?)
+  or    a
+  ret   nz  
+  ld    a,(ClesY)
+  add   a,(ix+enemies_and_objects.v3)         ;y movement
+  ld    (ClesY),a  
+  ret
+
+MovePlayerAlongWithObjectHorizontally:
+  ld    a,(PlayerDead?)
+  or    a
+  ret   nz  
+  ld    a,(ix+enemies_and_objects.v4)         ;x movement
+  or    a
+  ld    d,0
+  jp    p,.positive
+  dec   d  
+  .positive:
+  ld    e,a
+
+  ld    hl,(ClesX)
+  add   hl,de
+  ld    (ClesX),hl  
+  ret
   
-  MovePlayerAlongWithObject:
+MovePlayerAlongWithObject:
   ld    a,(PlayerDead?)
   or    a
   ret   nz  
@@ -7970,17 +7932,26 @@ CheckPlayerOrStoneOnSwitch:
   jp    nz,PlayerOrStoneOnSwitch
 
   .CheckStone1:
-;check stone 2 on switch right side
+;check stone 1 on switch right side
   ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.v9)
   ld    b,a
   ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
   sub   a,b
-;  sub   a,14
+
+;  sub   a,16                              ;16x16 enemy = sub   a,16
+;  sub   a,00                              ;stone = sub   a,00
+
   cp    (ix+enemies_and_objects.x)
   jp    nc,.CheckStone2
-;check stone 2 on switch left side
+;check stone 1 on switch left side
+  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.v8)
+  ld    b,a
   ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,14
+  add   a,b
+;  add   a,08                              ;trampoline blob = sub   a,6
+;  add   a,-2                              ;16x16 enemy = sub   a,16
+;  add   a,00                              ;stone = add   a,14
+
   cp    (ix+enemies_and_objects.x)
   jp    c,.CheckStone2
 ;check stone 2 on switch y
@@ -7995,12 +7966,22 @@ CheckPlayerOrStoneOnSwitch:
   ld    b,a
   ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
   sub   a,b
-;  sub   a,14
+
+;  sub   a,16                              ;16x16 enemy = sub   a,16
+;  sub   a,00                              ;stone = sub   a,00
+
   cp    (ix+enemies_and_objects.x)
   jp    nc,.CheckStone3
 ;check stone 2 on switch left side
+  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.v8)
+  ld    b,a
   ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,14
+  add   a,b
+;  add   a,08                              ;trampoline blob = sub   a,6
+;  add   a,-2                              ;16x16 enemy = sub   a,16
+;  add   a,00                              ;stone = add   a,14
+
+
   cp    (ix+enemies_and_objects.x)
   jp    c,.CheckStone3
 ;check stone 2 on switch y
@@ -8015,12 +7996,21 @@ CheckPlayerOrStoneOnSwitch:
   ld    b,a
   ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
   sub   a,b
-;  sub   a,14
+
+;  sub   a,16                              ;16x16 enemy = sub   a,16
+;  sub   a,00                              ;stone = sub   a,00
+
   cp    (ix+enemies_and_objects.x)
   jp    nc,.NotOnSwitch
 ;check stone 3 on switch left side
+  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.v8)
+  ld    b,a
   ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,14
+  add   a,b
+;  add   a,08                              ;trampoline blob = sub   a,6
+;  add   a,-2                              ;16x16 enemy = sub   a,16
+;  add   a,00                              ;stone = add   a,14
+
   cp    (ix+enemies_and_objects.x)
   jp    c,.NotOnSwitch
 ;check stone 3 on switch y
@@ -8109,6 +8099,89 @@ PlayerOrStoneOnSwitch:
   ld    (ShowOverView?),a
   ret
 
+PlatformOmniDirectionally:
+;v1 = sx
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=snap player?
+;v6=become active?
+;v7=collided with wall?
+  ld    a,216 + 16
+  ld    (CopyObject+sy),a  
+
+  ;once player has jumped on top of object, the object becomes active and starts to move
+  bit   0,(ix+enemies_and_objects.v6)       ;become active?
+  jr    nz,.EndCheckBecomeActive            ;don't check if object is already active
+  bit   0,(ix+enemies_and_objects.v5)       ;snap player?
+  jr    z,.EndCheckBecomeActive             ;don't check if player is not snapped to the top of the object
+  ld    (ix+enemies_and_objects.v6),1       ;become active?
+  .EndCheckBecomeActive:
+
+  call  VramObjectsTransparantCopies        ;put object in Vram/screen
+
+  bit   0,(ix+enemies_and_objects.v6)       ;become active?
+  jr    z,.EndMove
+  bit   0,(ix+enemies_and_objects.v7)       ;collided with wall?
+  jr    nz,.EndMove
+  call  MovePlatFormHorizontallyFaster      ;move
+  call  MovePlatFormVertically              ;move
+  .EndMove:
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  .animate                            ;rotate arrow (movement direction) when inactive, and set v3+v4 accordingly
+  call  CheckCollisionObject                ;checks for collision wall and if found sets v7 (collided with wall?)
+  ret
+
+  .animate:                                 ;rotate arrow (movement direction) when inactive
+  bit   0,(ix+enemies_and_objects.v6)       ;become active?
+  ret   nz
+  ld    a,(framecounter)
+  and   15
+  ret   nz
+  ld    a,(ix+enemies_and_objects.v1)       ;sx
+  add   a,16
+  and   127
+  ld    (ix+enemies_and_objects.v1),a       ;sx
+  ;set v3+v4 (Vertical+Horizontal Movement) based on direction of arrow
+	srl		a                                   ;/2
+	srl		a                                   ;/4
+	srl		a                                   ;/8 (a=0,2,4,6,8,10,12,14)
+  ld    d,0
+  ld    e,a
+  ld    hl,v3v4Table
+  add   hl,de
+  ld    a,(hl)                              ;v3
+  ld    (ix+enemies_and_objects.v3),a       ;Vertical Movement
+  inc   hl
+  ld    a,(hl)                              ;v4
+  ld    (ix+enemies_and_objects.v4),a       ;Horizontal Movement    
+  ret
+
+CheckCollisionObject:                       ;checks for collision wall and if found invert horizontal movement
+  ld    a,-16                               ;add to y (y is expressed in pixels)
+  ld    hl,+00                              ;add to x to check right side of sprite for collision
+  call  .Docheck
+  ld    a,+32                               ;add to y (y is expressed in pixels)
+  ld    hl,+00                              ;add to x to check right side of sprite for collision
+  
+  .Docheck:
+  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
+  jr    z,.CollisionFound
+
+  inc   hl
+  inc   hl
+  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+  dec   a                   ;1 = wall
+  ret   nz
+
+  .CollisionFound:
+  ld    (ix+enemies_and_objects.v7),1       ;v7=collided with wall?
+  ret
+
+
+
+
+v3v4Table:  db +00,-01, -01,-01, -01,+00, -01,+01, +00,+01, +01,+01, +01,+00, +01,-01
+
 PlatformHorizontally:
 ;v1 = sx
 ;v3=Vertical Movement
@@ -8131,7 +8204,7 @@ MovePlatFormVertically:
 
   ld    a,(ix+enemies_and_objects.SnapPlayer?)
   or    a
-  call  nz,MovePlayerAlongWithObject
+  call  nz,MovePlayerAlongWithObjectVertically
 
 ;move object
   ld    a,(ix+enemies_and_objects.y)
@@ -8148,14 +8221,21 @@ MovePlatFormVertically:
   ld    (ix+enemies_and_objects.v3),a
   ret
 
+MovePlatFormHorizontallyFaster:
+  ld    a,(framecounter)
+  and   1
+  ret   nz
+  jp    MovePlatFormHorizontally.go
+
 MovePlatFormHorizontally:
   ld    a,(framecounter)
   and   3
   ret   nz
 
+  .go:
   ld    a,(ix+enemies_and_objects.SnapPlayer?)
   or    a
-  call  nz,MovePlayerAlongWithObject
+  call  nz,MovePlayerAlongWithObjectHorizontally
 
 ;move object
   ld    a,(ix+enemies_and_objects.x)

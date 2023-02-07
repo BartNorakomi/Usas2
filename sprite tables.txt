@@ -1,0 +1,12 @@
+;spr color table $16c00
+;spr att table to $16e00    
+;spr chr table to $17000
+
+;spr color table $17400
+;spr att table to $17600
+;spr chr table at $17800
+
+
+sprite tables from $16c00 - 17a00 (y = 728 - 756) = (y=216 - 244 page 2)
+of
+sprite tables from $16c00 - 17c00 (y = 728 - 760) = (y=216 - 248 page 2)

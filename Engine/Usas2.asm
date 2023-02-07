@@ -524,9 +524,9 @@ MapA01_001:   ;EngineType, graphics, palette,
   incbin "..\maps\A01-001.map.pck"  | .amountofobjects: db  14
 ;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
-.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks13Y| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks14Y| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks15Y| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
+.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks13Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks14Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks15Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
 ;Pushing stone Puzzle Pieces overview                          x,x backup, v6=total pieces,v7=current piece to put
 .object4: db 1,        0|dw PushingPuzzlOverview|db 8*06|db 8*12,8*12,0,0|dw 00000000,0 db 0|dw PuzzleSwitchTable2|db  +00,+00,+00,+00,+00,+07,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
@@ -551,9 +551,9 @@ MapA01_002:
        ;alive?,inscreen?,movempat,  y,  x,ny,nx,spnrinspat,nrsprites, v1, v2, v3, v4, v5, v6, v7   coordinates                            ,v1,v2,v3,v4,sprchar,damagewhentouch?,   hp, item?        , attack
 ;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
-.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks1Y | db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks2Y | db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks3Y | db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
+.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks1Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks2Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks3Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
 ;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
 .object4: db 1,        0|dw PushingPuzzleSwitch |db 8*19|dw 8*06|db 16,16|db 0,0,0| dw PuzzleSwitchTable1,PuzzleSwitch1On? |db +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
@@ -577,9 +577,9 @@ MapA01_003:
   incbin "..\maps\A01-003.map.pck"  | .amountofobjects: db  7
 ;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
-.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks19Y| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks20Y| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object3: db 0,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0|dw PuzzleBlocksEmpty| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
+.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks19Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks20Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 0,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0|dw PuzzleBlocksEmpty| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
 ;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
 .object4: db 1,        0|dw PushingPuzzleSwitch |db 8*14|dw 8*11|db 16,16|db 0,0,0| dw PuzzleSwitchTable4,PuzzleSwitch38On?|db +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
@@ -634,9 +634,9 @@ MapA01_005:
 
 ;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
-.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks4Y | db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks5Y | db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks6Y | db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
+.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks4Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks5Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks6Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
 ;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
 .object4: db 1,        0|dw PushingPuzzleSwitch |db 8*18|dw 8*08|db 16,16|db 0,0,0| dw PuzzleSwitchTable1,PuzzleSwitch5On? |db +01,+03,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
@@ -664,9 +664,9 @@ MapA01_006:
 
 ;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
-.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks21Y| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks22Y| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object3: db 0,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0|dw PuzzleBlocksEmpty| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
+.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks21Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks22Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 0,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0|dw PuzzleBlocksEmpty| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
 ;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
 .object4: db 1,        0|dw PushingPuzzleSwitch |db 8*12|dw 8*06|db 16,16|db 0,0,0| dw PuzzleSwitchTable4,PuzzleSwitch42On?|db +01,+03,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
@@ -703,9 +703,9 @@ MapA01_007:
 
 ;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
-.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks16Y| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks17Y| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks18Y| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
+.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks16Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks17Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks18Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
 ;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
 .object4: db 1,        0|dw PushingPuzzleSwitch |db 8*25|dw 8*06|db 16,16|db 0,0,0| dw PuzzleSwitchTable3,PuzzleSwitch33On?|db +01,+02,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
@@ -739,9 +739,9 @@ MapA01_008:
 
 ;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
-.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks7Y | db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks8Y | db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
-.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks9Y | db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
+.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks7Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks8Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks9Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
 ;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
 .object4: db 1,        0|dw PushingPuzzleSwitch |db 8*15|dw 8*06|db 16,16|db 0,0,0| dw PuzzleSwitchTable1,PuzzleSwitch9On? |db +01,+01,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
@@ -783,11 +783,11 @@ MapA01_010:
 
 ;Trampoline Blob: v9=special width for Pushing Stone Puzzle Switch
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object1:db -1,        1|dw TrampolineBlob      |db 8*23|dw 8*04|db 16,22|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+36, 0|db 255,movepatblo1| ds fill-1
-.object2:db -1,        1|dw TrampolineBlob      |db 8*19|dw 8*23|db 16,22|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+36, 0|db 255,movepatblo1| ds fill-1
+.object1:db -1,        1|dw TrampolineBlob      |db 8*23|dw 8*04|db 16,22|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+08,+36, 0|db 255,movepatblo1| ds fill-1
+.object2:db -1,        1|dw TrampolineBlob      |db 8*19|dw 8*23|db 16,22|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+08,+36, 0|db 255,movepatblo1| ds fill-1
 ;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
-.object3: db 0,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0|dw PuzzleBlocksEmpty| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 0,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0|dw PuzzleBlocksEmpty| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
 ;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
 .object4: db 1,        0|dw PushingPuzzleSwitch |db 8*15|dw 8*06|db 16,16|db 0,0,0| dw PuzzleSwitchTable5,PuzzleSwitch46On?|db +01,+02,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
@@ -803,13 +803,14 @@ MapA01_010:
 MapA01_011:
   incbin "..\maps\A01-011.map.pck"  | .amountofobjects: db  8
 
-;Landstrider
+;Slime
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object1:db -1,        1|dw Landstrider         |db 8*07|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+14, 0|db 001,movepatblo1| ds fill-1
-.object2:db -1,        1|dw Landstrider         |db 8*15|dw 8*03|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,-01,+00,+00,+00,+00,+14, 0|db 001,movepatblo1| ds fill-1
+.object1:db -1,        1|dw Slime               |db 8*07|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,-02,+30, 0|db 001,movepatblo1| ds fill-1
+.object2:db -1,        1|dw Slime               |db 8*15|dw 8*03|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,-02,+30, 0|db 001,movepatblo1| ds fill-1
+
 ;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
-.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks23Y| db  112,+00,+00,+00,+00,+00,+00,+00,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks23Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
 ;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
 .object4: db 1,        0|dw PushingPuzzleSwitch |db 8*09|dw 8*29|db 16,16|db 0,0,0| dw PuzzleSwitchTable6,PuzzleSwitch49On?|db +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
@@ -823,18 +824,74 @@ MapA01_011:
 
 
 MapA01_012:
-  incbin "..\maps\A01-012.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\A01-012.map.pck"  | .amountofobjects: db  6
+;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
+.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks24Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks25Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 0,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0|dw PuzzleBlocksEmpty| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+
+;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
+.object4: db 1,        0|dw PushingPuzzleSwitch |db 8*25|dw 8*14|db 16,16|db 0,0,0| dw PuzzleSwitchTable7,PuzzleSwitch53On?|db +01,+01,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object5: db 1,        0|dw PushingPuzzleSwitch |db 8*25|dw 8*23|db 16,16|db 0,0,0| dw PuzzleSwitchTable7,PuzzleSwitch54On?|db +01,+02,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+;Pushing stone Puzzle Pieces overview                          x,x backup, v6=total pieces,v7=current piece to put
+.object6: db 1,        0|dw PushingPuzzlOverview|db 8*14|db 8*19,8*19,0,0|dw 00000000,0 db 0|dw PuzzleSwitchTable7|db  +00,+00,+00,+00,+00,+02,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+
 
 MapA01_013:
-  incbin "..\maps\A01-013.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\A01-013.map.pck"  | .amountofobjects: db  8
+
+;Slime
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1:db -1,        1|dw Slime               |db 8*14|dw 8*07|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,-02,+30, 0|db 001,movepatblo1| ds fill-1
+.object2:db -1,        1|dw Slime               |db 8*14|dw 8*30|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,-02,+30, 0|db 001,movepatblo1| ds fill-1
+.object3:db -1,        1|dw Slime               |db 8*23|dw 8*23|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,-02,+30, 0|db 001,movepatblo1| ds fill-1
+
+;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
+.object4: db 1,        0|dw PushingPuzzleSwitch |db 8*16|dw 8*08|db 16,16|db 0,0,0| dw PuzzleSwitchTable8,PuzzleSwitch55On?|db +01,+02,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object5: db 1,        0|dw PushingPuzzleSwitch |db 8*16|dw 8*28|db 16,16|db 0,0,0| dw PuzzleSwitchTable8,PuzzleSwitch56On?|db +01,+02,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object6: db 1,        0|dw PushingPuzzleSwitch |db 8*25|dw 8*08|db 16,16|db 0,0,0| dw PuzzleSwitchTable8,PuzzleSwitch57On?|db +01,+02,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object7: db 1,        0|dw PushingPuzzleSwitch |db 8*25|dw 8*28|db 16,16|db 0,0,0| dw PuzzleSwitchTable8,PuzzleSwitch58On?|db +01,+02,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+;Pushing stone Puzzle Pieces overview                          x,x backup, v6=total pieces,v7=current piece to put
+.object8: db 1,        0|dw PushingPuzzlOverview|db 8*09|db 8*16,8*16,0,0|dw 00000000,0 db 0|dw PuzzleSwitchTable8|db  +00,+00,+00,+00,+00,+03,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
 
 MapA01_014:
-  incbin "..\maps\A01-014.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\A01-014.map.pck"  | .amountofobjects: db  5
+;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
+.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks26Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object2: db 0,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0|dw PuzzleBlocksEmpty| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 0,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0|dw PuzzleBlocksEmpty| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+
+;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
+.object4: db 1,        0|dw PushingPuzzleSwitch |db 8*25|dw 8*13|db 16,16|db 0,0,0| dw PuzzleSwitchTable9,PuzzleSwitch59On?|db +01,+03,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+;Pushing stone Puzzle Pieces overview                          x,x backup, v6=total pieces,v7=current piece to put
+.object5: db 1,        0|dw PushingPuzzlOverview|db 8*14|db 8*20,8*20,0,0|dw 00000000,0 db 0|dw PuzzleSwitchTable9|db  +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
 
 MapA01_015:
-  incbin "..\maps\A01-015.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\A01-015.map.pck"  | .amountofobjects: db  9
 
+;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
+.object1: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks27Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks28Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0 | dw PuzzleBlocks29Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
+;Pushing stone Puzzle Switch: v1=initialize?, v2=switch nr(0-3), v3=switch on?, v4=activate switch to turn on or off
+.object4: db 1,        0|dw PushingPuzzleSwitch |db 8*09|dw 8*20|db 16,16|db 0,0,0|dw PuzzleSwitchTable10,PuzzleSwitch60On?|db +01,+03,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object5: db 1,        0|dw PushingPuzzleSwitch |db 8*13|dw 8*07|db 16,16|db 0,0,0|dw PuzzleSwitchTable10,PuzzleSwitch61On?|db +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object6: db 1,        0|dw PushingPuzzleSwitch |db 8*25|dw 8*10|db 16,16|db 0,0,0|dw PuzzleSwitchTable10,PuzzleSwitch62On?|db +01,+02,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object7: db 1,        0|dw PushingPuzzleSwitch |db 8*25|dw 8*12|db 16,16|db 0,0,0|dw PuzzleSwitchTable10,PuzzleSwitch63On?|db +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object8: db 1,        0|dw PushingPuzzleSwitch |db 8*25|dw 8*20|db 16,16|db 0,0,0|dw PuzzleSwitchTable10,PuzzleSwitch64On?|db +01,+01,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+;Pushing stone Puzzle Pieces overview                          x,x backup, v6=total pieces,v7=current piece to put
+.object9: db 1,        0|dw PushingPuzzlOverview|db 8*15|db 8*14,8*14,0,0|dw 00000000,0 db 0|dw PuzzleSwitchTable10|db +00,+00,+00,+00,+00,+05,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 
 
@@ -3462,10 +3519,11 @@ MapA10:
 MapA11:
   incbin "..\maps\a11.map.pck"  | .amountofobjects: db  0
 MapA12:
-  incbin "..\maps\a12.map.pck"  | .amountofobjects: db  1
-;Konark Palette Object
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
-.object1: db 1,        0|dw KonarkPaletteObject |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+  incbin "..\maps\a12.map.pck"  | .amountofobjects: db  2
+;platform Omni Directionally
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,   0|dw PlatformOmniDirectionally|db 8*11|dw 8*10|db 16,16|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object2: db 1,   0|dw PlatformOmniDirectionally|db 8*19|dw 8*25|db 16,16|dw CleanOb2,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 MapA13:
   incbin "..\maps\a13.map.pck"  | .amountofobjects: db  3
@@ -3536,7 +3594,13 @@ MapB09:
 MapB10:
   incbin "..\maps\b10.map.pck"  | .amountofobjects: db  0
 MapB11:
-  incbin "..\maps\b11.map.pck"  | .amountofobjects: db  0
+  incbin "..\maps\b11.map.pck"  | .amountofobjects: db  1
+;platform Omni Directionally
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,   0|dw PlatformOmniDirectionally|db 8*12|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+  
+  
+  
 MapB12:
   incbin "..\maps\b12.map.pck"  | .amountofobjects: db  0
 MapB13:

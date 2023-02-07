@@ -66,8 +66,8 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 150 ;$19 ;230 ;250 ;210
-ClesY:      db 160 ;144-1
+ClesX:      dw 180 ;$19 ;230 ;250 ;210
+ClesY:      db 120 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -709,6 +709,10 @@ PuzzleSwitchTable3: db  0,1,2,3   ,0,0,0,0,0,0
 PuzzleSwitchTable4: db  3,1,3,2,0   ,0,0,0,0,0
 PuzzleSwitchTable5: db  2,3,3,   0,0,0,0,0,0,0
 PuzzleSwitchTable6: db  0,3,2,1,   0,0,0,0,0,0
+PuzzleSwitchTable7: db  2,1,   0,0,0,0,0,0,0,0
+PuzzleSwitchTable8: db  2,2,2,   0,0,0,0,0,0,0
+PuzzleSwitchTable9: db  3,   0,0,0,0,0,0,0,0,0
+PuzzleSwitchTable10: db 0,3,2,0,1,   0,0,0,0,0
 ShowOverView?:  db  1
 
 CopySwitch1:
@@ -756,6 +760,15 @@ PuzzleBlocks21Y:db  04*8 | PuzzleBlocks21X:db  18*8+1
 PuzzleBlocks22Y:db  10*8 | PuzzleBlocks22X:db  10*8+1
 
 PuzzleBlocks23Y:db  15*8 | PuzzleBlocks23X:db  25*8+1
+
+PuzzleBlocks24Y:db  04*8 | PuzzleBlocks24X:db  10*8+1
+PuzzleBlocks25Y:db  04*8 | PuzzleBlocks25X:db  26*8+1
+
+PuzzleBlocks26Y:db  04*8 | PuzzleBlocks26X:db  22*8+1
+
+PuzzleBlocks27Y:db  04*8 | PuzzleBlocks27X:db  23*8+1
+PuzzleBlocks28Y:db  11*8 | PuzzleBlocks28X:db  13*8+1
+PuzzleBlocks29Y:db  15*8 | PuzzleBlocks29X:db  27*8+3
 
 PuzzleBlocksEmpty:db  00*8 | PuzzleBlocksEmptyX:db  00*8+1
 
@@ -816,6 +829,22 @@ PuzzleSwitch49On?:db  000
 PuzzleSwitch50On?:db  000
 PuzzleSwitch51On?:db  000
 PuzzleSwitch52On?:db  000
+
+PuzzleSwitch53On?:db  000
+PuzzleSwitch54On?:db  000
+
+PuzzleSwitch55On?:db  000
+PuzzleSwitch56On?:db  000
+PuzzleSwitch57On?:db  000
+PuzzleSwitch58On?:db  000
+
+PuzzleSwitch59On?:db  000
+
+PuzzleSwitch60On?:db  000
+PuzzleSwitch61On?:db  000
+PuzzleSwitch62On?:db  000
+PuzzleSwitch63On?:db  000
+PuzzleSwitch64On?:db  000
 
 
 SnapToPlatform?:  db  0
