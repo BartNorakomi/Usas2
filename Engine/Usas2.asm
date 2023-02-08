@@ -893,6 +893,24 @@ MapA01_015:
 ;Pushing stone Puzzle Pieces overview                          x,x backup, v6=total pieces,v7=current piece to put
 .object9: db 1,        0|dw PushingPuzzlOverview|db 8*15|db 8*14,8*14,0,0|dw 00000000,0 db 0|dw PuzzleSwitchTable10|db +00,+00,+00,+00,+00,+05,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
+MapA01_016:
+  incbin "..\maps\A01-016.map.pck"  | .amountofobjects: db  3  
+;AppearingBlocks Handler
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object1: db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+;AppearingBlocks
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.object2: db 0,        0|dw AppearingBlocks     |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
+
+
+;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
+.object3: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks30Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+;.object2: db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb2,0 db 0 | dw PuzzleBlocks31Y| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+;.object3: db 0,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb3,0 db 0|dw PuzzleBlocksEmpty| db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
+  
+
 
 
 	ds		$c000-$,$ff

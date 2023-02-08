@@ -2455,10 +2455,15 @@ AppBlocksHandler:
   ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),1
   ret
 
-AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
+;AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
   db    15*8,18*8,1, 07*8,20*8,0, 15*8,12*8,1, 07*8,26*8,0, 15*8,06*8,1, 15*8,18*8,0, 10*8,09*8,1, 15*8,12*8,0, 10*8,15*8,1, 15*8,06*8,0, 07*8,20*8,1
   db    10*8,09*8,0, 07*8,26*8,1, 10*8,15*8,0
   db    255
+
+AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
+  db    14*8,14*8,1, 14*8,22*8,0, 14*8,16*8,1, 14*8,24*8,0, 14*8,18*8,1, 14*8,14*8,0, 14*8,20*8,1, 14*8,16*8,0, 14*8,22*8,1, 14*8,18*8,0, 14*8,24*8,1, 14*8,20*8,0
+  db    255
+
   
 AppearingBlocks:
 ;v1 = dPage

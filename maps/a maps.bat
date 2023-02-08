@@ -29,6 +29,8 @@ dos2unix A01-014.tmx
 tmx16 A01-014.tmx A01-014.map
 dos2unix A01-015.tmx
 tmx16 A01-015.tmx A01-015.map
+dos2unix A01-016.tmx
+tmx16 A01-016.tmx A01-016.map
 
 
 pack A*.map
