@@ -1,3 +1,7 @@
+het normale punch wapen kun je gebruiken om walls te testen op een secret.
+je hoort dan een speciale sfx.
+Op deze manier blijft het punch wapen toch nog zinvol later in het spel
+
 je kunt een pilaar uit Burial in de SF2 engine door de grond laten zakken,
 bij het verslaan van x beesten of zo.... (met earthquake effect)
 

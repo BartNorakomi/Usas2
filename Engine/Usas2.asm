@@ -1147,6 +1147,9 @@ MapB01_018:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .object7:db -1,        1|dw TrampolineBlob      |db 8*17|dw 8*18|db 16,22|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+00, 0|db 255,movepatblo1| ds fill-1
 
+
+
+
 MapB01_019:
   incbin "..\maps\b01-019.map.pck"  | .amountofobjects: db  4
 ;Glass Ball
@@ -1159,6 +1162,10 @@ MapB01_019:
 ;Slime
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .object4:db -1,        1|dw Slime               |db 8*06|dw 8*13|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+
+
+
+
 
 MapB01_020:
   incbin "..\maps\b01-020.map.pck"  | .amountofobjects: db  4

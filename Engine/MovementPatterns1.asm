@@ -2455,12 +2455,12 @@ AppBlocksHandler:
   ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),1
   ret
 
-;AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
+AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
   db    15*8,18*8,1, 07*8,20*8,0, 15*8,12*8,1, 07*8,26*8,0, 15*8,06*8,1, 15*8,18*8,0, 10*8,09*8,1, 15*8,12*8,0, 10*8,15*8,1, 15*8,06*8,0, 07*8,20*8,1
   db    10*8,09*8,0, 07*8,26*8,1, 10*8,15*8,0
   db    255
 
-AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
+;AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
   db    14*8,14*8,1, 14*8,22*8,0, 14*8,16*8,1, 14*8,24*8,0, 14*8,18*8,1, 14*8,14*8,0, 14*8,20*8,1, 14*8,16*8,0, 14*8,22*8,1, 14*8,18*8,0, 14*8,24*8,1, 14*8,20*8,0
   db    255
 
@@ -4293,7 +4293,7 @@ GlassBall5:
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject1
   call  AnimateGlassBall
-  call  RemoveGlassBallWhenOutOfScreen
+;  call  RemoveGlassBallWhenOutOfScreen
   call  PutSF2Object  ;CHANGES IX    
   ret
   
@@ -4307,12 +4307,12 @@ GlassBall6:
   ld    a,(HugeObjectFrame)
   cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
   jp    nz,CheckCollisionObjectPlayer
-  ld    de,GlassBallMovementTable2
+  ld    de,GlassBallMovementTable4
   call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject2
   call  AnimateGlassBall
-  call  RemoveGlassBallWhenOutOfScreen
+;  call  RemoveGlassBallWhenOutOfScreen
   call  PutSF2Object2 ;CHANGES IX   
   ret
 
@@ -4371,9 +4371,10 @@ AnimateGlassBall:
   ld    hl,GlassBalHorizontalAnimation
   ld    a,(ix+enemies_and_objects.x)        ;x
   and   %0000 1110
-  ld    b,a
-  srl   a
-  add   a,b                                 ;animation step * 3
+;  ld    b,a
+;  srl   a
+;  add   a,b                                 ;animation step * 3
+add a,a
   ld    d,0
   ld    e,a
   add   hl,de
@@ -4381,7 +4382,8 @@ AnimateGlassBall:
   ld    a,(ix+enemies_and_objects.y)        ;y
   and   %0000 1000
   jr    nz,.GoAnimate
-  ld    de,4 * 3
+;  ld    de,4 * 3
+  ld    de,4 * 4
   add   hl,de
   .GoAnimate:
   
@@ -4391,27 +4393,33 @@ AnimateGlassBall:
   ld    a,(hl)
   ld    (Player1Frame+1),a
   inc   hl
-  ld    a,(hl)
-;  ld    (Player1Frame+2),a ; DEZE WAS NIET NODIG>.... FF CHECKEN
+  ld    b,(hl)                              ;frame list block
+  inc   hl
+  ld    c,(hl)                              ;sprite data block
   ret
+
 
 EmptyFrame:
   dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
 
 GlassBalHorizontalAnimation:
-  dw ryupage0frame004 | db 1
-  dw ryupage0frame011 | db 1
-  dw ryupage0frame010 | db 1
-  dw ryupage0frame009 | db 1
-  dw ryupage0frame008 | db 1
-  dw ryupage0frame007 | db 1
-  dw ryupage0frame006 | db 1
-  dw ryupage0frame005 | db 1
+  dw ryupage0frame004 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame011 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame010 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame009 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame008 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame007 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame006 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame005 | db ryuframelistblock, ryuspritedatablock
 ;4 extra for when  y is 16 fold
-  dw ryupage0frame004 | db 1
-  dw ryupage0frame011 | db 1
-  dw ryupage0frame010 | db 1
-  dw ryupage0frame009 | db 1
+  dw ryupage0frame004 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame011 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame010 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame009  | db ryuframelistblock, ryuspritedatablock
+
+
+
+
 
 LeftAndRightObjectMovementTable: ;repeating steps(128 = end table/repeat), move y, move x
   db    20,0,1, 20,0,-1, 128

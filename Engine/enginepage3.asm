@@ -1,7 +1,7 @@
 phase	$c000
 
-MusicOn?:   equ 0
-LogoOn?:    equ 0
+MusicOn?:   equ 1
+LogoOn?:    equ 1
 
 WorldMapData:
 WorldMapDataWidth:      equ 7     ;amount of maps in width 
@@ -27,8 +27,8 @@ MapB01_025Data: db MapsBlock02 | dw MapB01_025 | db 1,3,3                  | Map
 MapA01Data: db MapsBlock0A | dw MapA01 | db 1,0,0   | MapB01Data: db MapsBlock0B | dw MapB01 | db 1,0,0   | MapC01Data: db MapsBlock0C | dw MapC01 | db 1,0,0   | MapD01Data: db MapsBlock0D | dw MapD01 | db 1,0,0   | MapE01Data: db MapsBlock0E | dw MapE01 | db 1,1,1   | MapF01Data: db MapsBlock0F | dw MapF01 | db 1,1,1   | MapG01Data: db MapsBlock0G | dw MapG01 | db 1,1,1
 MapA02Data: db MapsBlock0A | dw MapA02 | db 1,0,0   | MapB02Data: db MapsBlock0B | dw MapB02 | db 1,0,0   | MapC02Data: db MapsBlock0C | dw MapC02 | db 1,0,0   | MapD02Data: db MapsBlock0D | dw MapD02 | db 1,0,0   | MapE02Data: db MapsBlock0E | dw MapE02 | db 1,1,1   | MapF02Data: db MapsBlock0F | dw MapF02 | db 1,1,1   | MapG02Data: db MapsBlock0G | dw MapG02 | db 1,1,1
 MapA03Data: db MapsBlock0A | dw MapA03 | db 1,0,0   | MapB03Data: db MapsBlock0B | dw MapB03 | db 1,0,0   | MapC03Data: db MapsBlock0C | dw MapC03 | db 1,0,0   | MapD03Data: db MapsBlock0D | dw MapD03 | db 1,0,0   | MapE03Data: db MapsBlock0E | dw MapE03 | db 1,1,1   | MapF03Data: db MapsBlock0F | dw MapF03 | db 1,1,1   | MapG03Data: db MapsBlock0G | dw MapG03 | db 1,1,1
-MapA04Data: db MapsBlock0A | dw MapA04 | db 3,3,3   | MapB04Data: db MapsBlock0B | dw MapB04 | db 1,3,3   | MapC04Data: db MapsBlock0C | dw MapC04 | db 1,3,3   | MapD04Data: db MapsBlock0D | dw MapD04 | db 2,6,6   | MapE04Data: db MapsBlock0E | dw MapE04 | db 2,6,6   | MapF04Data: db MapsBlock0F | dw MapF04 | db 1,1,1   | MapG04Data: db MapsBlock0G | dw MapG04 | db 1,1,1
-MapA05Data: db MapsBlock0A | dw MapA05 | db 1,3,3   | MapB05Data: db MapsBlock0B | dw MapB05 | db 1,3,3   | MapC05Data: db MapsBlock0C | dw MapC05 | db 1,3,3   | MapD05Data: db MapsBlock0D | dw MapD05 | db 1,0,0   | MapE05Data: db MapsBlock0E | dw MapE05 | db 1,1,1   | MapF05Data: db MapsBlock0F | dw MapF05 | db 1,1,1   | MapG05Data: db MapsBlock0G | dw MapG05 | db 3,5,5
+MapA04Data: db MapsBlock0A | dw MapA04 | db 3,3,3   | MapB04Data: db MapsBlock0B | dw MapB04 | db 1,3,3   | MapC04Data: db MapsBlock0C | dw MapC04 | db 1,3,3   | MapD04Data: db MapsBlock0D | dw MapD04 | db 2,6,6   | MapE04Data: db MapsBlock0E | dw MapE04 | db 2,6,6   | MapF04Data: db MapsBlock0F | dw MapF04 | db 1,1,1   | MapG04Data: db MapsBlock02 | dw MapB01_017 | db 1,3,3 ;     MapB01_017Data: db MapsBlock02 | dw MapB01_017 | db 1,3,3
+MapA05Data: db MapsBlock0A | dw MapA05 | db 1,3,3   | MapB05Data: db MapsBlock0B | dw MapB05 | db 1,3,3   | MapC05Data: db MapsBlock0C | dw MapC05 | db 1,3,3   | MapD05Data: db MapsBlock0D | dw MapD05 | db 1,0,0 | MapE05Data: db MapsBlock02 | dw MapB01_019 | db 2,3,3 | MapF05Data: db MapsBlock0F | dw MapF05 | db 1,1,1   | MapG05Data: db MapsBlock0G | dw MapG05 | db 3,5,5
 MapA06Data: db MapsBlock0A | dw MapA06 | db 1,3,3   | MapB06Data: db MapsBlock0B | dw MapB06 | db 1,3,3   | MapC06Data: db MapsBlock0C | dw MapC06 | db 1,3,3   | MapD06Data: db MapsBlock0D | dw MapD06 | db 1,5,5   | MapE06Data: db MapsBlock0E | dw MapE06 | db 1,5,5   | MapF06Data: db MapsBlock0F | dw MapF06 | db 1,5,5   | MapG06Data: db MapsBlock0G | dw MapG06 | db 1,5,5
 MapA07Data: db MapsBlock0A | dw MapA07 | db 1,3,3   | MapB07Data: db MapsBlock0B | dw MapB07 | db 1,3,3   | MapC07Data: db MapsBlock0C | dw MapC07 | db 1,3,3   | MapD07Data: db MapsBlock0D | dw MapD07 | db 1,5,5   | MapE07Data: db MapsBlock0E | dw MapE07 | db 1,5,5   | MapF07Data: db MapsBlock0F | dw MapF07 | db 1,5,5   | MapG07Data: db MapsBlock0G | dw MapG07 | db 1,5,5
 MapA08Data: db MapsBlock0A | dw MapA08 | db 1,4,4   | MapB08Data: db MapsBlock0B | dw MapB08 | db 1,4,4   | MapC08Data: db MapsBlock0C | dw MapC08 | db 1,4,4   | MapD08Data: db MapsBlock0D | dw MapD08 | db 1,4,4   | MapE08Data: db MapsBlock0E | dw MapE08 | db 1,5,5   | MapF08Data: db MapsBlock0F | dw MapF08 | db 1,5,5   | MapG08Data: db MapsBlock0G | dw MapG08 | db 1,5,5
@@ -43,23 +43,26 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapE04Data      ;Boss Zombie Caterpillar
 ;WorldMapPointer:  dw  MapD04Data      ;Boss Voodoo Wasp
 ;WorldMapPointer:  dw  MapA07Data      ;Retarded Zombies
-;WorldMapPointer:  dw  MapA04Data      ;Area Sign
+WorldMapPointer:  dw  MapA04Data      ;Area Sign
 ;WorldMapPointer:  dw  MapD12Data      ;pit
 ;WorldMapPointer:  dw  MapA05Data      ;
 ;WorldMapPointer:  dw  MapG05Data      ;NPC interaction
-;WorldMapPointer:  dw  MapC08Data      ;
+;WorldMapPointer:  dw  MapF06Data      ;
 ;WorldMapPointer:  dw  MapE09Data      ;lava
 ;WorldMapPointer:  dw  MapG13Data      ;Boss Goat (iceboss)
 ;WorldMapPointer:  dw  MapA12Data      ;
 ;WorldMapPointer:  dw  MapB11Data      ;
 ;WorldMapPointer:  dw  MapB01_017Data      ;Huge Blob
+;WorldMapPointer:  dw  MapG04Data      ;Huge Blob
+;WorldMapPointer:  dw  MapE05Data      ;let's make this a Glass Ball Room
 
 ;WorldMapPointer:  dw  MapA01_001Data      ;Puzzle
 ;WorldMapPointer:  dw  MapA01_010Data      ;Puzzle
 ;WorldMapPointer:  dw  MapA01_011Data      ;Puzzle
 ;WorldMapPointer:  dw  MapA01_013Data      ;Puzzle
 ;WorldMapPointer:  dw  MapA01_015Data      ;Puzzle
-WorldMapPointer:  dw  MapA01_016Data      ;Puzzle where you push stone on retracting platforms
+;WorldMapPointer:  dw  MapA01_016Data      ;Puzzle where you push stone on retracting platforms
+;WorldMapPointer:  dw  MapB01_019Data      ;Glass Ball Room
 
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it

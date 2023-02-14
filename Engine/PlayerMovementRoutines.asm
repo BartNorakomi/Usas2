@@ -1008,10 +1008,7 @@ RightChargeAnimation:
   dw  PlayerSpriteData_Char_RightCharge8 
   dw  PlayerSpriteData_Char_RightCharge8 
   
-Dying:
-  ld    a,1
-  ld    (PlayerDead?),a
-  
+Dying:  
   ld    a,(framecounter)
   and   %0000 1000
 	ld		hl,PlayerSpriteData_Char_Dying1
@@ -1019,7 +1016,30 @@ Dying:
 	ld		hl,PlayerSpriteData_Char_Dying2
   .Setchar:
 	ld		(standchar),hl
-  ret
+
+;  ld    a,1
+  ld    a,(PlayerDead?)
+  inc   a
+  ld    (PlayerDead?),a
+  ret   nz
+
+  call  Set_R_stand
+  
+  ld    hl,36
+  ld    (ClesX),hl
+  ld    a,80
+  ld    (ClesY),a
+  
+  ld    hl,MapA04Data       ;area sign
+  ld    (WorldMapPointer),hl
+
+  pop   hl                  ;pop the call to this routine
+  call  CameraEngine304x216.setR18R19R23andPage  
+
+  xor   a
+  ld    (CheckNewPressedControlUpForDoubleJump),a
+  call  DisableLineint	
+  jp    PlayLogo
 
 LSitPunch:
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
