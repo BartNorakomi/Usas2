@@ -1,3 +1,8 @@
+de grote blokken die je zelf kunt sturen als je erop mediteert
+of.. stel er zijn 2 grote blokken in een room en 2 meditatie shrines
+de blokken bewegen dan alleen als je mediteert per shrine
+
+
 het normale punch wapen kun je gebruiken om walls te testen op een secret.
 je hoort dan een speciale sfx.
 Op deze manier blijft het punch wapen toch nog zinvol later in het spel

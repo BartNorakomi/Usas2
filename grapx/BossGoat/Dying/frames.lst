@@ -944,7 +944,7 @@ GoatDyingframe018:
   dw 00600h,base+030AFh
 
 GoatDyingframe019:
-  db 084h,00Eh,04Ch,06Dh
+  db 084h,01Bh,04Ch,06Dh
   db 058h
   db 000h,000h,093h,000h,000h
   db 000h,000h
@@ -957,14 +957,69 @@ GoatDyingframe019:
   dw 01080h,base+02D35h
   dw 01080h,base+02D45h
   dw 00F81h,base+02E18h
-  dw 00E80h,base+02ECFh
-  dw 00D81h,base+02F79h
-  dw 00C80h,base+03046h
+  dw 00E1Dh,base+02ECFh
+  dw 00163h,base+00340h
+  dw 00D1Dh,base+02F79h
+  dw 00164h,base+00340h
+  dw 00C1Ch,base+03046h
+  dw 00164h,base+00340h
   dw 00405h,base+0281Dh
-  dw 0047Ch,base+000C4h
-  dw 00381h,base+035B4h
-  dw 00280h,base+00339h
-  dw 00281h,base+02614h
-  dw 00100h,base+00000h
+  dw 00413h,base+000C4h
+  dw 00104h,base+00340h
+  dw 00165h,base+00340h
+  dw 00317h,base+035B4h
+  dw 00104h,base+00340h
+  dw 00166h,base+00340h
+  dw 00216h,base+00339h
+  dw 00104h,base+00340h
+  dw 00166h,base+007FFh
+  dw 00216h,base+02614h
+  dw 00104h,base+00340h
+  dw 00167h,base+007FFh
+  dw 00115h,base+00000h
+  dw 00103h,base+00340h
+  dw 0027Dh,base+035EDh
+  dw 00103h,base+00322h
+  dw 0017Dh,base+00340h
+  dw 00103h,base+007FFh
+  dw 0017Ch,base+00322h
+  dw 00103h,base+00340h
+  dw 0026Eh,base+035EDh
+  dw 0010Fh,base+007FFh
+  dw 00103h,base+00340h
+  dw 0016Eh,base+00322h
+  dw 0010Fh,base+007FFh
+  dw 00102h,base+007FFh
+  dw 00105h,base+00340h
+  dw 0016Ah,base+007FFh
+  dw 0010Eh,base+007FFh
+  dw 00103h,base+00322h
+  dw 00104h,base+00322h
+  dw 00169h,base+00322h
+  dw 00102h,base+007FFh
+  dw 0010Dh,base+00340h
+  dw 00203h,base+035EDh
+  dw 00204h,base+0196Bh
+  dw 0016Ah,base+00322h
+  dw 00102h,base+007FFh
+  dw 0020Dh,base+035EDh
+  dw 00102h,base+00322h
+  dw 00204h,base+0196Bh
+  dw 0026Bh,base+0196Bh
+  dw 00103h,base+00340h
+  dw 0010Bh,base+00322h
+  dw 00406h,base+00340h
+  dw 0016Ch,base+00322h
+  dw 00203h,base+035EDh
+  dw 0020Ah,base+035EDh
+  dw 00406h,base+00340h
+  dw 0016Eh,base+00322h
+  dw 00203h,base+0196Bh
+  dw 00108h,base+00322h
+  dw 00405h,base+00340h
+  dw 00271h,base+00341h
+  dw 00408h,base+00341h
+  dw 0077Ah,base+00340h
+  dw 00400h,base+01969h
 
 

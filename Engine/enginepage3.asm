@@ -1,7 +1,7 @@
 phase	$c000
 
 MusicOn?:   equ 1
-LogoOn?:    equ 1
+LogoOn?:    equ 0
 
 WorldMapData:
 WorldMapDataWidth:      equ 7     ;amount of maps in width 
@@ -43,13 +43,13 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 ;WorldMapPointer:  dw  MapE04Data      ;Boss Zombie Caterpillar
 ;WorldMapPointer:  dw  MapD04Data      ;Boss Voodoo Wasp
 ;WorldMapPointer:  dw  MapA07Data      ;Retarded Zombies
-WorldMapPointer:  dw  MapA04Data      ;Area Sign
+;WorldMapPointer:  dw  MapA04Data      ;Area Sign
 ;WorldMapPointer:  dw  MapD12Data      ;pit
 ;WorldMapPointer:  dw  MapA05Data      ;
 ;WorldMapPointer:  dw  MapG05Data      ;NPC interaction
 ;WorldMapPointer:  dw  MapF06Data      ;
 ;WorldMapPointer:  dw  MapE09Data      ;lava
-;WorldMapPointer:  dw  MapG13Data      ;Boss Goat (iceboss)
+WorldMapPointer:  dw  MapG13Data      ;Boss Goat (iceboss)
 ;WorldMapPointer:  dw  MapA12Data      ;
 ;WorldMapPointer:  dw  MapB11Data      ;
 ;WorldMapPointer:  dw  MapB01_017Data      ;Huge Blob

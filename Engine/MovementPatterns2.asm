@@ -212,12 +212,17 @@ v7x5:
   add   hl,bc                                ;*5
   ret
 
+;ld    (ix+enemies_and_objects.v7),155/5
+
 SetFrameBossGoat:
   add   hl,hl                               ;*2
   add   hl,hl                               ;*4
   add   hl,de                               ;frame * 12 + frame address
 
   .SetFrameSF2Object:
+
+;ld hl,BossGoatAttack159
+  
   ld    a,(hl)
   ld    (Player1Frame),a
   inc   hl
@@ -1956,6 +1961,8 @@ BossGoat:
   
   call  .HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
 
+;  ld    (ix+enemies_and_objects.v7),175/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
+
   ld    de,BossGoatIdleAndWalk00
   jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
@@ -2326,13 +2333,13 @@ BossGoatAttack155:   dw GoatAttackframe009 | db BossGoatAttackframelistblock, Bo
 BossGoatAttack156:   dw GoatAttackframe009 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 BossGoatAttack157:   dw GoatAttackframe010 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 BossGoatAttack158:   dw GoatAttackframe011 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack159:   dw GoatAttackframe024 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack159:   dw GoatAttackframe022 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 
 BossGoatAttack160:   dw GoatAttackframe012 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 BossGoatAttack161:   dw GoatAttackframe012 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 BossGoatAttack162:   dw GoatAttackframe013 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 BossGoatAttack163:   dw GoatAttackframe014 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack164:   dw GoatAttackframe025 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack164:   dw GoatAttackframe023 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 
 BossGoatAttack165:   dw GoatAttackframe015 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 BossGoatAttack166:   dw GoatAttackframe015 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
@@ -2349,8 +2356,8 @@ BossGoatAttack174:   dw GoatAttackframe020 | db BossGoatAttackframelistblock, Bo
 BossGoatAttack175:   dw GoatAttackframe021 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 BossGoatAttack176:   dw GoatAttackframe021 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
 BossGoatAttack177:   dw GoatAttackframe021 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack178:   dw GoatAttackframe022 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
-BossGoatAttack179:   dw GoatAttackframe023 | db BossGoatAttackframelistblock, BossGoatAttackspritedatablock
+BossGoatAttack178:   dw GoatIdleAndWalkframe080 | db BossGoatIdleAndWalkframelistblock, BossGoatIdleAndWalkspritedatablock
+BossGoatAttack179:   dw GoatWalkAndAttackframe045 | db BossGoatWalkAndAttackframelistblock, BossGoatWalkAndAttackspritedatablock
 
 BossGoatAttack2180:   dw GoatAttack2frame000 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
 BossGoatAttack2181:   dw GoatAttack2frame000 | db BossGoatAttack2framelistblock, BossGoatAttack2spritedatablock
