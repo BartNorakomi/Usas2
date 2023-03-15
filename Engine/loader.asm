@@ -166,8 +166,9 @@ copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
   ld    a,38/2                        ;copy 38 lines..
   ld    b,0
   call  copyGraphicsToScreen.loop1
-  ld    b,128
-  otir                                ;copy last line, 39 in total
+;  ld    b,128
+;  otir                                ;copy last line, 39 in total
+  call  outix128
   ret
   
 SetMapPalette:
@@ -279,7 +280,7 @@ copyGraphicsToScreen2:
 	ld		hl,$8000
   ld    c,$98
   ld    a,64                          ;first 128 line, copy 64*256 = $4000 bytes to Vram
-  ld    b,0
+;  ld    b,0
       
   call  .loop1    
 
@@ -291,7 +292,7 @@ copyGraphicsToScreen2:
 	ld		hl,$8000
   ld    c,$98
   ld    a,64 ; 42                     ;second 84 line, copy 64*256 = $4000 bytes to Vram
-  ld    b,0
+;  ld    b,0
       
   call  .loop1   
 
@@ -305,7 +306,7 @@ copyGraphicsToScreen2:
   ret
 
 .loop1:
-  otir
+  call  outix256
   dec   a
   jp    nz,.loop1
   ret

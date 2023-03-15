@@ -873,7 +873,7 @@ copyGraphicsToScreen:
 	ld		hl,$4000
   ld    c,$98
   ld    a,64                ;first 128 line, copy 64*256 = $4000 bytes to Vram
-  ld    b,0
+ ; ld    b,0
       
   call  .loop1    
 
@@ -885,7 +885,7 @@ copyGraphicsToScreen:
 	ld		hl,$4000
   ld    c,$98
   ld    a,64 ; 42                ;second 84 line, copy 64*256 = $4000 bytes to Vram
-  ld    b,0
+;  ld    b,0
       
   call  .loop1   
 
@@ -899,7 +899,7 @@ copyGraphicsToScreen:
   ret
 
 .loop1:
-  otir
+  call  outix256
   dec   a
   jp    nz,.loop1
   ret
