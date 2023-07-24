@@ -1,3 +1,9 @@
+dos2unix AA01.tmx
+tmx16 AA01.tmx AA01.map
+
+dos2unix AB01.tmx
+tmx16 AB01.tmx AB01.map
+
 dos2unix A01.tmx
 tmx16 A01.tmx A01.map
 dos2unix A02.tmx

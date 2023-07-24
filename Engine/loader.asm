@@ -4,7 +4,16 @@ loader:
   call  SwapSpatColAndCharTable2
   call  SwapSpatColAndCharTable
   call  SwapSpatColAndCharTable2
-  ld    ix,(WorldMapPointer)
+
+
+  ld    a,MapDataCopiedToRamBlock     ;loader routine at $4000
+  call  block34
+  ld    hl,(WorldMapPointer)
+  ld    de,MapDataCopiedToRam
+  ld    bc,6
+  ldir
+  ld    ix,MapDataCopiedToRam
+
   call  SetEngineType                 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
   call  SetTilesInVram                ;copies all the tiles to Vram
   call  PopulateControls              ;this allows for a double jump as soon as you enter a new map

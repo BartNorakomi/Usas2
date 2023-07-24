@@ -10,3 +10,6 @@ of the screen. So when you get bumped to the left while facing right, I would ex
 de force move into screen bij axe kan ertoe leiden dat je in een muur geduwd wordt
 
 geen bug maar een addition: tot 3 ? frames na het vallen kun je nog jumpen
+
+als je geraakt bent door een vijand of kogel ofzo, stuiter je een stukkie achteruit.
+als je daardoor 'IN' een platform terecht komt spring je naar de 'getting crushed' routine en ga je dood
