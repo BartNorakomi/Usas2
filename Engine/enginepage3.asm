@@ -12,7 +12,7 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 ;Tiledata,palette: 0=Voodoo Wasp, 2=Konark,   1=Goddess Area, 3=Karni Mata, 4=BlueTemple, 5=Burial, 6=Boss Area, 7=IceTemple
 
 
-WorldMapPointer:  dw  MapAE22Data      ;NPC interaction
+WorldMapPointer:  dw  MapBT24Data      ;NPC interaction
 
 ;WorldMapPointer:  dw  MapE04Data      ;Boss Zombie Caterpillar
 ;WorldMapPointer:  dw  MapD04Data      ;Boss Voodoo Wasp

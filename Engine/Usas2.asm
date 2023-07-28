@@ -2701,14 +2701,14 @@ HugeBlob7_Col:                              include "..\sprites\enemies\HugeBlob
 dephase
 
 ;
-; block $52 + $53
+; block $29 ;$52 + $53
 ;
-FireEyeGreenSpriteblock:  equ   $52 / 2
-DemontjeGreenSpriteblock:  equ   $52 / 2
-HugeBlobWhiteSpriteblock:  equ   $52 / 2
-SensorTentaclesSpriteblock:  equ   $52 / 2
-YellowWaspSpriteblock:  equ   $52 / 2
-HugeSpiderSpriteblock:  equ   $52 / 2
+FireEyeGreenSpriteblock:  equ   $29 ;$52 / 2
+DemontjeGreenSpriteblock:  equ  $29 ; $52 / 2
+HugeBlobWhiteSpriteblock:  equ  $29 ; $52 / 2
+SensorTentaclesSpriteblock: equ $29 ;  $52 / 2
+YellowWaspSpriteblock:  equ   $29 ;$52 / 2
+HugeSpiderSpriteblock:  equ   $29 ;$52 / 2
 phase	$8000
 LeftDemontjeGreen1_Char:                    include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tgs.gen"	;y offset, x offset  
 LeftDemontjeGreen1_Col:                     include "..\sprites\enemies\Demontje\LeftDemontjeGreen1.tcs.gen"  | db 00,01,00,01
@@ -3130,48 +3130,13 @@ dephase
 
 
 ; block $58
-  ds  $2000
-
-;
-; block $59 - $5c
-;
-B01TilesBlock:  equ   $59
-phase	$4000
-  incbin "..\grapx\B01.SC5",7,$6A00  ;skip header
-	ds		$c000-$,$ff
-dephase
-
-;
-; block $5d - $60
-;
-A01TilesBlock:  equ   $5d
-phase	$4000
-  incbin "..\grapx\A01.SC5",7,$6A00  ;skip header
-	ds		$c000-$,$ff
-dephase
+  ds    $4000 * 5
 
 
-
-; Note: The routine below is a bit complex because it supports
-; songs > 16K. However, if you know that your song will always be < 16K you
-; can simplify it a lot:
-; - read the header and trash it!
-; - read the rest of the file
-; - modify the play_nextpos routine so that 3 is added to the pattern address
 ;
-; block $61
+; block $31
 ;
-MusicTestBlock:  equ   $61
-phase	$8000
-;  incbin "..\music\perftest.mwm",7  ;skip header
-  incbin "perftest.mwm" ;,7  ;skip header..... Header is 6 bytes ???
-	ds		$a000-$,$ff
-dephase
-
-;
-; block $62 - $63
-;
-Graphicsblock5:  equ   $62 / 2
+Graphicsblock5:  equ   $31 
 phase	$8000
 scoreboard:
   incbin "..\grapx\scoreboard\scoreboard.SC5",7,39*128  ;skip header
@@ -3182,22 +3147,14 @@ ElementalWeapons:
 	ds		$c000-$,$ff
 dephase
 
-; block $64
-  ds    $2000
+; block $32
+  ds    $4000
+
 
 ;
-; block $65 - $66
+; block $33
 ;
-;MusicReplayerBlock:  equ   $65
-phase	$4000
-;  include "MusicPlayer_new.asm"  
-	ds		$8000-$,$ff
-dephase
-
-;
-; block $67 + $68
-;
-LancelotSpriteblock:  equ   $67
+LancelotSpriteblock:  equ   $33
 phase	$8000
 LeftLancelot1_Char:                         include "..\sprites\enemies\Lancelot\LeftLancelot1.tgs.gen"	  
 LeftLancelot1_Col:                          include "..\sprites\enemies\Lancelot\LeftLancelot1.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
@@ -3236,9 +3193,9 @@ RightLancelot8_Col:                         include "..\sprites\enemies\Lancelot
 dephase
 
 ;
-; block $69 + $6a
+; block $34
 ;
-LancelotShieldHitSpriteblock:  equ   $69
+LancelotShieldHitSpriteblock:  equ   $34
 phase	$8000
 LeftLancelotShieldHit1_Char:                include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit1.tgs.gen"	  
 LeftLancelotShieldHit1_Col:                 include "..\sprites\enemies\Lancelot\LeftLancelotShieldHit1.tcs.gen"  | db 00-1+1,00, 00-1+1,00, 16-1+1,00, 16-1+1,00
@@ -3276,79 +3233,141 @@ RightLancelotShieldHit8_Col:                include "..\sprites\enemies\Lancelot
 	ds		$c000-$,$ff
 dephase
 
-; block $6b
-  ds $2000
+; block $35
+  ds $4000 * 19
 
-; block $6c
-  ds $2000
 
-;
-; block $6d - $6e
-;
-  ds $2000 * 2
 
-;
-; block $6f - $70
-;
-  ds $2000 * 2
-
-;
-; block $71 - $72
-;
-
-  ds $2000 * 2
-
-;
-; block $73 - $74
-;
-  ds $2000 * 2
-
-;
-; block $75 - $76
-;
-  ds $2000 * 2
-
-;
-; block $77 - $78
-;
-  ds $2000 * 2
 
 
 ;
-; block $79 - $87
+; block $48
 ;
-ds $2000 * 15
-
-;
-; block $88 - $8b
-;
-phase	$4000
+phase	$8000
+MapsBlockBU01:  equ   $48 | MapBU01: incbin "..\maps\BU01.map.pck"  | include "..\maps\mapdata\BU01.asm"  
+MapsBlockBU03:  equ   $48 | MapBU03: incbin "..\maps\BU03.map.pck"  | include "..\maps\mapdata\BU03.asm"  
+MapsBlockBU04:  equ   $48 | MapBU04: incbin "..\maps\BU04.map.pck"  | include "..\maps\mapdata\BU04.asm"  
+MapsBlockBU05:  equ   $48 | MapBU05: incbin "..\maps\BU05.map.pck"  | include "..\maps\mapdata\BU05.asm"  
+MapsBlockBU06:  equ   $48 | MapBU06: incbin "..\maps\BU06.map.pck"  | include "..\maps\mapdata\BU06.asm"  
+MapsBlockBU07:  equ   $48 | MapBU07: incbin "..\maps\BU07.map.pck"  | include "..\maps\mapdata\BU07.asm"  
+MapsBlockBU08:  equ   $48 | MapBU08: incbin "..\maps\BU08.map.pck"  | include "..\maps\mapdata\BU08.asm"  
+MapsBlockBU13:  equ   $48 | MapBU13: incbin "..\maps\BU13.map.pck"  | include "..\maps\mapdata\BU13.asm"  
+MapsBlockBU14:  equ   $48 | MapBU14: incbin "..\maps\BU14.map.pck"  | include "..\maps\mapdata\BU14.asm"  
+MapsBlockBU15:  equ   $48 | MapBU15: incbin "..\maps\BU15.map.pck"  | include "..\maps\mapdata\BU15.asm"  
+MapsBlockBU16:  equ   $48 | MapBU16: incbin "..\maps\BU16.map.pck"  | include "..\maps\mapdata\BU16.asm"  
+MapsBlockBU17:  equ   $48 | MapBU17: incbin "..\maps\BU17.map.pck"  | include "..\maps\mapdata\BU17.asm"  
+MapsBlockBU22:  equ   $48 | MapBU22: incbin "..\maps\BU22.map.pck"  | include "..\maps\mapdata\BU22.asm"  
+MapsBlockBU24:  equ   $48 | MapBU24: incbin "..\maps\BU24.map.pck"  | include "..\maps\mapdata\BU24.asm"  
+MapsBlockBU26:  equ   $48 | MapBU26: incbin "..\maps\BU26.map.pck"  | include "..\maps\mapdata\BU26.asm"  
+MapsBlockBU27:  equ   $48 | MapBU27: incbin "..\maps\BU27.map.pck"  | include "..\maps\mapdata\BU27.asm"  
+MapsBlockBU30:  equ   $48 | MapBU30: incbin "..\maps\BU30.map.pck"  | include "..\maps\mapdata\BU30.asm"  
+MapsBlockBU31:  equ   $48 | MapBU31: incbin "..\maps\BU31.map.pck"  | include "..\maps\mapdata\BU31.asm"  
+MapsBlockBU33:  equ   $48 | MapBU33: incbin "..\maps\BU33.map.pck"  | include "..\maps\mapdata\BU33.asm"  
+MapsBlockBU36:  equ   $48 | MapBU36: incbin "..\maps\BU36.map.pck"  | include "..\maps\mapdata\BU36.asm"  
+MapsBlockBU37:  equ   $48 | MapBU37: incbin "..\maps\BU37.map.pck"  | include "..\maps\mapdata\BU37.asm"  
+MapsBlockBU40:  equ   $48 | MapBU40: incbin "..\maps\BU40.map.pck"  | include "..\maps\mapdata\BU40.asm"  
+MapsBlockBU44:  equ   $48 | MapBU44: incbin "..\maps\BU44.map.pck"  | include "..\maps\mapdata\BU44.asm"  
+MapsBlockBU45:  equ   $48 | MapBU45: incbin "..\maps\BU45.map.pck"  | include "..\maps\mapdata\BU45.asm"  
+MapsBlockBU46:  equ   $48 | MapBU46: incbin "..\maps\BU46.map.pck"  | include "..\maps\mapdata\BU46.asm"  
+MapsBlockBU47:  equ   $48 | MapBU47: incbin "..\maps\BU47.map.pck"  | include "..\maps\mapdata\BU47.asm"  
+MapsBlockBU48:  equ   $48 | MapBU48: incbin "..\maps\BU48.map.pck"  | include "..\maps\mapdata\BU48.asm"  
+MapsBlockBU49:  equ   $48 | MapBU49: incbin "..\maps\BU49.map.pck"  | include "..\maps\mapdata\BU49.asm"  
+MapsBlockBU50:  equ   $48 | MapBU50: incbin "..\maps\BU50.map.pck"  | include "..\maps\mapdata\BU50.asm"  
 	ds		$c000-$,$ff
 dephase
 
-; block $$8c
-ds $2000
+
 
 ;
-; block $8d - $90
+; block $49
 ;
-phase	$4000
+phase	$8000
+MapsBlockBV01:  equ   $49 | MapBV01: incbin "..\maps\BV01.map.pck"  | include "..\maps\mapdata\BV01.asm"  
+MapsBlockBV05:  equ   $49 | MapBV05: incbin "..\maps\BV05.map.pck"  | include "..\maps\mapdata\BV05.asm"  
+MapsBlockBV07:  equ   $49 | MapBV07: incbin "..\maps\BV07.map.pck"  | include "..\maps\mapdata\BV07.asm"  
+MapsBlockBV14:  equ   $49 | MapBV14: incbin "..\maps\BV14.map.pck"  | include "..\maps\mapdata\BV14.asm"  
+MapsBlockBV17:  equ   $49 | MapBV17: incbin "..\maps\BV17.map.pck"  | include "..\maps\mapdata\BV17.asm"  
+MapsBlockBV24:  equ   $49 | MapBV24: incbin "..\maps\BV24.map.pck"  | include "..\maps\mapdata\BV24.asm"  
+MapsBlockBV27:  equ   $49 | MapBV27: incbin "..\maps\BV27.map.pck"  | include "..\maps\mapdata\BV27.asm"  
+MapsBlockBV30:  equ   $49 | MapBV30: incbin "..\maps\BV30.map.pck"  | include "..\maps\mapdata\BV30.asm"  
+MapsBlockBV31:  equ   $49 | MapBV31: incbin "..\maps\BV31.map.pck"  | include "..\maps\mapdata\BV31.asm"  
+MapsBlockBV33:  equ   $49 | MapBV33: incbin "..\maps\BV33.map.pck"  | include "..\maps\mapdata\BV33.asm"  
+MapsBlockBV34:  equ   $49 | MapBV34: incbin "..\maps\BV34.map.pck"  | include "..\maps\mapdata\BV34.asm"  
+MapsBlockBV37:  equ   $49 | MapBV37: incbin "..\maps\BV37.map.pck"  | include "..\maps\mapdata\BV37.asm"  
+MapsBlockBV39:  equ   $49 | MapBV39: incbin "..\maps\BV39.map.pck"  | include "..\maps\mapdata\BV39.asm"  
+MapsBlockBV40:  equ   $49 | MapBV40: incbin "..\maps\BV40.map.pck"  | include "..\maps\mapdata\BV40.asm"  
+MapsBlockBV44:  equ   $49 | MapBV44: incbin "..\maps\BV44.map.pck"  | include "..\maps\mapdata\BV44.asm"  
+MapsBlockBV47:  equ   $49 | MapBV47: incbin "..\maps\BV47.map.pck"  | include "..\maps\mapdata\BV47.asm"  
+MapsBlockBV48:  equ   $49 | MapBV48: incbin "..\maps\BV48.map.pck"  | include "..\maps\mapdata\BV48.asm"  
+MapsBlockBV50:  equ   $49 | MapBV50: incbin "..\maps\BV50.map.pck"  | include "..\maps\mapdata\BV50.asm"  
 	ds		$c000-$,$ff
 dephase
 
 ;
-; block $91 - $94
+; block $4a
 ;
-phase	$4000
+phase	$8000
+MapsBlockBW01:  equ   $4a | MapBW01: incbin "..\maps\BW01.map.pck"  | include "..\maps\mapdata\BW01.asm"  
+MapsBlockBW02:  equ   $4a | MapBW02: incbin "..\maps\BW02.map.pck"  | include "..\maps\mapdata\BW02.asm"  
+MapsBlockBW04:  equ   $4a | MapBW04: incbin "..\maps\BW04.map.pck"  | include "..\maps\mapdata\BW04.asm"  
+MapsBlockBW05:  equ   $4a | MapBW05: incbin "..\maps\BW05.map.pck"  | include "..\maps\mapdata\BW05.asm"  
+MapsBlockBW13:  equ   $4a | MapBW13: incbin "..\maps\BW13.map.pck"  | include "..\maps\mapdata\BW13.asm"  
+MapsBlockBW14:  equ   $4a | MapBW14: incbin "..\maps\BW14.map.pck"  | include "..\maps\mapdata\BW14.asm"  
+MapsBlockBW17:  equ   $4a | MapBW17: incbin "..\maps\BW17.map.pck"  | include "..\maps\mapdata\BW17.asm"  
+MapsBlockBW18:  equ   $4a | MapBW18: incbin "..\maps\BW18.map.pck"  | include "..\maps\mapdata\BW18.asm"  
+MapsBlockBW24:  equ   $4a | MapBW24: incbin "..\maps\BW24.map.pck"  | include "..\maps\mapdata\BW24.asm"  
+MapsBlockBW25:  equ   $4a | MapBW25: incbin "..\maps\BW25.map.pck"  | include "..\maps\mapdata\BW25.asm"  
+MapsBlockBW26:  equ   $4a | MapBW26: incbin "..\maps\BW26.map.pck"  | include "..\maps\mapdata\BW26.asm"  
+MapsBlockBW27:  equ   $4a | MapBW27: incbin "..\maps\BW27.map.pck"  | include "..\maps\mapdata\BW27.asm"  
+MapsBlockBW30:  equ   $4a | MapBW30: incbin "..\maps\BW30.map.pck"  | include "..\maps\mapdata\BW30.asm"  
+MapsBlockBW33:  equ   $4a | MapBW33: incbin "..\maps\BW33.map.pck"  | include "..\maps\mapdata\BW33.asm"  
+MapsBlockBW34:  equ   $4a | MapBW34: incbin "..\maps\BW34.map.pck"  | include "..\maps\mapdata\BW34.asm"  
+MapsBlockBW35:  equ   $4a | MapBW35: incbin "..\maps\BW35.map.pck"  | include "..\maps\mapdata\BW35.asm"  
+MapsBlockBW40:  equ   $4a | MapBW40: incbin "..\maps\BW40.map.pck"  | include "..\maps\mapdata\BW40.asm"  
+MapsBlockBW46:  equ   $4a | MapBW46: incbin "..\maps\BW46.map.pck"  | include "..\maps\mapdata\BW46.asm"  
+MapsBlockBW47:  equ   $4a | MapBW47: incbin "..\maps\BW47.map.pck"  | include "..\maps\mapdata\BW47.asm"  
+MapsBlockBW49:  equ   $4a | MapBW49: incbin "..\maps\BW49.map.pck"  | include "..\maps\mapdata\BW49.asm"  
+MapsBlockBW50:  equ   $4a | MapBW50: incbin "..\maps\BW50.map.pck"  | include "..\maps\mapdata\BW50.asm"  
 	ds		$c000-$,$ff
 dephase
 
+
 ;
-; block $95 - $97
+; block $4b
 ;
-phase	$4000
-	ds		$a000-$,$ff
+phase	$8000
+MapsBlockBX02:  equ   $4b | MapBX02: incbin "..\maps\BX02.map.pck"  | include "..\maps\mapdata\BX02.asm"  
+MapsBlockBX03:  equ   $4b | MapBX03: incbin "..\maps\BX03.map.pck"  | include "..\maps\mapdata\BX03.asm"  
+MapsBlockBX04:  equ   $4b | MapBX04: incbin "..\maps\BX04.map.pck"  | include "..\maps\mapdata\BX04.asm"  
+MapsBlockBX27:  equ   $4b | MapBX27: incbin "..\maps\BX27.map.pck"  | include "..\maps\mapdata\BX27.asm"  
+MapsBlockBX28:  equ   $4b | MapBX28: incbin "..\maps\BX28.map.pck"  | include "..\maps\mapdata\BX28.asm"  
+MapsBlockBX29:  equ   $4b | MapBX29: incbin "..\maps\BX29.map.pck"  | include "..\maps\mapdata\BX29.asm"  
+MapsBlockBX30:  equ   $4b | MapBX30: incbin "..\maps\BX30.map.pck"  | include "..\maps\mapdata\BX30.asm"  
+MapsBlockBX40:  equ   $4b | MapBX40: incbin "..\maps\BX40.map.pck"  | include "..\maps\mapdata\BX40.asm"  
+MapsBlockBX41:  equ   $4b | MapBX41: incbin "..\maps\BX41.map.pck"  | include "..\maps\mapdata\BX41.asm"  
+MapsBlockBX42:  equ   $4b | MapBX42: incbin "..\maps\BX42.map.pck"  | include "..\maps\mapdata\BX42.asm"  
+MapsBlockBX43:  equ   $4b | MapBX43: incbin "..\maps\BX43.map.pck"  | include "..\maps\mapdata\BX43.asm"  
+MapsBlockBX44:  equ   $4b | MapBX44: incbin "..\maps\BX44.map.pck"  | include "..\maps\mapdata\BX44.asm"  
+MapsBlockBX45:  equ   $4b | MapBX45: incbin "..\maps\BX45.map.pck"  | include "..\maps\mapdata\BX45.asm"  
+MapsBlockBX46:  equ   $4b | MapBX46: incbin "..\maps\BX46.map.pck"  | include "..\maps\mapdata\BX46.asm"  
+MapsBlockBX47:  equ   $4b | MapBX47: incbin "..\maps\BX47.map.pck"  | include "..\maps\mapdata\BX47.asm"  
+MapsBlockBX48:  equ   $4b | MapBX48: incbin "..\maps\BX48.map.pck"  | include "..\maps\mapdata\BX48.asm"  
+MapsBlockBX49:  equ   $4b | MapBX49: incbin "..\maps\BX49.map.pck"  | include "..\maps\mapdata\BX49.asm"  
+MapsBlockBX50:  equ   $4b | MapBX50: incbin "..\maps\BX50.map.pck"  | include "..\maps\mapdata\BX50.asm"  
+	ds		$c000-$,$ff
 dephase
+
+
+
+
+
+
+
+
+
+
+
+
 
 ;
 ; block $4c
@@ -3415,35 +3434,480 @@ endPlayerMovementRoutines:
 	ds		$8000-$,$ff
 dephase
 
-;
-; block $4e - $4f
-;
-
-  ds  2 * $4000
 
 ;
-; block $a0 - $bf
+; block $4e
 ;
+phase	$8000
+MapsBlockBC04:  equ   $4e | MapBC04: incbin "..\maps\BC04.map.pck"  | include "..\maps\mapdata\BC04.asm"  
+MapsBlockBC05:  equ   $4e | MapBC05: incbin "..\maps\BC05.map.pck"  | include "..\maps\mapdata\BC05.asm"  
+MapsBlockBC06:  equ   $4e | MapBC06: incbin "..\maps\BC06.map.pck"  | include "..\maps\mapdata\BC06.asm"  
+MapsBlockBC21:  equ   $4e | MapBC21: incbin "..\maps\BC21.map.pck"  | include "..\maps\mapdata\BC21.asm"  
+MapsBlockBC26:  equ   $4e | MapBC26: incbin "..\maps\BC26.map.pck"  | include "..\maps\mapdata\BC26.asm"  
+MapsBlockBC27:  equ   $4e | MapBC27: incbin "..\maps\BC27.map.pck"  | include "..\maps\mapdata\BC27.asm"  
+MapsBlockBC33:  equ   $4e | MapBC33: incbin "..\maps\BC33.map.pck"  | include "..\maps\mapdata\BC33.asm"  
+MapsBlockBC37:  equ   $4e | MapBC37: incbin "..\maps\BC37.map.pck"  | include "..\maps\mapdata\BC37.asm"  
+MapsBlockBC41:  equ   $4e | MapBC41: incbin "..\maps\BC41.map.pck"  | include "..\maps\mapdata\BC41.asm"  
+MapsBlockBC42:  equ   $4e | MapBC42: incbin "..\maps\BC42.map.pck"  | include "..\maps\mapdata\BC42.asm"  
+MapsBlockBC43:  equ   $4e | MapBC43: incbin "..\maps\BC43.map.pck"  | include "..\maps\mapdata\BC43.asm"  
+MapsBlockBC44:  equ   $4e | MapBC44: incbin "..\maps\BC44.map.pck"  | include "..\maps\mapdata\BC44.asm"  
+MapsBlockBC45:  equ   $4e | MapBC45: incbin "..\maps\BC45.map.pck"  | include "..\maps\mapdata\BC45.asm"  
+MapsBlockBC46:  equ   $4e | MapBC46: incbin "..\maps\BC46.map.pck"  | include "..\maps\mapdata\BC46.asm"  
+MapsBlockBC47:  equ   $4e | MapBC47: incbin "..\maps\BC47.map.pck"  | include "..\maps\mapdata\BC47.asm"  
+MapsBlockBC48:  equ   $4e | MapBC48: incbin "..\maps\BC48.map.pck"  | include "..\maps\mapdata\BC48.asm"  
+MapsBlockBC49:  equ   $4e | MapBC49: incbin "..\maps\BC49.map.pck"  | include "..\maps\mapdata\BC49.asm"  
+MapsBlockBC50:  equ   $4e | MapBC50: incbin "..\maps\BC50.map.pck"  | include "..\maps\mapdata\BC50.asm"  
+	ds		$c000-$,$ff
+dephase
 
-  ds  $20 * $2000
 
 
+;
+; block $4f
+;
+phase	$8000
+MapsBlockBD02:  equ   $4f | MapBD02: incbin "..\maps\BD02.map.pck"  | include "..\maps\mapdata\BD02.asm"  
+MapsBlockBD04:  equ   $4f | MapBD04: incbin "..\maps\BD04.map.pck"  | include "..\maps\mapdata\BD04.asm"  
+MapsBlockBD16:  equ   $4f | MapBD16: incbin "..\maps\BD16.map.pck"  | include "..\maps\mapdata\BD16.asm"  
+MapsBlockBD17:  equ   $4f | MapBD17: incbin "..\maps\BD17.map.pck"  | include "..\maps\mapdata\BD17.asm"  
+MapsBlockBD21:  equ   $4f | MapBD21: incbin "..\maps\BD21.map.pck"  | include "..\maps\mapdata\BD21.asm"  
+MapsBlockBD25:  equ   $4f | MapBD25: incbin "..\maps\BD25.map.pck"  | include "..\maps\mapdata\BD25.asm"  
+MapsBlockBD26:  equ   $4f | MapBD26: incbin "..\maps\BD26.map.pck"  | include "..\maps\mapdata\BD26.asm"  
+MapsBlockBD33:  equ   $4f | MapBD33: incbin "..\maps\BD33.map.pck"  | include "..\maps\mapdata\BD33.asm"  
+MapsBlockBD37:  equ   $4f | MapBD37: incbin "..\maps\BD37.map.pck"  | include "..\maps\mapdata\BD37.asm"  
+MapsBlockBD41:  equ   $4f | MapBD41: incbin "..\maps\BD41.map.pck"  | include "..\maps\mapdata\BD41.asm"  
+MapsBlockBD45:  equ   $4f | MapBD45: incbin "..\maps\BD45.map.pck"  | include "..\maps\mapdata\BD45.asm"  
+MapsBlockBD49:  equ   $4f | MapBD49: incbin "..\maps\BD49.map.pck"  | include "..\maps\mapdata\BD49.asm"  
+	ds		$c000-$,$ff
+dephase
 
 
+;
+; block $50
+;
+phase	$8000
+MapsBlockBE02:  equ   $50 | MapBE02: incbin "..\maps\BE02.map.pck"  | include "..\maps\mapdata\BE02.asm"  
+MapsBlockBE04:  equ   $50 | MapBE04: incbin "..\maps\BE04.map.pck"  | include "..\maps\mapdata\BE04.asm"  
+MapsBlockBE06:  equ   $50 | MapBE06: incbin "..\maps\BE06.map.pck"  | include "..\maps\mapdata\BE06.asm"  
+MapsBlockBE07:  equ   $50 | MapBE07: incbin "..\maps\BE07.map.pck"  | include "..\maps\mapdata\BE07.asm"  
+MapsBlockBE08:  equ   $50 | MapBE08: incbin "..\maps\BE08.map.pck"  | include "..\maps\mapdata\BE08.asm"  
+MapsBlockBE09:  equ   $50 | MapBE09: incbin "..\maps\BE09.map.pck"  | include "..\maps\mapdata\BE09.asm"  
+MapsBlockBE17:  equ   $50 | MapBE17: incbin "..\maps\BE17.map.pck"  | include "..\maps\mapdata\BE17.asm"  
+MapsBlockBE18:  equ   $50 | MapBE18: incbin "..\maps\BE18.map.pck"  | include "..\maps\mapdata\BE18.asm"  
+MapsBlockBE21:  equ   $50 | MapBE21: incbin "..\maps\BE21.map.pck"  | include "..\maps\mapdata\BE21.asm"  
+MapsBlockBE26:  equ   $50 | MapBE26: incbin "..\maps\BE26.map.pck"  | include "..\maps\mapdata\BE26.asm"  
+MapsBlockBE27:  equ   $50 | MapBE27: incbin "..\maps\BE27.map.pck"  | include "..\maps\mapdata\BE27.asm"  
+MapsBlockBE28:  equ   $50 | MapBE28: incbin "..\maps\BE28.map.pck"  | include "..\maps\mapdata\BE28.asm"  
+MapsBlockBE37:  equ   $50 | MapBE37: incbin "..\maps\BE37.map.pck"  | include "..\maps\mapdata\BE37.asm"  
+MapsBlockBE38:  equ   $50 | MapBE38: incbin "..\maps\BE38.map.pck"  | include "..\maps\mapdata\BE38.asm"  
+MapsBlockBE45:  equ   $50 | MapBE45: incbin "..\maps\BE45.map.pck"  | include "..\maps\mapdata\BE45.asm"  
+MapsBlockBE47:  equ   $50 | MapBE47: incbin "..\maps\BE47.map.pck"  | include "..\maps\mapdata\BE47.asm"  
+MapsBlockBE49:  equ   $50 | MapBE49: incbin "..\maps\BE49.map.pck"  | include "..\maps\mapdata\BE49.asm"  
+	ds		$c000-$,$ff
+dephase
 
 
+;
+; block $51
+;
+phase	$8000
+MapsBlockBF02:  equ   $51 | MapBF02: incbin "..\maps\BF02.map.pck"  | include "..\maps\mapdata\BF02.asm"  
+MapsBlockBF04:  equ   $51 | MapBF04: incbin "..\maps\BF04.map.pck"  | include "..\maps\mapdata\BF04.asm"  
+MapsBlockBF05:  equ   $51 | MapBF05: incbin "..\maps\BF05.map.pck"  | include "..\maps\mapdata\BF05.asm"  
+MapsBlockBF06:  equ   $51 | MapBF06: incbin "..\maps\BF06.map.pck"  | include "..\maps\mapdata\BF06.asm"  
+MapsBlockBF09:  equ   $51 | MapBF09: incbin "..\maps\BF09.map.pck"  | include "..\maps\mapdata\BF09.asm"  
+MapsBlockBF10:  equ   $51 | MapBF10: incbin "..\maps\BF10.map.pck"  | include "..\maps\mapdata\BF10.asm"  
+MapsBlockBF11:  equ   $51 | MapBF11: incbin "..\maps\BF11.map.pck"  | include "..\maps\mapdata\BF11.asm"  
+MapsBlockBF12:  equ   $51 | MapBF12: incbin "..\maps\BF12.map.pck"  | include "..\maps\mapdata\BF12.asm"  
+MapsBlockBF13:  equ   $51 | MapBF13: incbin "..\maps\BF13.map.pck"  | include "..\maps\mapdata\BF13.asm"  
+MapsBlockBF18:  equ   $51 | MapBF18: incbin "..\maps\BF18.map.pck"  | include "..\maps\mapdata\BF18.asm"  
+MapsBlockBF20:  equ   $51 | MapBF20: incbin "..\maps\BF20.map.pck"  | include "..\maps\mapdata\BF20.asm"  
+MapsBlockBF21:  equ   $51 | MapBF21: incbin "..\maps\BF21.map.pck"  | include "..\maps\mapdata\BF21.asm"  
+MapsBlockBF25:  equ   $51 | MapBF25: incbin "..\maps\BF25.map.pck"  | include "..\maps\mapdata\BF25.asm"  
+MapsBlockBF26:  equ   $51 | MapBF26: incbin "..\maps\BF26.map.pck"  | include "..\maps\mapdata\BF26.asm"  
+MapsBlockBF34:  equ   $51 | MapBF34: incbin "..\maps\BF34.map.pck"  | include "..\maps\mapdata\BF34.asm"  
+MapsBlockBF35:  equ   $51 | MapBF35: incbin "..\maps\BF35.map.pck"  | include "..\maps\mapdata\BF35.asm"  
+MapsBlockBF36:  equ   $51 | MapBF36: incbin "..\maps\BF36.map.pck"  | include "..\maps\mapdata\BF36.asm"  
+MapsBlockBF37:  equ   $51 | MapBF37: incbin "..\maps\BF37.map.pck"  | include "..\maps\mapdata\BF37.asm"  
+MapsBlockBF38:  equ   $51 | MapBF38: incbin "..\maps\BF38.map.pck"  | include "..\maps\mapdata\BF38.asm"  
+MapsBlockBF39:  equ   $51 | MapBF39: incbin "..\maps\BF39.map.pck"  | include "..\maps\mapdata\BF39.asm"  
+MapsBlockBF40:  equ   $51 | MapBF40: incbin "..\maps\BF40.map.pck"  | include "..\maps\mapdata\BF40.asm"  
+MapsBlockBF41:  equ   $51 | MapBF41: incbin "..\maps\BF41.map.pck"  | include "..\maps\mapdata\BF41.asm"  
+MapsBlockBF42:  equ   $51 | MapBF42: incbin "..\maps\BF42.map.pck"  | include "..\maps\mapdata\BF42.asm"  
+MapsBlockBF45:  equ   $51 | MapBF45: incbin "..\maps\BF45.map.pck"  | include "..\maps\mapdata\BF45.asm"  
+MapsBlockBF47:  equ   $51 | MapBF47: incbin "..\maps\BF47.map.pck"  | include "..\maps\mapdata\BF47.asm"  
+MapsBlockBF48:  equ   $51 | MapBF48: incbin "..\maps\BF48.map.pck"  | include "..\maps\mapdata\BF48.asm"  
+MapsBlockBF49:  equ   $51 | MapBF49: incbin "..\maps\BF49.map.pck"  | include "..\maps\mapdata\BF49.asm"  
+	ds		$c000-$,$ff
+dephase
 
 
+;
+; block $52
+;
+phase	$8000
+MapsBlockBG02:  equ   $52 | MapBG02: incbin "..\maps\BG02.map.pck"  | include "..\maps\mapdata\BG02.asm"  
+MapsBlockBG06:  equ   $52 | MapBG06: incbin "..\maps\BG06.map.pck"  | include "..\maps\mapdata\BG06.asm"  
+MapsBlockBG07:  equ   $52 | MapBG07: incbin "..\maps\BG07.map.pck"  | include "..\maps\mapdata\BG07.asm"  
+MapsBlockBG13:  equ   $52 | MapBG13: incbin "..\maps\BG13.map.pck"  | include "..\maps\mapdata\BG13.asm"  
+MapsBlockBG18:  equ   $52 | MapBG18: incbin "..\maps\BG18.map.pck"  | include "..\maps\mapdata\BG18.asm"  
+MapsBlockBG19:  equ   $52 | MapBG19: incbin "..\maps\BG19.map.pck"  | include "..\maps\mapdata\BG19.asm"  
+MapsBlockBG20:  equ   $52 | MapBG20: incbin "..\maps\BG20.map.pck"  | include "..\maps\mapdata\BG20.asm"  
+MapsBlockBG21:  equ   $52 | MapBG21: incbin "..\maps\BG21.map.pck"  | include "..\maps\mapdata\BG21.asm"  
+MapsBlockBG25:  equ   $52 | MapBG25: incbin "..\maps\BG25.map.pck"  | include "..\maps\mapdata\BG25.asm"  
+MapsBlockBG26:  equ   $52 | MapBG26: incbin "..\maps\BG26.map.pck"  | include "..\maps\mapdata\BG26.asm"  
+MapsBlockBG27:  equ   $52 | MapBG27: incbin "..\maps\BG27.map.pck"  | include "..\maps\mapdata\BG27.asm"  
+MapsBlockBG28:  equ   $52 | MapBG28: incbin "..\maps\BG28.map.pck"  | include "..\maps\mapdata\BG28.asm"  
+MapsBlockBG29:  equ   $52 | MapBG29: incbin "..\maps\BG29.map.pck"  | include "..\maps\mapdata\BG29.asm"  
+MapsBlockBG36:  equ   $52 | MapBG36: incbin "..\maps\BG36.map.pck"  | include "..\maps\mapdata\BG36.asm"  
+MapsBlockBG37:  equ   $52 | MapBG37: incbin "..\maps\BG37.map.pck"  | include "..\maps\mapdata\BG37.asm"  
+MapsBlockBG38:  equ   $52 | MapBG38: incbin "..\maps\BG38.map.pck"  | include "..\maps\mapdata\BG38.asm"  
+MapsBlockBG42:  equ   $52 | MapBG42: incbin "..\maps\BG42.map.pck"  | include "..\maps\mapdata\BG42.asm"  
+MapsBlockBG45:  equ   $52 | MapBG45: incbin "..\maps\BG45.map.pck"  | include "..\maps\mapdata\BG45.asm"  
+	ds		$c000-$,$ff
+dephase
 
 
+;
+; block $53
+;
+phase	$8000
+MapsBlockBH02:  equ   $53 | MapBH02: incbin "..\maps\BH02.map.pck"  | include "..\maps\mapdata\BH02.asm"  
+MapsBlockBH07:  equ   $53 | MapBH07: incbin "..\maps\BH07.map.pck"  | include "..\maps\mapdata\BH07.asm"  
+MapsBlockBH08:  equ   $53 | MapBH08: incbin "..\maps\BH08.map.pck"  | include "..\maps\mapdata\BH08.asm"  
+MapsBlockBH13:  equ   $53 | MapBH13: incbin "..\maps\BH13.map.pck"  | include "..\maps\mapdata\BH13.asm"  
+MapsBlockBH14:  equ   $53 | MapBH14: incbin "..\maps\BH14.map.pck"  | include "..\maps\mapdata\BH14.asm"  
+MapsBlockBH17:  equ   $53 | MapBH17: incbin "..\maps\BH17.map.pck"  | include "..\maps\mapdata\BH17.asm"  
+MapsBlockBH18:  equ   $53 | MapBH18: incbin "..\maps\BH18.map.pck"  | include "..\maps\mapdata\BH18.asm"  
+MapsBlockBH21:  equ   $53 | MapBH21: incbin "..\maps\BH21.map.pck"  | include "..\maps\mapdata\BH21.asm"  
+MapsBlockBH29:  equ   $53 | MapBH29: incbin "..\maps\BH29.map.pck"  | include "..\maps\mapdata\BH29.asm"  
+MapsBlockBH35:  equ   $53 | MapBH35: incbin "..\maps\BH35.map.pck"  | include "..\maps\mapdata\BH35.asm"  
+MapsBlockBH36:  equ   $53 | MapBH36: incbin "..\maps\BH36.map.pck"  | include "..\maps\mapdata\BH36.asm"  
+MapsBlockBH37:  equ   $53 | MapBH37: incbin "..\maps\BH37.map.pck"  | include "..\maps\mapdata\BH37.asm"  
+MapsBlockBH38:  equ   $53 | MapBH38: incbin "..\maps\BH38.map.pck"  | include "..\maps\mapdata\BH38.asm"  
+MapsBlockBH41:  equ   $53 | MapBH41: incbin "..\maps\BH41.map.pck"  | include "..\maps\mapdata\BH41.asm"  
+MapsBlockBH42:  equ   $53 | MapBH42: incbin "..\maps\BH42.map.pck"  | include "..\maps\mapdata\BH42.asm"  
+MapsBlockBH47:  equ   $53 | MapBH47: incbin "..\maps\BH47.map.pck"  | include "..\maps\mapdata\BH47.asm"  
+	ds		$c000-$,$ff
+dephase
 
 
+;
+; block $54
+;
+phase	$8000
+MapsBlockBI02:  equ   $54 | MapBI02: incbin "..\maps\BI02.map.pck"  | include "..\maps\mapdata\BI02.asm"  
+MapsBlockBI03:  equ   $54 | MapBI03: incbin "..\maps\BI03.map.pck"  | include "..\maps\mapdata\BI03.asm"  
+MapsBlockBI08:  equ   $54 | MapBI08: incbin "..\maps\BI08.map.pck"  | include "..\maps\mapdata\BI08.asm"  
+MapsBlockBI09:  equ   $54 | MapBI09: incbin "..\maps\BI09.map.pck"  | include "..\maps\mapdata\BI09.asm"  
+MapsBlockBI14:  equ   $54 | MapBI14: incbin "..\maps\BI14.map.pck"  | include "..\maps\mapdata\BI14.asm"  
+MapsBlockBI15:  equ   $54 | MapBI15: incbin "..\maps\BI15.map.pck"  | include "..\maps\mapdata\BI15.asm"  
+MapsBlockBI16:  equ   $54 | MapBI16: incbin "..\maps\BI16.map.pck"  | include "..\maps\mapdata\BI16.asm"  
+MapsBlockBI17:  equ   $54 | MapBI17: incbin "..\maps\BI17.map.pck"  | include "..\maps\mapdata\BI17.asm"  
+MapsBlockBI21:  equ   $54 | MapBI21: incbin "..\maps\BI21.map.pck"  | include "..\maps\mapdata\BI21.asm"  
+MapsBlockBI25:  equ   $54 | MapBI25: incbin "..\maps\BI25.map.pck"  | include "..\maps\mapdata\BI25.asm"  
+MapsBlockBI26:  equ   $54 | MapBI26: incbin "..\maps\BI26.map.pck"  | include "..\maps\mapdata\BI26.asm"  
+MapsBlockBI27:  equ   $54 | MapBI27: incbin "..\maps\BI27.map.pck"  | include "..\maps\mapdata\BI27.asm"  
+MapsBlockBI28:  equ   $54 | MapBI28: incbin "..\maps\BI28.map.pck"  | include "..\maps\mapdata\BI28.asm"  
+MapsBlockBI29:  equ   $54 | MapBI29: incbin "..\maps\BI29.map.pck"  | include "..\maps\mapdata\BI29.asm"  
+MapsBlockBI32:  equ   $54 | MapBI32: incbin "..\maps\BI32.map.pck"  | include "..\maps\mapdata\BI32.asm"  
+MapsBlockBI33:  equ   $54 | MapBI33: incbin "..\maps\BI33.map.pck"  | include "..\maps\mapdata\BI33.asm"  
+MapsBlockBI34:  equ   $54 | MapBI34: incbin "..\maps\BI34.map.pck"  | include "..\maps\mapdata\BI34.asm"  
+MapsBlockBI35:  equ   $54 | MapBI35: incbin "..\maps\BI35.map.pck"  | include "..\maps\mapdata\BI35.asm"  
+MapsBlockBI41:  equ   $54 | MapBI41: incbin "..\maps\BI41.map.pck"  | include "..\maps\mapdata\BI41.asm"  
+MapsBlockBI46:  equ   $54 | MapBI46: incbin "..\maps\BI46.map.pck"  | include "..\maps\mapdata\BI46.asm"  
+MapsBlockBI47:  equ   $54 | MapBI47: incbin "..\maps\BI47.map.pck"  | include "..\maps\mapdata\BI47.asm"  
+	ds		$c000-$,$ff
+dephase
 
 
+;
+; block $55
+;
+phase	$8000
+MapsBlockBJ03:  equ   $55 | MapBJ03: incbin "..\maps\BJ03.map.pck"  | include "..\maps\mapdata\BJ03.asm"  
+MapsBlockBJ04:  equ   $55 | MapBJ04: incbin "..\maps\BJ04.map.pck"  | include "..\maps\mapdata\BJ04.asm"  
+MapsBlockBJ05:  equ   $55 | MapBJ05: incbin "..\maps\BJ05.map.pck"  | include "..\maps\mapdata\BJ05.asm"  
+MapsBlockBJ06:  equ   $55 | MapBJ06: incbin "..\maps\BJ06.map.pck"  | include "..\maps\mapdata\BJ06.asm"  
+MapsBlockBJ09:  equ   $55 | MapBJ09: incbin "..\maps\BJ09.map.pck"  | include "..\maps\mapdata\BJ09.asm"  
+MapsBlockBJ15:  equ   $55 | MapBJ15: incbin "..\maps\BJ15.map.pck"  | include "..\maps\mapdata\BJ15.asm"  
+MapsBlockBJ16:  equ   $55 | MapBJ16: incbin "..\maps\BJ16.map.pck"  | include "..\maps\mapdata\BJ16.asm"  
+MapsBlockBJ19:  equ   $55 | MapBJ19: incbin "..\maps\BJ19.map.pck"  | include "..\maps\mapdata\BJ19.asm"  
+MapsBlockBJ20:  equ   $55 | MapBJ20: incbin "..\maps\BJ20.map.pck"  | include "..\maps\mapdata\BJ20.asm"  
+MapsBlockBJ21:  equ   $55 | MapBJ21: incbin "..\maps\BJ21.map.pck"  | include "..\maps\mapdata\BJ21.asm"  
+MapsBlockBJ22:  equ   $55 | MapBJ22: incbin "..\maps\BJ22.map.pck"  | include "..\maps\mapdata\BJ22.asm"  
+MapsBlockBJ25:  equ   $55 | MapBJ25: incbin "..\maps\BJ25.map.pck"  | include "..\maps\mapdata\BJ25.asm"  
+MapsBlockBJ29:  equ   $55 | MapBJ29: incbin "..\maps\BJ29.map.pck"  | include "..\maps\mapdata\BJ29.asm"  
+MapsBlockBJ30:  equ   $55 | MapBJ30: incbin "..\maps\BJ30.map.pck"  | include "..\maps\mapdata\BJ30.asm"  
+MapsBlockBJ31:  equ   $55 | MapBJ31: incbin "..\maps\BJ31.map.pck"  | include "..\maps\mapdata\BJ31.asm"  
+MapsBlockBJ32:  equ   $55 | MapBJ32: incbin "..\maps\BJ32.map.pck"  | include "..\maps\mapdata\BJ32.asm"  
+MapsBlockBJ35:  equ   $55 | MapBJ35: incbin "..\maps\BJ35.map.pck"  | include "..\maps\mapdata\BJ35.asm"  
+MapsBlockBJ41:  equ   $55 | MapBJ41: incbin "..\maps\BJ41.map.pck"  | include "..\maps\mapdata\BJ41.asm"  
+MapsBlockBJ42:  equ   $55 | MapBJ42: incbin "..\maps\BJ42.map.pck"  | include "..\maps\mapdata\BJ42.asm"  
+MapsBlockBJ43:  equ   $55 | MapBJ43: incbin "..\maps\BJ43.map.pck"  | include "..\maps\mapdata\BJ43.asm"  
+MapsBlockBJ46:  equ   $55 | MapBJ46: incbin "..\maps\BJ46.map.pck"  | include "..\maps\mapdata\BJ46.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $56
+;
+phase	$8000
+MapsBlockBK04:  equ   $56 | MapBK04: incbin "..\maps\BK04.map.pck"  | include "..\maps\mapdata\BK04.asm"  
+MapsBlockBK05:  equ   $56 | MapBK05: incbin "..\maps\BK05.map.pck"  | include "..\maps\mapdata\BK05.asm"  
+MapsBlockBK06:  equ   $56 | MapBK06: incbin "..\maps\BK06.map.pck"  | include "..\maps\mapdata\BK06.asm"  
+MapsBlockBK07:  equ   $56 | MapBK07: incbin "..\maps\BK07.map.pck"  | include "..\maps\mapdata\BK07.asm"  
+MapsBlockBK08:  equ   $56 | MapBK08: incbin "..\maps\BK08.map.pck"  | include "..\maps\mapdata\BK08.asm"  
+MapsBlockBK09:  equ   $56 | MapBK09: incbin "..\maps\BK09.map.pck"  | include "..\maps\mapdata\BK09.asm"  
+MapsBlockBK10:  equ   $56 | MapBK10: incbin "..\maps\BK10.map.pck"  | include "..\maps\mapdata\BK10.asm"  
+MapsBlockBK11:  equ   $56 | MapBK11: incbin "..\maps\BK11.map.pck"  | include "..\maps\mapdata\BK11.asm"  
+MapsBlockBK16:  equ   $56 | MapBK16: incbin "..\maps\BK16.map.pck"  | include "..\maps\mapdata\BK16.asm"  
+MapsBlockBK19:  equ   $56 | MapBK19: incbin "..\maps\BK19.map.pck"  | include "..\maps\mapdata\BK19.asm"  
+MapsBlockBK25:  equ   $56 | MapBK25: incbin "..\maps\BK25.map.pck"  | include "..\maps\mapdata\BK25.asm"  
+MapsBlockBK26:  equ   $56 | MapBK26: incbin "..\maps\BK26.map.pck"  | include "..\maps\mapdata\BK26.asm"  
+MapsBlockBK27:  equ   $56 | MapBK27: incbin "..\maps\BK27.map.pck"  | include "..\maps\mapdata\BK27.asm"  
+MapsBlockBK28:  equ   $56 | MapBK28: incbin "..\maps\BK28.map.pck"  | include "..\maps\mapdata\BK28.asm"  
+MapsBlockBK29:  equ   $56 | MapBK29: incbin "..\maps\BK29.map.pck"  | include "..\maps\mapdata\BK29.asm"  
+MapsBlockBK32:  equ   $56 | MapBK32: incbin "..\maps\BK32.map.pck"  | include "..\maps\mapdata\BK32.asm"  
+MapsBlockBK43:  equ   $56 | MapBK43: incbin "..\maps\BK43.map.pck"  | include "..\maps\mapdata\BK43.asm"  
+MapsBlockBK44:  equ   $56 | MapBK44: incbin "..\maps\BK44.map.pck"  | include "..\maps\mapdata\BK44.asm"  
+MapsBlockBK45:  equ   $56 | MapBK45: incbin "..\maps\BK45.map.pck"  | include "..\maps\mapdata\BK45.asm"  
+MapsBlockBK46:  equ   $56 | MapBK46: incbin "..\maps\BK46.map.pck"  | include "..\maps\mapdata\BK46.asm"  
+	ds		$c000-$,$ff
+dephase
 
 
+;
+; block $57
+;
+phase	$8000
+MapsBlockBL09:  equ   $57 | MapBL09: incbin "..\maps\BL09.map.pck"  | include "..\maps\mapdata\BL09.asm"  
+MapsBlockBL11:  equ   $57 | MapBL11: incbin "..\maps\BL11.map.pck"  | include "..\maps\mapdata\BL11.asm"  
+MapsBlockBL18:  equ   $57 | MapBL18: incbin "..\maps\BL18.map.pck"  | include "..\maps\mapdata\BL18.asm"  
+MapsBlockBL19:  equ   $57 | MapBL19: incbin "..\maps\BL19.map.pck"  | include "..\maps\mapdata\BL19.asm"  
+MapsBlockBL20:  equ   $57 | MapBL20: incbin "..\maps\BL20.map.pck"  | include "..\maps\mapdata\BL20.asm"  
+MapsBlockBL29:  equ   $57 | MapBL29: incbin "..\maps\BL29.map.pck"  | include "..\maps\mapdata\BL29.asm"  
+MapsBlockBL40:  equ   $57 | MapBL40: incbin "..\maps\BL40.map.pck"  | include "..\maps\mapdata\BL40.asm"  
+MapsBlockBL43:  equ   $57 | MapBL43: incbin "..\maps\BL43.map.pck"  | include "..\maps\mapdata\BL43.asm"  
+MapsBlockBL44:  equ   $57 | MapBL44: incbin "..\maps\BL44.map.pck"  | include "..\maps\mapdata\BL44.asm"  
+MapsBlockBL45:  equ   $57 | MapBL45: incbin "..\maps\BL45.map.pck"  | include "..\maps\mapdata\BL45.asm"  
+MapsBlockBL46:  equ   $57 | MapBL46: incbin "..\maps\BL46.map.pck"  | include "..\maps\mapdata\BL46.asm"  
+	ds		$c000-$,$ff
+dephase
 
 
+;
+; block $58
+;
+phase	$8000
+MapsBlockBM09:  equ   $58 | MapBM09: incbin "..\maps\BM09.map.pck"  | include "..\maps\mapdata\BM09.asm"  
+MapsBlockBM18:  equ   $58 | MapBM18: incbin "..\maps\BM18.map.pck"  | include "..\maps\mapdata\BM18.asm"  
+MapsBlockBM19:  equ   $58 | MapBM19: incbin "..\maps\BM19.map.pck"  | include "..\maps\mapdata\BM19.asm"  
+MapsBlockBM26:  equ   $58 | MapBM26: incbin "..\maps\BM26.map.pck"  | include "..\maps\mapdata\BM26.asm"  
+MapsBlockBM27:  equ   $58 | MapBM27: incbin "..\maps\BM27.map.pck"  | include "..\maps\mapdata\BM27.asm"  
+MapsBlockBM28:  equ   $58 | MapBM28: incbin "..\maps\BM28.map.pck"  | include "..\maps\mapdata\BM28.asm"  
+MapsBlockBM29:  equ   $58 | MapBM29: incbin "..\maps\BM29.map.pck"  | include "..\maps\mapdata\BM29.asm"  
+MapsBlockBM33:  equ   $58 | MapBM33: incbin "..\maps\BM33.map.pck"  | include "..\maps\mapdata\BM33.asm"  
+MapsBlockBM34:  equ   $58 | MapBM34: incbin "..\maps\BM34.map.pck"  | include "..\maps\mapdata\BM34.asm"  
+MapsBlockBM35:  equ   $58 | MapBM35: incbin "..\maps\BM35.map.pck"  | include "..\maps\mapdata\BM35.asm"  
+MapsBlockBM36:  equ   $58 | MapBM36: incbin "..\maps\BM36.map.pck"  | include "..\maps\mapdata\BM36.asm"  
+MapsBlockBM38:  equ   $58 | MapBM38: incbin "..\maps\BM38.map.pck"  | include "..\maps\mapdata\BM38.asm"  
+MapsBlockBM40:  equ   $58 | MapBM40: incbin "..\maps\BM40.map.pck"  | include "..\maps\mapdata\BM40.asm"  
+MapsBlockBM43:  equ   $58 | MapBM43: incbin "..\maps\BM43.map.pck"  | include "..\maps\mapdata\BM43.asm"  
+	ds		$c000-$,$ff
+dephase
+
+
+;
+; block $59
+;
+phase	$8000
+MapsBlockBN07:  equ   $59 | MapBN07: incbin "..\maps\BN07.map.pck"  | include "..\maps\mapdata\BN07.asm"  
+MapsBlockBN09:  equ   $59 | MapBN09: incbin "..\maps\BN09.map.pck"  | include "..\maps\mapdata\BN09.asm"  
+MapsBlockBN19:  equ   $59 | MapBN19: incbin "..\maps\BN19.map.pck"  | include "..\maps\mapdata\BN19.asm"  
+MapsBlockBN26:  equ   $59 | MapBN26: incbin "..\maps\BN26.map.pck"  | include "..\maps\mapdata\BN26.asm"  
+MapsBlockBN31:  equ   $59 | MapBN31: incbin "..\maps\BN31.map.pck"  | include "..\maps\mapdata\BN31.asm"  
+MapsBlockBN33:  equ   $59 | MapBN33: incbin "..\maps\BN33.map.pck"  | include "..\maps\mapdata\BN33.asm"  
+MapsBlockBN36:  equ   $59 | MapBN36: incbin "..\maps\BN36.map.pck"  | include "..\maps\mapdata\BN36.asm"  
+MapsBlockBN38:  equ   $59 | MapBN38: incbin "..\maps\BN38.map.pck"  | include "..\maps\mapdata\BN38.asm"  
+MapsBlockBN40:  equ   $59 | MapBN40: incbin "..\maps\BN40.map.pck"  | include "..\maps\mapdata\BN40.asm"  
+MapsBlockBN41:  equ   $59 | MapBN41: incbin "..\maps\BN41.map.pck"  | include "..\maps\mapdata\BN41.asm"  
+MapsBlockBN42:  equ   $59 | MapBN42: incbin "..\maps\BN42.map.pck"  | include "..\maps\mapdata\BN42.asm"  
+MapsBlockBN43:  equ   $59 | MapBN43: incbin "..\maps\BN43.map.pck"  | include "..\maps\mapdata\BN43.asm"  
+	ds		$c000-$,$ff
+dephase
+
+
+;
+; block $5a
+;
+phase	$8000
+MapsBlockBO04:  equ   $5a | MapBO04: incbin "..\maps\BO04.map.pck"  | include "..\maps\mapdata\BO04.asm"  
+MapsBlockBO05:  equ   $5a | MapBO05: incbin "..\maps\BO05.map.pck"  | include "..\maps\mapdata\BO05.asm"  
+MapsBlockBO06:  equ   $5a | MapBO06: incbin "..\maps\BO06.map.pck"  | include "..\maps\mapdata\BO06.asm"  
+MapsBlockBO07:  equ   $5a | MapBO07: incbin "..\maps\BO07.map.pck"  | include "..\maps\mapdata\BO07.asm"  
+MapsBlockBO08:  equ   $5a | MapBO08: incbin "..\maps\BO08.map.pck"  | include "..\maps\mapdata\BO08.asm"  
+MapsBlockBO09:  equ   $5a | MapBO09: incbin "..\maps\BO09.map.pck"  | include "..\maps\mapdata\BO09.asm"  
+MapsBlockBO19:  equ   $5a | MapBO19: incbin "..\maps\BO19.map.pck"  | include "..\maps\mapdata\BO19.asm"  
+MapsBlockBO20:  equ   $5a | MapBO20: incbin "..\maps\BO20.map.pck"  | include "..\maps\mapdata\BO20.asm"  
+MapsBlockBO21:  equ   $5a | MapBO21: incbin "..\maps\BO21.map.pck"  | include "..\maps\mapdata\BO21.asm"  
+MapsBlockBO26:  equ   $5a | MapBO26: incbin "..\maps\BO26.map.pck"  | include "..\maps\mapdata\BO26.asm"  
+MapsBlockBO29:  equ   $5a | MapBO29: incbin "..\maps\BO29.map.pck"  | include "..\maps\mapdata\BO29.asm"  
+MapsBlockBO30:  equ   $5a | MapBO30: incbin "..\maps\BO30.map.pck"  | include "..\maps\mapdata\BO30.asm"  
+MapsBlockBO31:  equ   $5a | MapBO31: incbin "..\maps\BO31.map.pck"  | include "..\maps\mapdata\BO31.asm"  
+MapsBlockBO32:  equ   $5a | MapBO32: incbin "..\maps\BO32.map.pck"  | include "..\maps\mapdata\BO32.asm"  
+MapsBlockBO33:  equ   $5a | MapBO33: incbin "..\maps\BO33.map.pck"  | include "..\maps\mapdata\BO33.asm"  
+MapsBlockBO36:  equ   $5a | MapBO36: incbin "..\maps\BO36.map.pck"  | include "..\maps\mapdata\BO36.asm"  
+MapsBlockBO37:  equ   $5a | MapBO37: incbin "..\maps\BO37.map.pck"  | include "..\maps\mapdata\BO37.asm"  
+MapsBlockBO38:  equ   $5a | MapBO38: incbin "..\maps\BO38.map.pck"  | include "..\maps\mapdata\BO38.asm"  
+MapsBlockBO39:  equ   $5a | MapBO39: incbin "..\maps\BO39.map.pck"  | include "..\maps\mapdata\BO39.asm"  
+MapsBlockBO40:  equ   $5a | MapBO40: incbin "..\maps\BO40.map.pck"  | include "..\maps\mapdata\BO40.asm"  
+MapsBlockBO47:  equ   $5a | MapBO47: incbin "..\maps\BO47.map.pck"  | include "..\maps\mapdata\BO47.asm"  
+MapsBlockBO48:  equ   $5a | MapBO48: incbin "..\maps\BO48.map.pck"  | include "..\maps\mapdata\BO48.asm"  
+MapsBlockBO49:  equ   $5a | MapBO49: incbin "..\maps\BO49.map.pck"  | include "..\maps\mapdata\BO49.asm"  
+MapsBlockBO50:  equ   $5a | MapBO50: incbin "..\maps\BO50.map.pck"  | include "..\maps\mapdata\BO50.asm"  
+	ds		$c000-$,$ff
+dephase
+
+
+;
+; block $5b
+;
+phase	$8000
+MapsBlockBP04:  equ   $5b | MapBP04: incbin "..\maps\BP04.map.pck"  | include "..\maps\mapdata\BP04.asm"  
+MapsBlockBP18:  equ   $5b | MapBP18: incbin "..\maps\BP18.map.pck"  | include "..\maps\mapdata\BP18.asm"  
+MapsBlockBP19:  equ   $5b | MapBP19: incbin "..\maps\BP19.map.pck"  | include "..\maps\mapdata\BP19.asm"  
+MapsBlockBP21:  equ   $5b | MapBP21: incbin "..\maps\BP21.map.pck"  | include "..\maps\mapdata\BP21.asm"  
+MapsBlockBP26:  equ   $5b | MapBP26: incbin "..\maps\BP26.map.pck"  | include "..\maps\mapdata\BP26.asm"  
+MapsBlockBP27:  equ   $5b | MapBP27: incbin "..\maps\BP27.map.pck"  | include "..\maps\mapdata\BP27.asm"  
+MapsBlockBP30:  equ   $5b | MapBP30: incbin "..\maps\BP30.map.pck"  | include "..\maps\mapdata\BP30.asm"  
+MapsBlockBP31:  equ   $5b | MapBP31: incbin "..\maps\BP31.map.pck"  | include "..\maps\mapdata\BP31.asm"  
+MapsBlockBP32:  equ   $5b | MapBP32: incbin "..\maps\BP32.map.pck"  | include "..\maps\mapdata\BP32.asm"  
+MapsBlockBP33:  equ   $5b | MapBP33: incbin "..\maps\BP33.map.pck"  | include "..\maps\mapdata\BP33.asm"  
+MapsBlockBP34:  equ   $5b | MapBP34: incbin "..\maps\BP34.map.pck"  | include "..\maps\mapdata\BP34.asm"  
+MapsBlockBP37:  equ   $5b | MapBP37: incbin "..\maps\BP37.map.pck"  | include "..\maps\mapdata\BP37.asm"  
+MapsBlockBP47:  equ   $5b | MapBP47: incbin "..\maps\BP47.map.pck"  | include "..\maps\mapdata\BP47.asm"  
+MapsBlockBP50:  equ   $5b | MapBP50: incbin "..\maps\BP50.map.pck"  | include "..\maps\mapdata\BP50.asm"  
+	ds		$c000-$,$ff
+dephase
+
+
+;
+; block $5c
+;
+phase	$8000
+MapsBlockBQ03:  equ   $5c | MapBQ03: incbin "..\maps\BQ03.map.pck"  | include "..\maps\mapdata\BQ03.asm"  
+MapsBlockBQ04:  equ   $5c | MapBQ04: incbin "..\maps\BQ04.map.pck"  | include "..\maps\mapdata\BQ04.asm"  
+MapsBlockBQ05:  equ   $5c | MapBQ05: incbin "..\maps\BQ05.map.pck"  | include "..\maps\mapdata\BQ05.asm"  
+MapsBlockBQ06:  equ   $5c | MapBQ06: incbin "..\maps\BQ06.map.pck"  | include "..\maps\mapdata\BQ06.asm"  
+MapsBlockBQ07:  equ   $5c | MapBQ07: incbin "..\maps\BQ07.map.pck"  | include "..\maps\mapdata\BQ07.asm"  
+MapsBlockBQ08:  equ   $5c | MapBQ08: incbin "..\maps\BQ08.map.pck"  | include "..\maps\mapdata\BQ08.asm"  
+MapsBlockBQ18:  equ   $5c | MapBQ18: incbin "..\maps\BQ18.map.pck"  | include "..\maps\mapdata\BQ18.asm"  
+MapsBlockBQ21:  equ   $5c | MapBQ21: incbin "..\maps\BQ21.map.pck"  | include "..\maps\mapdata\BQ21.asm"  
+MapsBlockBQ27:  equ   $5c | MapBQ27: incbin "..\maps\BQ27.map.pck"  | include "..\maps\mapdata\BQ27.asm"  
+MapsBlockBQ30:  equ   $5c | MapBQ30: incbin "..\maps\BQ30.map.pck"  | include "..\maps\mapdata\BQ30.asm"  
+MapsBlockBQ31:  equ   $5c | MapBQ31: incbin "..\maps\BQ31.map.pck"  | include "..\maps\mapdata\BQ31.asm"  
+MapsBlockBQ32:  equ   $5c | MapBQ32: incbin "..\maps\BQ32.map.pck"  | include "..\maps\mapdata\BQ32.asm"  
+MapsBlockBQ33:  equ   $5c | MapBQ33: incbin "..\maps\BQ33.map.pck"  | include "..\maps\mapdata\BQ33.asm"  
+MapsBlockBQ37:  equ   $5c | MapBQ37: incbin "..\maps\BQ37.map.pck"  | include "..\maps\mapdata\BQ37.asm"  
+MapsBlockBQ47:  equ   $5c | MapBQ47: incbin "..\maps\BQ47.map.pck"  | include "..\maps\mapdata\BQ47.asm"  
+MapsBlockBQ50:  equ   $5c | MapBQ50: incbin "..\maps\BQ50.map.pck"  | include "..\maps\mapdata\BQ50.asm"  
+	ds		$c000-$,$ff
+dephase
+
+
+;
+; block $5d
+;
+phase	$8000
+MapsBlockBR03:  equ   $5d | MapBR03: incbin "..\maps\BR03.map.pck"  | include "..\maps\mapdata\BR03.asm"  
+MapsBlockBR06:  equ   $5d | MapBR06: incbin "..\maps\BR06.map.pck"  | include "..\maps\mapdata\BR06.asm"  
+MapsBlockBR07:  equ   $5d | MapBR07: incbin "..\maps\BR07.map.pck"  | include "..\maps\mapdata\BR07.asm"  
+MapsBlockBR08:  equ   $5d | MapBR08: incbin "..\maps\BR08.map.pck"  | include "..\maps\mapdata\BR08.asm"  
+MapsBlockBR16:  equ   $5d | MapBR16: incbin "..\maps\BR16.map.pck"  | include "..\maps\mapdata\BR16.asm"  
+MapsBlockBR17:  equ   $5d | MapBR17: incbin "..\maps\BR17.map.pck"  | include "..\maps\mapdata\BR17.asm"  
+MapsBlockBR18:  equ   $5d | MapBR18: incbin "..\maps\BR18.map.pck"  | include "..\maps\mapdata\BR18.asm"  
+MapsBlockBR19:  equ   $5d | MapBR19: incbin "..\maps\BR19.map.pck"  | include "..\maps\mapdata\BR19.asm"  
+MapsBlockBR20:  equ   $5d | MapBR20: incbin "..\maps\BR20.map.pck"  | include "..\maps\mapdata\BR20.asm"  
+MapsBlockBR21:  equ   $5d | MapBR21: incbin "..\maps\BR21.map.pck"  | include "..\maps\mapdata\BR21.asm"  
+MapsBlockBR24:  equ   $5d | MapBR24: incbin "..\maps\BR24.map.pck"  | include "..\maps\mapdata\BR24.asm"  
+MapsBlockBR25:  equ   $5d | MapBR25: incbin "..\maps\BR25.map.pck"  | include "..\maps\mapdata\BR25.asm"  
+MapsBlockBR27:  equ   $5d | MapBR27: incbin "..\maps\BR27.map.pck"  | include "..\maps\mapdata\BR27.asm"  
+MapsBlockBR28:  equ   $5d | MapBR28: incbin "..\maps\BR28.map.pck"  | include "..\maps\mapdata\BR28.asm"  
+MapsBlockBR30:  equ   $5d | MapBR30: incbin "..\maps\BR30.map.pck"  | include "..\maps\mapdata\BR30.asm"  
+MapsBlockBR35:  equ   $5d | MapBR35: incbin "..\maps\BR35.map.pck"  | include "..\maps\mapdata\BR35.asm"  
+MapsBlockBR36:  equ   $5d | MapBR36: incbin "..\maps\BR36.map.pck"  | include "..\maps\mapdata\BR36.asm"  
+MapsBlockBR37:  equ   $5d | MapBR37: incbin "..\maps\BR37.map.pck"  | include "..\maps\mapdata\BR37.asm"  
+MapsBlockBR38:  equ   $5d | MapBR38: incbin "..\maps\BR38.map.pck"  | include "..\maps\mapdata\BR38.asm"  
+MapsBlockBR45:  equ   $5d | MapBR45: incbin "..\maps\BR45.map.pck"  | include "..\maps\mapdata\BR45.asm"  
+MapsBlockBR46:  equ   $5d | MapBR46: incbin "..\maps\BR46.map.pck"  | include "..\maps\mapdata\BR46.asm"  
+MapsBlockBR47:  equ   $5d | MapBR47: incbin "..\maps\BR47.map.pck"  | include "..\maps\mapdata\BR47.asm"  
+MapsBlockBR48:  equ   $5d | MapBR48: incbin "..\maps\BR48.map.pck"  | include "..\maps\mapdata\BR48.asm"  
+	ds		$c000-$,$ff
+dephase
+
+
+;
+; block $5e
+;
+phase	$8000
+MapsBlockBS01:  equ   $5e | MapBS01: incbin "..\maps\BS01.map.pck"  | include "..\maps\mapdata\BS01.asm"  
+MapsBlockBS03:  equ   $5e | MapBS03: incbin "..\maps\BS03.map.pck"  | include "..\maps\mapdata\BS03.asm"  
+MapsBlockBS04:  equ   $5e | MapBS04: incbin "..\maps\BS04.map.pck"  | include "..\maps\mapdata\BS04.asm"  
+MapsBlockBS06:  equ   $5e | MapBS06: incbin "..\maps\BS06.map.pck"  | include "..\maps\mapdata\BS06.asm"  
+MapsBlockBS07:  equ   $5e | MapBS07: incbin "..\maps\BS07.map.pck"  | include "..\maps\mapdata\BS07.asm"  
+MapsBlockBS08:  equ   $5e | MapBS08: incbin "..\maps\BS08.map.pck"  | include "..\maps\mapdata\BS08.asm"  
+MapsBlockBS16:  equ   $5e | MapBS16: incbin "..\maps\BS16.map.pck"  | include "..\maps\mapdata\BS16.asm"  
+MapsBlockBS20:  equ   $5e | MapBS20: incbin "..\maps\BS20.map.pck"  | include "..\maps\mapdata\BS20.asm"  
+MapsBlockBS24:  equ   $5e | MapBS24: incbin "..\maps\BS24.map.pck"  | include "..\maps\mapdata\BS24.asm"  
+MapsBlockBS28:  equ   $5e | MapBS28: incbin "..\maps\BS28.map.pck"  | include "..\maps\mapdata\BS28.asm"  
+MapsBlockBS30:  equ   $5e | MapBS30: incbin "..\maps\BS30.map.pck"  | include "..\maps\mapdata\BS30.asm"  
+MapsBlockBS34:  equ   $5e | MapBS34: incbin "..\maps\BS34.map.pck"  | include "..\maps\mapdata\BS34.asm"  
+MapsBlockBS35:  equ   $5e | MapBS35: incbin "..\maps\BS35.map.pck"  | include "..\maps\mapdata\BS35.asm"  
+MapsBlockBS38:  equ   $5e | MapBS38: incbin "..\maps\BS38.map.pck"  | include "..\maps\mapdata\BS38.asm"  
+MapsBlockBS39:  equ   $5e | MapBS39: incbin "..\maps\BS39.map.pck"  | include "..\maps\mapdata\BS39.asm"  
+MapsBlockBS40:  equ   $5e | MapBS40: incbin "..\maps\BS40.map.pck"  | include "..\maps\mapdata\BS40.asm"  
+MapsBlockBS41:  equ   $5e | MapBS41: incbin "..\maps\BS41.map.pck"  | include "..\maps\mapdata\BS41.asm"  
+MapsBlockBS44:  equ   $5e | MapBS44: incbin "..\maps\BS44.map.pck"  | include "..\maps\mapdata\BS44.asm"  
+MapsBlockBS45:  equ   $5e | MapBS45: incbin "..\maps\BS45.map.pck"  | include "..\maps\mapdata\BS45.asm"  
+MapsBlockBS47:  equ   $5e | MapBS47: incbin "..\maps\BS47.map.pck"  | include "..\maps\mapdata\BS47.asm"  
+MapsBlockBS48:  equ   $5e | MapBS48: incbin "..\maps\BS48.map.pck"  | include "..\maps\mapdata\BS48.asm"  
+MapsBlockBS49:  equ   $5e | MapBS49: incbin "..\maps\BS49.map.pck"  | include "..\maps\mapdata\BS49.asm"  
+MapsBlockBS50:  equ   $5e | MapBS50: incbin "..\maps\BS50.map.pck"  | include "..\maps\mapdata\BS50.asm"  
+	ds		$c000-$,$ff
+dephase
+
+
+;
+; block $5f
+;
+phase	$8000
+MapsBlockBT01:  equ   $5f | MapBT01: incbin "..\maps\BT01.map.pck"  | include "..\maps\mapdata\BT01.asm"  
+MapsBlockBT08:  equ   $5f | MapBT08: incbin "..\maps\BT08.map.pck"  | include "..\maps\mapdata\BT08.asm"  
+MapsBlockBT12:  equ   $5f | MapBT12: incbin "..\maps\BT12.map.pck"  | include "..\maps\mapdata\BT12.asm"  
+MapsBlockBT13:  equ   $5f | MapBT13: incbin "..\maps\BT13.map.pck"  | include "..\maps\mapdata\BT13.asm"  
+MapsBlockBT16:  equ   $5f | MapBT16: incbin "..\maps\BT16.map.pck"  | include "..\maps\mapdata\BT16.asm"  
+MapsBlockBT20:  equ   $5f | MapBT20: incbin "..\maps\BT20.map.pck"  | include "..\maps\mapdata\BT20.asm"  
+MapsBlockBT21:  equ   $5f | MapBT21: incbin "..\maps\BT21.map.pck"  | include "..\maps\mapdata\BT21.asm"  
+MapsBlockBT22:  equ   $5f | MapBT22: incbin "..\maps\BT22.map.pck"  | include "..\maps\mapdata\BT22.asm"  
+MapsBlockBT23:  equ   $5f | MapBT23: incbin "..\maps\BT23.map.pck"  | include "..\maps\mapdata\BT23.asm"  
+MapsBlockBT24:  equ   $5f | MapBT24: incbin "..\maps\BT24.map.pck"  | include "..\maps\mapdata\BT24.asm"  
+MapsBlockBT26:  equ   $5f | MapBT26: incbin "..\maps\BT26.map.pck"  | include "..\maps\mapdata\BT26.asm"  
+MapsBlockBT27:  equ   $5f | MapBT27: incbin "..\maps\BT27.map.pck"  | include "..\maps\mapdata\BT27.asm"  
+MapsBlockBT28:  equ   $5f | MapBT28: incbin "..\maps\BT28.map.pck"  | include "..\maps\mapdata\BT28.asm"  
+MapsBlockBT30:  equ   $5f | MapBT30: incbin "..\maps\BT30.map.pck"  | include "..\maps\mapdata\BT30.asm"  
+MapsBlockBT31:  equ   $5f | MapBT31: incbin "..\maps\BT31.map.pck"  | include "..\maps\mapdata\BT31.asm"  
+MapsBlockBT33:  equ   $5f | MapBT33: incbin "..\maps\BT33.map.pck"  | include "..\maps\mapdata\BT33.asm"  
+MapsBlockBT34:  equ   $5f | MapBT34: incbin "..\maps\BT34.map.pck"  | include "..\maps\mapdata\BT34.asm"  
+MapsBlockBT37:  equ   $5f | MapBT37: incbin "..\maps\BT37.map.pck"  | include "..\maps\mapdata\BT37.asm"  
+MapsBlockBT38:  equ   $5f | MapBT38: incbin "..\maps\BT38.map.pck"  | include "..\maps\mapdata\BT38.asm"  
+MapsBlockBT39:  equ   $5f | MapBT39: incbin "..\maps\BT39.map.pck"  | include "..\maps\mapdata\BT39.asm"  
+MapsBlockBT40:  equ   $5f | MapBT40: incbin "..\maps\BT40.map.pck"  | include "..\maps\mapdata\BT40.asm"  
+MapsBlockBT45:  equ   $5f | MapBT45: incbin "..\maps\BT45.map.pck"  | include "..\maps\mapdata\BT45.asm"  
+MapsBlockBT49:  equ   $5f | MapBT49: incbin "..\maps\BT49.map.pck"  | include "..\maps\mapdata\BT49.asm"  
+MapsBlockBT50:  equ   $5f | MapBT50: incbin "..\maps\BT50.map.pck"  | include "..\maps\mapdata\BT50.asm"  
+	ds		$c000-$,$ff
+dephase
 
 
 
@@ -3907,1870 +4371,156 @@ phase	$8000
 	ds		$c000-$,$ff
 dephase
 
-
-
-
-
 ;
 ; block $6b
 ;
 phase	$8000
-MapsBlockAA01:  equ   $6b
-MapAA01:
-  incbin "..\maps\AA01.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAA02:  equ   $6b
-MapAA02:
-  incbin "..\maps\AA02.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAA03:  equ   $6b
-MapAA03:
-  incbin "..\maps\AA03.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAA04:  equ   $6b
-MapAA04:
-  incbin "..\maps\AA04.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAA05:  equ   $6b
-MapAA05:
-  incbin "..\maps\AA05.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAA06:  equ   $6b
-MapAA06:
-  incbin "..\maps\AA06.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAA35:  equ   $6b
-MapAA35:
-  incbin "..\maps\AA35.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAA47:  equ   $6b
-MapAA47:
-  incbin "..\maps\AA47.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAA48:  equ   $6b
-MapAA48:
-  incbin "..\maps\AA48.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAA49:  equ   $6b
-MapAA49:
-  incbin "..\maps\AA49.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-
-
-
-
-
+MapsBlockAA01:  equ   $6b | MapAA01: incbin "..\maps\AA01.map.pck"  | include "..\maps\mapdata\AA01.asm"  
+MapsBlockAA02:  equ   $6b | MapAA02: incbin "..\maps\AA02.map.pck"  | include "..\maps\mapdata\AA02.asm"  
+MapsBlockAA03:  equ   $6b | MapAA03: incbin "..\maps\AA03.map.pck"  | include "..\maps\mapdata\AA03.asm"  
+MapsBlockAA04:  equ   $6b | MapAA04: incbin "..\maps\AA04.map.pck"  | include "..\maps\mapdata\AA04.asm"  
+MapsBlockAA05:  equ   $6b | MapAA05: incbin "..\maps\AA05.map.pck"  | include "..\maps\mapdata\AA05.asm"  
+MapsBlockAA06:  equ   $6b | MapAA06: incbin "..\maps\AA06.map.pck"  | include "..\maps\mapdata\AA06.asm"  
+MapsBlockAA35:  equ   $6b | MapAA35: incbin "..\maps\AA35.map.pck"  | include "..\maps\mapdata\AA35.asm"  
+MapsBlockAA47:  equ   $6b | MapAA47: incbin "..\maps\AA47.map.pck"  | include "..\maps\mapdata\AA47.asm"  
+MapsBlockAA48:  equ   $6b | MapAA48: incbin "..\maps\AA48.map.pck"  | include "..\maps\mapdata\AA48.asm"  
+MapsBlockAA49:  equ   $6b | MapAA49: incbin "..\maps\AA49.map.pck"  | include "..\maps\mapdata\AA49.asm"  
 	ds		$c000-$,$ff
 dephase
-
-
-
-
-
-
-
 
 ;
 ; block $6c
 ;
 phase	$8000
-MapsBlockAB01:  equ   $6c
-MapAB01:
-  incbin "..\maps\AB01.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAB02:  equ   $6c
-MapAB02:
-  incbin "..\maps\AB02.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAB05:  equ   $6c
-MapAB05:
-  incbin "..\maps\AB05.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAB06:  equ   $6c
-MapAB06:
-  incbin "..\maps\AB06.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAB09:  equ   $6b
-MapAB09:
-  incbin "..\maps\AB09.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAB10:  equ   $6c
-MapAB10:
-  incbin "..\maps\AB10.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAB12:  equ   $6c
-MapAB12:
-  incbin "..\maps\AB12.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAB35:  equ   $6c
-MapAB35:
-  incbin "..\maps\AB35.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-
-
-
-
-;==================================================================================================================
-MapsBlockAB45:  equ   $6c
-MapAB45:
-  incbin "..\maps\AB45.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAB46:  equ   $6c
-MapAB46:
-  incbin "..\maps\AB46.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAB47:  equ   $6c
-MapAB47:
-  incbin "..\maps\AB47.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAB48:  equ   $6c
-MapAB48:
-  incbin "..\maps\AB48.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAB49:  equ   $6c
-MapAB49:
-  incbin "..\maps\AB49.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-
-
+MapsBlockAB01:  equ   $6c | MapAB01: incbin "..\maps\AB01.map.pck"  | include "..\maps\mapdata\AB01.asm"  
+MapsBlockAB02:  equ   $6c | MapAB02: incbin "..\maps\AB02.map.pck"  | include "..\maps\mapdata\AB02.asm"  
+MapsBlockAB05:  equ   $6c | MapAB05: incbin "..\maps\AB05.map.pck"  | include "..\maps\mapdata\AB05.asm"  
+MapsBlockAB06:  equ   $6c | MapAB06: incbin "..\maps\AB06.map.pck"  | include "..\maps\mapdata\AB06.asm"  
+MapsBlockAB09:  equ   $6c | MapAB09: incbin "..\maps\AB09.map.pck"  | include "..\maps\mapdata\AB09.asm"  
+MapsBlockAB10:  equ   $6c | MapAB10: incbin "..\maps\AB10.map.pck"  | include "..\maps\mapdata\AB10.asm"  
+MapsBlockAB12:  equ   $6c | MapAB12: incbin "..\maps\AB12.map.pck"  | include "..\maps\mapdata\AB12.asm"  
+MapsBlockAB35:  equ   $6c | MapAB35: incbin "..\maps\AB35.map.pck"  | include "..\maps\mapdata\AB35.asm"  
+MapsBlockAB45:  equ   $6c | MapAB45: incbin "..\maps\AB45.map.pck"  | include "..\maps\mapdata\AB45.asm"  
+MapsBlockAB46:  equ   $6c | MapAB46: incbin "..\maps\AB46.map.pck"  | include "..\maps\mapdata\AB46.asm"  
+MapsBlockAB47:  equ   $6c | MapAB47: incbin "..\maps\AB47.map.pck"  | include "..\maps\mapdata\AB47.asm"  
+MapsBlockAB48:  equ   $6c | MapAB48: incbin "..\maps\AB48.map.pck"  | include "..\maps\mapdata\AB48.asm"  
+MapsBlockAB49:  equ   $6c | MapAB49: incbin "..\maps\AB49.map.pck"  | include "..\maps\mapdata\AB49.asm"  
 	ds		$c000-$,$ff
 dephase
-
 
 ;
 ; block $6d
 ;
 phase	$8000
-MapsBlockAC01:  equ   $6d
-MapAC01:
-  incbin "..\maps\AC01.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC02:  equ   $6d
-MapAC02:
-  incbin "..\maps\AC02.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC03:  equ   $6d
-MapAC03:
-  incbin "..\maps\AC03.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC06:  equ   $6d
-MapAC06:
-  incbin "..\maps\AC06.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC10:  equ   $6d
-MapAC10:
-  incbin "..\maps\AC10.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC11:  equ   $6d
-MapAC11:
-  incbin "..\maps\AC11.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC12:  equ   $6d
-MapAC12:
-  incbin "..\maps\AC12.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC16:  equ   $6d
-MapAC16:
-  incbin "..\maps\AC16.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC17:  equ   $6d
-MapAC17:
-  incbin "..\maps\AC17.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC18:  equ   $6d
-MapAC18:
-  incbin "..\maps\AC18.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC19:  equ   $6d
-MapAC19:
-  incbin "..\maps\AC19.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC20:  equ   $6d
-MapAC20:
-  incbin "..\maps\AC20.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC21:  equ   $6d
-MapAC21:
-  incbin "..\maps\AC21.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC35:  equ   $6d
-MapAC35:
-  incbin "..\maps\AC35.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC36:  equ   $6d
-MapAC36:
-  incbin "..\maps\AC36.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC37:  equ   $6d
-MapAC37:
-  incbin "..\maps\AC37.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC38:  equ   $6d
-MapAC38:
-  incbin "..\maps\AC38.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC45:  equ   $6d
-MapAC45:
-  incbin "..\maps\AC45.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC47:  equ   $6d
-MapAC47:
-  incbin "..\maps\AC47.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC48:  equ   $6d
-MapAC48:
-  incbin "..\maps\AC48.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC49:  equ   $6d
-MapAC49:
-  incbin "..\maps\AC49.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAC50:  equ   $6d
-MapAC50:
-  incbin "..\maps\AC50.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-
+MapsBlockAC01:  equ   $6d | MapAC01: incbin "..\maps\AC01.map.pck"  | include "..\maps\mapdata\AC01.asm"  
+MapsBlockAC02:  equ   $6d | MapAC02: incbin "..\maps\AC02.map.pck"  | include "..\maps\mapdata\AC02.asm"  
+MapsBlockAC03:  equ   $6d | MapAC03: incbin "..\maps\AC03.map.pck"  | include "..\maps\mapdata\AC03.asm"  
+MapsBlockAC06:  equ   $6d | MapAC06: incbin "..\maps\AC06.map.pck"  | include "..\maps\mapdata\AC06.asm"  
+MapsBlockAC10:  equ   $6d | MapAC10: incbin "..\maps\AC10.map.pck"  | include "..\maps\mapdata\AC10.asm"  
+MapsBlockAC11:  equ   $6d | MapAC11: incbin "..\maps\AC11.map.pck"  | include "..\maps\mapdata\AC11.asm"  
+MapsBlockAC12:  equ   $6d | MapAC12: incbin "..\maps\AC12.map.pck"  | include "..\maps\mapdata\AC12.asm"  
+MapsBlockAC16:  equ   $6d | MapAC16: incbin "..\maps\AC16.map.pck"  | include "..\maps\mapdata\AC16.asm"  
+MapsBlockAC17:  equ   $6d | MapAC17: incbin "..\maps\AC17.map.pck"  | include "..\maps\mapdata\AC17.asm"  
+MapsBlockAC18:  equ   $6d | MapAC18: incbin "..\maps\AC18.map.pck"  | include "..\maps\mapdata\AC18.asm"  
+MapsBlockAC19:  equ   $6d | MapAC19: incbin "..\maps\AC19.map.pck"  | include "..\maps\mapdata\AC19.asm"  
+MapsBlockAC20:  equ   $6d | MapAC20: incbin "..\maps\AC20.map.pck"  | include "..\maps\mapdata\AC20.asm"  
+MapsBlockAC21:  equ   $6d | MapAC21: incbin "..\maps\AC21.map.pck"  | include "..\maps\mapdata\AC21.asm"  
+MapsBlockAC35:  equ   $6d | MapAC35: incbin "..\maps\AC35.map.pck"  | include "..\maps\mapdata\AC35.asm"  
+MapsBlockAC36:  equ   $6d | MapAC36: incbin "..\maps\AC36.map.pck"  | include "..\maps\mapdata\AC36.asm"  
+MapsBlockAC37:  equ   $6d | MapAC37: incbin "..\maps\AC37.map.pck"  | include "..\maps\mapdata\AC37.asm"  
+MapsBlockAC38:  equ   $6d | MapAC38: incbin "..\maps\AC38.map.pck"  | include "..\maps\mapdata\AC38.asm"  
+MapsBlockAC45:  equ   $6d | MapAC45: incbin "..\maps\AC45.map.pck"  | include "..\maps\mapdata\AC45.asm"  
+MapsBlockAC47:  equ   $6d | MapAC47: incbin "..\maps\AC47.map.pck"  | include "..\maps\mapdata\AC47.asm"  
+MapsBlockAC48:  equ   $6d | MapAC48: incbin "..\maps\AC48.map.pck"  | include "..\maps\mapdata\AC48.asm"  
+MapsBlockAC49:  equ   $6d | MapAC49: incbin "..\maps\AC49.map.pck"  | include "..\maps\mapdata\AC49.asm"  
+MapsBlockAC50:  equ   $6d | MapAC50: incbin "..\maps\AC50.map.pck"  | include "..\maps\mapdata\AC50.asm"  
 	ds		$c000-$,$ff
 dephase
-
-
-
-
-
-
 
 ;
 ; block $6e
 ;
 phase	$8000
-MapsBlockAD01:  equ   $6e
-MapAD01:
-  incbin "..\maps\AD01.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD02:  equ   $6e
-MapAD02:
-  incbin "..\maps\AD02.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD06:  equ   $6e
-MapAD06:
-  incbin "..\maps\AD06.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD10:  equ   $6e
-MapAD10:
-  incbin "..\maps\AD10.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD11:  equ   $6e
-MapAD11:
-  incbin "..\maps\AD11.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD12:  equ   $6e
-MapAD12:
-  incbin "..\maps\AD12.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD13:  equ   $6e
-MapAD13:
-  incbin "..\maps\AD13.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD21:  equ   $6e
-MapAD21:
-  incbin "..\maps\AD21.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD22:  equ   $6e
-MapAD22:
-  incbin "..\maps\AD22.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD23:  equ   $6e
-MapAD23:
-  incbin "..\maps\AD23.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD35:  equ   $6e
-MapAD35:
-  incbin "..\maps\AD35.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD38:  equ   $6e
-MapAD38:
-  incbin "..\maps\AD38.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD39:  equ   $6e
-MapAD39:
-  incbin "..\maps\AD39.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD40:  equ   $6e
-MapAD40:
-  incbin "..\maps\AD40.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD41:  equ   $6e
-MapAD41:
-  incbin "..\maps\AD41.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD47:  equ   $6e
-MapAD47:
-  incbin "..\maps\AD47.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD48:  equ   $6e
-MapAD48:
-  incbin "..\maps\AD48.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD49:  equ   $6e
-MapAD49:
-  incbin "..\maps\AD49.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAD50:  equ   $6e
-MapAD50:
-  incbin "..\maps\AD50.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
+MapsBlockAD01:  equ   $6e | MapAD01: incbin "..\maps\AD01.map.pck"  | include "..\maps\mapdata\AD01.asm"  
+MapsBlockAD02:  equ   $6e | MapAD02: incbin "..\maps\AD02.map.pck"  | include "..\maps\mapdata\AD02.asm"  
+MapsBlockAD06:  equ   $6e | MapAD06: incbin "..\maps\AD06.map.pck"  | include "..\maps\mapdata\AD06.asm"  
+MapsBlockAD10:  equ   $6e | MapAD10: incbin "..\maps\AD10.map.pck"  | include "..\maps\mapdata\AD10.asm"  
+MapsBlockAD11:  equ   $6e | MapAD11: incbin "..\maps\AD11.map.pck"  | include "..\maps\mapdata\AD11.asm"  
+MapsBlockAD12:  equ   $6e | MapAD12: incbin "..\maps\AD12.map.pck"  | include "..\maps\mapdata\AD12.asm"  
+MapsBlockAD13:  equ   $6e | MapAD13: incbin "..\maps\AD13.map.pck"  | include "..\maps\mapdata\AD13.asm"  
+MapsBlockAD21:  equ   $6e | MapAD21: incbin "..\maps\AD21.map.pck"  | include "..\maps\mapdata\AD21.asm"  
+MapsBlockAD22:  equ   $6e | MapAD22: incbin "..\maps\AD22.map.pck"  | include "..\maps\mapdata\AD22.asm"  
+MapsBlockAD23:  equ   $6e | MapAD23: incbin "..\maps\AD23.map.pck"  | include "..\maps\mapdata\AD23.asm"  
+MapsBlockAD35:  equ   $6e | MapAD35: incbin "..\maps\AD35.map.pck"  | include "..\maps\mapdata\AD35.asm"  
+MapsBlockAD38:  equ   $6e | MapAD38: incbin "..\maps\AD38.map.pck"  | include "..\maps\mapdata\AD38.asm"  
+MapsBlockAD39:  equ   $6e | MapAD39: incbin "..\maps\AD39.map.pck"  | include "..\maps\mapdata\AD39.asm"  
+MapsBlockAD40:  equ   $6e | MapAD40: incbin "..\maps\AD40.map.pck"  | include "..\maps\mapdata\AD40.asm"  
+MapsBlockAD41:  equ   $6e | MapAD41: incbin "..\maps\AD41.map.pck"  | include "..\maps\mapdata\AD41.asm"  
+MapsBlockAD47:  equ   $6e | MapAD47: incbin "..\maps\AD47.map.pck"  | include "..\maps\mapdata\AD47.asm"  
+MapsBlockAD48:  equ   $6e | MapAD48: incbin "..\maps\AD48.map.pck"  | include "..\maps\mapdata\AD48.asm"  
+MapsBlockAD49:  equ   $6e | MapAD49: incbin "..\maps\AD49.map.pck"  | include "..\maps\mapdata\AD49.asm"  
+MapsBlockAD50:  equ   $6e | MapAD50: incbin "..\maps\AD50.map.pck"  | include "..\maps\mapdata\AD50.asm"  
 	ds		$c000-$,$ff
 dephase
-
-
-
-
-
-
-
-
 
 ;
 ; block $6f
 ;
 phase	$8000
-MapsBlockAE01:  equ   $6f
-MapAE01:
-  incbin "..\maps\AE01.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE02:  equ   $6f
-MapAE02:
-  incbin "..\maps\AE02.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE04:  equ   $6f
-MapAE04:
-  incbin "..\maps\AE04.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE05:  equ   $6f
-MapAE05:
-  incbin "..\maps\AE05.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE06:  equ   $6f
-MapAE06:
-  incbin "..\maps\AE06.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE13:  equ   $6f
-MapAE13:
-  incbin "..\maps\AE13.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE14:  equ   $6f
-MapAE14:
-  incbin "..\maps\AE14.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE15:  equ   $6f
-MapAE15:
-  incbin "..\maps\AE15.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE16:  equ   $6f
-MapAE16:
-  incbin "..\maps\AE16.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE19:  equ   $6f
-MapAE19:
-  incbin "..\maps\AE19.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE20:  equ   $6f
-MapAE20:
-  incbin "..\maps\AE20.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE21:  equ   $6f
-MapAE21:
-  incbin "..\maps\AE21.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE22:  equ   $6f
-MapAE22:
-  incbin "..\maps\AE22.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE23:  equ   $6f
-MapAE23:
-  incbin "..\maps\AE23.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE24:  equ   $6f
-MapAE24:
-  incbin "..\maps\AE24.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE25:  equ   $6f
-MapAE25:
-  incbin "..\maps\AE25.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE26:  equ   $6f
-MapAE26:
-  incbin "..\maps\AE26.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE27:  equ   $6f
-MapAE27:
-  incbin "..\maps\AE27.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE34:  equ   $6f
-MapAE34:
-  incbin "..\maps\AE34.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE35:  equ   $6f
-MapAE35:
-  incbin "..\maps\AE35.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE44:  equ   $6f
-MapAE44:
-  incbin "..\maps\AE44.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE45:  equ   $6f
-MapAE45:
-  incbin "..\maps\AE45.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE46:  equ   $6f
-MapAE46:
-  incbin "..\maps\AE46.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE47:  equ   $6f
-MapAE47:
-  incbin "..\maps\AE47.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE48:  equ   $6f
-MapAE48:
-  incbin "..\maps\AE48.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAE49:  equ   $6f
-MapAE49:
-  incbin "..\maps\AE49.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-
+MapsBlockAE01:  equ   $6f | MapAE01: incbin "..\maps\AE01.map.pck"  | include "..\maps\mapdata\AE01.asm"  
+MapsBlockAE02:  equ   $6f | MapAE02: incbin "..\maps\AE02.map.pck"  | include "..\maps\mapdata\AE02.asm"  
+MapsBlockAE04:  equ   $6f | MapAE04: incbin "..\maps\AE04.map.pck"  | include "..\maps\mapdata\AE04.asm"  
+MapsBlockAE05:  equ   $6f | MapAE05: incbin "..\maps\AE05.map.pck"  | include "..\maps\mapdata\AE05.asm"  
+MapsBlockAE06:  equ   $6f | MapAE06: incbin "..\maps\AE06.map.pck"  | include "..\maps\mapdata\AE06.asm"  
+MapsBlockAE13:  equ   $6f | MapAE13: incbin "..\maps\AE13.map.pck"  | include "..\maps\mapdata\AE13.asm"  
+MapsBlockAE14:  equ   $6f | MapAE14: incbin "..\maps\AE14.map.pck"  | include "..\maps\mapdata\AE14.asm"  
+MapsBlockAE15:  equ   $6f | MapAE15: incbin "..\maps\AE15.map.pck"  | include "..\maps\mapdata\AE15.asm"  
+MapsBlockAE16:  equ   $6f | MapAE16: incbin "..\maps\AE16.map.pck"  | include "..\maps\mapdata\AE16.asm"  
+MapsBlockAE19:  equ   $6f | MapAE19: incbin "..\maps\AE19.map.pck"  | include "..\maps\mapdata\AE19.asm"  
+MapsBlockAE20:  equ   $6f | MapAE20: incbin "..\maps\AE20.map.pck"  | include "..\maps\mapdata\AE20.asm"  
+MapsBlockAE21:  equ   $6f | MapAE21: incbin "..\maps\AE21.map.pck"  | include "..\maps\mapdata\AE21.asm"  
+MapsBlockAE22:  equ   $6f | MapAE22: incbin "..\maps\AE22.map.pck"  | include "..\maps\mapdata\AE22.asm"  
+MapsBlockAE23:  equ   $6f | MapAE23: incbin "..\maps\AE23.map.pck"  | include "..\maps\mapdata\AE23.asm"  
+MapsBlockAE24:  equ   $6f | MapAE24: incbin "..\maps\AE24.map.pck"  | include "..\maps\mapdata\AE24.asm"  
+MapsBlockAE25:  equ   $6f | MapAE25: incbin "..\maps\AE25.map.pck"  | include "..\maps\mapdata\AE25.asm"  
+MapsBlockAE26:  equ   $6f | MapAE26: incbin "..\maps\AE26.map.pck"  | include "..\maps\mapdata\AE26.asm"  
+MapsBlockAE27:  equ   $6f | MapAE27: incbin "..\maps\AE27.map.pck"  | include "..\maps\mapdata\AE27.asm"  
+MapsBlockAE34:  equ   $6f | MapAE34: incbin "..\maps\AE34.map.pck"  | include "..\maps\mapdata\AE34.asm"  
+MapsBlockAE35:  equ   $6f | MapAE35: incbin "..\maps\AE35.map.pck"  | include "..\maps\mapdata\AE35.asm"  
+MapsBlockAE44:  equ   $6f | MapAE44: incbin "..\maps\AE44.map.pck"  | include "..\maps\mapdata\AE44.asm"  
+MapsBlockAE45:  equ   $6f | MapAE45: incbin "..\maps\AE45.map.pck"  | include "..\maps\mapdata\AE45.asm"  
+MapsBlockAE46:  equ   $6f | MapAE46: incbin "..\maps\AE46.map.pck"  | include "..\maps\mapdata\AE46.asm"  
+MapsBlockAE47:  equ   $6f | MapAE47: incbin "..\maps\AE47.map.pck"  | include "..\maps\mapdata\AE47.asm"  
+MapsBlockAE48:  equ   $6f | MapAE48: incbin "..\maps\AE48.map.pck"  | include "..\maps\mapdata\AE48.asm"  
+MapsBlockAE49:  equ   $6f | MapAE49: incbin "..\maps\AE49.map.pck"  | include "..\maps\mapdata\AE49.asm"  
 	ds		$c000-$,$ff
 dephase
-
-
-
-
-
-
-
-
-
-
-
-
 
 ;
 ; block $70
 ;
 phase	$8000
-MapsBlockAF01:  equ   $70
-MapAF01:
-  incbin "..\maps\AF01.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF02:  equ   $70
-MapAF02:
-  incbin "..\maps\AF02.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF04:  equ   $70
-MapAF04:
-  incbin "..\maps\AF04.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF05:  equ   $70
-MapAF05:
-  incbin "..\maps\AF05.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF06:  equ   $70
-MapAF06:
-  incbin "..\maps\AF06.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF11:  equ   $70
-MapAF11:
-  incbin "..\maps\AF11.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF12:  equ   $70
-MapAF12:
-  incbin "..\maps\AF12.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF13:  equ   $70
-MapAF13:
-  incbin "..\maps\AF13.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF16:  equ   $70
-MapAF16:
-  incbin "..\maps\AF16.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF21:  equ   $70
-MapAF21:
-  incbin "..\maps\AF21.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF22:  equ   $70
-MapAF22:
-  incbin "..\maps\AF22.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF23:  equ   $70
-MapAF23:
-  incbin "..\maps\AF23.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF27:  equ   $70
-MapAF27:
-  incbin "..\maps\AF27.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF28:  equ   $70
-MapAF28:
-  incbin "..\maps\AF28.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF34:  equ   $70
-MapAF34:
-  incbin "..\maps\AF34.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF35:  equ   $70
-MapAF35:
-  incbin "..\maps\AF35.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF44:  equ   $70
-MapAF44:
-  incbin "..\maps\AF44.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF45:  equ   $70
-MapAF45:
-  incbin "..\maps\AF45.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF47:  equ   $70
-MapAF47:
-  incbin "..\maps\AF47.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF48:  equ   $70
-MapAF48:
-  incbin "..\maps\AF48.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAF49:  equ   $70
-MapAF49:
-  incbin "..\maps\AF49.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
+MapsBlockAF01:  equ   $70 | MapAF01: incbin "..\maps\AF01.map.pck"  | include "..\maps\mapdata\AF01.asm"  
+MapsBlockAF02:  equ   $70 | MapAF02: incbin "..\maps\AF02.map.pck"  | include "..\maps\mapdata\AF02.asm"  
+MapsBlockAF04:  equ   $70 | MapAF04: incbin "..\maps\AF04.map.pck"  | include "..\maps\mapdata\AF04.asm"  
+MapsBlockAF05:  equ   $70 | MapAF05: incbin "..\maps\AF05.map.pck"  | include "..\maps\mapdata\AF05.asm"  
+MapsBlockAF06:  equ   $70 | MapAF06: incbin "..\maps\AF06.map.pck"  | include "..\maps\mapdata\AF06.asm"  
+MapsBlockAF11:  equ   $70 | MapAF11: incbin "..\maps\AF11.map.pck"  | include "..\maps\mapdata\AF11.asm"  
+MapsBlockAF12:  equ   $70 | MapAF12: incbin "..\maps\AF12.map.pck"  | include "..\maps\mapdata\AF12.asm"  
+MapsBlockAF13:  equ   $70 | MapAF13: incbin "..\maps\AF13.map.pck"  | include "..\maps\mapdata\AF13.asm"  
+MapsBlockAF16:  equ   $70 | MapAF16: incbin "..\maps\AF16.map.pck"  | include "..\maps\mapdata\AF16.asm"  
+MapsBlockAF21:  equ   $70 | MapAF21: incbin "..\maps\AF21.map.pck"  | include "..\maps\mapdata\AF21.asm"  
+MapsBlockAF22:  equ   $70 | MapAF22: incbin "..\maps\AF22.map.pck"  | include "..\maps\mapdata\AF22.asm"  
+MapsBlockAF23:  equ   $70 | MapAF23: incbin "..\maps\AF23.map.pck"  | include "..\maps\mapdata\AF23.asm"  
+MapsBlockAF27:  equ   $70 | MapAF27: incbin "..\maps\AF27.map.pck"  | include "..\maps\mapdata\AF27.asm"  
+MapsBlockAF28:  equ   $70 | MapAF28: incbin "..\maps\AF28.map.pck"  | include "..\maps\mapdata\AF28.asm"  
+MapsBlockAF34:  equ   $70 | MapAF34: incbin "..\maps\AF34.map.pck"  | include "..\maps\mapdata\AF34.asm"  
+MapsBlockAF35:  equ   $70 | MapAF35: incbin "..\maps\AF35.map.pck"  | include "..\maps\mapdata\AF35.asm"  
+MapsBlockAF44:  equ   $70 | MapAF44: incbin "..\maps\AF44.map.pck"  | include "..\maps\mapdata\AF44.asm"  
+MapsBlockAF45:  equ   $70 | MapAF45: incbin "..\maps\AF45.map.pck"  | include "..\maps\mapdata\AF45.asm"  
+MapsBlockAF47:  equ   $70 | MapAF47: incbin "..\maps\AF47.map.pck"  | include "..\maps\mapdata\AF47.asm"  
+MapsBlockAF48:  equ   $70 | MapAF48: incbin "..\maps\AF48.map.pck"  | include "..\maps\mapdata\AF48.asm"  
+MapsBlockAF49:  equ   $70 | MapAF49: incbin "..\maps\AF49.map.pck"  | include "..\maps\mapdata\AF49.asm"  
 	ds		$c000-$,$ff
 dephase
 
@@ -5778,354 +4528,572 @@ dephase
 ; block $71
 ;
 phase	$8000
-MapsBlockAG01:  equ   $71
-MapAG01:
-  incbin "..\maps\AG01.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG10:  equ   $71
-MapAG10:
-  incbin "..\maps\AG10.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG11:  equ   $71
-MapAG11:
-  incbin "..\maps\AG11.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG15:  equ   $71
-MapAG15:
-  incbin "..\maps\AG15.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG16:  equ   $71
-MapAG16:
-  incbin "..\maps\AG16.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG17:  equ   $71
-MapAG17:
-  incbin "..\maps\AG17.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG18:  equ   $71
-MapAG18:
-  incbin "..\maps\AG18.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG22:  equ   $71
-MapAG22:
-  incbin "..\maps\AG22.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG23:  equ   $71
-MapAG23:
-  incbin "..\maps\AG23.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG28:  equ   $71
-MapAG28:
-  incbin "..\maps\AG28.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG33:  equ   $71
-MapAG33:
-  incbin "..\maps\AG33.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG34:  equ   $71
-MapAG34:
-  incbin "..\maps\AG34.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG35:  equ   $71
-MapAG35:
-  incbin "..\maps\AG35.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG36:  equ   $71
-MapAG36:
-  incbin "..\maps\AG36.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG37:  equ   $71
-MapAG37:
-  incbin "..\maps\AG37.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG38:  equ   $71
-MapAG38:
-  incbin "..\maps\AG38.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG39:  equ   $71
-MapAG39:
-  incbin "..\maps\AG39.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG40:  equ   $71
-MapAG40:
-  incbin "..\maps\AG40.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG41:  equ   $71
-MapAG41:
-  incbin "..\maps\AG41.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG44:  equ   $71
-MapAG44:
-  incbin "..\maps\AG44.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
-MapsBlockAG48:  equ   $71
-MapAG48:
-  incbin "..\maps\AG48.map.pck"  | .amountofobjects: db  0
-
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object0: db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*09|db 11,14|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-;Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object2:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+90+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object3:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,180,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object4:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+45,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object5:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,160,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object6:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+25+5,+01,+00, 0|db 001,movepatblo1| ds fill-1
-.object7:db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,110,+01,+00, 0|db 001,movepatblo1| ds fill-1
-;==================================================================================================================
+MapsBlockAG01:  equ   $71 | MapAG01: incbin "..\maps\AG01.map.pck"  | include "..\maps\mapdata\AG01.asm"  
+MapsBlockAG10:  equ   $71 | MapAG10: incbin "..\maps\AG10.map.pck"  | include "..\maps\mapdata\AG10.asm"  
+MapsBlockAG11:  equ   $71 | MapAG11: incbin "..\maps\AG11.map.pck"  | include "..\maps\mapdata\AG11.asm"  
+MapsBlockAG15:  equ   $71 | MapAG15: incbin "..\maps\AG15.map.pck"  | include "..\maps\mapdata\AG15.asm"  
+MapsBlockAG16:  equ   $71 | MapAG16: incbin "..\maps\AG16.map.pck"  | include "..\maps\mapdata\AG16.asm"  
+MapsBlockAG17:  equ   $71 | MapAG17: incbin "..\maps\AG17.map.pck"  | include "..\maps\mapdata\AG17.asm"  
+MapsBlockAG18:  equ   $71 | MapAG18: incbin "..\maps\AG18.map.pck"  | include "..\maps\mapdata\AG18.asm"  
+MapsBlockAG22:  equ   $71 | MapAG22: incbin "..\maps\AG22.map.pck"  | include "..\maps\mapdata\AG22.asm"  
+MapsBlockAG23:  equ   $71 | MapAG23: incbin "..\maps\AG23.map.pck"  | include "..\maps\mapdata\AG23.asm"  
+MapsBlockAG28:  equ   $71 | MapAG28: incbin "..\maps\AG28.map.pck"  | include "..\maps\mapdata\AG28.asm"  
+MapsBlockAG33:  equ   $71 | MapAG33: incbin "..\maps\AG33.map.pck"  | include "..\maps\mapdata\AG33.asm"  
+MapsBlockAG34:  equ   $71 | MapAG34: incbin "..\maps\AG34.map.pck"  | include "..\maps\mapdata\AG34.asm"  
+MapsBlockAG35:  equ   $71 | MapAG35: incbin "..\maps\AG35.map.pck"  | include "..\maps\mapdata\AG35.asm"  
+MapsBlockAG36:  equ   $71 | MapAG36: incbin "..\maps\AG36.map.pck"  | include "..\maps\mapdata\AG36.asm"  
+MapsBlockAG37:  equ   $71 | MapAG37: incbin "..\maps\AG37.map.pck"  | include "..\maps\mapdata\AG37.asm"  
+MapsBlockAG38:  equ   $71 | MapAG38: incbin "..\maps\AG38.map.pck"  | include "..\maps\mapdata\AG38.asm"  
+MapsBlockAG39:  equ   $71 | MapAG39: incbin "..\maps\AG39.map.pck"  | include "..\maps\mapdata\AG39.asm"  
+MapsBlockAG40:  equ   $71 | MapAG40: incbin "..\maps\AG40.map.pck"  | include "..\maps\mapdata\AG40.asm"  
+MapsBlockAG41:  equ   $71 | MapAG41: incbin "..\maps\AG41.map.pck"  | include "..\maps\mapdata\AG41.asm"  
+MapsBlockAG44:  equ   $71 | MapAG44: incbin "..\maps\AG44.map.pck"  | include "..\maps\mapdata\AG44.asm"  
+MapsBlockAG48:  equ   $71 | MapAG48: incbin "..\maps\AG48.map.pck"  | include "..\maps\mapdata\AG48.asm"  
 	ds		$c000-$,$ff
 dephase
 
+;
+; block $72
+;
+phase	$8000
 
+MapsBlockAH01:  equ   $72 | MapAH01: incbin "..\maps\AH01.map.pck"  | include "..\maps\mapdata\AH01.asm"  
+MapsBlockAH02:  equ   $72 | MapAH02: incbin "..\maps\AH02.map.pck"  | include "..\maps\mapdata\AH02.asm"  
+MapsBlockAH03:  equ   $72 | MapAH03: incbin "..\maps\AH03.map.pck"  | include "..\maps\mapdata\AH03.asm"  
+MapsBlockAH08:  equ   $72 | MapAH08: incbin "..\maps\AH08.map.pck"  | include "..\maps\mapdata\AH08.asm"  
+MapsBlockAH09:  equ   $72 | MapAH09: incbin "..\maps\AH09.map.pck"  | include "..\maps\mapdata\AH09.asm"  
+MapsBlockAH10:  equ   $72 | MapAH10: incbin "..\maps\AH10.map.pck"  | include "..\maps\mapdata\AH10.asm"  
+MapsBlockAH11:  equ   $72 | MapAH11: incbin "..\maps\AH11.map.pck"  | include "..\maps\mapdata\AH11.asm"  
+MapsBlockAH16:  equ   $72 | MapAH16: incbin "..\maps\AH16.map.pck"  | include "..\maps\mapdata\AH16.asm"  
+MapsBlockAH18:  equ   $72 | MapAH18: incbin "..\maps\AH18.map.pck"  | include "..\maps\mapdata\AH18.asm"  
+MapsBlockAH22:  equ   $72 | MapAH22: incbin "..\maps\AH22.map.pck"  | include "..\maps\mapdata\AH22.asm"  
+MapsBlockAH28:  equ   $72 | MapAH28: incbin "..\maps\AH28.map.pck"  | include "..\maps\mapdata\AH28.asm"  
+MapsBlockAH29:  equ   $72 | MapAH29: incbin "..\maps\AH29.map.pck"  | include "..\maps\mapdata\AH29.asm"  
+MapsBlockAH30:  equ   $72 | MapAH30: incbin "..\maps\AH30.map.pck"  | include "..\maps\mapdata\AH30.asm"  
+MapsBlockAH33:  equ   $72 | MapAH33: incbin "..\maps\AH33.map.pck"  | include "..\maps\mapdata\AH33.asm"  
+MapsBlockAH41:  equ   $72 | MapAH41: incbin "..\maps\AH41.map.pck"  | include "..\maps\mapdata\AH41.asm"  
+MapsBlockAH44:  equ   $72 | MapAH44: incbin "..\maps\AH44.map.pck"  | include "..\maps\mapdata\AH44.asm"  
+MapsBlockAH45:  equ   $72 | MapAH45: incbin "..\maps\AH45.map.pck"  | include "..\maps\mapdata\AH45.asm"  
+MapsBlockAH46:  equ   $72 | MapAH46: incbin "..\maps\AH46.map.pck"  | include "..\maps\mapdata\AH46.asm"  
+MapsBlockAH47:  equ   $72 | MapAH47: incbin "..\maps\AH47.map.pck"  | include "..\maps\mapdata\AH47.asm"  
+MapsBlockAH48:  equ   $72 | MapAH48: incbin "..\maps\AH48.map.pck"  | include "..\maps\mapdata\AH48.asm"  
+	ds		$c000-$,$ff
+dephase
 
+;
+; block $73
+;
+phase	$8000
+MapsBlockAI01:  equ   $73 | MapAI01: incbin "..\maps\AI01.map.pck"  | include "..\maps\mapdata\AI01.asm"  
+MapsBlockAI03:  equ   $73 | MapAI03: incbin "..\maps\AI03.map.pck"  | include "..\maps\mapdata\AI03.asm"  
+MapsBlockAI04:  equ   $73 | MapAI04: incbin "..\maps\AI04.map.pck"  | include "..\maps\mapdata\AI04.asm"  
+MapsBlockAI11:  equ   $73 | MapAI11: incbin "..\maps\AI11.map.pck"  | include "..\maps\mapdata\AI11.asm"  
+MapsBlockAI12:  equ   $73 | MapAI12: incbin "..\maps\AI12.map.pck"  | include "..\maps\mapdata\AI12.asm"  
+MapsBlockAI14:  equ   $73 | MapAI14: incbin "..\maps\AI14.map.pck"  | include "..\maps\mapdata\AI14.asm"  
+MapsBlockAI15:  equ   $73 | MapAI15: incbin "..\maps\AI15.map.pck"  | include "..\maps\mapdata\AI15.asm"  
+MapsBlockAI16:  equ   $73 | MapAI16: incbin "..\maps\AI16.map.pck"  | include "..\maps\mapdata\AI16.asm"  
+MapsBlockAI18:  equ   $73 | MapAI18: incbin "..\maps\AI18.map.pck"  | include "..\maps\mapdata\AI18.asm"  
+MapsBlockAI22:  equ   $73 | MapAI22: incbin "..\maps\AI22.map.pck"  | include "..\maps\mapdata\AI22.asm"  
+MapsBlockAI30:  equ   $73 | MapAI30: incbin "..\maps\AI30.map.pck"  | include "..\maps\mapdata\AI30.asm"  
+MapsBlockAI31:  equ   $73 | MapAI31: incbin "..\maps\AI31.map.pck"  | include "..\maps\mapdata\AI31.asm"  
+MapsBlockAI32:  equ   $73 | MapAI32: incbin "..\maps\AI32.map.pck"  | include "..\maps\mapdata\AI32.asm"  
+MapsBlockAI33:  equ   $73 | MapAI33: incbin "..\maps\AI33.map.pck"  | include "..\maps\mapdata\AI33.asm"  
+MapsBlockAI39:  equ   $73 | MapAI39: incbin "..\maps\AI39.map.pck"  | include "..\maps\mapdata\AI39.asm"  
+MapsBlockAI40:  equ   $73 | MapAI40: incbin "..\maps\AI40.map.pck"  | include "..\maps\mapdata\AI40.asm"  
+MapsBlockAI41:  equ   $73 | MapAI41: incbin "..\maps\AI41.map.pck"  | include "..\maps\mapdata\AI41.asm"  
+MapsBlockAI44:  equ   $73 | MapAI44: incbin "..\maps\AI44.map.pck"  | include "..\maps\mapdata\AI44.asm"  
+MapsBlockAI48:  equ   $73 | MapAI48: incbin "..\maps\AI48.map.pck"  | include "..\maps\mapdata\AI48.asm"  
+MapsBlockAI49:  equ   $73 | MapAI49: incbin "..\maps\AI49.map.pck"  | include "..\maps\mapdata\AI49.asm"  
+MapsBlockAI50:  equ   $73 | MapAI50: incbin "..\maps\AI50.map.pck"  | include "..\maps\mapdata\AI50.asm"  
+	ds		$c000-$,$ff
+dephase
 
+;
+; block $74
+;
+phase	$8000
+MapsBlockAJ03:  equ   $74 | MapAJ03: incbin "..\maps\AJ03.map.pck"  | include "..\maps\mapdata\AJ03.asm"  
+MapsBlockAJ04:  equ   $74 | MapAJ04: incbin "..\maps\AJ04.map.pck"  | include "..\maps\mapdata\AJ04.asm"  
+MapsBlockAJ09:  equ   $74 | MapAJ09: incbin "..\maps\AJ09.map.pck"  | include "..\maps\mapdata\AJ09.asm"  
+MapsBlockAJ10:  equ   $74 | MapAJ10: incbin "..\maps\AJ10.map.pck"  | include "..\maps\mapdata\AJ10.asm"  
+MapsBlockAJ11:  equ   $74 | MapAJ11: incbin "..\maps\AJ11.map.pck"  | include "..\maps\mapdata\AJ11.asm"  
+MapsBlockAJ14:  equ   $74 | MapAJ14: incbin "..\maps\AJ14.map.pck"  | include "..\maps\mapdata\AJ14.asm"  
+MapsBlockAJ15:  equ   $74 | MapAJ15: incbin "..\maps\AJ15.map.pck"  | include "..\maps\mapdata\AJ15.asm"  
+MapsBlockAJ18:  equ   $74 | MapAJ18: incbin "..\maps\AJ18.map.pck"  | include "..\maps\mapdata\AJ18.asm"  
+MapsBlockAJ22:  equ   $74 | MapAJ22: incbin "..\maps\AJ22.map.pck"  | include "..\maps\mapdata\AJ22.asm"  
+MapsBlockAJ29:  equ   $74 | MapAJ29: incbin "..\maps\AJ29.map.pck"  | include "..\maps\mapdata\AJ29.asm"  
+MapsBlockAJ30:  equ   $74 | MapAJ30: incbin "..\maps\AJ30.map.pck"  | include "..\maps\mapdata\AJ30.asm"  
+MapsBlockAJ39:  equ   $74 | MapAJ39: incbin "..\maps\AJ39.map.pck"  | include "..\maps\mapdata\AJ39.asm"  
+MapsBlockAJ44:  equ   $74 | MapAJ44: incbin "..\maps\AJ44.map.pck"  | include "..\maps\mapdata\AJ44.asm"  
+MapsBlockAJ45:  equ   $74 | MapAJ45: incbin "..\maps\AJ45.map.pck"  | include "..\maps\mapdata\AJ45.asm"  
+MapsBlockAJ46:  equ   $74 | MapAJ46: incbin "..\maps\AJ46.map.pck"  | include "..\maps\mapdata\AJ46.asm"  
+	ds		$c000-$,$ff
+dephase
 
+;
+; block $75
+;
+phase	$8000
+MapsBlockAK03:  equ   $75 | MapAK03: incbin "..\maps\AK03.map.pck"  | include "..\maps\mapdata\AK03.asm"  
+MapsBlockAK04:  equ   $75 | MapAK04: incbin "..\maps\AK04.map.pck"  | include "..\maps\mapdata\AK04.asm"  
+MapsBlockAK09:  equ   $75 | MapAK09: incbin "..\maps\AK09.map.pck"  | include "..\maps\mapdata\AK09.asm"  
+MapsBlockAK14:  equ   $75 | MapAK14: incbin "..\maps\AK14.map.pck"  | include "..\maps\mapdata\AK14.asm"  
+MapsBlockAK18:  equ   $75 | MapAK18: incbin "..\maps\AK18.map.pck"  | include "..\maps\mapdata\AK18.asm"  
+MapsBlockAK19:  equ   $75 | MapAK19: incbin "..\maps\AK19.map.pck"  | include "..\maps\mapdata\AK19.asm"  
+MapsBlockAK22:  equ   $75 | MapAK22: incbin "..\maps\AK22.map.pck"  | include "..\maps\mapdata\AK22.asm"  
+MapsBlockAK23:  equ   $75 | MapAK23: incbin "..\maps\AK23.map.pck"  | include "..\maps\mapdata\AK23.asm"  
+MapsBlockAK24:  equ   $75 | MapAK24: incbin "..\maps\AK24.map.pck"  | include "..\maps\mapdata\AK24.asm"  
+MapsBlockAK27:  equ   $75 | MapAK27: incbin "..\maps\AK27.map.pck"  | include "..\maps\mapdata\AK27.asm"  
+MapsBlockAK28:  equ   $75 | MapAK28: incbin "..\maps\AK28.map.pck"  | include "..\maps\mapdata\AK28.asm"  
+MapsBlockAK29:  equ   $75 | MapAK29: incbin "..\maps\AK29.map.pck"  | include "..\maps\mapdata\AK29.asm"  
+MapsBlockAK36:  equ   $75 | MapAK36: incbin "..\maps\AK36.map.pck"  | include "..\maps\mapdata\AK36.asm"  
+MapsBlockAK37:  equ   $75 | MapAK37: incbin "..\maps\AK37.map.pck"  | include "..\maps\mapdata\AK37.asm"  
+MapsBlockAK38:  equ   $75 | MapAK38: incbin "..\maps\AK38.map.pck"  | include "..\maps\mapdata\AK38.asm"  
+MapsBlockAK39:  equ   $75 | MapAK39: incbin "..\maps\AK39.map.pck"  | include "..\maps\mapdata\AK39.asm"  
+MapsBlockAK44:  equ   $75 | MapAK44: incbin "..\maps\AK44.map.pck"  | include "..\maps\mapdata\AK44.asm"  
+MapsBlockAK45:  equ   $75 | MapAK45: incbin "..\maps\AK45.map.pck"  | include "..\maps\mapdata\AK45.asm"  
+MapsBlockAK46:  equ   $75 | MapAK46: incbin "..\maps\AK46.map.pck"  | include "..\maps\mapdata\AK46.asm"  
+	ds		$c000-$,$ff
+dephase
 
+;
+; block $76
+;
+phase	$8000
+MapsBlockAL04:  equ   $76 | MapAL04: incbin "..\maps\AL04.map.pck"  | include "..\maps\mapdata\AL04.asm"  
+MapsBlockAL05:  equ   $76 | MapAL05: incbin "..\maps\AL05.map.pck"  | include "..\maps\mapdata\AL05.asm"  
+MapsBlockAL06:  equ   $76 | MapAL06: incbin "..\maps\AL06.map.pck"  | include "..\maps\mapdata\AL06.asm"  
+MapsBlockAL07:  equ   $76 | MapAL07: incbin "..\maps\AL07.map.pck"  | include "..\maps\mapdata\AL07.asm"  
+MapsBlockAL08:  equ   $76 | MapAL08: incbin "..\maps\AL08.map.pck"  | include "..\maps\mapdata\AL08.asm"  
+MapsBlockAL09:  equ   $76 | MapAL09: incbin "..\maps\AL09.map.pck"  | include "..\maps\mapdata\AL09.asm"  
+MapsBlockAL11:  equ   $76 | MapAL11: incbin "..\maps\AL11.map.pck"  | include "..\maps\mapdata\AL11.asm"  
+MapsBlockAL14:  equ   $76 | MapAL14: incbin "..\maps\AL14.map.pck"  | include "..\maps\mapdata\AL14.asm"  
+MapsBlockAL19:  equ   $76 | MapAL19: incbin "..\maps\AL19.map.pck"  | include "..\maps\mapdata\AL19.asm"  
+MapsBlockAL20:  equ   $76 | MapAL20: incbin "..\maps\AL20.map.pck"  | include "..\maps\mapdata\AL20.asm"  
+MapsBlockAL24:  equ   $76 | MapAL24: incbin "..\maps\AL24.map.pck"  | include "..\maps\mapdata\AL24.asm"  
+MapsBlockAL27:  equ   $76 | MapAL27: incbin "..\maps\AL27.map.pck"  | include "..\maps\mapdata\AL27.asm"  
+MapsBlockAL28:  equ   $76 | MapAL28: incbin "..\maps\AL28.map.pck"  | include "..\maps\mapdata\AL28.asm"  
+MapsBlockAL36:  equ   $76 | MapAL36: incbin "..\maps\AL36.map.pck"  | include "..\maps\mapdata\AL36.asm"  
+MapsBlockAL39:  equ   $76 | MapAL39: incbin "..\maps\AL39.map.pck"  | include "..\maps\mapdata\AL39.asm"  
+MapsBlockAL44:  equ   $76 | MapAL44: incbin "..\maps\AL44.map.pck"  | include "..\maps\mapdata\AL44.asm"  
+	ds		$c000-$,$ff
+dephase
 
+;
+; block $77
+;
+phase	$8000
+MapsBlockAM02:  equ   $77 | MapAM02: incbin "..\maps\AM02.map.pck"  | include "..\maps\mapdata\AM02.asm"  
+MapsBlockAM11:  equ   $77 | MapAM11: incbin "..\maps\AM11.map.pck"  | include "..\maps\mapdata\AM11.asm"  
+MapsBlockAM13:  equ   $77 | MapAM13: incbin "..\maps\AM13.map.pck"  | include "..\maps\mapdata\AM13.asm"  
+MapsBlockAM14:  equ   $77 | MapAM14: incbin "..\maps\AM14.map.pck"  | include "..\maps\mapdata\AM14.asm"  
+MapsBlockAM16:  equ   $77 | MapAM16: incbin "..\maps\AM16.map.pck"  | include "..\maps\mapdata\AM16.asm"  
+MapsBlockAM20:  equ   $77 | MapAM20: incbin "..\maps\AM20.map.pck"  | include "..\maps\mapdata\AM20.asm"  
+MapsBlockAM21:  equ   $77 | MapAM21: incbin "..\maps\AM21.map.pck"  | include "..\maps\mapdata\AM21.asm"  
+MapsBlockAM22:  equ   $77 | MapAM22: incbin "..\maps\AM22.map.pck"  | include "..\maps\mapdata\AM22.asm"  
+MapsBlockAM23:  equ   $77 | MapAM23: incbin "..\maps\AM23.map.pck"  | include "..\maps\mapdata\AM23.asm"  
+MapsBlockAM24:  equ   $77 | MapAM24: incbin "..\maps\AM24.map.pck"  | include "..\maps\mapdata\AM24.asm"  
+MapsBlockAM36:  equ   $77 | MapAM36: incbin "..\maps\AM36.map.pck"  | include "..\maps\mapdata\AM36.asm"  
+MapsBlockAM39:  equ   $77 | MapAM39: incbin "..\maps\AM39.map.pck"  | include "..\maps\mapdata\AM39.asm"  
+MapsBlockAM40:  equ   $77 | MapAM40: incbin "..\maps\AM40.map.pck"  | include "..\maps\mapdata\AM40.asm"  
+MapsBlockAM42:  equ   $77 | MapAM42: incbin "..\maps\AM42.map.pck"  | include "..\maps\mapdata\AM42.asm"  
+MapsBlockAM43:  equ   $77 | MapAM43: incbin "..\maps\AM43.map.pck"  | include "..\maps\mapdata\AM43.asm"  
+MapsBlockAM44:  equ   $77 | MapAM44: incbin "..\maps\AM44.map.pck"  | include "..\maps\mapdata\AM44.asm"  
+	ds		$c000-$,$ff
+dephase
 
-; block $6e - $86
-  ds  $4000 * $15
+;
+; block $78
+;
+phase	$8000
+MapsBlockAN02:  equ   $78 | MapAN02: incbin "..\maps\AN02.map.pck"  | include "..\maps\mapdata\AN02.asm"  
+MapsBlockAN03:  equ   $78 | MapAN03: incbin "..\maps\AN03.map.pck"  | include "..\maps\mapdata\AN03.asm"  
+MapsBlockAN04:  equ   $78 | MapAN04: incbin "..\maps\AN04.map.pck"  | include "..\maps\mapdata\AN04.asm"  
+MapsBlockAN06:  equ   $78 | MapAN06: incbin "..\maps\AN06.map.pck"  | include "..\maps\mapdata\AN06.asm"  
+MapsBlockAN07:  equ   $78 | MapAN07: incbin "..\maps\AN07.map.pck"  | include "..\maps\mapdata\AN07.asm"  
+MapsBlockAN08:  equ   $78 | MapAN08: incbin "..\maps\AN08.map.pck"  | include "..\maps\mapdata\AN08.asm"  
+MapsBlockAN10:  equ   $78 | MapAN10: incbin "..\maps\AN10.map.pck"  | include "..\maps\mapdata\AN10.asm"  
+MapsBlockAN11:  equ   $78 | MapAN11: incbin "..\maps\AN11.map.pck"  | include "..\maps\mapdata\AN11.asm"  
+MapsBlockAN12:  equ   $78 | MapAN12: incbin "..\maps\AN12.map.pck"  | include "..\maps\mapdata\AN12.asm"  
+MapsBlockAN13:  equ   $78 | MapAN13: incbin "..\maps\AN13.map.pck"  | include "..\maps\mapdata\AN13.asm"  
+MapsBlockAN14:  equ   $78 | MapAN14: incbin "..\maps\AN14.map.pck"  | include "..\maps\mapdata\AN14.asm"  
+MapsBlockAN15:  equ   $78 | MapAN15: incbin "..\maps\AN15.map.pck"  | include "..\maps\mapdata\AN15.asm"  
+MapsBlockAN16:  equ   $78 | MapAN16: incbin "..\maps\AN16.map.pck"  | include "..\maps\mapdata\AN16.asm"  
+MapsBlockAN17:  equ   $78 | MapAN17: incbin "..\maps\AN17.map.pck"  | include "..\maps\mapdata\AN17.asm"  
+MapsBlockAN18:  equ   $78 | MapAN18: incbin "..\maps\AN18.map.pck"  | include "..\maps\mapdata\AN18.asm"  
+MapsBlockAN19:  equ   $78 | MapAN19: incbin "..\maps\AN19.map.pck"  | include "..\maps\mapdata\AN19.asm"  
+MapsBlockAN20:  equ   $78 | MapAN20: incbin "..\maps\AN20.map.pck"  | include "..\maps\mapdata\AN20.asm"  
+MapsBlockAN40:  equ   $78 | MapAN40: incbin "..\maps\AN40.map.pck"  | include "..\maps\mapdata\AN40.asm"  
+MapsBlockAN41:  equ   $78 | MapAN41: incbin "..\maps\AN41.map.pck"  | include "..\maps\mapdata\AN41.asm"  
+MapsBlockAN42:  equ   $78 | MapAN42: incbin "..\maps\AN42.map.pck"  | include "..\maps\mapdata\AN42.asm"  
+MapsBlockAN47:  equ   $78 | MapAN47: incbin "..\maps\AN47.map.pck"  | include "..\maps\mapdata\AN47.asm"  
+MapsBlockAN48:  equ   $78 | MapAN48: incbin "..\maps\AN48.map.pck"  | include "..\maps\mapdata\AN48.asm"  
+MapsBlockAN49:  equ   $78 | MapAN49: incbin "..\maps\AN49.map.pck"  | include "..\maps\mapdata\AN49.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $79
+;
+phase	$8000
+MapsBlockAO03:  equ   $79 | MapAO03: incbin "..\maps\AO03.map.pck"  | include "..\maps\mapdata\AO03.asm"  
+MapsBlockAO06:  equ   $79 | MapAO06: incbin "..\maps\AO06.map.pck"  | include "..\maps\mapdata\AO06.asm"  
+MapsBlockAO08:  equ   $79 | MapAO08: incbin "..\maps\AO08.map.pck"  | include "..\maps\mapdata\AO08.asm"  
+MapsBlockAO10:  equ   $79 | MapAO10: incbin "..\maps\AO10.map.pck"  | include "..\maps\mapdata\AO10.asm"  
+MapsBlockAO11:  equ   $79 | MapAO11: incbin "..\maps\AO11.map.pck"  | include "..\maps\mapdata\AO11.asm"  
+MapsBlockAO14:  equ   $79 | MapAO14: incbin "..\maps\AO14.map.pck"  | include "..\maps\mapdata\AO14.asm"  
+MapsBlockAO17:  equ   $79 | MapAO17: incbin "..\maps\AO17.map.pck"  | include "..\maps\mapdata\AO17.asm"  
+MapsBlockAO40:  equ   $79 | MapAO40: incbin "..\maps\AO40.map.pck"  | include "..\maps\mapdata\AO40.asm"  
+MapsBlockAO46:  equ   $79 | MapAO46: incbin "..\maps\AO46.map.pck"  | include "..\maps\mapdata\AO46.asm"  
+MapsBlockAO47:  equ   $79 | MapAO47: incbin "..\maps\AO47.map.pck"  | include "..\maps\mapdata\AO47.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $7a
+;
+phase	$8000
+MapsBlockAP03:  equ   $7a | MapAP03: incbin "..\maps\AP03.map.pck"  | include "..\maps\mapdata\AP03.asm"  
+MapsBlockAP04:  equ   $7a | MapAP04: incbin "..\maps\AP04.map.pck"  | include "..\maps\mapdata\AP04.asm"  
+MapsBlockAP05:  equ   $7a | MapAP05: incbin "..\maps\AP05.map.pck"  | include "..\maps\mapdata\AP05.asm"  
+MapsBlockAP06:  equ   $7a | MapAP06: incbin "..\maps\AP06.map.pck"  | include "..\maps\mapdata\AP06.asm"  
+MapsBlockAP08:  equ   $7a | MapAP08: incbin "..\maps\AP08.map.pck"  | include "..\maps\mapdata\AP08.asm"  
+MapsBlockAP09:  equ   $7a | MapAP09: incbin "..\maps\AP09.map.pck"  | include "..\maps\mapdata\AP09.asm"  
+MapsBlockAP10:  equ   $7a | MapAP10: incbin "..\maps\AP10.map.pck"  | include "..\maps\mapdata\AP10.asm"  
+MapsBlockAP11:  equ   $7a | MapAP11: incbin "..\maps\AP11.map.pck"  | include "..\maps\mapdata\AP11.asm"  
+MapsBlockAP14:  equ   $7a | MapAP14: incbin "..\maps\AP14.map.pck"  | include "..\maps\mapdata\AP14.asm"  
+MapsBlockAP15:  equ   $7a | MapAP15: incbin "..\maps\AP15.map.pck"  | include "..\maps\mapdata\AP15.asm"  
+MapsBlockAP17:  equ   $7a | MapAP17: incbin "..\maps\AP17.map.pck"  | include "..\maps\mapdata\AP17.asm"  
+MapsBlockAP22:  equ   $7a | MapAP22: incbin "..\maps\AP22.map.pck"  | include "..\maps\mapdata\AP22.asm"  
+MapsBlockAP32:  equ   $7a | MapAP32: incbin "..\maps\AP32.map.pck"  | include "..\maps\mapdata\AP32.asm"  
+MapsBlockAP40:  equ   $7a | MapAP40: incbin "..\maps\AP40.map.pck"  | include "..\maps\mapdata\AP40.asm"  
+MapsBlockAP41:  equ   $7a | MapAP41: incbin "..\maps\AP41.map.pck"  | include "..\maps\mapdata\AP41.asm"  
+MapsBlockAP47:  equ   $7a | MapAP47: incbin "..\maps\AP47.map.pck"  | include "..\maps\mapdata\AP47.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $7b
+;
+phase	$8000
+MapsBlockAQ04:  equ   $7b | MapAQ04: incbin "..\maps\AQ04.map.pck"  | include "..\maps\mapdata\AQ04.asm"  
+MapsBlockAQ06:  equ   $7b | MapAQ06: incbin "..\maps\AQ06.map.pck"  | include "..\maps\mapdata\AQ06.asm"  
+MapsBlockAQ10:  equ   $7b | MapAQ10: incbin "..\maps\AQ10.map.pck"  | include "..\maps\mapdata\AQ10.asm"  
+MapsBlockAQ11:  equ   $7b | MapAQ11: incbin "..\maps\AQ11.map.pck"  | include "..\maps\mapdata\AQ11.asm"  
+MapsBlockAQ17:  equ   $7b | MapAQ17: incbin "..\maps\AQ17.map.pck"  | include "..\maps\mapdata\AQ17.asm"  
+MapsBlockAQ20:  equ   $7b | MapAQ20: incbin "..\maps\AQ20.map.pck"  | include "..\maps\mapdata\AQ20.asm"  
+MapsBlockAQ21:  equ   $7b | MapAQ21: incbin "..\maps\AQ21.map.pck"  | include "..\maps\mapdata\AQ21.asm"  
+MapsBlockAQ22:  equ   $7b | MapAQ22: incbin "..\maps\AQ22.map.pck"  | include "..\maps\mapdata\AQ22.asm"  
+MapsBlockAQ31:  equ   $7b | MapAQ31: incbin "..\maps\AQ31.map.pck"  | include "..\maps\mapdata\AQ31.asm"  
+MapsBlockAQ32:  equ   $7b | MapAQ32: incbin "..\maps\AQ32.map.pck"  | include "..\maps\mapdata\AQ32.asm"  
+MapsBlockAQ36:  equ   $7b | MapAQ36: incbin "..\maps\AQ36.map.pck"  | include "..\maps\mapdata\AQ36.asm"  
+MapsBlockAQ39:  equ   $7b | MapAQ39: incbin "..\maps\AQ39.map.pck"  | include "..\maps\mapdata\AQ39.asm"  
+MapsBlockAQ40:  equ   $7b | MapAQ40: incbin "..\maps\AQ40.map.pck"  | include "..\maps\mapdata\AQ40.asm"  
+MapsBlockAQ41:  equ   $7b | MapAQ41: incbin "..\maps\AQ41.map.pck"  | include "..\maps\mapdata\AQ41.asm"  
+MapsBlockAQ45:  equ   $7b | MapAQ45: incbin "..\maps\AQ45.map.pck"  | include "..\maps\mapdata\AQ45.asm"  
+MapsBlockAQ46:  equ   $7b | MapAQ46: incbin "..\maps\AQ46.map.pck"  | include "..\maps\mapdata\AQ46.asm"  
+MapsBlockAQ47:  equ   $7b | MapAQ47: incbin "..\maps\AQ47.map.pck"  | include "..\maps\mapdata\AQ47.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $7c
+;
+phase	$8000
+MapsBlockAR04:  equ   $7c | MapAR04: incbin "..\maps\AR04.map.pck"  | include "..\maps\mapdata\AR04.asm"  
+MapsBlockAR05:  equ   $7c | MapAR05: incbin "..\maps\AR05.map.pck"  | include "..\maps\mapdata\AR05.asm"  
+MapsBlockAR06:  equ   $7c | MapAR06: incbin "..\maps\AR06.map.pck"  | include "..\maps\mapdata\AR06.asm"  
+MapsBlockAR11:  equ   $7c | MapAR11: incbin "..\maps\AR11.map.pck"  | include "..\maps\mapdata\AR11.asm"  
+MapsBlockAR12:  equ   $7c | MapAR12: incbin "..\maps\AR12.map.pck"  | include "..\maps\mapdata\AR12.asm"  
+MapsBlockAR17:  equ   $7c | MapAR17: incbin "..\maps\AR17.map.pck"  | include "..\maps\mapdata\AR17.asm"  
+MapsBlockAR20:  equ   $7c | MapAR20: incbin "..\maps\AR20.map.pck"  | include "..\maps\mapdata\AR20.asm"  
+MapsBlockAR31:  equ   $7c | MapAR31: incbin "..\maps\AR31.map.pck"  | include "..\maps\mapdata\AR31.asm"  
+MapsBlockAR32:  equ   $7c | MapAR32: incbin "..\maps\AR32.map.pck"  | include "..\maps\mapdata\AR32.asm"  
+MapsBlockAR36:  equ   $7c | MapAR36: incbin "..\maps\AR36.map.pck"  | include "..\maps\mapdata\AR36.asm"  
+MapsBlockAR39:  equ   $7c | MapAR39: incbin "..\maps\AR39.map.pck"  | include "..\maps\mapdata\AR39.asm"  
+MapsBlockAR40:  equ   $7c | MapAR40: incbin "..\maps\AR40.map.pck"  | include "..\maps\mapdata\AR40.asm"  
+MapsBlockAR45:  equ   $7c | MapAR45: incbin "..\maps\AR45.map.pck"  | include "..\maps\mapdata\AR45.asm"  
+MapsBlockAR46:  equ   $7c | MapAR46: incbin "..\maps\AR46.map.pck"  | include "..\maps\mapdata\AR46.asm"  
+MapsBlockAR47:  equ   $7c | MapAR47: incbin "..\maps\AR47.map.pck"  | include "..\maps\mapdata\AR47.asm"  
+MapsBlockAR48:  equ   $7c | MapAR48: incbin "..\maps\AR48.map.pck"  | include "..\maps\mapdata\AR48.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $7d
+;
+phase	$8000
+MapsBlockAS04:  equ   $7d | MapAS04: incbin "..\maps\AS04.map.pck"  | include "..\maps\mapdata\AS04.asm"  
+MapsBlockAS12:  equ   $7d | MapAS12: incbin "..\maps\AS12.map.pck"  | include "..\maps\mapdata\AS12.asm"  
+MapsBlockAS14:  equ   $7d | MapAS14: incbin "..\maps\AS14.map.pck"  | include "..\maps\mapdata\AS14.asm"  
+MapsBlockAS15:  equ   $7d | MapAS15: incbin "..\maps\AS15.map.pck"  | include "..\maps\mapdata\AS15.asm"  
+MapsBlockAS16:  equ   $7d | MapAS16: incbin "..\maps\AS16.map.pck"  | include "..\maps\mapdata\AS16.asm"  
+MapsBlockAS17:  equ   $7d | MapAS17: incbin "..\maps\AS17.map.pck"  | include "..\maps\mapdata\AS17.asm"  
+MapsBlockAS18:  equ   $7d | MapAS18: incbin "..\maps\AS18.map.pck"  | include "..\maps\mapdata\AS18.asm"  
+MapsBlockAS19:  equ   $7d | MapAS19: incbin "..\maps\AS19.map.pck"  | include "..\maps\mapdata\AS19.asm"  
+MapsBlockAS20:  equ   $7d | MapAS20: incbin "..\maps\AS20.map.pck"  | include "..\maps\mapdata\AS20.asm"  
+MapsBlockAS27:  equ   $7d | MapAS27: incbin "..\maps\AS27.map.pck"  | include "..\maps\mapdata\AS27.asm"  
+MapsBlockAS31:  equ   $7d | MapAS31: incbin "..\maps\AS31.map.pck"  | include "..\maps\mapdata\AS31.asm"  
+MapsBlockAS32:  equ   $7d | MapAS32: incbin "..\maps\AS32.map.pck"  | include "..\maps\mapdata\AS32.asm"  
+MapsBlockAS33:  equ   $7d | MapAS33: incbin "..\maps\AS33.map.pck"  | include "..\maps\mapdata\AS33.asm"  
+MapsBlockAS34:  equ   $7d | MapAS34: incbin "..\maps\AS34.map.pck"  | include "..\maps\mapdata\AS34.asm"  
+MapsBlockAS35:  equ   $7d | MapAS35: incbin "..\maps\AS35.map.pck"  | include "..\maps\mapdata\AS35.asm"  
+MapsBlockAS36:  equ   $7d | MapAS36: incbin "..\maps\AS36.map.pck"  | include "..\maps\mapdata\AS36.asm"  
+MapsBlockAS37:  equ   $7d | MapAS37: incbin "..\maps\AS37.map.pck"  | include "..\maps\mapdata\AS37.asm"  
+MapsBlockAS40:  equ   $7d | MapAS40: incbin "..\maps\AS40.map.pck"  | include "..\maps\mapdata\AS40.asm"  
+MapsBlockAS41:  equ   $7d | MapAS41: incbin "..\maps\AS41.map.pck"  | include "..\maps\mapdata\AS41.asm"  
+MapsBlockAS42:  equ   $7d | MapAS42: incbin "..\maps\AS42.map.pck"  | include "..\maps\mapdata\AS42.asm"  
+MapsBlockAS43:  equ   $7d | MapAS43: incbin "..\maps\AS43.map.pck"  | include "..\maps\mapdata\AS43.asm"  
+MapsBlockAS44:  equ   $7d | MapAS44: incbin "..\maps\AS44.map.pck"  | include "..\maps\mapdata\AS44.asm"  
+MapsBlockAS45:  equ   $7d | MapAS45: incbin "..\maps\AS45.map.pck"  | include "..\maps\mapdata\AS45.asm"  
+MapsBlockAS48:  equ   $7d | MapAS48: incbin "..\maps\AS48.map.pck"  | include "..\maps\mapdata\AS48.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $7e
+;
+phase	$8000
+MapsBlockAT03:  equ   $7e | MapAT03: incbin "..\maps\AT03.map.pck"  | include "..\maps\mapdata\AT03.asm"  
+MapsBlockAT04:  equ   $7e | MapAT04: incbin "..\maps\AT04.map.pck"  | include "..\maps\mapdata\AT04.asm"  
+MapsBlockAT05:  equ   $7e | MapAT05: incbin "..\maps\AT05.map.pck"  | include "..\maps\mapdata\AT05.asm"  
+MapsBlockAT06:  equ   $7e | MapAT06: incbin "..\maps\AT06.map.pck"  | include "..\maps\mapdata\AT06.asm"  
+MapsBlockAT07:  equ   $7e | MapAT07: incbin "..\maps\AT07.map.pck"  | include "..\maps\mapdata\AT07.asm"  
+MapsBlockAT08:  equ   $7e | MapAT08: incbin "..\maps\AT08.map.pck"  | include "..\maps\mapdata\AT08.asm"  
+MapsBlockAT11:  equ   $7e | MapAT11: incbin "..\maps\AT11.map.pck"  | include "..\maps\mapdata\AT11.asm"  
+MapsBlockAT12:  equ   $7e | MapAT12: incbin "..\maps\AT12.map.pck"  | include "..\maps\mapdata\AT12.asm"  
+MapsBlockAT14:  equ   $7e | MapAT14: incbin "..\maps\AT14.map.pck"  | include "..\maps\mapdata\AT14.asm"  
+MapsBlockAT17:  equ   $7e | MapAT17: incbin "..\maps\AT17.map.pck"  | include "..\maps\mapdata\AT17.asm"  
+MapsBlockAT19:  equ   $7e | MapAT19: incbin "..\maps\AT19.map.pck"  | include "..\maps\mapdata\AT19.asm"  
+MapsBlockAT20:  equ   $7e | MapAT20: incbin "..\maps\AT20.map.pck"  | include "..\maps\mapdata\AT20.asm"  
+MapsBlockAT23:  equ   $7e | MapAT23: incbin "..\maps\AT23.map.pck"  | include "..\maps\mapdata\AT23.asm"  
+MapsBlockAT27:  equ   $7e | MapAT27: incbin "..\maps\AT27.map.pck"  | include "..\maps\mapdata\AT27.asm"  
+MapsBlockAT31:  equ   $7e | MapAT31: incbin "..\maps\AT31.map.pck"  | include "..\maps\mapdata\AT31.asm"  
+MapsBlockAT32:  equ   $7e | MapAT32: incbin "..\maps\AT32.map.pck"  | include "..\maps\mapdata\AT32.asm"  
+MapsBlockAT35:  equ   $7e | MapAT35: incbin "..\maps\AT35.map.pck"  | include "..\maps\mapdata\AT35.asm"  
+MapsBlockAT37:  equ   $7e | MapAT37: incbin "..\maps\AT37.map.pck"  | include "..\maps\mapdata\AT37.asm"  
+MapsBlockAT40:  equ   $7e | MapAT40: incbin "..\maps\AT40.map.pck"  | include "..\maps\mapdata\AT40.asm"  
+MapsBlockAT45:  equ   $7e | MapAT45: incbin "..\maps\AT45.map.pck"  | include "..\maps\mapdata\AT45.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $7f
+;
+phase	$8000
+MapsBlockAU03:  equ   $7f | MapAU03: incbin "..\maps\AU03.map.pck"  | include "..\maps\mapdata\AU03.asm"  
+MapsBlockAU05:  equ   $7f | MapAU05: incbin "..\maps\AU05.map.pck"  | include "..\maps\mapdata\AU05.asm"  
+MapsBlockAU06:  equ   $7f | MapAU06: incbin "..\maps\AU06.map.pck"  | include "..\maps\mapdata\AU06.asm"  
+MapsBlockAU07:  equ   $7f | MapAU07: incbin "..\maps\AU07.map.pck"  | include "..\maps\mapdata\AU07.asm"  
+MapsBlockAU08:  equ   $7f | MapAU08: incbin "..\maps\AU08.map.pck"  | include "..\maps\mapdata\AU08.asm"  
+MapsBlockAU11:  equ   $7f | MapAU11: incbin "..\maps\AU11.map.pck"  | include "..\maps\mapdata\AU11.asm"  
+MapsBlockAU14:  equ   $7f | MapAU14: incbin "..\maps\AU14.map.pck"  | include "..\maps\mapdata\AU14.asm"  
+MapsBlockAU15:  equ   $7f | MapAU15: incbin "..\maps\AU15.map.pck"  | include "..\maps\mapdata\AU15.asm"  
+MapsBlockAU17:  equ   $7f | MapAU17: incbin "..\maps\AU17.map.pck"  | include "..\maps\mapdata\AU17.asm"  
+MapsBlockAU20:  equ   $7f | MapAU20: incbin "..\maps\AU20.map.pck"  | include "..\maps\mapdata\AU20.asm"  
+MapsBlockAU21:  equ   $7f | MapAU21: incbin "..\maps\AU21.map.pck"  | include "..\maps\mapdata\AU21.asm"  
+MapsBlockAU23:  equ   $7f | MapAU23: incbin "..\maps\AU23.map.pck"  | include "..\maps\mapdata\AU23.asm"  
+MapsBlockAU24:  equ   $7f | MapAU24: incbin "..\maps\AU24.map.pck"  | include "..\maps\mapdata\AU24.asm"  
+MapsBlockAU25:  equ   $7f | MapAU25: incbin "..\maps\AU25.map.pck"  | include "..\maps\mapdata\AU25.asm"  
+MapsBlockAU26:  equ   $7f | MapAU26: incbin "..\maps\AU26.map.pck"  | include "..\maps\mapdata\AU26.asm"  
+MapsBlockAU27:  equ   $7f | MapAU27: incbin "..\maps\AU27.map.pck"  | include "..\maps\mapdata\AU27.asm"  
+MapsBlockAU28:  equ   $7f | MapAU28: incbin "..\maps\AU28.map.pck"  | include "..\maps\mapdata\AU28.asm"  
+MapsBlockAU29:  equ   $7f | MapAU29: incbin "..\maps\AU29.map.pck"  | include "..\maps\mapdata\AU29.asm"  
+MapsBlockAU31:  equ   $7f | MapAU31: incbin "..\maps\AU31.map.pck"  | include "..\maps\mapdata\AU31.asm"  
+MapsBlockAU34:  equ   $7f | MapAU34: incbin "..\maps\AU34.map.pck"  | include "..\maps\mapdata\AU34.asm"  
+MapsBlockAU35:  equ   $7f | MapAU35: incbin "..\maps\AU35.map.pck"  | include "..\maps\mapdata\AU35.asm"  
+MapsBlockAU40:  equ   $7f | MapAU40: incbin "..\maps\AU40.map.pck"  | include "..\maps\mapdata\AU40.asm"  
+MapsBlockAU41:  equ   $7f | MapAU41: incbin "..\maps\AU41.map.pck"  | include "..\maps\mapdata\AU41.asm"  
+MapsBlockAU42:  equ   $7f | MapAU42: incbin "..\maps\AU42.map.pck"  | include "..\maps\mapdata\AU42.asm"  
+MapsBlockAU43:  equ   $7f | MapAU43: incbin "..\maps\AU43.map.pck"  | include "..\maps\mapdata\AU43.asm"  
+MapsBlockAU44:  equ   $7f | MapAU44: incbin "..\maps\AU44.map.pck"  | include "..\maps\mapdata\AU44.asm"  
+MapsBlockAU45:  equ   $7f | MapAU45: incbin "..\maps\AU45.map.pck"  | include "..\maps\mapdata\AU45.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $80
+;
+phase	$8000
+MapsBlockAV03:  equ   $80 | MapAV03: incbin "..\maps\AV03.map.pck"  | include "..\maps\mapdata\AV03.asm"  
+MapsBlockAV06:  equ   $80 | MapAV06: incbin "..\maps\AV06.map.pck"  | include "..\maps\mapdata\AV06.asm"  
+MapsBlockAV08:  equ   $80 | MapAV08: incbin "..\maps\AV08.map.pck"  | include "..\maps\mapdata\AV08.asm"  
+MapsBlockAV09:  equ   $80 | MapAV09: incbin "..\maps\AV09.map.pck"  | include "..\maps\mapdata\AV09.asm"  
+MapsBlockAV10:  equ   $80 | MapAV10: incbin "..\maps\AV10.map.pck"  | include "..\maps\mapdata\AV10.asm"  
+MapsBlockAV11:  equ   $80 | MapAV11: incbin "..\maps\AV11.map.pck"  | include "..\maps\mapdata\AV11.asm"  
+MapsBlockAV14:  equ   $80 | MapAV14: incbin "..\maps\AV14.map.pck"  | include "..\maps\mapdata\AV14.asm"  
+MapsBlockAV17:  equ   $80 | MapAV17: incbin "..\maps\AV17.map.pck"  | include "..\maps\mapdata\AV17.asm"  
+MapsBlockAV18:  equ   $80 | MapAV18: incbin "..\maps\AV18.map.pck"  | include "..\maps\mapdata\AV18.asm"  
+MapsBlockAV20:  equ   $80 | MapAV20: incbin "..\maps\AV20.map.pck"  | include "..\maps\mapdata\AV20.asm"  
+MapsBlockAV21:  equ   $80 | MapAV21: incbin "..\maps\AV21.map.pck"  | include "..\maps\mapdata\AV21.asm"  
+MapsBlockAV23:  equ   $80 | MapAV23: incbin "..\maps\AV23.map.pck"  | include "..\maps\mapdata\AV23.asm"  
+MapsBlockAV24:  equ   $80 | MapAV24: incbin "..\maps\AV24.map.pck"  | include "..\maps\mapdata\AV24.asm"  
+MapsBlockAV25:  equ   $80 | MapAV25: incbin "..\maps\AV25.map.pck"  | include "..\maps\mapdata\AV25.asm"  
+MapsBlockAV26:  equ   $80 | MapAV26: incbin "..\maps\AV26.map.pck"  | include "..\maps\mapdata\AV26.asm"  
+MapsBlockAV27:  equ   $80 | MapAV27: incbin "..\maps\AV27.map.pck"  | include "..\maps\mapdata\AV27.asm"  
+MapsBlockAV28:  equ   $80 | MapAV28: incbin "..\maps\AV28.map.pck"  | include "..\maps\mapdata\AV28.asm"  
+MapsBlockAV29:  equ   $80 | MapAV29: incbin "..\maps\AV29.map.pck"  | include "..\maps\mapdata\AV29.asm"  
+MapsBlockAV31:  equ   $80 | MapAV31: incbin "..\maps\AV31.map.pck"  | include "..\maps\mapdata\AV31.asm"  
+MapsBlockAV34:  equ   $80 | MapAV34: incbin "..\maps\AV34.map.pck"  | include "..\maps\mapdata\AV34.asm"  
+MapsBlockAV35:  equ   $80 | MapAV35: incbin "..\maps\AV35.map.pck"  | include "..\maps\mapdata\AV35.asm"  
+MapsBlockAV39:  equ   $80 | MapAV39: incbin "..\maps\AV39.map.pck"  | include "..\maps\mapdata\AV39.asm"  
+MapsBlockAV40:  equ   $80 | MapAV40: incbin "..\maps\AV40.map.pck"  | include "..\maps\mapdata\AV40.asm"  
+MapsBlockAV44:  equ   $80 | MapAV44: incbin "..\maps\AV44.map.pck"  | include "..\maps\mapdata\AV44.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $81
+;
+phase	$8000
+MapsBlockAW03:  equ   $81 | MapAW03: incbin "..\maps\AW03.map.pck"  | include "..\maps\mapdata\AW03.asm"  
+MapsBlockAW04:  equ   $81 | MapAW04: incbin "..\maps\AW04.map.pck"  | include "..\maps\mapdata\AW04.asm"  
+MapsBlockAW05:  equ   $81 | MapAW05: incbin "..\maps\AW05.map.pck"  | include "..\maps\mapdata\AW05.asm"  
+MapsBlockAW06:  equ   $81 | MapAW06: incbin "..\maps\AW06.map.pck"  | include "..\maps\mapdata\AW06.asm"  
+MapsBlockAW11:  equ   $81 | MapAW11: incbin "..\maps\AW11.map.pck"  | include "..\maps\mapdata\AW11.asm"  
+MapsBlockAW12:  equ   $81 | MapAW12: incbin "..\maps\AW12.map.pck"  | include "..\maps\mapdata\AW12.asm"  
+MapsBlockAW13:  equ   $81 | MapAW13: incbin "..\maps\AW13.map.pck"  | include "..\maps\mapdata\AW13.asm"  
+MapsBlockAW14:  equ   $81 | MapAW14: incbin "..\maps\AW14.map.pck"  | include "..\maps\mapdata\AW14.asm"  
+MapsBlockAW17:  equ   $81 | MapAW17: incbin "..\maps\AW17.map.pck"  | include "..\maps\mapdata\AW17.asm"  
+MapsBlockAW20:  equ   $81 | MapAW20: incbin "..\maps\AW20.map.pck"  | include "..\maps\mapdata\AW20.asm"  
+MapsBlockAW24:  equ   $81 | MapAW24: incbin "..\maps\AW24.map.pck"  | include "..\maps\mapdata\AW24.asm"  
+MapsBlockAW27:  equ   $81 | MapAW27: incbin "..\maps\AW27.map.pck"  | include "..\maps\mapdata\AW27.asm"  
+MapsBlockAW31:  equ   $81 | MapAW31: incbin "..\maps\AW31.map.pck"  | include "..\maps\mapdata\AW31.asm"  
+MapsBlockAW37:  equ   $81 | MapAW37: incbin "..\maps\AW37.map.pck"  | include "..\maps\mapdata\AW37.asm"  
+MapsBlockAW38:  equ   $81 | MapAW38: incbin "..\maps\AW38.map.pck"  | include "..\maps\mapdata\AW38.asm"  
+MapsBlockAW39:  equ   $81 | MapAW39: incbin "..\maps\AW39.map.pck"  | include "..\maps\mapdata\AW39.asm"  
+MapsBlockAW44:  equ   $81 | MapAW44: incbin "..\maps\AW44.map.pck"  | include "..\maps\mapdata\AW44.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $82
+;
+phase	$8000
+MapsBlockAX01:  equ   $82 | MapAX01: incbin "..\maps\AX01.map.pck"  | include "..\maps\mapdata\AX01.asm"  
+MapsBlockAX08:  equ   $82 | MapAX08: incbin "..\maps\AX08.map.pck"  | include "..\maps\mapdata\AX08.asm"  
+MapsBlockAX09:  equ   $82 | MapAX09: incbin "..\maps\AX09.map.pck"  | include "..\maps\mapdata\AX09.asm"  
+MapsBlockAX10:  equ   $82 | MapAX10: incbin "..\maps\AX10.map.pck"  | include "..\maps\mapdata\AX10.asm"  
+MapsBlockAX17:  equ   $82 | MapAX17: incbin "..\maps\AX17.map.pck"  | include "..\maps\mapdata\AX17.asm"  
+MapsBlockAX20:  equ   $82 | MapAX20: incbin "..\maps\AX20.map.pck"  | include "..\maps\mapdata\AX20.asm"  
+MapsBlockAX24:  equ   $82 | MapAX24: incbin "..\maps\AX24.map.pck"  | include "..\maps\mapdata\AX24.asm"  
+MapsBlockAX27:  equ   $82 | MapAX27: incbin "..\maps\AX27.map.pck"  | include "..\maps\mapdata\AX27.asm"  
+MapsBlockAX31:  equ   $82 | MapAX31: incbin "..\maps\AX31.map.pck"  | include "..\maps\mapdata\AX31.asm"  
+MapsBlockAX32:  equ   $82 | MapAX32: incbin "..\maps\AX32.map.pck"  | include "..\maps\mapdata\AX32.asm"  
+MapsBlockAX33:  equ   $82 | MapAX33: incbin "..\maps\AX33.map.pck"  | include "..\maps\mapdata\AX33.asm"  
+MapsBlockAX34:  equ   $82 | MapAX34: incbin "..\maps\AX34.map.pck"  | include "..\maps\mapdata\AX34.asm"  
+MapsBlockAX36:  equ   $82 | MapAX36: incbin "..\maps\AX36.map.pck"  | include "..\maps\mapdata\AX36.asm"  
+MapsBlockAX37:  equ   $82 | MapAX37: incbin "..\maps\AX37.map.pck"  | include "..\maps\mapdata\AX37.asm"  
+MapsBlockAX44:  equ   $82 | MapAX44: incbin "..\maps\AX44.map.pck"  | include "..\maps\mapdata\AX44.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $83
+;
+phase	$8000
+MapsBlockAY01:  equ   $83 | MapAY01: incbin "..\maps\AY01.map.pck"  | include "..\maps\mapdata\AY01.asm"  
+MapsBlockAY02:  equ   $83 | MapAY02: incbin "..\maps\AY02.map.pck"  | include "..\maps\mapdata\AY02.asm"  
+MapsBlockAY03:  equ   $83 | MapAY03: incbin "..\maps\AY03.map.pck"  | include "..\maps\mapdata\AY03.asm"  
+MapsBlockAY06:  equ   $83 | MapAY06: incbin "..\maps\AY06.map.pck"  | include "..\maps\mapdata\AY06.asm"  
+MapsBlockAY08:  equ   $83 | MapAY08: incbin "..\maps\AY08.map.pck"  | include "..\maps\mapdata\AY08.asm"  
+MapsBlockAY20:  equ   $83 | MapAY20: incbin "..\maps\AY20.map.pck"  | include "..\maps\mapdata\AY20.asm"  
+MapsBlockAY21:  equ   $83 | MapAY21: incbin "..\maps\AY21.map.pck"  | include "..\maps\mapdata\AY21.asm"  
+MapsBlockAY22:  equ   $83 | MapAY22: incbin "..\maps\AY22.map.pck"  | include "..\maps\mapdata\AY22.asm"  
+MapsBlockAY23:  equ   $83 | MapAY23: incbin "..\maps\AY23.map.pck"  | include "..\maps\mapdata\AY23.asm"  
+MapsBlockAY24:  equ   $83 | MapAY24: incbin "..\maps\AY24.map.pck"  | include "..\maps\mapdata\AY24.asm"  
+MapsBlockAY25:  equ   $83 | MapAY25: incbin "..\maps\AY25.map.pck"  | include "..\maps\mapdata\AY25.asm"  
+MapsBlockAY26:  equ   $83 | MapAY26: incbin "..\maps\AY26.map.pck"  | include "..\maps\mapdata\AY26.asm"  
+MapsBlockAY27:  equ   $83 | MapAY27: incbin "..\maps\AY27.map.pck"  | include "..\maps\mapdata\AY27.asm"  
+MapsBlockAY28:  equ   $83 | MapAY28: incbin "..\maps\AY28.map.pck"  | include "..\maps\mapdata\AY28.asm"  
+MapsBlockAY29:  equ   $83 | MapAY29: incbin "..\maps\AY29.map.pck"  | include "..\maps\mapdata\AY29.asm"  
+MapsBlockAY30:  equ   $83 | MapAY30: incbin "..\maps\AY30.map.pck"  | include "..\maps\mapdata\AY30.asm"  
+MapsBlockAY31:  equ   $83 | MapAY31: incbin "..\maps\AY31.map.pck"  | include "..\maps\mapdata\AY31.asm"  
+MapsBlockAY34:  equ   $83 | MapAY34: incbin "..\maps\AY34.map.pck"  | include "..\maps\mapdata\AY34.asm"  
+MapsBlockAY35:  equ   $83 | MapAY35: incbin "..\maps\AY35.map.pck"  | include "..\maps\mapdata\AY35.asm"  
+MapsBlockAY36:  equ   $83 | MapAY36: incbin "..\maps\AY36.map.pck"  | include "..\maps\mapdata\AY36.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $84
+;
+phase	$8000
+MapsBlockAZ02:  equ   $84 | MapAZ02: incbin "..\maps\AZ02.map.pck"  | include "..\maps\mapdata\AZ02.asm"  
+MapsBlockAZ03:  equ   $84 | MapAZ03: incbin "..\maps\AZ03.map.pck"  | include "..\maps\mapdata\AZ03.asm"  
+MapsBlockAZ04:  equ   $84 | MapAZ04: incbin "..\maps\AZ04.map.pck"  | include "..\maps\mapdata\AZ04.asm"  
+MapsBlockAZ05:  equ   $84 | MapAZ05: incbin "..\maps\AZ05.map.pck"  | include "..\maps\mapdata\AZ05.asm"  
+MapsBlockAZ06:  equ   $84 | MapAZ06: incbin "..\maps\AZ06.map.pck"  | include "..\maps\mapdata\AZ06.asm"  
+MapsBlockAZ07:  equ   $84 | MapAZ07: incbin "..\maps\AZ07.map.pck"  | include "..\maps\mapdata\AZ07.asm"  
+MapsBlockAZ08:  equ   $84 | MapAZ08: incbin "..\maps\AZ08.map.pck"  | include "..\maps\mapdata\AZ08.asm"  
+MapsBlockAZ09:  equ   $84 | MapAZ09: incbin "..\maps\AZ09.map.pck"  | include "..\maps\mapdata\AZ09.asm"  
+MapsBlockAZ21:  equ   $84 | MapAZ21: incbin "..\maps\AZ21.map.pck"  | include "..\maps\mapdata\AZ21.asm"  
+MapsBlockAZ23:  equ   $84 | MapAZ23: incbin "..\maps\AZ23.map.pck"  | include "..\maps\mapdata\AZ23.asm"  
+MapsBlockAZ24:  equ   $84 | MapAZ24: incbin "..\maps\AZ24.map.pck"  | include "..\maps\mapdata\AZ24.asm"  
+MapsBlockAZ27:  equ   $84 | MapAZ27: incbin "..\maps\AZ27.map.pck"  | include "..\maps\mapdata\AZ27.asm"  
+MapsBlockAZ31:  equ   $84 | MapAZ31: incbin "..\maps\AZ31.map.pck"  | include "..\maps\mapdata\AZ31.asm"  
+MapsBlockAZ43:  equ   $84 | MapAZ43: incbin "..\maps\AZ43.map.pck"  | include "..\maps\mapdata\AZ43.asm"  
+MapsBlockAZ45:  equ   $84 | MapAZ45: incbin "..\maps\AZ45.map.pck"  | include "..\maps\mapdata\AZ45.asm"  
+MapsBlockAZ47:  equ   $84 | MapAZ47: incbin "..\maps\AZ47.map.pck"  | include "..\maps\mapdata\AZ47.asm"  
+MapsBlockAZ49:  equ   $84 | MapAZ49: incbin "..\maps\AZ49.map.pck"  | include "..\maps\mapdata\AZ49.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $85
+;
+phase	$8000
+MapsBlockBA01:  equ   $85 | MapBA01: incbin "..\maps\BA01.map.pck"  | include "..\maps\mapdata\BA01.asm"  
+MapsBlockBA02:  equ   $85 | MapBA02: incbin "..\maps\BA02.map.pck"  | include "..\maps\mapdata\BA02.asm"  
+MapsBlockBA03:  equ   $85 | MapBA03: incbin "..\maps\BA03.map.pck"  | include "..\maps\mapdata\BA03.asm"  
+MapsBlockBA06:  equ   $85 | MapBA06: incbin "..\maps\BA06.map.pck"  | include "..\maps\mapdata\BA06.asm"  
+MapsBlockBA08:  equ   $85 | MapBA08: incbin "..\maps\BA08.map.pck"  | include "..\maps\mapdata\BA08.asm"  
+MapsBlockBA19:  equ   $85 | MapBA19: incbin "..\maps\BA19.map.pck"  | include "..\maps\mapdata\BA19.asm"  
+MapsBlockBA20:  equ   $85 | MapBA20: incbin "..\maps\BA20.map.pck"  | include "..\maps\mapdata\BA20.asm"  
+MapsBlockBA21:  equ   $85 | MapBA21: incbin "..\maps\BA21.map.pck"  | include "..\maps\mapdata\BA21.asm"  
+MapsBlockBA24:  equ   $85 | MapBA24: incbin "..\maps\BA24.map.pck"  | include "..\maps\mapdata\BA24.asm"  
+MapsBlockBA27:  equ   $85 | MapBA27: incbin "..\maps\BA27.map.pck"  | include "..\maps\mapdata\BA27.asm"  
+MapsBlockBA31:  equ   $85 | MapBA31: incbin "..\maps\BA31.map.pck"  | include "..\maps\mapdata\BA31.asm"  
+MapsBlockBA32:  equ   $85 | MapBA32: incbin "..\maps\BA32.map.pck"  | include "..\maps\mapdata\BA32.asm"  
+MapsBlockBA33:  equ   $85 | MapBA33: incbin "..\maps\BA33.map.pck"  | include "..\maps\mapdata\BA33.asm"  
+MapsBlockBA34:  equ   $85 | MapBA34: incbin "..\maps\BA34.map.pck"  | include "..\maps\mapdata\BA34.asm"  
+MapsBlockBA35:  equ   $85 | MapBA35: incbin "..\maps\BA35.map.pck"  | include "..\maps\mapdata\BA35.asm"  
+MapsBlockBA36:  equ   $85 | MapBA36: incbin "..\maps\BA36.map.pck"  | include "..\maps\mapdata\BA36.asm"  
+MapsBlockBA37:  equ   $85 | MapBA37: incbin "..\maps\BA37.map.pck"  | include "..\maps\mapdata\BA37.asm"  
+MapsBlockBA39:  equ   $85 | MapBA39: incbin "..\maps\BA39.map.pck"  | include "..\maps\mapdata\BA39.asm"  
+MapsBlockBA40:  equ   $85 | MapBA40: incbin "..\maps\BA40.map.pck"  | include "..\maps\mapdata\BA40.asm"  
+MapsBlockBA41:  equ   $85 | MapBA41: incbin "..\maps\BA41.map.pck"  | include "..\maps\mapdata\BA41.asm"  
+MapsBlockBA43:  equ   $85 | MapBA43: incbin "..\maps\BA43.map.pck"  | include "..\maps\mapdata\BA43.asm"  
+MapsBlockBA44:  equ   $85 | MapBA44: incbin "..\maps\BA44.map.pck"  | include "..\maps\mapdata\BA44.asm"  
+MapsBlockBA45:  equ   $85 | MapBA45: incbin "..\maps\BA45.map.pck"  | include "..\maps\mapdata\BA45.asm"  
+MapsBlockBA46:  equ   $85 | MapBA46: incbin "..\maps\BA46.map.pck"  | include "..\maps\mapdata\BA46.asm"  
+MapsBlockBA47:  equ   $85 | MapBA47: incbin "..\maps\BA47.map.pck"  | include "..\maps\mapdata\BA47.asm"  
+MapsBlockBA48:  equ   $85 | MapBA48: incbin "..\maps\BA48.map.pck"  | include "..\maps\mapdata\BA48.asm"  
+MapsBlockBA49:  equ   $85 | MapBA49: incbin "..\maps\BA49.map.pck"  | include "..\maps\mapdata\BA49.asm"  
+	ds		$c000-$,$ff
+dephase
+
+;
+; block $86
+;
+phase	$8000
+MapsBlockBB01:  equ   $86 | MapBB01: incbin "..\maps\BB01.map.pck"  | include "..\maps\mapdata\BB01.asm"  
+MapsBlockBB06:  equ   $86 | MapBB06: incbin "..\maps\BB06.map.pck"  | include "..\maps\mapdata\BB06.asm"  
+MapsBlockBB08:  equ   $86 | MapBB08: incbin "..\maps\BB08.map.pck"  | include "..\maps\mapdata\BB08.asm"  
+MapsBlockBB09:  equ   $86 | MapBB09: incbin "..\maps\BB09.map.pck"  | include "..\maps\mapdata\BB09.asm"  
+MapsBlockBB10:  equ   $86 | MapBB10: incbin "..\maps\BB10.map.pck"  | include "..\maps\mapdata\BB10.asm"  
+MapsBlockBB21:  equ   $86 | MapBB21: incbin "..\maps\BB21.map.pck"  | include "..\maps\mapdata\BB21.asm"  
+MapsBlockBB23:  equ   $86 | MapBB23: incbin "..\maps\BB23.map.pck"  | include "..\maps\mapdata\BB23.asm"  
+MapsBlockBB24:  equ   $86 | MapBB24: incbin "..\maps\BB24.map.pck"  | include "..\maps\mapdata\BB24.asm"  
+MapsBlockBB27:  equ   $86 | MapBB27: incbin "..\maps\BB27.map.pck"  | include "..\maps\mapdata\BB27.asm"  
+MapsBlockBB33:  equ   $86 | MapBB33: incbin "..\maps\BB33.map.pck"  | include "..\maps\mapdata\BB33.asm"  
+MapsBlockBB37:  equ   $86 | MapBB37: incbin "..\maps\BB37.map.pck"  | include "..\maps\mapdata\BB37.asm"  
+MapsBlockBB38:  equ   $86 | MapBB38: incbin "..\maps\BB38.map.pck"  | include "..\maps\mapdata\BB38.asm"  
+MapsBlockBB39:  equ   $86 | MapBB39: incbin "..\maps\BB39.map.pck"  | include "..\maps\mapdata\BB39.asm"  
+MapsBlockBB41:  equ   $86 | MapBB41: incbin "..\maps\BB41.map.pck"  | include "..\maps\mapdata\BB41.asm"  
+MapsBlockBB49:  equ   $86 | MapBB49: incbin "..\maps\BB49.map.pck"  | include "..\maps\mapdata\BB49.asm"  
+	ds		$c000-$,$ff
+dephase
 
 
 
@@ -6326,9 +5294,9 @@ dephase
 ;
 ; block $a3
 ;
-MapDataCopiedToRamBlock:  equ   $a3
+WorldMapDataCopiedToRamBlock:  equ   $a3
 phase	$8000
-  include "MapDataCopiedToRam.asm"
+  include "WorldMapDataCopiedToRam.asm"
 	ds		$c000-$,$ff
 dephase
 

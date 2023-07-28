@@ -38,3 +38,5 @@ del tniasm.out
 del tniasm.tmp
 cd..
 cd maps
+
+exit

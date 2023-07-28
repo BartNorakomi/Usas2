@@ -1030,7 +1030,7 @@ Dying:
   ld    a,80
   ld    (ClesY),a
   
-  ld    hl,MapA04Data       ;area sign
+  ld    hl,MapAA01Data       ;start
   ld    (WorldMapPointer),hl
 
   pop   hl                  ;pop the call to this routine
