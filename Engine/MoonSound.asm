@@ -121,6 +121,10 @@ MoonSound_WriteWave_Loop:
 	inc c
 	outi
 	jp nz,MoonSound_WriteWave_Loop
+	ld b,9
+MoonSound_WriteWave_SampleWaitLoop:  ; wait to let OPL4 process the sample (e.g. key-off)
+	in a,(MoonSound_STATUS)          ; extra wait for R800 -- wait 22.7 µs (163 cycles)
+	djnz MoonSound_WriteWave_SampleWaitLoop
 	jp MoonSound_Process_Loop
 
 ; hl = sound data
@@ -132,12 +136,6 @@ MoonSound_WaitLoad:
 
 ; hl = sound data
 MoonSound_WriteMemory:
-	ld e,(hl)
-	inc hl
-	ld d,(hl)
-	inc hl
-	ld a,(hl)
-	inc hl
 	ld c,(hl)
 	inc hl
 	ld b,(hl)
@@ -254,24 +252,6 @@ MoonSound_ReadStatusRegister:
 ; ade = destination address
 ; hl = source address
 MoonSound_WriteWaveMemory:
-	push af
-	push de
-	ld de,0211H
-	call MoonSound_WriteWaveRegister  ; set standard memory layout
-	pop de
-	pop af
-	push de
-	ld e,a
-	ld d,03H
-	call MoonSound_WriteWaveRegister
-	pop de
-	push de
-	ld e,d
-	ld d,04H
-	call MoonSound_WriteWaveRegister
-	pop de
-	ld d,05H
-	call MoonSound_WriteWaveRegister
 	ld a,06H
 	out (MoonSound_WAVE_ADDRESS),a
 	dec bc
@@ -284,5 +264,4 @@ MoonSound_WriteMemory_Loop:
 	otir
 	dec a
 	jr nz,MoonSound_WriteMemory_Loop
-	ld de,0210H
-	jp MoonSound_WriteWaveRegister  ; set standard memory layout
+	ret

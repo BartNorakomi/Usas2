@@ -304,6 +304,18 @@ Player_Play:
 	ld (Player_playing),a
 	ret
 
+Player_Stop:
+	xor a
+	ld (Player_playing),a
+	call Player_Mute
+	ret
+
+Player_Resume:
+	call Player_Restore
+	ld a,1
+	ld (Player_playing),a
+	ret
+
 ; hl = value
 ; ix = stack pointer
 ; ix <- stack pointer

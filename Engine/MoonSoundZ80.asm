@@ -90,12 +90,6 @@ MoonSoundZ80_WaitLoad:
 
 ; hl = sound data
 MoonSoundZ80_WriteMemory:
-	ld e,(hl)
-	inc hl
-	ld d,(hl)
-	inc hl
-	ld a,(hl)
-	inc hl
 	ld c,(hl)
 	inc hl
 	ld b,(hl)
