@@ -3865,7 +3865,15 @@ Jump:
   
   xor   a
   ld    (DoubleJumpAvailable?),a
-  jp    Set_jump.SkipTurnOnDoubleJump
+;  jp    Set_jump.SkipTurnOnDoubleJump
+
+;this code is new, and decreases the 2nd jump height
+  call  Set_jump.SkipTurnOnDoubleJump
+	ld    a,(StartingJumpSpeed)
+	inc   a
+	ld		(JumpSpeed),a
+  ret
+;/this code is new, and decreases the 2nd jump height
 
 AnimateMeditating:
   ld    a,(framecounter)          ;animate every 4 frames

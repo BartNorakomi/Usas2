@@ -12,7 +12,7 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 ;Tiledata,palette: 0=Voodoo Wasp, 2=Konark,   1=Goddess Area, 3=Karni Mata, 4=BlueTemple, 5=Burial, 6=Boss Area, 7=IceTemple
 
 
-WorldMapPointer:  dw  MapBT24Data      ;NPC interaction
+;WorldMapPointer:  dw  MapBT24Data      ;NPC interaction
 
 ;WorldMapPointer:  dw  MapE04Data      ;Boss Zombie Caterpillar
 ;WorldMapPointer:  dw  MapD04Data      ;Boss Voodoo Wasp
@@ -24,8 +24,8 @@ WorldMapPointer:  dw  MapBT24Data      ;NPC interaction
 ;WorldMapPointer:  dw  MapF06Data      ;
 ;WorldMapPointer:  dw  MapE09Data      ;lava
 ;WorldMapPointer:  dw  MapG13Data      ;Boss Goat (iceboss)
-;WorldMapPointer:  dw  MapA12Data      ;
-;WorldMapPointer:  dw  MapB11Data      ;
+WorldMapPointer:  dw  MapA12Data      ;omni directional platforms
+;WorldMapPointer:  dw  MapB01_018Data      ;trampoline
 ;WorldMapPointer:  dw  MapB01_017Data      ;Huge Blob
 ;WorldMapPointer:  dw  MapG04Data      ;Huge Blob
 ;WorldMapPointer:  dw  MapE05Data      ;let's make this a Glass Ball Room
@@ -645,8 +645,8 @@ ConvertToMapinRam:
 
 
 ;newer
-;tilenr: 1 t/m 16 = ladder
-;tilenr: 17 t/m 31 = 
+;tilenr: 1 t/m 8 = ladder
+;tilenr: 9 t/m 31 = free
 ;tilenr: 32 t/m 39 = spikes/poison
 ;tilenr: 40 t/m 47 = lava
 ;tilenr: 48 t/m 49 = stairs left
