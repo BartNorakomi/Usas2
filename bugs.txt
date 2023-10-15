@@ -13,3 +13,8 @@ geen bug maar een addition: tot 3 ? frames na het vallen kun je nog jumpen
 
 als je geraakt bent door een vijand of kogel ofzo, stuiter je een stukkie achteruit.
 als je daardoor 'IN' een platform terecht komt spring je naar de 'getting crushed' routine en ga je dood
+
+Als ik de emulator heeeel erg vertraag zie ik wat je bedoelt Maarten.
+De allereerste frame van de nieuwe room is versprongen idd.
+Ik moet dus het scherm 1 frame later *aanzetten.
+Dat zou voldoende moeten zijn. (edited) 

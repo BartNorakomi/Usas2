@@ -1,0 +1,5 @@
+Van de laatste x uren:
+gci -path  C:\Users\bartf\OneDrive\Usas2\maps\* -include *.tmx|where{$_.LastWriteTime -gt (Get-Date).AddHours(-1)}|%{..\convert-tmxtoraw16.ps1 -path $_.fullname -pack -targetPath .\ }
+
+handmatig kollomen
+..\convert-tmxtoraw16.ps1 -Path C:\Users\bartf\OneDrive\Usas2\maps\BU*.tmx -targetPath .\  -pack

@@ -1,6 +1,6 @@
 phase	$c000
 
-MusicOn?:   equ 1
+MusicOn?:   equ 0
 LogoOn?:    equ 0
 
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
@@ -12,7 +12,7 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 ;Tiledata,palette: 0=Voodoo Wasp, 2=Konark,   1=Goddess Area, 3=Karni Mata, 4=BlueTemple, 5=Burial, 6=Boss Area, 7=IceTemple
 
 
-;WorldMapPointer:  dw  MapBT24Data      ;NPC interaction
+WorldMapPointer:  dw  MapBT12Data      ;NPC interaction
 
 ;WorldMapPointer:  dw  MapE04Data      ;Boss Zombie Caterpillar
 ;WorldMapPointer:  dw  MapD04Data      ;Boss Voodoo Wasp
@@ -24,7 +24,7 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 ;WorldMapPointer:  dw  MapF06Data      ;
 ;WorldMapPointer:  dw  MapE09Data      ;lava
 ;WorldMapPointer:  dw  MapG13Data      ;Boss Goat (iceboss)
-WorldMapPointer:  dw  MapA12Data      ;omni directional platforms
+;WorldMapPointer:  dw  MapA12Data      ;omni directional platforms
 ;WorldMapPointer:  dw  MapB01_018Data      ;trampoline
 ;WorldMapPointer:  dw  MapB01_017Data      ;Huge Blob
 ;WorldMapPointer:  dw  MapG04Data      ;Huge Blob
@@ -724,6 +724,13 @@ ConvertToMapinRam:
   ld    e,(hl)              ;each tile is 16 bit. bit 0-4 (value between 0-31) give us the x value if we multiply by 8
   inc   hl
   ld    d,(hl)
+  
+;**************** HACK **************** 
+  ld    a,d
+  and   %0000 0011          ;remove bit 15,14,13,12,11,10
+  ld    d,a
+;**************** HACK **************** 
+  
   inc   hl                  ;next tile in tilemap
   
   ;set sx and sy of this tile
