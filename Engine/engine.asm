@@ -22,7 +22,7 @@ LevelEngine:
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
   call  CheckF1Menu               ;check if F1 is pressed and the menu can be entered
   call  BackdropBlue
-  call  Player_Tick               ;music routine
+  call  RePlayer_Tick             ;music routine
   call  BackdropBlack
 
 ;Routines starting at lineint:
@@ -2720,7 +2720,7 @@ InterruptHandlerLoader:
   ld    a,(memblocks.2)
   push  af                ;store current memblock2 
 
-  call  Player_Tick       ;music player
+  call  RePlayer_Tick     ;music player
 
 	ld		a,(NewPrContr)
   push  af

@@ -5611,6 +5611,7 @@ dephase
 ;
 usas2repBlock:  equ   $df
   incbin "usas2.rep"
+	ds		-$ and $3fff,$ff  ; pad to next multiple of $4000
 
 
 

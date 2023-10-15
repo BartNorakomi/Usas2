@@ -41,7 +41,7 @@ WorldMapPointer:  dw  MapBT12Data      ;NPC interaction
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
 loadGraphics:
-;	ld    a,(Player_playing)
+;	ld    a,(RePlayer_playing)
 ;	and   a
 ;  call  z,VGMRePlay
 
@@ -130,231 +130,19 @@ VGMRePlay:
   ei
   
   ld    a,FormatOPL4_ID
-  call  Player_Detect                 ;detect moonsound
+  call  RePlayer_Detect               ;detect moonsound
   ld    bc,0                          ;track nr
   ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
   ld    hl,$8000+1
-  call  Player_Play                   ;bc = track number, ahl = sound data (after format ID, so +1)
-  jp    Player_Tick                   ;initialise, load samples
+  call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
+  jp    RePlayer_Tick                 ;initialise, load samples
   
 Main_Loop:
   halt
-  call  Player_Tick
+  call  RePlayer_Tick
   jp    Main_Loop  
 
-Player_Tick:
-  ld    a,(slot.page12rom)             ;all RAM except page 1+2
-  out   ($a8),a
-  
-	ld a,(Player_playing)
-	and a
-	ret z
-	ld ix,(Player_stackPointer)
-	dec (ix)
-	ret nz
-;	call Mapper_GetBank
-	ld a,(ASCII16Mapper_currentBank)	
-	push af
-	call Player_Pop
-;	call Mapper_SetBank
-	ld (ASCII16Mapper_currentBank),a
-	ld (7000H),a
-	call Player_Process
-	ld b,a
-;	call Mapper_GetBank
-	ld a,(ASCII16Mapper_currentBank)	
-	call Player_Push
-	ld (ix),b
-	ld (Player_stackPointer),ix
-	pop af
-;	call Mapper_SetBank
-	ld (ASCII16Mapper_currentBank),a
-	ld (7000H),a
-	ret
-
-FormatOPL4_ID: equ 1
-
-; a = format ID (first byte of sound data)
-; f <- c: found
-Player_Detect:
-	call Player_Detect_Format
-	jp c,Player_SetJumpTable
-	jp Player_ClearJumpTable
-
-; a = format ID (first byte of sound data)
-; f <- c: found
-Player_Detect_Format:
-;	cp FormatOPN_ID
-;	jp z,FormatOPN_Detect
-	cp FormatOPL4_ID
-	jp z,FormatOPL4_Detect
-	and a
-	ret
-
-; f <- c: found
-; hl = jump table
-Player_SetJumpTable:
-	ld de,Player_Process
-	ld bc,3 * 3
-	ldir
-	ret
-
-; f <- c: found
-Player_ClearJumpTable:
-	ld hl,Player_Process
-	ld de,Player_Process + 1
-	ld bc,3 * 3 - 1
-	ld (hl),0C9H  ; ret
-	ldir
-	ret
-
-; hl = sound data
-Player_Jump:
-	ld e,(hl)
-	inc hl
-	ld d,(hl)
-	inc hl
-;	call Mapper_GetBank
-	ld a,(ASCII16Mapper_currentBank)	
-	add a,(hl)
-	inc hl
-	add hl,de
-;	jp Mapper_SetBank
-	ld (ASCII16Mapper_currentBank),a
-	ld (7000H),a
-  ret
-
-; hl = sound data
-; ix = stack pointer
-Player_Return:
-	call Player_Pop
-;	jp Mapper_SetBank
-	ld (ASCII16Mapper_currentBank),a
-	ld (7000H),a	
-  ret
-	
-; hl = sound data
-; ix = stack pointer
-Player_Call:
-	ld e,(hl)
-	inc hl
-	ld d,(hl)
-	inc hl
-	ld b,(hl)
-	inc hl
-;	call Mapper_GetBank
-	ld a,(ASCII16Mapper_currentBank)
-	call Player_Push
-	add hl,de
-	add a,b
-;	jp Mapper_SetBank
-	ld (ASCII16Mapper_currentBank),a
-	ld (7000H),a	
-  ret
-
-INCLUDE "MoonSoundZ80.asm"
-INCLUDE "MoonSound.asm"
-FormatOPL4_Detect:
-	call  MoonSound_Detect
-	ld    hl,MoonSoundZ80_JumpTable
-;	ret   c
-;	call  MoonSound_Detect
-;	ld    hl,MoonSound_JumpTable
-	ret
-
-;IDBYT2: equ 2DH
-;GETCPU: equ 183H
-
-; f <- c: turbo R
-;Utils_IsTurboR:
-;	ld hl,IDBYT2
-;	call Memory_ReadBIOS
-;	add a,-3
-;	ret
-
-; f <- c: R800
-;Utils_IsR800:
-;	call Utils_IsTurboR
-;	ret nc
-;	push ix
-;	ld ix,GETCPU
-;	call Memory_CallBIOS
-;	pop ix
-;	add a,-1
-;	ret
-
-
-
-; bc = track number
-; ahl = sound data (after format ID, so +1)
-Player_Play:
-	add hl,bc
-	add hl,bc
-	add hl,bc
-	add hl,bc
-	ld b,a
-	xor a
-	ld (Player_playing),a
-	ld a,b
-	ld ix,Player_stack
-	call Player_Push
-	ld a,1
-	ld (ix),a
-	ld (Player_stackPointer),ix
-	ld (Player_playing),a
-	ret
-
-Player_Stop:
-	xor a
-	ld (Player_playing),a
-	call Player_Mute
-	ret
-
-Player_Resume:
-	call Player_Restore
-	ld a,1
-	ld (Player_playing),a
-	ret
-
-; hl = value
-; ix = stack pointer
-; ix <- stack pointer
-Player_Push:
-	ld (ix + 0),l
-	ld (ix + 1),h
-	ld (ix + 2),a
-	inc ix
-	inc ix
-	inc ix
-	ret
-
-; ix = stack pointer
-; hl <- value
-; ix <- stack pointer
-Player_Pop:
-	dec ix
-	dec ix
-	dec ix
-	ld l,(ix + 0)
-	ld h,(ix + 1)
-	ld a,(ix + 2)
-	ret
-
-ASCII16Mapper_currentBank:
-	db usas2repBlock
-Player_STACK_CAPACITY: equ 128
-Player_playing:
-	db 0
-Player_stackPointer:
-	dw Player_stack
-Player_stack:
-	ds Player_STACK_CAPACITY * 3 + 1
-Player_Process:
-	db 0C9H, 0, 0
-Player_Mute:
-	db 0C9H, 0, 0
-Player_Restore:
-	db 0C9H, 0, 0
+INCLUDE "RePlayer.asm"
 
 WaitForInterrupt:
   ld    a,(CameraY)
