@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="38" height="27" tilewidth="8" tileheight="8" infinite="0" nextlayerid="2" nextobjectid="1">
- <tileset firstgid="1" source="tilesheets/tsKarniMata.tsx"/>
+ <tileset firstgid="1" source="../tilesheets/tsKarniMata.tsx"/>
  <layer id="1" name="Tile Layer 1" width="38" height="27">
   <data encoding="csv">
 191,192,250,250,250,250,250,250,250,250,250,250,191,192,250,250,249,457,425,457,425,248,250,250,250,250,250,170,163,164,161,162,171,17,18,169,162,163,

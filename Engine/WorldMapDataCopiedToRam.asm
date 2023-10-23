@@ -37,6 +37,33 @@ MapA13Data: db MapsBlock0A | dw MapA13 | db 2,2,2   | MapB13Data: db MapsBlock0B
 
 
 
+;ID	Name	Type
+;1	Hub	Ruin
+;2	Lemniscate	Ruin
+;3	BosStenenWater	Ruin
+;4	Pegu	Ruin
+;5	Bio	Ruin
+;6	KarniMata	Ruin
+;7	Konark	Ruin
+;8	Verhakselaar	Ruin
+;9	Taxilla	Ruin
+;10	EuderusSet	Ruin
+;11	Akna	Ruin
+;12	Fate	Ruin
+;13	Sepa	Ruin
+;15	Chi	Ruin
+;16	Sui	Ruin
+;17	Grot	Ruin
+;18	Tiwanaku	Ruin
+;19	Aggayu	Ruin
+;20	Ka	Ruin
+;21	Genbu	Ruin
+;22	Fuu	Ruin
+;23	Indra	Ruin
+;24		
+;32	Teleport	Room
+;33	Secret	Room
+
 
 
 MapAA01Data: db MapsBlockAA01|dw MapAA01|db 1,3,3  |  MapAB01Data: db MapsBlockAB01|dw MapAB01|db 1,3,3  |  MapAC01Data: db MapsBlockAC01|dw MapAC01|db 1,3,3  |  MapAD01Data: db MapsBlockAD01|dw MapAD01|db 1,3,3  |  MapAE01Data: db MapsBlockAE01|dw MapAE01|db 1,3,3  |  MapAF01Data: db MapsBlockAF01|dw MapAF01|db 1,3,3  |  MapAG01Data: db MapsBlockAG01|dw MapAG01|db 1,3,3  |  MapAH01Data: db MapsBlockAH01|dw MapAH01|db 1,3,3  |  MapAI01Data: db MapsBlockAI01|dw MapAI01|db 1,3,3  |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  MapAX01Data: db MapsBlockAX01|dw MapAX01|db 1,3,3  |  MapAY01Data: db MapsBlockAY01|dw MapAY01|db 1,3,3  |  ds 6                                               |  MapBA01Data: db MapsBlockBA01|dw MapBA01|db 1,3,3  |  MapBB01Data: db MapsBlockBB01|dw MapBB01|db 1,3,3  |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  ds 6                                               |  MapBS01Data: db MapsBlockBS01|dw MapBS01|db 1,3,3  |  MapBT01Data: db MapsBlockBT01|dw MapBT01|db 1,3,3  |  MapBU01Data: db MapsBlockBU01|dw MapBU01|db 1,3,3  |  MapBV01Data: db MapsBlockBV01|dw MapBV01|db 1,3,3  |  MapBW01Data: db MapsBlockBW01|dw MapBW01|db 1,3,3  |  ds 6                                               |

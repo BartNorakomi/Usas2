@@ -3974,10 +3974,10 @@ MapA06:
   
   
 MapA07:
-  incbin "..\maps\a07.map.pck"  | .amountofobjects: db  6  
+  incbin "..\maps\a07.map.pck"  | .amountofobjects: db  7  
 ;Retarded Zombie Spawnpoint
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc,
-.object1:db +1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+01,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object1:db +0,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+01,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
 ;Retarded Zombie
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
@@ -3987,10 +3987,12 @@ MapA07:
 .object5:db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 24*16,spat+(24*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 ;platform (moving horizontally)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
-.object6: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+;.object6: db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+01,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+  
+.object6: db 1,        0|dw PlatformHorizontally2|db 8*15|dw 254-1|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+00,+01,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
   
   
-  
+.object7: db 1,        0|dw PlatformHorizontally2|db 8*17|dw 015|db 16,32|dw CleanOb2,0 db 0,0,0,                      +00,+00,+00,+01,+00,+16,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
   
   
   
@@ -4160,7 +4162,7 @@ MapD03:
 MapD04:
   incbin "..\maps\d04.map.pck"  | .amountofobjects: db  3
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object1: db 0,        0|dw BossVoodooWasp      |db -066|dw 8*22|db 50,52|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+81,+05,+00, 0|db 020,movepatblo1| ds fill-1
+.object1: db 0,        0|dw BossVoodooWasp      |db -066|dw 8*22|db 50,52|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+81,+05,+00, 0|db 020,movepatblo2| ds fill-1
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .object2: db 2,        0|dw Altar1              |db 8*02|dw 8*16|db 20,20|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+10, 0|db 000,movepatblo1| ds fill-1
 .object3: db 2,        0|dw Altar2              |db 8*14|dw 8*16|db 00,00|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1

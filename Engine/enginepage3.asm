@@ -12,11 +12,11 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 ;Tiledata,palette: 0=Voodoo Wasp, 2=Konark,   1=Goddess Area, 3=Karni Mata, 4=BlueTemple, 5=Burial, 6=Boss Area, 7=IceTemple
 
 
-WorldMapPointer:  dw  MapBT12Data      ;NPC interaction
+;WorldMapPointer:  dw  MapBT12Data      ;NPC interaction
 
 ;WorldMapPointer:  dw  MapE04Data      ;Boss Zombie Caterpillar
 ;WorldMapPointer:  dw  MapD04Data      ;Boss Voodoo Wasp
-;WorldMapPointer:  dw  MapA07Data      ;Retarded Zombies
+WorldMapPointer:  dw  MapA07Data      ;Retarded Zombies
 ;WorldMapPointer:  dw  MapA04Data      ;Area Sign
 ;WorldMapPointer:  dw  MapD12Data      ;pit
 ;WorldMapPointer:  dw  MapA05Data      ;
@@ -726,9 +726,9 @@ ConvertToMapinRam:
   ld    d,(hl)
   
 ;**************** HACK **************** 
-  ld    a,d
-  and   %0000 0011          ;remove bit 15,14,13,12,11,10
-  ld    d,a
+;  ld    a,d
+;  and   %0000 0011          ;remove bit 15,14,13,12,11,10
+;  ld    d,a
 ;**************** HACK **************** 
   
   inc   hl                  ;next tile in tilemap
