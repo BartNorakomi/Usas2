@@ -15,7 +15,7 @@ loader:
   ld    ix,MapDataCopiedToRam
 
   call  SetEngineType                 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
-  call  SetTilesInVram                ;copies all the tiles to Vram
+;  call  SetTilesInVram                ;copies all the tiles to Vram
   call  PopulateControls              ;this allows for a double jump as soon as you enter a new map
   call  SetMapPalette                 ;sets palette
   ret
@@ -161,8 +161,11 @@ CopyVramObjectsPage1and3:
   jp    copyGraphicsToScreen.loop1   
   
 copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
-;  ld    hl,FillBottomPartScoreBoard
-;  call  docopy  
+  ld    a,(ScoreBoardAlreadyInScreen?)
+  or    a
+  ret   nz
+  ld    a,1
+  ld    (ScoreBoardAlreadyInScreen?),a
 
   ld    hl,$6C00+128                      ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
   ld    a,Graphicsblock5              ;block to copy from
@@ -175,10 +178,7 @@ copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
   ld    a,38/2                        ;copy 38 lines..
   ld    b,0
   call  copyGraphicsToScreen.loop1
-;  ld    b,128
-;  otir                                ;copy last line, 39 in total
-  call  outix128
-  ret
+  jp    outix128
   
 SetMapPalette:
 ;set palette
@@ -243,82 +243,71 @@ BossAreaPalette:
 IceTemplePalette:
   incbin "..\grapx\tilesheets\sIceTemplePalette.PL" ;file palette 
   
-SetTilesInVram:  
+;SetTilesInVram:  
 ;set tiles in Vram
-  ld    a,(ix+4)                      ;tile data
-  or    a
-  ld    d,VoodooWaspTilesBlock        ;0
-  jr    z,.settiles
-  dec   a
-  ld    d,GoddessTilesBlock           ;1
-  jr    z,.settiles
-  dec   a
-  ld    d,KonarkTilesBlock            ;2
-  jr    z,.settiles
-  dec   a
-  ld    d,KarniMataTilesBlock         ;3
-  jr    z,.settiles
-  dec   a
-  ld    d,BlueTempleTilesBlock        ;4
-  jr    z,.settiles
-  dec   a
-  ld    d,BurialTilesBlock            ;5
-  jr    z,.settiles
-  dec   a
-  ld    d,BossAreaTilesBlock          ;6
-  jr    z,.settiles
-  dec   a
-  ld    d,IceTempleTilesBlock         ;7
-  jr    z,.settiles
+;  ld    a,(ix+4)                      ;tile data
+;  or    a
+;  ld    d,VoodooWaspTilesBlock        ;0
+;  jr    z,.settiles
+;  dec   a
+;  ld    d,GoddessTilesBlock           ;1
+;  jr    z,.settiles
+;  dec   a
+;  ld    d,KonarkTilesBlock            ;2
+;  jr    z,.settiles
+;  dec   a
+;  ld    d,KarniMataTilesBlock         ;3
+;  jr    z,.settiles
+;  dec   a
+;  ld    d,BlueTempleTilesBlock        ;4
+;  jr    z,.settiles
+;  dec   a
+;  ld    d,BurialTilesBlock            ;5
+;  jr    z,.settiles
+;  dec   a
+;  ld    d,BossAreaTilesBlock          ;6
+;  jr    z,.settiles
+;  dec   a
+;  ld    d,IceTempleTilesBlock         ;7
+;  jr    z,.settiles
 
-  .settiles:
-  ld    a,(slot.page12rom)            ;all RAM except page 12
-  out   ($a8),a          
+;  .settiles:
+;  ld    a,(slot.page12rom)            ;all RAM except page 12
+;  out   ($a8),a          
 
-  ld    hl,$8000                      ;page 1 - screen 5
-  ld    b,0
-  call  copyGraphicsToScreen2
-  ret
-
-copyGraphicsToScreen2:
-  ld    a,d                           ;Graphicsblock
-  call  block34
-  
-	ld		a,b
-	call	SetVdp_Write	
-	ld		hl,$8000
-  ld    c,$98
-  ld    a,64                          ;first 128 line, copy 64*256 = $4000 bytes to Vram
+;  ld    hl,$8000                      ;page 1 - screen 5
 ;  ld    b,0
-      
-  call  .loop1    
+;  call  copyGraphicsToScreen2
+;  ret
 
-  ld    a,d                           ;Graphicsblock
-;  add   a,2
-  inc   a
-  call  block34
+;copyGraphicsToScreen2:
+;  ld    a,d                           ;Graphicsblock
+;  call  block34
   
-	ld		hl,$8000
-  ld    c,$98
-  ld    a,64 ; 42                     ;second 84 line, copy 64*256 = $4000 bytes to Vram
-;  ld    b,0
-      
-  call  .loop1   
-
-  ;this last part is to fill the screen with a repetition
-;	ld		hl,$4000
+;	ld		a,b
+;	call	SetVdp_Write	
+;	ld		hl,$8000
 ;  ld    c,$98
-;  ld    a,22                         ;second 84 line, copy 64*256 = $4000 bytes to Vram
-;  ld    b,0
+;  ld    a,64                          ;first 128 line, copy 64*256 = $4000 bytes to Vram
+      
+;  call  .loop1    
+
+;  ld    a,d                           ;Graphicsblock
+;  inc   a
+;  call  block34
+  
+;	ld		hl,$8000
+;  ld    c,$98
+;  ld    a,64 ; 42                     ;second 84 line, copy 64*256 = $4000 bytes to Vram
       
 ;  call  .loop1   
-  ret
+;  ret
 
-.loop1:
-  call  outix256
-  dec   a
-  jp    nz,.loop1
-  ret
+;.loop1:
+;  call  outix256
+;  dec   a
+;  jp    nz,.loop1
+;  ret
 
 ;BorderMaskingSpritesCall:
 ;  call  SetBorderMaskingSprites       ;set border masking sprites position in Spat
@@ -370,7 +359,7 @@ SetEngineType:                        ;sets engine type (1= 304x216 engine  2=25
   xor   a
   .setCameraX:
   ld    (CameraX),a
-  
+
   ;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
   ld    hl,(ClesX)
   ld    de,ExitRight304x216

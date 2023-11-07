@@ -7,16 +7,13 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 
 ; 51 breed 51 hoog
 
+WorldMapPointer:  dw  MapBT22Data      ;
 
-
-;Tiledata,palette: 0=Voodoo Wasp, 2=Konark,   1=Goddess Area, 3=Karni Mata, 4=BlueTemple, 5=Burial, 6=Boss Area, 7=IceTemple
-
-
-;WorldMapPointer:  dw  MapBT12Data      ;NPC interaction
+;OLD INFO: Tiledata,palette: 0=Voodoo Wasp, 2=Konark,   1=Goddess Area, 3=Karni Mata, 4=BlueTemple, 5=Burial, 6=Boss Area, 7=IceTemple
 
 ;WorldMapPointer:  dw  MapE04Data      ;Boss Zombie Caterpillar
 ;WorldMapPointer:  dw  MapD04Data      ;Boss Voodoo Wasp
-WorldMapPointer:  dw  MapA07Data      ;Retarded Zombies
+;WorldMapPointer:  dw  MapA07Data      ;Retarded Zombies
 ;WorldMapPointer:  dw  MapA04Data      ;Area Sign
 ;WorldMapPointer:  dw  MapD12Data      ;pit
 ;WorldMapPointer:  dw  MapA05Data      ;
@@ -53,8 +50,6 @@ loadGraphics:
   call  UnpackMapdata_SetObjects      ;unpacks packed map to $4000 in ram and sets objects.                                       ;ends with: all RAM except page 2
   call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
   call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
-;This can be removed after we optimised the BuildUpMap routine
-  halt | halt | halt | halt                  ;this is instead of a call waitvdpready. copy instructions need to finish before we put vramobjects in page1and3
   ld    a,(slot.page12rom)            ;all RAM except page 12
   out   ($a8),a       
   call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
@@ -95,9 +90,33 @@ loadGraphics:
 	ld		(NewPrContr),a
   .EndCheckDoubleJump:
 
+  call  PlaySongnr3
+
+  ld    a,1
+  ld    (AmountOfFramesUntilScreenTurnsOn?),a
+
   jp    LevelEngine
 
-SetElementalWeaponInVramJumper:                        ;check if F1 is pressed and the menu can be entered
+ScoreBoardAlreadyInScreen?: db  0
+AmountOfFramesUntilScreenTurnsOn?:  ds  1
+CurrentSongBeingPlayed: db  0
+
+PlaySongnr3:
+  ld    a,(CurrentSongBeingPlayed)
+  cp    3
+  ret   z
+  ld    a,3
+  ld    (CurrentSongBeingPlayed),a
+  call  Player_Stop
+  ld    bc,3                          ;track nr
+  ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
+  ld    hl,$8000+1
+  call  Player_Play                   ;bc = track number, ahl = sound data (after format ID, so +1)
+  call  Player_Tick                   ;initialise, load samples
+  ret
+
+
+SetElementalWeaponInVramJumper:       ;check if F1 is pressed and the menu can be entered
   ld    a,(slot.page12rom)            ;all RAM except page 1+2
   out   ($a8),a
 
@@ -393,17 +412,18 @@ WaitVblank:
   ld    (lineintflag),a
   ret
 
-BuildUpMap:
-  ld    hl,$4000                      ;map in ram
-  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  jp    z,buildupMap38x27
-;  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
-;  cp    2
-;  jp    z,buildupMap32x27
-;  ret
-  jp    buildupMap32x27
-  
+
+
+
+
+
+
+
+
+
+
+
+
 UnpackMapdata_SetObjects:             ;unpacks packed map to $4000 in ram and sets objects. ends with: all RAM except page 2
   ;set all objects Alive? to 0 / clear all objects from the list
   ld    b,amountofenemies
@@ -429,7 +449,7 @@ UnpackMapdata_SetObjects:             ;unpacks packed map to $4000 in ram and se
   ld    a,(slot.page2rom)             ;all RAM except page 2
   out   ($a8),a      
     
-  ld    de,$4000
+  ld    de,UnpackedRoomFile
   call  Depack
   
   ;FOR NOW LETS ASUME DEPACK ALWAYS ENDS HL 2 BYTES FURTHER TO THE RIGHT
@@ -451,188 +471,14 @@ UnpackMapdata_SetObjects:             ;unpacks packed map to $4000 in ram and se
   ret
 
 
-  
-buildupMap32x27:
-;first put 32*27 tiles to page 0, starting at (0,0)
-  ld    a,32
-  ld    b,a                 ;32 tiles on x-axis
-  ld    (AmountTilesToPut),a
-  ld    a,0
-  ld    (DXtiles),a
-  ld    (SetTile+dx),a
-  ld    a,0 * 2             ;6 tiles (2 bytes each)
-  ld    (AmountTilesToSkip),a
-  ld    c,27                ;27 tiles on y axis
-  xor   a
-  ld    (SetTile+dy),a
-  ld    (SetTile+dpage),a
-  call  buildupMap38x27.xloop
-  
-  ld    hl,.CopyPage0to1
-  call  docopy  
-  ld    hl,.CopyPage0to2
-  call  docopy  
-  ld    hl,.CopyPage0to3
-  call  docopy  
-  ret
 
-.CopyPage0to1:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,001   ;dx,--,dy,dpage
-  db    000,001,226,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
-.CopyPage0to2:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,002   ;dx,--,dy,dpage
-  db    000,001,226,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
-.CopyPage0to3:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,003   ;dx,--,dy,dpage
-  db    000,001,226,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
 
-buildupMap38x27:
-;first put 32*27 tiles to page 0, starting at (0,0)
-  push  hl
 
-  ld    a,32
-  ld    b,a                 ;32 tiles on x-axis
-  ld    (AmountTilesToPut),a
-  ld    a,0
-  ld    (DXtiles),a
-  ld    (SetTile+dx),a
-  ld    a,6 * 2             ;6 tiles (2 bytes each)
-  ld    (AmountTilesToSkip),a
-  ld    c,27                ;27 tiles on y axis
-  xor   a
-  ld    (SetTile+dy),a
-  ld    (SetTile+dpage),a
-  call  .xloop
-  pop   hl
 
-;now put 6*27 tiles to page 3, starting at (208,0)
-  ld    de,64
-  add   hl,de
-  xor   a
-  ld    (SetTile+dy),a
 
-  ld    a,3
-  ld    (SetTile+dpage),a
-
-  ld    a,6
-  ld    b,a                 ;32 tiles on x-axis
-  ld    (AmountTilesToPut),a
-  ld    a,208
-  ld    (DXtiles),a
-  ld    (SetTile+dx),a
-  ld    a,32 * 2             ;6 tiles (2 bytes each)
-  ld    (AmountTilesToSkip),a
-  ld    c,27                ;27 tiles on y axis
-  call  .xloop
-
-  ld    hl,.CopyRemainingParts1
-  call  docopy  
-  ld    hl,.CopyRemainingParts2
-  call  docopy 
-  ld    hl,.CopyRemainingParts3
-  call  docopy  
-  ld    hl,.CopyRemainingParts4
-  call  docopy  
-  ld    hl,.CopyRemainingParts5
-  call  docopy  
-  ret
-
-.CopyRemainingParts1:
-  db    208,000,000,003   ;sx,--,sy,spage
-  db    224,000,000,002   ;dx,--,dy,dpage
-  db    032,000,226,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
-
-.CopyRemainingParts2:
-  db    208,000,000,003   ;sx,--,sy,spage
-  db    240,000,000,001   ;dx,--,dy,dpage
-  db    016,000,226,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
-
-.CopyRemainingParts3:
-  db    016,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,001   ;dx,--,dy,dpage
-  db    240,000,226,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
-
-.CopyRemainingParts4:
-  db    016,000,000,001   ;sx,--,sy,spage
-  db    000,000,000,002   ;dx,--,dy,dpage
-  db    224,000,226,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
-
-.CopyRemainingParts5:
-  db    016,000,000,002   ;sx,--,sy,spage
-  db    000,000,000,003   ;dx,--,dy,dpage
-  db    208,000,226,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
-      
-.xloop:  
-  ;get tilenr in de
-  ld    e,(hl)              ;each tile is 16 bit. bit 0-4 (value between 0-31) give us the x value if we multiply by 8
-  inc   hl
-  ld    d,(hl)
-  inc   hl                  ;next tile in tilemap
-  
-  ;set sx and sy of this tile
-  dec   de
-  
-  ld    a,e
-  add   a,a
-  add   a,a
-  add   a,a                 ;*8
-  ld    (SetTile+sx),a
-
-  rr    d
-  rr    e                   ;/2
-  rr    d
-  rr    e                   ;/4
-  ld    a,e                 ;each tile is 16 bit. bit 5-9 (value between 32-512) give us the y value
-  and   %1111 1000
-  ld    (SetTile+sy),a
-
-  exx
-  ld    hl,SetTile
-  call  docopy
-  exx
-
-  ld    a,(SetTile+dx)
-  add   a,8
-  ld    (SetTile+dx),a
-  djnz  .xloop
-
-  ld    a,(AmountTilesToSkip)
-  ld    e,a
-  ld    d,0
-  add   hl,de
-
-  ld    a,(SetTile+dy)
-  add   a,8
-  ld    (SetTile+dy),a
-
-  ld    a,(DXtiles)
-  ld    (SetTile+dx),a
-
-  ld    a,(AmountTilesToPut)
-  ld    b,a
-  dec   c
-  jr    nz,.xloop
-  ret
-
-  db    0
-MapData:
-  ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
-MapDataLenght:  Equ $-MapData
 
 ;Engine256x216: a map is 32x27. We add 2 empty tiles on the right per row, and the remainder is filled with background tiles. Total mapsize will be 34x27 + empty fill
 ;Engine304x216: a map is 38x27. We add 2 empty tiles on the right per row, and we have two extra rows with background tiles. Total mapsize will be 40x27 + empty rows
-
 
 MapHeight:                  equ 27
 MapLenght256x216:           equ 32
@@ -641,158 +487,381 @@ MapLenght304x216:           equ 38
 CheckTile256x216MapLenght:  equ 32 + 2
 CheckTile304x216MapLenght:  equ 38 + 2
 
-ConvertToMapinRam:
-  ld    hl,MapData-1
-  ld    de,MapData
-  ld    bc,MapDataLenght
-  ldir
+MapData:
+  ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
+ 
+UnpackedRoomFile:  ds  38*27*2
 
-;new
-;tiles 0 - 31 are ladder tiles
-;tiles 32 - 47 are spikes and lava
-;tiles 48 - 49 are stairs left up
-;tiles 50 - 51 are stairs right up
-;tiles 52 - 255 are hard foreground
-;tiles 256 - > are background
-
-
-;newer
-;tilenr: 1 t/m 8 = ladder
-;tilenr: 9 t/m 31 = free
-;tilenr: 32 t/m 39 = spikes/poison
-;tilenr: 40 t/m 47 = lava
-;tilenr: 48 t/m 49 = stairs left
-;tilenr: 50 t/m 51 = stairs right
-;tilenr: 52 t/m 255 = foreground
-;tilenr: 256 t/m 1023 = background
-
-;convert into
-;tile 0 = background
-;tile 1 = hardforeground
-;tile 2 = laddertiles
-;tile 3 = spikes/poison
-;tile 4 = stairsleftup
-;tile 5 = stairsrightup
-;tile 6 = lava
-
-  ld    hl,$4000
-  ld    iy,MapData
-
-  ld    c,MapHeight
-.SelfModifyingCodeMapLenght:
-  ld    b,000               ;maplenght: 32 or 38, depending on which engine is active
-.loop:
-  push  hl
-  call  .convertTile
-  pop   hl
-  inc   hl
-  inc   hl
-  inc   iy
-  djnz  .loop
-  
-  inc   iy
-  inc   iy                  ;2 empty tiles on the right side of the map
-  
-  dec   c
-  jp    nz,.SelfModifyingCodeMapLenght
-  ret
-  
-;duplicate the last row 4 tiles
-;  ld    hl,40*26 + MapData 
-;  ld    de,40*27 + MapData 
-;  ld    bc,40
-;  ldir  
-
-;  ld    hl,40*26 + MapData 
-;  ld    de,40*28 + MapData 
-;  ld    bc,40
-;  ldir  
-
-;  ld    hl,40*26 + MapData 
-;  ld    de,40*29 + MapData 
-;  ld    bc,40
-;  ldir  
-
-;  ld    hl,40*26 + MapData 
-;  ld    de,40*30 + MapData 
-;  ld    bc,40
-;  ldir  
+BuildUpMap:
+  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jp    z,.buildupMap38x27
+;  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
+;  cp    2
+;  jp    z,buildupMap32x27
 ;  ret
+  jp    .buildupMap32x27
+  
 
+.buildupMap32x27:
+  ld    a,32*2
+  ld    (.SelfModifyingCodeMapLenght),a
+
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a    
+
+  ld    a,KarniMataTilesBlock         ;tilesheet gfx in page 1+2 rom
+  call  block1234
+
+  ;set vdp ready to write in page 0 in vram 
+  xor   a
+  ld    hl,0                          ;start writing at (0,0) page 0
+	call	SetVdp_Write	
+
+  ;rom->vram copy 14 rows to page 0
+  ld    ix,UnpackedRoomFile
+  ld    b,14                          ;14 rows
+  ld    c,$98                         ;out port for outi's
+  .loop6:
+  call  .Put8lines
+  djnz  .loop6
+
+  ;vdp copy these 14 rows to page 1
+  ld    hl,.CopyPage0to1first14rows
+  call  docopy
+
+  ;rom->vram copy the last 13 rows to page 0
+  ld    b,13                          ;13 rows
+  ld    c,$98                         ;out port for outi's
+  .loop7:
+  call  .Put8lines
+  djnz  .loop7
+
+  ;vdp copy these 13 rows to page 1
+  ld    hl,.CopyPage0to1second13rows
+  call  docopy
+
+  ;set vdp ready to write in page 3 in vram 
+  ld    a,1
+  ld    hl,$8000                      ;start writing at (0,0) page 3
+	call	SetVdp_Write	
+
+  ;rom->vram copy 7 rows to page 3
+  ld    ix,UnpackedRoomFile
+  ld    b,07                          ;7 rows
+  ld    c,$98                         ;out port for outi's
+  .loop8:
+  call  .Put8lines
+  djnz  .loop8
+
+  ;vdp copy page 0 to page 2
+  ld    hl,.CopyPage0to2
+  call  docopy
+
+  ;rom->vram copy the next 14 rows to page 3
+  ld    b,14                          ;14 rows
+  ld    c,$98                         ;out port for outi's
+  .loop9:
+  call  .Put8lines
+  djnz  .loop9
+
+  ;vdp copy the last 5 rows to page 3
+  ld    hl,.CopyPage0to3last6rows
+  call  docopy
+
+  ld    a,Loaderblock                 ;loader routine at $4000
+  call  block12
+  ret
+
+.CopyPage0to1first14rows:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,001   ;dx,--,dy,dpage
+  db    000,001,14*8,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy
+.CopyPage0to1second13rows:
+  db    000,000,14*8,000   ;sx,--,sy,spage
+  db    000,000,14*8,001   ;dx,--,dy,dpage
+  db    000,001,13*8,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy
+.CopyPage0to2:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,002   ;dx,--,dy,dpage
+  db    000,001,216,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+.CopyPage0to3last6rows:
+  db    000,000,21*8,000   ;sx,--,sy,spage
+  db    000,000,21*8,003   ;dx,--,dy,dpage
+  db    000,001,6*8,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+.buildupMap38x27:
+  ld    a,38*2
+  ld    (.SelfModifyingCodeMapLenght),a
+
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a    
+
+  ld    a,KarniMataTilesBlock         ;tilesheet gfx in page 1+2 rom
+  call  block1234
+
+  ;set vdp ready to write in page 0 in vram 
+  xor   a
+  ld    hl,0                          ;start writing at (0,0) page 0
+	call	SetVdp_Write	
+
+  ;rom->vram copy 14 rows to page 0
+  ld    ix,UnpackedRoomFile
+  ld    b,14                          ;14 rows
+  ld    c,$98                         ;out port for outi's
+  .loop1:
+  call  .Put8lines
+  djnz  .loop1
+
+  ;vdp copy these 14 rows to page 2
+  ld    hl,.Page0toPage2first14rows
+  call  docopy
+
+  ;rom->vram copy the last 13 rows to page 0
+  ld    b,13                          ;13 rows
+  ld    c,$98                         ;out port for outi's
+  .loop4:
+  call  .Put8lines
+  djnz  .loop4
+  
+  ;vdp copy these last 13 rows to page 2
+  ld    hl,.Page0toPage2second13rows
+  call  docopy
+
+  ;set vdp ready to write in page 3 in vram 
+  ld    a,1
+  ld    hl,$8000                      ;start writing at (0,0) page 3
+	call	SetVdp_Write	
+
+  ;rom->vram copy 6 rows to page 3
+  ld    ix,UnpackedRoomFile + 12
+  ld    b,06                          ;6 rows
+  ld    c,$98                         ;out port for outi's
+  .loop2:
+  call  .Put8lines
+  djnz  .loop2
+
+  ;vdp copy page 0 to page 1
+  ld    hl,.Page0toPage1
+  call  docopy
+
+  ;rom->vram copy the next 14 rows to page 3
+  ld    b,14                          ;14 rows
+  ld    c,$98                         ;out port for outi's
+  .loop3:
+  call  .Put8lines
+  djnz  .loop3
+
+  ;vdp copy a 20 rows of a strip (32x160) page 3 to page 2
+  ld    hl,.Page3toPage2_StripOf32first20rows
+  call  docopy
+
+  ;rom->vram copy the last 7 rows to page 3
+  ld    b,07                          ;7 rows
+  ld    c,$98                         ;out port for outi's
+  .loop5:
+  call  .Put8lines
+  djnz  .loop5
+
+  ;vdp copy the remaining 2 small copies
+  ld    hl,.Page3toPage2_StripOf32second7rows
+  call  docopy
+  ld    hl,.Page3toPage1_StripOf16
+  call  docopy
+
+  ld    a,Loaderblock                 ;loader routine at $4000
+  call  block12
+  ret
+
+.Page0toPage1:
+  db    016,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,001   ;dx,--,dy,dpage
+  db    240,000,216,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+.Page0toPage2first14rows:
+  db    032,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,002   ;dx,--,dy,dpage
+  db    224,000,14*8,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+.Page0toPage2second13rows:
+  db    032,000,14*8,000   ;sx,--,sy,spage
+  db    000,000,14*8,002   ;dx,--,dy,dpage
+  db    224,000,13*8,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+.Page3toPage1_StripOf16:
+  db    208,000,000,003   ;sx,--,sy,spage
+  db    240,000,000,001   ;dx,--,dy,dpage
+  db    016,000,216,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+.Page3toPage2_StripOf32first20rows:
+  db    208,000,000,003   ;sx,--,sy,spage
+  db    224,000,000,002   ;dx,--,dy,dpage
+  db    032,000,20*8,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+.Page3toPage2_StripOf32second7rows:
+  db    208,000,20*8,003   ;sx,--,sy,spage
+  db    224,000,20*8,002   ;dx,--,dy,dpage
+  db    032,000,7*8,000   ;nx,--,ny,--
+  db    000,000,$D0       ;fast copy   
+
+.Put8lines:
+  push  bc
+  
+  di
+  ld    (spatpointer),sp              ;store stack pointer
+  ld    a,8                           ;8 lines
+  ld    de,0 * 128                    ;1st line
+  .MainLoop:
+  ld    sp,ix                         ;sp now points to mapdata in ram
+  ld    b,5*32                        ;32 tiles per line (x5 because the 4 outi's also dec b)
+  .LineLoop:
+  pop   hl                            ;starting address of tile in rom
+  add   hl,de                         ;tileline of tile
+  outi
+  outi
+  outi
+  outi                                ;first line of this tile
+  djnz  .LineLoop  
+
+  ld    hl,1 * 128                    ;lenght of 1 line (128 bytes)
+  add   hl,de                         ;next line
+  ex    de,hl
+
+  dec   a
+  jp    nz,.MainLoop
+
+  ld    sp,(spatpointer)              ;recall stack pointer
+  ei
+
+.SelfModifyingCodeMapLenght: equ $+1  
+  ld    de,000
+  add   ix,de                         ;go to next row of tiles
+  pop   bc
+  ret
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; Tiles numbering
+LadderTilesEndAdrStart:	equ 1
+LadderTilesEndAdrEnd:	equ 8 	;tilenr: 1 t/m 8 = ladder
+FreeTilesStart:	equ 9
+FreeTilesEnd:	equ 31	;tilenr: 9 t/m 31 = free
+SpikeTilesStart:	equ 32
+SpikeTilesEnd:	equ 39	;tilenr: 32 t/m 39 = spikes/poison
+LavaTilesStart:	equ 40
+LavaTilesEnd:	equ 47	;tilenr: 40 t/m 47 = lava
+StairLeftTilesStart:	equ 48
+StairLeftTilesEnd:	equ 49	;tilenr: 48 t/m 49 = stairs left
+StairRightTilesStart:	equ 50
+StairRightTilesEnd:	equ 51	;tilenr: 50 t/m 51 = stairs right
+ForegroundTilesStart: equ 52
+ForegroundTilesEnd: equ 255	;tilenr: 52 t/m 255 = foreground
+BackgroundTilesStart:	equ 256
+BackgroundTilesEnd:	equ 1023;tilenr: 256 t/m 1023 = background
+;convert into
+BackgroundID:	equ 0	;tile 0 = background
+HardForeGroundID:	equ 1	;tile 1 = hardforeground
+LadderId:	equ 2	;tile 2 = LadderTilesEndAdrEnd
+SpikeId:		equ 3	;tile 3 = spikes/poison
+StairLeftId:	equ 4	;tile 4 = stairsleftup
+StairRightId:	equ 5	;tile 5 = stairsrightup
+LavaId:		equ 6	;tile 6 = lava
+
+tileConversionTable: ;(id,tilenr) order desc
+  DB  HardForeGroundID,ForegroundTilesStart,StairRightId,StairRightTilesStart
+  DB  StairLeftId,StairLeftTilesStart,LavaId,LavaTilesStart
+  DB  SpikeId,SpikeTilesStart,BackgroundID,FreeTilesStart
+  DB  ladderID,LadderTilesEndAdrStart,BackgroundID,0
+
+;20231104
+;Convert TileNumbers to TileIDs
+ConvertToMapinRam:
+	ld  de,UnpackedRoomFile 
+	ld  hl,MapData
+	ld	a,MapHeight
+.SelfModifyingCodeMapLenght:
+    ld	b,000   ;maplenght: 32 or 38, depending on which engine is active
+    push af
+.loop:
+    push hl
+    call .convertTile
+    pop hl
+    ld  (HL),c
+    inc hl
+    djnz .loop
+
+    ld  (hl),0
+    inc hl
+    ld  (hl),0
+    inc hl  ;2 empty tiles on the right side of the map
+
+    pop AF
+    dec a
+    jp  nz,.SelfModifyingCodeMapLenght
+    ret
+  
+;Convert one MapTileNr to TileID using a lookupTable
 .convertTile:
-  ;get tilenr in de
-  ld    e,(hl)              ;each tile is 16 bit. bit 0-4 (value between 0-31) give us the x value if we multiply by 8
-  inc   hl
-  ld    d,(hl)
-  
-;**************** HACK **************** 
-;  ld    a,d
-;  and   %0000 0011          ;remove bit 15,14,13,12,11,10
-;  ld    d,a
-;**************** HACK **************** 
-  
-  inc   hl                  ;next tile in tilemap
-  
-  ;set sx and sy of this tile
-  dec   de
-  
-  ld    hl,31               ;ladder
-  xor   a
-  sbc   hl,de
-  jp    nc,.laddertiles
+        ld	A,(de)
+		inc de
+		rrca
+		rrca
+		ld	l,a
+        ld  a,(de)
+        inc de
+        ld c,BackgroundId
+        cp $60
+        ret nc
+		and $3f
+		rla
+		rla
+		rla
+		or l
 
-  ld    hl,39               ;spikes & poison
-  xor   a
-  sbc   hl,de
-  jp    nc,.spikespoison
-  
-  ld    hl,47               ;lava
-  xor   a
-  sbc   hl,de
-  jp    nc,.lava
-
-  ld    hl,49               ;stairs left up
-  xor   a
-  sbc   hl,de
-  jp    nc,.stairsleftup
-
-  ld    hl,51               ;stairs right up
-  xor   a
-  sbc   hl,de
-  jp    nc,.stairsrightup
-
-  ld    hl,255
-  xor   a
-  sbc   hl,de
-  jp    nc,.hardforeground
-    
-.background:
-  ld    (iy),0
-  ret
-
-.hardforeground:
-  ld    (iy),1
-  ret
-
-.laddertiles:
-  ld    (iy),2
-  ret
-
-.spikespoison: 
-  ld    (iy),3
-  ret
-
-.stairsleftup:
-  ld    (iy),4
-  ret
-
-.stairsrightup:
-  ld    (iy),5
-  ret
-
-.lava:
-  ld    (iy),6
-  ret
+        ld hl,tileConversionTable
+.loop0: ld c,(hl)
+        inc hl
+        cp (hl)
+        ret nc
+        inc hl
+        jp .loop0
   
 SetTile:
   db    000,000,000,001   ;sx,--,sy,spage

@@ -66,7 +66,7 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 186 ;$19 ;230 ;250 ;210
+ClesX:      dw 300 ;$19 ;230 ;250 ;210
 ClesY:      db 130 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
@@ -2782,6 +2782,34 @@ InterruptHandlerLoader:
 
 
 
+; Int. Service Routine (RST &H38)
+;ISR:	PUSH	AF
+;	IN	A,($99)
+;	RLCA	
+;LNIISR:	JP	NC,LNIISR ;Line interrupt
+;	CALL	VBLISR	; VBL vector
+;    POP af
+;	EI	
+;	RET	
+
+
+;Dit zou dan het laatste in je LNI zijn:
+;        LD    A,1             ;s#1
+;        OUT   (#99),A
+;        LD    A,#80+15
+;        OUT   (#99),A
+;        LD    A,0
+;        IN    A,(#99)         ;Clear FH
+;        LD    A,0             ; s#0
+;        OUT   (#99),A
+;        LD    A,#80+15
+;        OUT   (#99),A
+;        POP   AF              ;from ISR
+;        EI
+;        RETI
+;
+
+
 vblankintflag:  db  0
 lineintflag:  db  0
 InterruptHandler:
@@ -3103,11 +3131,19 @@ LineInt:
   ld    a,8+128
   out   ($99),a
 
+  ld    a,(AmountOfFramesUntilScreenTurnsOn?)
+  dec   a
+  jp    m,.SetScreenOn
+  ld    (AmountOfFramesUntilScreenTurnsOn?),a
+  jr    .EndSetScreenOn
+
+  .SetScreenOn:
   ld    a,(VDP_0+1)       ;screen on
   or    %0100 0000
   out   ($99),a
   ld    a,1+128
   out   ($99),a
+  .EndSetScreenOn:
 
   xor   a                 ;set s#0
   out   ($99),a
@@ -3313,7 +3349,7 @@ CameraEngine304x216:
   ld    a,(PlayerFacingRight?)          ;is player facing right ?
   or    a
   jp    z,.playerfacingLeft
-
+  .GoPlayerFacingRight:
   ld    hl,(ClesX)                      ;is player x>CameraMoveRightXBoundary ?
   ld    de,CameraMoveRightXBoundary
   xor   a 

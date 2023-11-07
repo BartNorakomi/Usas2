@@ -3331,7 +3331,6 @@ MapsBlockBW50:  equ   $4a | MapBW50: incbin "..\maps\BW50.map.pck"  | include ".
 	ds		$c000-$,$ff
 dephase
 
-
 ;
 ; block $4b
 ;
@@ -5304,6 +5303,36 @@ dephase
 
 
 
+
+
+
+
+
+
+
+
+
+;
+; block $df -----------------> Music
+;
+usas2repBlock:  equ   $a4
+;usas2repBlock:  equ   $df
+  incbin "usas2.rep"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ; block $a4 - $b4
   ds  $4000 * $11
 
@@ -5605,14 +5634,6 @@ dephase
 
 
 
-
-
-
-;
-; block $df -----------------> Music
-;
-usas2repBlock:  equ   $df
-  incbin "usas2.rep"
 
 
 
