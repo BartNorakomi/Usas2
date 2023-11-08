@@ -1,3 +1,8 @@
+# Create a Tiled.worldmap files and optional its maps
+# A custom script for the MSX Usas2 project
+# Shadow@FuzzyLogic
+# 20231015-20231108
+
 [CmdletBinding()]
 param
 (	$name="",
@@ -10,7 +15,8 @@ param
 	$sourceOffsetY=0,
 	$mapWidth=38,
 	$mapHeight=27,
-	$ruin=1,
+	[Parameter(ParameterSetName='ruinid',Mandatory)]$ruin=1,
+	[Parameter(ParameterSetName='ruinname',Mandatory)]$ruinName=1,
 	[switch]$createRoom,
 	[switch]$openWorldMap=$false,
 	[switch]$forceOverWrite
@@ -91,6 +97,10 @@ $mapSource=get-content $masterMap
 $usas2PropertiesFile="..\usas2-properties.csv"
 $usas2Properties=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
 $global:usas2=convert-CsvToObject -objname usas2 -csv $usas2Properties
+
+if ($ruinName)
+{	$ruin=($usas2.ruin|where{$_.name -match ("^("+($ruinname -join ("|"))+")$")}).ruinid
+}
 
 $global:maps=convert-Usas2WorldMapToTiledWorldMap -mapSource $mapSource -roomMatch ("^("+($ruin -join ("|"))+")$")
 $worldmap=new-TiledWorldMap -name $name -DefaultMapWidth=$mapWidth -DefaultMapHeight=$mapHeight
