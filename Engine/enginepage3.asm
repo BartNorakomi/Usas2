@@ -1,42 +1,17 @@
-phase	$c000
+phase	enginepage3addr
 
 MusicOn?:   equ 0
 LogoOn?:    equ 0
 
+
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
-
-; 51 breed 51 hoog
-
 WorldMapPointer:  dw  MapBT22Data      ;
 
-;OLD INFO: Tiledata,palette: 0=Voodoo Wasp, 2=Konark,   1=Goddess Area, 3=Karni Mata, 4=BlueTemple, 5=Burial, 6=Boss Area, 7=IceTemple
 
-;WorldMapPointer:  dw  MapE04Data      ;Boss Zombie Caterpillar
-;WorldMapPointer:  dw  MapD04Data      ;Boss Voodoo Wasp
-;WorldMapPointer:  dw  MapA07Data      ;Retarded Zombies
-;WorldMapPointer:  dw  MapA04Data      ;Area Sign
-;WorldMapPointer:  dw  MapD12Data      ;pit
-;WorldMapPointer:  dw  MapA05Data      ;
-;WorldMapPointer:  dw  MapG05Data      ;NPC interaction
-;WorldMapPointer:  dw  MapF06Data      ;
-;WorldMapPointer:  dw  MapE09Data      ;lava
-;WorldMapPointer:  dw  MapG13Data      ;Boss Goat (iceboss)
-;WorldMapPointer:  dw  MapA12Data      ;omni directional platforms
-;WorldMapPointer:  dw  MapB01_018Data      ;trampoline
-;WorldMapPointer:  dw  MapB01_017Data      ;Huge Blob
-;WorldMapPointer:  dw  MapG04Data      ;Huge Blob
-;WorldMapPointer:  dw  MapE05Data      ;let's make this a Glass Ball Room
-
-;WorldMapPointer:  dw  MapA01_001Data      ;Puzzle
-;WorldMapPointer:  dw  MapA01_010Data      ;Puzzle
-;WorldMapPointer:  dw  MapA01_011Data      ;Puzzle
-;WorldMapPointer:  dw  MapA01_013Data      ;Puzzle
-;WorldMapPointer:  dw  MapA01_015Data      ;Puzzle
-;WorldMapPointer:  dw  MapA01_016Data      ;Puzzle where you push stone on retracting platforms
-;WorldMapPointer:  dw  MapB01_019Data      ;Glass Ball Room
 
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
+
 loadGraphics:
 ;	ld    a,(Player_playing)
 ;	and   a
@@ -417,13 +392,6 @@ WaitVblank:
 
 
 
-
-
-
-
-
-
-
 UnpackMapdata_SetObjects:             ;unpacks packed map to $4000 in ram and sets objects. ends with: all RAM except page 2
   ;set all objects Alive? to 0 / clear all objects from the list
   ld    b,amountofenemies
@@ -487,9 +455,10 @@ MapLenght304x216:           equ 38
 CheckTile256x216MapLenght:  equ 32 + 2
 CheckTile304x216MapLenght:  equ 38 + 2
 
-MapData:
-  ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
- 
+;Space for room tile IDs
+MapData:	ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
+
+;Space for room tiles data 
 UnpackedRoomFile:  ds  38*27*2
 
 BuildUpMap:
@@ -519,23 +488,23 @@ BuildUpMap:
 	call	SetVdp_Write	
 
   ;rom->vram copy 14 rows to page 0
-  ld    ix,UnpackedRoomFile
-  ld    b,14                          ;14 rows
-  ld    c,$98                         ;out port for outi's
-  .loop6:
-  call  .Put8lines
-  djnz  .loop6
+		ld    ix,UnpackedRoomFile
+;		ld    b,14                          ;14 rows
+;		ld    c,$98                         ;out port for outi's
+		ld	bc,$0e98
+.loop6:	call  .Put8lines
+		djnz  .loop6
 
   ;vdp copy these 14 rows to page 1
   ld    hl,.CopyPage0to1first14rows
   call  docopy
 
-  ;rom->vram copy the last 13 rows to page 0
-  ld    b,13                          ;13 rows
-  ld    c,$98                         ;out port for outi's
-  .loop7:
-  call  .Put8lines
-  djnz  .loop7
+;rom->vram copy the last 13 rows to page 0
+;		ld    b,13                          ;13 rows
+;		ld    c,$98                         ;out port for outi's
+		ld	bc,$0d98
+.loop7:	call  .Put8lines
+		djnz  .loop7
 
   ;vdp copy these 13 rows to page 1
   ld    hl,.CopyPage0to1second13rows
@@ -544,23 +513,25 @@ BuildUpMap:
   ;set vdp ready to write in page 3 in vram 
   ld    a,1
   ld    hl,$8000                      ;start writing at (0,0) page 3
-	call	SetVdp_Write	
+  call	SetVdp_Write	
 
   ;rom->vram copy 7 rows to page 3
   ld    ix,UnpackedRoomFile
-  ld    b,07                          ;7 rows
-  ld    c,$98                         ;out port for outi's
+;  ld    b,07                          ;7 rows
+;  ld    c,$98                         ;out port for outi's
+	ld	bc,$0798
   .loop8:
-  call  .Put8lines
-  djnz  .loop8
+	call  .Put8lines
+	djnz  .loop8
 
   ;vdp copy page 0 to page 2
   ld    hl,.CopyPage0to2
   call  docopy
 
   ;rom->vram copy the next 14 rows to page 3
-  ld    b,14                          ;14 rows
-  ld    c,$98                         ;out port for outi's
+;  ld    b,14                          ;14 rows
+;  ld    c,$98                         ;out port for outi's
+	ld	bc,$0e98
   .loop9:
   call  .Put8lines
   djnz  .loop9
@@ -611,8 +582,9 @@ BuildUpMap:
 
   ;rom->vram copy 14 rows to page 0
   ld    ix,UnpackedRoomFile
-  ld    b,14                          ;14 rows
-  ld    c,$98                         ;out port for outi's
+;  ld    b,14                          ;14 rows
+;  ld    c,$98                         ;out port for outi's
+	ld	bc,$0e98
   .loop1:
   call  .Put8lines
   djnz  .loop1
@@ -622,8 +594,9 @@ BuildUpMap:
   call  docopy
 
   ;rom->vram copy the last 13 rows to page 0
-  ld    b,13                          ;13 rows
-  ld    c,$98                         ;out port for outi's
+;  ld    b,13                          ;13 rows
+;  ld    c,$98                         ;out port for outi's
+	ld	bc,$0d98
   .loop4:
   call  .Put8lines
   djnz  .loop4
@@ -639,8 +612,9 @@ BuildUpMap:
 
   ;rom->vram copy 6 rows to page 3
   ld    ix,UnpackedRoomFile + 12
-  ld    b,06                          ;6 rows
-  ld    c,$98                         ;out port for outi's
+;  ld    b,06                          ;6 rows
+;  ld    c,$98                         ;out port for outi's
+	ld	bc,$0698
   .loop2:
   call  .Put8lines
   djnz  .loop2
@@ -650,8 +624,9 @@ BuildUpMap:
   call  docopy
 
   ;rom->vram copy the next 14 rows to page 3
-  ld    b,14                          ;14 rows
-  ld    c,$98                         ;out port for outi's
+;  ld    b,14                          ;14 rows
+;  ld    c,$98                         ;out port for outi's
+	ld	bc,$0e98
   .loop3:
   call  .Put8lines
   djnz  .loop3
@@ -661,8 +636,9 @@ BuildUpMap:
   call  docopy
 
   ;rom->vram copy the last 7 rows to page 3
-  ld    b,07                          ;7 rows
-  ld    c,$98                         ;out port for outi's
+ ; ld    b,07                          ;7 rows
+ ; ld    c,$98                         ;out port for outi's
+	ld	bc,$0798
   .loop5:
   call  .Put8lines
   djnz  .loop5

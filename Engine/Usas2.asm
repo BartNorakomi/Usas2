@@ -1,5 +1,6 @@
 		fname	"Usas2.rom"
 	org		$4000
+
 Usas2:
 ;
 ; StarFox - ROM version
@@ -391,133 +392,83 @@ tempisr:
 ;  ret
 
 
-; 
-; block 00
-;	
-enginepage3:
-	include	"enginepage3.asm"	
 
-; 
-; block 00 - 01 engine 
-;	
+; ROM block 00-01: boot, enginepage3, enginepage0
+enginepage3:				include	"enginepage3.asm"
+enginepage3RomEndAddress:	EQU $-1-$4000
+
 engine:
-phase	engaddr
-	include	"engine.asm"	
-endengine:
-dephase
-enlength:	Equ	$-engine
-;
-; fill remainder of blocks 00-01
-;
-	ds		$c000-$,$ff		
+;phase	engaddr	;moved phasing to the engine.asm source file itself, where it belongs
+							include	"engine.asm"	
+;endengine:
+;dephase
+;enlength:					Equ	$-engine
+enginepage0RomEndAddress: 	equ $-1-$4000
+							ds	2*$4000 - $ and $3fff,$ff		; fill remainder of blocks 00-01
 
-;
-; block $02
-;
-F1Menublock:  equ $02
-phase	$4000
-	include	"F1Menu.asm"	
+; ROM block 02-02: f1menu
+F1Menublock:				equ $02
+f1MenuRomAddress:			equ $-$4000
+phase	$4000	;should be in f1menu.asm source(!)
+							include	"F1Menu.asm"	
 endF1MenuRoutine:
-F1MenuRoutinelength:	Equ	$-F1MenuRoutine
-	ds		$8000-$,$ff		
+F1MenuRoutinelength:		Equ	$-F1MenuRoutine
+;							ds	$8000-$,$ff	;fill remainder of this block		
 dephase
+f1MenuRomEndAddress:	equ $-1-$4000
+							ds	1*$4000 - $ and $3fff,$ff	;Fill remainder of this block
 
-;
-; block $03
-;
-Loaderblock:  equ $03
-phase	$4000
-StartLoaderRoutine:
-	include	"loader.asm"	
+; ROM block 03-03: loader
+loaderRomStartAddress:		equ $-$4000
+Loaderblock:  				equ $03
+phase	$4000	;should be in loader.asm source (!)
+StartLoaderRoutine:			include	"loader.asm"	
 endLoaderRoutine:
-LoaderRoutinelength:	Equ	$-StartLoaderRoutine
-	ds		$8000-$,$ff		
+LoaderRoutinelength:		Equ	$-StartLoaderRoutine
+;							ds	$8000-$,$ff		
 dephase
+loaderRomEndAddress:		equ $-1-$4000
+							ds	1*$4000 - $ and $3fff,$ff	;Fill remainder of this block
 
-;
 ; block $04
-;
 	ds		$4000
-
-;
 ; block $05
-;
 	ds		$4000
-
-;
 ; block $06
-;
 	ds		$4000
-
-;
 ; block $07
-;
 	ds		$4000
-
-;
 ; block $08
-;
 	ds		$4000
-
-;
 ; block $09
-;
 	ds		$4000
-
-;
 ; block $0A
-;
 	ds		$4000
 
 ;
 ; block $0B
 ;
+teamNxtLogoRomAddress:	equ $-$4000
 teamNXTlogoblock:  equ $B
 phase	$8000
 	include "teamNXTlogo.asm"
 	ds		$c000-$,$ff
 dephase
-
-;
-; block $18 - $1b
-;
-phase	$4000
-	ds		$c000-$,$ff
-dephase
+teamNxtLogoRomEndAddress:	equ $-1-$4000
 
 
+; ROM block 0c
+	ds		$4000,$ff
+
+; ROM block 0d
+	ds		$4000,$ff
+
+; ROM block 0e
+	ds		$4000,$ff
 
 
-
-;
-; block $e
-;
-;MapsBlock03:  equ   $f
-phase	$8000
-
-	ds		$c000-$,$ff
-dephase
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-;
-; block $f
-;
+; ROM block $f
+block0FRomAddress:	equ $-$4000
 MapsBlock01:  equ   $f
 phase	$8000
 MapA01_001:   ;EngineType, graphics, palette,
