@@ -728,32 +728,6 @@ BuildUpMap:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ; Tiles numbering
 LadderTilesEndAdrStart:	equ 1
 LadderTilesEndAdrEnd:	equ 8 	;tilenr: 1 t/m 8 = ladder
@@ -877,6 +851,7 @@ DoCopy:
 	dw    $a3ed,$a3ed,$a3ed,$a3ed
 	dw    $a3ed,$a3ed,$a3ed
   ret
+
 
 lineintheight: equ 212-43
 SetInterruptHandler:
