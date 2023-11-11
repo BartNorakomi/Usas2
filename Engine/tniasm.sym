@@ -4747,6 +4747,7 @@ BossGoatIdleAndWalk41: equ 093D9h ; last def. pass 3
 RestoreBackgroundObject1Page1: equ 0ABDh ; last def. pass 3
 BossZombieCaterpillarAttack129: equ 0829Dh ; last def. pass 3
 blackL10: equ 071h ; last def. pass 3
+replayOrgEndAddress: equ 0C493h ; last def. pass 3
 RightOctopussyAnimation: equ 0A0E1h ; last def. pass 3
 MapAX17: equ 0847Eh ; last def. pass 3
 MapBC45.amountofobjects: equ 08DE7h ; last def. pass 3
@@ -10379,6 +10380,7 @@ initiatebordermaskingsprites: equ 040FEh ; last def. pass 3
 PlayerSpriteData_Colo_RightPush1: equ 07F68h ; last def. pass 3
 MapBO07.object3: equ 08400h ; last def. pass 3
 LeftLandstrider4_Col: equ 08554h ; last def. pass 3
+replayOrgAddress: equ 0C163h ; last def. pass 3
 MapAE15.object4: equ 08924h ; last def. pass 3
 MapAV24Data: equ 09E96h ; last def. pass 3
 MapBD21Data: equ 09B42h ; last def. pass 3

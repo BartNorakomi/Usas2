@@ -246,6 +246,7 @@ Player_Call:
 	ld (7000H),a	
   ret
 
+replayOrgAddress: equ $
 INCLUDE "MoonSoundZ80.asm"
 INCLUDE "MoonSound.asm"
 FormatOPL4_Detect:
@@ -255,6 +256,7 @@ FormatOPL4_Detect:
 ;	call  MoonSound_Detect
 ;	ld    hl,MoonSound_JumpTable
 	ret
+replayOrgEndAddress: equ $-1
 
 ;IDBYT2: equ 2DH
 ;GETCPU: equ 183H
