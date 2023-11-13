@@ -2,7 +2,7 @@
 #Shadow@FuzzyLogic
 #20231027-20231030  
 
-
+# DMS OBJECT
 #Initiate a new DMS object
 function new-Dms
 {   param
@@ -16,6 +16,7 @@ function new-Dms
         return [psobject]@{name=$name;blocksize=$blocksize;numblocks=$numblocks;segmentSize=$segmentSize;numSegmentsPerBlock=$numSegmentsPerBlock;segmentAllocationTable=$SegmentAllocationTable;dataList=@()}
 }
 
+# DMS OBJECT
 #Decommission an existing DMS object
 function remove-dms
 {   param
@@ -26,6 +27,7 @@ function remove-dms
     return $true
 }
 
+# DMS OBJECT
 # Return an empty SatRecord
 function new-DmsSegmentAllocationRecord
 {   param   ( [uint32]$numSegmentsPerBlock
@@ -33,7 +35,7 @@ function new-DmsSegmentAllocationRecord
     return  [pscustomobject]@{numfree=$numSegmentsPerBlock;alloc=@(0)*$numSegmentsPerBlock}
 }
 
-
+# DMS OBJECT
 # Initialize and return empty SAT
 function new-DmsSegmentAllocationTable
 {   param ([uint32]$numBlocks,[uint32]$numSegmentsPerBlock)
@@ -42,6 +44,7 @@ function new-DmsSegmentAllocationTable
     }
 }
 
+# DMS OBJECT
 # Save DMS space as a file
 function save-dms
 {   param
@@ -51,6 +54,7 @@ function save-dms
     ConvertTo-Json -InputObject $dms|Set-Content "$($path).dms"
 }
 
+# DMS OBJECT
 # Load DMS space from a file
 function load-dms
 {   param
@@ -61,8 +65,10 @@ function load-dms
     return $dms
 }
 
+
+# SEGMENT
 # Exclude a whole block from the allocationTable
-function exclude-block
+function exclude-Dmsblock
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$Dms,
         [Parameter(Mandatory)]$block
@@ -71,6 +77,7 @@ function exclude-block
     return  
 }
 
+# SEGMENT
 # Lock a segmentChain
 #in: DMS, block, segment, length
 function lock-DmsSegment
@@ -99,6 +106,7 @@ function lock-DmsSegment
 }
 
 
+# SEGMENT
 # UnLock a segmentChain
 #in: DMS, block, segment
 function unLock-DmsSegment
@@ -120,6 +128,7 @@ function unLock-DmsSegment
     return
 }
 
+# SEGMENT
 # Get the length of a segmentChain (either free, or assigned)
 function get-DmsSegmentChain
 {   param
@@ -133,6 +142,7 @@ function get-DmsSegmentChain
     }
 }
 
+# SEGMENT
 # return the length of a segmentChain of free records
 function get-DmsFreeSegmentChain
 {   param
@@ -151,6 +161,7 @@ function get-DmsFreeSegmentChain
     return $count
 }
 
+# SEGMENT
 #Get the length of a segmentChain of assigned records
 function get-DsmAssignedSegmentChain
 {   param 
@@ -167,6 +178,7 @@ function get-DsmAssignedSegmentChain
         return $count
 }
 
+# SEGMENT
 #Look in a SatRecord if there's a spot free
 #in:  SatRecord,length of records
 #out: -1, not found else index@satrecord
@@ -187,6 +199,7 @@ function find-DmsFreeSegment
 }
 
 
+# ALLOCATE
 # Find a space big enough
 function find-DmsFreeSpace
 {   param
@@ -210,6 +223,8 @@ function find-DmsFreeSpace
     }
 }
 
+
+# ALLOCATE
 # Reserve and return a piece of blockspace
 # in:   Dms object, length in bytes
 # out:  array (block,segment,length)
@@ -250,19 +265,40 @@ function add-DmsDataList
 }
 
 # DATA LIST
-# add an allocation to an existing dataList
+# add an existing allocation to an existing dataList
 function add-DmsDataListAllocation
 {   param
     (	[Parameter(ParameterSetName='dms',Mandatory,ValueFromPipeline)]$dms,
 		[Parameter(ParameterSetName='dms',Mandatory)]$dataListName="",
 		[Parameter(ParameterSetName='dmsDataList',Mandatory,ValueFromPipeline)]$dataList,
+		$allocation,
 		$name="",$block=0,$segment=0,$length=0
     )
 	if ($datalistname) {$datalist=$dms.datalist|where{$_.name -eq $datalistname}}
-	$datalist.allocations+=[pscustomobject]@{name=$name;block=$block;segment=$segment;length=$length}
-	return $datalist.allocations
+	if (-not ($datalist.allocations|where{$_.name -eq $name}))
+	{	if (-not $allocation) {$allocation=@{block=$block;segment=$segment;length=$length}}
+		$datalist.allocations+=[pscustomobject]($allocation+@{name=$name})
+	}
+	return
 }
 
+# DATA LIST
+# Add one, or more file(s) to DMS and optional datalist
+function add-DmsFile
+{   param
+    (	[Parameter(ParameterSetName='dms',Mandatory,ValueFromPipeline)]$dms,
+		$dataListName="", $path, $files, $filelist
+	)
+	$datalist=$dms.dataList|where{$_.name -eq $datalistname}
+	if (-not $files) {$Files=gci $path}
+	foreach ($file in $Files)
+	{	if ($alloc=$dms|alloc-DmsSpace -lengthBytes $file.length)
+		{	if ($datalist)
+			{	$null=$DataList|add-DmsDataListAllocation -name $file.name -allocation $alloc
+			}
+		}
+	}
+}
 
 #------------------------------------------------------------------------------------------
 # TESTS
@@ -283,29 +319,31 @@ $global:dms=new-dms -name Usas2.Rom -BlockSize 16KB -numBlocks 256 -SegmentSize 
 #$dms|find-DmsFreeSpace -length 32
 #$dms|unLock-DmsSegment -segment $a.segment -block $a.block
 #$dms|alloc-DmsSpace -lengthBytes 100; #$null=$dms|lock-DmsSegment -block $a.block -segment $a.segment -length $a.length
-$null=$dms|exclude-block -block 0   #exclude code blocks
-$null=$dms|exclude-block -block 1
-$null=$dms|exclude-block -block 2
-$null=$dms|exclude-block -block 3
+$null=$dms|exclude-Dmsblock -block 0   #exclude code blocks
+$null=$dms|exclude-Dmsblock -block 1
+$null=$dms|exclude-Dmsblock -block 2
+$null=$dms|exclude-Dmsblock -block 3
 $roommapDataList=$dms|add-DmsDataList -name "roomMap"
 $gfxDataList=$dms|add-DmsDataList -name "gfx"
 $vgmDataList=$dms|add-DmsDataList -name "vgm"
+$codeDataList=$dms|add-DmsDataList -name "cod"
+#add-DmsFile -dms $dms -path ".\*.ps1" -datalistname cod
+
+$filelist=gc .\filelist.txt
+foreach ($this in $filelist.split("`n")) {add-DmsFile -dms $dms -path $this -datalistname cod}
+#$codedatalist.allocations
+
 #$dms|add-DmsDataListAllocation -datalistname "roommap" -name "file1" -block 1 -segment 1 -length 1
-#$dms|add-DmsDataListAllocation -datalistname "roommap" -name "file2" -block 2 -segment 1 -length 1
 #$dms.dataList|where{$_.name -eq "roommap"}|add-DmsDataListAllocation -name "file3" -block 3 -segment 1 -length 1
 #exit
 
 $mapsLocation="C:\Users\rvand\Usas2-main\maps"
-$mapFiles=gci $mapsLocation\* -include *.map.pck|select -first 10
-$maps=[pscustomobject]@{files=@()}
-foreach ($mapfile in $mapFiles)
-{   $alloc=$dms|alloc-DmsSpace -lengthBytes $mapfile.length
-    if ($alloc)
-    {   $maps.files+=[pscustomobject]($alloc+@{filename=$mapfile.name})
-		$null=$roommapDataList|add-DmsDataListAllocation -name $mapfile.name -block $alloc.block -segment $alloc.segment -length $alloc.length
-    }
-}
+$Files=gci $mapsLocation\* -include *.map.pck|select -first 100
+$null=add-DmsFile -dms $dms -files $files -datalistname roommap
 $roommapDataList.allocations
-#$maps.files
+
+
 exit
+
+
 $dms.SegmentAllocationTable|ft #[0].alloc -join(",")
