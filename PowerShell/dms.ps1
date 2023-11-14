@@ -49,8 +49,11 @@ function new-DmsSegmentAllocationTable
 function save-dms
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$Dms,
-        [Parameter(Mandatory)]$path
+        $path
     )
+	if (-not $path) {$path=$dms.name}
+	write-verbose "saving DMS as $path"
+	
     ConvertTo-Json -InputObject $dms|Set-Content "$($path).dms"
 }
 
@@ -302,8 +305,9 @@ function add-DmsFile
 
 #------------------------------------------------------------------------------------------
 # TESTS
+exit
 
-$global:dms=new-dms -name Usas2.Rom -BlockSize 16KB -numBlocks 256 -SegmentSize 256
+$global:dms=new-dms -name Usas2.Rom -BlockSize 32KB -numBlocks 256 -SegmentSize 512
 #$global:SegmentAllocationTable=new-DmsSegmentAllocationTable -numBlocks $numBlocks -numSegmentsPerBlock $numSegmentsPerBlock
 #$null=$dms.SegmentAllocationTable[0]|lock-DmsSegment -segment 0 -length 30
 #$null=$dms.SegmentAllocationTable[0]|lock-DmsSegment -segment 4 -length 3
@@ -331,14 +335,16 @@ $codeDataList=$dms|add-DmsDataList -name "cod"
 
 $filelist=gc .\filelist.txt
 foreach ($this in $filelist.split("`n")) {add-DmsFile -dms $dms -path $this -datalistname cod}
-#$codedatalist.allocations
+$codedatalist.allocations
 
 #$dms|add-DmsDataListAllocation -datalistname "roommap" -name "file1" -block 1 -segment 1 -length 1
 #$dms.dataList|where{$_.name -eq "roommap"}|add-DmsDataListAllocation -name "file3" -block 3 -segment 1 -length 1
 #exit
-
+$path="..\grapx\tilesheets\*.sc5"
+$null=add-DmsFile -dms $dms -path $path -datalistname gfx
+$gfxdatalist.allocations
 $mapsLocation="C:\Users\rvand\Usas2-main\maps"
-$Files=gci $mapsLocation\* -include *.map.pck|select -first 100
+$Files=gci $mapsLocation\* -include *.map.pck|select -first 10
 $null=add-DmsFile -dms $dms -files $files -datalistname roommap
 $roommapDataList.allocations
 

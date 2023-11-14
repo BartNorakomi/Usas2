@@ -3,8 +3,11 @@ phase	enginepage3addr
 MusicOn?:   equ 0
 LogoOn?:    equ 0
 
+WorldMapDataWidth:      equ 50    ;amount of maps in width 
+WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
 
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
+MapBT22Data: equ $99AA
 WorldMapPointer:  dw  MapBT22Data      ;
 
 

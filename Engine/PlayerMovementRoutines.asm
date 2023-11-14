@@ -1030,8 +1030,8 @@ Dying:
   ld    a,80
   ld    (ClesY),a
   
-  ld    hl,MapAA01Data       ;start
-  ld    (WorldMapPointer),hl
+  ;ld    hl,MapAA01Data       ;start
+  ;ld    (WorldMapPointer),hl
 
   pop   hl                  ;pop the call to this routine
   call  CameraEngine304x216.setR18R19R23andPage  
