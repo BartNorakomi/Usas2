@@ -5253,14 +5253,9 @@ RomAddressWorldMapMatrix:
 WorldMapDataCopiedToRamBlock:  equ   $a3
 phase	$8000
   ;include "WorldMapDataCopiedToRam.asm"
-  	incbin "wmmatrix.dat"
+  	incbin "WorldMapDataCopiedToRam.dat"
 	ds		$c000-$,$ff
 dephase
-
-
-
-
-
 
 
 
@@ -5275,30 +5270,8 @@ usas2repBlock:  equ   $a4
 ;usas2repBlock:  equ   $df
   incbin "usas2.rep"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ; block $a4 - $b4
   ds  $4000 * $11
-
-
-
-
-
-
-
-
 
 
 
