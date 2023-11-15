@@ -3,8 +3,11 @@ phase	enginepage3addr
 MusicOn?:   equ 0
 LogoOn?:    equ 0
 
+WorldMapDataWidth:      equ 50    ;amount of maps in width 
+WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
 
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
+MapBT22Data: equ $99AA
 WorldMapPointer:  dw  MapBT22Data      ;
 
 
@@ -246,6 +249,7 @@ Player_Call:
 	ld (7000H),a	
   ret
 
+replayOrgAddress: equ $
 INCLUDE "MoonSoundZ80.asm"
 INCLUDE "MoonSound.asm"
 FormatOPL4_Detect:
@@ -255,6 +259,7 @@ FormatOPL4_Detect:
 ;	call  MoonSound_Detect
 ;	ld    hl,MoonSound_JumpTable
 	ret
+replayOrgEndAddress: equ $-1
 
 ;IDBYT2: equ 2DH
 ;GETCPU: equ 183H
@@ -728,32 +733,6 @@ BuildUpMap:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ; Tiles numbering
 LadderTilesEndAdrStart:	equ 1
 LadderTilesEndAdrEnd:	equ 8 	;tilenr: 1 t/m 8 = ladder
@@ -877,6 +856,7 @@ DoCopy:
 	dw    $a3ed,$a3ed,$a3ed,$a3ed
 	dw    $a3ed,$a3ed,$a3ed
   ret
+
 
 lineintheight: equ 212-43
 SetInterruptHandler:

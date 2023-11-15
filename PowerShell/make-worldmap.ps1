@@ -16,7 +16,7 @@ param
 	$mapWidth=38,
 	$mapHeight=27,
 	[Parameter(ParameterSetName='ruinid',Mandatory)]$ruin=1,
-	[Parameter(ParameterSetName='ruinname',Mandatory)]$ruinName=1,
+	[Parameter(ParameterSetName='ruinname',Mandatory)]$ruinName="",
 	[switch]$createRoom,
 	[switch]$openWorldMap=$false,
 	[switch]$forceOverWrite
@@ -29,8 +29,8 @@ write-verbose "maps location: $TiledMapsLocation"
 
 
 ##### Includes #####
-. .\tiled-functions.ps1
-. .\Usas2-SharedFunctions.ps1
+. .\tiled-functions.inc.ps1
+. .\Usas2-SharedFunctions.inc.ps1
 
 ##### Functions #####
 

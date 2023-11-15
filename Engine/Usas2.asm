@@ -11,6 +11,9 @@ Usas2:
 ;
 ; this is one-time only... can be overwritten with game stuff after it's done
 ;
+
+RomBlockSize: equ 16*1024
+
 memInit:	
 	phase	$c000
 ;
@@ -5246,16 +5249,13 @@ dephase
 ;
 ; block $a3
 ;
+RomAddressWorldMapMatrix:
 WorldMapDataCopiedToRamBlock:  equ   $a3
 phase	$8000
-  include "WorldMapDataCopiedToRam.asm"
+  ;include "WorldMapDataCopiedToRam.asm"
+  	incbin "WorldMapDataCopiedToRam.dat"
 	ds		$c000-$,$ff
 dephase
-
-
-
-
-
 
 
 
@@ -5270,30 +5270,8 @@ usas2repBlock:  equ   $a4
 ;usas2repBlock:  equ   $df
   incbin "usas2.rep"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ; block $a4 - $b4
   ds  $4000 * $11
-
-
-
-
-
-
-
-
 
 
 
