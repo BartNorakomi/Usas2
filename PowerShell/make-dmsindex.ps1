@@ -29,12 +29,13 @@ function new-WorldMapMatrixRecord
 
 #Print the worldmap on screen with ruinIds
 function print-worldmap
-{	param ($wmmatrix)
+{	param ($wmmatrix,$ruinIdFilter)
 	$y=0
 	foreach ($row in $wmMatrix)
 	{	$x=0;$rowData=""
 		foreach ($column in $row)
 		{	$data="$($WmMatrix[$y][$x])"
+			if (-not ($data -match $ruinIdFilter)) {$data=""}
 			if ($data.length -eq 0) {$data="  "}
 			if ($data.length -eq 1) {$data="0$data"}
 			$rowData+="$data "
@@ -45,16 +46,46 @@ function print-worldmap
 	}
 }
 
+
+#Get roomMapFileNames
+function get-WorldMapRooms
+{	param ($wmmatrix,$ruinIdFilter)
+	$y=0
+	foreach ($row in $wmMatrix)
+	{	$x=0;$rowData=""
+		foreach ($column in $row)
+		{	$data="$($WmMatrix[$y][$x])"
+			if ($data -match $ruinIdFilter)
+			{	$name=get-roomName -x $x -y $y
+				[pscustomobject]@{x=$x;y=$y;filename="$name.map.pck"}
+			}
+			$x++
+		}
+		$y++
+	}
+}
+
 ##### Main: #####
 $WorldmapSource=get-content $masterWorldMapFile
 $usas2GlobalsCsv=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
 $global:usas2Globals=convert-CsvToObject -objname usas2 -csv $usas2GlobalsCsv
-$global:dms=new-dms -name U2WorldMapMatrix -BlockSize 32KB -numBlocks 256 -SegmentSize 512
+$global:dms=new-dms -name U2WorldMapMatrix -BlockSize 16KB -numBlocks 8 -SegmentSize 512
 
 $global:WmMatrix=get-roomMatrix -mapsource $WorldMapSource
-print-worldMap -wmmatrix $wmmatrix
+#print-worldMap -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
+$roomfiles=get-WorldMapRooms -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
+$datalist=$dms|add-DmsDataList -name WorldMapIndex
+$index=@()
+foreach ($this in $roomfiles)
+{	$alloc=$dms|add-dmsfile -datalistname WorldMapIndex -path "..\maps\$($this.filename)"
+	$index+=($this.x*256+$this.y),$alloc.block,($alloc.segment*$dms.segmentsize)
+}
+$index -join(",")
+#$datalist.allocations
 
 
+
+exit
 ##### Tests #####
 $filename=".\filelist.txt"
 $rawData=[byte[]]::new(16KB)

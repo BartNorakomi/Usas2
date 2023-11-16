@@ -295,19 +295,35 @@ function add-DmsFile
 	$datalist=$dms.dataList|where{$_.name -eq $datalistname}
 	if (-not $files) {$Files=gci $path}
 	foreach ($file in $Files)
-	{	if ($alloc=$dms|alloc-DmsSpace -lengthBytes $file.length)
+	{	write-verbose "Adding $($file.fullname) $($file.length)"
+		if ($alloc=$dms|alloc-DmsSpace -lengthBytes $file.length)
 		{	if ($datalist)
 			{	$null=$DataList|add-DmsDataListAllocation -name $file.name -allocation $alloc
+				[pscustomobject]$alloc
 			}
 		}
 	}
 }
 
+# STATISTICS
+function get-DmsStatistics
+{   param
+    (	[Parameter(ParameterSetName='dms',Mandatory,ValueFromPipeline)]$dms
+	)
+	$capacity=$dms.numblocks*$dms.blocksize
+	$free=$($dms.segmentAllocationTable.numfree|measure -Sum).sum*$dms.segmentsize
+	write "Name:		$($dms.name)"
+	write "Blocks:		$($dms.numblocks) of $($dms.blocksize)"
+	write "Capacity:	$capacity	/ $($capacity/1kb)KB"
+	write "Free space:	$free	/ $($free/1kb)KB"
+	write "In use:		$($capacity-$free)	/ $(($capacity-$free)/1kb)KB"
+}
+
+
 #------------------------------------------------------------------------------------------
 # TESTS
 exit
-
-$global:dms=new-dms -name Usas2.Rom -BlockSize 32KB -numBlocks 256 -SegmentSize 512
+$global:dms=new-dms -name Usas2.Rom -BlockSize 32KB -numBlocks 128 -SegmentSize 512
 #$global:SegmentAllocationTable=new-DmsSegmentAllocationTable -numBlocks $numBlocks -numSegmentsPerBlock $numSegmentsPerBlock
 #$null=$dms.SegmentAllocationTable[0]|lock-DmsSegment -segment 0 -length 30
 #$null=$dms.SegmentAllocationTable[0]|lock-DmsSegment -segment 4 -length 3
@@ -331,23 +347,24 @@ $roommapDataList=$dms|add-DmsDataList -name "roomMap"
 $gfxDataList=$dms|add-DmsDataList -name "gfx"
 $vgmDataList=$dms|add-DmsDataList -name "vgm"
 $codeDataList=$dms|add-DmsDataList -name "cod"
-#add-DmsFile -dms $dms -path ".\*.ps1" -datalistname cod
-
+add-DmsFile -dms $dms -path ".\*.ps1" -datalistname cod
+exit
 $filelist=gc .\filelist.txt
 foreach ($this in $filelist.split("`n")) {add-DmsFile -dms $dms -path $this -datalistname cod}
-$codedatalist.allocations
+#$codedatalist.allocations
 
 #$dms|add-DmsDataListAllocation -datalistname "roommap" -name "file1" -block 1 -segment 1 -length 1
 #$dms.dataList|where{$_.name -eq "roommap"}|add-DmsDataListAllocation -name "file3" -block 3 -segment 1 -length 1
 #exit
 $path="..\grapx\tilesheets\*.sc5"
 $null=add-DmsFile -dms $dms -path $path -datalistname gfx
-$gfxdatalist.allocations
+#$gfxdatalist.allocations
 $mapsLocation="C:\Users\rvand\Usas2-main\maps"
 $Files=gci $mapsLocation\* -include *.map.pck|select -first 10
 $null=add-DmsFile -dms $dms -files $files -datalistname roommap
-$roommapDataList.allocations
+#$roommapDataList.allocations
 
+get-DmsStatistics -dms $dms
 
 exit
 
