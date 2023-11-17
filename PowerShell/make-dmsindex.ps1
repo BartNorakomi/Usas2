@@ -17,19 +17,24 @@ param
 
 ##### Functions #####
 
-function new-WorldMapMatrixRecord
+function new-WorldMapMatrixRecordObject
 {	
 	return $WmMatrixRecord=@{block=0;address=0;engineType=1;tileSet=0;palette=0}
-	#+00 ROM block
-	#+01 ROM address
-	#+03 engineType. 1=regularRoom (38x27), 2=specialRoom (32x27)
-	#+04 tiledata (gfx id)
-	#+05 palette (pal id)
+}
+
+function new-WorldMapMatrixRecordBytes
+{	
+	return [byte[]](0,0,0,1,0,0)
+	#+00 01 ROM block
+	#+01 02 ROM address
+	#+03 01 engineType. 1=regularRoom (38x27), 2=specialRoom (32x27)
+	#+04 01 tiledata (gfx id)
+	#+05 01 palette (pal id)
 }
 
 #Print the worldmap on screen with ruinIds
-function print-worldmap
-{	param ($wmmatrix,$ruinIdFilter)
+function print-worldmapMatrix
+{	param ($wmmatrix,$ruinIdFilter=".*")
 	$y=0
 	foreach ($row in $wmMatrix)
 	{	$x=0;$rowData=""
@@ -65,20 +70,80 @@ function get-WorldMapRooms
 	}
 }
 
+
+#Create a WorldMapMatrix binairy structure, equal to the "WorldMapDatCopiedToRam.asm" file.
+#This is a one-time, temp file as intermediate migration setup
+#in:	an existing DMS object, the worldmapmatrix, and optional a filter for which ruinrooms
+#out:	a byte array of 50x50x6 bytes with matrix data
+function get-WorldMapBinMatrix
+{	param
+	(	[Parameter(Mandatory,ValueFromPipeline)]$Dms,
+		$wmmatrix,$ruinIdFilter=".*"
+	)
+	$BinMatrix=[byte[]]::new(0)
+	$y=0
+	foreach ($row in $wmMatrix)
+	{	$x=0;
+		foreach ($column in $row)
+		{	$data="$($WmMatrix[$y][$x])"
+			$ruinId=$data-band0x1f;$roomType=$data-band0xe0
+			if ($ruinId -match $ruinIdFilter)
+			{	$name=get-roomName -x $x -y $y
+				$path="..\maps\$name.map.pck"
+				$numObject=0
+				$alloc=$dms|add-dmsfile -datalistname WorldMapIndex -path $path -updateFileSpace -addlength $numObjects.length #add one more byte for numobjects
+				$null=$dms|write-DmsFileSpace -data ([byte]$numObjects) #number of objects
+				$address=$alloc.segment*$dms.segmentsize+0x8000
+				$engineType=1
+				$tileSet=0
+				$palette=0
+				$newRecord=($alloc.block,($address -band 255),($address -shr 8),$engineType,$tileset,$palette)
+			} else
+			{	$newRecord=new-WorldMapMatrixRecordBytes
+			}
+			$BinMatrix+=$newrecord
+			$x++
+		}
+		$y++
+	}
+	return $BinMatrix
+}
+
+
+#$BinMatrix=[byte[]]:new(50*50*6)
+#foreach ($this in $roomfiles)
+#{	$alloc=$dms|add-dmsfile -datalistname WorldMapIndex -path "..\maps\$($this.filename)"#
+#	$index+=$this.x,$this.y,$alloc.block,$alloc.segment#($alloc.segment*$dms.segmentsize#)
+#}
+
+
 ##### Main: #####
 $WorldmapSource=get-content $masterWorldMapFile
 $usas2GlobalsCsv=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
 $global:usas2Globals=convert-CsvToObject -objname usas2 -csv $usas2GlobalsCsv
-$global:dms=new-dms -name U2WorldMapMatrix -BlockSize 16KB -numBlocks 8 -SegmentSize 512
+
+$global:dms=new-dms -name U2WorldMapMatrix -BlockSize 16KB -numBlocks 4 -SegmentSize 128
+$datalist=$dms|add-DmsDataList -name WorldMapIndex
+$fileSpace=$dms|create-DmsFileSpace
 
 $global:WmMatrix=get-roomMatrix -mapsource $WorldMapSource
-#print-worldMap -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
+#print-worldMapMatrix -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
+$null=$dms|open-DmsFileSpace
+$binMatrix=get-WorldMapBinMatrix -dms $dms -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
+$null=$dms|close-DmsFileSpace 
+#$binMatrix -join(",")
+#$binmatrix.count
+$null=Set-Content -Value $rawdata -Path "..\engine\WorldMapMatrix.dat" -Encoding Byte
+$dms|save-dms
+
+exit
+
 $roomfiles=get-WorldMapRooms -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
-$datalist=$dms|add-DmsDataList -name WorldMapIndex
-$index=@()
+#Create an Index
+$index=[byte[]]::new(0) #@()
 foreach ($this in $roomfiles)
 {	$alloc=$dms|add-dmsfile -datalistname WorldMapIndex -path "..\maps\$($this.filename)"
-	$index+=($this.x*256+$this.y),$alloc.block,($alloc.segment*$dms.segmentsize)
+	$index+=$this.x,$this.y,$alloc.block,$alloc.segment#($alloc.segment*$dms.segmentsize)
 }
 $index -join(",")
 #$datalist.allocations

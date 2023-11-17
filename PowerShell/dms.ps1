@@ -2,18 +2,23 @@
 #Shadow@FuzzyLogic
 #20231027-20231030  
 
+
+#Globals
+$filemodes=@{Append=6;Create=2;CreateNew=1;Open=3;OpenOrCreate=4;Truncate=5}
+
 # DMS OBJECT
 #Initiate a new DMS object
 function new-Dms
 {   param
     (   [string]$name,
         [uint32]$BlockSize=16KB,
-        [uint32]$numBlocks=10,
-        [uint32]$SegmentSize=512 #bytes   
+		[uint32]$FirstBlock=0,
+        [uint32]$numBlocks=8,
+        [uint32]$SegmentSize=512 #bytes
     )
         [uint32]$numSegmentsPerBlock=$Blocksize/$SegmentSize
         $SegmentAllocationTable=new-DmsSegmentAllocationTable -numBlocks $numBlocks -numSegmentsPerBlock $numSegmentsPerBlock
-        return [psobject]@{name=$name;blocksize=$blocksize;numblocks=$numblocks;segmentSize=$segmentSize;numSegmentsPerBlock=$numSegmentsPerBlock;segmentAllocationTable=$SegmentAllocationTable;dataList=@()}
+        return [psobject]@{name=$name;blocksize=$blocksize;firstBlock=$firstBlock;numblocks=$numblocks;segmentSize=$segmentSize;numSegmentsPerBlock=$numSegmentsPerBlock;segmentAllocationTable=$SegmentAllocationTable;dataList=@();fileSpace=$null}
 }
 
 # DMS OBJECT
@@ -51,10 +56,10 @@ function save-dms
     (   [Parameter(Mandatory,ValueFromPipeline)]$Dms,
         $path
     )
-	if (-not $path) {$path=$dms.name}
+	if (-not $path) {$path="$($dms.name).dms"}
 	write-verbose "saving DMS as $path"
 	
-    ConvertTo-Json -InputObject $dms|Set-Content "$($path).dms"
+    ConvertTo-Json -InputObject $dms|Set-Content $path
 }
 
 # DMS OBJECT
@@ -285,25 +290,174 @@ function add-DmsDataListAllocation
 	return
 }
 
+
 # DATA LIST
-# Add one, or more file(s) to DMS and optional datalist
+# Add one, or more file(s) to DMS and optionally to a datalist and optionally update the file space file
+# out:	Array of allocations
 function add-DmsFile
 {   param
     (	[Parameter(ParameterSetName='dms',Mandatory,ValueFromPipeline)]$dms,
-		$dataListName="", $path, $files, $filelist
+		$dataListName="", $path, $files,
+		$addLength=0, [switch]$updateFileSpace #optional
 	)
 	$datalist=$dms.dataList|where{$_.name -eq $datalistname}
 	if (-not $files) {$Files=gci $path}
 	foreach ($file in $Files)
 	{	write-verbose "Adding $($file.fullname) $($file.length)"
-		if ($alloc=$dms|alloc-DmsSpace -lengthBytes $file.length)
+		if ($alloc=$dms|alloc-DmsSpace -lengthBytes ($file.length+$addlength))
 		{	if ($datalist)
 			{	$null=$DataList|add-DmsDataListAllocation -name $file.name -allocation $alloc
 				[pscustomobject]$alloc
 			}
+			if ($updateFileSpace -and $dms.filespace)
+			{	write-verbose "updateing file space -block $($alloc["block"]) -segment $($alloc["segment"]) $($alloc["length"])"
+				$data=get-content $file -Encoding byte
+				$null=$dms|write-DmsFileSpace -block $alloc["block"] -segment $alloc["segment"] -data $data
+			}
 		}
 	}
 }
+
+
+# FILE SPACE
+# Create an empty DMS fileSpace as file
+function create-DmsFileSpace
+{   param
+    (   [Parameter(Mandatory,ValueFromPipeline)]$Dms,
+        $path
+    )
+	if (-not $path) {$path="$(resolve-path ".\")\$($dms.name).dms.dat"}
+	write-verbose "saving DMS space as $path"
+	if ($fs=[io.file]::create($path))
+	{	$rawData=[byte[]]::new($dms.blocksize)
+		for ($i=0;$i -lt $dms.numblocks;$i++)
+		{	write-verbose "Writing Block $i, size $($dms.blocksize)"
+			$fs.Write($RawData,0,$RawData.Length)
+		}
+		$fs.close()
+	}
+}
+
+
+# FILE SPACE
+# Open DMS file space with WRITE access
+function open-DmsFileSpace
+{   param
+    (   [Parameter(Mandatory,ValueFromPipeline)]$Dms,
+        $path
+    )
+	if (-not $dms.filespace)
+	{	if (-not $path) {$path="$(resolve-path ".\")\$($dms.name).dms.dat"}
+		write-verbose "Opening DMS file space $path"
+		if ($fs=[io.file]::open($path,$filemodes["open"]))
+		{	$dms.filespace=$fs
+			return $fs
+		} else
+		{	return $false
+		}
+	} else
+	{	return $dms.filespace
+	}
+
+}
+
+
+# FILE SPACE
+# Close DMS files space (system)
+function close-DmsFileSpace
+{   param
+    (   [Parameter(Mandatory,ValueFromPipeline)]$Dms
+    )
+	if ($dms.filespace)
+	{	$dms.filespace.close()
+		$dms.filespace=$null		#no error checking!
+	}
+}
+
+
+# FILE SPACE
+# Seek to a block+segment position in an open File Space
+function seek-DmsFileSpace
+{   param
+    (   [Parameter(Mandatory,ValueFromPipeline)]$Dms,
+		$block=0,$segment=0
+    )
+	if ($dms.filespace)
+	{	$seekPosition=($block*$dms.blocksize)+($segment*$dms.segmentsize)
+		return $dms.filespace.seek($seekPosition,0)
+	} else
+	{	return $false
+	}
+}
+
+
+# FILE SPACE
+# Read from an open File Space
+function read-DmsFileSpace
+{   param
+    (   [Parameter(Mandatory,ValueFromPipeline)]$Dms,
+		[Parameter(Mandatory)]$length=0,
+		$block=-1,$segment=0	#optional seek to block/segment
+    )
+
+	if (-not $dms.filespace)
+	{	return 0
+	} else
+	{	if ($block -ne -1)
+		{	if (-not ($seek=seek-DmsFileSpace -dms $dms -block $block -segment $segment).GetType().name -eq "int32")
+			{	return $false
+			}
+		}
+		$Data=[byte[]]::new($length)
+		$null=$dms.filespace.read($data,0,$data.length)
+		return $data
+	}
+}
+
+
+# FILE SPACE
+# Read one whole block from an open File Space
+function read-DmsFileSpaceBlock
+{   param
+    (   [Parameter(Mandatory,ValueFromPipeline)]$Dms,
+		$block=0
+    )
+
+	return $dms|read-DmsFileSpace -length ($dms.blocksize) -block $block -segment 0
+}
+
+
+# FILE SPACE
+# Write to an open File Space
+function write-DmsFileSpace
+{   param
+    (   [Parameter(Mandatory,ValueFromPipeline)]$Dms,
+		[Parameter(Mandatory)]$Data,
+		$block=-1,$segment=0	#optional seek to block/segment
+    )
+	if (-not $dms.filespace)
+	{	return $false
+	} else
+	{	if ($block -ne -1)
+		{	if (-not ($seek=seek-DmsFileSpace -dms $dms -block $block -segment $segment).GetType().name -eq "int32")
+			{	return $false
+			}
+		}
+		return $dms.filespace.write($Data,0,$Data.length)
+	}
+}
+
+# FILE SPACE
+# Write one whole block to an open File Space
+function write-DmsFileSpaceBlock
+{   param
+	(   [Parameter(Mandatory,ValueFromPipeline)]$Dms,
+		$block=0,$blockData
+	)
+	return $dms|write-DmsFileSpace -data $blockData -block $block -segment 0
+}
+
+
 
 # STATISTICS
 function get-DmsStatistics
@@ -323,7 +477,18 @@ function get-DmsStatistics
 #------------------------------------------------------------------------------------------
 # TESTS
 exit
-$global:dms=new-dms -name Usas2.Rom -BlockSize 32KB -numBlocks 128 -SegmentSize 512
+$global:dms=new-dms -name Usas2.Rom -BlockSize 16KB -numBlocks 8 -SegmentSize 256
+#$dms|create-DmsFileSpace -verbose
+
+$null=$dms|open-DmsFileSpace -verbose
+$null=$dms|write-DmsFileSpaceblock -block 0 -blockdata ([System.Text.Encoding]::UTF8.GetBytes(">> block #00"))
+$null=$dms|write-DmsFileSpaceblock -block 1 -blockdata ([System.Text.Encoding]::UTF8.GetBytes(">> block #01"))
+#if (-not ($global:data=$dms|read-DmsFileSpaceBlock -block 0 -verbose)) {write-error "error reading"}
+#$data|select -first 32|format-hex
+#if (-not ($global:data=$dms|read-DmsFileSpace -length 32 -block 1)) {write-error "error reading"}
+#$data|select -first 32|format-hex
+$null=$dms|close-DmsFileSpace -verbose
+
 #$global:SegmentAllocationTable=new-DmsSegmentAllocationTable -numBlocks $numBlocks -numSegmentsPerBlock $numSegmentsPerBlock
 #$null=$dms.SegmentAllocationTable[0]|lock-DmsSegment -segment 0 -length 30
 #$null=$dms.SegmentAllocationTable[0]|lock-DmsSegment -segment 4 -length 3
@@ -341,13 +506,17 @@ $global:dms=new-dms -name Usas2.Rom -BlockSize 32KB -numBlocks 128 -SegmentSize 
 #$dms|alloc-DmsSpace -lengthBytes 100; #$null=$dms|lock-DmsSegment -block $a.block -segment $a.segment -length $a.length
 $null=$dms|exclude-Dmsblock -block 0   #exclude code blocks
 $null=$dms|exclude-Dmsblock -block 1
-$null=$dms|exclude-Dmsblock -block 2
-$null=$dms|exclude-Dmsblock -block 3
+#$null=$dms|exclude-Dmsblock -block 2
+#$null=$dms|exclude-Dmsblock -block 3
 $roommapDataList=$dms|add-DmsDataList -name "roomMap"
 $gfxDataList=$dms|add-DmsDataList -name "gfx"
 $vgmDataList=$dms|add-DmsDataList -name "vgm"
 $codeDataList=$dms|add-DmsDataList -name "cod"
-add-DmsFile -dms $dms -path ".\*.ps1" -datalistname cod
+#$null=$dms|open-DmsFileSpace -verbose
+$null=add-DmsFile -dms $dms -path ".\*.ps1" -datalistname cod -updateFileSpace -verbose
+$codeDatalist.allocations
+#$null=$dms|close-DmsFileSpace -verbose
+
 exit
 $filelist=gc .\filelist.txt
 foreach ($this in $filelist.split("`n")) {add-DmsFile -dms $dms -path $this -datalistname cod}
