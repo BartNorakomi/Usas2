@@ -5,3 +5,4 @@ Engine/tniasm.tmp
 Engine/Usas2.rom
 Engine/tniasm.txt
 *.dms
+node_modules/
