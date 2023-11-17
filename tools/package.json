@@ -1,0 +1,14 @@
+{
+	"name": "usas2-tools",
+	"version": "0.0.0",
+	"description": "Usas2 tools",
+	"author": "TeamNXT",
+	"license": "MIT",
+	"type": "module",
+	"dependencies": {
+	},
+	"private": true,
+	"scripts": {
+		"romspace": "node romspace.js ../Engine/Usas2.rom"
+	}
+}
