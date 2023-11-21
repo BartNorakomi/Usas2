@@ -470,7 +470,7 @@ phase	$8000
 	ds		$c000-$,$ff
 dephase
 
-; block $09
+; block $09                   (worldmap matrix)
 RomAddressWorldMapMatrix:
 WorldMapDataCopiedToRamBlock:  equ   $9
 phase	$8000
@@ -479,7 +479,7 @@ phase	$8000
 	ds		$c000-$,$ff
 dephase
 
-; block $0a - $5e
+; block $0a - $5e             (music)
 usas2repBlock:  equ   $0a
 phase	$0000
   incbin "usas2.rep"
@@ -515,17 +515,17 @@ MapsBlockBT50:  equ   $5f | MapBT50: incbin "..\maps\BT50.map.pck"  | include ".
 	ds		$c000-$,$ff
 dephase
 
-; block $60 - $7b 
+; block $60 - $7b             (sc5 tilesheets)
 GraphicsSc5DataStartBlock:  equ $60
 GraphicsSc5DataEndBlock:    equ GraphicsSc5DataStartBlock+$1b
 include "GraphicsSc5Data.asm"
 
-; block $7c - $8f             (Player's sprite positions)
+; block $7c - $8f             (hardware sprites)
 SpriteDataStartBlock: equ $7c
 SpriteDataEndBlock:   equ SpriteDataStartBlock+$13
 include "SpriteData.asm"
 
-; block $90 - $B8
+; block $90 - $B8             (software sprites)
 BossSpritesDataStartBlock:  equ $90
 BossSpritesDataEndBlock:  equ BossSpritesDataStartBlock+$28
 include "BossSpriteData.asm"
