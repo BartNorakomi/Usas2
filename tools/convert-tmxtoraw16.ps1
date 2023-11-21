@@ -110,7 +110,7 @@ gci -path C:\Users\$($env:username)\OneDrive\Usas2\maps\* -include *.tmx|where{$
 #From Worldmap
 . .\Tiled-Functions.inc.ps1
 $worldMap=get-TiledWorldMap -path "C:\Users\rvand\OneDrive\Usas2\maps\KarniMata.world"
-foreach ($map in $worldmap.maps) {.\convert-tmxtoraw16.ps1 -path "C:\Users\$($env:username)\OneDrive\Usas2\maps\$($map.filename)" -targetpath $targetpath -verbose -pack}
+foreach ($map in $worldmap.maps) {.\convert-tmxtoraw16.ps1 -path "C:\Users\$($env:username)\OneDrive\Usas2\maps\$($map.filename)" -verbose -pack}
 
 [xml]$data=Get-Content C:\Users\rvand\OneDrive\Usas2\maps\BW24.tmx
 $rawdata=Convert-TmxLayers -data $data -includeLayer $includeLayer -excludeLayer $excludeLayer

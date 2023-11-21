@@ -7,3 +7,5 @@ Engine/tniasm.txt
 *.dms
 node_modules/
 tools/U2WorldMapMatrix.dsm.space
+tniasm.sym
+Usas2.rom

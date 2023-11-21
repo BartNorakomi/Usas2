@@ -1,6 +1,6 @@
 phase	enginepage3addr
 
-MusicOn?:   equ 0
+MusicOn?:   equ 
 LogoOn?:    equ 0
 
 WorldMapDataWidth:      equ 50    ;amount of maps in width 
@@ -199,12 +199,11 @@ UnpackMapdata_SetObjects:             ;unpacks packed map to $4000 in ram and se
   out   ($a8),a      
 
   ld    a,(ix+0)	;ROM block 
-  add a,$b7
-  ;ld a,$b7			;offset (temp)
+  add a,$b7			;offset (temp)
   call  block34		;we can only switch block34 if page 1 is in rom
   ld    l,(ix+1)	;ROM adr
   ld    h,(ix+2)
-;ld hl,$8000
+
 ;unpack map data
   ld    a,(slot.page2rom)             ;all RAM except page 2
   out   ($a8),a      
