@@ -1099,6 +1099,7 @@ LogoAnimationVar3:            rb    1
 
 
 
+fill: equ 2
 
 amountofenemies:        equ 22
 lenghtenemytable:       equ 27 + fill
