@@ -13,7 +13,7 @@ param
 	$excludeLayer="(objects|room numbers)",
 	$targetFileExtention="map",
 	[switch]$pack=$false,
-	$bitBusterPath="..\pack.exe"
+	$bitBusterPath=".\pack.exe"
 )
 
 
@@ -108,7 +108,7 @@ gci -path C:\Users\$($env:username)\OneDrive\Usas2\maps\* -include *.tmx|where{$
 gci -path C:\Users\$($env:username)\OneDrive\Usas2\maps\* -include *.tmx|where{$_.LastWriteTime -gt (Get-Date).AddDays(-2)}|%{.\convert-tmxtoraw16.ps1 -path $_.fullname -verbose -pack}
 
 #From Worldmap
-. .\Tiled-Functions.ps1
+. .\Tiled-Functions.inc.ps1
 $worldMap=get-TiledWorldMap -path "C:\Users\rvand\OneDrive\Usas2\maps\KarniMata.world"
 foreach ($map in $worldmap.maps) {.\convert-tmxtoraw16.ps1 -path "C:\Users\$($env:username)\OneDrive\Usas2\maps\$($map.filename)" -targetpath $targetpath -verbose -pack}
 

@@ -6,3 +6,4 @@ Engine/Usas2.rom
 Engine/tniasm.txt
 *.dms
 node_modules/
+tools/U2WorldMapMatrix.dsm.space

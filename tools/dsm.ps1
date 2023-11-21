@@ -476,6 +476,7 @@ function get-DSMStatistics
 	write "Capacity:	$capacity	/ $($capacity/1kb)KB"
 	write "Free space:	$free	/ $($free/1kb)KB"
 	write "In use:		$($capacity-$free)	/ $(($capacity-$free)/1kb)KB"
+    write "Allocations:    $($dsm.dataList.allocations.count)"
 }
 
 

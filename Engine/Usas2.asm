@@ -475,7 +475,8 @@ RomAddressWorldMapMatrix:
 WorldMapDataCopiedToRamBlock:  equ   $9
 phase	$8000
   ;include "WorldMapDataCopiedToRam.asm"
-  	incbin "WorldMapDataCopiedToRam.dat"
+  ;	incbin "WorldMapDataCopiedToRam.dat"
+  incbin "..\tools\U2WorldMapMatrix.dsm.index"
 	ds		$c000-$,$ff
 dephase
 
@@ -530,5 +531,9 @@ BossSpritesDataStartBlock:  equ $90
 BossSpritesDataEndBlock:  equ BossSpritesDataStartBlock+$28
 include "BossSpriteData.asm"
 
+;B8
+incbin "..\tools\U2WorldMapMatrix.dsm.space"
+
+lastblock: equ $ and $ffc000/RomBlockSize
 totallenght:	Equ	$-Usas2
-	ds		(8*$80000)-totallenght
+	ds		(256*RomBlockSize)-totallenght

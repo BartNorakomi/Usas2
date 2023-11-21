@@ -1,4 +1,4 @@
-# Create DMS index from files
+# Create DSM index from files
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
 # 20231114-20231114
@@ -13,7 +13,7 @@ param
 ##### Includes #####
 #. .\tiled-functions.inc.ps1
 . .\Usas2-SharedFunctions.inc.ps1
-. .\dms.ps1
+. .\DSM.ps1
 
 ##### Functions #####
 
@@ -73,11 +73,11 @@ function get-WorldMapRooms
 
 #Create a WorldMapMatrix binairy structure, equal to the "WorldMapDatCopiedToRam.asm" file.
 #This is a one-time, temp file as intermediate migration setup
-#in:	an existing DMS object, the worldmapmatrix, and optional a filter for which ruinrooms
+#in:	an existing DSM object, the worldmapmatrix, and optional a filter for which ruinrooms
 #out:	a byte array of 50x50x6 bytes with matrix data
 function get-WorldMapBinMatrix
 {	param
-	(	[Parameter(Mandatory,ValueFromPipeline)]$Dms,
+	(	[Parameter(Mandatory,ValueFromPipeline)]$DSM,
 		$wmmatrix,$ruinIdFilter=".*"
 	)
 	$BinMatrix=[byte[]]::new(0)
@@ -91,15 +91,16 @@ function get-WorldMapBinMatrix
 			{	$name=get-roomName -x $x -y $y
 				$path="..\maps\$name.map.pck"
 				$numObject=0
-				$alloc=$dms|add-dmsfile -datalistname WorldMapIndex -path $path -updateFileSpace -addlength $numObjects.length #add one more byte for numobjects
-				$null=$dms|write-DmsFileSpace -data ([byte]$numObjects) #number of objects
-				$address=$alloc.segment*$dms.segmentsize+0x8000
-				$engineType=1
-				$tileSet=0
-				$palette=0
-				$newRecord=($alloc.block,($address -band 255),($address -shr 8),$engineType,$tileset,$palette)
+				$alloc=$DSM|add-DSMfile -datalistname WorldMapIndex -path $path -updateFileSpace -addlength $numObjects.length #add one more byte for numobjects
+				$null=$DSM|write-DSMFileSpace -data ([byte]$numObjects) #number of objects
+				$address=$alloc.segment*$DSM.segmentsize+0x8000
+				[byte]$engineType=1
+				[byte]$tileSet=0
+				[byte]$palette=0
+				$newRecord=([byte]$alloc.block,[byte]($address -band 255),[byte]($address -shr 8),$engineType,$tileset,$palette)
+				write-verbose ($newrecord -join(","))
 			} else
-			{	$newRecord=new-WorldMapMatrixRecordBytes
+			{	$newRecord=[byte]0,[byte]0,[byte]0,[byte]1,[byte]0,[byte]0 #new-WorldMapMatrixRecordBytes
 			}
 			$BinMatrix+=$newrecord
 			$x++
@@ -112,8 +113,8 @@ function get-WorldMapBinMatrix
 
 #$BinMatrix=[byte[]]:new(50*50*6)
 #foreach ($this in $roomfiles)
-#{	$alloc=$dms|add-dmsfile -datalistname WorldMapIndex -path "..\maps\$($this.filename)"#
-#	$index+=$this.x,$this.y,$alloc.block,$alloc.segment#($alloc.segment*$dms.segmentsize#)
+#{	$alloc=$DSM|add-DSMfile -datalistname WorldMapIndex -path "..\maps\$($this.filename)"#
+#	$index+=$this.x,$this.y,$alloc.block,$alloc.segment#($alloc.segment*$DSM.segmentsize#)
 #}
 
 
@@ -122,19 +123,19 @@ $WorldmapSource=get-content $masterWorldMapFile
 $usas2GlobalsCsv=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
 $global:usas2Globals=convert-CsvToObject -objname usas2 -csv $usas2GlobalsCsv
 
-$global:dms=new-dms -name U2WorldMapMatrix -BlockSize 16KB -numBlocks 4 -SegmentSize 128
-$datalist=$dms|add-DmsDataList -name WorldMapIndex
-$fileSpace=$dms|create-DmsFileSpace
+$global:DSM=new-DSM -name U2WorldMapMatrix -BlockSize 16KB -numBlocks 4 -SegmentSize 256
+$datalist=$DSM|add-DSMDataList -name WorldMapIndex
+$fileSpace=$DSM|create-DSMFileSpace
 
 $global:WmMatrix=get-roomMatrix -mapsource $WorldMapSource
 #print-worldMapMatrix -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
-$null=$dms|open-DmsFileSpace
-$binMatrix=get-WorldMapBinMatrix -dms $dms -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
-$null=$dms|close-DmsFileSpace 
+$null=$DSM|open-DSMFileSpace
+$global:binMatrix=get-WorldMapBinMatrix -DSM $DSM -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
+$null=$DSM|close-DSMFileSpace 
 #$binMatrix -join(",")
 #$binmatrix.count
-$null=Set-Content -Value $rawdata -Path "..\engine\WorldMapMatrix.dat" -Encoding Byte
-$dms|save-dms
+$null=Set-Content -Value $binMatrix -Path "$(resolve-path ".\")\$($DSM.name).$dsmIndexFilenameExtention" -Encoding Byte
+$DSM|save-DSM
 
 exit
 
@@ -142,8 +143,8 @@ $roomfiles=get-WorldMapRooms -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
 #Create an Index
 $index=[byte[]]::new(0) #@()
 foreach ($this in $roomfiles)
-{	$alloc=$dms|add-dmsfile -datalistname WorldMapIndex -path "..\maps\$($this.filename)"
-	$index+=$this.x,$this.y,$alloc.block,$alloc.segment#($alloc.segment*$dms.segmentsize)
+{	$alloc=$DSM|add-DSMfile -datalistname WorldMapIndex -path "..\maps\$($this.filename)"
+	$index+=$this.x,$this.y,$alloc.block,$alloc.segment#($alloc.segment*$DSM.segmentsize)
 }
 $index -join(",")
 #$datalist.allocations
