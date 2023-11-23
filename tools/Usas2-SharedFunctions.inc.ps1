@@ -1,5 +1,5 @@
-# shared functions
-# 20231024-20231101;shadow@fuzzylogic
+# Usas2 shared functions
+# shadow@fuzzylogic 20231024-20231123
 
 # 20231101
 # Create and return an Object (with empty properties)

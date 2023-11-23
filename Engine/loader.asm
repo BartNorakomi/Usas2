@@ -5,20 +5,66 @@ loader:
   call  SwapSpatColAndCharTable
   call  SwapSpatColAndCharTable2
 
+  call getRoom
+  call  SetEngineType
 
-  ld    a,WorldMapDataCopiedToRamBlock;loader routine at $4000
-  call  block34
-  ld    hl,(WorldMapPointer)
-  ld    de,MapDataCopiedToRam
-  ld    bc,6
-  ldir
-  ld    ix,MapDataCopiedToRam
-
-  call  SetEngineType                 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
 ;  call  SetTilesInVram                ;copies all the tiles to Vram
   call  PopulateControls              ;this allows for a double jump as soon as you enter a new map
   call  SetMapPalette                 ;sets palette
   ret
+
+getRoom:
+  ld    a,WorldMapDataCopiedToRamBlock;loader routine at $4000
+  call  block34
+;  ld    hl,(WorldMapPointer)
+;  ld    de,MapDataCopiedToRam
+;  ld    bc,6
+;  ldir
+  ld de,(WorldMapPositionY)   ;WorldMapPositionX/Y:  
+  call GETWMR
+  ld bc,$8000
+  add hl,bc
+  ld ix,MapDataCopiedToRam
+  ld (ix),a ;block
+  ld (ix+1),l ;adr
+  ld (ix+2),h
+  ld (ix+3),1 ;engine
+  ld (ix+4),0 ;tileSet
+  ld (ix+5),0 ;pal
+ret
+
+
+;Usas2 Worldmap Index
+|WMIID: EQU   0               ;ID (x,y)
+|WMIBL: EQU   2               ;block
+|WMISG: EQU   3               ;segment
+SEGSIZ: EQU   $0100           ;segment size
+IDXADR: EQU   $8000           ;indexAddress
+RECLEN: EQU   4               ;recordLength
+
+;Get WorldMapRoom
+;In:  DE=IndexID (D=X,E=Y)
+GETWMR: LD    HL,IDXADR
+        LD    BC,RECLEN-1
+GWMR.1: LD    A,D             ;x
+        CP    (HL)
+        INC   HL
+        JR    NZ,GWMR.0
+        LD    A,E             ;y
+        CP    (HL)
+        JR    NZ,GWMR.0
+        INC   HL
+        LD    A,(HL)          ;block
+        INC   HL
+        LD    H,(HL)          ;seg
+        LD    L,0
+        RET
+GWMR.0: ADD   HL,BC
+        JP    GWMR.1
+
+
+
+
 
 PutSpatToVramSlow:
 	ld		hl,(invisspratttableaddress)		;sprite attribute table in VRAM ($17600)

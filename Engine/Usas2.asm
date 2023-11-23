@@ -476,7 +476,8 @@ WorldMapDataCopiedToRamBlock:  equ   $9
 phase	$8000
   ;include "WorldMapDataCopiedToRam.asm"
   ;	incbin "WorldMapDataCopiedToRam.dat"
-  incbin "..\tools\U2WorldMapMatrix.dsm.index"
+  ;incbin "..\tools\U2WorldMapMatrix.dsm.index"
+incbin "..\tools\U2WorldMap.dsm.index"
 	ds		$c000-$,$ff
 dephase
 
