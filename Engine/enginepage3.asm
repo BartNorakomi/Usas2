@@ -1,6 +1,6 @@
 phase	enginepage3addr
 
-MusicOn?:   equ 
+MusicOn?:   equ 0
 LogoOn?:    equ 0
 
 WorldMapDataWidth:      equ 50    ;amount of maps in width 
@@ -9,6 +9,10 @@ WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 MapBT22Data: equ $99AA
 WorldMapPointer:  dw  MapBT22Data      ;
+
+;we are going to change the worldmappointer, giving it an x and  y position instead
+WorldMapPositionX:  db  46            ;(46,16) = BS16
+WorldMapPositionY:  db  16
 
 
 

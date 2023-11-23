@@ -2564,7 +2564,14 @@ CheckMapExit:
   ld    a,6
   ld    (ClesY),a
   ld    a,0
-  ld    (CameraY),a  
+  ld    (CameraY),a
+  
+  
+  ld    a,(WorldMapPositionY)
+  inc   a
+  ld    (WorldMapPositionY),a
+  
+  
   jp    .LoadnextMap
   
 .ExitTopFound:  
@@ -2596,7 +2603,15 @@ CheckMapExit:
   ld    a,176+8 + 24;  - 60
   ld    (ClesY),a
   ld    a,44
-  ld    (CameraY),a  
+  ld    (CameraY),a
+
+
+  ld    a,(WorldMapPositionY)
+  dec   a
+  ld    (WorldMapPositionY),a
+
+
+  
   jp    .LoadnextMap
   
 .ExitRightFound:
@@ -2616,6 +2631,14 @@ CheckMapExit:
   ld    (ClesX),hl
   xor   a
   ld    (CameraX),a
+
+
+  ld    a,(WorldMapPositionx)
+  inc   a
+  ld    (WorldMapPositionx),a
+
+
+  
   jp    .LoadnextMap
 
 .PossibleExitLeftFound:  
@@ -2639,6 +2662,15 @@ CheckMapExit:
   ld    (ClesX),hl
   ld    a,63
   ld    (CameraX),a
+
+
+
+  ld    a,(WorldMapPositionx)
+  dec   a
+  ld    (WorldMapPositionx),a
+
+
+
   jp    .LoadnextMap
 
 .LoadnextMap:

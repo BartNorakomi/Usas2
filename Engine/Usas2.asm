@@ -488,33 +488,7 @@ phase	$0000
 dephase
 
 ; block $5f
-phase	$8000
-MapsBlockBT01:  equ   $5f | MapBT01: incbin "..\maps\BT01.map.pck"  | include "..\maps\mapdata\BT01.asm"  
-MapsBlockBT08:  equ   $5f | MapBT08: incbin "..\maps\BT08.map.pck"  | include "..\maps\mapdata\BT08.asm"  
-MapsBlockBT12:  equ   $5f | MapBT12: incbin "..\maps\BT12.map.pck"  | include "..\maps\mapdata\BT12.asm"  
-MapsBlockBT13:  equ   $5f | MapBT13: incbin "..\maps\BT13.map.pck"  | include "..\maps\mapdata\BT13.asm"  
-MapsBlockBT16:  equ   $5f | MapBT16: incbin "..\maps\BT16.map.pck"  | include "..\maps\mapdata\BT16.asm"  
-MapsBlockBT20:  equ   $5f | MapBT20: incbin "..\maps\BT20.map.pck"  | include "..\maps\mapdata\BT20.asm"  
-MapsBlockBT21:  equ   $5f | MapBT21: incbin "..\maps\BT21.map.pck"  | include "..\maps\mapdata\BT21.asm"  
-MapsBlockBT22:  equ   $5f | MapBT22: incbin "..\maps\BT22.map.pck"  | include "..\maps\mapdata\BT22.asm"  
-MapsBlockBT23:  equ   $5f | MapBT23: incbin "..\maps\BT23.map.pck"  | include "..\maps\mapdata\BT23.asm"  
-MapsBlockBT24:  equ   $5f | MapBT24: incbin "..\maps\BT24.map.pck"  | include "..\maps\mapdata\BT24.asm"  
-MapsBlockBT26:  equ   $5f | MapBT26: incbin "..\maps\BT26.map.pck"  | include "..\maps\mapdata\BT26.asm"  
-MapsBlockBT27:  equ   $5f | MapBT27: incbin "..\maps\BT27.map.pck"  | include "..\maps\mapdata\BT27.asm"  
-MapsBlockBT28:  equ   $5f | MapBT28: incbin "..\maps\BT28.map.pck"  | include "..\maps\mapdata\BT28.asm"  
-MapsBlockBT30:  equ   $5f | MapBT30: incbin "..\maps\BT30.map.pck"  | include "..\maps\mapdata\BT30.asm"  
-MapsBlockBT31:  equ   $5f | MapBT31: incbin "..\maps\BT31.map.pck"  | include "..\maps\mapdata\BT31.asm"  
-MapsBlockBT33:  equ   $5f | MapBT33: incbin "..\maps\BT33.map.pck"  | include "..\maps\mapdata\BT33.asm"  
-MapsBlockBT34:  equ   $5f | MapBT34: incbin "..\maps\BT34.map.pck"  | include "..\maps\mapdata\BT34.asm"  
-MapsBlockBT37:  equ   $5f | MapBT37: incbin "..\maps\BT37.map.pck"  | include "..\maps\mapdata\BT37.asm"  
-MapsBlockBT38:  equ   $5f | MapBT38: incbin "..\maps\BT38.map.pck"  | include "..\maps\mapdata\BT38.asm"  
-MapsBlockBT39:  equ   $5f | MapBT39: incbin "..\maps\BT39.map.pck"  | include "..\maps\mapdata\BT39.asm"  
-MapsBlockBT40:  equ   $5f | MapBT40: incbin "..\maps\BT40.map.pck"  | include "..\maps\mapdata\BT40.asm"  
-MapsBlockBT45:  equ   $5f | MapBT45: incbin "..\maps\BT45.map.pck"  | include "..\maps\mapdata\BT45.asm"  
-MapsBlockBT49:  equ   $5f | MapBT49: incbin "..\maps\BT49.map.pck"  | include "..\maps\mapdata\BT49.asm"  
-MapsBlockBT50:  equ   $5f | MapBT50: incbin "..\maps\BT50.map.pck"  | include "..\maps\mapdata\BT50.asm"  
-	ds		$c000-$,$ff
-dephase
+	ds		$4000,$ff
 
 ; block $60 - $7b             (sc5 tilesheets)
 GraphicsSc5DataStartBlock:  equ $60
