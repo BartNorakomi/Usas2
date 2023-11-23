@@ -50,16 +50,31 @@ function convert-CsvToObject
 
 
 ##### USAS2 specific Functions #####
+$global:WorldMapColumnNames="AA AB AC AD AE AF AG AH AI AJ AK AL AM AN AO AP AQ AR AS AT AU AV AW AX AY AZ BA BB BC BD BE BF BG BH BI BJ BK BL BM BN BO BP BQ BR BS BT BU BV BW BX BY BZ" -split(" ")
 
 # return roomName located at(x,y)
 function get-roomName
 {	param ($x,$y)
-	$rowNames="AAABACADAEAFAGAHAIAJAKALAMANAOAPAQARASATAUAVAWAXAYAZBABBBCBDBEBFBGBHBIBJBKBLBMBNBOBPBQBRBSBTBUBVBWBXBYBZ"
-	return $rownames.substring($x*2,2)+"0$($y+1)".substring(([string]$y).length-1,2)
+	#$rowNames="AAABACADAEAFAGAHAIAJAKALAMANAOAPAQARASATAUAVAWAXAYAZBABBBCBDBEBFBGBHBIBJBKBLBMBNBOBPBQBRBSBTBUBVBWBXBYBZ"
+	#return $rownames.substring($x*2,2)+"0$($y+1)".substring(([string]$y).length-1,2)
+	return $rownames[$x]+"0$($y+1)".substring(([string]$y).length-1,2)
 }
 
+
+# return the coordinates of a room by its name
+# in:	roomName (filename base)
+#out:	object (x,y)
+function get-roomLocation
+{	param ($name)
+	$x=$global:WorldMapColumnNames.IndexOf($name.substring(0,2).toupper())
+	#"0$($y+1)".substring(([string]$y).length-1,2)
+	$y=[uint32]$name.substring(2,2)
+	return [pscustomobject]@{x=$x;y=$y}
+}
+
+
 # WorldMap
-#Return the mastermap as a matrix[y][x]=roomType/RuinId
+#Return the WorldMap (CSV data) as a matrix[y][x]=roomType/RuinId
 function get-roomMatrix
 {	param ($mapsource)
 	$roomMatrix=$mapsource;$index=0
@@ -71,7 +86,7 @@ function get-roomMatrix
 }
 
 # WorldMap
-#Return the masterMap as a hashTable Index [filename]=roomType/RuinId
+#Return the WorldMap (CSV data) as a hashTable Index [filename]=roomType/RuinId
 function get-roomHashTable
 {	param ($mapsource,$sourceOffsetX=0,$sourceOffsetY=0)
 	$y=-$sourceOffsetY
@@ -90,7 +105,10 @@ function get-roomHashTable
 }
 
 # WorldMap
-#Return the masterMap as a array of map objects
+# Return the WorldMap (CSV data) as a array of map objects
+# in:	mapsource=CSV input data
+#		optional: X/Y offsets if the CSV matrix data doesn't start at 0,0
+# out:	Array of object (roomname,ruinId,roomType,XposWorldmap,YposWorldmap)
 function get-roomMaps
 {	param ($mapsource,$sourceOffsetX=0,$sourceOffsetY=0)
 	$y=-$sourceOffsetY

@@ -15,11 +15,13 @@ param
 	$sourceOffsetY=0,
 	$mapWidth=38,
 	$mapHeight=27,
-	[Parameter(ParameterSetName='ruinid',Mandatory)]$ruin=1,
-	[Parameter(ParameterSetName='ruinname',Mandatory)]$ruinName="",
+	[Parameter(ParameterSetName='ruinid')]$ruinId=1,
+	[Parameter(ParameterSetName='ruinname')]$ruinName="",
 	[switch]$createRoom,
 	[switch]$openWorldMap=$false,
-	[switch]$forceOverWrite
+	[switch]$printWorldMap=$false,
+	[switch]$forceOverWrite,
+	$usas2PropertiesFile="..\usas2-properties.csv"
 )
 
 $worldMapFile=$targetLocation+$name+".world"
@@ -33,6 +35,28 @@ write-verbose "maps location: $TiledMapsLocation"
 . .\Usas2-SharedFunctions.inc.ps1
 
 ##### Functions #####
+
+# Return the worldmap as printable data
+# Just a test function, to see if the map is still correct
+# in:	WmMatrix=WorldMatrix data (get-roommatrix output)
+#		$ruinIdFilter=optional filter for ruins. Default is no filter.
+function print-worldmapMatrix
+{	param ($wmmatrix,$ruinIdFilter=".*")
+	$y=0
+	foreach ($row in $wmMatrix)
+	{	$x=0;$rowData=""
+		foreach ($column in $row)
+		{	$data="$($WmMatrix[$y][$x])"
+			if (-not ($data -match $ruinIdFilter)) {$data=""}
+			if ($data.length -eq 0) {$data="  "}
+			if ($data.length -eq 1) {$data="0$data"}
+			$rowData+="$data "
+			$x++
+		}
+		$rowdata
+		$y++
+	}
+}
 
 function new-Usas2RoomTiledMapFile
 {	[CmdletBinding()]
@@ -67,24 +91,25 @@ function new-Usas2RoomTiledMapFile
 	}
 }
 
-#Convert input data to WorldMap objects
-#return an array of worldmap map objects
+# Convert input data from the U2Worldmap.csv to tiled worldmap locations
+# return an array of worldmap map objects ()
 function convert-Usas2WorldMapToTiledWorldMap
 {	param
-	(	$mapsource,$roomMatch=".*"
+	(	$WorldMapSource,$roomMatch=".*"
 	)
 
-	$global:roomMaps=get-roomMaps -mapsource $mapsource
+	$global:roomMaps=get-roomMaps -mapsource $WorldMapSource #Return the masterMap as a array of map objects (all rooms)
 	foreach ($roomMap in $roomMaps|where{$_.ruinId -match $roomMatch})
 	{	$filename=$roomMap.name+".tmx"
 		$ruinProps=$usas2.ruin|where{$_.ruinid -eq $roomMap.ruinId}
 		$roomProps=$usas2.room|where{$_.roomType -eq $roomMap.roomType}
 		write-verbose "Ruin name: $($ruinProps.Name), Room name: $filename, Room type: $($roomProps.identity)"
 		$fileExist=test-path "$TiledMapsLocation\$filename"
-		if ($forceOverWrite -or (-not (test-path "$TiledMapsLocation\$filename") -and $createRoom))
+		write-verbose "File $filename exist? $fileexist"
+		if ($forceOverWrite -or (-not $fileExist -and $createRoom))
 		{	new-Usas2RoomTiledMapFile -ruinId $roomMap.ruinId -roomType $roomMap.roomType -path "$TiledMapsLocation\$filename"
 		}
-		if (-not (test-path "$TiledMapsLocation\$filename"))
+		if (-not (test-path "$TiledMapsLocation\$filename"))	# test it again, in case it has just been created
 		{	write-verbose "$filename does not exist - skipping"
 		} else
 		{	write-verbose "Adding room"
@@ -93,24 +118,35 @@ function convert-Usas2WorldMapToTiledWorldMap
 	}
 }
 
-$mapSource=get-content $masterMap
-$usas2PropertiesFile="..\usas2-properties.csv"
+
+##### main: #####
+# Global properties
 $usas2Properties=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
 $global:usas2=convert-CsvToObject -objname usas2 -csv $usas2Properties
 
+# If parameter "ruinName" was used, then resolve the ruinID
 if ($ruinName)
-{	$ruin=($usas2.ruin|where{$_.name -match ("^("+($ruinname -join ("|"))+")$")}).ruinid
+{	$ruinId=($usas2.ruin|where{$_.name -match ("^("+($ruinname -join ("|"))+")$")}).ruinid
+}
+write-verbose "RuinId: $ruinid"
+
+# optionally, print the map to host
+$WorldMapSource=get-content $masterMap
+if ($printWorldMap)
+{	$global:WmMatrix=get-roomMatrix -mapsource $WorldMapSource
+	print-worldMapMatrix -wmmatrix $wmmatrix -ruinIdFilter ("^("+($ruinId -join ("|"))+")$")
 }
 
-$global:maps=convert-Usas2WorldMapToTiledWorldMap -mapSource $mapSource -roomMatch ("^("+($ruin -join ("|"))+")$")
-$worldmap=new-TiledWorldMap -name $name -DefaultMapWidth=$mapWidth -DefaultMapHeight=$mapHeight
-$worldmap.maps=$maps
-$global:worldmap=$worldmap
+# Converting csv to tiled objects
+$global:maps=convert-Usas2WorldMapToTiledWorldMap -WorldmapSource $WorldMapSource -roomMatch ("^("+($ruinId -join ("|"))+")$")
 
+# Create tiled.worldmap
 if (-not $name)
-{	write-warning "No name defined, couldn't create worldmap."
+{	write-host "No name defined, couldn't create worldmap."
 }	else
-{	$worldmap|convertto-json|set-content $worldMapFile
+{	$worldmap=new-TiledWorldMap -name $name -DefaultMapWidth=$mapWidth -DefaultMapHeight=$mapHeight
+	$worldmap.maps=$maps
+	$worldmap|convertto-json|set-content $worldMapFile
 	if ($openWorldMap) {& $worldmapfile}
 }
 

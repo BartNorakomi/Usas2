@@ -1,6 +1,6 @@
 #Data Space Manager
 #Shadow@FuzzyLogic
-#20231027-20231119 
+#20231027-20231123
 
 
 #Globals
@@ -34,7 +34,7 @@ function remove-DSM
     )
     #do some segment checks first... (todo)
     $DSM=$null
-    return $true
+    return $dsm
 }
 
 # DSM OBJECT
@@ -299,10 +299,12 @@ function add-DSMDataList
 {   param
     (	[Parameter(ParameterSetName='DSM',Mandatory,ValueFromPipeline)]$DSM,
 		$name=""
-    )    
-    $list=new-DSMDataList -name $name
-	$DSM.dataList+=$list
-	return $DSM.datalist|where{$_.name -eq $name}
+    )
+    if (-not ($dsm.datalist|where{$_.name -eq $name}))
+    {   $list=new-DSMDataList -name $name
+	    $DSM.dataList+=$list
+	}
+    return $DSM.datalist|where{$_.name -eq $name}
 }    
 
 # DATA LIST
