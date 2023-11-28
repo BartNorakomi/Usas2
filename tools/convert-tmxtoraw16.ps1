@@ -1,5 +1,5 @@
 #Convert Tiled map files to raw data file, and pack it with BB to .map.pck
-#20231009;RomanVanDerMeulen aka shadow@fuzzylogic
+#20231009-20231126;RomanVanDerMeulen aka shadow@fuzzylogic
 <#
 Example: convert all BX maps
 .\convert-tmxtoraw16.ps1 -path "C:\Users\$($env:username)\OneDrive\Usas2\maps\Bx*.tmx" -targetPath ".\" -includeLayer ".*" -excludeLayer "(Objects|room numbers)" -pack

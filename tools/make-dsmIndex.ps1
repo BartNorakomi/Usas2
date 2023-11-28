@@ -8,7 +8,7 @@ param
 (	$name="",
 	$masterWorldMapFile="..\Usas2-WorldMap.csv",
 	$usas2PropertiesFile="..\usas2-properties.csv",
-	$index
+	[Parameter(Mandatory)]$indexType
 )
 
 ##### Includes #####
@@ -21,80 +21,6 @@ param
 function new-WorldMapMatrixRecordObject
 {	
 	return $WmMatrixRecord=@{block=0;address=0;engineType=1;tileSet=0;palette=0}
-}
-
-# 20231123: Temp function for matrix file, which we're gonna replace later 
-function new-WorldMapMatrixRecordBytes
-{	
-	return [byte[]](0,0,0,1,0,0)
-	#+00 01 ROM block
-	#+01 02 ROM address
-	#+03 01 engineType. 1=regularRoom (38x27), 2=specialRoom (32x27)
-	#+04 01 tiledata (gfx id)
-	#+05 01 palette (pal id)
-}
-
-
-
-
-# Get roomMapFileNames
-# in:	WorldMapMatrixData (source csv)
-# out:	array of objects (x,y,filename)
-function get-WorldMapRooms
-{	param ($wmmatrix,$ruinIdFilter)
-	$y=0
-	foreach ($row in $wmMatrix)
-	{	$x=0;$rowData=""
-		foreach ($column in $row)
-		{	$data="$($WmMatrix[$y][$x])"
-			if ($data -match $ruinIdFilter)
-			{	$name=get-roomName -x $x -y $y
-				[pscustomobject]@{x=$x;y=$y;filename="$name.map.pck"}
-			}
-			$x++
-		}
-		$y++
-	}
-}
-
-
-# Create a WorldMapMatrix binairy structure, equal to the "WorldMapDatCopiedToRam.asm" file.
-# This is a one-time, temp file as intermediate migration setup
-# in:	an existing DSM object, the worldmapmatrix, and optional a filter for which ruinrooms
-# out:	a byte array of 50x50x6 bytes with matrix data
-function get-WorldMapBinMatrix
-{	param
-	(	[Parameter(Mandatory,ValueFromPipeline)]$DSM,
-		$wmmatrix,$ruinIdFilter=".*"
-	)
-	$BinMatrix=[byte[]]::new(0)
-	$y=0
-	foreach ($row in $wmMatrix)
-	{	$x=0;
-		foreach ($column in $row)
-		{	$data="$($WmMatrix[$y][$x])"
-			$ruinId=$data-band0x1f;$roomType=$data-band0xe0
-			if ($ruinId -match $ruinIdFilter)
-			{	$name=get-roomName -x $x -y $y
-				$path="..\maps\$name.map.pck"
-				$numObject=0
-				$alloc=$DSM|add-DSMfile -datalistname WorldMapIndex -path $path -updateFileSpace -addlength $numObjects.length #add one more byte for numobjects
-				$null=$DSM|write-DSMFileSpace -data ([byte]$numObjects) #number of objects
-				$address=$alloc.segment*$DSM.segmentsize+0x8000
-				[byte]$engineType=1
-				[byte]$tileSet=0
-				[byte]$palette=0
-				$newRecord=([byte]$alloc.block,[byte]($address -band 255),[byte]($address -shr 8),$engineType,$tileset,$palette)
-				write-verbose ($newrecord -join(","))
-			} else
-			{	$newRecord=[byte]0,[byte]0,[byte]0,[byte]1,[byte]0,[byte]0 #new-WorldMapMatrixRecordBytes
-			}
-			$BinMatrix+=$newrecord
-			$x++
-		}
-		$y++
-	}
-	return $BinMatrix
 }
 
 
@@ -124,55 +50,30 @@ function get-RoomMapIndex
 
 ##### Main: #####
 $WorldmapSource=get-content $masterWorldMapFile
-$usas2GlobalsCsv=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
-$global:usas2Globals=convert-CsvToObject -objname usas2 -csv $usas2GlobalsCsv
+#$usas2GlobalsCsv=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
+#$global:usas2Globals=convert-CsvToObject -objname usas2 -csv $usas2GlobalsCsv
 
-write-host "Index: $index"
+write-host "IndexType: $indexType"
 
-if	($index -eq "maps")
-{	# MAPS index
-	$dsmName="U2WorldMap"
-	$dataListName="WorldMapIndex"
-	if	(test-path "$dsmname.dsm")
-	{	$dsm=load-dsm -path "$dsmname.dsm"
-	}	else
-	{	#$global:DSM=new-DSM -name U2WorldMap -BlockSize 16KB -numBlocks 4 -SegmentSize 128
+switch ($indexType)
+{	maps
+	{	# MAPS index
+		$dsmName="U2WorldMap"
+		$dataListName="WorldMapIndex"
+		if	(test-path "$dsmname.dsm")
+		{	$dsm=load-dsm -path "$dsmname"
+		}	else
+		{	$global:DSM=new-DSM -name $dsmName -BlockSize 16KB -numBlocks 4 -SegmentSize 128
+		}
+		$datalist=$DSM|add-DSMDataList -name $dataListName
+		$global:indexRecords=get-RoomMapIndex -dsm $dsm -datalistname $dataListName
+		$indexRecords|format-hex
+		$null=Set-Content -Value $indexRecords -Path "$(resolve-path ".\")\$($DSMname).$dsmIndexFilenameExtention" -Encoding Byte
 	}
-	$datalist=$DSM|add-DSMDataList -name $dataListName
-	$global:indexRecords=get-RoomMapIndex -dsm $dsm -datalistname $dataListName
-	$indexRecords|format-hex
-	$null=Set-Content -Value $indexRecords -Path "$(resolve-path ".\")\$($DSMname).$dsmIndexFilenameExtention" -Encoding Byte
-
 }
 
-
-# WorldMapMatrix (one time, temp)
-if	($index -eq "wmmatrix")
-{	$global:DSM=new-DSM -name U2WorldMapMatrix -BlockSize 16KB -numBlocks 4 -SegmentSize 128
-	$datalist=$DSM|add-DSMDataList -name WorldMapIndex
-	$fileSpace=$DSM|create-DSMFileSpace
-	$global:WmMatrix=get-roomMatrix -mapsource $WorldMapSource
-	#print-worldMapMatrix -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
-	$null=$DSM|open-DSMFileSpace
-	$global:binMatrix=get-WorldMapBinMatrix -DSM $DSM -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
-	$null=$DSM|close-DSMFileSpace 
-	#$binMatrix -join(",")
-	#$binmatrix.count
-	$null=Set-Content -Value $binMatrix -Path "$(resolve-path ".\")\$($DSM.name).$dsmIndexFilenameExtention" -Encoding Byte
-	$DSM|save-DSM
-}
-
+#
 exit
-
-$roomfiles=get-WorldMapRooms -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
-#Create an Index
-$index=[byte[]]::new(0) #@()
-foreach ($this in $roomfiles)
-{	$alloc=$DSM|add-DSMfile -datalistname WorldMapIndex -path "..\maps\$($this.filename)"
-	$index+=$this.x,$this.y,$alloc.block,$alloc.segment#($alloc.segment*$DSM.segmentsize)
-}
-$index -join(",")
-#$datalist.allocations
 
 
 

@@ -1,26 +1,26 @@
 # Create a Tiled.worldmap files and optional its maps
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
-# 20231015-20231108
+# 20231015-20231128
 
 [CmdletBinding()]
 param
-(	$name="",
-	$masterMap="..\Usas2-WorldMap.csv",
-	$TiledMapsLocation="C:\Users\$($env:username)\OneDrive\Usas2\maps",
-	$targetLocation="$TiledMapsLocation\",
+(	[Parameter(ParameterSetName='ruinid')]$ruinId=1,
+	[Parameter(ParameterSetName='ruinname')]$ruinName="",
+	$name="",
 	$marginX=8,
 	$marginY=8,
 	$sourceOffsetX=0,
 	$sourceOffsetY=0,
 	$mapWidth=38,
 	$mapHeight=27,
-	[Parameter(ParameterSetName='ruinid')]$ruinId=1,
-	[Parameter(ParameterSetName='ruinname')]$ruinName="",
+	$TiledMapsLocation="C:\Users\$($env:username)\OneDrive\Usas2\maps",
+	$targetLocation="$TiledMapsLocation\",
 	[switch]$createRoom,
 	[switch]$openWorldMap=$false,
 	[switch]$printWorldMap=$false,
 	[switch]$forceOverWrite,
+	$masterMap, #="..\Usas2-WorldMap.csv",
 	$usas2PropertiesFile="..\usas2-properties.csv"
 )
 
@@ -33,6 +33,10 @@ write-verbose "maps location: $TiledMapsLocation"
 ##### Includes #####
 . .\tiled-functions.inc.ps1
 . .\Usas2-SharedFunctions.inc.ps1
+
+##### Global properties #####
+$global:usas2=get-Usas2Globals
+if (-not $mastermap) {$mastermap="..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile}
 
 ##### Functions #####
 
@@ -58,6 +62,7 @@ function print-worldmapMatrix
 	}
 }
 
+# Create a new Tiled map file
 function new-Usas2RoomTiledMapFile
 {	[CmdletBinding()]
 	param
@@ -81,7 +86,7 @@ function new-Usas2RoomTiledMapFile
 		$hasSet=($usas2.TiledtileSet|where{$_.identity -eq $roomProps.identity}).path
 		if ($hasSet) {$tileSetPath=$hasSet}
 		if (-not $tileSetPath)
-		{	write-warning "No TileSet defined for room $($roomProps.identity)"
+		{	write-warning "No TileSet defined for ruin $($ruinprops.identity)-or room $($roomProps.identity)"
 		}	else
 		{	write-verbose "Tileset $tilesetPath"
 			$xml=add-TiledTileset -map $xml -source $tileSetPath -firstgid 1
@@ -120,18 +125,14 @@ function convert-Usas2WorldMapToTiledWorldMap
 
 
 ##### main: #####
-# Global properties
-$usas2Properties=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
-$global:usas2=convert-CsvToObject -objname usas2 -csv $usas2Properties
 
 # If parameter "ruinName" was used, then resolve the ruinID
-if ($ruinName)
-{	$ruinId=($usas2.ruin|where{$_.name -match ("^("+($ruinname -join ("|"))+")$")}).ruinid
-}
+if ($ruinName) {$ruinId=($usas2.ruin|where{$_.name -match ("^("+($ruinname -join ("|"))+")$")}).ruinid}
 write-verbose "RuinId: $ruinid"
 
-# optionally, print the map to host
 $WorldMapSource=get-content $masterMap
+
+# optionally, print the map to host
 if ($printWorldMap)
 {	$global:WmMatrix=get-roomMatrix -mapsource $WorldMapSource
 	print-worldMapMatrix -wmmatrix $wmmatrix -ruinIdFilter ("^("+($ruinId -join ("|"))+")$")
@@ -142,13 +143,14 @@ $global:maps=convert-Usas2WorldMapToTiledWorldMap -WorldmapSource $WorldMapSourc
 
 # Create tiled.worldmap
 if (-not $name)
-{	write-host "No name defined, couldn't create worldmap."
+{	write-verbose "No name defined, couldn't create worldmap."
 }	else
 {	$worldmap=new-TiledWorldMap -name $name -DefaultMapWidth=$mapWidth -DefaultMapHeight=$mapHeight
 	$worldmap.maps=$maps
 	$worldmap|convertto-json|set-content $worldMapFile
 	if ($openWorldMap) {& $worldmapfile}
 }
+
 
 <#
 $p=(invoke-expression "write $($usas2.TiledWorldMap.defaultlocation[0])")
@@ -167,6 +169,4 @@ foreach ($worldmapMap in $maps)
 }
 
 %{$map=get-TiledMap $tmxLocation\$_;$map|Get-TiledTileSet|where{$_.firstgid -ne 1}|%{$_|remove-tiledtileset};$map|set-tiledmap  $tmxLocation\$_}
-
-
 #>
