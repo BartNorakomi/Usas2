@@ -1,21 +1,19 @@
 #Data Space Manager
 #Shadow@FuzzyLogic
-#20231027-20231119 
+#20231027-20231123
 
-
-#Globals
+##### Globals #####
 $filemodes=@{Append=6;Create=2;CreateNew=1;Open=3;OpenOrCreate=4;Truncate=5}
 $dsmObjectFilenameExtention="dsm"
-$dsmIndexFilenameExtention="dsm.index"
+$dsmIndexFilenameExtention="index"
 $dsmSpaceFilenameExtention="dsm.space"
 
 
-
 # DSM OBJECT
-#Initiate a new DSM object
+# Initiate a new DSM object
 function new-DSM
 {   param
-    (   [string]$name,
+    (   [Parameter(Mandatory)][string]$name,
         [uint32]$BlockSize=16KB,
 		[uint32]$FirstBlock=0,
         [uint32]$numBlocks=8,
@@ -23,18 +21,18 @@ function new-DSM
     )
         [uint32]$numSegmentsPerBlock=$Blocksize/$SegmentSize
         $SegmentAllocationTable=new-DSMSegmentAllocationTable -numBlocks $numBlocks -numSegmentsPerBlock $numSegmentsPerBlock
-        return [psobject]@{name=$name;blocksize=$blocksize;firstBlock=$firstBlock;numblocks=$numblocks;segmentSize=$segmentSize;numSegmentsPerBlock=$numSegmentsPerBlock;segmentAllocationTable=$SegmentAllocationTable;dataList=@();fileSpace=$null}
+        return [psobject]@{name=$name;blocksize=$blocksize;firstBlock=$firstBlock;numblocks=$numblocks;segmentSize=$segmentSize;numSegmentsPerBlock=$numSegmentsPerBlock;segmentAllocationTable=$SegmentAllocationTable;dataList=[System.Collections.ArrayList]::new();fileSpace=$null}
 }
 
 # DSM OBJECT
-#Decommission an existing DSM object
+# Decommission an existing DSM object (no checking!)
 function remove-DSM
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM
     )
     #do some segment checks first... (todo)
     $DSM=$null
-    return $true
+    return $dsm
 }
 
 # DSM OBJECT
@@ -55,7 +53,7 @@ function new-DSMSegmentAllocationTable
 }
 
 # DSM OBJECT
-# Save DSM space as a file
+# Save DSM object as a file
 function save-DSM
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,
@@ -63,19 +61,34 @@ function save-DSM
     )
 	if (-not $path) {$path="$($DSM.name).$dsmObjectFilenameExtention"}
 	write-verbose "saving DSM as $path"
-	
-    ConvertTo-Json -InputObject $DSM|Set-Content $path
+    $null=$DSM|close-DSMFileSpace #Close any filespace first
+    #20231130;disabled;ConvertTo-Json -InputObject $DSM -depth 3|Set-Content $path
+    Export-Clixml -InputObject $dsm -Depth 3 -Path $path
 }
 
 # DSM OBJECT
-# Load DSM space from a file
+# Load DSM object from a file
 function load-DSM
 {   param
-    (   
-        [Parameter(Mandatory)]$path
+    (   [Parameter(Mandatory)]$path
     )
-    $DSM=get-content "$($path).$dsmObjectFilenameExtention" |ConvertFrom-Json
+    #20231130;disabled;$DSM=get-content "$($path).$dsmObjectFilenameExtention" |ConvertFrom-Json
+    ###foreach ($alloc in $dsm.segmentAllocationTable) {$alloc.alloc=$alloc.alloc -split (" ")}
+    $DSM=Import-Clixml -Path $path
     return $DSM
+}
+
+# SEGMENT
+# Clear a SatRecord (force) -for testing purpose only
+function clear-DsmBlock
+{   param
+    (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,
+        [Parameter(Mandatory)]$block
+    )
+    foreach ($this in $block)
+    {   $DSM.SegmentAllocationTable[$this]=new-DSMSegmentAllocationRecord -numSegmentsPerBlock $dsm.numSegmentsPerBlock
+    }
+    return
 }
 
 
@@ -86,7 +99,22 @@ function exclude-DSMblock
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,
         [Parameter(Mandatory)]$block
     )
-    lock-DSMSegment -DSM $DSM -block $block -segment 0 -length $DSM.numSegmentsPerBlock
+    foreach ($this in $block)
+    {   lock-DSMSegment -DSM $DSM -block $this -segment 0 -length $DSM.numSegmentsPerBlock
+    }
+    return  
+}
+
+# SEGMENT
+# Include a whole block from the allocationTable (might destroy allocations)
+function include-DSMblock
+{   param
+    (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,
+        [Parameter(Mandatory)]$block
+    )
+    foreach ($this in $block)
+    {   unlock-DSMSegment -DSM $DSM -block $this -segment 0
+    }
     return  
 }
 
@@ -118,9 +146,8 @@ function lock-DSMSegment
     }
 }
 
-
 # SEGMENT
-# UnLock a segmentChain
+# UnLock a segmentChain (free)
 #in: DSM, block, segment
 function unLock-DSMSegment
 {   param
@@ -130,15 +157,13 @@ function unLock-DSMSegment
     )
     $SatRecord=$DSM.SegmentAllocationTable[$block]
     $length=get-DsmAssignedSegmentChain -satrecord $satrecord -startsegment $Segment
-    #if ($length)
-    #{   #write-host "unlock $length"
-        while ($length)
-        {   $satRecord.alloc[$length-1]=0
-            $length--
-            $satRecord.numfree++
-        }
-    #}
-    return
+    #write-verbose "unlock-DSMsegment block: $block segment: $segment"
+    while ($length)
+    {   $satRecord.alloc[$segment+$length-1]=0
+        $length--
+        $satRecord.numfree++
+    }
+    return $satrecord
 }
 
 # SEGMENT
@@ -162,13 +187,13 @@ function get-DSMFreeSegmentChain
     (   [Parameter(ParameterSetName='record',Mandatory,ValueFromPipeline)]$SatRecord,
         $startSegment
     )
-    $numSeg=$SatRecord.alloc.length-$startSegment
+    $numSeg=$SatRecord.alloc.count-$startSegment
     if ($numseg -lt 1)
     {   write-error "Available number of allocations too low"
         return
     }
     $count=0
-    while (($startSegment+$count -lt $SatRecord.alloc.length) -and ($SatRecord.alloc[$startSegment+$count] -eq 0))
+    while (($startSegment+$count -lt $SatRecord.alloc.count) -and ($SatRecord.alloc[$startSegment+$count] -eq 0))
     {   $count++        
     }
     return $count
@@ -181,11 +206,11 @@ function get-DsmAssignedSegmentChain
     (   [Parameter(ParameterSetName='record',Mandatory,ValueFromPipeline)]$SatRecord,
         $startSegment
     )   if ($SatRecord.alloc[$startSegment] -ne 1)
-        {   #not the beginning of a segmentAllocationBlock
+        {   #write-warning "not the beginning of a segmentAllocationBlock"
             return  
         }
         $count=1
-        while (($startSegment+$count -lt $SatRecord.alloc.length) -and ($SatRecord.alloc[$startSegment+$count] -eq ($SatRecord.alloc[$startSegment+$count-1]+1)))
+        while (($startSegment+$count -lt $SatRecord.alloc.count) -and ($SatRecord.alloc[$startSegment+$count] -eq ($SatRecord.alloc[$startSegment+$count-1]+1)))
         {   $count++
         }
         return $count
@@ -202,7 +227,7 @@ function find-DSMFreeSegment
     )
     if ($length)
     {   $index=0
-        while ($SatRecord.alloc.length -ge $index+$length)
+        while ($SatRecord.alloc.count -ge $index+$length)
         {   $count=get-DSMFreeSegmentChain -SatRecord $SatRecord -startSegment $index
             if ($count+1 -gt $length) {return $index;break}
             $index++
@@ -226,7 +251,7 @@ function find-DSMFreeSpace
         {   if ($SatRecord.numfree+1 -gt $length)
             {   if (($startSegment=find-DSMFreeSegment -SatRecord $SatRecord -length $length) -ne -1)
                 {    #$segmentRecord|lock-DSMSegment -segment $startSegment -length $length
-                    return @{block=$block;segment=$startSegment;length=$length};break;
+                    return [pscustomobject]@{block=$block;segment=$startSegment;length=$length};break;
                 }
             }
             $block++
@@ -235,7 +260,6 @@ function find-DSMFreeSpace
     {   return $false
     }
 }
-
 
 # ALLOCATE
 # Reserve and return a piece of blockspace
@@ -256,32 +280,105 @@ function alloc-DSMSpace
     }
 }
 
-
 # ALLOCATE
-# Add one, or more file(s) to DSM and optionally to a datalist and optionally update the file space file
+# Free an earlier allocated piece of blockspace
+# in:   DSM object, Alloc information, either AllocArray (block,segment) or -block -segment
+# out   -
+#       $false=error
+function free-DSMSpace
+{   param
+    (
+    [Parameter(Mandatory,ValueFromPipeline)]$DSM,
+    [Parameter(ParameterSetName='alloc',Mandatory)]$alloc,
+    [Parameter(ParameterSetName='blockSegment',Mandatory)]$block,
+    [Parameter(ParameterSetName='blockSegment',Mandatory)]$segment
+    )
+
+    if ($alloc) {$block=$alloc.block;$segment=$alloc.segment}
+    $null=unlock-DSMSegment -DSM $DSM -block $block -segment $segment
+    return $true
+}
+
+
+# DATA LIST
+# Add one, or more file(s) to DSM.datalist and optionally update the file space file
 # out:	Array of allocations
 function add-DSMFile
 {   param
-    (	[Parameter(ParameterSetName='DSM',Mandatory,ValueFromPipeline)]$DSM,
-        $dataListName="", $path, $files,
+    (	[Parameter(Mandatory,ValueFromPipeline)]$DSM,
+        [Parameter(ParameterSetName='ListName',Mandatory)]$dataListName,
+        [Parameter(ParameterSetName='ListObject',Mandatory)]$dataList,
+        $path, $files, #either by name or object
         $addLength=0, [switch]$updateFileSpace #optional
     )
-    $datalist=$DSM.dataList|where{$_.name -eq $datalistname}
+    if (-not $datalist) {$datalist=get-DSMDataList -dsm $dsm -name $datalistname|select -first 1}
     if (-not $files) {$Files=gci $path}
+  
     foreach ($file in $Files)
-    {	write-verbose "Adding $($file.fullname) $($file.length)"
-        if ($alloc=$DSM|alloc-DSMSpace -lengthBytes ($file.length+$addlength))
-        {	if ($datalist)
-            {	$null=$DataList|add-DSMDataListAllocation -name $file.name -allocation $alloc
-                [pscustomobject]$alloc
+    {   if ($datalist -and -not (get-DsmDataListAllocation -dataList $datalist -name $file.name))
+        {   write-verbose "Adding $($file.fullname) $($file.length) to DSM"
+            if ($alloc=$DSM|alloc-DSMSpace -lengthBytes ($file.length+$addlength))
+            {	if ($datalist)
+                {	write-verbose "adding to datalist: $($datalist.name)"
+                    $null=$DataList|add-DSMDataListAllocation -name $file.name -alloc $alloc
+                }   
+                if ($updateFileSpace -and $DSM.filespace)
+                {	write-verbose "updating file space -block $($alloc.block) -segment $($alloc.segment) $($alloc.length)"
+                    $data=get-content $file -Encoding byte
+                    $null=$DSM|write-DSMFileSpace -block $alloc.block -segment $alloc.segment -data $data
+                }
+                $alloc
+            } else
+            {
+                write-warning "Allocation fault"
             }
-            if ($updateFileSpace -and $DSM.filespace)
-            {	write-verbose "updateing file space -block $($alloc["block"]) -segment $($alloc["segment"]) $($alloc["length"])"
-                $data=get-content $file -Encoding byte
-                $null=$DSM|write-DSMFileSpace -block $alloc["block"] -segment $alloc["segment"] -data $data
-            }
+        } else
+        {   write-warning "file $($file.name) already in datalist $($datalist.name)" 
         }
     }
+}
+
+
+# DATA LIST
+# Remove a file from the data list, and free up the allocation
+function remove-DSMfile
+{   param
+    (	[Parameter(Mandatory,ValueFromPipeline)]$DSM,
+        [Parameter(ParameterSetName='ListName',Mandatory)]$dataListName,
+        [Parameter(ParameterSetName='ListObject')]$dataList,
+        $name,$allocation,  #either name or object
+        [switch]$updateFileSpace #optional
+    )
+    if ($name) {$name=Split-Path -path $name -Leaf} #keep only filename.ext, strip path chars
+    if (-not $datalist) {$datalist=get-DSMDataList -dsm $dsm -name $datalistname|select -first 1}
+	if (-not $allocation) {$allocation=$datalist.allocations|where{$_.name -eq $name}}
+
+    if ($allocation)
+    {   if (free-DSMSpace -dsm $dsm -alloc $allocation)
+        {   remove-DsmDatalistAllocation -dataList $datalist -allocation $allocation
+            # don't really need to update the file space
+            #if ($updateFileSpace)
+            #{   $null=$DSM|write-DSMFileSpace -block $allocation["block"] -segment $allocaction["segment"] -data $data
+            #}
+        }
+    }
+}
+
+
+# DATA LIST
+# replace a file in  DSM Datalist
+function replace-DsmFile
+{   param
+    (	[Parameter(Mandatory,ValueFromPipeline)]$DSM,
+        [Parameter(ParameterSetName='ListName',Mandatory)]$dataListName,
+        [Parameter(ParameterSetName='ListObject')]$dataList,
+        [Parameter(Mandatory)]$name,  #current filename
+        [Parameter(Mandatory)]$path,  #path to new file
+        [switch]$updateFileSpace #optional
+    )
+    if (-not $datalist) {$datalist=get-DSMDataList -dsm $dsm -name $datalistname|select -first 1}
+    remove-DSMfile -dsm $dsm -datalist $datalist -name $name
+    add-DSMFile -dsm $dsm -dataList $datalist -path $path -updateFileSpace:$updateFileSpace
 }
 
 
@@ -290,8 +387,18 @@ function add-DSMFile
 function new-DSMDataList
 {   param   (   $name=""
             )
-    return  [pscustomobject]@{name=$name;allocations=@()} #block=0;segment=0;length=0}        
+    return  [pscustomobject]@{name=$name;allocations=[System.Collections.ArrayList]::new()} #block=0;segment=0;length=0}        
 }    
+
+# DATA LIST
+# Get dataList(s) from an existing DSM object
+function get-DSMDataList
+{   param
+    (	[Parameter(ParameterSetName='DSM',Mandatory,ValueFromPipeline)]$DSM,
+		$name="*"
+    )
+    return $dsm.datalist|where{$_.name -like $name}
+}
 
 # DATA LIST
 # Add a new dataList to an existing DSM object
@@ -299,26 +406,77 @@ function add-DSMDataList
 {   param
     (	[Parameter(ParameterSetName='DSM',Mandatory,ValueFromPipeline)]$DSM,
 		$name=""
-    )    
-    $list=new-DSMDataList -name $name
-	$DSM.dataList+=$list
-	return $DSM.datalist|where{$_.name -eq $name}
+    )
+    if (-not ($list=get-DSMDataList -DSM $dsm -name $name))
+    {   $list=new-DSMDataList -name $name
+	    [void]$DSM.dataList.add($list)
+	}
+    return $list
 }    
 
 # DATA LIST
-# add an existing allocation to an existing dataList
+# Remove a dataList from an existing DSM object and optionally free space allocations as well
+function remove-DSMDataList
+{   param
+    (	[Parameter(ParameterSetName='DSM',Mandatory,ValueFromPipeline)]$DSM,
+		$name="", [switch]$freeAllocation
+    )
+    if ($list=get-DSMDataList -DSM $dsm -name $name)
+    {   if ($freeAllocation)
+        {   foreach ($allocation in $list.allocations)
+            {   remove-DSMfile -dsm $dsm -datalist $datalist -allocation $allocation
+            }
+        }        
+        [void]$DSM.dataList.remove($list)
+	}
+    return
+}    
+
+# DATA LIST
+# add an existing SegmentAllocation to an existing dataList
 function add-DSMDataListAllocation
 {   param
     (	[Parameter(ParameterSetName='DSM',Mandatory,ValueFromPipeline)]$DSM,
 		[Parameter(ParameterSetName='DSM',Mandatory)]$dataListName="",
 		[Parameter(ParameterSetName='DSMDataList',Mandatory,ValueFromPipeline)]$dataList,
-		$allocation,
-		$name="",$block=0,$segment=0,$length=0
+		[Parameter(Mandatory)]$name="",
+		$alloc,$block=0,$segment=0,$length=0  #either ALLOC or block/seg/len
+    )
+    if (-not $alloc) {$alloc=[pscustomobject]@{block=$block;segment=$segment;length=$length}}
+    if (-not $datalist) {$datalist=$DSM.datalist|where{$_.name -eq $datalistname}}
+	#Only add if it doens't exist yet
+    if (-not (get-DsmDataListAllocation -dataList $datalist -name $name))
+	{	$allocation=$alloc
+        $allocation|Add-Member @{name=$name}
+        [void]$datalist.allocations.add($allocation)
+	}
+    return
+}    
+
+
+function get-DsmDataListAllocation
+{   [CmdletBinding()]
+    param
+    (   [Parameter(Mandatory,ValueFromPipeline)]$dataList,
+        [Parameter(Mandatory)]$name=""
+    )
+    return ($datalist.allocations|where{$_.name -eq $name})
+}
+
+
+# DATA LIST
+# remove an existing datalist allocation
+function remove-DsmDatalistAllocation
+{   param
+    (	[Parameter(ParameterSetName='listName',Mandatory,ValueFromPipeline)]$DSM,
+		[Parameter(ParameterSetName='listName',Mandatory)]$dataListName="",
+		[Parameter(ParameterSetName='listObject',Mandatory,ValueFromPipeline)]$dataList,
+		$allocation,$name #either by name or object
     )    
-	if ($datalistname) {$datalist=$DSM.datalist|where{$_.name -eq $datalistname}}
-	if (-not ($datalist.allocations|where{$_.name -eq $name}))
-	{	if (-not $allocation) {$allocation=@{block=$block;segment=$segment;length=$length}}
-		$datalist.allocations+=[pscustomobject]($allocation+@{name=$name})
+	if (-not $datalist) {$datalist=get-DSMDataList -dsm $dsm -name $datalistname|select -first 1}
+	if (-not $allocation) {$allocation=$datalist.allocations|where{$_.name -eq $name}}
+    if ($allocation)
+	{   [void]$datalist.allocations.remove($allocation)
 	}    
 	return
 }    
@@ -329,20 +487,25 @@ function add-DSMDataListAllocation
 function create-DSMFileSpace
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,
-        $path
+        $path, [switch]$force #force overwrite
     )
 	if (-not $path) {$path="$(resolve-path ".\")\$($DSM.name).$dsmSpaceFilenameExtention"}
-	write-verbose "saving DSM space as $path"
-	if ($fs=[io.file]::create($path))
-	{	$rawData=[byte[]]::new($DSM.blocksize)
-		for ($i=0;$i -lt $DSM.numblocks;$i++)
-		{	write-verbose "Writing Block $i, size $($DSM.blocksize)"
-			$fs.Write($RawData,0,$RawData.Length)
-		}
-		$fs.close()
-	}
-}
+	if  ((Test-Path $path) -and (-not $force))
+    {   write-warning "File '$path' already exists. Use -force to overwrite"
 
+    }   else
+    {
+        write-verbose "saving DSM space as $path"
+        if ($fs=[io.file]::create($path))
+        {	$rawData=[byte[]]::new($DSM.blocksize)
+            for ($i=0;$i -lt $DSM.numblocks;$i++)
+            {	write-verbose "Writing Block $i, size $($DSM.blocksize)"
+                $fs.Write($RawData,0,$RawData.Length)
+            }
+            $fs.close()
+        }
+    }
+}
 
 # FILE SPACE
 # Open DSM file space with WRITE access
@@ -483,47 +646,76 @@ function get-DSMStatistics
 #------------------------------------------------------------------------------------------
 # TESTS
 exit
-$global:DSM=new-DSM -name Usas2.Rom -BlockSize 16KB -numBlocks 8 -SegmentSize 256
+$global:DSM=new-DSM -name Usas2Test.Rom -BlockSize 16KB -numBlocks 8 -SegmentSize 128
+$dl=add-DSMDataList -dsm $dsm -name "DL"
+$dsm|add-DSMFile -dataListName dl -path .\*.ps1 -verbose
+$dsm|remove-DSMfile -name concat-sc5files.ps1 -dataListName dl -verbose
+$dsm.segmentAllocationTable
+$dsm.datalist.allocations
+
+$dsm|unLock-DSMSegment -block 0 -segment 10
+$dsm.segmentAllocationTable
+
+$dsm|replace-DsmFile -dataListName dl -name .\package.json -path .\package.json -verbose
+$dsm|replace-DsmFile -dataListName dl -name make-dsmindex.ps1 -path .\package.json -verbose
+$dsm.datalist.allocations
+$dsm.segmentAllocationTable
+
 #$DSM|create-DSMFileSpace -verbose
+# ALLOC
+#$null=$DSM|exclude-DSMblock -block 0,1,2,3   #exclude code blocks
+#$null=$DSM|include-DSMblock -block 0
+#lock-DSMSegment -dsm $dsm -block 0 -segment 0 -length 2
+#unlock-DSMSegment -dsm $dsm -block 0 -segment 0
+#$alloc=$dsm|alloc-DSMSpace -lengthBytes 512
+#write-host $alloc
+#$null=$dsm|free-DSMSpace -alloc $alloc #-block 1 -segment 0
+#$x=add-dsmfile -dsm $dsm -path ".\make-dsmIndex.ps1" -verbose -datalist $dl
+#write-host $x
+#$x=remove-DSMfile -dsm $dsm -name ".\make-dsmIndex.ps1" -verbose -datalist $dl
+#write-host $x
+#$x=replace-dsmfile -dsm $dsm -name ".\make-dsmIndex.ps1" -path ".\make-dsmIndex.ps1" -verbose -datalist $dl
+#write-host $x
+#write-host "-"; $dsm.segmentAllocationTable
 
-$null=$DSM|open-DSMFileSpace -verbose
-$null=$DSM|write-DSMFileSpaceblock -block 0 -blockdata ([System.Text.Encoding]::UTF8.GetBytes(">> block #00"))
-$null=$DSM|write-DSMFileSpaceblock -block 1 -blockdata ([System.Text.Encoding]::UTF8.GetBytes(">> block #01"))
-#if (-not ($global:data=$DSM|read-DSMFileSpaceBlock -block 0 -verbose)) {write-error "error reading"}
-#$data|select -first 32|format-hex
-#if (-not ($global:data=$DSM|read-DSMFileSpace -length 32 -block 1)) {write-error "error reading"}
-#$data|select -first 32|format-hex
-$null=$DSM|close-DSMFileSpace -verbose
 
-#$global:SegmentAllocationTable=new-DSMSegmentAllocationTable -numBlocks $numBlocks -numSegmentsPerBlock $numSegmentsPerBlock
-#$null=$DSM.SegmentAllocationTable[0]|lock-DSMSegment -segment 0 -length 30
-#$null=$DSM.SegmentAllocationTable[0]|lock-DSMSegment -segment 4 -length 3
-#$DSM.SegmentAllocationTable[0]|get-DsmAssignedSegmentChain -startSegment 0
-#$null=$global:SegmentAllocationTable[0]|lock-DSMSegment -segment 4 -length 2
-#$global:SegmentAllocationTable[0].alloc -join(",")# return the length of an segmentChain
-#$global:SegmentAllocationTable[0]|get-DSMFreeSegmentChain -startSegment 0
-#$DSM|find-DSMFreeSegment -length 29|lock-DSMSegment -segment 2 -length 20
-#if (($a=find-DSMFreeSegment -SatRecord $DSM.segmentAllocationTable[0] -length 20) -ne -1) {write-host $a}
-#DSM.SegmentAllocationTable[0]|lock-DSMSegment -segment $a -length 20
-#$a=$DSM|find-DSMFreeSpace -length 28;$null=$DSM|lock-DSMSegment -block $a.block -segment $a.segment -length $a.length
-#$a=$DSM|find-DSMFreeSpace -length 5;$null=$DSM|lock-DSMSegment -block $a.block -segment $a.segment -length $a.length
-#$DSM|find-DSMFreeSpace -length 32
-#$DSM|unLock-DSMSegment -segment $a.segment -block $a.block
-#$DSM|alloc-DSMSpace -lengthBytes 100; #$null=$DSM|lock-DSMSegment -block $a.block -segment $a.segment -length $a.length
-$null=$DSM|exclude-DSMblock -block 0   #exclude code blocks
-$null=$DSM|exclude-DSMblock -block 1
-#$null=$DSM|exclude-DSMblock -block 2
-#$null=$DSM|exclude-DSMblock -block 3
-$roommapDataList=$DSM|add-DSMDataList -name "roomMap"
-$gfxDataList=$DSM|add-DSMDataList -name "gfx"
-$vgmDataList=$DSM|add-DSMDataList -name "vgm"
-$codeDataList=$DSM|add-DSMDataList -name "cod"
+# DATA LIST
+#$roommapDataList=$DSM|add-DSMDataList -name "roomMap"
+#$gfxDataList=$DSM|add-DSMDataList -name "gfx"
+#$vgmDataList=$DSM|add-DSMDataList -name "vgm"
+#$global:codeDataList=$DSM|add-DSMDataList -name "cod"
+#$dsm|remove-dsmdatalist -name "gfx"
+#get-DSMDataList -dsm $dsm
+
+# FILE SPACE
 #$null=$DSM|open-DSMFileSpace -verbose
-$null=add-DSMFile -DSM $DSM -path ".\*.ps1" -datalistname cod -updateFileSpace -verbose
-$codeDatalist.allocations
+#$null=$DSM|write-DSMFileSpaceblock -block 0 -blockdata ([System.Text.Encoding]::UTF8.GetBytes(">> block #00"))
 #$null=$DSM|close-DSMFileSpace -verbose
 
-exit
+# ADD/REMOVE/REPLACE FILE
+#$null=$DSM|open-DSMFileSpace -verbose
+#$null=add-DSMFile -DSM $DSM -path ".\*.ps1" -datalistname cod -updateFileSpace -verbose
+#$null=add-DSMFile -DSM $DSM -path ".\*.ps1" -datalist $codedatalist -verbose
+#$dsm.segmentAllocationTable
+#$codeDatalist.allocations
+#write "-"
+#remove-DSMfile -DSM $dsm -dataListName cod -name "Usas2-SharedFunctions.inc.ps1"
+#remove-DSMfile -DSM $dsm -dataList $codeDatalist -name "Usas2-SharedFunctions.inc.ps1"
+#$x=replace-DsmFile -dsm $dsm -dataListName cod -name "Usas2-SharedFunctions.inc.ps1" -path ".\romspace.js" -updateFileSpace
+#$codeDatalist.allocations
+#$codedatalist.allocations.gettype()
+
+#remove-dsmdatalist -dsm $dsm -name cod -freeAllocation
+#write "-"
+#$dsm.datalist
+#$codeDatalist.allocations
+#$dsm.segmentAllocationTable
+
+$null=$DSM|close-DSMFileSpace -verbose
+#save-DSM -DSM $dsm
+get-DSMStatistics -DSM $dsm
+Exit
+
 $filelist=gc .\filelist.txt
 foreach ($this in $filelist.split("`n")) {add-DSMFile -DSM $DSM -path $this -datalistname cod}
 #$codedatalist.allocations

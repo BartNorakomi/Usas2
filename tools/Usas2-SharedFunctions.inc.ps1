@@ -1,65 +1,82 @@
-# shared functions
-# 20231024-20231101;shadow@fuzzylogic
+# Usas2 shared functions
+# shadow@fuzzylogic 20231024-20231126
 
 # 20231101
 # Create and return an Object (with empty properties)
 function new-CustomObject
-{              param ($name,$propertyNames)
-                $o=[PSCustomObject]@{ObjectName=$name}
-                $propertyNames|%{$o|add-member NoteProperty $_ $null}
-                return $o
+{	param ($name,$propertyNames)
+	$o=[PSCustomObject]@{ObjectName=$name}
+	$propertyNames|%{$o|add-member NoteProperty $_ $null}
+	return $o
 }
 
 # 20231101
 # Return a hastable of property=value from CSV records (e.g. globalProperties)
 function new-CsvHash
-{              param ($CsvRecord)
-
-                $hash=@{};$CsvRecord|%{$hash+=@{$_.propertyname=$_.propertyvalue}}
-                return $Hash
+{	param ($CsvRecord)
+	$hash=@{};$CsvRecord|%{$hash+=@{$_.propertyname=$_.propertyvalue}}
+	return $Hash
 }
 
 # 20231101
 # Return an object created out of CSV records (e.g. globalproperties)
 #the CSV should have "name","identiy","propertyname","propertyvalue" records
 function convert-CsvToObject
-{              param ($objname="Default",$csv)
+{	param ($objname="Default",$csv)
 
-                #Create root object
-                $names=$csv.name|select -Unique
-                $rootObj=new-CustomObject -propertyNames $names -name $objname
+	#Create root object
+	$names=$csv.name|select -Unique
+	$rootObj=new-CustomObject -propertyNames $names -name $objname
 
-                #Create child objects
-                foreach ($name in $names)
-                {              $nameRecords=$csv|where{$_.name -eq $name}
-                               $nameIdentities=$nameRecords.identity|where{$_ -notmatch "(\*|\(|\)|\||\\)"}|select -Unique
-                               $rootObj.$name=@()
-                               foreach ($identity in $nameIdentities)
-                               {              #$match=$identity
-                                               #if ($match -notmatch "^\^") {$match="^"+$match} 
-                                               #if ($match -notmatch "\$$") {$match=$match+"$"}
-                                               $identityRecords=$nameRecords|where{$Identity -match "^"+$_.identity+"$"}
-                                               #$identityRecords=$nameRecords|where{$Identity -match $_.identity}
-                                               $identityHash=new-CsvHash -CsvRecord $identityRecords
-                                               $identityHash+=@{Identity=$identity}
-                                               $rootObj.$name+=[pscustomobject]$identityHash
-                               }
-                }
-                return $rootObj
+	#Create child objects
+	foreach ($name in $names)
+	{	$nameRecords=$csv|where{$_.name -eq $name}
+		$nameIdentities=$nameRecords.identity|where{$_ -notmatch "(\*|\(|\)|\||\\)"}|select -Unique
+		$rootObj.$name=@()
+		foreach ($identity in $nameIdentities)
+		{ 
+			$identityRecords=$nameRecords|where{$Identity -match "^"+$_.identity+"$"}
+			#$identityRecords=$nameRecords|where{$Identity -match $_.identity}
+			$identityHash=new-CsvHash -CsvRecord $identityRecords
+			$identityHash+=@{Identity=$identity}
+			$rootObj.$name+=[pscustomobject]$identityHash
+		}
+	}
+	return $rootObj
 }
 
 
 ##### USAS2 specific Functions #####
+$global:WorldMapColumnNames="AA AB AC AD AE AF AG AH AI AJ AK AL AM AN AO AP AQ AR AS AT AU AV AW AX AY AZ BA BB BC BD BE BF BG BH BI BJ BK BL BM BN BO BP BQ BR BS BT BU BV BW BX BY BZ" -split(" ")
+
+function get-Usas2Globals
+{	param ($usas2PropertiesFile="..\usas2-properties.csv")
+	$usas2Properties=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
+	$global:usas2=convert-CsvToObject -objname usas2 -csv $usas2Properties
+	return $usas2
+}
 
 # return roomName located at(x,y)
 function get-roomName
 {	param ($x,$y)
-	$rowNames="AAABACADAEAFAGAHAIAJAKALAMANAOAPAQARASATAUAVAWAXAYAZBABBBCBDBEBFBGBHBIBJBKBLBMBNBOBPBQBRBSBTBUBVBWBXBYBZ"
-	return $rownames.substring($x*2,2)+"0$($y+1)".substring(([string]$y).length-1,2)
+	return $WorldMapColumnNames[$x]+"0$($y+1)".substring(([string]$y).length-1,2)
 }
 
+
+# return the coordinates of a room by its name
+# in:	roomName (filename base)
+#out:	object (x,y)
+function get-roomLocation
+{	param ($name)
+	$x=$global:WorldMapColumnNames.IndexOf($name.substring(0,2).toupper())
+	#"0$($y+1)".substring(([string]$y).length-1,2)
+	$y=[uint32]$name.substring(2,2)
+	return [pscustomobject]@{x=$x;y=$y}
+}
+
+
 # WorldMap
-#Return the mastermap as a matrix[y][x]=roomType/RuinId
+#Return the WorldMap (CSV data) as a matrix[y][x]=roomType/RuinId
 function get-roomMatrix
 {	param ($mapsource)
 	$roomMatrix=$mapsource;$index=0
@@ -71,7 +88,7 @@ function get-roomMatrix
 }
 
 # WorldMap
-#Return the masterMap as a hashTable Index [filename]=roomType/RuinId
+#Return the WorldMap (CSV data) as a hashTable Index [filename]=roomType/RuinId
 function get-roomHashTable
 {	param ($mapsource,$sourceOffsetX=0,$sourceOffsetY=0)
 	$y=-$sourceOffsetY
@@ -90,7 +107,10 @@ function get-roomHashTable
 }
 
 # WorldMap
-#Return the masterMap as a array of map objects
+# Return the WorldMap (CSV data) as a array of map objects
+# in:	mapsource=CSV input data
+#		optional: X/Y offsets if the CSV matrix data doesn't start at 0,0
+# out:	Array of object (roomname,ruinId,roomType,XposWorldmap,YposWorldmap)
 function get-roomMaps
 {	param ($mapsource,$sourceOffsetX=0,$sourceOffsetY=0)
 	$y=-$sourceOffsetY
@@ -108,7 +128,20 @@ function get-roomMaps
 	}
 }
 
+
+# Get WorldMapRooms > same as above, but with some presets and a filter on ruin and room
+function get-U2WorldMapRooms
+{	param ($ruinId=".*",$roomId=".*")
+	$WorldMapSource=get-content ("..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile)
+	$roomMaps=get-roommaps -mapsource $WorldMapSource
+	$roomMaps|where{($_.ruinId -match $ruinId) -and ($_.roomType -match $roomId)}
+}
+
 exit
+
+$usas2=get-Usas2Globals
+get-U2WorldMapRooms -ruinid "^6$" -roomid "^64$"
+
 
 <# test stuff
 $global:roomMaps=get-roomMaps -mapsource $mapsource

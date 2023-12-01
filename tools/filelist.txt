@@ -1,4 +1,0 @@
-*.ps1
-..\*.txt
-..\engine\engine.asm
-

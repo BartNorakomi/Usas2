@@ -11,8 +11,8 @@ MapBT22Data: equ $99AA
 WorldMapPointer:  dw  MapBT22Data      ;
 
 ;we are going to change the worldmappointer, giving it an x and  y position instead
-WorldMapPositionX:  db  46            ;(46,16) = BS16
-WorldMapPositionY:  db  16
+WorldMapPositionY:  db  21 ;16
+WorldMapPositionX:  db  43; 45
 
 
 

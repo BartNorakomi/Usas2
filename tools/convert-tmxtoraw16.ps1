@@ -1,5 +1,5 @@
 #Convert Tiled map files to raw data file, and pack it with BB to .map.pck
-#20231009;RomanVanDerMeulen aka shadow@fuzzylogic
+#20231009-20231126;RomanVanDerMeulen aka shadow@fuzzylogic
 <#
 Example: convert all BX maps
 .\convert-tmxtoraw16.ps1 -path "C:\Users\$($env:username)\OneDrive\Usas2\maps\Bx*.tmx" -targetPath ".\" -includeLayer ".*" -excludeLayer "(Objects|room numbers)" -pack
@@ -83,7 +83,7 @@ function Convert-TmxLayers
 $convertToAddress=$true
 
 ##### Main: #####
-Write "Convert Tiled .tmx file to raw 16-bit data .map file and pack it to .map.pck (if -pack:`$true)"
+Write-verbose "Convert Tiled .tmx file to raw 16-bit data .map file and pack it to .map.pck (if -pack:`$true)"
 write-verbose "Source: $path"
 write-verbose "Target: $targetPath"
 foreach ($file in gci $path -Include *.tmx)
