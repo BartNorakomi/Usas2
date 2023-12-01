@@ -32,8 +32,8 @@ function new-WorldMapMatrixRecordObject
 
 
 # ROOM MAP FILE INDEX
-# return an index of the files in a datalist as byte array of records (id(xxyy)[16],block[8],segment[8]) 
-function get-RoomMapIndex
+# return a WorldMap index of the files in a datalist as byte array of records (id(xxyy)[16],block[8],segment[8]) 
+function get-WorldMapRoomIndex
 {	param
 	(	[Parameter(Mandatory,ValueFromPipeline)]$DSM,$datalistName=".*"
 	)
@@ -59,8 +59,7 @@ function get-RoomMapIndex
 ##### Main: #####
 write-verbose $dsmname
 write-verbose "IndexType: $indexType"
-
-#$WorldmapSource=get-content $masterWorldMapFile
+exit
 
 if	(-not ($dsm=load-dsm -path "$dsmname" -ErrorAction SilentlyContinue))
 {	$DSM=new-DSM -name $dsmName -BlockSize 16KB -numBlocks 8 -SegmentSize 128
@@ -72,14 +71,14 @@ switch ($indexType)
 	{	# MAPS index
 		$dataListName="WorldMap"
 		$datalist=$DSM|add-DSMDataList -name $dataListName
-		$global:indexRecords=get-RoomMapIndex -dsm $dsm -datalistname $dataListName
+		$global:indexRecords=get-WorldMapRoomIndex -dsm $dsm -datalistname $dataListName
 		#$indexRecords|format-hex
 		$null=Set-Content -Value $indexRecords -Path "$(resolve-path ".\")\$($DSMname).$datalistname.$dsmIndexFilenameExtention" -Encoding Byte
 	}
 }
 
-save-dsm $dsm
-$global:dsm=$dsm
+#save-dsm $dsm
+#$global:dsm=$dsm
 exit
 
 

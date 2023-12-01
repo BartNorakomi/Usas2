@@ -1,5 +1,5 @@
 #Convert Tiled map files to raw data file, and pack it with BB to .map.pck
-#20231009-20231126;RomanVanDerMeulen aka shadow@fuzzylogic
+#20231009-20231201;RomanVanDerMeulen aka shadow@fuzzylogic
 <#
 Example: convert all BX maps
 .\convert-tmxtoraw16.ps1 -path "C:\Users\$($env:username)\OneDrive\Usas2\maps\Bx*.tmx" -targetPath ".\" -includeLayer ".*" -excludeLayer "(Objects|room numbers)" -pack
@@ -52,7 +52,7 @@ function Convert-TmxLayers
 	$rawData=[byte[]]::new($filelength*2)
 
 	#Walk through each layer in descending order
-	foreach ($layer in ($data.map.layer|where{($_.name -match $includeLayer) -and ($_.name -notmatch $excludeLayer) -and ([boolean]$_.visible -eq $false)}))
+	foreach ($layer in ($data.map.layer|where{$_.name -and ($_.name -match $includeLayer) -and ($_.name -notmatch $excludeLayer) -and ([boolean]$_.visible -eq $false)}))
 	{	write-verbose "Layer: $($layer.name)"	#Buffy was here
 		$position=0	;#pointer in the byte array
 		foreach ($tile in $layer.innertext.replace("`n","").split(","))
@@ -84,10 +84,10 @@ $convertToAddress=$true
 
 ##### Main: #####
 Write-verbose "Convert Tiled .tmx file to raw 16-bit data .map file and pack it to .map.pck (if -pack:`$true)"
-write-verbose "Source: $path"
-write-verbose "Target: $targetPath"
+write-verbose "Source: $path. Target: $targetPath. Include layers: $includelayer. Exclude layers: $excludelayer"
+
 foreach ($file in gci $path -Include *.tmx)
-{	write-host "$($file.basename);" -NoNewline
+{	#write-host "$($file.basename);" -NoNewline
 	$inFile=$file.fullname
 	if (-not ($targetPath.substring($targetPath.length-1,1) -eq "\")) {$targetPath=$targetPath+"\"}
 	$outFile="$targetPath$($file.basename).$targetFileExtention"

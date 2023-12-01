@@ -24,13 +24,14 @@ $global:usas2=get-Usas2Globals
 
 ##### MAIN #####
 $ruinIdFilter=("^("+($ruinId -join ("|"))+")$")
+write-verbose "DSM: $dsmname, Datalist:$datalistname"
 
-if (-not ($global:dsm=load-dsm -path $dsmname))
+if (-not ($dsm=load-dsm -path $dsmname))
 {	write-error "DSM $dmsname not found"
 }	else
 {	$null=$DSM|open-DSMFileSpace -verbose
 	$datalist=add-DSMDataList -dsm $dsm -name $datalistname
-	$rooms=get-U2WorldMapRooms -ruinid $ruinidfilter
+	$rooms=get-U2WorldMapRooms -ruinid $ruinidfilter # |select -first 2
 	foreach ($room in $rooms)
 	{	#convert .tmx to .map
 		$tiledMapPath="$tiledmapsLocation\$($room.name).tmx"
@@ -38,16 +39,24 @@ if (-not ($global:dsm=load-dsm -path $dsmname))
 		#Add to DSM
 		$pckPath="$mapslocation\$($room.name).map.pck"
 		$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $pckpath -name $pckpath -updateFileSpace
+		#add-dsmfile -dsm $dsm -dataList $datalist -path $pckpath  -updateFileSpace
 	}
-	$null=$DSM|close-DSMFileSpace -verbose
+	$null=$DSM|close-DSMFileSpace
 	#Make new maps index
-	.\make-dsmIndex.ps1 -indexType maps
-	
+	#.\make-dsmIndex.ps1 -indexType maps
+	write-verbose "index: $DSMname.$datalistname.$dsmIndexFilenameExtention"
+	$indexRecords=get-WorldMapRoomIndex -dsm $dsm -datalistname $dataListName
+	$null=Set-Content -Value $indexRecords -Path "$(resolve-path ".\")\$DSMname.$datalistname.$dsmIndexFilenameExtention" -Encoding Byte
+
+	#get-DsmDataListAllocation -datalist $dsm.datalist[0] -name (Split-Path -path $pckpath -Leaf)
 	save-dsm -dsm $dsm
 }
 
 write "`n"
+$dsm.datalist
+write "`n"
 $dsm|get-DSMStatistics
+$global:dsm=$dsm
 EXIT
 
 <#

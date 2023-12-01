@@ -11,8 +11,8 @@ MapBT22Data: equ $99AA
 WorldMapPointer:  dw  MapBT22Data      ;
 
 ;we are going to change the worldmappointer, giving it an x and  y position instead
-WorldMapPositionY:  db  21 ;16
-WorldMapPositionX:  db  43; 45
+WorldMapPositionY:  db  14 ;14 ;21
+WorldMapPositionX:  db  18 ;43
 
 
 
@@ -203,8 +203,7 @@ UnpackMapdata_SetObjects:             ;unpacks packed map to $4000 in ram and se
   out   ($a8),a      
 
   ld    a,(ix+0)	;ROM block 
-  add a,$b7			;offset (temp)
-  call  block34		;we can only switch block34 if page 1 is in rom
+    call  block34		;we can only switch block34 if page 1 is in rom
   ld    l,(ix+1)	;ROM adr
   ld    h,(ix+2)
 
@@ -219,8 +218,9 @@ UnpackMapdata_SetObjects:             ;unpacks packed map to $4000 in ram and se
   dec   hl
   dec   hl
     
-  ld    a,(hl)                        ;amount of objects for this map
-  or    a
+  ;ld    a,(hl)                        ;amount of objects for this map
+  ;or    a
+  xor A         ;temp set at zero
   ret   z
   
   inc   hl                            ;object 1 - table

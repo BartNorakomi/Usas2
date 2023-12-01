@@ -316,14 +316,15 @@ function add-DSMFile
   
     foreach ($file in $Files)
     {   if ($datalist -and -not (get-DsmDataListAllocation -dataList $datalist -name $file.name))
-        {   write-verbose "Adding $($file.fullname) $($file.length) to DSM"
+        {   write-verbose "Adding file:$($file.fullname) size:$($file.length) to DSM"
             if ($alloc=$DSM|alloc-DSMSpace -lengthBytes ($file.length+$addlength))
             {	if ($datalist)
-                {	write-verbose "adding to datalist: $($datalist.name)"
-                    $null=$DataList|add-DSMDataListAllocation -name $file.name -alloc $alloc
+                {	write-verbose "adding '$($file.name)' to datalist: $($datalist.name)"
+                    $result=$DataList|add-DSMDataListAllocation -name $file.name -alloc $alloc
+                    write-verbose $result
                 }   
                 if ($updateFileSpace -and $DSM.filespace)
-                {	write-verbose "updating file space -block $($alloc.block) -segment $($alloc.segment) $($alloc.length)"
+                {	write-verbose "updating file space / block:$($alloc.block) segment:$($alloc.segment) len:$($alloc.length)"
                     $data=get-content $file -Encoding byte
                     $null=$DSM|write-DSMFileSpace -block $alloc.block -segment $alloc.segment -data $data
                 }
@@ -352,10 +353,11 @@ function remove-DSMfile
     if ($name) {$name=Split-Path -path $name -Leaf} #keep only filename.ext, strip path chars
     if (-not $datalist) {$datalist=get-DSMDataList -dsm $dsm -name $datalistname|select -first 1}
 	if (-not $allocation) {$allocation=$datalist.allocations|where{$_.name -eq $name}}
-
+    
     if ($allocation)
     {   if (free-DSMSpace -dsm $dsm -alloc $allocation)
-        {   remove-DsmDatalistAllocation -dataList $datalist -allocation $allocation
+        {   write-verbose "[remove-DSMfile] Removing Datalist Allocation name:$($allocation.name) $allocation"
+            remove-DsmDatalistAllocation -dataList $datalist -allocation $allocation
             # don't really need to update the file space
             #if ($updateFileSpace)
             #{   $null=$DSM|write-DSMFileSpace -block $allocation["block"] -segment $allocaction["segment"] -data $data
@@ -377,6 +379,7 @@ function replace-DsmFile
         [switch]$updateFileSpace #optional
     )
     if (-not $datalist) {$datalist=get-DSMDataList -dsm $dsm -name $datalistname|select -first 1}
+    write-verbose "[replace-DsmFile] $name from $datalist"
     remove-DSMfile -dsm $dsm -datalist $datalist -name $name
     add-DSMFile -dsm $dsm -dataList $datalist -path $path -updateFileSpace:$updateFileSpace
 }
@@ -442,15 +445,19 @@ function add-DSMDataListAllocation
 		[Parameter(Mandatory)]$name="",
 		$alloc,$block=0,$segment=0,$length=0  #either ALLOC or block/seg/len
     )
+    #write-verbose "[add-DSMDataListAllocation]"
     if (-not $alloc) {$alloc=[pscustomobject]@{block=$block;segment=$segment;length=$length}}
-    if (-not $datalist) {$datalist=$DSM.datalist|where{$_.name -eq $datalistname}}
+    if (-not $datalist) {$datalist=get-dsmdatalist -dsm $dsm -name $datalistname} #{$datalist=$DSM.datalist|where{$_.name -eq $datalistname}}
 	#Only add if it doens't exist yet
     if (-not (get-DsmDataListAllocation -dataList $datalist -name $name))
 	{	$allocation=$alloc
         $allocation|Add-Member @{name=$name}
         [void]$datalist.allocations.add($allocation)
-	}
-    return
+        #write-verbose $allocation
+        return $allocation
+	} else
+    {   write-warning "add-DSMDataListAllocation: Datalist Allocation already exists"        
+    }
 }    
 
 
@@ -639,7 +646,7 @@ function get-DSMStatistics
 	write "Capacity:	$capacity	/ $($capacity/1kb)KB"
 	write "Free space:	$free	/ $($free/1kb)KB"
 	write "In use:		$($capacity-$free)	/ $(($capacity-$free)/1kb)KB"
-    write "Allocations:    $($dsm.dataList.allocations.count)"
+    write "Allocations:    $(($dsm.dataList.allocations|measure).count)"
 }
 
 

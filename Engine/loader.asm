@@ -22,9 +22,8 @@ getRoom:
 ;  ldir
   ld de,(WorldMapPositionY)   ;WorldMapPositionX/Y:  
   call GetWorldMapRoom
-
-
-         ld bc,$8000
+  add a,$b7			;offset (temp)
+  ld bc,$8000
   add hl,bc
   ld ix,MapDataCopiedToRam
   ld (ix),a ;block
