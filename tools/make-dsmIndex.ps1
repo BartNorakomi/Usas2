@@ -1,12 +1,13 @@
 # Create DSM index from files
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
-# 20231114-20231114
+# 20231114-20231128
 
 [CmdletBinding()]
 param
 (	$name="",
-	$masterWorldMapFile="..\Usas2-WorldMap.csv",
+	$dsmName="Usas2.Rom.dsm",
+	$masterWorldMapFile, #="..\Usas2-WorldMap.csv",
 	$usas2PropertiesFile="..\usas2-properties.csv",
 	[Parameter(Mandatory)]$indexType
 )
@@ -14,6 +15,12 @@ param
 ##### Includes #####
 . .\Usas2-SharedFunctions.inc.ps1
 . .\DSM.ps1
+
+
+##### Global properties #####
+$global:usas2=get-Usas2Globals
+if (-not $masterWorldMapFile) {$masterWorldMapFile="..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile}
+
 
 ##### Functions #####
 
@@ -31,8 +38,9 @@ function get-RoomMapIndex
 	(	[Parameter(Mandatory,ValueFromPipeline)]$DSM,$datalistName=".*"
 	)
 	$IndexRecordLength=4
-	$numIndexRecords=$datalist.allocations.count
-	if	($datalist=$dsm.datalist|where{$_.name -match $datalistname}) #.allocations.name)
+	$datalist=get-dsmdatalist -dsm $dsm -name $datalistName
+	#$numIndexRecords=$datalist.allocations.count
+	if ($datalist.allocations)
 	{	$indexRecords=[byte[]]::new(0) #::new($numIndexRecords*$IndexRecordLength)
 		foreach ($this in $datalist.allocations)
 		{	write-verbose $this.name
@@ -49,30 +57,29 @@ function get-RoomMapIndex
 
 
 ##### Main: #####
-$WorldmapSource=get-content $masterWorldMapFile
-#$usas2GlobalsCsv=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
-#$global:usas2Globals=convert-CsvToObject -objname usas2 -csv $usas2GlobalsCsv
+write-verbose $dsmname
+write-verbose "IndexType: $indexType"
 
-write-host "IndexType: $indexType"
+#$WorldmapSource=get-content $masterWorldMapFile
+
+if	(-not ($dsm=load-dsm -path "$dsmname" -ErrorAction SilentlyContinue))
+{	$DSM=new-DSM -name $dsmName -BlockSize 16KB -numBlocks 8 -SegmentSize 128
+}
+
 
 switch ($indexType)
 {	maps
 	{	# MAPS index
-		$dsmName="U2WorldMap"
-		$dataListName="WorldMapIndex"
-		if	(test-path "$dsmname.dsm")
-		{	$dsm=load-dsm -path "$dsmname"
-		}	else
-		{	$global:DSM=new-DSM -name $dsmName -BlockSize 16KB -numBlocks 4 -SegmentSize 128
-		}
+		$dataListName="WorldMap"
 		$datalist=$DSM|add-DSMDataList -name $dataListName
 		$global:indexRecords=get-RoomMapIndex -dsm $dsm -datalistname $dataListName
-		$indexRecords|format-hex
-		$null=Set-Content -Value $indexRecords -Path "$(resolve-path ".\")\$($DSMname).$dsmIndexFilenameExtention" -Encoding Byte
+		#$indexRecords|format-hex
+		$null=Set-Content -Value $indexRecords -Path "$(resolve-path ".\")\$($DSMname).$datalistname.$dsmIndexFilenameExtention" -Encoding Byte
 	}
 }
 
-#
+save-dsm $dsm
+$global:dsm=$dsm
 exit
 
 
@@ -118,3 +125,13 @@ $fs.close()
 
 #open existing for write
 #[System.IO.File]::Open($Item,'Open','Write')
+
+
+<#
+brainstew
+
+-get a list of roommap files
+-put/replace in dsm, datalist, and filestore
+-make index, save
+
+#>

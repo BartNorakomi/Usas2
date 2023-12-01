@@ -21,8 +21,10 @@ getRoom:
 ;  ld    bc,6
 ;  ldir
   ld de,(WorldMapPositionY)   ;WorldMapPositionX/Y:  
-  call GETWMR
-  ld bc,$8000
+  call GetWorldMapRoom
+
+
+         ld bc,$8000
   add hl,bc
   ld ix,MapDataCopiedToRam
   ld (ix),a ;block
@@ -44,7 +46,8 @@ RECLEN: EQU   4               ;recordLength
 
 ;Get WorldMapRoom
 ;In:  DE=IndexID (D=X,E=Y)
-GETWMR: LD    HL,IDXADR
+GetWorldMapRoom:
+        LD    HL,IDXADR
         LD    BC,RECLEN-1
 GWMR.1: LD    A,D             ;x
         CP    (HL)
@@ -58,6 +61,8 @@ GWMR.1: LD    A,D             ;x
         INC   HL
         LD    H,(HL)          ;seg
         LD    L,0
+        SRL   H         ;seglen=128
+        RR    L
         RET
 GWMR.0: ADD   HL,BC
         JP    GWMR.1

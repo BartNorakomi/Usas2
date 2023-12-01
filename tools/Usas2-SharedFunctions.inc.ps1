@@ -59,7 +59,7 @@ function get-Usas2Globals
 # return roomName located at(x,y)
 function get-roomName
 {	param ($x,$y)
-	return $rownames[$x]+"0$($y+1)".substring(([string]$y).length-1,2)
+	return $WorldMapColumnNames[$x]+"0$($y+1)".substring(([string]$y).length-1,2)
 }
 
 

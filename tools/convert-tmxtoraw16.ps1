@@ -83,7 +83,7 @@ function Convert-TmxLayers
 $convertToAddress=$true
 
 ##### Main: #####
-Write "Convert Tiled .tmx file to raw 16-bit data .map file and pack it to .map.pck (if -pack:`$true)"
+Write-verbose "Convert Tiled .tmx file to raw 16-bit data .map file and pack it to .map.pck (if -pack:`$true)"
 write-verbose "Source: $path"
 write-verbose "Target: $targetPath"
 foreach ($file in gci $path -Include *.tmx)

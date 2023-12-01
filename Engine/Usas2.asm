@@ -474,10 +474,11 @@ dephase
 RomAddressWorldMapMatrix:
 WorldMapDataCopiedToRamBlock:  equ   $9
 phase	$8000
-  ;include "WorldMapDataCopiedToRam.asm"
-  ;	incbin "WorldMapDataCopiedToRam.dat"
-  ;incbin "..\tools\U2WorldMapMatrix.dsm.index"
-incbin "..\tools\U2WorldMap.dsm.index"
+	;include "WorldMapDataCopiedToRam.asm"
+	;incbin "WorldMapDataCopiedToRam.dat"
+	;incbin "..\tools\U2WorldMapMatrix.dsm.index"
+	;incbin "..\tools\U2WorldMap.dsm.index"
+	incbin "..\tools\Usas2.Rom.dsm.WorldMap.index"
 	ds		$c000-$,$ff
 dephase
 
@@ -507,8 +508,8 @@ BossSpritesDataEndBlock:  equ BossSpritesDataStartBlock+$28
 include "BossSpriteData.asm"
 
 ;B8
-incbin "..\tools\U2WorldMapMatrix.dsm.space"
-
+	;incbin "..\tools\U2WorldMapMatrix.dsm.space"
+	incbin "..\tools\Usas2.Rom.dsm.space"
 lastblock: equ $ and $ffc000/RomBlockSize
 totallenght:	Equ	$-Usas2
 	ds		(256*RomBlockSize)-totallenght
