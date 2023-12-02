@@ -39,11 +39,9 @@ if (-not ($dsm=load-dsm -path $dsmname))
 		#Add to DSM
 		$pckPath="$mapslocation\$($room.name).map.pck"
 		$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $pckpath -name $pckpath -updateFileSpace
-		#add-dsmfile -dsm $dsm -dataList $datalist -path $pckpath  -updateFileSpace
 	}
 	$null=$DSM|close-DSMFileSpace
 	#Make new maps index
-	#.\make-dsmIndex.ps1 -indexType maps
 	write-verbose "index: $DSMname.$datalistname.$dsmIndexFilenameExtention"
 	$indexRecords=get-WorldMapRoomIndex -dsm $dsm -datalistname $dataListName
 	$null=Set-Content -Value $indexRecords -Path "$(resolve-path ".\")\$DSMname.$datalistname.$dsmIndexFilenameExtention" -Encoding Byte
