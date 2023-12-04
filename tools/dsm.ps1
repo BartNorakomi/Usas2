@@ -1,6 +1,6 @@
 #Data Space Manager
 #Shadow@FuzzyLogic
-#20231027-20231123
+#20231027-20231202
 
 ##### Globals #####
 $filemodes=@{Append=6;Create=2;CreateNew=1;Open=3;OpenOrCreate=4;Truncate=5}
@@ -14,14 +14,18 @@ $dsmSpaceFilenameExtention="dsm.space"
 function new-DSM
 {   param
     (   [Parameter(Mandatory)][string]$name,
+        [Parameter(Mandatory)][uint32]$size,
         [uint32]$BlockSize=16KB,
 		[uint32]$FirstBlock=0,
-        [uint32]$numBlocks=8,
+        [uint32]$numBlocks=$size-$firstblock,
         [uint32]$SegmentSize=512 #bytes
     )
-        [uint32]$numSegmentsPerBlock=$Blocksize/$SegmentSize
-        $SegmentAllocationTable=new-DSMSegmentAllocationTable -numBlocks $numBlocks -numSegmentsPerBlock $numSegmentsPerBlock
-        return [psobject]@{name=$name;blocksize=$blocksize;firstBlock=$firstBlock;numblocks=$numblocks;segmentSize=$segmentSize;numSegmentsPerBlock=$numSegmentsPerBlock;segmentAllocationTable=$SegmentAllocationTable;dataList=[System.Collections.ArrayList]::new();fileSpace=$null}
+    #first some checks
+    if ($firstblock+$numblocks -gt $size) {write-error "Size is too small";break}
+
+    [uint32]$numSegmentsPerBlock=$Blocksize/$SegmentSize
+        $SegmentAllocationTable=new-DSMSegmentAllocationTable -numBlocks $numBlocks #-numSegmentsPerBlock $numSegmentsPerBlock
+        return [psobject]@{name=$name;size=$size;blocksize=$blocksize;firstBlock=$firstBlock;numblocks=$numblocks;segmentSize=$segmentSize;numSegmentsPerBlock=$numSegmentsPerBlock;segmentAllocationTable=$SegmentAllocationTable;dataList=[System.Collections.ArrayList]::new();fileSpace=$null}
 }
 
 # DSM OBJECT
@@ -36,19 +40,36 @@ function remove-DSM
 }
 
 # DSM OBJECT
-# Return an empty SatRecord
+# Return an un-intialized SatRecord
 function new-DSMSegmentAllocationRecord
-{   param   ( [uint32]$numSegmentsPerBlock
+{   param   ( #[uint32]$numSegmentsPerBlock
             )
-    return  [pscustomobject]@{numfree=$numSegmentsPerBlock;alloc=@(0)*$numSegmentsPerBlock}
+    #return  [pscustomobject]@{numfree=$numSegmentsPerBlock;alloc=@(0)*$numSegmentsPerBlock}
+    return  [pscustomobject]@{stat="u";numfree=[uint32]0;alloc=[system.collections.generic.list[uint32]]::new()} #@(0)*$numSegmentsPerBlock}
 }
 
 # DSM OBJECT
-# Initialize and return empty SAT
+# Initialize a SegmentAllocationRecord
+function enable-DSMSegmentAllocationRecord
+{   param   (	$segmentAllocationRecord, [uint32]$numSegmentsPerBlock
+            )
+	if ($segmentAllocationRecord.alloc.count -eq 0)
+		{0..($numSegmentsPerBlock-1)|%{$segmentAllocationRecord.alloc.add(0)}
+		$segmentAllocationRecord.stat="a"
+		$segmentAllocationRecord.numFree=$numSegmentsPerBlock
+	}
+	return  $segmentAllocationRecord
+}
+
+
+# DSM OBJECT
+# Initialize and return a complet SegmentAllocationTable (SAT), all allocations are un-initialized (empty)
 function new-DSMSegmentAllocationTable
-{   param ([uint32]$numBlocks,[uint32]$numSegmentsPerBlock)
+{   param
+	(	[uint32]$numBlocks #, [uint32]$numSegmentsPerBlock
+	)
     for ($i=0;$i -lt $numblocks;$i++)
-    {   new-DSMSegmentAllocationRecord -numSegmentsPerBlock $numSegmentsPerBlock
+    {   new-DSMSegmentAllocationRecord #-numSegmentsPerBlock $numSegmentsPerBlock
     }
 }
 
@@ -78,6 +99,7 @@ function load-DSM
     return $DSM
 }
 
+
 # SEGMENT
 # Clear a SatRecord (force) -for testing purpose only
 function clear-DsmBlock
@@ -93,27 +115,31 @@ function clear-DsmBlock
 
 
 # SEGMENT
-# Exclude a whole block from the allocationTable
+# Exclude a block for new allocation (keep current allacations)
 function exclude-DSMblock
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,
         [Parameter(Mandatory)]$block
     )
     foreach ($this in $block)
-    {   lock-DSMSegment -DSM $DSM -block $this -segment 0 -length $DSM.numSegmentsPerBlock
+    {   #lock-DSMSegment -DSM $DSM -block $this -segment 0 -length $DSM.numSegmentsPerBlock
+        #if ($dsm.segmentAllocationTable[$this].numfree -eq $dsm.numSegmentsPerBlock)
+        if ($this -lt $dsm.numblocks) {$dsm.segmentAllocationTable[$this].stat="x"}
     }
     return  
 }
 
 # SEGMENT
-# Include a whole block from the allocationTable (might destroy allocations)
+# Include a block for allocations
 function include-DSMblock
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,
         [Parameter(Mandatory)]$block
     )
     foreach ($this in $block)
-    {   unlock-DSMSegment -DSM $DSM -block $this -segment 0
+    {   #unlock-DSMSegment -DSM $DSM -block $this -segment 0
+        if ($dsm.segmentAllocationTable[$this].alloc.count -ne $dsm.numSegmentsPerBlock) {$stat="u"} else {$stat="a"}
+        $dsm.segmentAllocationTable[$this].stat=$stat
     }
     return  
 }
@@ -248,13 +274,15 @@ function find-DSMFreeSpace
     if ($length=[int][Math]::Ceiling($lengthBytes/$DSM.segmentSize))
     {   $block=0;$segment=0
         foreach ($SatRecord in $DSM.segmentAllocationTable)
-        {   if ($SatRecord.numfree+1 -gt $length)
-            {   if (($startSegment=find-DSMFreeSegment -SatRecord $SatRecord -length $length) -ne -1)
-                {    #$segmentRecord|lock-DSMSegment -segment $startSegment -length $length
-                    return [pscustomobject]@{block=$block;segment=$startSegment;length=$length};break;
-                }
-            }
-            $block++
+        {   if ($SatRecord.stat -ne "x")
+			{	$satrecord=enable-DSMSegmentAllocationRecord -segmentAllocationRecord $satrecord -numSegmentsPerBlock $dsm.numSegmentsPerBlock
+				if ($SatRecord.numfree+1 -gt $length)
+				{	if (($startSegment=find-DSMFreeSegment -SatRecord $SatRecord -length $length) -ne -1)
+					{	return [pscustomobject]@{block=$block;segment=$startSegment;length=$length};break;
+					}
+				}
+			}
+			$block++
         }
     } else
     {   return $false
@@ -499,13 +527,11 @@ function create-DSMFileSpace
 	if (-not $path) {$path="$(resolve-path ".\")\$($DSM.name).$dsmSpaceFilenameExtention"}
 	if  ((Test-Path $path) -and (-not $force))
     {   write-warning "File '$path' already exists. Use -force to overwrite"
-
     }   else
-    {
-        write-verbose "saving DSM space as $path"
+    {   write-verbose "Creating DSM space: $path"
         if ($fs=[io.file]::create($path))
         {	$rawData=[byte[]]::new($DSM.blocksize)
-            for ($i=0;$i -lt $DSM.numblocks;$i++)
+            for ($i=0;$i -lt $DSM.size;$i++)
             {	write-verbose "Writing Block $i, size $($DSM.blocksize)"
                 $fs.Write($RawData,0,$RawData.Length)
             }
@@ -557,8 +583,8 @@ function seek-DSMFileSpace
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,
 		$block=0,$segment=0
     )
-	if ($DSM.filespace)
-	{	$seekPosition=($block*$DSM.blocksize)+($segment*$DSM.segmentsize)
+ 	if ($DSM.filespace)
+	{	$seekPosition=(($dsm.firstblock+$block)*$DSM.blocksize)+($segment*$DSM.segmentsize)
 		return $DSM.filespace.seek($seekPosition,0)
 	} else
 	{	return $false
@@ -642,7 +668,9 @@ function get-DSMStatistics
 	$capacity=$DSM.numblocks*$DSM.blocksize
 	$free=$($DSM.segmentAllocationTable.numfree|measure -Sum).sum*$DSM.segmentsize
 	write "Name:		$($DSM.name)"
-	write "Blocks:		$($DSM.numblocks) of $($DSM.blocksize)"
+	write "Size:		$($DSM.size) blocks"
+    write "FirstBlock:	$($DSM.firstBlock)"
+	write "Blocks:		$($DSM.numblocks) of size $($DSM.blocksize)"
 	write "Capacity:	$capacity	/ $($capacity/1kb)KB"
 	write "Free space:	$free	/ $($free/1kb)KB"
 	write "In use:		$($capacity-$free)	/ $(($capacity-$free)/1kb)KB"
@@ -653,31 +681,27 @@ function get-DSMStatistics
 #------------------------------------------------------------------------------------------
 # TESTS
 exit
-$global:DSM=new-DSM -name Usas2Test.Rom -BlockSize 16KB -numBlocks 8 -SegmentSize 128
+$global:DSM=new-DSM -name Usas2Test.Rom -BlockSize 16KB -size 8 -firstblock 2 -numBlocks 4 -SegmentSize 128
+$DSM|create-DSMFileSpace -verbose -force
 $dl=add-DSMDataList -dsm $dsm -name "DL"
-$dsm|add-DSMFile -dataListName dl -path .\*.ps1 -verbose
-$dsm|remove-DSMfile -name concat-sc5files.ps1 -dataListName dl -verbose
+#$null=$DSM|exclude-DSMblock -block 0,1,2   #exclude code blocks
+#$null=$DSM|include-DSMblock -block 1
+#$null=alloc-DSMSpace -dsm $dsm -lengthBytes 15KB
+#$null=alloc-DSMSpace -dsm $dsm -lengthBytes 2KB
+#$null=$DSM|open-DSMFileSpace -verbose
+#$x=add-dsmfile -dsm $dsm -path ".\romspace.js" -verbose -datalist $dl -updateFileSpace
+#$null=$DSM|close-DSMFileSpace -verbose
 $dsm.segmentAllocationTable
-$dsm.datalist.allocations
+$dsm|get-DSMStatistics
+exit
 
-$dsm|unLock-DSMSegment -block 0 -segment 10
-$dsm.segmentAllocationTable
 
-$dsm|replace-DsmFile -dataListName dl -name .\package.json -path .\package.json -verbose
-$dsm|replace-DsmFile -dataListName dl -name make-dsmindex.ps1 -path .\package.json -verbose
-$dsm.datalist.allocations
-$dsm.segmentAllocationTable
-
-#$DSM|create-DSMFileSpace -verbose
 # ALLOC
-#$null=$DSM|exclude-DSMblock -block 0,1,2,3   #exclude code blocks
-#$null=$DSM|include-DSMblock -block 0
 #lock-DSMSegment -dsm $dsm -block 0 -segment 0 -length 2
 #unlock-DSMSegment -dsm $dsm -block 0 -segment 0
 #$alloc=$dsm|alloc-DSMSpace -lengthBytes 512
 #write-host $alloc
 #$null=$dsm|free-DSMSpace -alloc $alloc #-block 1 -segment 0
-#$x=add-dsmfile -dsm $dsm -path ".\make-dsmIndex.ps1" -verbose -datalist $dl
 #write-host $x
 #$x=remove-DSMfile -dsm $dsm -name ".\make-dsmIndex.ps1" -verbose -datalist $dl
 #write-host $x

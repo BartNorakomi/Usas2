@@ -148,7 +148,7 @@ function get-WorldMapRoomIndex
 	$datalist=get-dsmdatalist -dsm $dsm -name $datalistName
 	#$numIndexRecords=$datalist.allocations.count
 	if ($datalist.allocations)
-	{	$indexRecords=[byte[]]::new(0) #::new($numIndexRecords*$IndexRecordLength)
+	{	$indexRecords=[System.Collections.Generic.List[byte]]::new() #[byte[]]::new(0) #::new($numIndexRecords*$IndexRecordLength)
 		foreach ($this in $datalist.allocations)
 		{	write-verbose $this.name
 			$location=get-roomLocation $this.name.substring(0,4)
@@ -156,8 +156,10 @@ function get-WorldMapRoomIndex
 			[byte]$block=$this.block
 			[byte]$segment=$this.segment
 			write-verbose "ID:$id, block:$block, seg:$segment"
-			$indexRecords+=[byte]$location.x,[byte]$location.y,$block,$segment
+			#$indexRecords+=[byte]$location.x,[byte]$location.y,$block,$segment
+			$indexRecords.addrange([byte[]]@([byte]$location.x,[byte]$location.y,$block,$segment))
+			#$indexRecords.add(1)
 		}
 	}
-	return $indexRecords
+	return ,$indexRecords
 }

@@ -14,7 +14,7 @@ loader:
   ret
 
 getRoom:
-  ld    a,WorldMapDataCopiedToRamBlock;loader routine at $4000
+  ld    a,$b7 ;WorldMapDataCopiedToRamBlock;loader routine at $4000
   call  block34
 ;  ld    hl,(WorldMapPointer)
 ;  ld    de,MapDataCopiedToRam

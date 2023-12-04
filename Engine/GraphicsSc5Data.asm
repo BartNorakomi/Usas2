@@ -21,9 +21,9 @@ dephase
 
 BlueTempleTilesBlock:  equ   KarniMataTilesBlock+2
 phase	$4000
-;  incbin "..\grapx\tilesheets\sBlueTemple.SC5",7,208 * 128      ;208 lines
-;  incbin "..\grapx\tilesheets\sBlueTempleBottom48Lines.SC5",7,48 * 128 ;48 lines
-incbin "..\tools\karnimatatiles.sc5"
+  incbin "..\grapx\tilesheets\sBlueTemple.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sBlueTempleBottom48Lines.SC5",7,48 * 128 ;48 lines
+ ; incbin "..\tools\karnimatatiles.sc5"
 	ds		$c000-$,$ff
 dephase
 

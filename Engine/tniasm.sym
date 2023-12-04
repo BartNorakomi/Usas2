@@ -4506,14 +4506,14 @@ ZombieCaterpillarAttackframe007: equ 08346h ; last def. pass 3
 NPCDialogueText1: equ 08C0Eh ; last def. pass 3
 ryuPage1frame005: equ 08592h ; last def. pass 3
 BossVoodooWaspHit62: equ 098DDh ; last def. pass 3
-totallenght: equ 02FC000h ; last def. pass 3
+totallenght: equ 06DC000h ; last def. pass 3
 RAttack3.setSprite: equ 0503Fh ; last def. pass 3
 BossZombieCaterpillarIdle15: equ 080D5h ; last def. pass 3
 ForegroundTilesStart: equ 034h ; last def. pass 3
 PushingStone.CollisionLeftSide: equ 047EDh ; last def. pass 3
 LeftLancelot1_Col: equ 08080h ; last def. pass 3
 RightBlackHoleAlienWalk: equ 094DFh ; last def. pass 3
-lastblock: equ 0C0h ; last def. pass 3
+lastblock: equ 01B8h ; last def. pass 3
 HugeBlobWalking.endMove: equ 09CDFh ; last def. pass 3
 RightSnowbalThrowerWalk: equ 098C1h ; last def. pass 3
 PuzzleBlocks7X: equ 05F1h ; last def. pass 3
