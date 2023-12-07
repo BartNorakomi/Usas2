@@ -2,7 +2,9 @@
 #for testing
 [CmdletBinding()]
 param
-(	$file1="Karni-Mata-TILES.SC5",$file2="Karni-Mata-TILESbottom.SC5",$dstFile="$(resolve-path ".\")\KarniMataTiles.sc5"
+(	$file1="..\grapx\tilesheets\sKarniMata.SC5",
+	$file2="..\grapx\tilesheets\sKarniMataBottom48Lines.SC5",
+	$dstFile="$(resolve-path ".\")\KarniMataTiles.sc5"
 )
 
 $filemodes=@{Append=6;Create=2;CreateNew=1;Open=3;OpenOrCreate=4;Truncate=5}

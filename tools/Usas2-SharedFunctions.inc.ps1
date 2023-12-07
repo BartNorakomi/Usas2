@@ -161,5 +161,5 @@ function get-WorldMapRoomIndex
 			#$indexRecords.add(1)
 		}
 	}
-	return ,$indexRecords
+	return ,$indexRecords.toarray()
 }

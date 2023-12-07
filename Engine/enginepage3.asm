@@ -360,20 +360,22 @@ BuildUpMap:
   db    000,001,6*8,000   ;nx,--,ny,--
   db    000,000,$D0       ;fast copy   
 
+
+
 .buildupMap38x27:
-  ld    a,38*2
-  ld    (.SelfModifyingCodeMapLenght),a
+	ld    a,38*2
+	ld    (.SelfModifyingCodeMapLenght),a
+	ld    a,(slot.page12rom)            ;all RAM except page 12
+	out   ($a8),a    
+;	ld    a,KarniMataTilesBlock         ;tilesheet gfx in page 1+2 rom
+	xor A
+	call getgfx
+	call  block1234
 
-  ld    a,(slot.page12rom)            ;all RAM except page 12
-  out   ($a8),a    
-
-  ld    a,KarniMataTilesBlock         ;tilesheet gfx in page 1+2 rom
-  call  block1234
-
-  ;set vdp ready to write in page 0 in vram 
-  xor   a
-  ld    hl,0                          ;start writing at (0,0) page 0
-	call	SetVdp_Write	
+;set vdp ready to write in page 0 in vram 
+	xor   a
+	ld    hl,0                          ;start writing at (0,0) page 0
+	call  SetVdp_Write	
 
   ;rom->vram copy 14 rows to page 0
   ld    ix,UnpackedRoomFile
@@ -521,6 +523,33 @@ BuildUpMap:
 
 
 
+TileSetIndex:
+	dw .TileSet00
+.TileSet00:
+	DB 0,2,KarniMataTilesBlock,0,KarniMataTilesBlock+1,0
+
+GETGFX: LD    BC,TileSetIndex
+        LD    L,A
+        LD    H,0
+        ADD   HL,HL
+        ADD   HL,BC
+        LD    A,(HL)
+        INC   HL
+        LD    H,(HL)
+        LD    L,A
+        LD    A,(HL)          ;pal
+        INC   HL
+        LD    B,(HL)          ;parts
+        INC   HL
+GFX.0:  LD    A,(HL)          ;block
+        INC   HL
+        LD    D,(HL)          ;seg
+        INC   HL
+        LD    E,0
+        SRL   D               ;seglen=128
+        RR    E
+;        DJNZ  GFX.0
+        RET
 
 
 ; Tiles numbering

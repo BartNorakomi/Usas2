@@ -42,13 +42,11 @@ function Convert-TmxLayers
 		$includeLayer,
 		$excludeLayer
 	)	
-
-	write-verbose "Map width: $($data.map.width)"
-	write-verbose "Map height: $($data.map.height)"
+	write-verbose "Map width:$($data.map.width), height:$($data.map.height)"
 	$fileLength=[uint16]$data.map.width * [uint16]$data.map.height
 	write-verbose "Block length: $($fileLength*2)"
 
-	#Initialize a block of raw data in bytes
+	#Initialize a array of raw data in bytes
 	$rawData=[byte[]]::new($filelength*2)
 
 	#Walk through each layer in descending order
@@ -66,7 +64,6 @@ function Convert-TmxLayers
 				}
 				$L=$HL -band 255
 				$H=$HL -shr 8
-				
 				$rawData[$position]=$L
 				$rawData[$position+1]=$H
 			}

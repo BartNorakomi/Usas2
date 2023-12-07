@@ -1,18 +1,16 @@
-		fname	"Usas2.rom"
+		fname	"Usas2.rom",0	;Append code to existing Usas2.Rom file
+
+; GLobals
+RomBlockSize:		equ 16*1024
+RomStartAddress:	equ $4000
+
+
 	org		$4000
-
 Usas2:
-;
-; StarFox - ROM version
-;
-; Written by: TNI Team
-;
+;	ROM
 	dw		"AB",init,0,0,0,0,0,0
-;
-; this is one-time only... can be overwritten with game stuff after it's done
-;
 
-RomBlockSize: equ 16*1024
+; this is one-time only... can be overwritten with game stuff after it's done
 
 memInit:	
 	phase	$c000
@@ -250,7 +248,7 @@ initMem.length:	equ	$-initMem
 ; end of one-time only code...
 ;
 
-;
+; Initialize USAS2
 init:		
   ld    a,15        ;is zwart in onze huidige pallet
 	ld		($f3e9),a	  ;foreground color 
@@ -398,99 +396,83 @@ tempisr:
 
 ; ROM block 00-01: boot, enginepage3, enginepage0
 enginepage3:				include	"enginepage3.asm"
-enginepage3RomEndAddress:	EQU $-1-$4000
+enginepage3RomEndAddress:	EQU $-1-RomStartAddress
 
-engine:
-;phase	engaddr	;moved phasing to the engine.asm source file itself, where it belongs
-							include	"engine.asm"	
-;endengine:
-;dephase
-;enlength:					Equ	$-engine
-enginepage0RomEndAddress: 	equ $-1-$4000
-							ds	2*$4000 - $ and $3fff,$ff		; fill remainder of blocks 00-01
+engine:						include	"engine.asm"	
+enginepage0RomEndAddress: 	equ $-1-RomStartAddress
+							ds	2*RomBlockSize - $ and $3fff,$ff		; fill remainder of blocks 00-01
 
 ; ROM block 02-02: f1menu
 F1Menublock:				equ $02
-f1MenuRomAddress:			equ $-$4000
+f1MenuRomAddress:			equ $-RomStartAddress
 phase	$4000	;should be in f1menu.asm source(!)
 							include	"F1Menu.asm"	
 endF1MenuRoutine:
 F1MenuRoutinelength:		Equ	$-F1MenuRoutine
-;							ds	$8000-$,$ff	;fill remainder of this block		
 dephase
-f1MenuRomEndAddress:	equ $-1-$4000
-							ds	1*$4000 - $ and $3fff,$ff	;Fill remainder of this block
+f1MenuRomEndAddress:		equ $-1-RomStartAddress ;08572
+							ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; ROM block 03-03: loader
-loaderRomStartAddress:		equ $-$4000
 Loaderblock:  				equ $03
+loaderRomStartAddress:		equ $-RomStartAddress
 phase	$4000	;should be in loader.asm source (!)
-StartLoaderRoutine:			include	"loader.asm"	
+StartLoaderRoutine:			include	"loader.asm"
 endLoaderRoutine:
 LoaderRoutinelength:		Equ	$-StartLoaderRoutine
-;							ds	$8000-$,$ff		
 dephase
 loaderRomEndAddress:		equ $-1-$4000
-							ds	1*$4000 - $ and $3fff,$ff	;Fill remainder of this block
+							ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; block $4
-PlayerMovementRoutinesBlock:  equ   $4
-phase	$4000
-  include "PlayerMovementRoutines.asm" | endPlayerMovementRoutines:  
-	ds		$8000-$,$ff
+PlayerMovementRoutinesBlock:	equ $04
+phase	$4000	
+include "PlayerMovementRoutines.asm" | endPlayerMovementRoutines:  
 dephase
+ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; block $5
-movementpatterns1block:  equ   $5
-movepatblo1:  equ   $5
-phase	$8000
-  include "MovementPatterns1.asm"
-	ds		$c000-$,$ff
-dephase
+movementpatterns1block:		equ   $05
+movepatblo1:  				equ   $05
+	phase	$8000
+	include "MovementPatterns1.asm"
+	dephase
+	ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; block $6
-MovementPatternsFixedPage1block:  equ   $6
-phase	$4000
-  include "MovementPatternsFixedPage1.asm"
-	ds		$8000-$,$ff
-dephase
+MovementPatternsFixedPage1block:	equ   $6
+	phase	$4000
+	include "MovementPatternsFixedPage1.asm"
+	dephase
+	ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; block $7
-movementpatterns2block:  equ   $7
-movepatblo2:  equ   $7
-phase	$8000
-  include "MovementPatterns2.asm"
-	ds		$c000-$,$ff
-dephase
+movementpatterns2block:	equ   $7
+movepatblo2:			equ   $7
+	phase	$8000
+	include "MovementPatterns2.asm"
+	dephase
+	ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; block $08
 teamNXTlogoblock:  equ $8
-phase	$8000
+	phase	$8000
 	include "teamNXTlogo.asm"
-	ds		$c000-$,$ff
-dephase
+	dephase
+	ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
-; block $09                   (worldmap matrix)
-RomAddressWorldMapMatrix:
-WorldMapDataCopiedToRamBlock:  equ   $9
-phase	$8000
-	;include "WorldMapDataCopiedToRam.asm"
-	;incbin "WorldMapDataCopiedToRam.dat"
-	;incbin "..\tools\U2WorldMapMatrix.dsm.index"
-	;incbin "..\tools\U2WorldMap.dsm.index"
-	incbin "..\tools\Usas2.Rom.dsm.WorldMap.index"
-	ds		$c000-$,$ff
-dephase
+; block $09
+;EX worldmap matrix) 20131201;RM;VERVALLEN
+;FREE
+	ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
-; block $0a - $5e             (music)
+; block $0A-$5F VGM
 usas2repBlock:  equ   $0a
 phase	$0000
-  incbin "usas2.rep"
-	ds		$154000-$,$ff
+	incbin "usas2.rep"
+	ds		$56*RomBlockSize-$,$ff
 dephase
 
-; block $5f
-	ds		$4000,$ff
 
 ; block $60 - $7b             (sc5 tilesheets)
 GraphicsSc5DataStartBlock:  equ $60
@@ -509,7 +491,7 @@ include "BossSpriteData.asm"
 
 ;B8
 	;incbin "..\tools\U2WorldMapMatrix.dsm.space"
-	incbin "..\tools\Usas2.Rom.dsm.space"
+	;incbin "..\tools\Usas2.Rom.dsm.space"
 lastblock: equ $ and $ffc000/RomBlockSize
 totallenght:	Equ	$-Usas2
-	ds		(256*RomBlockSize)-totallenght
+;	ds		(256*RomBlockSize)-totallenght

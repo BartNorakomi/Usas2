@@ -1,43 +1,43 @@
 VoodooWaspTilesBlock:  equ   GraphicsSc5DataStartBlock
 phase	$4000
-  incbin "..\grapx\tilesheets\sVoodooWasp.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sVoodooWaspBottom48Lines.SC5",7,48 * 128 ;48 lines
+;  incbin "..\grapx\tilesheets\sVoodooWasp.SC5",7,208 * 128      ;208 lines
+;  incbin "..\grapx\tilesheets\sVoodooWaspBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
 GoddessTilesBlock:  equ   VoodooWaspTilesBlock+2
 phase	$4000
-  incbin "..\grapx\tilesheets\sGoddess.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sGoddessBottom48Lines.SC5",7,48 * 128 ;48 lines
+;  incbin "..\grapx\tilesheets\sGoddess.SC5",7,208 * 128      ;208 lines
+;  incbin "..\grapx\tilesheets\sGoddessBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
 KarniMataTilesBlock:  equ   GoddessTilesBlock+2
 phase	$4000
-  incbin "..\grapx\tilesheets\sKarniMata.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sKarniMataBottom48Lines.SC5",7,48 * 128 ;48 lines
+;  incbin "..\grapx\tilesheets\sKarniMata.SC5",7,208 * 128      ;208 lines
+;  incbin "..\grapx\tilesheets\sKarniMataBottom48Lines.SC5",7,48 * 128 ;48 lines
+	incbin "..\grapx\tilesheets\KarniMataTiles.sc5" ;full 256*212
 	ds		$c000-$,$ff
 dephase
 
 BlueTempleTilesBlock:  equ   KarniMataTilesBlock+2
 phase	$4000
-  incbin "..\grapx\tilesheets\sBlueTemple.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sBlueTempleBottom48Lines.SC5",7,48 * 128 ;48 lines
- ; incbin "..\tools\karnimatatiles.sc5"
+;  incbin "..\grapx\tilesheets\sBlueTemple.SC5",7,208 * 128      ;208 lines
+;  incbin "..\grapx\tilesheets\sBlueTempleBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
 KonarkTilesBlock:  equ   BlueTempleTilesBlock+2
 phase	$4000
-  incbin "..\grapx\tilesheets\sKonark.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sKonarkBottom48Lines.SC5",7,48 * 128 ;48 lines
+ ; incbin "..\grapx\tilesheets\sKonark.SC5",7,208 * 128      ;208 lines
+ ; incbin "..\grapx\tilesheets\sKonarkBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
 BurialTilesBlock:  equ   KonarkTilesBlock+2
 phase	$4000
-  incbin "..\grapx\tilesheets\sBurial.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sBurialBottom48Lines.SC5",7,48 * 128 ;48 lines
+  ;incbin "..\grapx\tilesheets\sBurial.SC5",7,208 * 128      ;208 lines
+  ;incbin "..\grapx\tilesheets\sBurialBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
