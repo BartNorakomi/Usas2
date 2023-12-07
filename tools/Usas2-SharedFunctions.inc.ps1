@@ -131,10 +131,10 @@ function get-roomMaps
 
 # Get WorldMapRooms > same as above, but with some presets and a filter on ruin and room
 function get-U2WorldMapRooms
-{	param ($ruinId=".*",$roomId=".*")
+{	param ($ruinId=".*",$roomTypeId=".*",$roomName=".*")
 	$WorldMapSource=get-content ("..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile)
 	$roomMaps=get-roommaps -mapsource $WorldMapSource
-	$roomMaps|where{($_.ruinId -match $ruinId) -and ($_.roomType -match $roomId)}
+	$roomMaps|where{($_.ruinId -match $ruinId) -and ($_.roomType -match $roomTypeId) -and ($_.name -match $roomName)}
 }
 
 
@@ -142,11 +142,10 @@ function get-U2WorldMapRooms
 # return a WorldMap index of the files in a datalist as byte array of records (id(xxyy)[16],block[8],segment[8]) 
 function get-WorldMapRoomIndex
 {	param
-	(	[Parameter(Mandatory,ValueFromPipeline)]$DSM,$datalistName=".*"
+	(	[Parameter(Mandatory,ValueFromPipeline)]$DSM,$datalistName="WorldMap"
 	)
 	$IndexRecordLength=4
 	$datalist=get-dsmdatalist -dsm $dsm -name $datalistName
-	#$numIndexRecords=$datalist.allocations.count
 	if ($datalist.allocations)
 	{	$indexRecords=[System.Collections.Generic.List[byte]]::new() #[byte[]]::new(0) #::new($numIndexRecords*$IndexRecordLength)
 		foreach ($this in $datalist.allocations)
@@ -156,10 +155,59 @@ function get-WorldMapRoomIndex
 			[byte]$block=$this.block
 			[byte]$segment=$this.segment
 			write-verbose "ID:$id, block:$block, seg:$segment"
-			#$indexRecords+=[byte]$location.x,[byte]$location.y,$block,$segment
 			$indexRecords.addrange([byte[]]@([byte]$location.x,[byte]$location.y,$block,$segment))
-			#$indexRecords.add(1)
 		}
 	}
 	return ,$indexRecords.toarray()
 }
+
+# BITMAP GFX INDEX 20231207
+# return an index with tilesets
+function get-BitmapGfxIndex
+{	param
+	(	[Parameter(Mandatory,ValueFromPipeline)]$DSM,$datalistName="BitMapGfx"
+	)
+	#$DataListProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistname}
+	#write-host $DataListProperties
+	$datalist=get-dsmdatalist -dsm $dsm -name $datalistName
+	$maxRecords=32
+	[System.Collections.Generic.List[byte]]$indexPointerTable=[byte[]]::new($maxRecords*2)
+	$indexRecords=[System.Collections.Generic.List[byte]]::new() #[byte[]]::new(0) #::new($numIndexRecords*$IndexRecordLength)
+	[byte[]]$emptyIndexRecord=0,0
+	for ($index=0;$index -lt $maxrecords;$index++)
+	{	$L=$indexRecords.count -band 255
+		$H=$indexRecords.count -shr 8
+		$indexPointerTable[$index*2]=$l
+		$indexPointerTable[$index*2+1]=$h
+		if ($tileset=$usas2.tileset|where{$_.id -eq $index})
+		{	write-verbose  "index:$index, $($tileset)"
+			$claims=$datalist.allocations|where{$_.name -eq (split-path -path $tileset.file -leaf)}|sort part
+			$parts=$claims.count
+			$indexRecords.add(0)	#palette
+			$indexRecords.add($parts)	#parts
+			write-verbose "Palette: 0, Parts: $parts"
+			foreach ($claim in $claims)
+			{	write-verbose "Block: $($claim.block), segment:$($claim.segment)"
+				$indexRecords.add($claim.block)
+				$indexRecords.add($claim.segment)
+			}
+		} else
+		{	$indexRecords.AddRange($emptyIndexRecord)			
+		}
+	}
+	return [pscustomobject]@{indexPointerTable=$indexPointerTable.toarray();index=$indexRecords.toarray()}
+}
+
+exit
+#test
+$usas2=get-Usas2Globals
+$global:usas2=$usas2
+$datalist=$dsm|add-DSMDataList -name BitMapGfx
+$dsm|add-dsmfile -path "..\grapx\tilesheets\KarniMataTiles.sc5" -datalistname bitmapgfx
+#$datalist.allocations|ft
+$BitmapGfxIndex=get-BitmapGfxIndex -dsm $dsm -Verbose
+$BitmapGfxIndex.indexPointerTable -join(",")
+$BitmapGfxIndex.index -join(",")
+
+
+

@@ -428,11 +428,12 @@ function replace-DsmFile
     (	[Parameter(Mandatory,ValueFromPipeline)]$DSM,
         [Parameter(ParameterSetName='ListName',Mandatory)]$dataListName,
         [Parameter(ParameterSetName='ListObject')]$dataList,
-        [Parameter(Mandatory)]$name,  #current filename
+        $name,  #current filename
         [Parameter(Mandatory)]$path,  #path to new file
         [switch]$updateFileSpace #optional
     )
     if (-not $datalist) {$datalist=get-DSMDataList -dsm $dsm -name $datalistname|select -first 1}
+	if (-not $name) {$name=Split-Path -path $path -Leaf} 
     write-verbose "[replace-DsmFile] $name from $datalist"
     remove-DSMfile -dsm $dsm -datalist $datalist -name $name
     add-DSMFile -dsm $dsm -dataList $datalist -path $path -updateFileSpace:$updateFileSpace

@@ -1,7 +1,7 @@
 VoodooWaspTilesBlock:  equ   GraphicsSc5DataStartBlock   ;ruin Euderus Set (10)
 phase	$4000
-  incbin "..\grapx\tilesheets\sVoodooWasp.SC5",7,208 * 128      ;208 lines
-  incbin "..\grapx\tilesheets\sVoodooWaspBottom48Lines.SC5",7,48 * 128 ;48 lines
+;  incbin "..\grapx\tilesheets\sVoodooWasp.SC5",7,208 * 128      ;208 lines
+;  incbin "..\grapx\tilesheets\sVoodooWaspBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
@@ -16,7 +16,7 @@ KarniMataTilesBlock:  equ   GoddessTilesBlock+2		;ruin Karni Mata (6)
 phase	$4000
 ;  incbin "..\grapx\tilesheets\sKarniMata.SC5",7,208 * 128      ;208 lines
 ;  incbin "..\grapx\tilesheets\sKarniMataBottom48Lines.SC5",7,48 * 128 ;48 lines
-	incbin "..\grapx\tilesheets\KarniMataTiles.sc5" ;full 256*212
+;	incbin "..\grapx\tilesheets\KarniMataTiles.sc5" ;full 256*212
 	ds		$c000-$,$ff
 dephase
 

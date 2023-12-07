@@ -1,112 +1,126 @@
 Enabled	configName	target	Name	identity	PropertyName	PropertyValue	Description	Comment
-1	Usas2		Gfx	KarniMata	id	0		
-1	Usas2		Gfx	KarniMata	type	0		
-1	Usas2		Gfx	KarniMata	file	.\gfx\pack\tiles06.sc5		
+1	Usas2		DSM	usas2	blocksize	16384	One block is 16KB	
+1	Usas2		DSM	usas2	size	256	Total space size in blocks > 4MB	
+1	Usas2		DSM	usas2	segmentSize	128	One segment is 128bytes	
+1	Usas2		DSM	usas2	fileSpace	usas2.rom	The destination file for the data	
+1	Usas2		DSM	usas2	name	usas2.rom		
+1	Usas2		DSM	usas2	description	Usas 2 ROM file		
+1	Usas2		DSM	usas2	blockExclusion	0	Block#0 is excluded for indexes	
+1	Usas2		DsmDatalist	Worldmap	name	Worldmap		
+1	Usas2		DsmDatalist	Worldmap	IndexBlock	0		
+1	Usas2		DsmDatalist	Worldmap	IndexSegment	0		
+1	Usas2		DsmDatalist	BitmapGfx	name	BitmapGfx		
+1	Usas2		DsmDatalist	BitmapGfx	IndexBlock	0		
+1	Usas2		DsmDatalist	BitmapGfx	IndexSegment	32		
+1	Usas2		Tileset	KarniMata	id	6		
+1	Usas2		Tileset	KarniMata	type	0		
+1	Usas2		Tileset	KarniMata	file	..\grapx\tilesheets\KarniMataTiles.sc5		
 1	Usas2		Room	boss	width	32		
 1	Usas2		Room	boss	height	27		
-1	Usas2		Room	general	roomType	0		
 1	Usas2		Room	boss	name	Boss Room		
 1	Usas2		Room	boss	engine	2		
+1	Usas2		Room	boss	roomType	96		
 1	Usas2		Room	gate	engine	2		
-1	Usas2		Room	general	engine	1		
-1	Usas2		Room	secret	engine	1		
-1	Usas2		Room	teleport	engine	2		
 1	Usas2		Room	gate	width	32		
 1	Usas2		Room	gate	height	27		
-1	Usas2		Room	teleport	roomType	32		
 1	Usas2		Room	gate	name	Gate Room		
+1	Usas2		Room	gate	roomType	128		
+1	Usas2		Room	general	roomType	0		
+1	Usas2		Room	general	engine	1		
 1	Usas2		Room	general	width	38		
 1	Usas2		Room	general	height	27		
-1	Usas2		Room	secret	roomType	64		
 1	Usas2		Room	general	name	General Room		
+1	Usas2		Room	secret	engine	1		
+1	Usas2		Room	secret	roomType	64		
 1	Usas2		Room	secret	width	38		
 1	Usas2		Room	secret	height	27		
-1	Usas2		Room	boss	roomType	96		
 1	Usas2		Room	secret	name	Secret Room		
+1	Usas2		Room	teleport	engine	2		
+1	Usas2		Room	teleport	roomType	32		
 1	Usas2		Room	teleport	name	Teleport room		
 1	Usas2		Room	teleport	width	32		
 1	Usas2		Room	teleport	height	27		
-1	Usas2		Room	gate	roomType	128		
-1	Usas2		Ruin	Hub	ruinId	1		
 1	Usas2		Ruin	Aggayu	name	Aggayu		
-1	Usas2		Ruin	Lemniscate	ruinId	2		
+1	Usas2		Ruin	Aggayu	ruinId	19		
 1	Usas2		Ruin	Akna	name	Akna		
-1	Usas2		Ruin	BosStenenWater	ruinId	3		
-1	Usas2		Ruin	Bio	name	Bio		
-1	Usas2		Ruin	Pegu	ruinId	4		
-1	Usas2		Ruin	BosStenenWater	name	Bos Stenen Water		
-1	Usas2		Ruin	Bio	ruinId	5		
-1	Usas2		Ruin	Chi	name	Chi		
-1	Usas2		Ruin	KarniMata	ruinId	6		
-1	Usas2		Ruin	EuderusSet	name	Euderus Set		
-1	Usas2		Ruin	Konark	ruinId	7		
-1	Usas2		Ruin	Fate	name	Fate		
-1	Usas2		Ruin	Verhakselaar	ruinId	8		
-1	Usas2		Ruin	Fuu	name	Fuu		
-1	Usas2		Ruin	Taxilla	ruinId	9		
-1	Usas2		Ruin	Genbu	name	Genbu		
-1	Usas2		Ruin	EuderusSet	ruinId	10		
-1	Usas2		Ruin	Grot	name	Grot		
 1	Usas2		Ruin	Akna	ruinId	11		
+1	Usas2		Ruin	Bio	name	Bio		
+1	Usas2		Ruin	Bio	ruinId	5		
+1	Usas2		Ruin	BosStenenWater	ruinId	3		
+1	Usas2		Ruin	BosStenenWater	name	Bos Stenen Water		
+1	Usas2		Ruin	Chi	name	Chi		
+1	Usas2		Ruin	Chi	ruinId	15		
+1	Usas2		Ruin	EuderusSet	name	Euderus Set		
+1	Usas2		Ruin	EuderusSet	ruinId	10		
+1	Usas2		Ruin	Fate	name	Fate		
+1	Usas2		Ruin	Fate	ruinId	12		
+1	Usas2		Ruin	Fuu	name	Fuu		
+1	Usas2		Ruin	Fuu	ruinId	22		
+1	Usas2		Ruin	Genbu	name	Genbu		
+1	Usas2		Ruin	Genbu	ruinId	21		
+1	Usas2		Ruin	Grot	name	Grot		
+1	Usas2		Ruin	Grot	ruinId	17		
+1	Usas2		Ruin	Hub	ruinId	1		
 1	Usas2		Ruin	Hub	name	Hub		
 1	Usas2		Ruin	Hub	tileSet	Hub		
-1	Usas2		Ruin	Fate	ruinId	12		
 1	Usas2		Ruin	Indra	name	Indra		
-1	Usas2		Ruin	Sepa	ruinId	13		
+1	Usas2		Ruin	Indra	ruinId	23		
 1	Usas2		Ruin	Ka	name	Ka		
-1	Usas2		Ruin	Chi	ruinId	15		
-1	Usas2		Ruin	KarniMata	name	Karni Mata		
-1	Usas2		Ruin	KarniMata	tileSet	KarniMata		
-1	Usas2		Ruin	KarniMata	tilesSc5SourceFile	.\gfx\tiles06.sc5		
-1	Usas2		Ruin	KarniMata	tilesSc5CompressedFile	.\gfx\pack\tiles06.sc5		
-1	Usas2		Ruin	KarniMata	musicVgmFile	.\music\karnimata.vgm		
-1	Usas2		Ruin	Sui	ruinId	16		
+1	Usas2		Ruin	Ka	ruinId	20		
+1	Usas2		Ruin	KarniMata	ruinId	6	Identifier for this Ruin	
+1	Usas2		Ruin	KarniMata	name	Karni Mata	The display name	
+1	Usas2		Ruin	KarniMata	tileSet	KarniMata	Default Tileset (ID)	
+1	Usas2		Ruin	KarniMata	palette	KarniMata	Default Palette (ID)	
+1	Usas2		Ruin	KarniMata	TiledTileSet	KarniMata	Default TiledTileset (ID)	
+1	Usas2		Ruin	KarniMata	TiledWorldMap	KarniMata	Belongs to which Worldmap, besides the gobal worldmap	
+1	Usas2		Ruin	KarniMata	VGM	6	Default music (ID) for this ruin	
+1	Usas2		Ruin	Konark	ruinId	7		
 1	Usas2		Ruin	Konark	name	Konark		
-1	Usas2		Ruin	Grot	ruinId	17		
+1	Usas2		Ruin	Lemniscate	ruinId	2		
 1	Usas2		Ruin	Lemniscate	name	Lemniscate		
 1	Usas2		Ruin	Lemniscate	tileSet	Lemniscate		
-1	Usas2		Ruin	Tiwanaku	ruinId	18		
 1	Usas2		Ruin	Morana	name	Morana		
-1	Usas2		Ruin	Aggayu	ruinId	19		
+1	Usas2		Ruin	Morana	ruinId	24		
+1	Usas2		Ruin	Pegu	ruinId	4		
 1	Usas2		Ruin	Pegu	name	Pegu		
 1	Usas2		Ruin	Pegu	tileSet	Pegu		
-1	Usas2		Ruin	Ka	ruinId	20		
+1	Usas2		Ruin	Sepa	ruinId	13		
 1	Usas2		Ruin	Sepa	name	Sepa		
-1	Usas2		Ruin	Genbu	ruinId	21		
+1	Usas2		Ruin	Sui	ruinId	16		
 1	Usas2		Ruin	Sui	name	Sui		
-1	Usas2		Ruin	Fuu	ruinId	22		
+1	Usas2		Ruin	Taxilla	ruinId	9		
 1	Usas2		Ruin	Taxilla	name	Taxilla		
-1	Usas2		Ruin	Indra	ruinId	23		
+1	Usas2		Ruin	Tiwanaku	ruinId	18		
 1	Usas2		Ruin	Tiwanaku	name	Tiwanaku		
-1	Usas2		Ruin	Morana	ruinId	24		
+1	Usas2		Ruin	Verhakselaar	ruinId	8		
 1	Usas2		Ruin	Verhakselaar	name	Verhakselaar		
-1	Usas2		Tile	empty	groupId	-	empty	
-1	Usas2		Tile	VerticalStairs	groupId	2	VerticalStairs	
-1	Usas2		Tile	Free	groupId	-	Free	
-1	Usas2		Tile	SpikePoison	groupId	3	Spike/Poison	
-1	Usas2		Tile	Lava	groupId	6	Lava	
-1	Usas2		Tile	DiagonalStairsLeft	groupId	4	DiagonalStairsLeft	
-1	Usas2		Tile	DiagonalStairsRight	groupId	5	DiagonalStairsRight	
-1	Usas2		Tile	Foreground	groupId	1	Foreground	
 1	Usas2		Tile	Background	groupId	0	Background	
-1	Usas2		Tile	empty	first	0	First number	
-1	Usas2		Tile	VerticalStairs	first	1	First number	
-1	Usas2		Tile	Free	first	9	First number	
-1	Usas2		Tile	SpikePoison	first	32	First number	
-1	Usas2		Tile	Lava	first	40	First number	
-1	Usas2		Tile	DiagonalStairsLeft	first	48	First number	
-1	Usas2		Tile	DiagonalStairsRight	first	50	First number	
-1	Usas2		Tile	Foreground	first	52	First number	
 1	Usas2		Tile	Background	first	256	First number	
-1	Usas2		Tile	empty	last	0	Last number	
-1	Usas2		Tile	VerticalStairs	last	8	Last number	
-1	Usas2		Tile	Free	last	31	Last number	
-1	Usas2		Tile	SpikePoison	last	39	Last number	
-1	Usas2		Tile	Lava	last	47	Last number	
-1	Usas2		Tile	DiagonalStairsLeft	last	49	Last number	
-1	Usas2		Tile	DiagonalStairsRight	last	51	Last number	
-1	Usas2		Tile	Foreground	last	255	Last number	
 1	Usas2		Tile	Background	last	1023	Last number	
+1	Usas2		Tile	DiagonalStairsLeft	groupId	4	DiagonalStairsLeft	
+1	Usas2		Tile	DiagonalStairsLeft	first	48	First number	
+1	Usas2		Tile	DiagonalStairsLeft	last	49	Last number	
+1	Usas2		Tile	DiagonalStairsRight	groupId	5	DiagonalStairsRight	
+1	Usas2		Tile	DiagonalStairsRight	first	50	First number	
+1	Usas2		Tile	DiagonalStairsRight	last	51	Last number	
+1	Usas2		Tile	empty	groupId	-	empty	
+1	Usas2		Tile	empty	first	0	First number	
+1	Usas2		Tile	empty	last	0	Last number	
+1	Usas2		Tile	Foreground	groupId	1	Foreground	
+1	Usas2		Tile	Foreground	first	52	First number	
+1	Usas2		Tile	Foreground	last	255	Last number	
+1	Usas2		Tile	Free	groupId	-	Free	
+1	Usas2		Tile	Free	first	9	First number	
+1	Usas2		Tile	Free	last	31	Last number	
+1	Usas2		Tile	Lava	groupId	6	Lava	
+1	Usas2		Tile	Lava	first	40	First number	
+1	Usas2		Tile	Lava	last	47	Last number	
+1	Usas2		Tile	SpikePoison	groupId	3	Spike/Poison	
+1	Usas2		Tile	SpikePoison	first	32	First number	
+1	Usas2		Tile	SpikePoison	last	39	Last number	
+1	Usas2		Tile	VerticalStairs	groupId	2	VerticalStairs	
+1	Usas2		Tile	VerticalStairs	first	1	First number	
+1	Usas2		Tile	VerticalStairs	last	8	Last number	
 1	Usas2		TiledMap	.*	defaultLocation	C:\Users\$env:username\OneDrive\Usas2\maps		
 1	Usas2		TiledMap	default	path	jemoeder.tmx		
 1	Usas2		TiledMap	default	name	Je Moeder		
@@ -121,6 +135,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	Description	C
 1	Usas2		TiledtileSet	Hub	path	tilesheets/tsHub.tsx		
 1	Usas2		TiledtileSet	Hub	imageSourceFile	../../grapx/tilesheets/sHub.bmp		
 1	Usas2		TiledtileSet	Indra	path	tilesheets/tsKarniMata.tsx		
+1	Usas2		TiledtileSet	KarniMata	id	6		
 1	Usas2		TiledtileSet	KarniMata	path	tilesheets/tsKarniMata.tsx		
 1	Usas2		TiledtileSet	KarniMata	imageSourceFile	../../grapx/tilesheets/sKarniMata.bmp		
 1	Usas2		TiledtileSet	Lemniscate	path	tilesheets/tsLemniscate.tsx		
@@ -132,17 +147,11 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	Description	C
 1	Usas2		TiledWorldMap	.*	defaultLocation	C:\Users\$($env:username)\OneDrive\Usas2\maps		
 1	Usas2		TiledWorldMap	Hub	Name	Hub		
 1	Usas2		TiledWorldMap	Hub	path	Hub.world		
-1	Usas2		TiledWorldMap	Pegu	Name	Pegu		
-1	Usas2		TiledWorldMap	Pegu	path	Pegu.world		
 1	Usas2		TiledWorldMap	KarniMata	Name	Karni Mata		
 1	Usas2		TiledWorldMap	KarniMata	path	KarniMata.world		
-1	Usas2		DSM	usas2	blocksize	16384		
-1	Usas2		DSM	usas2	numBlocks	256		
-1	Usas2		DSM	usas2	segmentSize	128		
-1	Usas2		DsmDatalist	maps	name	maps		
-1	Usas2		DsmDatalist	gfx	name	gfx		
-1	Usas2		DSM	usas2	fileSpace	usas2.rom		
-1	Usas2		DSM	usas2	name	usas2.rom		
-1	Usas2		DSM	usas2	description	Complete ROM files of 4MB		
-1	Usas2		DSM	usas2	blockExclusion	0,1,2,3		
+1	Usas2		TiledWorldMap	Pegu	Name	Pegu		
+1	Usas2		TiledWorldMap	Pegu	path	Pegu.world		
+1	Usas2		VGM	KarniMata	filename	.\music\karnimata.vgm		
 1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv		
+1	Usas2		Palette	KarniMata	id	6		
+1	Usas2		Palette	KarniMata	file	karnimata.pl		

@@ -277,6 +277,9 @@ BuildUpMap:
   ;ld    a,KarniMataTilesBlock         ;tilesheet gfx in page 1+2 rom
   ;call  block1234
 
+	LD A,6			;RM: WIP 6=karnimata
+	call getgfx			;get GfxRecordAdr
+	
   ;set vdp ready to write in page 0 in vram 
   xor   a
   ld    hl,0                          ;start writing at (0,0) page 0
@@ -524,37 +527,44 @@ BuildUpMap:
 
 
 ;RM: Tijdelijke index voor tilesets -> komt in DSM
-TileSetIndex:
-			dw .TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSet06,.TileSet07
-			dw .TileSetNull,.TileSet09,.TileSet10,.TileSet11,.TileSet12,.TileSetNull,.TileSetNull,.TileSetNull
-			dw .TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull
-			dw .TileSet24,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull
-.TileSetNull:			
-.TileSet06:	DB 0,2,KarniMataTilesBlock,0,KarniMataTilesBlock+1,0
-.TileSet07:	DB 0,2,KonarkTilesBlock,0,KonarkTilesBlock+1,0
-.TileSet09:	DB 0,2,BurialTilesBlock,0,BurialTilesBlock+1,0
-.TileSet10:	DB 0,2,VoodooWaspTilesBlock,0,VoodooWaspTilesBlock+1,0
-.TileSet11:	DB 0,2,BlueTempleTilesBlock,0,BlueTempleTilesBlock+1,0
-.TileSet12:	DB 0,2,GoddessTilesBlock,0,GoddessTilesBlock+1,0
-.TileSet24:	DB 0,2,IceTempleTilesBlock,0,IceTempleTilesBlock+1,0
+;TileSetIndex:
+;			dw .TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSet06,.TileSet07
+;			dw .TileSetNull,.TileSet09,.TileSet10,.TileSet11,.TileSet12,.TileSetNull,.TileSetNull,.TileSetNull
+;			dw .TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull
+;			dw .TileSet24,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull
+;.TileSetNull:			
+;.TileSet06:	DB 0,2,KarniMataTilesBlock,0,KarniMataTilesBlock+1,0
+;.TileSet07:	DB 0,2,KonarkTilesBlock,0,KonarkTilesBlock+1,0
+;.TileSet09:	DB 0,2,BurialTilesBlock,0,BurialTilesBlock+1,0
+;.TileSet10:	DB 0,2,VoodooWaspTilesBlock,0,VoodooWaspTilesBlock+1,0
+;.TileSet11:	DB 0,2,BlueTempleTilesBlock,0,BlueTempleTilesBlock+1,0
+;.TileSet12:	DB 0,2,GoddessTilesBlock,0,GoddessTilesBlock+1,0
+;.TileSet24:	DB 0,2,IceTempleTilesBlock,0,IceTempleTilesBlock+1,0
 
 
 ;Get GFX location, and set blocks at page 1,2
-GETGFX: LD    BC,TileSetIndex
+GETGFX: 
+;		LD    BC,TileSetIndex
+		LD 	BC,$9000 		;start of the gfx index (temp)
         LD    L,A
         LD    H,0
         ADD   HL,HL
         ADD   HL,BC
+		LD A,$b7 				;indexblock (temp)
+		call block34			;map it to p2
         LD    A,(HL)
         INC   HL
         LD    H,(HL)
         LD    L,A
+		ld bc,$9000+64
+		add hl,bc
 ;rm: voorlopig zo, met raw sc5 uitgaande van volledige 32K
 	LD    A,(HL)          ;pal
     INC   HL
 ;	LD    B,(HL)          ;parts
 	INC   HL
 	LD    A,(HL)          ;block part 1
+add a,$b7 ;temp
 	Call	block12
 	INC   HL
 ;    LD    D,(HL)          ;seg
@@ -563,6 +573,7 @@ GETGFX: LD    BC,TileSetIndex
 ;    SRL   D               ;seglen=128
 ;    RR    E
 	LD    A,(HL)          ;block part 2
+add a,$b7 ;temp
 	jp	block34
 
 ;        LD    A,(HL)          ;pal

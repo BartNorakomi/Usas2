@@ -5,13 +5,14 @@
 
 [CmdletBinding()]
 param
-(	[Parameter(ParameterSetName='ruin')]$ruinId=".*",
-#	[Parameter(ParameterSetName='room')]$roomname,
-#	[Parameter(ParameterSetName='file')]$path,
+(	[Parameter(ParameterSetName='ruin')]$ruinId,
+	[Parameter(ParameterSetName='room')]$roomname,
+	[Parameter(ParameterSetName='file')]$path,
 	$dsmName="Usas2.Rom.dsm",
 	$datalistName="WorldMap",
 	$mapslocation="..\maps",
-	$TiledMapsLocation="C:\Users\$($env:username)\OneDrive\Usas2\maps"
+	$TiledMapsLocation="C:\Users\$($env:username)\OneDrive\Usas2\maps",
+	[switch]$convertTiledMap
 )
 
 ##### Includes #####
@@ -23,8 +24,27 @@ param
 $global:usas2=get-Usas2Globals
 $romfile="$(resolve-path "..\Engine\usas2.rom")" #\usas2.rom"
 
+##### Functions #####
+
+#note that this functions uses script parameters as global
+function add-roomToDsm
+{	param ($rooms)
+	foreach ($room in $rooms)
+	{	#convert .tmx to .map
+		if ($convertTiledMap)
+		{	$tiledMapPath="$tiledmapsLocation\$($room.name).tmx"
+			.\convert-tmxtoraw16.ps1 -path $tiledMapPath -targetPath $mapsLocation -includeLayer ".*" -excludeLayer "(Objects|room numbers)" -pack
+		}
+		#Add to DSM and inject to ROM
+		$pckPath="$mapslocation\$($room.name).map.pck"
+		$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $pckpath -name $pckpath -updateFileSpace
+	}
+}
+
+
+
 ##### MAIN #####
-$ruinIdFilter=("^("+($ruinId -join ("|"))+")$")
+$DatalistProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistName}
 write-verbose "DSM: $dsmname, Datalist:$datalistname"
 
 if (-not ($dsm=load-dsm -path $dsmname))
@@ -32,19 +52,35 @@ if (-not ($dsm=load-dsm -path $dsmname))
 }	else
 {	$null=$DSM|open-DSMFileSpace -path $romfile
 	$datalist=add-DSMDataList -dsm $dsm -name $datalistname
-	$rooms=get-U2WorldMapRooms -ruinid $ruinidfilter 
-	foreach ($room in $rooms)
-	{	#convert .tmx to .map
-		$tiledMapPath="$tiledmapsLocation\$($room.name).tmx"
-		.\convert-tmxtoraw16.ps1 -path $tiledMapPath -targetPath $mapsLocation -includeLayer ".*" -excludeLayer "(Objects|room numbers)" -pack
-		#Add to DSM and inject to ROM
-		$pckPath="$mapslocation\$($room.name).map.pck"
-		$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $pckpath -name $pckpath -updateFileSpace
+
+	#Add Ruin(s)
+	if ($ruinid)
+	{	$ruinIdFilter=("^("+($ruinId -join ("|"))+")$")
+		$rooms=get-U2WorldMapRooms -ruinid $ruinidfilter
+		add-roomToDsm -rooms $rooms
 	}
+
+	#Add room(s)
+	elseif ($roomname)
+	{	$roomNameFilter=("^("+($roomname -join ("|"))+")$")
+		$rooms=get-U2WorldMapRooms -roomname $roomNameFilter
+		add-roomToDsm -rooms $rooms
+	}
+
+	#Add file
+	elseif ($path)
+	{
+		write-warning "not yet supported"
+	}
+
 	#Make new maps index and inject into ROM
 	$indexRecords=get-WorldMapRoomIndex -dsm $dsm -datalistname $dataListName
-	write-DSMFileSpace -dsm $dsm -block 0 -segment 0 -data $indexrecords #$data 
-
+	if ($DatalistProperties)
+	{	$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
+		write-verbose "Writing Index to block:$indexblock, segment:$indexsegment"
+		write-DSMFileSpace -dsm $dsm -block $indexBlock -segment $indexSegment -data $indexrecords
+	}
+	#close the ROM file and save DSM
 	$null=$DSM|close-DSMFileSpace
 	save-dsm -dsm $dsm
 }
