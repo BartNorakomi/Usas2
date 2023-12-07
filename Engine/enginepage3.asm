@@ -274,8 +274,8 @@ BuildUpMap:
   ld    a,(slot.page12rom)            ;all RAM except page 12
   out   ($a8),a    
 
-  ld    a,KarniMataTilesBlock         ;tilesheet gfx in page 1+2 rom
-  call  block1234
+  ;ld    a,KarniMataTilesBlock         ;tilesheet gfx in page 1+2 rom
+  ;call  block1234
 
   ;set vdp ready to write in page 0 in vram 
   xor   a
@@ -368,9 +368,10 @@ BuildUpMap:
 	ld    a,(slot.page12rom)            ;all RAM except page 12
 	out   ($a8),a    
 ;	ld    a,KarniMataTilesBlock         ;tilesheet gfx in page 1+2 rom
-	xor A
-	call getgfx
-	call  block1234
+;	call  block1234
+
+	LD A,6			;RM: WIP 6=karnimata
+	call getgfx			;get GfxRecordAdr
 
 ;set vdp ready to write in page 0 in vram 
 	xor   a
@@ -522,12 +523,23 @@ BuildUpMap:
   ret
 
 
-
+;RM: Tijdelijke index voor tilesets -> komt in DSM
 TileSetIndex:
-	dw .TileSet00
-.TileSet00:
-	DB 0,2,KarniMataTilesBlock,0,KarniMataTilesBlock+1,0
+			dw .TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSet06,.TileSet07
+			dw .TileSetNull,.TileSet09,.TileSet10,.TileSet11,.TileSet12,.TileSetNull,.TileSetNull,.TileSetNull
+			dw .TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull
+			dw .TileSet24,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull,.TileSetNull
+.TileSetNull:			
+.TileSet06:	DB 0,2,KarniMataTilesBlock,0,KarniMataTilesBlock+1,0
+.TileSet07:	DB 0,2,KonarkTilesBlock,0,KonarkTilesBlock+1,0
+.TileSet09:	DB 0,2,BurialTilesBlock,0,BurialTilesBlock+1,0
+.TileSet10:	DB 0,2,VoodooWaspTilesBlock,0,VoodooWaspTilesBlock+1,0
+.TileSet11:	DB 0,2,BlueTempleTilesBlock,0,BlueTempleTilesBlock+1,0
+.TileSet12:	DB 0,2,GoddessTilesBlock,0,GoddessTilesBlock+1,0
+.TileSet24:	DB 0,2,IceTempleTilesBlock,0,IceTempleTilesBlock+1,0
 
+
+;Get GFX location, and set blocks at page 1,2
 GETGFX: LD    BC,TileSetIndex
         LD    L,A
         LD    H,0
@@ -537,19 +549,35 @@ GETGFX: LD    BC,TileSetIndex
         INC   HL
         LD    H,(HL)
         LD    L,A
-        LD    A,(HL)          ;pal
-        INC   HL
-        LD    B,(HL)          ;parts
-        INC   HL
-GFX.0:  LD    A,(HL)          ;block
-        INC   HL
-        LD    D,(HL)          ;seg
-        INC   HL
-        LD    E,0
-        SRL   D               ;seglen=128
-        RR    E
+;rm: voorlopig zo, met raw sc5 uitgaande van volledige 32K
+	LD    A,(HL)          ;pal
+    INC   HL
+;	LD    B,(HL)          ;parts
+	INC   HL
+	LD    A,(HL)          ;block part 1
+	Call	block12
+	INC   HL
+;    LD    D,(HL)          ;seg
+    INC   HL
+;    LD    E,0
+;    SRL   D               ;seglen=128
+;    RR    E
+	LD    A,(HL)          ;block part 2
+	jp	block34
+
+;        LD    A,(HL)          ;pal
+;        INC   HL
+;        LD    B,(HL)          ;parts
+;        INC   HL
+;GFX.0:  LD    A,(HL)          ;block
+;        INC   HL
+;        LD    D,(HL)          ;seg
+;        INC   HL
+;        LD    E,0
+;        SRL   D               ;seglen=128
+;        RR    E
 ;        DJNZ  GFX.0
-        RET
+;        RET
 
 
 ; Tiles numbering

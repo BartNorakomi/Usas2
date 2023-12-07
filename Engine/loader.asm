@@ -14,14 +14,10 @@ loader:
   ret
 
 getRoom:
-  ld    a,$b7 ;WorldMapDataCopiedToRamBlock;loader routine at $4000
+  ld    a,$b7 ;Index
   call  block34
-;  ld    hl,(WorldMapPointer)
-;  ld    de,MapDataCopiedToRam
-;  ld    bc,6
-;  ldir
   ld de,(WorldMapPositionY)   ;WorldMapPositionX/Y:  
-  call GetWorldMapRoom
+  call GetWorldMapRoomLocation
   add a,$b7			;offset (temp)
   ld bc,$8000
   add hl,bc
@@ -45,7 +41,7 @@ RECLEN: EQU   4               ;recordLength
 
 ;Get WorldMapRoom
 ;In:  DE=IndexID (D=X,E=Y)
-GetWorldMapRoom:
+GetWorldMapRoomLocation:
         LD    HL,IDXADR
         LD    BC,RECLEN-1
 GWMR.1: LD    A,D             ;x

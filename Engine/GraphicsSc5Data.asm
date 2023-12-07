@@ -1,18 +1,18 @@
-VoodooWaspTilesBlock:  equ   GraphicsSc5DataStartBlock
+VoodooWaspTilesBlock:  equ   GraphicsSc5DataStartBlock   ;ruin Euderus Set (10)
 phase	$4000
-;  incbin "..\grapx\tilesheets\sVoodooWasp.SC5",7,208 * 128      ;208 lines
-;  incbin "..\grapx\tilesheets\sVoodooWaspBottom48Lines.SC5",7,48 * 128 ;48 lines
+  incbin "..\grapx\tilesheets\sVoodooWasp.SC5",7,208 * 128      ;208 lines
+  incbin "..\grapx\tilesheets\sVoodooWaspBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
-GoddessTilesBlock:  equ   VoodooWaspTilesBlock+2
+GoddessTilesBlock:  equ   VoodooWaspTilesBlock+2	;ruin Fate (12)
 phase	$4000
 ;  incbin "..\grapx\tilesheets\sGoddess.SC5",7,208 * 128      ;208 lines
 ;  incbin "..\grapx\tilesheets\sGoddessBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
-KarniMataTilesBlock:  equ   GoddessTilesBlock+2
+KarniMataTilesBlock:  equ   GoddessTilesBlock+2		;ruin Karni Mata (6)
 phase	$4000
 ;  incbin "..\grapx\tilesheets\sKarniMata.SC5",7,208 * 128      ;208 lines
 ;  incbin "..\grapx\tilesheets\sKarniMataBottom48Lines.SC5",7,48 * 128 ;48 lines
@@ -20,26 +20,27 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
-BlueTempleTilesBlock:  equ   KarniMataTilesBlock+2
+BlueTempleTilesBlock:  equ   KarniMataTilesBlock+2	; ruin Akna (11)
 phase	$4000
 ;  incbin "..\grapx\tilesheets\sBlueTemple.SC5",7,208 * 128      ;208 lines
 ;  incbin "..\grapx\tilesheets\sBlueTempleBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
-KonarkTilesBlock:  equ   BlueTempleTilesBlock+2
+KonarkTilesBlock:  equ   BlueTempleTilesBlock+2	; ruin Konark (7)
 phase	$4000
  ; incbin "..\grapx\tilesheets\sKonark.SC5",7,208 * 128      ;208 lines
  ; incbin "..\grapx\tilesheets\sKonarkBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
 
-BurialTilesBlock:  equ   KonarkTilesBlock+2
+BurialTilesBlock:  equ   KonarkTilesBlock+2	;ruin Taxilla (9)
 phase	$4000
   ;incbin "..\grapx\tilesheets\sBurial.SC5",7,208 * 128      ;208 lines
   ;incbin "..\grapx\tilesheets\sBurialBottom48Lines.SC5",7,48 * 128 ;48 lines
 	ds		$c000-$,$ff
 dephase
+
 
 Graphicsblock4:  equ   BurialTilesBlock+2
 phase	$8000
@@ -90,7 +91,7 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
-IceTempleTilesBlock:  equ   PrimaryWeaponSelectGraphicsBlock+2
+IceTempleTilesBlock:  equ   PrimaryWeaponSelectGraphicsBlock+2	;ruin Morana (24)
 phase	$4000
   incbin "..\grapx\tilesheets\sIceTemple.SC5",7,208 * 128      ;208 lines
   incbin "..\grapx\tilesheets\sIceTempleBottom48Lines.SC5",7,48 * 128 ;48 lines
