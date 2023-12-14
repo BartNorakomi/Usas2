@@ -45,7 +45,7 @@ function new-DSMSegmentAllocationRecord
 {   param   ( #[uint32]$numSegmentsPerBlock
             )
     #return  [pscustomobject]@{numfree=$numSegmentsPerBlock;alloc=@(0)*$numSegmentsPerBlock}
-    return  [pscustomobject]@{stat="u";numfree=[uint32]0;alloc=[system.collections.generic.list[uint32]]::new()} #@(0)*$numSegmentsPerBlock}
+    return  [pscustomobject]@{stat=[char]"u";numfree=[uint32]0;alloc=[system.collections.generic.list[uint32]]::new()} #@(0)*$numSegmentsPerBlock}
 }
 
 # DSM OBJECT
@@ -55,7 +55,7 @@ function enable-DSMSegmentAllocationRecord
             )
 	if ($segmentAllocationRecord.alloc.count -eq 0)
 		{0..($numSegmentsPerBlock-1)|%{$segmentAllocationRecord.alloc.add(0)}
-		$segmentAllocationRecord.stat="a"
+		$segmentAllocationRecord.stat=[char]"a"
 		$segmentAllocationRecord.numFree=$numSegmentsPerBlock
 	}
 	return  $segmentAllocationRecord
@@ -124,7 +124,7 @@ function exclude-DSMblock
     foreach ($this in $block)
     {   #lock-DSMSegment -DSM $DSM -block $this -segment 0 -length $DSM.numSegmentsPerBlock
         #if ($dsm.segmentAllocationTable[$this].numfree -eq $dsm.numSegmentsPerBlock)
-        if ($this -lt $dsm.numblocks) {$dsm.segmentAllocationTable[$this].stat="x"}
+        if ($this -lt $dsm.numblocks) {$dsm.segmentAllocationTable[$this].stat=[char]"x"}
     }
     return  
 }
@@ -138,7 +138,7 @@ function include-DSMblock
     )
     foreach ($this in $block)
     {   #unlock-DSMSegment -DSM $DSM -block $this -segment 0
-        if ($dsm.segmentAllocationTable[$this].alloc.count -ne $dsm.numSegmentsPerBlock) {$stat="u"} else {$stat="a"}
+        if ($dsm.segmentAllocationTable[$this].alloc.count -ne $dsm.numSegmentsPerBlock) {$stat=[char]"u"} else {$stat=[char]"a"}
         $dsm.segmentAllocationTable[$this].stat=$stat
     }
     return  
@@ -698,7 +698,8 @@ function get-DSMStatistics
     (	[Parameter(ParameterSetName='DSM',Mandatory,ValueFromPipeline)]$DSM
 	)
 	$capacity=$DSM.numblocks*$DSM.blocksize
-	$free=$($DSM.segmentAllocationTable.numfree|measure -Sum).sum*$DSM.segmentsize
+	$free=$($DSM.segmentAllocationTable|where{$_.stat -ne "u"}|measure -property numfree -Sum).sum*$DSM.segmentsize
+	$free+=$($DSM.segmentAllocationTable|where{$_.stat -eq "u"}|measure).count*$DSM.blocksize
 	write "Name:		$($DSM.name)"
 	write "Size:		$($DSM.size) blocks"
     write "FirstBlock:	$($DSM.firstBlock)"

@@ -228,67 +228,18 @@ copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
   
 SetMapPalette:
 ;set palette
-  ld    a,(ix+5)                      ;palette
-  or    a
-  ld    hl,VoodooWaspPalette          ;0
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,GoddessPalette             ;1
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,KonarkPalette              ;2
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,KarniMataPalette           ;3
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,BlueTemplePalette          ;4
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,BurialPalette              ;5
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,BossAreaPalette            ;6
-  jr    z,.goSetPalette
-  dec   a
-  ld    hl,IceTemplePalette           ;7
-  jr    z,.goSetPalette
-
-  .goSetPalette:
-  
+  ld hl,KarniMataPalette			;temp karni
   push  hl
   ld    de,CurrentPalette
   ld    bc,32
   ldir
   pop   hl
-  
-;ret  
-  
   jp    setpalette
 
 KarniMataPalette:
-  incbin "..\grapx\tilesheets\sKarniMatapalette.PL" ;file palette 
-VoodooWaspPalette:
-  incbin "..\grapx\tilesheets\sVoodooWaspPalette.PL" ;file palette 
-GoddessPalette:
-  incbin "..\grapx\tilesheets\sGoddessPalette.PL" ;file palette 
-BlueTemplePalette:
-  incbin "..\grapx\tilesheets\sBlueTemplePalette.PL" ;file palette 
-KonarkPalette:
-  incbin "..\grapx\tilesheets\sKonarkPalette.PL" ;file palette 
-;KonarkBrighterPalette1:
-;  incbin "..\grapx\tilesheets\sKonarkBrighterPalette1.PL" ;file palette 
-;KonarkBrighterPalette2:
-;  incbin "..\grapx\tilesheets\sKonarkBrighterPalette2.PL" ;file palette 
-;KonarkBrighterPalette3:
-;  incbin "..\grapx\tilesheets\sKonarkBrighterPalette3.PL" ;file palette 
-BurialPalette:
-  incbin "..\grapx\tilesheets\sBurialPalette.PL" ;file palette 
-BossAreaPalette:
-  incbin "..\grapx\tilesheets\sBossAreaPalette.PL" ;file palette 
-IceTemplePalette:
-  incbin "..\grapx\tilesheets\sIceTemplePalette.PL" ;file palette 
-  
+;sKarniMataPalette.PL
+DB 71,5,18,1,32,5,52,3,32,1,0,3,80,3,115,6,0,2,119,7,64,6,35,2,69,4,112,5,112,2,0,0
+
 ;SetTilesInVram:  
 ;set tiles in Vram
 ;  ld    a,(ix+4)                      ;tile data

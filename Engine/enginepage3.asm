@@ -1,5 +1,6 @@
 phase	enginepage3addr
 
+LoadSamples?: equ 1
 MusicOn?:   equ 0
 LogoOn?:    equ 0
 
@@ -132,12 +133,16 @@ VGMRePlay:
   
   ld    a,FormatOPL4_ID
   call  RePlayer_Detect               ;detect moonsound
-  ld    bc,0                          ;track nr
+  ld a,LoadSamples?	;debug function to skip sample load
+  and A
+  ret z
+  ld    bc,0                          ;track nr 0 will alos initialize samples
   ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
   ld    hl,$8000+1
   call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
-  jp    RePlayer_Tick                 ;initialise, load samples
-  
+  call	RePlayer_Tick
+  ret
+
 Main_Loop:
   halt
   call  RePlayer_Tick
