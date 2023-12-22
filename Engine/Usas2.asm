@@ -1,17 +1,44 @@
 		fname	"Usas2.rom",0	;Append code to existing Usas2.Rom file
 
+;Debug stuff
+LoadSamples?: equ 0
+MusicOn?:   equ 1
+LogoOn?:    equ 0
+
+
 ; GLobals
-RomBlockSize:		equ 16*1024
-RomStartAddress:	equ $4000
+RomBlockSize:			equ 16*1024
+RomStartAddress:		equ $4000
+
+DSM:					equ 0
+.segmentSize:			equ 128
+.blockSize:				equ 16*1024
+.firstBlock:			equ $b7
+.numBlocks:				equ 73
+.indexBlock:			equ 0	;offset of firstblock
+.worldMapIndexAdr:		equ $8000
+.worldMapIndexRecLen:	equ 4
+.bitmapGfxindexAdr:		equ $9000
+.bitmapGfxPointersAdr:	equ +0
+.bitmapGfxRecords:		equ +64
+
+RoomIndexRec:			equ	0		;Room index record structure
+.id:					equ +0
+.block:					equ +1
+.segmentSize:			equ +2
+
+RuinPropertiesRec:		equ 0		;Ruin propertie table record structure
+.tileset:				equ +0
+.palette:				equ +1
+.music:					equ +2
+.Name:					equ +3
 
 
-	org		$4000
-Usas2:
-;	ROM
-	dw		"AB",init,0,0,0,0,0,0
+; ##### MAIN #####
+	org		RomStartAddress
+Usas2:		dw	"AB",init,0,0,0,0,0,0
 
 ; this is one-time only... can be overwritten with game stuff after it's done
-
 memInit:	
 	phase	$c000
 ;

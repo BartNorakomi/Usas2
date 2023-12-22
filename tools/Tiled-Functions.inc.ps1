@@ -1,6 +1,6 @@
 #Functions for Tiled
 # shadow@fuzzylogic
-# 20231018-20231024
+# 20231018-20231221
 
 [CmdletBinding()]
 param
@@ -10,17 +10,25 @@ param
 #Load an existing map file
 function get-TiledMap
 {	param ($path)
-	[xml]$map=Get-Content $path
-	return $map
+	if ([xml]$map=Get-Content $path)
+	{	$null=add-TiledMapProperty -map $map -name path -type string -value $path -force
+		return ,$map
+	}	else
+	{	write-error "File not found"
+	}
 }
 
 #Save map file
 function set-TiledMap
 {	param
 	(	[Parameter(Mandatory,Position=0,ValueFromPipeline)]$map,
-		[Parameter(Mandatory,Position=1)]$path
+		[Parameter(Position=1)]$path
 	)
-	$null= set-content -Value $map.OuterXml -Path $path
+	if (-not $path) {$path=($map.map.properties.property|where{$_.name -eq "path"}).value}
+	if ($path)
+	{	write-verbose "Writing Tiled .map file $path"
+		$null= set-content -Value $map.OuterXml -Path $path
+	}
 }
 
 #Return an empty Tiled.Map Object in XLM document format
@@ -60,20 +68,24 @@ function add-TiledMapProperty
 	(	[Parameter(Mandatory,Position=0,ValueFromPipeline)]$map,
 		[Parameter(Mandatory)]$name,
 		[Parameter(Mandatory)]$type,
-		[Parameter(Mandatory)]$value
+		[Parameter(Mandatory)]$value,
+		[switch]$force
 	)
-	if ($property=$map.map.properties.property|where{$_.name -eq $name -and $_.type -eq $type})
-	{	write-error "Map property already exists"
-	}	else
-	{	if (-not ($properties=$map.map.properties)) {$properties=$map.CreateElement("properties");[void]$map.map.AppendChild($properties)}
-		$property=$map.CreateElement("property")
-		$null=$property.SetAttribute("name",$name)
-		$null=$property.SetAttribute("type",$type)
-		$null=$property.SetAttribute("value",$value)
-		[void]$properties.AppendChild($property)
-		#if (-not $map.map.properties) {[void]$map.map.AppendChild($properties)}
-		return $map
+	if ($node=$map|Get-TiledMapProperty -name $name -type $type)
+	{	if (-not $force)
+		{	write-error "Map property already exists";break
+		} else
+		{	$null=$map|remove-TiledMapProperty -name $name -type $type
+		}
 	}
+	if (-not ($properties=$map.map.properties)) {$properties=$map.CreateElement("properties");[void]$map.map.AppendChild($properties)}
+	$property=$map.CreateElement("property")
+	$null=$property.SetAttribute("name",$name)
+	$null=$property.SetAttribute("type",$type)
+	$null=$property.SetAttribute("value",$value)
+	[void]$properties.AppendChild($property)
+	#if (-not $map.map.properties) {[void]$map.map.AppendChild($properties)}
+	return $map
 }
 
 
@@ -93,7 +105,7 @@ function set-TiledMapProperty
 		{	$node=$property
 		}
 	}
-	elseif ($name) {$node=$map.map.properties.property|where{$_.name -eq $name -and $_.type -eq $type}|select -first 1}
+	else {$node=$map|Get-TiledMapProperty -name $name -type $type|select -first 1}
 	
 	if (-not $node)
 	{	write-error "Property name $name not found"
@@ -119,7 +131,7 @@ function remove-TiledMapProperty
 		{	$node=$property
 		}
 	}
-	else {$node=$map.map.properties.property|where{$_.name -eq $name -and $_.type -eq $type}|select -first 1}
+	else {$node=$map|Get-TiledMapProperty -name $name -type $type|select -first 1}
 
 	if (-not $node)
 	{	write-error "Property name $name not found"
@@ -127,7 +139,6 @@ function remove-TiledMapProperty
 	{	[void]$node.parentnode.removeChild($node)
 		if ($map) {return $map} else {return}
 	}
-	
 }
 
 
@@ -437,9 +448,11 @@ function Remove-TiledWorldMapMap
 if ($test)
 {
 #includes
-. .\csvtoobj.ps1
-
-
+$mapFileName="test.tmx"
+$tmxFolder="C:\Users\rvand\OneDrive\Usas2\maps"
+$map=get-TiledMap $tmxFolder\$mapFilename
+$map|get-TiledMapProperty
+$global:map=$map
 
 }
 

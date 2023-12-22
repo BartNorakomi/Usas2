@@ -5,45 +5,41 @@ loader:
   call  SwapSpatColAndCharTable
   call  SwapSpatColAndCharTable2
 
-  call getRoom
+  call	getRoom
   call  SetEngineType
 
 ;  call  SetTilesInVram                ;copies all the tiles to Vram
   call  PopulateControls              ;this allows for a double jump as soon as you enter a new map
+  ld a,6 		;ruinId (temp)
+  call	getPalette
   call  SetMapPalette                 ;sets palette
   ret
 
+
 getRoom:
-  ld    a,$b7 ;Index
-  call  block34
-  ld de,(WorldMapPositionY)   ;WorldMapPositionX/Y:  
-  call GetWorldMapRoomLocation
-  add a,$b7			;offset (temp)
-  ld bc,$8000
-  add hl,bc
-  ld ix,MapDataCopiedToRam
-  ld (ix),a ;block
-  ld (ix+1),l ;adr
-  ld (ix+2),h
-  ld (ix+3),1 ;engine
-  ld (ix+4),0 ;tileSet
-  ld (ix+5),0 ;pal
-ret
+		ld    a,Dsm.firstBlock+dsm.indexBlock
+		call  block34
+		ld de,(WorldMapPositionY) 			;WorldMapPositionX/Y:  
+		call GetWorldMapRoomLocation
+		add a,Dsm.firstBlock+dsm.indexBlock	;offset (temp)
+		ld bc,$8000							;destination
+		add hl,bc
+		ld ix,MapDataCopiedToRam
+		ld (ix),a ;block
+		ld (ix+1),l ;adr
+		ld (ix+2),h
+		ld (ix+3),1 ;engine
+		ld (ix+4),0 ;tileSet
+		ld (ix+5),0 ;pal
+		ret
 
-
-;Usas2 Worldmap Index
-|WMIID: EQU   0               ;ID (x,y)
-|WMIBL: EQU   2               ;block
-|WMISG: EQU   3               ;segment
-SEGSIZ: EQU   $0100           ;segment size
-IDXADR: EQU   $8000           ;indexAddress
-RECLEN: EQU   4               ;recordLength
 
 ;Get WorldMapRoom
-;In:  DE=IndexID (D=X,E=Y)
+;In:	DE=IndexID (D=X,E=Y)
+;out:	HL=Address(relative, 0-3fff), A=block(relative)
 GetWorldMapRoomLocation:
-        LD    HL,IDXADR
-        LD    BC,RECLEN-1
+        LD    HL,dsm.worldMapIndexAdr
+        LD    BC,dsm.worldMapIndexRecLen-1
 GWMR.1: LD    A,D             ;x
         CP    (HL)
         INC   HL
@@ -56,12 +52,49 @@ GWMR.1: LD    A,D             ;x
         INC   HL
         LD    H,(HL)          ;seg
         LD    L,0
-        SRL   H         ;seglen=128
+        SRL   H     	    ;seglen=128, so shift 1 right
         RR    L
         RET
 GWMR.0: ADD   HL,BC
         JP    GWMR.1
 
+
+SetMapPalette:
+;set palette
+  push  hl
+  ld    de,CurrentPalette
+  ld    bc,32
+  ldir
+  pop   hl
+  jp    setpalette
+
+
+;Get palette location
+;in:	A=palId
+;out:	HL=adr
+getPalette:
+	push bc
+	LD	h,0
+	ld	l,A
+	add	hl,hl	;x2
+	add	hl,hl	;4
+	add hl,hl	;8
+	add	hl,hl	;16
+	add hl,hl	;32
+	ld	bc,palettes
+	add	hl,bc
+	pop bc
+	ret
+
+palettes:
+.0:				DS 32		;incBin filename,0,32
+.1:				DS 32
+.2:				DS 32
+.3:				DS 32
+.4:				DS 32
+.5:				DS 32
+.6KarniMata:	DB 71,5,18,1,32,5,52,3,32,1,0,3,80,3,115,6,0,2,119,7,64,6,35,2,69,4,112,5,112,2,0,0
+.7:				DS 32
 
 
 
@@ -225,20 +258,8 @@ copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
   ld    b,0
   call  copyGraphicsToScreen.loop1
   jp    outix128
-  
-SetMapPalette:
-;set palette
-  ld hl,KarniMataPalette			;temp karni
-  push  hl
-  ld    de,CurrentPalette
-  ld    bc,32
-  ldir
-  pop   hl
-  jp    setpalette
 
-KarniMataPalette:
-;sKarniMataPalette.PL
-DB 71,5,18,1,32,5,52,3,32,1,0,3,80,3,115,6,0,2,119,7,64,6,35,2,69,4,112,5,112,2,0,0
+
 
 ;SetTilesInVram:  
 ;set tiles in Vram

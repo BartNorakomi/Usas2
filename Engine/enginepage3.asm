@@ -1,19 +1,38 @@
 phase	enginepage3addr
 
-LoadSamples?: equ 1
-MusicOn?:   equ 0
-LogoOn?:    equ 0
 
-WorldMapDataWidth:      equ 50    ;amount of maps in width 
 WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
-
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
-MapBT22Data: equ $99AA
-WorldMapPointer:  dw  MapBT22Data      ;
 
-;we are going to change the worldmappointer, giving it an x and  y position instead
 WorldMapPositionY:  db  21 ;14 ;14 ;21
 WorldMapPositionX:  db  43 ;18 ;43
+
+;LookUpTable for Room Types (width,height,engine,free)
+roomTypesRec:	equ 0
+.length:		equ 4
+.num:			equ 8
+.roomWidth:		equ +0
+.roomHeight:	equ +1
+.engineType:	equ +2
+.free:			equ +3
+RoomTypes:		DB 38,27,1,0	;Regular
+				DB 32,27,2,0	;Teleport
+				DB 38,27,1,0	;Secret
+				DB 32,27,2,0	;Boss
+				DB 32,27,2,0	;Gate
+				DB 0,0,0,0	;<free>
+				DB 0,0,0,0	;<free>
+				DB 0,0,0,0	;<free>
+
+;RoomDataBlock structure
+roomDataBlock:	equ 0
+.mapId:			equ +0
+.tileSet:		equ +1
+.music:			equ +2
+.palette:		equ +3
+.free:			equ +4
+.mapTiles:		equ +8
+
 
 
 
@@ -188,59 +207,55 @@ WaitVblank:
   ret
 
 
+clearEnemyTable:
+		ld    b,amountofenemies
+		ld    hl,enemies_and_objects
+		ld    de,lenghtenemytable
+		xor   a
+.Loop:	ld    (hl),a
+		add   hl,de
+		djnz  .Loop
+ret
 
 
+;unpacks packed map to $4000 in ram and sets objects. ends with: all RAM except page 2
+;set all objects Alive? to 0 / clear all objects from the list
+;in:	IX
+UnpackMapdata_SetObjects:             
+		call	clearEnemyTable
 
+		;unpack map data
+		ld    a,(slot.page12rom)            ;all RAM except page 2
+		out   ($a8),a      
+		ld    a,(ix+0)		;ROM block 
+		call  block34		;we can only switch block34 if page 1 is in rom
+		ld    l,(ix+1)		;ROM adr
+		ld    h,(ix+2)
 
-UnpackMapdata_SetObjects:             ;unpacks packed map to $4000 in ram and sets objects. ends with: all RAM except page 2
-  ;set all objects Alive? to 0 / clear all objects from the list
-  ld    b,amountofenemies
-  ld    hl,enemies_and_objects
-  ld    de,lenghtenemytable
-  xor   a
-  .ClearEnemyTableLoop:
-  ld    (hl),a
-  add   hl,de
-  djnz  .ClearEnemyTableLoop
-
-;unpack map data
-  ld    a,(slot.page12rom)            ;all RAM except page 2
-  out   ($a8),a      
-
-  ld    a,(ix+0)	;ROM block 
-    call  block34		;we can only switch block34 if page 1 is in rom
-  ld    l,(ix+1)	;ROM adr
-  ld    h,(ix+2)
-
-;unpack map data
-  ld    a,(slot.page2rom)             ;all RAM except page 2
-  out   ($a8),a      
-    
-  ld    de,UnpackedRoomFile
-  call  Depack
+		;unpack map data
+		ld    a,(slot.page2rom)             ;all RAM except page 2
+		out   ($a8),a      
+			
+		ld    de,UnpackedRoomFile
+		call  Depack
   
-  ;FOR NOW LETS ASUME DEPACK ALWAYS ENDS HL 2 BYTES FURTHER TO THE RIGHT
-  dec   hl
-  dec   hl
-    
-  ;ld    a,(hl)                        ;amount of objects for this map
-  ;or    a
-  xor A         ;temp set at zero
-  ret   z
-  
-  inc   hl                            ;object 1 - table
-  ld    de,enemies_and_objects        ;copy just 1 object for now
-  
-  .CopyAllEnemiesLoop:
-  ld    bc,lenghtenemytable
-  ldir
-  dec   a
-  jp    nz,.CopyAllEnemiesLoop
-  ret
-
-
-
-
+		;FOR NOW LETS ASUME DEPACK ALWAYS ENDS HL 2 BYTES FURTHER TO THE RIGHT
+		dec   hl
+		dec   hl
+			
+		;ld    a,(hl)                        ;amount of objects for this map
+		;or    a
+		xor A         ;temp set at zero
+		ret   z
+		
+		inc   hl                            ;object 1 - table
+		ld    de,enemies_and_objects        ;copy just 1 object for now
+.CopyAllEnemiesLoop:
+		ld    bc,lenghtenemytable
+		ldir
+		dec   a
+		jp    nz,.CopyAllEnemiesLoop
+ret
 
 
 
@@ -550,36 +565,36 @@ BuildUpMap:
 ;Get GFX location, and set blocks at page 1,2
 GETGFX: 
 ;		LD    BC,TileSetIndex
-		LD 	BC,$9000 		;start of the gfx index (temp)
+		LD 	BC,dsm.bitmapGfxindexAdr	; $9000 		;start of the gfx index (temp)
         LD    L,A
         LD    H,0
         ADD   HL,HL
         ADD   HL,BC
-		LD A,$b7 				;indexblock (temp)
-		call block34			;map it to p2
+		LD A,dsm.firstblock+dsm.indexblock 		;indexblock (temp)
+		call block34							;map it to p2
         LD    A,(HL)
         INC   HL
         LD    H,(HL)
         LD    L,A
-		ld bc,$9000+64
+		ld bc,dsm.bitmapGfxindexAdr+dsm.bitmapGfxRecords ;$9000+64
 		add hl,bc
 ;rm: voorlopig zo, met raw sc5 uitgaande van volledige 32K
-	LD    A,(HL)          ;pal
-    INC   HL
-;	LD    B,(HL)          ;parts
-	INC   HL
-	LD    A,(HL)          ;block part 1
-add a,$b7 ;temp
-	Call	block12
-	INC   HL
-;    LD    D,(HL)          ;seg
-    INC   HL
-;    LD    E,0
-;    SRL   D               ;seglen=128
-;    RR    E
-	LD    A,(HL)          ;block part 2
-add a,$b7 ;temp
-	jp	block34
+		LD    A,(HL)          ;pal
+		INC   HL
+;		LD    B,(HL)          ;parts
+		INC   HL
+		LD    A,(HL)          ;block part 1
+		add a,dsm.firstblock ;temp
+		Call	block12
+		INC   HL
+;	    LD    D,(HL)          ;seg
+		INC   HL
+;   	 LD    E,0
+;    	SRL   D               ;seglen=128
+;	    RR    E
+		LD    A,(HL)          ;block part 2
+		add a,dsm.firstBlock ;temp
+		jp	block34
 
 ;        LD    A,(HL)          ;pal
 ;        INC   HL
@@ -828,7 +843,7 @@ invisspratttableaddress:    ds  2
 invissprchatableaddress:    ds  2
 
 
-
+;Write pal data [HL] to VDP
 SetPalette:
 	xor		a
 	di

@@ -1,5 +1,5 @@
 #Convert Tiled map files to raw data file, and pack it with BB to .map.pck
-#20231009-20231201;RomanVanDerMeulen aka shadow@fuzzylogic
+#20231009-20231221;RomanVanDerMeulen aka shadow@fuzzylogic
 <#
 Example: convert all BX maps
 .\convert-tmxtoraw16.ps1 -path "C:\Users\$($env:username)\OneDrive\Usas2\maps\Bx*.tmx" -targetPath ".\" -includeLayer ".*" -excludeLayer "(Objects|room numbers)" -pack
@@ -16,6 +16,11 @@ param
 	$bitBusterPath=".\pack.exe"
 )
 
+##### Includes #####
+. .\Tiled-Functions.inc.ps1
+. .\Usas2-SharedFunctions.inc.ps1
+
+##### Functions #####
 
 #Take a Tiled .tmx file and write the raw Layer(s) data to a .map file of size mapXl*mapYl
 function Convert-TmxFile
@@ -27,8 +32,9 @@ function Convert-TmxFile
 	)	
 
 	write-verbose "$infile > $outFile" 
-	[xml]$data=Get-Content $inFile
-	$rawData=Convert-TmxLayers -data $data -includeLayer $includeLayer -excludeLayer $excludeLayer
+	$data=get-TiledMap -path $infile #[xml]$data=Get-Content $inFile
+	$TiledLayerData=Convert-TmxLayers -data $data -includeLayer $includeLayer -excludeLayer $excludeLayer
+	#$RoomHeader=get-U2roomProperties
 	write-verbose "Writing RAW data to file" 
 	$null=Set-Content -Value $rawdata -Path $outFile -Encoding Byte
 }
@@ -46,7 +52,7 @@ function Convert-TmxLayers
 	$fileLength=[uint16]$data.map.width * [uint16]$data.map.height
 	write-verbose "Block length: $($fileLength*2)"
 
-	#Initialize a array of raw data in bytes
+	#Initialize an array of raw data in bytes
 	$rawData=[byte[]]::new($filelength*2)
 
 	#Walk through each layer in descending order

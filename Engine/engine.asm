@@ -2560,18 +2560,16 @@ CheckMapExit:
   ld    (ClesX),hl
   .EndCheckClimbStairsRightUp1:
   
-  ld    de,WorldMapDataMapLenght*WorldMapDataWidth
+;  ld    de,WorldMapDataMapLenght*WorldMapDataWidth
   ld    a,6
   ld    (ClesY),a
   ld    a,0
   ld    (CameraY),a
   
-  
   ld    a,(WorldMapPositionY)
   inc   a
   ld    (WorldMapPositionY),a
-  
-  
+
   jp    .LoadnextMap
   
 .ExitTopFound:  
@@ -2599,19 +2597,16 @@ CheckMapExit:
   ld    (ClesX),hl
   .EndCheckClimbStairsRightUp2:
 
-  ld    de,-WorldMapDataMapLenght*WorldMapDataWidth
+;  ld    de,-WorldMapDataMapLenght*WorldMapDataWidth
   ld    a,176+8 + 24;  - 60
   ld    (ClesY),a
   ld    a,44
   ld    (CameraY),a
 
-
   ld    a,(WorldMapPositionY)
   dec   a
   ld    (WorldMapPositionY),a
 
-
-  
   jp    .LoadnextMap
   
 .ExitRightFound:
@@ -2626,19 +2621,16 @@ CheckMapExit:
   ld    (Clesy),a
   .EndCheckClimbStairs3:
   
-  ld    de,WorldMapDataMapLenght
+;  ld    de,WorldMapDataMapLenght
   ld    hl,1
   ld    (ClesX),hl
   xor   a
   ld    (CameraX),a
 
-
   ld    a,(WorldMapPositionx)
   inc   a
   ld    (WorldMapPositionx),a
 
-
-  
   jp    .LoadnextMap
 
 .PossibleExitLeftFound:  
@@ -2657,26 +2649,22 @@ CheckMapExit:
   ld    (Clesy),a
   .EndCheckClimbStairs4:
     
-  ld    de,-WorldMapDataMapLenght
+;  ld    de,-WorldMapDataMapLenght
   ld    hl,ExitRight304x216
   ld    (ClesX),hl
   ld    a,63
   ld    (CameraX),a
 
-
-
   ld    a,(WorldMapPositionx)
   dec   a
   ld    (WorldMapPositionx),a
 
-
-
   jp    .LoadnextMap
 
 .LoadnextMap:
-  ld    hl,(WorldMapPointer)
-  add   hl,de
-  ld    (WorldMapPointer),hl
+;  ld    hl,(WorldMapPointer)
+;  add   hl,de
+;  ld    (WorldMapPointer),hl
 
   pop   hl                  ;pop the call to this routine
   call  CameraEngine304x216.setR18R19R23andPage  
