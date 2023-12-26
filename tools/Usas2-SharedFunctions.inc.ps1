@@ -198,16 +198,39 @@ function get-BitmapGfxIndex
 	return [pscustomobject]@{indexPointerTable=$indexPointerTable.toarray();index=$indexRecords.toarray()}
 }
 
-exit
+
+#RuinPropertiesTable
+function get-ruinPropertiesTable
+{	foreach ($ruin in $usas2.ruin)
+	{	#$ruin|select tileset,palette,music,name
+		if (-not ($tilesetUid=($usas2.tileset|where{$_.identity -eq $ruin.tileset}).id)) {$tilesetUid=0}
+		if (-not ($paletteUid=($usas2.palette|where{$_.identity -eq $ruin.palette}).id)) {$paletteUid=0}
+		if (-not ($musicUid=($usas2.music|where{$_.identity -eq $ruin.music}).id)) {$musicUid=0}
+		[pscustomobject]@{id=[byte]$ruin.ruinid;name=[string]$ruin.name;tileset=[byte]$tilesetUid;palette=[byte]$paletteUid;music=[byte]$musicUid}
+	}
+}
+
+
+#exit
 #test
 $usas2=get-Usas2Globals
 $global:usas2=$usas2
+
+<#
+#RuinPropertiesTable to code
+foreach ($this in (get-ruinPropertiesTable|sort id))
+{	write "	DB	$($this.tileset),$($this.palette),$($this.music),`"$(($this.name+"             ").substring(0,13))`""
+}
+#>
+
+<#
+#bitmapIndex
 $datalist=$dsm|add-DSMDataList -name BitMapGfx
 $dsm|add-dsmfile -path "..\grapx\tilesheets\KarniMataTiles.sc5" -datalistname bitmapgfx
 #$datalist.allocations|ft
 $BitmapGfxIndex=get-BitmapGfxIndex -dsm $dsm -Verbose
 $BitmapGfxIndex.indexPointerTable -join(",")
 $BitmapGfxIndex.index -join(",")
-
+#>
 
 

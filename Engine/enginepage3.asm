@@ -7,6 +7,47 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 WorldMapPositionY:  db  21 ;14 ;14 ;21
 WorldMapPositionX:  db  43 ;18 ;43
 
+ruinProperties:
+.reclen:		equ 16		;[attribute]The length of one record
+.numrec:		equ 32		;[attribute]Number of records
+.tileset:		equ +0		;[property]Default Tileset ID
+.palette:		equ +1		;[property]Default palette ID
+.music:			equ +2		;[property]Default music ID
+.Name:			equ +3		;[property]Name of the ruin as string
+.data:						;RM:table generated externally
+	DB	0,0,0,"             "
+	DB	0,0,0,"Hub          "
+	DB	0,0,0,"Lemniscate   "
+	DB	0,0,0,"Bos Stenen Wa"
+	DB	0,0,0,"Pegu         "
+	DB	0,0,0,"Bio          "
+	DB	6,6,3,"Karni Mata   "
+	DB	0,0,0,"Konark       "
+	DB	0,0,0,"Verhakselaar "
+	DB	0,0,0,"Taxilla      "
+	DB	0,0,0,"Euderus Set  "
+	DB	0,0,0,"Akna         "
+	DB	0,0,0,"Fate         "
+	DB	0,0,0,"Sepa         "
+	DB	0,0,0,"undefined    "
+	DB	0,0,0,"Chi          "
+	DB	0,0,0,"Sui          "
+	DB	0,0,0,"Grot         "
+	DB	0,0,0,"Tiwanaku     "
+	DB	0,0,0,"Aggayu       "
+	DB	0,0,0,"Ka           "
+	DB	0,0,0,"Genbu        "
+	DB	0,0,0,"Fuu          "
+	DB	0,0,0,"Indra        "
+	DB	0,0,0,"Morana       "
+	DB	0,0,0,"             "
+	DB	0,0,0,"             "
+	DB	0,0,0,"             "
+	DB	0,0,0,"             "
+	DB	0,0,0,"             "
+	DB	0,0,0,"             "
+	DB	0,0,0,"             "
+
 ;LookUpTable for Room Types (width,height,engine,free)
 roomTypesRec:	equ 0
 .length:		equ 4
@@ -236,7 +277,7 @@ UnpackMapdata_SetObjects:
 		ld    a,(slot.page2rom)             ;all RAM except page 2
 		out   ($a8),a      
 			
-		ld    de,UnpackedRoomFile
+		ld    de,UnpackedRoomFile.tiledata	;(RM: .data is temp)
 		call  Depack
   
 		;FOR NOW LETS ASUME DEPACK ALWAYS ENDS HL 2 BYTES FURTHER TO THE RIGHT
@@ -274,7 +315,9 @@ CheckTile304x216MapLenght:  equ 38 + 2
 MapData:	ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
 
 ;Space for room tiles data 
-UnpackedRoomFile:  ds  38*27*2
+UnpackedRoomFile
+.meta:		ds 8
+.tiledata:  ds  38*27*2
 
 BuildUpMap:
   ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
@@ -306,7 +349,7 @@ BuildUpMap:
 	call	SetVdp_Write	
 
   ;rom->vram copy 14 rows to page 0
-		ld    ix,UnpackedRoomFile
+		ld    ix,UnpackedRoomFile.tiledata
 ;		ld    b,14                          ;14 rows
 ;		ld    c,$98                         ;out port for outi's
 		ld	bc,$0e98
@@ -334,7 +377,7 @@ BuildUpMap:
   call	SetVdp_Write	
 
   ;rom->vram copy 7 rows to page 3
-  ld    ix,UnpackedRoomFile
+  ld    ix,UnpackedRoomFile.tiledata
 ;  ld    b,07                          ;7 rows
 ;  ld    c,$98                         ;out port for outi's
 	ld	bc,$0798
@@ -402,7 +445,7 @@ BuildUpMap:
 	call  SetVdp_Write	
 
   ;rom->vram copy 14 rows to page 0
-  ld    ix,UnpackedRoomFile
+  ld    ix,UnpackedRoomFile.tiledata
 ;  ld    b,14                          ;14 rows
 ;  ld    c,$98                         ;out port for outi's
 	ld	bc,$0e98
@@ -432,7 +475,7 @@ BuildUpMap:
 	call	SetVdp_Write	
 
   ;rom->vram copy 6 rows to page 3
-  ld    ix,UnpackedRoomFile + 12
+  ld    ix,UnpackedRoomFile.tiledata + 12
 ;  ld    b,06                          ;6 rows
 ;  ld    c,$98                         ;out port for outi's
 	ld	bc,$0698
@@ -646,7 +689,7 @@ tileConversionTable: ;(id,tilenr) order desc
 ;20231104
 ;Convert TileNumbers to TileIDs
 ConvertToMapinRam:
-	ld  de,UnpackedRoomFile 
+	ld  de,UnpackedRoomFile.tiledata 
 	ld  hl,MapData
 	ld	a,MapHeight
 .SelfModifyingCodeMapLenght:

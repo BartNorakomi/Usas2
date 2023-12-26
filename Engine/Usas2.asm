@@ -27,12 +27,6 @@ RoomIndexRec:			equ	0		;Room index record structure
 .block:					equ +1
 .segmentSize:			equ +2
 
-RuinPropertiesRec:		equ 0		;Ruin propertie table record structure
-.tileset:				equ +0
-.palette:				equ +1
-.music:					equ +2
-.Name:					equ +3
-
 
 ; ##### MAIN #####
 	org		RomStartAddress

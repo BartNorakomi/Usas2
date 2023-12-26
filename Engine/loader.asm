@@ -1,25 +1,53 @@
 loader:
-  call  screenoff
-  call  ReSetVariables
-  call  SwapSpatColAndCharTable2
-  call  SwapSpatColAndCharTable
-  call  SwapSpatColAndCharTable2
+	call screenoff
+	call ReSetVariables
+	call SwapSpatColAndCharTable2
+	call SwapSpatColAndCharTable
+	call SwapSpatColAndCharTable2
 
-  call	getRoom
-  call  SetEngineType
+	ld de,(WorldMapPositionY) 			;WorldMapPositionX/Y:  
+	call getRoom
+	call SetEngineType
 
-;  call  SetTilesInVram                ;copies all the tiles to Vram
-  call  PopulateControls              ;this allows for a double jump as soon as you enter a new map
-  ld a,6 		;ruinId (temp)
-  call	getPalette
-  call  SetMapPalette                 ;sets palette
-  ret
+	;call  SetTilesInVram				;copies all the tiles to Vram
+	call PopulateControls			;this allows for a double jump as soon as you enter a new map
+	ld	a,RuinId.KarniMata		 		;ruinId (temp)
+	call getPalette
+	call SetMapPalette				
+ret
 
+;LookUpTable for Room Types (width,height,engine,free)
+roomTypes:
+.recLen:		equ 4		;[atrribute]record length
+.numRec:		equ 8		;[atrribute]number of records
+.size:			equ .reclen*.numrec		;[atrribute]table size
+.roomWidth:		equ +0		;[property]Room with
+.roomHeight:	equ +1		;[property]Room height
+.engineType:	equ +2		;[property]engineType
+.free:			equ +3		;[property]<free for future use>
+.data:			DB 38,27,1,0	;Regular
+				DB 32,27,2,0	;Teleport
+				DB 38,27,1,0	;Secret
+				DB 32,27,2,0	;Boss
+				DB 32,27,2,0	;Gate
+				DB 0,0,0,0	;<free>
+				DB 0,0,0,0	;<free>
+				DB 0,0,0,0	;<free>
 
+;Get room type [A] table record address [HL]
+getRoomType:
+		push bc
+		ld l,A
+		ld h,0
+		add hl,hl
+		add hl,hl
+		ld bc,roomTypes.data
+		add hl,bc
+		pop bc
+ret
+
+;Get room [DE] location, block[A] address[HL]
 getRoom:
-		ld    a,Dsm.firstBlock+dsm.indexBlock
-		call  block34
-		ld de,(WorldMapPositionY) 			;WorldMapPositionX/Y:  
 		call GetWorldMapRoomLocation
 		add a,Dsm.firstBlock+dsm.indexBlock	;offset (temp)
 		ld bc,$8000							;destination
@@ -31,15 +59,17 @@ getRoom:
 		ld (ix+3),1 ;engine
 		ld (ix+4),0 ;tileSet
 		ld (ix+5),0 ;pal
-		ret
+ret
 
 
 ;Get WorldMapRoom
 ;In:	DE=IndexID (D=X,E=Y)
 ;out:	HL=Address(relative, 0-3fff), A=block(relative)
 GetWorldMapRoomLocation:
-        LD    HL,dsm.worldMapIndexAdr
-        LD    BC,dsm.worldMapIndexRecLen-1
+		ld    a,Dsm.firstBlock+dsm.indexBlock
+		call  block34
+        LD    HL,roomindex.data
+        LD    BC,roomindex.reclen-1
 GWMR.1: LD    A,D             ;x
         CP    (HL)
         INC   HL
@@ -59,42 +89,45 @@ GWMR.0: ADD   HL,BC
         JP    GWMR.1
 
 
+;store and set palette for this room
 SetMapPalette:
-;set palette
-  push  hl
-  ld    de,CurrentPalette
-  ld    bc,32
-  ldir
-  pop   hl
-  jp    setpalette
-
+		push  hl
+		ld    de,CurrentPalette
+		ld    bc,32
+		ldir
+		pop   hl
+		call setpalette
+ret
 
 ;Get palette location
 ;in:	A=palId
 ;out:	HL=adr
 getPalette:
-	push bc
-	LD	h,0
-	ld	l,A
-	add	hl,hl	;x2
-	add	hl,hl	;4
-	add hl,hl	;8
-	add	hl,hl	;16
-	add hl,hl	;32
-	ld	bc,palettes
-	add	hl,bc
-	pop bc
-	ret
+		push bc
+		LD	h,0
+		ld	l,A
+		add	hl,hl	;x2
+		add	hl,hl	;4
+		add hl,hl	;8
+		add	hl,hl	;16
+		add hl,hl	;32
+		ld	bc,palettes.data
+		add	hl,bc
+		pop bc
+ret
 
 palettes:
-.0:				DS 32		;incBin filename,0,32
-.1:				DS 32
-.2:				DS 32
-.3:				DS 32
-.4:				DS 32
-.5:				DS 32
+.reclen:		equ 32
+.numrec:		equ 32
+.data:
+.0:				DS .reclen		;incBin filename,0,.reclen
+.1:				DS .reclen
+.2:				DS .reclen
+.3:				DS .reclen
+.4:				DS .reclen
+.5:				DS .reclen
 .6KarniMata:	DB 71,5,18,1,32,5,52,3,32,1,0,3,80,3,115,6,0,2,119,7,64,6,35,2,69,4,112,5,112,2,0,0
-.7:				DS 32
+.7:				DS .reclen
 
 
 
