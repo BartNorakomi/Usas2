@@ -10,7 +10,7 @@ param
 (	$path=".\*.tmx", #C:\Users\$($env:username)\OneDrive\Usas2\maps
 	$targetPath="..\maps",
 	$includeLayer=".*",
-	$excludeLayer="(objects|room numbers)",
+	$excludeLayer="(objects|object|room numbers)",
 	$targetFileExtention="map",
 	[switch]$pack=$false,
 	$bitBusterPath=".\pack.exe"
@@ -31,12 +31,25 @@ function Convert-TmxFile
 		$excludeLayer
 	)	
 
-	write-verbose "$infile > $outFile" 
+	$roomName=(get-item $inFile).basename
+	$room=$worldmap|where{$_.name -eq $roomname}
+	$ruinIdRoomType=[byte]($room.ruinid -bor $room.roomtype -band 255)
+	$ruinIdentity=($usas2.ruin|where{$_.ruinId -eq $room.ruinid}).identity
+	$ruinProperties=get-U2ruinProperties -identity $ruinIdentity
+	write-verbose "$infile > $outFile"
+	write-verbose "Room name: $roomName, ruinId: $($room.ruinId), roomType: $($room.RoomType)"
+
+	$metaData=[byte[]]::new(8)
+		$metaData[0]=$ruinIdRoomType
+		$metaData[1]=$ruinProperties.tileset
+		$metaData[2]=$ruinProperties.music
+		$metaData[3]=$ruinProperties.palette
+
 	$data=get-TiledMap -path $infile #[xml]$data=Get-Content $inFile
 	$TiledLayerData=Convert-TmxLayers -data $data -includeLayer $includeLayer -excludeLayer $excludeLayer
-	#$RoomHeader=get-U2roomProperties
 	write-verbose "Writing RAW data to file" 
-	$null=Set-Content -Value $rawdata -Path $outFile -Encoding Byte
+	$null=Set-Content -Value ($metadata+$TiledLayerData) -Path $outFile -Encoding Byte
+	
 }
 
 
@@ -76,18 +89,23 @@ function Convert-TmxLayers
 			$position=$position+2
 		}
 	}
-	return $rawdata
+	return ,$rawdata
 }
 
 
 #tests
-#$path="C:\Users\rvand\OneDrive\Usas2\maps\BS20.tmx"
+#$path="C:\Users\rvand\OneDrive\Usas2\maps\Br21.tmx"
 #$targetPath="C:\Users\rvand\Usas2-main\maps"
 $convertToAddress=$true
 
 ##### Main: #####
 Write-verbose "Convert Tiled .tmx file to raw 16-bit data .map file and pack it to .map.pck (if -pack:`$true)"
 write-verbose "Source: $path. Target: $targetPath. Include layers: $includelayer. Exclude layers: $excludelayer"
+
+#Script globals
+$usas2=get-Usas2Globals
+$WorldMap=get-roomMaps -mapsource (get-content ("..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile))
+#$global:worldmap=$worldmap
 
 foreach ($file in gci $path -Include *.tmx)
 {	#write-host "$($file.basename);" -NoNewline
@@ -96,7 +114,7 @@ foreach ($file in gci $path -Include *.tmx)
 	$outFile="$targetPath$($file.basename).$targetFileExtention"
 	Convert-TmxFile -infile $infile -outfile $outfile -includeLayer $includeLayer -excludeLayer $excludeLayer
 	if ($pack)
-	{	write-verbose "Packing file > $($file.directoryname)\$($file.basename).$targetFileExtention.pck"
+	{	write-verbose "Packing file > $targetPath$($file.basename).$targetFileExtention.pck"
 		$packExe=(get-item $bitBusterPath).fullname
 		pushd $targetPath
 		$null=& $packExe ".\$($file.basename).$targetFileExtention"

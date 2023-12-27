@@ -22,10 +22,41 @@ DSM:					equ 0
 .bitmapGfxPointersAdr:	equ +0
 .bitmapGfxRecords:		equ +64
 
-RoomIndexRec:			equ	0		;Room index record structure
+RoomIndex:				equ	0		;Room index record structure
+.numrec:				EQU 1024
+.reclen: 				EQU 4
 .id:					equ +0
 .block:					equ +1
 .segmentSize:			equ +2
+.data:					equ dsm.worldMapIndexAdr
+
+ruinId:					equ 0
+.Hub: EQU 1
+.Lemniscate: EQU 2
+.BosStenenWater: EQU 3
+.Pegu: EQU 4
+.Bio: EQU 5
+.KarniMata: EQU 6
+.Konark: EQU 7
+.Verhakselaar: EQU 8
+.Taxilla: EQU 9
+.EuderusSet: EQU 10
+.Akna: EQU 11
+.Fate: EQU 12
+.Sepa: EQU 13
+.undefined14: EQU 14
+.Chi: EQU 15
+.Sui: EQU 16
+.Grot: EQU 17
+.Tiwanaku: EQU 18
+.Aggayu: EQU 19
+.Ka: EQU 20
+.Genbu: EQU 21
+.Fuu: EQU 22
+.Indra: EQU 23
+.Morana: EQU 24
+
+
 
 
 ; ##### MAIN #####

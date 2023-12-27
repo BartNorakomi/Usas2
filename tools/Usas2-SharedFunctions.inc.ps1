@@ -47,7 +47,7 @@ function convert-CsvToObject
 
 
 ##### USAS2 specific Functions #####
-$global:WorldMapColumnNames="AA AB AC AD AE AF AG AH AI AJ AK AL AM AN AO AP AQ AR AS AT AU AV AW AX AY AZ BA BB BC BD BE BF BG BH BI BJ BK BL BM BN BO BP BQ BR BS BT BU BV BW BX BY BZ" -split(" ")
+$WorldMapColumnNames="AA AB AC AD AE AF AG AH AI AJ AK AL AM AN AO AP AQ AR AS AT AU AV AW AX AY AZ BA BB BC BD BE BF BG BH BI BJ BK BL BM BN BO BP BQ BR BS BT BU BV BW BX BY BZ" -split(" ")
 
 function get-Usas2Globals
 {	param ($usas2PropertiesFile="..\usas2-properties.csv")
@@ -56,13 +56,14 @@ function get-Usas2Globals
 	return $usas2
 }
 
+# Room
 # return roomName located at(x,y)
 function get-roomName
 {	param ($x,$y)
 	return $WorldMapColumnNames[$x]+"0$($y+1)".substring(([string]$y).length-1,2)
 }
 
-
+# Room
 # return the coordinates of a room by its name
 # in:	roomName (filename base)
 #out:	object (x,y)
@@ -200,8 +201,11 @@ function get-BitmapGfxIndex
 
 
 #RuinPropertiesTable
-function get-ruinPropertiesTable
-{	foreach ($ruin in $usas2.ruin)
+function get-U2ruinProperties
+{	param
+	(	$identity="*"
+	)
+	foreach ($ruin in $usas2.ruin|where{$_.identity -like $identity})
 	{	#$ruin|select tileset,palette,music,name
 		if (-not ($tilesetUid=($usas2.tileset|where{$_.identity -eq $ruin.tileset}).id)) {$tilesetUid=0}
 		if (-not ($paletteUid=($usas2.palette|where{$_.identity -eq $ruin.palette}).id)) {$paletteUid=0}
@@ -211,17 +215,17 @@ function get-ruinPropertiesTable
 }
 
 
-#exit
+exit
 #test
 $usas2=get-Usas2Globals
 $global:usas2=$usas2
 
-<#
+#<#
 #RuinPropertiesTable to code
-foreach ($this in (get-ruinPropertiesTable|sort id))
+foreach ($this in (get-U2ruinProperties -identity "karnimata"|sort id))
 {	write "	DB	$($this.tileset),$($this.palette),$($this.music),`"$(($this.name+"             ").substring(0,13))`""
 }
-#>
+##>
 
 <#
 #bitmapIndex

@@ -7,56 +7,19 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 WorldMapPositionY:  db  21 ;14 ;14 ;21
 WorldMapPositionX:  db  43 ;18 ;43
 
-ruinProperties:
-.reclen:		equ 16		;[attribute]The length of one record
-.numrec:		equ 32		;[attribute]Number of records
-.tileset:		equ +0		;[property]Default Tileset ID
-.palette:		equ +1		;[property]Default palette ID
-.music:			equ +2		;[property]Default music ID
-.Name:			equ +3		;[property]Name of the ruin as string
-.data:						;RM:table generated externally
-	DB	0,0,0,"             "
-	DB	0,0,0,"Hub          "
-	DB	0,0,0,"Lemniscate   "
-	DB	0,0,0,"Bos Stenen Wa"
-	DB	0,0,0,"Pegu         "
-	DB	0,0,0,"Bio          "
-	DB	6,6,3,"Karni Mata   "
-	DB	0,0,0,"Konark       "
-	DB	0,0,0,"Verhakselaar "
-	DB	0,0,0,"Taxilla      "
-	DB	0,0,0,"Euderus Set  "
-	DB	0,0,0,"Akna         "
-	DB	0,0,0,"Fate         "
-	DB	0,0,0,"Sepa         "
-	DB	0,0,0,"undefined    "
-	DB	0,0,0,"Chi          "
-	DB	0,0,0,"Sui          "
-	DB	0,0,0,"Grot         "
-	DB	0,0,0,"Tiwanaku     "
-	DB	0,0,0,"Aggayu       "
-	DB	0,0,0,"Ka           "
-	DB	0,0,0,"Genbu        "
-	DB	0,0,0,"Fuu          "
-	DB	0,0,0,"Indra        "
-	DB	0,0,0,"Morana       "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
+
 
 ;LookUpTable for Room Types (width,height,engine,free)
-roomTypesRec:	equ 0
-.length:		equ 4
-.num:			equ 8
-.roomWidth:		equ +0
-.roomHeight:	equ +1
-.engineType:	equ +2
-.free:			equ +3
-RoomTypes:		DB 38,27,1,0	;Regular
+;LookUpTable for Room Types (width,height,engine,free)
+roomTypes:
+.recLen:		equ 4		;[atrribute]record length
+.numRec:		equ 8		;[atrribute]number of records
+.size:			equ .reclen*.numrec		;[atrribute]table size
+.roomWidth:		equ +0		;[property]Room with
+.roomHeight:	equ +1		;[property]Room height
+.engineType:	equ +2		;[property]engineType
+.free:			equ +3		;[property]<free for future use>
+.data:			DB 38,27,1,0	;Regular
 				DB 32,27,2,0	;Teleport
 				DB 38,27,1,0	;Secret
 				DB 32,27,2,0	;Boss
@@ -277,7 +240,7 @@ UnpackMapdata_SetObjects:
 		ld    a,(slot.page2rom)             ;all RAM except page 2
 		out   ($a8),a      
 			
-		ld    de,UnpackedRoomFile.tiledata	;(RM: .data is temp)
+		ld    de,UnpackedRoomFile.meta	;(RM: .data is temp)
 		call  Depack
   
 		;FOR NOW LETS ASUME DEPACK ALWAYS ENDS HL 2 BYTES FURTHER TO THE RIGHT
@@ -315,7 +278,7 @@ CheckTile304x216MapLenght:  equ 38 + 2
 MapData:	ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
 
 ;Space for room tiles data 
-UnpackedRoomFile
+UnpackedRoomFile:
 .meta:		ds 8
 .tiledata:  ds  38*27*2
 

@@ -33,7 +33,7 @@ function add-roomToDsm
 	{	#convert .tmx to .map
 		if ($convertTiledMap)
 		{	$tiledMapPath="$tiledmapsLocation\$($room.name).tmx"
-			.\convert-tmxtoraw16.ps1 -path $tiledMapPath -targetPath $mapsLocation -includeLayer ".*" -excludeLayer "(Objects|room numbers)" -pack
+			.\convert-tmxtoraw16.ps1 -path $tiledMapPath -targetPath $mapsLocation -includeLayer ".*" -excludeLayer "(Objects|object|room numbers)" -pack
 		}
 		#Add to DSM and inject to ROM
 		$pckPath="$mapslocation\$($room.name).map.pck"
