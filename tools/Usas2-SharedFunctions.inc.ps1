@@ -1,6 +1,11 @@
 # Usas2 shared functions
 # shadow@fuzzylogic 20231024-20231201
 
+[CmdletBinding()]
+param
+(	[switch]$getglobals
+)
+
 # 20231101
 # Create and return an Object (with empty properties)
 function new-CustomObject
@@ -11,7 +16,7 @@ function new-CustomObject
 }
 
 # 20231101
-# Return a hastable of property=value from CSV records (e.g. globalProperties)
+# Return a hash table of property=value from CSV records (e.g. globalProperties)
 function new-CsvHash
 {	param ($CsvRecord)
 	$hash=@{};$CsvRecord|%{$hash+=@{$_.propertyname=$_.propertyvalue}}
@@ -50,11 +55,19 @@ function convert-CsvToObject
 $WorldMapColumnNames="AA AB AC AD AE AF AG AH AI AJ AK AL AM AN AO AP AQ AR AS AT AU AV AW AX AY AZ BA BB BC BD BE BF BG BH BI BJ BK BL BM BN BO BP BQ BR BS BT BU BV BW BX BY BZ" -split(" ")
 
 function get-Usas2Globals
-{	param ($usas2PropertiesFile="..\usas2-properties.csv")
-	$usas2Properties=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
-	$global:usas2=convert-CsvToObject -objname usas2 -csv $usas2Properties
-	return $usas2
+{	param ([string]$usas2PropertiesFile="..\usas2-properties.csv", [switch]$force)
+	if (-not ($usas2.objectname -eq "usas2") -or $force)
+	{	write-verbose "Loading globals"
+		$usas2Properties=Import-Csv -Path $usas2PropertiesFile -Delimiter `t|where{$_.enabled -eq 1}
+		$global:usas2=convert-CsvToObject -objname usas2 -csv $usas2Properties
+	}
+return $usas2
 }
+
+
+
+
+
 
 # Room
 # return roomName located at(x,y)
@@ -215,17 +228,18 @@ function get-U2ruinProperties
 }
 
 
+if ($getglobals) {$usas2=get-Usas2Globals -verbose -force}
+
 exit
 #test
-$usas2=get-Usas2Globals
 $global:usas2=$usas2
 
-#<#
+<#
 #RuinPropertiesTable to code
 foreach ($this in (get-U2ruinProperties -identity "karnimata"|sort id))
 {	write "	DB	$($this.tileset),$($this.palette),$($this.music),`"$(($this.name+"             ").substring(0,13))`""
 }
-##>
+#>
 
 <#
 #bitmapIndex

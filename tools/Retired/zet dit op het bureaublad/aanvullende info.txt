@@ -1,0 +1,6 @@
+de folder cygwin64 stond in
+C:\cygwin64
+
+dus misschien moet die daarheen gezet worden ?
+
+ik heb die folder alweer verwijderd, omdat ik 'm niet kon pushed in github desktop

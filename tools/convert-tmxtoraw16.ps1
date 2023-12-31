@@ -31,25 +31,64 @@ function Convert-TmxFile
 		$excludeLayer
 	)	
 
+	write-verbose "Reading Tiled file $infile"
+	$TiledMap=get-TiledMap -path $infile #[xml]$data=Get-Content $inFile
 	$roomName=(get-item $inFile).basename
+	
+	#first, get default ruin props
+	$RoomProps=get-roomDefaultProperties -roomName $roomName
+	#next insert optional tmxMapProperties
+	$roomProps=convert-TmxMapProperties -TiledMap $TiledMap -roomProps $roomProps
+	write-verbose "Room name: $roomName, ruinId/roomType: $($roomProps[0])"
+	#convert the tiles in this map
+	$TiledLayerData=Convert-TmxLayers -data $tiledMap -includeLayer $includeLayer -excludeLayer $excludeLayer
+	write-verbose "Tiles Block length: $($TiledLayerData.length)"
+	#convert objects in this map
+	$RoomObjects=convert-TmxObjects -tiledMap $tiledMap
+	write-verbose ($RoomObjects -join(","))
+	write-verbose "Writing to file $outfile" 
+	$null=Set-Content -Value ($roomProps+$TiledLayerData+$roomObjects) -Path $outFile -Encoding Byte
+}
+
+# Get roomproperties as 8bytes block
+# Depends on script globals $worldmap,$usas2
+# in:	roomname (xxyy)
+# out:	8 bytes data block
+function get-roomDefaultProperties
+{	param
+	(	$roomName
+	)
 	$room=$worldmap|where{$_.name -eq $roomname}
 	$ruinIdRoomType=[byte]($room.ruinid -bor $room.roomtype -band 255)
 	$ruinIdentity=($usas2.ruin|where{$_.ruinId -eq $room.ruinid}).identity
 	$ruinProperties=get-U2ruinProperties -identity $ruinIdentity
-	write-verbose "$infile > $outFile"
-	write-verbose "Room name: $roomName, ruinId: $($room.ruinId), roomType: $($room.RoomType)"
-
-	$metaData=[byte[]]::new(8)
-		$metaData[0]=$ruinIdRoomType
-		$metaData[1]=$ruinProperties.tileset
-		$metaData[2]=$ruinProperties.music
-		$metaData[3]=$ruinProperties.palette
-
-	$data=get-TiledMap -path $infile #[xml]$data=Get-Content $inFile
-	$TiledLayerData=Convert-TmxLayers -data $data -includeLayer $includeLayer -excludeLayer $excludeLayer
-	write-verbose "Writing RAW data to file" 
-	$null=Set-Content -Value ($metadata+$TiledLayerData) -Path $outFile -Encoding Byte
 	
+	$data=[byte[]]::new(8)
+	$data[0]=$ruinIdRoomType
+	$data[1]=$ruinProperties.tileset
+	$data[2]=$ruinProperties.music
+	$data[3]=$ruinProperties.palette
+	return ,$data
+}
+
+# Convert optional map properties and put in roomProps header block
+function convert-TmxMapProperties
+{	param
+	(	$TiledMap,$roomProps
+	)
+	if ($tileset=$TiledMap.map.properties.property|where{$_.name -eq "tileset"})
+	{	write-verbose "Alternative tileset"
+		$roomProps[1]=$tileset.value
+	}
+	if ($music=$TiledMap.map.properties.property|where{$_.name -eq "music"})
+	{	write-verbose "Alternative music"
+		$roomProps[2]=$music.value
+	}
+	if ($palette=$TiledMap.map.properties.property|where{$_.name -eq "palette"})
+	{	write-verbose "Alternative palette"
+		$roomProps[3]=$palette.value
+	}
+	return ,$roomProps
 }
 
 
@@ -63,8 +102,6 @@ function Convert-TmxLayers
 	)	
 	write-verbose "Map width:$($data.map.width), height:$($data.map.height)"
 	$fileLength=[uint16]$data.map.width * [uint16]$data.map.height
-	write-verbose "Block length: $($fileLength*2)"
-
 	#Initialize an array of raw data in bytes
 	$rawData=[byte[]]::new($filelength*2)
 
@@ -92,20 +129,79 @@ function Convert-TmxLayers
 	return ,$rawdata
 }
 
+#20231231
+# Convert objects from the "object" layer to raw data
+# in:	TiledMap
+# out:	binary block of data, null terminated
+function convert-TmxObjects
+{ param ($tiledMap)
+	write-verbose "Converting Objects"
+	#Get all objects with a UID
+	[byte[]]$dataBlock=[byte]0
+	foreach ($object in $tiledMap.map.objectgroup.object|where{$_.properties.property.name -eq "uid"})
+	{	$uid=($object.properties.property|where{$_.name -eq "uid"}).value #get UID from map
+		if ($roomobject=$usas2.roomobject|where{$_.uid -eq $uid}) #get object info from globalVars
+		{	write-verbose "Object Uid=$($roomobject.uid), id=$($roomobject.identity), class=$($roomobject.objectclass)"
+			$class=$U2objectClassDefinitions.$($roomobject.objectclass)	#get the class
+			$blockLength=($class|measure -sum numBytes).sum
+			$data=[byte[]]::new($blockLength+1)
+			$data[0]=$uid	#first byte is object's ID
+			foreach ($classProperty in $class)
+			{	if ($classProperty.propertyType -eq "default") {$value=$object.($classProperty.propertyName)}
+				elseif ($classProperty.propertyType -eq "custom") {$value=$object.properties.property|where{$_.name -eq $classProperty.propertyName}}
+				#Does this object have the property value set?
+				if (-not $value) {$value=$classProperty.propertyValue} #if not set, take default value from class
+				#write number of bytes to byte array
+				for ($b=0;$b -lt $classProperty.numbytes;$b++) {$data[$classProperty.offset+$b+1]=$value -band 255;$value=$value -shr8}
+			}
+			$datablock=$data+$datablock
+		}
+	}
+	$datablock
+}
 
-#tests
-#$path="C:\Users\rvand\OneDrive\Usas2\maps\Br21.tmx"
-#$targetPath="C:\Users\rvand\Usas2-main\maps"
+
+
+# 20231229
+# Import the objectClass definitions from .csv file and return as an object
+function get-U2objectClassDefinitions
+{	param ([string]$usas2objectclassfile="..\usas2-objectclass.csv", [switch]$force)
+	if (-not ($U2objectClassDefinitions.objectname -eq "u2objectclass") -or $force)
+	{	write-verbose "Retrieving objectClass properties from file"
+		$usas2objectclass=Import-Csv -Path $usas2objectclassFile -Delimiter `t|where{$_.enabled -eq 1}
+		$names=($usas2objectclass).name|select -unique
+		$rootObj=new-CustomObject -propertyNames $names -name "u2objectclass"
+		foreach ($name in $names)
+		{	$records=$usas2objectclass|where{$_.name -eq $name}
+			$rootObj.$name=$records|%{[pscustomobject]@{propertyName=[string]$_.propertyName;propertyType=[string]$_.propertyType;propertyValue=[uint16]$_.propertyValue;offset=[uint32]$_.offset;numBytes=[uint32]$_.numBytes}}
+		}
+		$U2objectClassDefinitions=$rootObj
+	}
+	return $U2objectClassDefinitions
+}
+
+
+##### Script globals #####
 $convertToAddress=$true
+$usas2=get-Usas2Globals -force
+$U2objectClassDefinitions=get-U2objectClassDefinitions -force
+$WorldMap=get-roomMaps -mapsource (get-content ("..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile))
+
 
 ##### Main: #####
+#tests
+$path="C:\Users\rvand\OneDrive\Usas2\maps\Br21.tmx"
+<#
+$tiledmap=get-tiledmap -path $path
+$objectData=convert-TmxObjects -tiledMap $tiledmap
+$objectdata -join(",")
+$global:usas2=$usas2
+$global:tiledmap=$tiledmap
+exit
+#$targetPath="C:\Users\rvand\Usas2-main\maps"
+#>
 Write-verbose "Convert Tiled .tmx file to raw 16-bit data .map file and pack it to .map.pck (if -pack:`$true)"
 write-verbose "Source: $path. Target: $targetPath. Include layers: $includelayer. Exclude layers: $excludelayer"
-
-#Script globals
-$usas2=get-Usas2Globals
-$WorldMap=get-roomMaps -mapsource (get-content ("..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile))
-#$global:worldmap=$worldmap
 
 foreach ($file in gci $path -Include *.tmx)
 {	#write-host "$($file.basename);" -NoNewline
