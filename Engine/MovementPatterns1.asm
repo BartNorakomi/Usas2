@@ -7442,12 +7442,111 @@ CheckCollisionObject:                       ;checks for collision wall and if fo
 v3v4Table:  db +00,-01, -01,-01, -01,+00, -01,+01, +00,+01, +01,+01, +01,+00, +01,-01
 
 PlatformHorizontally:
-;v1 = sx
-;v3=Vertical Movement
-;v4=Horizontal Movement
+;v1=sx software sprite in Vram
+;v2=active?
+;v3=y movement
+;v4=x movement
+;v5=SnapPlayer?
+;v6=box left
+;v7=box right
+;v8=box top
+;v9=box bottom
+;v10=speed
   call  VramObjectsTransparantCopies        ;put object in Vram/screen
-  call  MovePlatFormHorizontally            ;move
+  call  MovePlatForm
+;  call  MovePlatFormHorizontally            ;move
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  ret
+
+MovePlatForm:
+  ld    a,(ix+enemies_and_objects.v10)      ;v10=speed
+  dec   a
+  ld    b,7
+  jr    z,.SpeedSet
+  dec   a
+  ld    b,3
+  jr    z,.SpeedSet
+  dec   a
+  ld    b,1
+  jr    z,.SpeedSet
+  ld    b,0
+  .SpeedSet:
+
+  ld    a,(framecounter)
+  and   b
+  ret   nz
+
+  ld    a,(ix+enemies_and_objects.SnapPlayer?)
+  or    a
+  call  nz,MovePlayerAlongWithObject
+
+;move object
+  call  MoveObjectHorizontallyAndVertically
+  call  ChangeDirectionWhenOutOfBox
+  ret
+
+ChangeDirectionWhenOutOfBox:
+  ;check surpasses top side box
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=box top
+  add   a,a                     ;*2
+  add   a,a                     ;*4
+  add   a,a                     ;*8
+  dec   a                       ;add tolerance of 1 pixel
+  sub   a,(ix+enemies_and_objects.y)        ;y
+  jr    nc,.OutOfBoxChangeDirection
+
+  ;check surpasses bottom side box
+  ld    a,(ix+enemies_and_objects.v9)       ;v9=box bottom
+  add   a,a                     ;*2
+  add   a,a                     ;*4
+  add   a,a                     ;*8
+  ld    b,(ix+enemies_and_objects.y)        ;y
+  sub   a,b
+  jr    c,.OutOfBoxChangeDirection
+
+  ;check surpasses left side box
+  ld    a,(ix+enemies_and_objects.v6)       ;v6=box left
+  add   a,a                     ;*2
+  add   a,a                     ;*4
+  ld    l,a
+  ld    h,0
+  add   hl,hl                   ;8
+  dec   hl
+  ld    e,(ix+enemies_and_objects.x)        ;x
+  ld    d,(ix+enemies_and_objects.x+1)      ;x
+  sbc   hl,de
+  jr    nc,.OutOfBoxChangeDirection
+
+  ;check surpasses right side box
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=box right
+  add   a,a                     ;*2
+  add   a,a                     ;*4
+  ld    l,a
+  ld    h,0
+  add   hl,hl                   ;8
+  ld    e,(ix+enemies_and_objects.x)        ;x
+  ld    d,(ix+enemies_and_objects.x+1)      ;x
+  sbc   hl,de
+  jr    c,.OutOfBoxChangeDirection
+  ret
+  
+  .OutOfBoxChangeDirection:
+  ld    a,(ix+enemies_and_objects.v3)         ;v3=y movement
+  neg
+  ld    (ix+enemies_and_objects.v3),a         ;v3=y movement
+  ld    a,(ix+enemies_and_objects.v4)         ;v4=x movement
+  neg
+  ld    (ix+enemies_and_objects.v4),a         ;v4=x movement
+  ret
+
+MoveObjectHorizontallyAndVertically:
+  ld    a,(ix+enemies_and_objects.y)
+  add   (ix+enemies_and_objects.v3)         ;v3=y movement
+  ld    (ix+enemies_and_objects.y),a
+
+  ld    a,(ix+enemies_and_objects.x)
+  add   (ix+enemies_and_objects.v4)         ;v4=x movement
+  ld    (ix+enemies_and_objects.x),a
   ret
   
 PlatformVertically:

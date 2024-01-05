@@ -53,7 +53,14 @@ loadGraphics:
   ld    a,Loaderblock                 ;loader routine at $4000
   call  block12
   call  loader                        ;loader routines
-  call  UnpackMapdata_SetObjects      ;unpacks packed map to $4000 in ram and sets objects.                                       ;ends with: all RAM except page 2
+  call  UnpackMapdataAndObjectData    ;unpacks packed map to ram. sets objectdata at the end of mapdata ends with: all RAM except page 2
+
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a
+  ld    a,Loaderblock                 ;loader routine at $4000
+  call  block12
+  call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
+
   call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
   call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
   ld    a,(slot.page12rom)            ;all RAM except page 12
@@ -222,12 +229,9 @@ clearEnemyTable:
 ret
 
 
-;unpacks packed map to $4000 in ram and sets objects. ends with: all RAM except page 2
-;set all objects Alive? to 0 / clear all objects from the list
+;unpacks packed map to ram. ends with: all RAM except page 2
 ;in:	IX
-UnpackMapdata_SetObjects:             
-		call	clearEnemyTable
-
+UnpackMapdataAndObjectData:             
 		;unpack map data
 		ld    a,(slot.page12rom)            ;all RAM except page 2
 		out   ($a8),a      
@@ -241,28 +245,7 @@ UnpackMapdata_SetObjects:
 		out   ($a8),a      
 			
 		ld    de,UnpackedRoomFile	;(RM: .data is temp)
-		call  Depack
-  
-		;FOR NOW LETS ASUME DEPACK ALWAYS ENDS HL 2 BYTES FURTHER TO THE RIGHT
-		dec   hl
-		dec   hl
-			
-		;ld    a,(hl)                        ;amount of objects for this map
-		;or    a
-		xor A         ;temp set at zero
-		ret   z
-		
-		inc   hl                            ;object 1 - table
-		ld    de,enemies_and_objects        ;copy just 1 object for now
-.CopyAllEnemiesLoop:
-		ld    bc,lenghtenemytable
-		ldir
-		dec   a
-		jp    nz,.CopyAllEnemiesLoop
-ret
-
-
-
+		jp    Depack
 
 ;Engine256x216: a map is 32x27. We add 2 empty tiles on the right per row, and the remainder is filled with background tiles. Total mapsize will be 34x27 + empty fill
 ;Engine304x216: a map is 38x27. We add 2 empty tiles on the right per row, and we have two extra rows with background tiles. Total mapsize will be 40x27 + empty rows
