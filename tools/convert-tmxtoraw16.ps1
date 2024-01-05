@@ -144,6 +144,7 @@ function convert-TmxObjects
 		{	write-verbose "Object Uid=$($roomobject.uid), id=$($roomobject.identity), class=$($roomobject.objectclass)"
 			$class=$U2objectClassDefinitions.$($roomobject.objectclass)	#get the class
 			$blockLength=($class|measure -sum numBytes).sum
+			write-verbose "Number of bytes for this class: $blockLength"
 			$data=[byte[]]::new($blockLength+1)
 			$data[0]=$uid	#first byte is object's ID
 			foreach ($classProperty in $class)
@@ -151,9 +152,19 @@ function convert-TmxObjects
 				elseif ($classProperty.propertyType -eq "custom") {$value=$object.properties.property|where{$_.name -eq $classProperty.propertyName}}
 				#Does this object have the property value set?
 				if (-not $value) {$value=$classProperty.propertyValue} #if not set, take default value from class
+				#Pre-conversion?
+				switch ($classProperty.conversionMethod)
+				{	toTile
+					{	write-verbose "Converting $($classProperty.propertyName) to Tile number"
+						$value=$value/8 -band 255
+					}
+					Default {}
+				}
 				#write number of bytes to byte array
 				for ($b=0;$b -lt $classProperty.numbytes;$b++) {$data[$classProperty.offset+$b+1]=$value -band 255;$value=$value -shr8}
 			}
+			#Post-conversion
+			#<tba>
 			$datablock=$data+$datablock
 		}
 	}
@@ -173,7 +184,7 @@ function get-U2objectClassDefinitions
 		$rootObj=new-CustomObject -propertyNames $names -name "u2objectclass"
 		foreach ($name in $names)
 		{	$records=$usas2objectclass|where{$_.name -eq $name}
-			$rootObj.$name=$records|%{[pscustomobject]@{propertyName=[string]$_.propertyName;propertyType=[string]$_.propertyType;propertyValue=[uint16]$_.propertyValue;offset=[uint32]$_.offset;numBytes=[uint32]$_.numBytes}}
+			$rootObj.$name=$records|%{[pscustomobject]@{propertyName=[string]$_.propertyName;propertyType=[string]$_.propertyType;propertyValue=[uint16]$_.propertyValue;offset=[uint32]$_.offset;numBytes=[uint32]$_.numBytes;conversionMethod=[string]$_.conversionMethod}}
 		}
 		$U2objectClassDefinitions=$rootObj
 	}
@@ -186,11 +197,11 @@ $convertToAddress=$true
 $usas2=get-Usas2Globals -force
 $U2objectClassDefinitions=get-U2objectClassDefinitions -force
 $WorldMap=get-roomMaps -mapsource (get-content ("..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile))
-
+$global:U2objectClassDefinitions=$U2objectClassDefinitions
 
 ##### Main: #####
 #tests
-$path="C:\Users\rvand\OneDrive\Usas2\maps\Br21.tmx"
+#$path="C:\Users\rvand\OneDrive\Usas2\maps\Br21.tmx"
 <#
 $tiledmap=get-tiledmap -path $path
 $objectData=convert-TmxObjects -tiledMap $tiledmap

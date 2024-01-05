@@ -240,7 +240,7 @@ UnpackMapdata_SetObjects:
 		ld    a,(slot.page2rom)             ;all RAM except page 2
 		out   ($a8),a      
 			
-		ld    de,UnpackedRoomFile.meta	;(RM: .data is temp)
+		ld    de,UnpackedRoomFile	;(RM: .data is temp)
 		call  Depack
   
 		;FOR NOW LETS ASUME DEPACK ALWAYS ENDS HL 2 BYTES FURTHER TO THE RIGHT
@@ -277,10 +277,7 @@ CheckTile304x216MapLenght:  equ 38 + 2
 ;Space for room tile IDs
 MapData:	ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
 
-;Space for room tiles data 
-UnpackedRoomFile:
-.meta:		ds 8
-.tiledata:  ds  38*27*2
+
 
 BuildUpMap:
   ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
@@ -1195,6 +1192,11 @@ LogoAnimationVar1:            rb    1
 LogoAnimationVar2:            rb    1
 LogoAnimationVar3:            rb    1
 
+;Space for room tiles data 
+UnpackedRoomFile:
+.meta:		rb 8
+.tiledata:  rb  38*27*2
+.object:	rb 256
 
 
 fill: equ 2

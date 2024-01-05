@@ -55,14 +55,16 @@ if (-not ($dsm=load-dsm -path $dsmname))
 
 	#Add Ruin(s)
 	if ($ruinid)
-	{	$ruinIdFilter=("^("+($ruinId -join ("|"))+")$")
+	{	write-verbose "Adding Ruin(s) $ruinid"
+		$ruinIdFilter=("^("+($ruinId -join ("|"))+")$")
 		$rooms=get-U2WorldMapRooms -ruinid $ruinidfilter
 		add-roomToDsm -rooms $rooms
 	}
 
 	#Add room(s)
 	elseif ($roomname)
-	{	$roomNameFilter=("^("+($roomname -join ("|"))+")$")
+	{	write-verbose "Adding room(s) $roomname"
+		$roomNameFilter=("^("+($roomname -join ("|"))+")$")
 		$rooms=get-U2WorldMapRooms -roomname $roomNameFilter
 		add-roomToDsm -rooms $rooms
 	}
@@ -70,7 +72,7 @@ if (-not ($dsm=load-dsm -path $dsmname))
 	#Add file
 	elseif ($path)
 	{
-		write-warning "not yet supported"
+		write-warning "add TMX file (path) not yet supported"
 	}
 
 	#Make new maps index and inject into ROM

@@ -65,10 +65,6 @@ return $usas2
 }
 
 
-
-
-
-
 # Room
 # return roomName located at(x,y)
 function get-roomName
@@ -82,7 +78,8 @@ function get-roomName
 #out:	object (x,y)
 function get-roomLocation
 {	param ($name)
-	$x=$global:WorldMapColumnNames.IndexOf($name.substring(0,2).toupper())
+	write-verbose "get-roomlocation for $name"
+	$x=$WorldMapColumnNames.IndexOf($name.substring(0,2).toupper())
 	#"0$($y+1)".substring(([string]$y).length-1,2)
 	$y=[uint32]$name.substring(2,2)
 	return [pscustomobject]@{x=$x;y=$y}
@@ -163,7 +160,7 @@ function get-WorldMapRoomIndex
 	if ($datalist.allocations)
 	{	$indexRecords=[System.Collections.Generic.List[byte]]::new() #[byte[]]::new(0) #::new($numIndexRecords*$IndexRecordLength)
 		foreach ($this in $datalist.allocations)
-		{	write-verbose $this.name
+		{	write-verbose "index: $($this.name)"
 			$location=get-roomLocation $this.name.substring(0,4)
 			[uint32]$id=$location.x*256+$location.y
 			[byte]$block=$this.block

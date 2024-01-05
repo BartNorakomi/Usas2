@@ -2954,7 +2954,7 @@ lineintBorderMaskingSplit:
   ;prepare y bordermasking splitsprites for next frame
   ld    a,(CameraY)
   add   a,95
-  ld    (BorderMaskingSpat+00),a | add   a,16
+  ld    (BorderMaskingSpat+00),a | add   a,16				;rm: I'd do ADD A,B (have LD B,16)
   ld    (BorderMaskingSpat+01),a | add   a,16
   ld    (BorderMaskingSpat+02),a | add   a,16
   ld    (BorderMaskingSpat+03),a | add   a,16
@@ -2981,115 +2981,111 @@ lineintBorderMaskingSplit:
 BorderMaskingSpat:  db  0,0,0,0,0
 
 LineIntNPCInteractions:
-  ld    a,(SpriteSplitAtY100?)
-  or    a
-  jp    nz,lineintBorderMaskingSplit
+	ld    a,(SpriteSplitAtY100?)				;rm:why? you set LNI Y pos, right? each LNI is unique that way
+	or    a
+	jp    nz,lineintBorderMaskingSplit
 
-;on the lineint we turn the screen off at the end of the line using polling for HR
-;then we switch page
-;we set horizontal and vertical adjust
-;and we turn screen on again at the end of the line
-;and set s#0 again
-;LineIntAtScoreboard:
-;  call  BackdropBlack
+	;on the lineint we turn the screen off at the end of the line using polling for HR
+	;then we switch page
+	;we set horizontal and vertical adjust
+	;and we turn screen on again at the end of the line
+	;and set s#0 again
+	;LineIntAtScoreboard:
+	;  call  BackdropBlack
 
-  ;screen always gets turned on/off at the END of the line
-  ld    a,(VDP_0+1)       ;screen off
-  and   %1011 1111
-  out   ($99),a
-  ld    a,1+128
-  out   ($99),a
- ;so after turning off the screen wait till the end of HBLANK, then perform actions
+	;screen always gets turned on/off at the END of the line
+	ld    a,(VDP_0+1)       ;screen off
+	and   %1011 1111
+	out   ($99),a
+	ld    a,1+128
+	out   ($99),a
+	;so after turning off the screen wait till the end of HBLANK, then perform actions
 
-  ld    a,2               ;Set Status register #2
-  out   ($99),a
-  ld    a,15+128          ;we are about to check for HR
-  out   ($99),a
+	ld    a,2               ;Set Status register #2
+	out   ($99),a
+	ld    a,15+128          ;we are about to check for HR
+	out   ($99),a
  
 .Waitline:                ;wait until end of HBLANK
-  in    a,($99)           ;Read Status register #2
-  and   %0010 0000        ;bit to check for HBlank detection
-  jr    z,.Waitline
-  
-  ld    a,0*32+31         ;set page 0
-  out   ($99),a
-  ld    a,2+128
-  out   ($99),a
+	in    a,($99)           ;Read Status register #2
+	and   %0010 0000        ;bit to check for HBlank detection
+	jr    z,.Waitline
 
-  xor   a                  ;set horizontal screen adjust
-  out   ($99),a
-  ld    a,18+128
-  out   ($99),a
+	ld    a,0*32+31         ;set page 0
+	out   ($99),a
+	ld    a,2+128
+	out   ($99),a
 
-  push  hl
-  ld    hl,NPCtableForR23
-  ld    a,(hl)
+	xor   a                  ;set horizontal screen adjust
+	out   ($99),a
+	ld    a,18+128
+	out   ($99),a
 
-;  ld    a,-40 ;44+39             ;set vertical screen adjust  
-  out   ($99),a
-  ld    a,23+128
-  out   ($99),a
+	push  hl
+	ld    hl,NPCtableForR23
+	ld    a,(hl)
 
-  ld    a,(VDP_8)         ;sprites off
-  or    %00000010
-  ld    (VDP_8),a
-  out   ($99),a
-  ld    a,8+128
-  out   ($99),a
+	;  ld    a,-40 ;44+39             ;set vertical screen adjust  
+	out   ($99),a
+	ld    a,23+128
+	out   ($99),a
 
-  ld    a,(VDP_0+1)       ;screen on
-  or    %0100 0000
-  out   ($99),a
-  ld    a,1+128
-  out   ($99),a
+	ld    a,(VDP_8)         ;sprites off
+	or    %00000010
+	ld    (VDP_8),a
+	out   ($99),a
+	ld    a,8+128
+	out   ($99),a
 
-  push  bc
-  push  de
+	ld    a,(VDP_0+1)       ;screen on
+	or    %0100 0000
+	out   ($99),a
+	ld    a,1+128
+	out   ($99),a
 
+	push  bc
+	push  de
 ;  ld    b,38*3
-  ld    b,39*1
-  ld    c,$99
+	ld    b,39*1	;RM: use LD BC,39*256+0x99
+	ld    c,$99
 
-  .loop:
-  ld    d,(hl)
-  inc   hl
-  ld    e,(hl)
-  inc   hl
+.loop:
+	ld    d,(hl)
+	inc   hl
+	ld    e,(hl)
+	inc   hl
 
 ;  .Waitline1:
 ;  in    a,($99)           ;Read Status register #2
 ;  and   %0010 0000        ;bit to check for HBlank detection
 ;  jr    nz,.Waitline1
-  .Waitline2:
-nop |nop |nop |nop |nop |nop |nop |nop |nop |nop |nop |
+.Waitline2:
+nop |nop |nop |nop |nop |nop |nop |nop |nop |nop |nop |			;RM:why?
 nop |nop |nop |nop |nop |nop |nop |nop |nop |
 
+	out   (c),d			;RM: outi perhaps? as E is always 23+128
+	out   (c),e			;and... D is always D+2.. so, why bother with a table?
 
-  out   (c),d
-  out   (c),e
+.Waitline1:
+	in    a,($99)           ;Read Status register #2
+	and   %0010 0000        ;bit to check for HBlank detection
+	jr    nz,.Waitline1
 
+	djnz  .loop
 
-  .Waitline1:
-  in    a,($99)           ;Read Status register #2
-  and   %0010 0000        ;bit to check for HBlank detection
-  jr    nz,.Waitline1
+	xor   a                 ;set s#0
+	out   ($99),a
+	ld    a,15+128
+	out   ($99),a
 
+	ld    (lineintflag),a   ;lineine flag gets set
 
-  djnz  .loop
-
-  xor   a                 ;set s#0
-  out   ($99),a
-  ld    a,15+128
-  out   ($99),a
-
-  ld    (lineintflag),a   ;lineine flag gets set
-
-  pop   de
-  pop   bc
-  pop   hl
-  pop   af 
-  ei
-  ret  
+	pop   de
+	pop   bc
+	pop   hl
+	pop   af 
+	ei
+ret  
 
 NPCtableForR23:
   db    +082-000,23+128,+082-002,23+128,+082-004,23+128,+082-006,23+128,+082-008,23+128,+082-010,23+128,+082-012,23+128,+082-014,23+128,+082-016,23+128,+082-018,23+128
@@ -3098,8 +3094,7 @@ NPCtableForR23:
   db    +082-060,23+128,+082-062,23+128,+082-064,23+128,+082-066,23+128,+082-068,23+128,+082-070,23+128,+082-072,23+128,+082-074,23+128,+082-076,23+128
 
 
-
-  
+ 
 LineInt:
   ld    a,(SpriteSplitAtY100?)
   or    a
