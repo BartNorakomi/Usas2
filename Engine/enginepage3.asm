@@ -8,8 +8,6 @@ WorldMapPositionY:  db  21 ;14 ;14 ;21
 WorldMapPositionX:  db  43 ;18 ;43
 
 
-
-;LookUpTable for Room Types (width,height,engine,free)
 ;LookUpTable for Room Types (width,height,engine,free)
 roomTypes:
 .recLen:		equ 4		;[atrribute]record length
@@ -27,17 +25,6 @@ roomTypes:
 				DB 0,0,0,0	;<free>
 				DB 0,0,0,0	;<free>
 				DB 0,0,0,0	;<free>
-
-;RoomDataBlock structure
-roomDataBlock:	equ 0
-.mapId:			equ +0
-.tileSet:		equ +1
-.music:			equ +2
-.palette:		equ +3
-.free:			equ +4
-.mapTiles:		equ +8
-
-
 
 
 PlayLogo:
@@ -1175,6 +1162,14 @@ LogoAnimationVar1:            rb    1
 LogoAnimationVar2:            rb    1
 LogoAnimationVar3:            rb    1
 
+;RoomDataBlock structure
+roomDataBlock:	equ 0
+.mapId:			equ +0
+.tileSet:		equ +1
+.music:			equ +2
+.palette:		equ +3
+.free:			equ +4
+.mapTiles:		equ +8
 ;Space for room tiles data 
 UnpackedRoomFile:
 .meta:		rb 8

@@ -133,33 +133,36 @@ function Convert-TmxLayers
 # Convert objects from the "object" layer to raw data
 # in:	TiledMap
 # out:	binary block of data, null terminated
+# let wel, de engine moet echt de software sprites eerst afhandelen, en die moeten van boven naar beneden gesorteerd worden.
 function convert-TmxObjects
 { param ($tiledMap)
 	write-verbose "Converting Objects"
-	#Get all objects with a UID
 	[byte[]]$dataBlock=[byte]0
-	foreach ($object in $tiledMap.map.objectgroup.object|where{$_.properties.property.name -eq "uid"})
-	{	$uid=($object.properties.property|where{$_.name -eq "uid"}).value #get UID from map
+	$objects=get-RoomObjects -tiledmap $tiledmap|sort Uid -Descending #sort so software sprite objects come first
+	foreach ($object in $objects)
+	{	$uid=$object.uid #get UID from map
 		if ($roomobject=$usas2.roomobject|where{$_.uid -eq $uid}) #get object info from globalVars
 		{	write-verbose "Object Uid=$($roomobject.uid), id=$($roomobject.identity), class=$($roomobject.objectclass)"
 			$class=$U2objectClassDefinitions.$($roomobject.objectclass)	#get the class
 			$blockLength=($class|measure -sum numBytes).sum
-			write-verbose "Number of bytes for this class: $blockLength"
+			#write-verbose "Number of bytes for this class: $blockLength"
 			$data=[byte[]]::new($blockLength+1)
 			$data[0]=$uid	#first byte is object's ID
 			foreach ($classProperty in $class)
-			{	if ($classProperty.propertyType -eq "default") {$value=$object.($classProperty.propertyName)}
-				elseif ($classProperty.propertyType -eq "custom") {$value=$object.properties.property|where{$_.name -eq $classProperty.propertyName}}
+			{	#if ($classProperty.propertyType -eq "default") {$value=$object.($classProperty.propertyName)}
+				#elseif ($classProperty.propertyType -eq "custom") {$value=$object.properties.property|where{$_.name -eq $classProperty.propertyName}}
+				$value=$object.($classProperty.propertyName)
 				#Does this object have the property value set?
 				if (-not $value) {$value=$classProperty.propertyValue} #if not set, take default value from class
 				#Pre-conversion?
-				switch ($classProperty.conversionMethod)
+				switch ($classProperty.preConversion)
 				{	toTile
-					{	write-verbose "Converting $($classProperty.propertyName) to Tile number"
+					{	#write-verbose "pre-conversion: $($classProperty.propertyName) to Tile number"
 						$value=$value/8 -band 255
 					}
 					Default {}
 				}
+				#write-verbose " $($classProperty.propertyName)=$value"
 				#write number of bytes to byte array
 				for ($b=0;$b -lt $classProperty.numbytes;$b++) {$data[$classProperty.offset+$b+1]=$value -band 255;$value=$value -shr8}
 			}
@@ -171,6 +174,16 @@ function convert-TmxObjects
 	$datablock
 }
 
+# Get all valid room objects (objects with a UID) and merge all properties at object rool level
+#in:	TiledMap (xml)
+#out:	Array of objects
+function get-RoomObjects
+{	param ($tiledMap)
+	foreach ($object in $tiledMap.map.objectgroup.object|where{$_.properties.property.name -eq "uid"})
+	{	$object.properties.property|%{add-member -InputObject $object -membertype NoteProperty -name $_.name -value $_.value}
+		$object
+	}
+}
 
 
 # 20231229
@@ -184,7 +197,7 @@ function get-U2objectClassDefinitions
 		$rootObj=new-CustomObject -propertyNames $names -name "u2objectclass"
 		foreach ($name in $names)
 		{	$records=$usas2objectclass|where{$_.name -eq $name}
-			$rootObj.$name=$records|%{[pscustomobject]@{propertyName=[string]$_.propertyName;propertyType=[string]$_.propertyType;propertyValue=[uint16]$_.propertyValue;offset=[uint32]$_.offset;numBytes=[uint32]$_.numBytes;conversionMethod=[string]$_.conversionMethod}}
+			$rootObj.$name=$records|%{[pscustomobject]@{propertyName=[string]$_.propertyName;propertyType=[string]$_.propertyType;propertyValue=[uint16]$_.propertyValue;offset=[uint32]$_.offset;numBytes=[uint32]$_.numBytes;preConversion=[string]$_.preConversion}}
 		}
 		$U2objectClassDefinitions=$rootObj
 	}
@@ -201,10 +214,13 @@ $global:U2objectClassDefinitions=$U2objectClassDefinitions
 
 ##### Main: #####
 #tests
-#$path="C:\Users\rvand\OneDrive\Usas2\maps\Br21.tmx"
-<#
-$tiledmap=get-tiledmap -path $path
-$objectData=convert-TmxObjects -tiledMap $tiledmap
+$path="C:\Users\rvand\OneDrive\Usas2\maps\Br21.tmx"
+#$tiledmap=get-tiledmap -path $path
+#get-RoomObjects -tiledmap $tiledmap
+#$tiledMap.map.objectgroup.object.properties.property|%{[pscustomobject]@{$_.name=$_.value}}
+#exit
+
+<#$objectData=convert-TmxObjects -tiledMap $tiledmap
 $objectdata -join(",")
 $global:usas2=$usas2
 $global:tiledmap=$tiledmap

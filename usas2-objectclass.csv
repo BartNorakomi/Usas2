@@ -1,21 +1,21 @@
-Enabled	ID	Name	propertyName	propertyType	propertyValue	Offset	numBytes	ConversionMethod	Description	Comment
-1	1	MovingPlatform	Xstart	custom	0	0	1	toTile	X start position (absolute)	Location in Tile numbers
-1	1	MovingPlatform	Ystart	custom	0	1	1	toTile	Y start position (absolute)	Location in Tile numbers
-1	1	MovingPlatform	X	default	0	2	1	toTile	X position move box min	Location in Tile numbers
-1	1	MovingPlatform	Y	default	0	3	1	toTile	Y position move box min	Location in Tile numbers
-1	1	MovingPlatform	Width	default	0	4	1	toTile	X position move box max	Relative postition gets transformed to absolute position
-1	1	MovingPlatform	Height	default	0	5	1	toTile	X position move box max	Relative postition gets transformed to absolute position
-1	1	MovingPlatform	Face	custom	3	6	1		Initial facing direction	
-1	1	MovingPlatform	Speed	custom	1	7	1		Initial move speed	
-1	1	MovingPlatform	Active	custom	1	8	1		Active (1) or non-active (0) platform	
-1	2	Platform	X	default	0	0	2		X position (top)	
-1	2	Platform	Y	default	0	2	1		Y position (left)	
-1	3	Enemy	X	default	0	0	2		X position (top)	
-1	3	Enemy	Y	default	0	2	1		Y position (left)	
-1	3	Enemy	Face	custom	3	3	1		Initial facing direction	
-1	3	Enemy	Speed	custom	1	4	1		Initial move speed	
-1	3	EnemySpawn	X	default	0	0	2		X position (top) of spawnpoint	
-1	3	EnemySpawn	Y	default	0	2	1		Y position (left) of spawnpoint	
-1	3	EnemySpawn	Face	custom	0	3	1		Initial facing direction	
-1	3	EnemySpawn	Speed	custom	1	4	1		Initial move speed	
-1	3	EnemySpawn	maxNum	custom	1	5	1		Max amount of concurrent spawned offspring	
+Enabled	ID	Name	propertyName	propertyType	propertyValue	Offset	numBytes	preConversion	postConversion	Description	Comment
+1	1	MovingPlatform	Xstart	custom	0	0	1	toTile		X start position (absolute)	Location in Tile numbers
+1	1	MovingPlatform	Ystart	custom	0	1	1	toTile		Y start position (absolute)	Location in Tile numbers
+1	1	MovingPlatform	X	default	0	2	1	toTile		X position move box	Location in Tile numbers
+1	1	MovingPlatform	Y	default	0	3	1	toTile		Y position move box	Location in Tile numbers
+1	1	MovingPlatform	Width	default	0	4	1	toTile		Width move box	
+1	1	MovingPlatform	Height	default	0	5	1	toTile		Height move box	
+1	1	MovingPlatform	Face	custom	3	6	1			Initial facing direction	
+1	1	MovingPlatform	Speed	custom	1	7	1			Initial move speed	
+1	1	MovingPlatform	Active	custom	1	8	1			Active (1) or non-active (0) platform	
+1	2	Platform	X	default	0	0	1	toTile		X position (top)	
+1	2	Platform	Y	default	0	1	1	toTile		Y position (left)	
+1	3	Enemy	X	default	0	0	1	toTile		X position (top)	
+1	3	Enemy	Y	default	0	1	1	toTile		Y position (left)	
+1	3	Enemy	Face	custom	3	2	1			Initial facing direction	
+1	3	Enemy	Speed	custom	1	3	1			Initial move speed	
+1	3	EnemySpawn	X	default	0	0	1	toTile		X position (top) of spawnpoint	
+1	3	EnemySpawn	Y	default	0	1	1	toTile		Y position (left) of spawnpoint	
+1	3	EnemySpawn	Face	custom	0	2	1			Initial facing direction	
+1	3	EnemySpawn	Speed	custom	1	3	1			Initial move speed	
+1	3	EnemySpawn	maxNum	custom	1	4	1			Max amount of concurrent spawned offspring	

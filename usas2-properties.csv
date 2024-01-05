@@ -74,7 +74,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Sui	music						
 1	Usas2		Ruin	Taxilla	music						
 1	Usas2		Ruin	Tiwanaku	music						
-1	Usas2		Ruin	Verhakselaar	music						
+1	Usas2		Ruin	AshokasHell	music						
 1	Usas2		Ruin	KarniMata	name	Karni Mata		The display name			
 1	Usas2		Ruin	Aggayu	name	Aggayu					
 1	Usas2		Ruin	Akna	name	Akna					
@@ -97,7 +97,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Sui	name	Sui					
 1	Usas2		Ruin	Taxilla	name	Taxilla					
 1	Usas2		Ruin	Tiwanaku	name	Tiwanaku					
-1	Usas2		Ruin	Verhakselaar	name	Verhakselaar					
+1	Usas2		Ruin	AshokasHell	name	Ashoka's hell			aka verhakselaar		
 1	Usas2		Ruin	KarniMata	palette	KarniMata		Default Palette			
 1	Usas2		Ruin	Aggayu	Palette						
 1	Usas2		Ruin	Akna	Palette						
@@ -120,7 +120,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Sui	Palette						
 1	Usas2		Ruin	Taxilla	Palette						
 1	Usas2		Ruin	Tiwanaku	Palette						
-1	Usas2		Ruin	Verhakselaar	Palette						
+1	Usas2		Ruin	AshokasHell	Palette						
 1	Usas2		Ruin	undefined00	ruinId	0					
 1	Usas2		Ruin	Hub	ruinId	1					
 1	Usas2		Ruin	Lemniscate	ruinId	2					
@@ -129,7 +129,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Bio	ruinId	5					
 1	Usas2		Ruin	KarniMata	ruinId	6		Identifier for this Ruin			
 1	Usas2		Ruin	Konark	ruinId	7					
-1	Usas2		Ruin	Verhakselaar	ruinId	8					
+1	Usas2		Ruin	AshokasHell	ruinId	8					
 1	Usas2		Ruin	Taxilla	ruinId	9					
 1	Usas2		Ruin	EuderusSet	ruinId	10					
 1	Usas2		Ruin	Akna	ruinId	11					
@@ -223,11 +223,11 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	undefined31	ruinId	31					
 1	Usas2		RoomObject	zombieSpawn	uid	87					
 1	Usas2		RoomObject	zombieSpawn	objectClass	EnemySpawn					
-1	Usas2		RoomObject	retartedZombie	uid	67					
+1	Usas2		RoomObject	retartedZombie	uid	143					
 1	Usas2		RoomObject	retartedZombie	objectClass	Enemy					
-1	Usas2		RoomObject	slime	uid	74					
+1	Usas2		RoomObject	slime	uid	150					
 1	Usas2		RoomObject	slime	objectClass	Enemy					
-1	Usas2		RoomObject	spider	uid	65					
+1	Usas2		RoomObject	spider	uid	141					
 1	Usas2		RoomObject	spider	objectClass	Enemy					
 1	Usas2		RoomObject	smallMovingPlatform	uid	1					
 1	Usas2		RoomObject	smallMovingPlatform	objectClass	movingPlatform					
