@@ -6,6 +6,13 @@ param
 (	[switch]$getglobals
 )
 
+#20240106
+# Write verbose if global parameter $verboseMore=$true
+function write-verboseMore
+{	param ([Parameter(Mandatory, Position=0,ValueFromPipeline)]$message)
+	if ($verboseMore) {write-verbose $message}
+}
+
 # 20231101
 # Create and return an Object (with empty properties)
 function new-CustomObject

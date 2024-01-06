@@ -13,7 +13,8 @@ param
 	$excludeLayer="(objects|object|room numbers)",
 	$targetFileExtention="map",
 	[switch]$pack=$false,
-	$bitBusterPath=".\pack.exe"
+	$bitBusterPath=".\pack.exe",
+	[switch]$verboseMore
 )
 
 ##### Includes #####
@@ -21,6 +22,8 @@ param
 . .\Usas2-SharedFunctions.inc.ps1
 
 ##### Functions #####
+
+
 
 #Take a Tiled .tmx file and write the raw Layer(s) data to a .map file of size mapXl*mapYl
 function Convert-TmxFile
@@ -42,10 +45,10 @@ function Convert-TmxFile
 	write-verbose "Room name: $roomName, ruinId/roomType: $($roomProps[0])"
 	#convert the tiles in this map
 	$TiledLayerData=Convert-TmxLayers -data $tiledMap -includeLayer $includeLayer -excludeLayer $excludeLayer
-	write-verbose "Tiles Block length: $($TiledLayerData.length)"
+	write-verboseMore "Tiles Block length: $($TiledLayerData.length)"
 	#convert objects in this map
 	$RoomObjects=convert-TmxObjects -tiledMap $tiledMap
-	write-verbose ($RoomObjects -join(","))
+	write-verboseMore ($RoomObjects -join(","))
 	write-verbose "Writing to file $outfile" 
 	$null=Set-Content -Value ($roomProps+$TiledLayerData+$roomObjects) -Path $outFile -Encoding Byte
 }
@@ -77,15 +80,15 @@ function convert-TmxMapProperties
 	(	$TiledMap,$roomProps
 	)
 	if ($tileset=$TiledMap.map.properties.property|where{$_.name -eq "tileset"})
-	{	write-verbose "Alternative tileset"
+	{	write-verboseMore "Alternative tileset: $($tileset.value)"
 		$roomProps[1]=$tileset.value
 	}
 	if ($music=$TiledMap.map.properties.property|where{$_.name -eq "music"})
-	{	write-verbose "Alternative music"
+	{	write-verboseMore "Alternative music: $($music.value)"
 		$roomProps[2]=$music.value
 	}
 	if ($palette=$TiledMap.map.properties.property|where{$_.name -eq "palette"})
-	{	write-verbose "Alternative palette"
+	{	write-verboseMore "Alternative palette: $($palette.value)"
 		$roomProps[3]=$palette.value
 	}
 	return ,$roomProps
@@ -145,7 +148,8 @@ function convert-TmxObjects
 		{	write-verbose "Object Uid=$($roomobject.uid), id=$($roomobject.identity), class=$($roomobject.objectclass)"
 			$class=$U2objectClassDefinitions.$($roomobject.objectclass)	#get the class
 			$blockLength=($class|measure -sum numBytes).sum
-			#write-verbose "Number of bytes for this class: $blockLength"
+			write-verboseMore "Class properties: $($classProperty)"
+			write-verboseMore "Number of bytes for this class: $blockLength"
 			$data=[byte[]]::new($blockLength+1)
 			$data[0]=$uid	#first byte is object's ID
 			foreach ($classProperty in $class)
@@ -154,16 +158,18 @@ function convert-TmxObjects
 				$value=$object.($classProperty.propertyName)
 				#Does this object have the property value set?
 				if (-not $value) {$value=$classProperty.propertyValue} #if not set, take default value from class
-				#Pre-conversion?
+				#Pre-conversion
 				switch ($classProperty.preConversion)
-				{	toTile
-					{	#write-verbose "pre-conversion: $($classProperty.propertyName) to Tile number"
-						$value=$value/8 -band 255
+				{	toTile	#convert value to Tile number
+					{	$value=$value/8 -band 255
+					}
+					half	#convert value in half
+					{	$value=$value/2 -band 255
 					}
 					Default {}
 				}
-				#write-verbose " $($classProperty.propertyName)=$value"
-				#write number of bytes to byte array
+				write-verboseMore "$($classProperty.propertyName)=$value"
+				#Put number of bytes in byte Array
 				for ($b=0;$b -lt $classProperty.numbytes;$b++) {$data[$classProperty.offset+$b+1]=$value -band 255;$value=$value -shr8}
 			}
 			#Post-conversion
@@ -211,6 +217,7 @@ $usas2=get-Usas2Globals -force
 $U2objectClassDefinitions=get-U2objectClassDefinitions -force
 $WorldMap=get-roomMaps -mapsource (get-content ("..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile))
 $global:U2objectClassDefinitions=$U2objectClassDefinitions
+
 
 ##### Main: #####
 #tests
