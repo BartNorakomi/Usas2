@@ -185,7 +185,7 @@ function convert-TmxObjects
 #out:	Array of objects
 function get-RoomObjects
 {	param ($tiledMap)
-	foreach ($object in $tiledMap.map.objectgroup.object|where{$_.properties.property.name -eq "uid"})
+	foreach ($object in $tiledMap.map.objectgroup.object|where{($_.properties.property.name -eq "uid") -and ($_.visible -ne "0" )})
 	{	$object.properties.property|%{add-member -InputObject $object -membertype NoteProperty -name $_.name -value $_.value}
 		$object
 	}

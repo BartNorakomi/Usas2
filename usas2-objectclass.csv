@@ -6,7 +6,7 @@ Enabled	ID	Name	propertyName	propertyType	propertyValue	Offset	numBytes	preConve
 1	1	MovingPlatform	Width	default	0	4	1	half		Width move box	
 1	1	MovingPlatform	Height	default	0	5	1			Height move box	
 1	1	MovingPlatform	Face	custom	3	6	1			Initial facing direction	
-1	1	MovingPlatform	Speed	custom	1	7	1			Initial move speed	
+1	1	MovingPlatform	Speed	custom	3	7	1			Initial move speed	
 1	1	MovingPlatform	Active	custom	1	8	1			Active (1) or non-active (0) platform	
 1	2	Platform	X	default	0	0	1	half		X position (top)	
 1	2	Platform	Y	default	0	1	1			Y position (left)	

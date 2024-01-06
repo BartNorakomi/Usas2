@@ -50,8 +50,8 @@ SetObjects:                    ;after unpacking the map to ram, all the object d
   ;set x relative to box
   ld    a,(ix+Object001Platform.x)
   add   a,(ix+Object001Platform.relativex)
-  add   a,a                     ;*2
-  add   a,a                     ;*4
+ ; add   a,a                     ;*2
+ ; add   a,a                     ;*4
   ld    l,a
   ld    h,0
   add   hl,hl                   ;8
@@ -61,9 +61,9 @@ SetObjects:                    ;after unpacking the map to ram, all the object d
   ;set y relative to box
   ld    a,(ix+Object001Platform.y)
   add   a,(ix+Object001Platform.relativey)
-  add   a,a                     ;*2
-  add   a,a                     ;*4
-  add   a,a                     ;*8
+ ; add   a,a                     ;*2
+ ; add   a,a                     ;*4
+ ; add   a,a                     ;*8
   ld    (iy+enemies_and_objects.y),a
   
   ;set box x left
