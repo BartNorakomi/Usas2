@@ -55,52 +55,60 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ret
 
   .Object001:                           ;moving platform
+;v1-2=box right (16 bit)
+;v1-1=box right (16 bit)
 ;v1=sx software sprite in Vram
 ;v2=active?
 ;v3=y movement
 ;v4=x movement
-;v5=speed
 ;v5=SnapPlayer?
-;v6=box left
-;v7=box right
+;v6=box left (16 bit)
+;v7=box left (16 bit)
 ;v8=box top
 ;v9=box bottom
+;v10=speed
   ld    hl,Object001Table
   push  iy
   pop   de                              ;enemy object table
   ld    bc,lenghtenemytable
   ldir                                  ;copy enemy table
 
-  ;set x relative to box
-  ld    a,(ix+Object001Table.x)
+  ;set x (relative to box)
+  ld    a,(ix+Object001Table.xbox)
   add   a,(ix+Object001Table.relativex)
-  add   a,a                             ;*2
-  add   a,a                             ;*4
   ld    l,a
   ld    h,0
-  add   hl,hl                           ;8
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
   ld    (iy+enemies_and_objects.x),l
   ld    (iy+enemies_and_objects.x+1),h
 
-  ;set y relative to box
-  ld    a,(ix+Object001Table.y)
+  ;set y (relative to box)
+  ld    a,(ix+Object001Table.ybox)
   add   a,(ix+Object001Table.relativey)
-  add   a,a                             ;*2
-  add   a,a                             ;*4
-  add   a,a                             ;*8
   ld    (iy+enemies_and_objects.y),a
   
   ;set box x left
-  ld    a,(ix+Object001Table.x)
-  ld    (iy+enemies_and_objects.v6),a   ;v6=box left
+  ld    l,(ix+Object001Table.xbox)
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.v6),l   ;v6 and v7=box left (16bit)
+  ld    (iy+enemies_and_objects.v7),h   ;v6 and v7=box left (16bit)
+
   ;set box x right
-  add   a,(ix+Object001Table.width)
-  ld    (iy+enemies_and_objects.v7),a   ;v7=box right
-  ;set box x top
-  ld    a,(ix+Object001Table.y)
+  ld    a,(ix+Object001Table.xbox)
+  add   a,(ix+Object001Table.widthbox)
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
+  ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
+
+  ;set box y top
+  ld    a,(ix+Object001Table.ybox)
   ld    (iy+enemies_and_objects.v8),a   ;v8=box top
-  ;set box x bottom
-  add   a,(ix+Object001Table.height)
+
+  ;set box y bottom
+  add   a,(ix+Object001Table.heightbox)
   ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
 
   ;set facing direction
@@ -110,10 +118,10 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    e,a
   ld    hl,Movementtable-2
   add   hl,de
-  ld    a,(hl)                              ;y
+  ld    a,(hl)                          ;y
   ld    (iy+enemies_and_objects.v3),a   ;v3=y movement
   inc   hl
-  ld    a,(hl)                              ;x
+  ld    a,(hl)                          ;x
   ld    (iy+enemies_and_objects.v4),a   ;v4=x movement
   
   ;set speed
@@ -141,19 +149,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ;set x
   ld    a,(ix+Object150Table.x)
-  add   a,a                             ;*2
-  add   a,a                             ;*4
   ld    l,a
   ld    h,0
-  add   hl,hl                           ;8
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
   ld    (iy+enemies_and_objects.x),l
   ld    (iy+enemies_and_objects.x+1),h
 
-  ;set y relative to box
+  ;set y
   ld    a,(ix+Object150Table.y)
-  add   a,a                             ;*2
-  add   a,a                             ;*4
-  add   a,a                             ;*8
+  sub   a,16                            ;temp fix, subtract height trampoline blob
   ld    (iy+enemies_and_objects.y),a
 
   ;set facing direction
@@ -183,19 +187,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ;set x
   ld    a,(ix+Object143Table.x)
-  add   a,a                             ;*2
-  add   a,a                             ;*4
   ld    l,a
   ld    h,0
-  add   hl,hl                           ;8
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
   ld    (iy+enemies_and_objects.x),l
   ld    (iy+enemies_and_objects.x+1),h
 
-  ;set y relative to box
+  ;set y
   ld    a,(ix+Object143Table.y)
-  add   a,a                             ;*2
-  add   a,a                             ;*4
-  add   a,a                             ;*8
+  sub   a,32                            ;temp fix, subtract height retarded zombie
   ld    (iy+enemies_and_objects.y),a
 
   ;set facing direction
@@ -218,10 +218,10 @@ Object001Table:               ;platform
 .ID: equ 0
 .relativex: equ 1
 .relativey: equ 2
-.x: equ 3
-.y: equ 4
-.width: equ 5
-.height: equ 6
+.xbox: equ 3
+.ybox: equ 4
+.widthbox: equ 5
+.heightbox: equ 6
 .face: equ 7
 .speed: equ 8
 .active: equ 9
