@@ -665,6 +665,8 @@ CopyObject:                                           ;copy any object into scre
 ;  db    000,%0000 0100,$d0       ;slow transparant copy -> Copy from right to left
   db    000,%0000 0100,$90       ;slow transparant copy -> Copy from right to left
 
+CleanObjectTableLenght: equ CleanOb2-CleanOb1
+
   db    0                 ;restorebackground?
 CleanOb1:                                             ;these 3 objects are used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)
   db    000,000,000,000   ;sx,--,sy,spage
@@ -693,17 +695,17 @@ CleanOb4:
   db    002,000,001,000   ;nx,--,ny,--
   db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
-CleanOb5:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    002,000,001,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+;CleanOb5:
+;  db    000,000,000,000   ;sx,--,sy,spage
+;  db    000,000,000,000   ;dx,--,dy,dpage
+;  db    002,000,001,000   ;nx,--,ny,--
+;  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
-CleanOb6:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    002,000,001,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+;CleanOb6:
+;  db    000,000,000,000   ;sx,--,sy,spage
+;  db    000,000,000,000   ;dx,--,dy,dpage
+;  db    002,000,001,000   ;nx,--,ny,--
+;  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
 PuzzleSwitchTable2: db  0,1,2,3,1,3,0,   0,0,0
