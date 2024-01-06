@@ -2766,7 +2766,6 @@ RightLancelot:
 TrampolineBlob:
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
-;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Unable to be hit duration
   ld    a,(ix+enemies_and_objects.v5)       ;v5=Unable to be hit duration
