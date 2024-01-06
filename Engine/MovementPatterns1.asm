@@ -2766,7 +2766,6 @@ RightLancelot:
 TrampolineBlob:
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
-;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Unable to be hit duration
   ld    a,(ix+enemies_and_objects.v5)       ;v5=Unable to be hit duration
@@ -7442,16 +7441,19 @@ CheckCollisionObject:                       ;checks for collision wall and if fo
 v3v4Table:  db +00,-01, -01,-01, -01,+00, -01,+01, +00,+01, +01,+01, +01,+00, +01,-01
 
 PlatformHorizontally:
+;v1-2=box right (16 bit)
+;v1-1=box right (16 bit)
 ;v1=sx software sprite in Vram
 ;v2=active?
 ;v3=y movement
 ;v4=x movement
 ;v5=SnapPlayer?
-;v6=box left
-;v7=box right
+;v6=box left (16 bit)
+;v7=box left (16 bit)
 ;v8=box top
 ;v9=box bottom
 ;v10=speed
+
   call  VramObjectsTransparantCopies        ;put object in Vram/screen
   call  MovePlatForm
 ;  call  MovePlatFormHorizontally            ;move
@@ -7487,43 +7489,26 @@ MovePlatForm:
 
 ChangeDirectionWhenOutOfBox:
   ;check surpasses top side box
-  ld    a,(ix+enemies_and_objects.v8)       ;v8=box top
-  add   a,a                     ;*2
-  add   a,a                     ;*4
-  add   a,a                     ;*8
-  dec   a                       ;add tolerance of 1 pixel
-  sub   a,(ix+enemies_and_objects.y)        ;y
-  jr    nc,.OutOfBoxChangeDirection
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  sub   a,(ix+enemies_and_objects.v8)       ;v8=box top
+  jr    c,.OutOfBoxChangeDirection
 
   ;check surpasses bottom side box
   ld    a,(ix+enemies_and_objects.v9)       ;v9=box bottom
-  add   a,a                     ;*2
-  add   a,a                     ;*4
-  add   a,a                     ;*8
-  ld    b,(ix+enemies_and_objects.y)        ;y
-  sub   a,b
+  sub   a,(ix+enemies_and_objects.y)        ;y
   jr    c,.OutOfBoxChangeDirection
 
   ;check surpasses left side box
-  ld    a,(ix+enemies_and_objects.v6)       ;v6=box left
-  add   a,a                     ;*2
-  add   a,a                     ;*4
-  ld    l,a
-  ld    h,0
-  add   hl,hl                   ;8
-  dec   hl
-  ld    e,(ix+enemies_and_objects.x)        ;x
-  ld    d,(ix+enemies_and_objects.x+1)      ;x
+  ld    e,(ix+enemies_and_objects.v6)       ;v6 and v7=box left (16bit)
+  ld    d,(ix+enemies_and_objects.v7)       ;v6 and v7=box left (16bit)
+  ld    l,(ix+enemies_and_objects.x)        ;x
+  ld    h,(ix+enemies_and_objects.x+1)      ;x
   sbc   hl,de
-  jr    nc,.OutOfBoxChangeDirection
+  jr    c,.OutOfBoxChangeDirection
 
   ;check surpasses right side box
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=box right
-  add   a,a                     ;*2
-  add   a,a                     ;*4
-  ld    l,a
-  ld    h,0
-  add   hl,hl                   ;8
+  ld    l,(ix+enemies_and_objects.v1-2)     ;v1-2 and v1-1=box right (16bit)
+  ld    h,(ix+enemies_and_objects.v1-1)     ;v1-2 and v1-1=box right (16bit)
   ld    e,(ix+enemies_and_objects.x)        ;x
   ld    d,(ix+enemies_and_objects.x+1)      ;x
   sbc   hl,de

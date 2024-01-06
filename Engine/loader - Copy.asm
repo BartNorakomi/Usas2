@@ -16,19 +16,45 @@ loader:
 	call SetMapPalette				
   ret
 
-SetObjects:                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
+;1,0,0,10,22,17,2,3,1,1,143,14,18,3,2,150,17,18,3,1,0 (edited) 
+
+;1=platform
+;143=retartedZombie (geen spawnpoint, gewoon solo zombie)
+;150=slime
+;8:21
+;Zie objectClass sheet voor data
+;8:21
+;Platform had je al. Enemy is x,y,face,speed
+;8:21
+;0=eof
+
+
+SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
   call	clearEnemyTable
   
-  ld    ix,UnpackedRoomFile.object
+  ld    ix,UnpackedRoomFile.object      ;room object data list
+  ld    iy,enemies_and_objects          ;start object table in iy
+
+  .loop:
   ld    a,(ix)
   or    a
-  ret   z                       ;0=end room object list
-  dec   a
-  jp    z,.Object001
-  ret
+  ret   z                               ;0=end room object list
+  call  .SetObject
+  add   ix,de                           ;add the lenght of current object data to ix, and set next object in ix
+  ld    de,lenghtenemytable             ;lenght 1 object in object table
+  add   iy,de                           ;next object in object table
+  jp    .loop                           ;go handle next object
   
-  .Object001:                   ;moving platform
+  .SetObject:
+  cp    1
+  jp    z,.Object001                    ;platform
+  cp    143
+  jp    z,.Object143                    ;retarded zombie
+  cp    150
+  jp    z,.Object150                    ;trampoline blob
+  ret
 
+  .Object001:                           ;moving platform
 ;v1=sx software sprite in Vram
 ;v2=active?
 ;v3=y movement
@@ -39,76 +65,157 @@ SetObjects:                    ;after unpacking the map to ram, all the object d
 ;v7=box right
 ;v8=box top
 ;v9=box bottom
-
-  ld    hl,Object001Platform
-  ld    de,enemies_and_objects
+  ld    hl,Object001Table
+  push  iy
+  pop   de                              ;enemy object table
   ld    bc,lenghtenemytable
-  ldir
-
-  ld    iy,enemies_and_objects
+  ldir                                  ;copy enemy table
 
   ;set x relative to box
-  ld    a,(ix+Object001Platform.x)
-  add   a,(ix+Object001Platform.relativex)
- ; add   a,a                     ;*2
- ; add   a,a                     ;*4
+  ld    a,(ix+Object001Table.x)
+  add   a,(ix+Object001Table.relativex)
+  add   a,a                             ;*2
+  add   a,a                             ;*4
   ld    l,a
   ld    h,0
-  add   hl,hl                   ;8
+  add   hl,hl                           ;8
   ld    (iy+enemies_and_objects.x),l
   ld    (iy+enemies_and_objects.x+1),h
 
   ;set y relative to box
-  ld    a,(ix+Object001Platform.y)
-  add   a,(ix+Object001Platform.relativey)
- ; add   a,a                     ;*2
- ; add   a,a                     ;*4
- ; add   a,a                     ;*8
+  ld    a,(ix+Object001Table.y)
+  add   a,(ix+Object001Table.relativey)
+  add   a,a                             ;*2
+  add   a,a                             ;*4
+  add   a,a                             ;*8
   ld    (iy+enemies_and_objects.y),a
   
   ;set box x left
-  ld    a,(ix+Object001Platform.x)
-  ld    (iy+enemies_and_objects.v6),a ;v6=box left
+  ld    a,(ix+Object001Table.x)
+  ld    (iy+enemies_and_objects.v6),a   ;v6=box left
   ;set box x right
-  add   a,(ix+Object001Platform.width)
-  ld    (iy+enemies_and_objects.v7),a ;v7=box right
+  add   a,(ix+Object001Table.width)
+  ld    (iy+enemies_and_objects.v7),a   ;v7=box right
   ;set box x top
-  ld    a,(ix+Object001Platform.y)
-  ld    (iy+enemies_and_objects.v8),a ;v8=box top
+  ld    a,(ix+Object001Table.y)
+  ld    (iy+enemies_and_objects.v8),a   ;v8=box top
   ;set box x bottom
-  add   a,(ix+Object001Platform.height)
-  ld    (iy+enemies_and_objects.v9),a ;v9=box bottom
+  add   a,(ix+Object001Table.height)
+  ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
 
-  ;set box face
-  ld    a,(ix+Object001Platform.face)
+  ;set facing direction
+  ld    a,(ix+Object001Table.face)
   add   a,a
   ld    d,0
   ld    e,a
   ld    hl,Movementtable-2
   add   hl,de
   ld    a,(hl)                              ;y
-  ld    (iy+enemies_and_objects.v3),a ;v3=y movement
+  ld    (iy+enemies_and_objects.v3),a   ;v3=y movement
   inc   hl
   ld    a,(hl)                              ;x
-  ld    (iy+enemies_and_objects.v4),a ;v4=x movement
+  ld    (iy+enemies_and_objects.v4),a   ;v4=x movement
   
-  ;set box speed
-  ld    a,(ix+Object001Platform.speed)
-  ld    (iy+enemies_and_objects.v10),a ;v10=speed
+  ;set speed
+  ld    a,(ix+Object001Table.speed)
+  ld    (iy+enemies_and_objects.v10),a  ;v10=speed
 
-  ;set box active
-  ld    a,(ix+Object001Platform.active)
-  ld    (iy+enemies_and_objects.v2),a ;v2=active?
+  ;set active
+  ld    a,(ix+Object001Table.active)
+  ld    (iy+enemies_and_objects.v2),a   ;v2=active?
+
+  ld    de,Object001Table.lenghtobjectdata
+  ret
+
+
+  .Object150:                           ;trampoline blob
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v4=Horizontal Movement
+;v5=Unable to be hit duration
+  ld    hl,Object150Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable
+  ldir                                  ;copy enemy table
+
+  ;set x
+  ld    a,(ix+Object150Table.x)
+  add   a,a                             ;*2
+  add   a,a                             ;*4
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;8
+  ld    (iy+enemies_and_objects.x),l
+  ld    (iy+enemies_and_objects.x+1),h
+
+  ;set y relative to box
+  ld    a,(ix+Object150Table.y)
+  add   a,a                             ;*2
+  add   a,a                             ;*4
+  add   a,a                             ;*8
+  ld    (iy+enemies_and_objects.y),a
+
+  ;set facing direction
+  ld    a,(ix+Object150Table.face)
+  cp    3
+  jr    z,.EndCheckMovingRight          ;the standard movement direction of any object is right, if this is the facing direction, then we don't need to change movement direction
+  ld    (iy+enemies_and_objects.v4),-1  ;v4=Horizontal Movement
+  .EndCheckMovingRight:
+
+  ld    de,Object150Table.lenghtobjectdata
+  ret
+
+
+
+
+  .Object143:                           ;retarded zombie
+;v1=Animation Counter
+;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Wait Timer
+  ld    hl,Object143Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable
+  ldir                                  ;copy enemy table
+
+  ;set x
+  ld    a,(ix+Object143Table.x)
+  add   a,a                             ;*2
+  add   a,a                             ;*4
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;8
+  ld    (iy+enemies_and_objects.x),l
+  ld    (iy+enemies_and_objects.x+1),h
+
+  ;set y relative to box
+  ld    a,(ix+Object143Table.y)
+  add   a,a                             ;*2
+  add   a,a                             ;*4
+  add   a,a                             ;*8
+  ld    (iy+enemies_and_objects.y),a
+
+  ;set facing direction
+  ld    a,(ix+Object143Table.face)
+  cp    3
+  jr    z,.EndCheckMovingRight2          ;the standard movement direction of any object is right, if this is the facing direction, then we don't need to change movement direction
+  ld    (iy+enemies_and_objects.v4),-1  ;v4=Horizontal Movement
+  .EndCheckMovingRight2:
+
+  ld    de,Object143Table.lenghtobjectdata
   ret
 
 
                 ;y,x  1=up,   2=upright,  3=right,  4=rightdown,  5=down, 6=downleft, 7=left, 8=leftup)
 Movementtable:    db  -1,+0,  -1,+1,      +0,+1,    +1,+1,        +1,+0,  +1,-1,      +0,-1,  -1,-1  
 
-
-Object001Platform:
+Object001Table:               ;platform
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
           db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.ID: equ 0
 .relativex: equ 1
 .relativey: equ 2
 .x: equ 3
@@ -118,14 +225,31 @@ Object001Platform:
 .face: equ 7
 .speed: equ 8
 .active: equ 9
+.lenghtobjectdata: equ 10
 
-;1,0,0,10,22,17,2,3,1,1,0
-;start positie platform 0,0 (relatief tot box) in tiles
-;box X,Y,width,length (10,22,17,2) in tiles
-;face 3 =rechts
-;speed=1
-;active=1
-;0=end
+Object143Table:               ;retarded zombie
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+;         db -0,        1|dw RetardedZombie      |db 0000|dw 0000|db 32,16|dw 12*16,spat+(12*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+         db -1,        1|dw RetardedZombie      |db 0000|dw 0000|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.face: equ 3
+.speed: equ 4
+.lenghtobjectdata: equ 5
+
+Object150Table:               ;trampoline blob: v9=special width for Pushing Stone Puzzle Switch
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+         db -1,        1|dw TrampolineBlob      |db 0000|dw 0000|db 16,22|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+08,+36, 0|db 255,movepatblo1| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.face: equ 3
+.speed: equ 4
+.lenghtobjectdata: equ 5
+
+
+
 
 
 
