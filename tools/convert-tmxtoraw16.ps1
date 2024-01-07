@@ -221,7 +221,7 @@ $global:U2objectClassDefinitions=$U2objectClassDefinitions
 
 ##### Main: #####
 #tests
-$path="C:\Users\rvand\OneDrive\Usas2\maps\Br21.tmx"
+#$path="C:\Users\rvand\OneDrive\Usas2\maps\Br21.tmx"
 #$tiledmap=get-tiledmap -path $path
 #get-RoomObjects -tiledmap $tiledmap
 #$tiledMap.map.objectgroup.object.properties.property|%{[pscustomobject]@{$_.name=$_.value}}
