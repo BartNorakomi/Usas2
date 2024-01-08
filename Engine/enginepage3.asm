@@ -4,8 +4,9 @@ phase	enginepage3addr
 WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 
-WorldMapPositionY:  db  21 ;14 ;14 ;21
-WorldMapPositionX:  db  43 ;18 ;43
+;bt21=21,43. bt28=28,45
+WorldMapPositionY:  db  28
+WorldMapPositionX:  db  45
 
 
 ;LookUpTable for Room Types (width,height,engine,free)
