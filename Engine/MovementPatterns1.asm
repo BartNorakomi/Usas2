@@ -6682,7 +6682,14 @@ RetardedZombie:
   
   .CheckFloorFalling:
   call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
+  jr    z,.FloorFound
+  cp    SpikeId-1
+  jp    z,CheckPlayerPunchesEnemy.EnemyDied
+  cp    LavaId-1
   ret   nz
+  jp    CheckPlayerPunchesEnemy.EnemyDied
+  
+  .FloorFound:
   ld    (ix+enemies_and_objects.v2),4       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
   ld    (ix+enemies_and_objects.v3),1       ;v3=Vertical Movement
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter

@@ -17,22 +17,22 @@ loader:
   ret
 
 
-;ObjectExample: 
+ObjectExample: 
 ;db 1,0,0,$28,$a0,$44,16,3,3,1 ;platform
 ;db 1,0,0,$28,$b0,$44,16,3,3,1
-;db $8f,$44,$40,03,02 ;retard zombie
+db $8f,64/2,$40,03,02 ;retard zombie
 ;db $8f,$54,$50,03,02
 ;db $8f,$64,$60,03,02
 ;db $8f,$74,$70,03,02
-;db $96,$24,$80,03,01 ;slime
+;db $96,32/2,$80,03,01 ;slime
 ;db $96,$24,$30,03,01
-;db 0
+db 0
 
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
-;  ld  hl,ObjectExample
-;  ld  de,UnpackedRoomFile.object
-;  ld  bc,200
+  ld  hl,ObjectExample
+  ld  de,UnpackedRoomFile.object
+  ld  bc,200
 ;  ldir
 
   call	clearEnemyTable
@@ -166,6 +166,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ;set x
   ld    a,(ix+Object150Table.x)
+  add   a,8                             ;all hardware sprites need to be put 16 pixel to the right
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
@@ -202,6 +203,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ;set x
   ld    a,(ix+Object143Table.x)
+  add   a,8                             ;all hardware sprites need to be put 16 pixel to the right
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)

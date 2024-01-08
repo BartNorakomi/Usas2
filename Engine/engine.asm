@@ -68,7 +68,7 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 100 ;$19 ;230 ;250 ;210
+ClesX:      dw 10 ;$19 ;230 ;250 ;210
 ClesY:      db 80 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
@@ -3706,6 +3706,7 @@ CheckTileEnemyInHL:
 ;  jp    m,checktile.CheckTileIsOutOfScreenLeft
 
   add   a,(ix+enemies_and_objects.y)
+;  add a,1
   jp    checktile.XandYset
 
 CheckTileEnemy:  
@@ -3822,6 +3823,15 @@ checktile:                  ;in b->add y to check, de->add x to check
   ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
   dec   a                   ;1 = wall
 	ret
+
+;BackgroundID:	equ 0	;tile 0 = background
+;HardForeGroundID:	equ 1	;tile 1 = hardforeground
+;LadderId:	equ 2	;tile 2 = LadderTilesEndAdrEnd
+;SpikeId:		equ 3	;tile 3 = spikes/poison
+;StairLeftId:	equ 4	;tile 4 = stairsleftup
+;StairRightId:	equ 5	;tile 5 = stairsrightup
+;LavaId:		equ 6	;tile 6 = lava
+
 
 .CheckTileIsOutOfScreenLeft:
   ld    hl,0

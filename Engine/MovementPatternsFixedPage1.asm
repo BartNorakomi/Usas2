@@ -266,6 +266,7 @@ MoveSpriteVertically:                       ;Add v3 to y. Add v4 to x (16 bit)
 
 CheckCollisionWallEnemy:                    ;checks for collision wall and if found invert horizontal movement
   ld    a,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
+  add   a,8                                 ;this checks exactly at the feet of the enemy
   ld    hl,-16                              ;add to x to check right side of sprite for collision
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   jr    z,.MovingRight
