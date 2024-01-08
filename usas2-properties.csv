@@ -29,27 +29,27 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Palette	KarniMata	id	6					
 1	Usas2		Room	boss	engine	2					
 1	Usas2		Room	gate	engine	2					
-1	Usas2		Room	general	engine	1					
+1	Usas2		Room	regular	engine	1					
 1	Usas2		Room	secret	engine	1					
 1	Usas2		Room	teleport	engine	2					
 1	Usas2		Room	boss	height	27					
 1	Usas2		Room	gate	height	27					
-1	Usas2		Room	general	height	27					
+1	Usas2		Room	regular	height	27					
 1	Usas2		Room	secret	height	27					
 1	Usas2		Room	teleport	height	27					
 1	Usas2		Room	boss	name	Boss Room					
 1	Usas2		Room	gate	name	Gate Room					
-1	Usas2		Room	general	name	General Room					
+1	Usas2		Room	regular	name	Regular Room					
 1	Usas2		Room	secret	name	Secret Room					
 1	Usas2		Room	teleport	name	Teleport room					
 1	Usas2		Room	boss	roomType	96					
 1	Usas2		Room	gate	roomType	128					
-1	Usas2		Room	general	roomType	0					
+1	Usas2		Room	regular	roomType	0					
 1	Usas2		Room	secret	roomType	64					
 1	Usas2		Room	teleport	roomType	32					
 1	Usas2		Room	boss	width	32					
 1	Usas2		Room	gate	width	32					
-1	Usas2		Room	general	width	38					
+1	Usas2		Room	regular	width	38					
 1	Usas2		Room	secret	width	38					
 1	Usas2		Room	teleport	width	32					
 1	Usas2		Ruin	KarniMata	music	KarniMata		Default music (ID) for this ruin			
@@ -231,3 +231,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	spider	objectClass	Enemy					
 1	Usas2		RoomObject	smallMovingPlatform	uid	1					
 1	Usas2		RoomObject	smallMovingPlatform	objectClass	movingPlatform					
+1	Usas2		Room	regularSmall	engine	2					
+1	Usas2		Room	regularSmall	height	27					
+1	Usas2		Room	regularSmall	name	Regular Room Small					
+1	Usas2		Room	regularSmall	roomType	160					
+1	Usas2		Room	regularSmall	width	32					

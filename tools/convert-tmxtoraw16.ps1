@@ -62,7 +62,7 @@ function get-roomDefaultProperties
 	(	$roomName
 	)
 	$room=$worldmap|where{$_.name -eq $roomname}
-	$ruinIdRoomType=[byte]($room.ruinid -bor $room.roomtype -band 255)
+	$ruinIdRoomType=[byte](($room.ruinid -band 0x1F) -bor ($room.roomtype -band 0xe0) -band 255)
 	$ruinIdentity=($usas2.ruin|where{$_.ruinId -eq $room.ruinid}).identity
 	$ruinProperties=get-U2ruinProperties -identity $ruinIdentity
 	
@@ -74,6 +74,8 @@ function get-roomDefaultProperties
 	return ,$data
 }
 
+
+# 20240108
 # Convert optional map properties and put in roomProps header block
 function convert-TmxMapProperties
 {	param
@@ -90,6 +92,10 @@ function convert-TmxMapProperties
 	if ($palette=$TiledMap.map.properties.property|where{$_.name -eq "palette"})
 	{	write-verboseMore "Alternative palette: $($palette.value)"
 		$roomProps[3]=$palette.value
+	}
+	if ($roomType=$TiledMap.map.properties.property|where{$_.name -eq "roomType"})
+	{	write-verboseMore "Alternative roomType: $($roomType.value)"
+		$roomProps[0]=($roomProps[0] -band 0x1F) -bor ($roomType.value -shl 5 -band 0xe0)
 	}
 	return ,$roomProps
 }

@@ -23,7 +23,7 @@ roomTypes:
 				DB 38,27,1,0	;Secret
 				DB 32,27,2,0	;Boss
 				DB 32,27,2,0	;Gate
-				DB 0,0,0,0	;<free>
+				DB 32,27,2,0	;RegularSmall
 				DB 0,0,0,0	;<free>
 				DB 0,0,0,0	;<free>
 
