@@ -7461,7 +7461,7 @@ PlatformHorizontally:
 ;v9=box bottom
 ;v10=speed
 
-  call  VramObjectsTransparantCopies        ;put object in Vram/screen
+  call  VramObjectsTransparantCopies2       ;put object in Vram/screen
   call  MovePlatForm
 ;  call  MovePlatFormHorizontally            ;move
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object

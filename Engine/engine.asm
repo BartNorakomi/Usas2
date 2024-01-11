@@ -867,6 +867,9 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
 
 ;check player collides with object on the top side. c= no collision
   ld    a,(ClesY)
+
+;check +8 pixels lower for: Rsitting,RRolling,RSitPunch,RSitShootArrow (and same for left)
+SelfModifyingCodeHitBoxPlayerTopY:  equ $+1
   add   a,17
   sub   (ix+enemies_and_objects.y)
   ret   c
@@ -1056,8 +1059,7 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
 	sbc   hl,de
   ret   nz  
   
-  
-  ld    a,(PlayerFacingRight?)          ;is player facing right ?
+  ld    a,(PlayerFacingRight?)              ;is player facing right ?
   or    a
   jp    z,Set_L_stand
   jp    Set_R_stand
@@ -1067,6 +1069,15 @@ CheckCollisionObjectPlayer:               ;check collision with player - and han
   or    a
   ret   nz
 
+  ld    a,(SelfModifyingCodeHitBoxPlayerTopY)
+  cp    PlayerTopYHitBoxSoftSpritesSitting  ;are we sitting ?
+  jr    z,.YesWeAreSitting
+  ld    a,(PlayerFacingRight?)              ;is player facing right ?
+  or    a
+  jp    z,Set_L_sit
+  jp    Set_R_sit
+
+  .YesWeAreSitting:
   ld    a,(ix+enemies_and_objects.y)
   add   a,(ix+enemies_and_objects.ny)
   add   a,14d
@@ -5531,8 +5542,7 @@ Set_L_Attack:
   ret
 
 Set_R_Rolling:
-  ld    a,CollisionSYRolling
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerRolling
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
@@ -5542,8 +5552,7 @@ Set_R_Rolling:
   ret
 
 Set_L_Rolling:
-  ld    a,CollisionSYRolling
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerRolling
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
@@ -5553,8 +5562,7 @@ Set_L_Rolling:
   ret
 
 Set_Stairs_Climb_RightUp:
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerStanding
   
 	ld		hl,ClimbStairsRightUp
 	ld		(PlayerSpriteStand),hl
@@ -5570,9 +5578,8 @@ Set_Stairs_Climb_RightUp:
   ret
 
 Set_Stairs_Climb_LeftUp:
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
-  
+  call  SetHitBoxPlayerStanding
+
 	ld		hl,ClimbStairsLeftUp
 	ld		(PlayerSpriteStand),hl
 
@@ -5587,8 +5594,7 @@ Set_Stairs_Climb_LeftUp:
   ret
 
 Set_ClimbDown:
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerStanding
   
 	ld		hl,ClimbDown
 	ld		(PlayerSpriteStand),hl
@@ -5609,8 +5615,7 @@ CollisionSYStanding:  equ 07 + 0
 CollisionSYSitting:   equ 07 + 6
 CollisionSYRolling:   equ 07 + 10
 Set_ClimbUp:
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerStanding
   
 	ld		hl,ClimbUp
 	ld		(PlayerSpriteStand),hl
@@ -5631,8 +5636,7 @@ Set_Climb_AndResetAniCount:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   Set_Climb:
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a  
+  call  SetHitBoxPlayerStanding
   
 	ld		hl,Climb
 	ld		(PlayerSpriteStand),hl
@@ -5653,8 +5657,7 @@ Set_Climb_AndResetAniCount:
   ret
 
 Set_jump:
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerStanding
   
 ;  xor   a
 ;  ld    (EnableHitbox?),a
@@ -5678,8 +5681,7 @@ Set_jump:
   ret
 
 Set_Fall: 
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerStanding
   
   xor   a
 ;  ld    (EnableHitbox?),a
@@ -5712,11 +5714,8 @@ Set_L_run:
   ret
 
 Set_R_sit:
-  ld    a,CollisionSYSitting
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerSitting
   
-;  xor   a
-;  ld    (EnableHitbox?),a
 	ld		hl,RSitting
 	ld		(PlayerSpriteStand),hl
 
@@ -5724,12 +5723,36 @@ Set_R_sit:
 	ld		(standchar),hl	
   ret
 
-Set_L_sit:	
-  ld    a,CollisionSYSitting
+PlayerTopYHitBoxSoftSpritesSitting:   equ 17+8
+PlayerTopYHitBoxSoftSpritesStanding:  equ 17
+PlayerTopYHitBoxSoftSpritesRolling:   equ 17
+SetHitBoxPlayerSitting:
+  ld    a,CollisionSYSitting                    ;1st one is for hardware sprites (collision player-enemy)
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
 
-;  xor   a
-;  ld    (EnableHitbox?),a
+  ld    a,PlayerTopYHitBoxSoftSpritesSitting    ;2nd one is for software sprites (collision player-platforms)
+  ld    (SelfModifyingCodeHitBoxPlayerTopY),a
+  ret
+
+SetHitBoxPlayerStanding:
+  ld    a,CollisionSYStanding                   ;1st one is for hardware sprites (collision player-enemy)
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+
+  ld    a,PlayerTopYHitBoxSoftSpritesStanding   ;2nd one is for software sprites (collision player-platforms)
+  ld    (SelfModifyingCodeHitBoxPlayerTopY),a
+  ret
+
+SetHitBoxPlayerRolling:
+  ld    a,CollisionSYRolling                    ;1st one is for hardware sprites (collision player-enemy)
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+
+  ld    a,PlayerTopYHitBoxSoftSpritesRolling    ;2nd one is for software sprites (collision player-platforms)
+  ld    (SelfModifyingCodeHitBoxPlayerTopY),a
+  ret
+
+Set_L_sit:	
+  call  SetHitBoxPlayerSitting
+
 	ld		hl,LSitting
 	ld		(PlayerSpriteStand),hl
 
@@ -5738,8 +5761,7 @@ Set_L_sit:
   ret
 
 Set_L_stand:
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerStanding
 
 ;  xor   a
 ;  ld    (EnableHitbox?),a
@@ -5848,9 +5870,7 @@ Set_L_stand:
   ret
 
 Set_R_stand:
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
-
+  call  SetHitBoxPlayerStanding
 ;  xor   a
 ;  ld    (EnableHitbox?),a
   ld    a,1
@@ -5972,8 +5992,7 @@ Set_R_Push:
   ret
 
 Set_L_BeingHit:
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerStanding
   
 	ld		hl,LBeingHit
 	ld		(PlayerSpriteStand),hl
@@ -6000,8 +6019,7 @@ Set_L_BeingHit:
   ret
 
 Set_R_BeingHit:
-  ld    a,CollisionSYStanding
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerStanding
   
 	ld		hl,RBeingHit
 	ld		(PlayerSpriteStand),hl
@@ -6027,8 +6045,7 @@ Set_R_BeingHit:
   ret
 
 Set_L_SitPunch:
-  ld    a,CollisionSYSitting
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerSitting
   
 	ld		hl,LSitPunch
 	ld		(PlayerSpriteStand),hl
@@ -6039,8 +6056,7 @@ Set_L_SitPunch:
   ret
 
 Set_R_SitPunch:
-  ld    a,CollisionSYSitting
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  call  SetHitBoxPlayerSitting
   
 	ld		hl,RSitPunch
 	ld		(PlayerSpriteStand),hl

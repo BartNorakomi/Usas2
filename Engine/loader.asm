@@ -224,9 +224,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,Object143Table.lenghtobjectdata
   ret
 
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-         db -1,        1|dw RetardedZombie      |db 0000|dw 0000|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
-
 SetSPATPositionForThisSprite:           ;we need to define the position this sprite takes in the SPAT
   exx
   push  hl
