@@ -7,5 +7,5 @@ Engine/tniasm.txt
 *.dms
 node_modules/
 tniasm.sym
-*\Usas2.rom
-Engine/Usas2.rom
+tools/versions/*
+versions/*
