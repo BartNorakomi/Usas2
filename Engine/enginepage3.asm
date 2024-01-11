@@ -996,7 +996,8 @@ Depack:     ;In: HL: source, DE: destination
 	inc	hl
 	rla
 	ret    
-
+	
+freezecontrols?:          db  0
 ;DoubleTapCounter:         db  1
 ;
 ; bit	7	  6	  5		    4		    3		    2		  1		  0
@@ -1090,7 +1091,7 @@ AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
   ds    6 ;1 extra block buffer
 AmountOfAppearingBlocks:  ds  1
 
-freezecontrols?:          db  0
+
 
 
 endenginepage3:
