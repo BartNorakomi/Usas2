@@ -106,7 +106,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,b
   ld    (AmountOfAppearingBlocks),a
   dec   a                               ;only 1 platform ?
-  jp    z,.MoreThan2RetractingPlatforms ;only 1 platform uses the same placement routin as more than 2
+;  jp    z,.MoreThan2RetractingPlatforms ;only 1 platform uses the same placement routin as more than 2
+  jp    z,.Only1RetractingPlatform ;only 1 platform uses the same placement routin as more than 2
   dec   a                               ;only 2 platforms ?
   jp    z,.Only2RetractingPlatforms
 
@@ -176,24 +177,24 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,Object005Table.lenghtobjectdata
   ret
 
-;  .Only1RetractingPlatform:
-;  ld    a,1
-;  ld    (AppearingBlocksTable+2),a
-;  xor   a
-;  ld    (AppearingBlocksTable+5),a
-;  ld    a,255
-;  ld    (AppearingBlocksTable+6),a
+  .Only1RetractingPlatform:
+  ld    a,1
+  ld    (AppearingBlocksTable+2),a
+  xor   a
+  ld    (AppearingBlocksTable+5),a
+  ld    a,255
+  ld    (AppearingBlocksTable+6),a
 
-;  ld    a,(ix+Object005Table.y)
-;  ld    (AppearingBlocksTable+0),a
-;  ld    (AppearingBlocksTable+3),a
-;  ld    a,(ix+Object005Table.x)
-;  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-;  ld    (AppearingBlocksTable+1),a
-;  ld    (AppearingBlocksTable+4),a
+  ld    a,(ix+Object005Table.y)
+  ld    (AppearingBlocksTable+0),a
+  ld    (AppearingBlocksTable+3),a
+  ld    a,(ix+Object005Table.x)
+  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (AppearingBlocksTable+1),a
+  ld    (AppearingBlocksTable+4),a
 
-;  ld    de,Object005Table.lenghtobjectdata
-;  ret
+  ld    de,Object005Table.lenghtobjectdata
+  ret
 
   .FindTotalAmountOfRetractingPlatforms:
   add   ix,de                           ;next object
