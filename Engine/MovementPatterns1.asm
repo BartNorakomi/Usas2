@@ -1667,10 +1667,20 @@ AreaSignSyTable:
   db    55,72,54,73,53,74,52,75,51,76,50,77,49,78,48,79
   db    47,80,46,81,45,82,44,83,43,84,42,85,41,86,40,87
 
-AppBlocksHandler:  
+AppBlocksHandler:
+  ld    a,(AmountOfAppearingBlocks)
+  dec   a
+  ld    b,255
+  jr    z,.AmountOfBlocksFound
+  dec   a
+  ld    b,127
+  jr    z,.AmountOfBlocksFound
+  ld    b,63  
+  .AmountOfBlocksFound:
+  
   ld    a,(ix+enemies_and_objects.v1)     ;v1 = activate block timer
   inc   a
-  and   63
+  and   b
   ld    (ix+enemies_and_objects.v1),a     ;v1 = activate block timer
   ret   nz
   
@@ -1709,7 +1719,17 @@ AppBlocksHandler:
   ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),1
   ret
 
-AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
+;AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
+  db    15*8,18*8,1, 07*8,20*8,0, 15*8,12*8,1, 07*8,26*8,0, 15*8,06*8,1, 15*8,18*8,0, 10*8,09*8,1, 15*8,12*8,0, 10*8,15*8,1, 15*8,06*8,0, 07*8,20*8,1
+  db    10*8,09*8,0, 07*8,26*8,1, 10*8,15*8,0
+  db    255
+
+  db    15*8,18*8,1, 23*8,18*8,0, 19*8,18*8,1, 15*8,18*8,0, 23*8,18*8,1, 19*8,18*8,0, 255
+
+  db    15*8,18*8,1, 19*8,18*8,1, 15*8,18*8,0, 19*8,18*8,0, 255
+
+  db    15*8,18*8,1, 15*8,18*8,0, 255
+
   db    15*8,18*8,1, 07*8,20*8,0, 15*8,12*8,1, 07*8,26*8,0, 15*8,06*8,1, 15*8,18*8,0, 10*8,09*8,1, 15*8,12*8,0, 10*8,15*8,1, 15*8,06*8,0, 07*8,20*8,1
   db    10*8,09*8,0, 07*8,26*8,1, 10*8,15*8,0
   db    255
@@ -7447,7 +7467,7 @@ CheckCollisionObject:                       ;checks for collision wall and if fo
 
 v3v4Table:  db +00,-01, -01,-01, -01,+00, -01,+01, +00,+01, +01,+01, +01,+00, +01,-01
 
-PlatformHorizontally:
+Platform:
 ;v1-2=box right (16 bit)
 ;v1-1=box right (16 bit)
 ;v1=sx software sprite in Vram

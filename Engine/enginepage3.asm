@@ -5,7 +5,7 @@ WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 
 ;bt21=21,43;bt28=28,45;bt16=16,45
-WorldMapPositionY:  db  18
+WorldMapPositionY:  db  17
 WorldMapPositionX:  db  48
 
 
@@ -998,7 +998,6 @@ Depack:     ;In: HL: source, DE: destination
 	ret    
 
 ;DoubleTapCounter:         db  1
-freezecontrols?:          db  0
 ;
 ; bit	7	  6	  5		    4		    3		    2		  1		  0
 ;		  0	  0	  trig-b	trig-a	right	  left	down	up	(joystick)
@@ -1085,6 +1084,14 @@ PopulateControls:
 	ld		(Controls),a
 	ld		(NewPrContr),a
   ret
+
+AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
+  ds    7 * 6 ;7 blocks maximum, 6 bytes per block
+  ds    6 ;1 extra block buffer
+AmountOfAppearingBlocks:  ds  1
+
+freezecontrols?:          db  0
+
 
 endenginepage3:
 dephase

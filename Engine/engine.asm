@@ -1072,11 +1072,20 @@ SelfModifyingCodeHitBoxPlayerTopY:  equ $+1
   ld    a,(SelfModifyingCodeHitBoxPlayerTopY)
   cp    PlayerTopYHitBoxSoftSpritesSitting  ;are we sitting ?
   jr    z,.YesWeAreSitting
+  ;at this point we hit our head into an object. If we are jumping, then no need to force sitting
+
+	ld		hl,(PlayerSpriteStand)
+	ld		de,Jump
+  or    a
+  sbc   hl,de
+  jr    z,.YesWeAreJumping
+
   ld    a,(PlayerFacingRight?)              ;is player facing right ?
   or    a
   jp    z,Set_L_sit
   jp    Set_R_sit
 
+  .YesWeAreJumping:
   .YesWeAreSitting:
   ld    a,(ix+enemies_and_objects.y)
   add   a,(ix+enemies_and_objects.ny)
@@ -5725,7 +5734,7 @@ Set_R_sit:
 
 PlayerTopYHitBoxSoftSpritesSitting:   equ 17+8
 PlayerTopYHitBoxSoftSpritesStanding:  equ 17
-PlayerTopYHitBoxSoftSpritesRolling:   equ 17
+PlayerTopYHitBoxSoftSpritesRolling:   equ 17+8
 SetHitBoxPlayerSitting:
   ld    a,CollisionSYSitting                    ;1st one is for hardware sprites (collision player-enemy)
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a

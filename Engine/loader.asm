@@ -18,9 +18,27 @@ loader:
 
 
 ObjectExample: 
+db 5,76,30,64,64,0
+db 5,76,40,64,64,0
+db 5,76,60,64,64
+db 5,76,80,64,64
+db 5,76,100,64,64
+db 5,76,120,64,64
+db 5,76,140,64,64
+db 0 ;3 retracting platforms
+
+;AppBlocksHandler
+;5=id platform
+;76,80=xy
+;64,64=open/close framespeed
+;en dat keer 3
+;12:44
+;0=eod
+
+
 ;db 1,0,0,$28,$a0,$44,16,3,3,1 ;platform
 ;db 1,0,0,$28,$b0,$44,16,3,3,1
-db $8f,64/2,$40,03,02 ;retard zombie
+;db $8f,64/2,$40,03,02 ;retard zombie
 ;db $8f,$54,$50,03,02
 ;db $8f,$64,$60,03,02
 ;db $8f,$74,$70,03,02
@@ -30,10 +48,12 @@ db 0
 
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
-  ld  hl,ObjectExample
+  ld  hl,ObjectExample  
   ld  de,UnpackedRoomFile.object
   ld  bc,200
 ;  ldir
+
+;halt
 
   call	clearEnemyTable
   ld    hl,CleanOb1                     ;refers to the cleanup table for 1st object. we can place 3 objects max. CleanOb1, CleanOb2 and CleanOb3 are their tables
@@ -56,11 +76,132 @@ SetObjects:                             ;after unpacking the map to ram, all the
   .SetObject:
   cp    1
   jp    z,.Object001                    ;platform
+  cp    5
+  jp    z,.Object005                    ;retracting platforms
   cp    143
   jp    z,.Object143                    ;retarded zombie
   cp    150
   jp    z,.Object150                    ;trampoline blob
   ret
+
+  .Object005:                           ;retracting platform  
+  ld    hl,Object005Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*2
+  ldir    
+
+  ;retracting platform has 3 different situations:
+  ;1=only 1 retracting platform in total: animation will be platform1 on, platform1 off
+  ;2=only 2 retracting platforms in total: animation will be platform1 on, platform2 on, platform1 off, platform2 off
+  ;3=3 or more retracting platforms in total: animation will be platform1 on, platform3 off, platform2 on, platform1 off, platform3 on, platform2 off (this concept can then be used for more than 3)
+  
+  ;first let's find total amount of retracting platforms
+  ld    b,1                             ;amount of retracting platforms
+  ld    de,Object005Table.lenghtobjectdata
+  push  ix
+  call  .FindTotalAmountOfRetractingPlatforms
+  pop   ix
+
+  ld    a,b
+  ld    (AmountOfAppearingBlocks),a
+  dec   a                               ;only 1 platform ?
+  jp    z,.MoreThan2RetractingPlatforms ;only 1 platform uses the same placement routin as more than 2
+  dec   a                               ;only 2 platforms ?
+  jp    z,.Only2RetractingPlatforms
+
+  .MoreThan2RetractingPlatforms:  
+  push  iy
+  ld    iy,AppearingBlocksTable
+  push  iy
+  .PlatformLoop:
+  ld    a,(ix+Object005Table.y)
+  ld    l,a
+  ld    (iy+0),a                        ;y block 1 (block turns on)
+  ld    (iy+9),a                        ;y block 1 (block turns off)
+  ld    a,(ix+Object005Table.x)
+  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    h,a
+  ld    (iy+1),a                        ;x block 1 (block turns on)
+  ld    (iy+2),1                        ;block 1 on
+  ld    (iy+10),a                       ;x block 1 (block turns off)
+  ld    (iy+11),0                       ;block 1 off
+
+  ld    de,Object005Table.lenghtobjectdata
+  add   ix,de                           ;next object
+  ld    de,6
+  add   iy,de                           ;next block that turns on in list
+
+  djnz  .PlatformLoop
+  ld    (iy+0),255                      ;end list
+
+  pop   iy  
+  ld    (iy+3),l                        ;y last block (block turns on)
+  ld    (iy+4),h                        ;x last block (block turns on)
+  ld    (iy+5),0                        ;off
+  pop   iy
+  
+  ld    de,Object005Table.lenghtobjectdata
+  ret  
+
+  .Only2RetractingPlatforms:  
+  ld    a,1
+  ld    (AppearingBlocksTable+2),a
+  ld    (AppearingBlocksTable+5),a
+  xor   a
+  ld    (AppearingBlocksTable+8),a
+  ld    (AppearingBlocksTable+11),a
+  ld    a,255
+  ld    (AppearingBlocksTable+12),a
+
+  ld    a,(ix+Object005Table.y)
+  ld    (AppearingBlocksTable+0),a
+  ld    (AppearingBlocksTable+6),a
+  ld    a,(ix+Object005Table.x)
+  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (AppearingBlocksTable+1),a
+  ld    (AppearingBlocksTable+7),a
+
+  ld    de,Object005Table.lenghtobjectdata
+  add   ix,de                           ;next retracting platform
+
+  ld    a,(ix+Object005Table.y)
+  ld    (AppearingBlocksTable+3),a
+  ld    (AppearingBlocksTable+9),a
+  ld    a,(ix+Object005Table.x)
+  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (AppearingBlocksTable+4),a
+  ld    (AppearingBlocksTable+10),a
+
+  ld    de,Object005Table.lenghtobjectdata
+  ret
+
+;  .Only1RetractingPlatform:
+;  ld    a,1
+;  ld    (AppearingBlocksTable+2),a
+;  xor   a
+;  ld    (AppearingBlocksTable+5),a
+;  ld    a,255
+;  ld    (AppearingBlocksTable+6),a
+
+;  ld    a,(ix+Object005Table.y)
+;  ld    (AppearingBlocksTable+0),a
+;  ld    (AppearingBlocksTable+3),a
+;  ld    a,(ix+Object005Table.x)
+;  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+;  ld    (AppearingBlocksTable+1),a
+;  ld    (AppearingBlocksTable+4),a
+
+;  ld    de,Object005Table.lenghtobjectdata
+;  ret
+
+  .FindTotalAmountOfRetractingPlatforms:
+  add   ix,de                           ;next object
+  ld    a,(ix)
+  cp    5
+  ret   nz
+  inc   b
+  jr    .FindTotalAmountOfRetractingPlatforms
 
   .Object001:                           ;moving platform
 ;v1-2=box right (16 bit)
@@ -115,6 +256,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  call  .CheckIfObjectMovementIsWithinAllowedRange
   ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
   ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
 
@@ -150,6 +292,16 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,Object001Table.lenghtobjectdata
   ret
 
+  .CheckIfObjectMovementIsWithinAllowedRange:
+  ld    de,253                          ;box right edge
+  xor   a                               ;clear carry flag
+  sbc   hl,de
+  jr    c,.WithinRange
+  ld    hl,253                          ;16 pixels wide
+  ret
+  .WithinRange:
+  add   hl,de
+  ret
 
   .Object150:                           ;trampoline blob
 ;v1=Animation Counter
@@ -253,7 +405,7 @@ Movementtable:    db  -1,+0,  -1,+1,      +0,+1,    +1,+1,        +1,+0,  +1,-1,
 
 Object001Table:               ;platform
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
-          db 1,        0|dw PlatformHorizontally|db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+          db 1,        0|dw Platform            |db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 .ID: equ 0
 .relativex: equ 1
 .relativey: equ 2
@@ -265,6 +417,19 @@ Object001Table:               ;platform
 .speed: equ 8
 .active: equ 9
 .lenghtobjectdata: equ 10
+
+Object005Table:               ;retracting platform (handler)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+          db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+                              ;AppearingBlocks
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+          db 0,        0|dw AppearingBlocks     |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.openspeed: equ 3
+.closespeed: equ 4
+.lenghtobjectdata: equ 5
 
 Object143Table:               ;retarded zombie
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
