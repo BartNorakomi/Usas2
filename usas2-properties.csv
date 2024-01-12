@@ -223,6 +223,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	undefined31	ruinId	31					
 1	Usas2		RoomObject	zombieSpawn	uid	87					
 1	Usas2		RoomObject	zombieSpawn	objectClass	EnemySpawn					
+1	Usas2		RoomObject	classBall	uid	51					
+1	Usas2		RoomObject	classBall	objectClass	classBall					
 1	Usas2		RoomObject	retractingPlatform	uid	5					
 1	Usas2		RoomObject	retractingPlatform	objectClass	platForm					
 1	Usas2		RoomObject	retartedZombie	uid	143					
