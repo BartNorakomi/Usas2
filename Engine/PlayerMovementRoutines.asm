@@ -3870,7 +3870,8 @@ Jump:
 ;this code is new, and decreases the 2nd jump height
   call  Set_jump.SkipTurnOnDoubleJump
 	ld    a,(StartingJumpSpeed)
-	inc   a
+;	inc   a
+  add   a,2
 	ld		(JumpSpeed),a
   ret
 ;/this code is new, and decreases the 2nd jump height
