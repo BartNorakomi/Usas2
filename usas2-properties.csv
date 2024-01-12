@@ -221,7 +221,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	undefined29	ruinId	29					
 1	Usas2		Ruin	undefined30	ruinId	30					
 1	Usas2		Ruin	undefined31	ruinId	31					
-1	Usas2		RoomObject	zombieSpawn	uid	87					
+1	Usas2		RoomObject	zombieSpawn	uid	52					
 1	Usas2		RoomObject	zombieSpawn	objectClass	EnemySpawn					
 1	Usas2		RoomObject	classBall	uid	51					
 1	Usas2		RoomObject	classBall	objectClass	classBall					
