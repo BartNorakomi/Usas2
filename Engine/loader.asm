@@ -18,21 +18,13 @@ loader:
 
 
 ObjectExample: 
-db 5,76,30,64,64,0
-db 5,76,40,64,64,0
-db 5,76,60,64,64
-db 5,76,80,64,64
-db 5,76,100,64,64
-db 5,76,120,64,64
-db 5,76,140,64,64
+db 5,76,30,0
+db 5,76,40,0
 db 0 ;3 retracting platforms (AppBlocksHandler)
 
 ;AppBlocksHandler
 ;5=id platform
 ;76,80=xy
-;64,64=open/close framespeed
-;en dat keer 3
-;12:44
 ;0=eod
 
 
@@ -428,9 +420,7 @@ Object005Table:               ;retracting platform (handler)
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.openspeed: equ 3
-.closespeed: equ 4
-.lenghtobjectdata: equ 5
+.lenghtobjectdata: equ 3
 
 Object143Table:               ;retarded zombie
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 

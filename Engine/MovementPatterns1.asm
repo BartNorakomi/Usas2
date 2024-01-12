@@ -1696,6 +1696,9 @@ AppBlocksHandler:
   ld    e,a
   add   hl,de
 
+  ld    a,(AmountOfAppearingBlocks)
+  cp    3
+  jr    c,.EndSkipFirstTimeCloseBlock
   ld    a,(ix+enemies_and_objects.v3)     ;v3 = skip first time closing block
   inc   a
   cp    3
