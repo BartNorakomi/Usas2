@@ -25,7 +25,7 @@ db 5,76,80,64,64
 db 5,76,100,64,64
 db 5,76,120,64,64
 db 5,76,140,64,64
-db 0 ;3 retracting platforms
+db 0 ;3 retracting platforms (AppBlocksHandler)
 
 ;AppBlocksHandler
 ;5=id platform
