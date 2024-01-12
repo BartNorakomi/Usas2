@@ -154,12 +154,13 @@ function convert-TmxObjects
 		{	write-verbose "Object Uid=$($roomobject.uid), id=$($roomobject.identity), class=$($roomobject.objectclass)"
 			$class=$U2objectClassDefinitions.$($roomobject.objectclass)	#get the class
 			$blockLength=($class|measure -sum numBytes).sum
-			write-verboseMore "Class properties: $($classProperty)"
+			write-verbosemore "Class properties: $($class.propertyname)"
 			write-verboseMore "Number of bytes for this class: $blockLength"
 			$data=[byte[]]::new($blockLength+1)
 			$data[0]=$uid	#first byte is object's ID
 			foreach ($classProperty in $class)
-			{	#if ($classProperty.propertyType -eq "default") {$value=$object.($classProperty.propertyName)}
+			{	
+				#if ($classProperty.propertyType -eq "default") {$value=$object.($classProperty.propertyName)}
 				#elseif ($classProperty.propertyType -eq "custom") {$value=$object.properties.property|where{$_.name -eq $classProperty.propertyName}}
 				$value=$object.($classProperty.propertyName)
 				#Does this object have the property value set?

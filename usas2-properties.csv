@@ -224,7 +224,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	zombieSpawn	uid	87					
 1	Usas2		RoomObject	zombieSpawn	objectClass	EnemySpawn					
 1	Usas2		RoomObject	retractingPlatform	uid	5					
-1	Usas2		RoomObject	retractingPlatform	objectClass	retractingPlatform					
+1	Usas2		RoomObject	retractingPlatform	objectClass	platForm					
 1	Usas2		RoomObject	retartedZombie	uid	143					
 1	Usas2		RoomObject	retartedZombie	objectClass	Enemy					
 1	Usas2		RoomObject	slime	uid	150					

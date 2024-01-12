@@ -19,7 +19,3 @@ Enabled	ID	Name	propertyName	propertyType	propertyValue	Offset	numBytes	preConve
 1	3	EnemySpawn	Face	custom	0	2	1			Initial facing direction	
 1	3	EnemySpawn	Speed	custom	1	3	1			Initial move speed	
 1	3	EnemySpawn	maxNum	custom	1	4	1			Max amount of concurrent spawned offspring	
-1	4	retractingPlatform	X	default	0	0	1	half		X position (top)	
-1	4	retractingPlatform	Y	default	0	1	1			Y position (left)	
-1	4	retractingPlatform	timeOpen	custom	64	2	1			Time open/visible in frames	
-1	4	retractingPlatform	timeClosed	custom	64	3	1			Time closed in frames	
