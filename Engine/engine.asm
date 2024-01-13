@@ -1673,7 +1673,7 @@ PutSF2Object:                 ;in b->framelistblock, c->spritedatablock
   ;set framelist in page 2 in rom ($8000 - $bfff)
 	ld    a,b
   call	block34
-  
+ 
   di
   call  GoPutSF2Object
   ei

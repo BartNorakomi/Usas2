@@ -525,19 +525,21 @@ phase	$0000
 	ds		$56*RomBlockSize-$,$ff
 dephase
 
-
+kut1:
 ; block $60 - $7b             (sc5 tilesheets)
 GraphicsSc5DataStartBlock:  equ $60
 GraphicsSc5DataEndBlock:    equ GraphicsSc5DataStartBlock+$1b
 include "GraphicsSc5Data.asm"
 
+kut2:
 ; block $7c - $8f             (hardware sprites)
 SpriteDataStartBlock: equ $7c
 SpriteDataEndBlock:   equ SpriteDataStartBlock+$13
 include "SpriteData.asm"
 
+kut3:
 ; block $90 - $B8             (software sprites)
-BossSpritesDataStartBlock:  equ $90
+BossSpritesDataStartBlock:  equ $8f
 BossSpritesDataEndBlock:  equ BossSpritesDataStartBlock+$28
 include "BossSpriteData.asm"
 

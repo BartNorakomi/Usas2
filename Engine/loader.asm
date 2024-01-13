@@ -23,7 +23,10 @@ ObjectExample:
 ;db $96,100,116,03,01  ;slime
 ;db 0
 
-db 52,16/2,100,3,1,2,0  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
+db 51,5 ;id,balnr (
+db 51,4,0 ;id,balnr (
+
+db 52,16/2,100,3,1,4,0  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
 db 5,76,30,0  ;id, x,y
 db 5,76,40,0
 db 0 ;3 retracting platforms (AppBlocksHandler)
@@ -49,7 +52,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ld  hl,ObjectExample
   ld  bc,200
-  ldir
+;  ldir
 
 ;halt
 
@@ -57,8 +60,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    hl,CleanOb1                     ;refers to the cleanup table for 1st object. we can place 3 objects max. CleanOb1, CleanOb2 and CleanOb3 are their tables
   ld    b,12                            ;first hardware object sprite nr (sprite 0-11 are border masking sprites, after this start the hardware sprite objects)
   exx                                   ;keep CleanOb1 address untouched
-
- 
 
   pop   ix
 ;  ld    ix,UnpackedRoomFile.tiledata+38*27*2  ;room object data list
@@ -81,6 +82,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object001                    ;platform
   cp    5
   jp    z,.Object005                    ;retracting platforms
+  cp    51
+  jp    z,.Object051                    ;glass ball (GlassBallActivator)
   cp    52
   jp    z,.Object052                    ;zombie spawn point
 ;  cp    143
@@ -96,6 +99,22 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (iy+enemies_and_objects.Alive?),2
   ret
 
+  .Object051:                           ;glass ball (GlassBallActivator)
+  ld    a,(ix+Object051Table.ballnr)
+  cp    5
+  jr    z,.SetGlassBall5
+  ret
+  
+  .SetGlassBall5:
+  ld    hl,GlassBall5Data
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*3
+  ldir
+
+  ld    de,Object051Table.lenghtobjectdata*2
+  ret    
+  
   .Object052:                           ;zombie spawn point (ZombieSpawnPoint)
 ;v1=Zombie Spawn Timer
 ;v2=Max Number Of Zombies
@@ -571,6 +590,19 @@ Object005Table:               ;retracting platform (handler)
 .y: equ 2
 .lenghtobjectdata: equ 3
 
+Object051Table:               ;glass ball (& GlassBallActivator)
+.ID: equ 0
+.ballnr: equ 1
+.lenghtobjectdata: equ 2
+GlassBall5Data:
+;Glass Ball
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 2,        0|dw GlassBall3          |db 8*19|dw 8*02|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object2: db 2,        0|dw GlassBall4          |db 8*19|dw 8*24|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+;Glass Ball Activator
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
 Object052Table:               ;zombie spawn point
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
          db  1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+04,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
@@ -965,8 +997,8 @@ SetEngineType:                        ;sets engine type (1= 304x216 engine  2=25
 ;  ldir
 
 ;;;;;;;;;;;;;;;; ################ in the SF2 engine we can choose to have spritesplit active, which gives us 14 extra sprites  
-;  xor   a
-;  ld    (SpriteSplitFlag),a           ;SF2 engine with spritesplit inactive
+  xor   a
+  ld    (SpriteSplitFlag),a           ;SF2 engine with spritesplit inactive
 
   .Engine256x216WithSpriteSplit:
   ld    de,CheckTile256x216MapLenght
