@@ -5,8 +5,11 @@ WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 
 ;bt21=21,43;bt28=28,45;bt16=16,45
-WorldMapPositionY:  db  17
-WorldMapPositionX:  db  48
+;WorldMapPositionY:  db  20
+;WorldMapPositionX:  db  44
+
+WorldMapPositionY:  db  27
+WorldMapPositionX:  db  46
 
 
 ;LookUpTable for Room Types (width,height,engine,free)
@@ -47,7 +50,7 @@ loadGraphics:
   out   ($a8),a
   ld    a,Loaderblock                 ;loader routine at $4000
   call  block12
-  call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
+	call SetEngineType
 
   call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
   call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
@@ -55,6 +58,13 @@ loadGraphics:
   out   ($a8),a       
   call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
   call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
+
+  ld    a,(slot.page12rom)            ;all RAM except page 12
+  out   ($a8),a
+  ld    a,Loaderblock                 ;loader routine at $4000
+  call  block12
+  call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
+
   call  RemoveSpritesFromScreen       ;|loader|
   call  SwapSpatColAndCharTable
   call  PutSpatToVramSlow

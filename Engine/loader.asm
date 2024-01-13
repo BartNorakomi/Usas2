@@ -7,7 +7,7 @@ loader:
 
 	ld de,(WorldMapPositionY) 			;WorldMapPositionX/Y:  
 	call getRoom
-	call SetEngineType
+;	call SetEngineType
 
 	;call  SetTilesInVram				;copies all the tiles to Vram
 	call PopulateControls			;this allows for a double jump as soon as you enter a new map
@@ -18,16 +18,15 @@ loader:
 
 
 ObjectExample: 
-db 5,76,30,0
+
+;db $96,100,100,03,01  ;slime
+;db $96,100,116,03,01  ;slime
+;db 0
+
+db 52,16/2,100,3,1,2,0  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
+db 5,76,30,0  ;id, x,y
 db 5,76,40,0
 db 0 ;3 retracting platforms (AppBlocksHandler)
-
-;AppBlocksHandler
-;5=id platform
-;76,80=xy
-;0=eod
-
-
 ;db 1,0,0,$28,$a0,$44,16,3,3,1 ;platform
 ;db 1,0,0,$28,$b0,$44,16,3,3,1
 ;db $8f,64/2,$40,03,02 ;retard zombie
@@ -40,10 +39,17 @@ db 0
 
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
-  ld  hl,ObjectExample  
-  ld  de,UnpackedRoomFile.object
+  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    de,UnpackedRoomFile.tiledata+38*27*2  ;room object data list
+  jr    z,.ObjectAddressFound
+  ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
+  .ObjectAddressFound:
+  push  de
+
+  ld  hl,ObjectExample
   ld  bc,200
-;  ldir
+  ldir
 
 ;halt
 
@@ -51,8 +57,13 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    hl,CleanOb1                     ;refers to the cleanup table for 1st object. we can place 3 objects max. CleanOb1, CleanOb2 and CleanOb3 are their tables
   ld    b,12                            ;first hardware object sprite nr (sprite 0-11 are border masking sprites, after this start the hardware sprite objects)
   exx                                   ;keep CleanOb1 address untouched
-  
-  ld    ix,UnpackedRoomFile.object      ;room object data list
+
+ 
+
+  pop   ix
+;  ld    ix,UnpackedRoomFile.tiledata+38*27*2  ;room object data list
+;  ld    ix,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
+
   ld    iy,enemies_and_objects          ;start object table in iy
 
   .loop:
@@ -70,12 +81,150 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object001                    ;platform
   cp    5
   jp    z,.Object005                    ;retracting platforms
-  cp    143
-  jp    z,.Object143                    ;retarded zombie
+  cp    52
+  jp    z,.Object052                    ;zombie spawn point
+;  cp    143
+;  jp    z,.Object143                    ;retarded zombie
   cp    150
   jp    z,.Object150                    ;trampoline blob
   ret
 
+  .SetAlive?BasedOnEngineType:
+  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ret   z
+  ld    (iy+enemies_and_objects.Alive?),2
+  ret
+
+  .Object052:                           ;zombie spawn point (ZombieSpawnPoint)
+;v1=Zombie Spawn Timer
+;v2=Max Number Of Zombies
+;v3=Spawn Speed
+;v4=Face direction
+  ld    hl,Object052Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1
+  ldir
+
+  call  .SetAlive?BasedOnEngineType
+
+  ;set x
+  ld    a,(ix+Object052Table.x)
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.x),l
+  ld    (iy+enemies_and_objects.x+1),h
+
+  ;set y
+  ld    a,(ix+Object052Table.y)
+  ld    (iy+enemies_and_objects.y),a
+
+  ;set Max Number Of Zombies
+  ld    a,(ix+Object052Table.MaxNum)
+  ld    (iy+enemies_and_objects.v2),a
+
+  ;set Zombies spawn speed
+  ld    a,(ix+Object052Table.speed)
+  ld    (iy+enemies_and_objects.v3),a
+
+  ;set Zombies face direction
+  ld    a,(ix+Object052Table.face)
+  ld    (iy+enemies_and_objects.v4),a
+
+  call  .SetGfxZombieSpawnPoint
+
+  ld    b,(ix+Object052Table.MaxNum)
+  .addZombieLoop:
+  push  bc
+  call  .AddZombie                      ;adds a zombie to the room's object table
+  pop   bc
+  djnz  .addZombieLoop
+
+  ld    de,Object052Table.lenghtobjectdata
+  ret  
+  
+  .AddZombie:                           ;add a zombie to the room's object table 
+  ld    de,lenghtenemytable             ;lenght 1 object in object table
+  add   iy,de                           ;next object in object table
+
+  ld    hl,Object143Table               ;zombie
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable
+  ldir                                  ;copy enemy table
+
+  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+  ret
+
+  .SetGfxZombieSpawnPoint:
+  ld    a,-1
+  ld    (FreeToUseFastCopy+dpage),a
+  ld    de,00                           ;x offset for spawnpoint in page 0
+  call  .SetZombieSpawnPointInThisPage
+  ld    de,16                           ;x offset for spawnpoint in page 1
+  call  .SetZombieSpawnPointInThisPage
+  ld    de,32                           ;x offset for spawnpoint in page 2
+  call  .SetZombieSpawnPointInThisPage
+  ld    de,48                           ;x offset for spawnpoint in page 3
+;  call  .SetZombieSpawnPointInThisPage
+;  ret
+    
+  .SetZombieSpawnPointInThisPage:
+  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  jr    z,.SetZombieSpawnPointNormalEngine
+  ld    de,00
+  .SetZombieSpawnPointNormalEngine:
+  
+  ld    a,(FreeToUseFastCopy+dpage)
+  inc   a
+  ld    (FreeToUseFastCopy+dpage),a
+
+  ld    l,(iy+enemies_and_objects.x)
+  ld    h,(iy+enemies_and_objects.x+1)
+  or    a
+  sbc   hl,de
+  ld    a,h
+  or    a
+  ret   nz
+  ld    a,l
+  ld    (FreeToUseFastCopy+dx),a
+
+  ld    a,0
+  ld    (FreeToUseFastCopy+sx),a
+  ld    a,216+32
+  ld    (FreeToUseFastCopy+sy),a
+
+  ld    a,(iy+enemies_and_objects.y)
+  ld    (FreeToUseFastCopy+dy),a
+  ld    a,3
+  ld    (FreeToUseFastCopy+spage),a
+  ld    a,16
+  ld    (FreeToUseFastCopy+nx),a
+  ld    a,08
+  ld    (FreeToUseFastCopy+ny),a
+  ld    a,$98
+  ld    (FreeToUseFastCopy+copytype),a
+  call  .CopyRowOf8PixelsHigh
+  call  .CopyRowOf8PixelsHigh
+  call  .CopyRowOf8PixelsHigh
+  call  .CopyRowOf8PixelsHigh
+  ld    a,$d0
+  ld    (FreeToUseFastCopy+copytype),a
+  ret
+  .CopyRowOf8PixelsHigh:
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+  ld    a,(FreeToUseFastCopy+sx)
+  add   a,16
+  ld    (FreeToUseFastCopy+sx),a
+  ld    a,(FreeToUseFastCopy+dy)
+  add   a,8
+  ld    (FreeToUseFastCopy+dy),a
+  ret
+   
   .Object005:                           ;retracting platform  
   ld    hl,Object005Table
   push  iy
@@ -332,42 +481,42 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,Object150Table.lenghtobjectdata
   ret
 
-  .Object143:                           ;retarded zombie
+;  .Object143:                           ;retarded zombie
 ;v1=Animation Counter
 ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Wait Timer
-  ld    hl,Object143Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable
-  ldir                                  ;copy enemy table
+;  ld    hl,Object143Table
+;  push  iy
+;  pop   de                              ;enemy object table
+;  ld    bc,lenghtenemytable
+;  ldir                                  ;copy enemy table
 
-  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+;  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
 
   ;set x
-  ld    a,(ix+Object143Table.x)
-  add   a,8                             ;all hardware sprites need to be put 16 pixel to the right
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),l
-  ld    (iy+enemies_and_objects.x+1),h
+;  ld    a,(ix+Object143Table.x)
+;  add   a,8                             ;all hardware sprites need to be put 16 pixel to the right
+;  ld    l,a
+;  ld    h,0
+;  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+;  ld    (iy+enemies_and_objects.x),l
+;  ld    (iy+enemies_and_objects.x+1),h
 
   ;set y
-  ld    a,(ix+Object143Table.y)
-  ld    (iy+enemies_and_objects.y),a
+;  ld    a,(ix+Object143Table.y)
+;  ld    (iy+enemies_and_objects.y),a
 
   ;set facing direction
-  ld    a,(ix+Object143Table.face)
-  cp    3
-  jr    z,.EndCheckMovingRight2          ;the standard movement direction of any object is right, if this is the facing direction, then we don't need to change movement direction
-  ld    (iy+enemies_and_objects.v4),-1  ;v4=Horizontal Movement
-  .EndCheckMovingRight2:
+;  ld    a,(ix+Object143Table.face)
+;  cp    3
+;  jr    z,.EndCheckMovingRight2          ;the standard movement direction of any object is right, if this is the facing direction, then we don't need to change movement direction
+;  ld    (iy+enemies_and_objects.v4),-1  ;v4=Horizontal Movement
+;  .EndCheckMovingRight2:
 
-  ld    de,Object143Table.lenghtobjectdata
-  ret
+;  ld    de,Object143Table.lenghtobjectdata
+;  ret
 
 SetSPATPositionForThisSprite:           ;we need to define the position this sprite takes in the SPAT
   exx
@@ -422,10 +571,21 @@ Object005Table:               ;retracting platform (handler)
 .y: equ 2
 .lenghtobjectdata: equ 3
 
+Object052Table:               ;zombie spawn point
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+         db  1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+04,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.face: equ 3
+.speed: equ 4
+.MaxNum: equ 5
+.lenghtobjectdata: equ 6
+
 Object143Table:               ;retarded zombie
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 ;         db -0,        1|dw RetardedZombie      |db 0000|dw 0000|db 32,16|dw 12*16,spat+(12*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
-         db -1,        1|dw RetardedZombie      |db 0000|dw 0000|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+         db -0,        1|dw RetardedZombie      |db 8*00|dw 8*00|db 32,16|dw 12*16,spat+(12*2)|db 00-(00*0),04  ,04*16,+00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2
@@ -435,7 +595,7 @@ Object143Table:               ;retarded zombie
 
 Object150Table:               ;trampoline blob: v9=special width for Pushing Stone Puzzle Switch
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-         db -1,        1|dw TrampolineBlob      |db 0000|dw 0000|db 16,22|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+08,+36, 0|db 255,movepatblo1| ds fill-1
+         db -1,        1|dw TrampolineBlob      |db 8*10|dw 8*10|db 16,22|dw 20*16,spat+(20*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+08,+36, 0|db 255,movepatblo1| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2
@@ -783,7 +943,14 @@ SetEngineType:                        ;sets engine type (1= 304x216 engine  2=25
   ld    a,1
   ld    (SpriteSplitFlag),a           ;sprite split active
 
-  ld    a,(ix+3)                      ;engine type
+  ld    a,(UnpackedRoomFile+roomTypes.roomWidth)  ;$a6 if roomwidth is 256, $06 if roomwidth is 304
+  cp    $06
+  ld    a,1                           ;1= 304x216 engine  2=256x216 SF2 engine
+  jr    z,.EngineTypeFound
+  ld    a,2                           ;1= 304x216 engine  2=256x216 SF2 engine
+  .EngineTypeFound:
+
+;  ld    a,(ix+3)                      ;engine type
   ld    (scrollEngine),a              ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a                             ;1= 304x216 engine  2=256x216 SF2 engine
   jp    z,.Engine304x216
@@ -796,9 +963,10 @@ SetEngineType:                        ;sets engine type (1= 304x216 engine  2=25
 ;  ld    de,LevelEngine.SelfModifyingCallBMS
 ;  ld    bc,3
 ;  ldir
-  
-  xor   a
-  ld    (SpriteSplitFlag),a           ;SF2 engine with spritesplit inactive
+
+;;;;;;;;;;;;;;;; ################ in the SF2 engine we can choose to have spritesplit active, which gives us 14 extra sprites  
+;  xor   a
+;  ld    (SpriteSplitFlag),a           ;SF2 engine with spritesplit inactive
 
   .Engine256x216WithSpriteSplit:
   ld    de,CheckTile256x216MapLenght

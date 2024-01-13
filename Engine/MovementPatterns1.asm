@@ -69,16 +69,34 @@
 
 ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer
+;v2=Max Number Of Zombies
+;v3=Spawn Speed
+;v4=Face direction
   ld    a,(framecounter)
-  and   1
-;  ret   nz
+  rrca
+  ret   c
+
+  ld    a,(ix+enemies_and_objects.v3)     ;spawn speed: 1=slow. anything else =fast
+  cp    1
+  jr    z,.Go
+  dec   (ix+enemies_and_objects.v1)       ;v1=Zombie Spawn Timer
+  .Go:
   dec   (ix+enemies_and_objects.v1)       ;v1=Zombie Spawn Timer
   ret   nz
 
-;  push  ix
-;  call  .SearchEmptySlot
-;  pop   ix
-;  ret
+  ld    l,(ix+enemies_and_objects.x)
+  ld    h,(ix+enemies_and_objects.x+1)
+  ld    bc,16                               ;all hardware sprites need to be put 16 pixel to the right
+  add   hl,bc
+  ld    c,(ix+enemies_and_objects.y)
+  ld    b,(ix+enemies_and_objects.v2)       ;v2=Max Number Of Zombies
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Face direction
+  cp    3
+  ld    a,1
+  jr    z,.HorizontalMovementSpeedSet
+  ld    a,-1
+  .HorizontalMovementSpeedSet:
+  ex    af,af'
 
   .SearchEmptySlot:
   ld    de,lenghtenemytable
@@ -86,25 +104,35 @@ ZombieSpawnPoint:
   add   ix,de
   bit   0,(ix+enemies_and_objects.Alive?)
   jr    z,.EmptySlotFound
+  ld    a,b                                 ;Max Number Of Zombies
+  cp    1
+  ret   z
   add   ix,de
   bit   0,(ix+enemies_and_objects.Alive?)
   jr    z,.EmptySlotFound
+  ld    a,b                                 ;Max Number Of Zombies
+  cp    2
+  ret   z
   add   ix,de
   bit   0,(ix+enemies_and_objects.Alive?)
   jr    z,.EmptySlotFound
+  ld    a,b                                 ;Max Number Of Zombies
+  cp    3
+  ret   z
   add   ix,de
   bit   0,(ix+enemies_and_objects.Alive?)
   ret   nz
   
   .EmptySlotFound:
   ld    (ix+enemies_and_objects.alive?),-1 
-  ld    (ix+enemies_and_objects.y),24
-  ld    (ix+enemies_and_objects.x),152
-  ld    (ix+enemies_and_objects.x+1),0
+  ld    (ix+enemies_and_objects.y),c
+  ld    (ix+enemies_and_objects.x),l
+  ld    (ix+enemies_and_objects.x+1),h
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
 ;  ld    (ix+enemies_and_objects.v3),1       ;v3=Vertical Movement
-  ld    (ix+enemies_and_objects.v4),1       ;v4=Horizontal Movement
+  ex    af,af'
+  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
   ld    (ix+enemies_and_objects.ny),32       ;ny
   ld    hl,RetardedZombie
   ld    (ix+enemies_and_objects.movementpattern),l
