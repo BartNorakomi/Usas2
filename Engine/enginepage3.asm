@@ -9,7 +9,7 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 ;WorldMapPositionX:  db  44
 
 WorldMapPositionY:  db  27
-WorldMapPositionX:  db  46
+WorldMapPositionX:  db  48
 
 
 ;LookUpTable for Room Types (width,height,engine,free)
@@ -39,38 +39,38 @@ loadGraphics:
 ;	and   a
 ;  call  z,VGMRePlay
 
-  ld    a,(slot.page12rom)            ;all RAM except page 12
-  out   ($a8),a
-  ld    a,Loaderblock                 ;loader routine at $4000
-  call  block12
-  call  loader                        ;loader routines
-  call  UnpackMapdataAndObjectData    ;unpacks packed map to ram. sets objectdata at the end of mapdata ends with: all RAM except page 2
+	ld    a,(slot.page12rom)            ;all RAM except page 12
+	out   ($a8),a
+	ld    a,Loaderblock                 ;loader routine at $4000
+	call  block12
+	call  loader                        ;loader routines
+	call  UnpackMapdataAndObjectData    ;unpacks packed map to ram. sets objectdata at the end of mapdata ends with: all RAM except page 2
 
-  ld    a,(slot.page12rom)            ;all RAM except page 12
-  out   ($a8),a
-  ld    a,Loaderblock                 ;loader routine at $4000
-  call  block12
+	ld    a,(slot.page12rom)            ;all RAM except page 12
+	out   ($a8),a
+	ld    a,Loaderblock                 ;loader routine at $4000
+	call  block12
 	call SetEngineType
 
-  call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
-  call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
-  ld    a,(slot.page12rom)            ;all RAM except page 12
-  out   ($a8),a       
-  call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
-  call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
+	call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
+	call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
+	ld    a,(slot.page12rom)            ;all RAM except page 12
+	out   ($a8),a       
+	call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
+	call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
 
-  ld    a,(slot.page12rom)            ;all RAM except page 12
-  out   ($a8),a
-  ld    a,Loaderblock                 ;loader routine at $4000
-  call  block12
-  call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
+	ld    a,(slot.page12rom)            ;all RAM except page 12
+	out   ($a8),a
+	ld    a,Loaderblock                 ;loader routine at $4000
+	call  block12
+	call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 
-  call  RemoveSpritesFromScreen       ;|loader|
-  call  SwapSpatColAndCharTable
-  call  PutSpatToVramSlow
-  call  SwapSpatColAndCharTable
-  call  PutSpatToVramSlow
-  call  initiatebordermaskingsprites  ;|loader|
+	call  RemoveSpritesFromScreen       ;|loader|
+	call  SwapSpatColAndCharTable
+	call  PutSpatToVramSlow
+	call  SwapSpatColAndCharTable
+	call  PutSpatToVramSlow
+	call  initiatebordermaskingsprites  ;|loader|
 
 ;  di                                  ;register 14 sets VRAM address to read/write to/from. This value is only set once per frame ingame, we assume it's set to $05 at all times, so set it back when going back to the game
 ;  ld    a,$05
@@ -278,10 +278,9 @@ BuildUpMap:
   ld    a,(slot.page12rom)            ;all RAM except page 12
   out   ($a8),a    
 
-  ;ld    a,KarniMataTilesBlock         ;tilesheet gfx in page 1+2 rom
-  ;call  block1234
-
-	LD A,6			;RM: WIP 6=karnimata
+	ld a,6	;something gets fucked here
+	ld a,(UnpackedRoomFile+roomdatablock.mapid)
+	and $1f
 	call getgfx			;get GfxRecordAdr
 	
   ;set vdp ready to write in page 0 in vram 
@@ -377,7 +376,9 @@ BuildUpMap:
 ;	ld    a,KarniMataTilesBlock         ;tilesheet gfx in page 1+2 rom
 ;	call  block1234
 
-	LD A,6			;RM: WIP 6=karnimata
+;	LD A,6			;RM: WIP 6=karnimata
+	ld a,(UnpackedRoomFile+roomdatablock.mapid)
+	and $1f
 	call getgfx			;get GfxRecordAdr
 
 ;set vdp ready to write in page 0 in vram 

@@ -50,7 +50,7 @@ function print-worldmapMatrix
 	foreach ($row in $wmMatrix)
 	{	$x=0;$rowData=""
 		foreach ($column in $row)
-		{	$data="$($WmMatrix[$y][$x])"
+		{	$data="$($WmMatrix[$y][$x])" -band 0x1f #we'll skip roomtype here to make prettier print
 			if (-not ($data -match $ruinIdFilter)) {$data=""}
 			if ($data.length -eq 0) {$data="  "}
 			if ($data.length -eq 1) {$data="0$data"}
@@ -131,6 +131,7 @@ if ($ruinName) {$ruinId=($usas2.ruin|where{$_.name -match ("^("+($ruinname -join
 write-verbose "RuinId: $ruinid"
 
 $WorldMapSource=get-content $masterMap
+$global:WorldMapSource=$WorldMapSource
 
 # optionally, print the map to host
 if ($printWorldMap)

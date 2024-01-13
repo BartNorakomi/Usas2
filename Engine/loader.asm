@@ -647,7 +647,7 @@ getRoomType:
 		pop bc
 ret
 
-;Get room [DE] location, block[A] address[HL]
+;Get room [DE] ROM location, block[A] address[HL]
 getRoom:
 		call GetWorldMapRoomLocation
 		add a,Dsm.firstBlock+dsm.indexBlock	;offset (temp)
@@ -975,16 +975,17 @@ SetEngineType:                        ;sets engine type (1= 304x216 engine  2=25
   ld    a,1
   ld    (SpriteSplitFlag),a           ;sprite split active
 
-  ld    a,(UnpackedRoomFile+roomTypes.roomWidth)  ;$a6 if roomwidth is 256, $06 if roomwidth is 304
-  cp    $06
-  ld    a,1                           ;1= 304x216 engine  2=256x216 SF2 engine
-  jr    z,.EngineTypeFound
-  ld    a,2                           ;1= 304x216 engine  2=256x216 SF2 engine
-  .EngineTypeFound:
-
-;  ld    a,(ix+3)                      ;engine type
+  ld    a,(UnpackedRoomFile+roomDataBlock.mapid)  ;tttrrrrr (t=type,r=ruin)
+  rlca
+  rlca
+  rlca
+  and 7
+  call getroomtype
+  inc hl		;skip width
+  inc hl		;skip heigth
+  ld a,(hl)
   ld    (scrollEngine),a              ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a                             ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
   jp    z,.Engine304x216
 
   .Engine256x216:                     ;SF2 engine
