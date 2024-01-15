@@ -5667,6 +5667,10 @@ Set_Climb_AndResetAniCount:
 
 Set_jump:
   call  SetHitBoxPlayerStanding
+
+  ld    a,(ClesY)
+  sub   a,3
+  ld    (ClesY),a
   
 ;  xor   a
 ;  ld    (EnableHitbox?),a
