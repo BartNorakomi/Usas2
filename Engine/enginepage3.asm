@@ -12,25 +12,6 @@ WorldMapPositionY:  db  16
 WorldMapPositionX:  db  43
 
 
-;LookUpTable for Room Types (width,height,engine,free)
-roomTypes:
-.recLen:		equ 4		;[atrribute]record length
-.numRec:		equ 8		;[atrribute]number of records
-.size:			equ .reclen*.numrec		;[atrribute]table size
-.roomWidth:		equ +0		;[property]Room with
-.roomHeight:	equ +1		;[property]Room height
-.engineType:	equ +2		;[property]engineType
-.free:			equ +3		;[property]<free for future use>
-.data:			DB 38,27,1,0	;Regular
-				DB 32,27,2,0	;Teleport
-				DB 38,27,1,0	;Secret
-				DB 32,27,2,0	;Boss
-				DB 32,27,2,0	;Gate
-				DB 32,27,2,0	;RegularSmall
-				DB 0,0,0,0	;<free>
-				DB 0,0,0,0	;<free>
-
-
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
 
