@@ -58,7 +58,13 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   call	clearEnemyTable
   ld    hl,CleanOb1                     ;refers to the cleanup table for 1st object. we can place 3 objects max. CleanOb1, CleanOb2 and CleanOb3 are their tables
+
+  ld    a,(scrollEngine)              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
+  cp    2
+  ld    b,12+10                         ;first hardware object sprite nr (sprite 0-11 are border masking sprites, after this start the hardware sprite objects)
+  jp    z,.EngineTypeFound
   ld    b,12                            ;first hardware object sprite nr (sprite 0-11 are border masking sprites, after this start the hardware sprite objects)
+  .EngineTypeFound:
   exx                                   ;keep CleanOb1 address untouched
 
   pop   ix
@@ -972,34 +978,35 @@ SetEngineType:                        ;sets engine type (1= 304x216 engine  2=25
 ;  ld    bc,3
 ;  ldir
 
-  ld    a,1
-  ld    (SpriteSplitFlag),a           ;sprite split active
+  ld    a,1                           ;sprite split active
+  ld    (SpriteSplitFlag),a           
 
   ld    a,(UnpackedRoomFile+roomDataBlock.mapid)  ;tttrrrrr (t=type,r=ruin)
   rlca
   rlca
   rlca
-  and 7
-  call getroomtype
-  inc hl		;skip width
-  inc hl		;skip heigth
-  ld a,(hl)
-  ld    (scrollEngine),a              ;1= 304x216 engine  2=256x216 SF2 engine
+  and   7
+  call  getroomtype
+  inc   hl		;skip width
+  inc   hl		;skip heigth
+  ld    a,(hl)
+  ld    (scrollEngine),a              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
   dec   a
   jp    z,.Engine304x216
 
   .Engine256x216:                     ;SF2 engine
-  dec   a                             ;'normal' SF2 engine ?
-  jr    nz,.Engine256x216WithSpriteSplit
+;;;;;;;;;;;;;;;; ################ in the SF2 engine we can choose to have spritesplit active, which gives us 14 extra sprites  
+  dec   a                             ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
+  ld    a,1                           ;sprite split active
+  jr    nz,.SetSpriteSplit
+  xor   a                             ;sprite split inactive
+  .SetSpriteSplit:
+  ld    (SpriteSplitFlag),a           
 
 ;  ld    hl,NoBorderMaskingSpritesCall
 ;  ld    de,LevelEngine.SelfModifyingCallBMS
 ;  ld    bc,3
 ;  ldir
-
-;;;;;;;;;;;;;;;; ################ in the SF2 engine we can choose to have spritesplit active, which gives us 14 extra sprites  
-  xor   a
-  ld    (SpriteSplitFlag),a           ;SF2 engine with spritesplit inactive
 
   .Engine256x216WithSpriteSplit:
   ld    de,CheckTile256x216MapLenght

@@ -3801,7 +3801,7 @@ Jump:
   jp    z,Set_L_stand       ;on collision change to L_Stand  
   jp    Set_R_stand         ;on collision change to R_Stand    
 
-  .CheckPlatformAbove:    
+  .CheckPlatformAbove:
 ;check platform above
   ld    b,YaddHeadPLayer    ;add y to check (y is expressed in pixels)
   ld    de,XaddRightPlayer-3  ;add x to check (x is expressed in pixels)
