@@ -52,8 +52,7 @@ function print-worldmapMatrix
 		foreach ($column in $row)
 		{	$data="$($WmMatrix[$y][$x])" -band 0x1f #we'll skip roomtype here to make prettier print
 			if (-not ($data -match $ruinIdFilter)) {$data=""}
-			if ($data.length -eq 0) {$data="  "}
-			if ($data.length -eq 1) {$data="0$data"}
+			if ($data.length -eq 0) {$data="  "} else {$data="$data".PadLeft(2,"0")}
 			$rowData+="$data "
 			$x++
 		}
