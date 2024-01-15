@@ -240,3 +240,5 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Room	regularSmall	name	Regular Room Small					
 1	Usas2		Room	regularSmall	roomType	160					
 1	Usas2		Room	regularSmall	width	32					
+1	Usas2		RoomObject	pushStone	uid	4					
+1	Usas2		RoomObject	pushStone	objectClass	General					
