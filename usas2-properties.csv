@@ -221,11 +221,11 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	undefined29	ruinId	29					
 1	Usas2		Ruin	undefined30	ruinId	30					
 1	Usas2		Ruin	undefined31	ruinId	31					
-1	Usas2		RoomObject	zombieSpawn	uid	52					
+1	Usas2		RoomObject	zombieSpawn	uid	62					
 1	Usas2		RoomObject	zombieSpawn	objectClass	EnemySpawn					
-1	Usas2		RoomObject	classBall	uid	51					
+1	Usas2		RoomObject	classBall	uid	61					
 1	Usas2		RoomObject	classBall	objectClass	classBall					
-1	Usas2		RoomObject	retractingPlatform	uid	5					
+1	Usas2		RoomObject	retractingPlatform	uid	15					
 1	Usas2		RoomObject	retractingPlatform	objectClass	platForm					
 1	Usas2		RoomObject	retartedZombie	uid	143					
 1	Usas2		RoomObject	retartedZombie	objectClass	Enemy					
@@ -233,12 +233,12 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	slime	objectClass	Enemy					
 1	Usas2		RoomObject	spider	uid	141					
 1	Usas2		RoomObject	spider	objectClass	Enemy					
-1	Usas2		RoomObject	smallMovingPlatform	uid	1					
+1	Usas2		RoomObject	smallMovingPlatform	uid	11					
 1	Usas2		RoomObject	smallMovingPlatform	objectClass	movingPlatform					
 1	Usas2		Room	regularSmall	engine	2					
 1	Usas2		Room	regularSmall	height	27					
 1	Usas2		Room	regularSmall	name	Regular Room Small					
 1	Usas2		Room	regularSmall	roomType	160					
 1	Usas2		Room	regularSmall	width	32					
-1	Usas2		RoomObject	pushStone	uid	4					
+1	Usas2		RoomObject	pushStone	uid	1					
 1	Usas2		RoomObject	pushStone	objectClass	General					
