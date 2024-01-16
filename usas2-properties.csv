@@ -227,6 +227,10 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	classBall	objectClass	classBall					
 1	Usas2		RoomObject	retractingPlatform	uid	15					
 1	Usas2		RoomObject	retractingPlatform	objectClass	platForm					
+1	Usas2		RoomObject	smallPlatformOff	uid	12					
+1	Usas2		RoomObject	smallPlatformOff	objectClass	platForm					
+1	Usas2		RoomObject	smallPlatformOn	uid	13					
+1	Usas2		RoomObject	smallPlatformOn	objectClass	platForm					
 1	Usas2		RoomObject	retartedZombie	uid	143					
 1	Usas2		RoomObject	retartedZombie	objectClass	Enemy					
 1	Usas2		RoomObject	slime	uid	150					
