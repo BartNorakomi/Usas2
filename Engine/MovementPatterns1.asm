@@ -7665,7 +7665,7 @@ MovePlatFormHorizontally:
   ld    (ix+enemies_and_objects.v4),a
   ret
 
-VramObjects:
+VramObjectsPushingStone:
 ;first clean the object
 ;  call  BackdropRed
 
@@ -7685,39 +7685,50 @@ VramObjects:
   ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
   ld    (CopyObject+sx),a  
 ;set copy direction
-  ld    a,%0000 0000      ;Copy from left to right
+;  ld    a,%0000 0000      ;Copy from left to right
+  xor   a
   ld    (iy+copydirection),a
   ld    (CopyObject+copydirection),a
 
 ;set pages to copy to and to clean from
   ld    a,(PageOnNextVblank)
   cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
+  jr    z,.RightSideCurrentPageIs0
   cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
+  jr    z,.RightSideCurrentPageIs1
   cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
+  jr    z,.RightSideCurrentPageIs2
+;  cp    3*32+31           ;x*32+31 (x=page)
+;  jp    z,.RightSideCurrentPageIs3
 
-  cp    3*32+31           ;x*32+31 (x=page)
+  .RightSideCurrentPageIs3:
   ld    b,3               ;copy to page 3
   ld    c,2               ;clean object from vram data in page 2
   ld    d,-048+01         ;dx offset CopyObject
   ld    e,+016            ;sx offset CleanObject 
-  jp    z,.pagefound
+  jp    .pagefound
+
+  .RightSideCurrentPageIs2:
+  ld    b,2               ;copy to page 2
+  ld    c,3               ;clean object from vram data in page 3
+  ld    d,-032+01         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    .pagefound
+
+  .RightSideCurrentPageIs1:
+  ld    b,1               ;copy to page 1
+  ld    c,2               ;clean object from vram data in page 2
+  ld    d,-016+01         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    .pagefound
+
+  .RightSideCurrentPageIs0:
+  ld    b,0               ;copy to page 0
+  ld    c,1               ;clean object from vram data in page 1
+  ld    d,+000+01         ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+  jp    .pagefound
+
 
 
   .ObjectOnLeftSideOfScreen:
@@ -7731,35 +7742,73 @@ VramObjects:
   ld    (iy+copydirection),a
   ld    (CopyObject+copydirection),a
 
+
 ;set pages to copy to and to clean from
   ld    a,(PageOnNextVblank)
   cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000            ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
+  jr    z,.CurrentPageIs0
   cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,0               ;clean object from vram data in page 2
-  ld    d,-016            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
+  jr    z,.CurrentPageIs1
   cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,1               ;clean object from vram data in page 3
-  ld    d,-032            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
+  jr    z,.CurrentPageIs2
+;  cp    3*32+31           ;x*32+31 (x=page)
+;  jp    z,.CurrentPageIs3
 
-  cp    3*32+31           ;x*32+31 (x=page)
+;We have to check now if object is within screen display
+;for objects that are 16 pixels wide:
+;If current page is page 0 then object can only be put if x=>15 (but this is always the case, since that's our determined value)
+;If current page is page 1 then object can only be put if x=>15 (but this is always the case, since that's our determined value)
+;If current page is page 2 then object can only be put if x=>16
+;If current page is page 3 then object can only be put if x=>32
+
+;for objects that are 32 pixels wide:
+;If current page is page 0 then object can only be put if x=>15 (but this is always the case, since that's our determined value)
+;If current page is page 1 then object can only be put if x=>15 (but this is always the case, since that's our determined value)
+;If current page is page 2 then object can only be put if x=>15 (but this is always the case, since that's our determined value)
+;If current page is page 3 then object can only be put if x=>16
+  .CurrentPageIs3:
+  ld    a,(ix+enemies_and_objects.nx)
+  cp    32
+  ld    b,16
+  jr    z,.Check
+  ld    b,32
+  .Check:
+  ld    a,(ix+enemies_and_objects.x)
+  cp    b
+  ret   c
   ld    b,3               ;copy to page 3
   ld    c,2               ;clean object from vram data in page 2
   ld    d,-048            ;dx offset CopyObject
   ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
+  jp    .pagefoundLeft
+
+  .CurrentPageIs2:
+  ld    a,(ix+enemies_and_objects.nx)
+  cp    32
+  jr    z,.EndCheck16PixWide
+  ld    a,(ix+enemies_and_objects.x)
+  cp    16
+  ret   c
+  .EndCheck16PixWide:
+  ld    b,2               ;copy to page 2
+  ld    c,1               ;clean object from vram data in page 3
+  ld    d,-032            ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jp    .pagefoundLeft
+
+  .CurrentPageIs1:
+  ld    b,1               ;copy to page 1
+  ld    c,0               ;clean object from vram data in page 2
+  ld    d,-016            ;dx offset CopyObject
+  ld    e,+016            ;sx offset CleanObject 
+  jp    .pagefoundLeft
+    
+  .CurrentPageIs0:
+  ld    b,0               ;copy to page 0
+  ld    c,1               ;clean object from vram data in page 1
+  ld    d,+000            ;dx offset CopyObject
+  ld    e,-016            ;sx offset CleanObject 
+;  jp    .pagefoundLeft
 
 .pagefoundLeft:
   ld    a,d
@@ -8072,7 +8121,8 @@ VramObjectsTransparantCopies2:
   .ObjectOnRightSideOfScreen:
   ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
   ld    (CopyObject+sx),a               ;set sx
-  ld    a,%0000 0000                    ;Copy from left to right
+;  ld    a,%0000 0000                    ;Copy from left to right
+  xor   a
   ld    (iy+copydirection),a            ;set copy direction
   ld    (CopyObject+copydirection),a
 

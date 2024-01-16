@@ -18,20 +18,31 @@ loader:
 
 
 ObjectExample: 
+db 1,80/2,80 ;id,x,y (pushing stone)
+;db 1,140/2,80 ;id,x,y (pushing stone)
+;db 1,180/2,80 ;,0 ;id,x,y (pushing stone)
+
+
+db 11,0,0,$28,$a0,$44,16,3,3,1 ;platform
+
+db $96,32/2,$b8,03,01 ;slime (TrampolineBlob)
+
+db 0
+
 
 ;db $96,100,100,03,01  ;slime
 ;db $96,100,116,03,01  ;slime
 ;db 0
 
-db 51,5 ;id,balnr (
-db 51,4,0 ;id,balnr (
+db 61,5 ;id,balnr (
+db 61,4,0 ;id,balnr (
 
-db 52,16/2,100,3,1,4,0  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
-db 5,76,30,0  ;id, x,y
-db 5,76,40,0
+db 62,16/2,100,3,1,4,0  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
+db 15,76,30,0  ;id, x,y (retracting platforms)
+db 15,76,40,0
 db 0 ;3 retracting platforms (AppBlocksHandler)
-;db 1,0,0,$28,$a0,$44,16,3,3,1 ;platform
-;db 1,0,0,$28,$b0,$44,16,3,3,1
+;db 11,0,0,$28,$a0,$44,16,3,3,1 ;platform
+;db 11,0,0,$28,$b0,$44,16,3,3,1
 ;db $8f,64/2,$40,03,02 ;retard zombie
 ;db $8f,$54,$50,03,02
 ;db $8f,$64,$60,03,02
@@ -39,6 +50,15 @@ db 0 ;3 retracting platforms (AppBlocksHandler)
 ;db $96,32/2,$80,03,01 ;slime
 ;db $96,$24,$30,03,01
 db 0
+
+Object001Table:               ;pushing stone (PushingStone)
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.lenghtobjectdata: equ 3
+;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
+          db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks4Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
@@ -56,6 +76,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
 ;halt
 
+  xor   a
+  ld    (AmountOfPushingStonesInCurrentRoom),a
   call	clearEnemyTable
   ld    hl,CleanOb1                     ;refers to the cleanup table for 1st object. we can place 3 objects max. CleanOb1, CleanOb2 and CleanOb3 are their tables
 
@@ -85,17 +107,136 @@ SetObjects:                             ;after unpacking the map to ram, all the
   
   .SetObject:
   cp    1
-  jp    z,.Object001                    ;platform
-  cp    5
-  jp    z,.Object005                    ;retracting platforms
-  cp    51
-  jp    z,.Object051                    ;glass ball (GlassBallActivator)
-  cp    52
-  jp    z,.Object052                    ;zombie spawn point
+  jp    z,.Object001                    ;pushing stone
+  cp    11
+  jp    z,.Object011                    ;platform
+  cp    15
+  jp    z,.Object015                    ;retracting platforms
+  cp    61
+  jp    z,.Object061                    ;glass ball (GlassBallActivator)
+  cp    62
+  jp    z,.Object062                    ;zombie spawn point
 ;  cp    143
 ;  jp    z,.Object143                    ;retarded zombie
   cp    150
   jp    z,.Object150                    ;trampoline blob
+  ret
+
+  .Object001:                           ;pushing stone (PushingStone)
+;v1=sx
+;v2=falling stone?
+;v3=y movement
+;v4=x movement
+;v7=set/store coord
+;v9=special width for Pushing Stone Puzzle Switch
+;v1-2= coordinates in pushing stone table (PuzzleBlocks1Y, PuzzleBlocks2Y etc)
+  call  .SetPushingStoneInEnemyTable
+  
+  ;now we have to check if this block is already present in the pushing block table
+  ld    hl,PuzzleBlocks1Y+3
+  .CheckBlock:
+  ld    a,(hl)                          ;room y
+  or    a
+  jr    z,.NotYetPresent
+  ld    b,a
+  ld    a,(WorldMapPositionY)
+  cp    b
+  jr    nz,.ThisBlockBelongsInADifferentRoom
+  dec   hl
+  ld    a,(hl)                          ;room x
+  ld    b,a
+  inc   hl
+  ld    a,(WorldMapPositionX)
+  cp    b
+  jr    nz,.ThisBlockBelongsInADifferentRoom
+  dec   hl
+  dec   hl
+  dec   hl
+
+  .AlreadyPresent:                      ;when a block is already in the table, set table coordinates in v1-2 and take x,y from table and feed it into the object
+  ld    (iy+enemies_and_objects.v1-2),l ;set coordinates in pushing stone table (PuzzleBlocks1Y, PuzzleBlocks2Y etc)
+  ld    (iy+enemies_and_objects.v1-1),h
+
+  ld    a,(ix+Object001Table.lenghtobjectdata)
+  cp    1                               ;check if next object is another pushing stone
+  ld    de,Object001Table.lenghtobjectdata
+  ret   nz
+
+  ld    de,Object001Table.lenghtobjectdata
+  add   ix,de                           ;add the lenght of current object data to ix, and set next object in ix
+  ld    de,lenghtenemytable             ;lenght 1 object in object table
+  add   iy,de                           ;next object in object table
+
+  call  .SetPushingStoneInEnemyTable
+    
+  ld    de,4
+  add   hl,de                           ;next block in pushing block table
+  jr    .AlreadyPresent                 ;now loop this routine and look for more pushing stones in this room
+
+  .ThisBlockBelongsInADifferentRoom:
+  ld    de,4
+  add   hl,de                           ;next block in pushing block table
+  jr    .CheckBlock
+    
+  .NotYetPresent:
+  call  .SetRoomYXStoneXYAndTableAddress 
+
+  ld    a,(ix+Object001Table.lenghtobjectdata)
+  cp    1                               ;check if next object is another pushing stone
+  ld    de,Object001Table.lenghtobjectdata
+  ret   nz
+
+  ld    de,Object001Table.lenghtobjectdata
+  add   ix,de                           ;add the lenght of current object data to ix, and set next object in ix
+  ld    de,lenghtenemytable             ;lenght 1 object in object table
+  add   iy,de                           ;next object in object table
+
+  call  .SetPushingStoneInEnemyTable
+    
+  ld    de,7
+  add   hl,de                           ;room y for next block in pushing block table
+  jr    .NotYetPresent                  ;now loop this routine and look for more pushing stones in this room
+
+  .SetRoomYXStoneXYAndTableAddress:
+  ;set room y
+  ld    a,(WorldMapPositionY)
+  ld    (hl),a
+
+  ;set room x
+  dec   hl
+  ld    a,(WorldMapPositionX)
+  ld    (hl),a
+
+  ;set stone x
+  dec   hl
+  ld    a,(ix+Object150Table.x)
+  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+  set   0,a                             ;pushing stones need to have an odd x value
+  ld    (hl),a
+
+  ;set stone y
+  dec   hl
+  ld    a,(ix+Object150Table.y)
+  ld    (hl),a
+
+  ld    (iy+enemies_and_objects.v1-2),l ;set coordinates in pushing stone table (PuzzleBlocks1Y, PuzzleBlocks2Y etc)
+  ld    (iy+enemies_and_objects.v1-1),h
+  ret
+
+  .SetPushingStoneInEnemyTable:
+  push  hl
+  ld    hl,Object001Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1
+  ldir                                  ;copy enemy table
+  call  SetCleanObjectNumber            ;each object has a reference cleanup table
+
+  ld    a,(AmountOfPushingStonesInCurrentRoom)
+  inc   a
+  ld    (AmountOfPushingStonesInCurrentRoom),a
+
+  pop   hl
   ret
 
   .SetAlive?BasedOnEngineType:
@@ -105,8 +246,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (iy+enemies_and_objects.Alive?),2
   ret
 
-  .Object051:                           ;glass ball (GlassBallActivator)
-  ld    a,(ix+Object051Table.ballnr)
+  .Object061:                           ;glass ball (GlassBallActivator)
+  ld    a,(ix+Object061Table.ballnr)
   cp    5
   jr    z,.SetGlassBall5
   ret
@@ -118,15 +259,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    bc,lenghtenemytable*3
   ldir
 
-  ld    de,Object051Table.lenghtobjectdata*2
+  ld    de,Object061Table.lenghtobjectdata*2
   ret    
   
-  .Object052:                           ;zombie spawn point (ZombieSpawnPoint)
+  .Object062:                           ;zombie spawn point (ZombieSpawnPoint)
 ;v1=Zombie Spawn Timer
 ;v2=Max Number Of Zombies
 ;v3=Spawn Speed
 ;v4=Face direction
-  ld    hl,Object052Table
+  ld    hl,Object062Table
   push  iy
   pop   de                              ;enemy object table
   ld    bc,lenghtenemytable*1
@@ -135,7 +276,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   call  .SetAlive?BasedOnEngineType
 
   ;set x
-  ld    a,(ix+Object052Table.x)
+  ld    a,(ix+Object062Table.x)
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
@@ -143,31 +284,31 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (iy+enemies_and_objects.x+1),h
 
   ;set y
-  ld    a,(ix+Object052Table.y)
+  ld    a,(ix+Object062Table.y)
   ld    (iy+enemies_and_objects.y),a
 
   ;set Max Number Of Zombies
-  ld    a,(ix+Object052Table.MaxNum)
+  ld    a,(ix+Object062Table.MaxNum)
   ld    (iy+enemies_and_objects.v2),a
 
   ;set Zombies spawn speed
-  ld    a,(ix+Object052Table.speed)
+  ld    a,(ix+Object062Table.speed)
   ld    (iy+enemies_and_objects.v3),a
 
   ;set Zombies face direction
-  ld    a,(ix+Object052Table.face)
+  ld    a,(ix+Object062Table.face)
   ld    (iy+enemies_and_objects.v4),a
 
   call  .SetGfxZombieSpawnPoint
 
-  ld    b,(ix+Object052Table.MaxNum)
+  ld    b,(ix+Object062Table.MaxNum)
   .addZombieLoop:
   push  bc
   call  .AddZombie                      ;adds a zombie to the room's object table
   pop   bc
   djnz  .addZombieLoop
 
-  ld    de,Object052Table.lenghtobjectdata
+  ld    de,Object062Table.lenghtobjectdata
   ret  
   
   .AddZombie:                           ;add a zombie to the room's object table 
@@ -250,8 +391,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (FreeToUseFastCopy+dy),a
   ret
    
-  .Object005:                           ;retracting platform  
-  ld    hl,Object005Table
+  .Object015:                           ;retracting platform  
+  ld    hl,Object015Table
   push  iy
   pop   de                              ;enemy object table
   ld    bc,lenghtenemytable*2
@@ -264,7 +405,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   
   ;first let's find total amount of retracting platforms
   ld    b,1                             ;amount of retracting platforms
-  ld    de,Object005Table.lenghtobjectdata
+  ld    de,Object015Table.lenghtobjectdata
   push  ix
   call  .FindTotalAmountOfRetractingPlatforms
   pop   ix
@@ -282,11 +423,11 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    iy,AppearingBlocksTable
   push  iy
   .PlatformLoop:
-  ld    a,(ix+Object005Table.y)
+  ld    a,(ix+Object015Table.y)
   ld    l,a
   ld    (iy+0),a                        ;y block 1 (block turns on)
   ld    (iy+9),a                        ;y block 1 (block turns off)
-  ld    a,(ix+Object005Table.x)
+  ld    a,(ix+Object015Table.x)
   add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
   ld    h,a
   ld    (iy+1),a                        ;x block 1 (block turns on)
@@ -294,7 +435,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (iy+10),a                       ;x block 1 (block turns off)
   ld    (iy+11),0                       ;block 1 off
 
-  ld    de,Object005Table.lenghtobjectdata
+  ld    de,Object015Table.lenghtobjectdata
   add   ix,de                           ;next object
   ld    de,6
   add   iy,de                           ;next block that turns on in list
@@ -308,7 +449,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (iy+5),0                        ;off
   pop   iy
   
-  ld    de,Object005Table.lenghtobjectdata
+  ld    de,Object015Table.lenghtobjectdata
   ret  
 
   .Only2RetractingPlatforms:  
@@ -321,26 +462,26 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,255
   ld    (AppearingBlocksTable+12),a
 
-  ld    a,(ix+Object005Table.y)
+  ld    a,(ix+Object015Table.y)
   ld    (AppearingBlocksTable+0),a
   ld    (AppearingBlocksTable+6),a
-  ld    a,(ix+Object005Table.x)
+  ld    a,(ix+Object015Table.x)
   add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
   ld    (AppearingBlocksTable+1),a
   ld    (AppearingBlocksTable+7),a
 
-  ld    de,Object005Table.lenghtobjectdata
+  ld    de,Object015Table.lenghtobjectdata
   add   ix,de                           ;next retracting platform
 
-  ld    a,(ix+Object005Table.y)
+  ld    a,(ix+Object015Table.y)
   ld    (AppearingBlocksTable+3),a
   ld    (AppearingBlocksTable+9),a
-  ld    a,(ix+Object005Table.x)
+  ld    a,(ix+Object015Table.x)
   add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
   ld    (AppearingBlocksTable+4),a
   ld    (AppearingBlocksTable+10),a
 
-  ld    de,Object005Table.lenghtobjectdata
+  ld    de,Object015Table.lenghtobjectdata
   ret
 
   .Only1RetractingPlatform:
@@ -351,26 +492,26 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,255
   ld    (AppearingBlocksTable+6),a
 
-  ld    a,(ix+Object005Table.y)
+  ld    a,(ix+Object015Table.y)
   ld    (AppearingBlocksTable+0),a
   ld    (AppearingBlocksTable+3),a
-  ld    a,(ix+Object005Table.x)
+  ld    a,(ix+Object015Table.x)
   add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
   ld    (AppearingBlocksTable+1),a
   ld    (AppearingBlocksTable+4),a
 
-  ld    de,Object005Table.lenghtobjectdata
+  ld    de,Object015Table.lenghtobjectdata
   ret
 
   .FindTotalAmountOfRetractingPlatforms:
   add   ix,de                           ;next object
   ld    a,(ix)
-  cp    5
+  cp    15
   ret   nz
   inc   b
   jr    .FindTotalAmountOfRetractingPlatforms
 
-  .Object001:                           ;moving platform
+  .Object011:                           ;moving platform
 ;v1-2=box right (16 bit)
 ;v1-1=box right (16 bit)
 ;v1=sx software sprite in Vram
@@ -383,22 +524,17 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v8=box top
 ;v9=box bottom
 ;v10=speed
-  ld    hl,Object001Table
+  ld    hl,Object011Table
   push  iy
   pop   de                              ;enemy object table
   ld    bc,lenghtenemytable
   ldir                                  ;copy enemy table
 
-  exx
-  ld    (iy+enemies_and_objects.ObjectNumber),l
-  ld    (iy+enemies_and_objects.ObjectNumber+1),h
-  ld    de,CleanObjectTableLenght
-  add   hl,de                           ;set next clean object table for potential next object
-  exx
+  call  SetCleanObjectNumber            ;each object has a reference cleanup table
 
   ;set x (relative to box)
-  ld    a,(ix+Object001Table.xbox)
-  add   a,(ix+Object001Table.relativex)
+  ld    a,(ix+Object011Table.xbox)
+  add   a,(ix+Object011Table.relativex)
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
@@ -406,20 +542,20 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (iy+enemies_and_objects.x+1),h
 
   ;set y (relative to box)
-  ld    a,(ix+Object001Table.ybox)
-  add   a,(ix+Object001Table.relativey)
+  ld    a,(ix+Object011Table.ybox)
+  add   a,(ix+Object011Table.relativey)
   ld    (iy+enemies_and_objects.y),a
   
   ;set box x left
-  ld    l,(ix+Object001Table.xbox)
+  ld    l,(ix+Object011Table.xbox)
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
   ld    (iy+enemies_and_objects.v6),l   ;v6 and v7=box left (16bit)
   ld    (iy+enemies_and_objects.v7),h   ;v6 and v7=box left (16bit)
 
   ;set box x right
-  ld    a,(ix+Object001Table.xbox)
-  add   a,(ix+Object001Table.widthbox)
+  ld    a,(ix+Object011Table.xbox)
+  add   a,(ix+Object011Table.widthbox)
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
@@ -428,15 +564,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
 
   ;set box y top
-  ld    a,(ix+Object001Table.ybox)
+  ld    a,(ix+Object011Table.ybox)
   ld    (iy+enemies_and_objects.v8),a   ;v8=box top
 
   ;set box y bottom
-  add   a,(ix+Object001Table.heightbox)
+  add   a,(ix+Object011Table.heightbox)
   ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
 
   ;set facing direction
-  ld    a,(ix+Object001Table.face)
+  ld    a,(ix+Object011Table.face)
   add   a,a
   ld    d,0
   ld    e,a
@@ -449,14 +585,14 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (iy+enemies_and_objects.v4),a   ;v4=x movement
   
   ;set speed
-  ld    a,(ix+Object001Table.speed)
+  ld    a,(ix+Object011Table.speed)
   ld    (iy+enemies_and_objects.v10),a  ;v10=speed
 
   ;set active
-  ld    a,(ix+Object001Table.active)
+  ld    a,(ix+Object011Table.active)
   ld    (iy+enemies_and_objects.v2),a   ;v2=active?
 
-  ld    de,Object001Table.lenghtobjectdata
+  ld    de,Object011Table.lenghtobjectdata
   ret
 
   .CheckIfObjectMovementIsWithinAllowedRange:
@@ -543,6 +679,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;  ld    de,Object143Table.lenghtobjectdata
 ;  ret
 
+SetCleanObjectNumber:                   ;each object has a reference cleanup table
+  exx
+  ld    (iy+enemies_and_objects.ObjectNumber),l
+  ld    (iy+enemies_and_objects.ObjectNumber+1),h
+  ld    de,CleanObjectTableLenght
+  add   hl,de                           ;set next clean object table for potential next object
+  exx
+  ret
+
 SetSPATPositionForThisSprite:           ;we need to define the position this sprite takes in the SPAT
   exx
   push  hl
@@ -570,7 +715,7 @@ SetSPATPositionForThisSprite:           ;we need to define the position this spr
                 ;y,x  1=up,   2=upright,  3=right,  4=rightdown,  5=down, 6=downleft, 7=left, 8=leftup)
 Movementtable:    db  -1,+0,  -1,+1,      +0,+1,    +1,+1,        +1,+0,  +1,-1,      +0,-1,  -1,-1  
 
-Object001Table:               ;platform
+Object011Table:               ;platform
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
           db 1,        0|dw Platform            |db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 .ID: equ 0
@@ -585,7 +730,7 @@ Object001Table:               ;platform
 .active: equ 9
 .lenghtobjectdata: equ 10
 
-Object005Table:               ;retracting platform (handler)
+Object015Table:               ;retracting platform (handler)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
           db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
                               ;AppearingBlocks
@@ -596,7 +741,7 @@ Object005Table:               ;retracting platform (handler)
 .y: equ 2
 .lenghtobjectdata: equ 3
 
-Object051Table:               ;glass ball (& GlassBallActivator)
+Object061Table:               ;glass ball (& GlassBallActivator)
 .ID: equ 0
 .ballnr: equ 1
 .lenghtobjectdata: equ 2
@@ -609,7 +754,7 @@ GlassBall5Data:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 
-Object052Table:               ;zombie spawn point
+Object062Table:               ;zombie spawn point
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
          db  1,        1|dw ZombieSpawnPoint    |db 8*03|dw 8*19|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+04,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 .ID: equ 0
