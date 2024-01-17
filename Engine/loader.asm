@@ -707,6 +707,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ;set x
   ld    a,(ix+Object020Table.x)
+  inc   a                               ;2 pixels to the right
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
