@@ -2062,6 +2062,7 @@ BigStatueMouthClosedSx: equ 00
 BigStatueMouthOpenSx:   equ 28
 BigStatueMouth:
 ;v1=sx software sprite in Vram
+;v9=face (3=right, 7=left, 0=random)
 ;v10=max number
   ld    a,3
   ld    (CopyObject+spage),a
@@ -2145,7 +2146,22 @@ BigStatueMouth:
   ld    (ix+enemies_and_objects.v4),0       ;v4=Horizontal Movement
   ld    (ix+enemies_and_objects.v5),0       ;v5=repeating steps
   ld    (ix+enemies_and_objects.v6),0       ;v6=pointer to movement table
-  ld    (ix+enemies_and_objects.v8),1       ;v8=face left (0) or face right (1)  
+
+  ld    a,(iy+enemies_and_objects.v9)       ;v9=face (3=right, 7=left, 0=random)
+  cp    3
+  ld    b,+1
+  jr    z,.FaceFound
+  cp    7
+  ld    b,-1
+  jr    z,.FaceFound
+  ld    a,r
+  and   1
+  jr    nz,.FaceFoundRandom
+  ld    a,-1
+  .FaceFoundRandom:
+  ld    b,a
+  .FaceFound:
+  ld    (ix+enemies_and_objects.v8),b       ;v8=face left (-1) or face right (1)  
   ld    hl,CuteMiniBat
   ld    (ix+enemies_and_objects.movementpattern),l
   ld    (ix+enemies_and_objects.movementpattern+1),h
