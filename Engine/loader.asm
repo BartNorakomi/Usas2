@@ -101,7 +101,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ld  hl,ObjectExample
   ld  bc,200
-  ldir
+;  ldir
 
 ;halt
 
@@ -710,7 +710,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ;set x
   ld    a,(ix+Object020Table.x)
-  add   a,4                             ;8 pix to the right
+  add   a,5                             ;10 pix to the right
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
@@ -719,7 +719,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ;set y
   ld    a,(ix+Object020Table.y)
-  add   a,21                            ;21 pix down
+  add   a,8                            ;8 pix down
   ld    (iy+enemies_and_objects.y),a
 
   ld    a,(ix+Object020Table.face)
