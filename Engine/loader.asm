@@ -40,6 +40,9 @@ ObjectExample:
 db 20,120/2,80,3,0,6 ;id,x,y,face, speed, amount of bats (BigStatueMouth bat spawner)
 ;db 62,16/2,100,3,1,2  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
 
+db 11,0,0,$28,$a0,$44,16,3,3,1 ;platform
+
+
 db 0
 
 
@@ -98,7 +101,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ld  hl,ObjectExample
   ld  bc,200
-;  ldir
+  ldir
 
 ;halt
 
@@ -707,7 +710,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ;set x
   ld    a,(ix+Object020Table.x)
-  inc   a                               ;2 pixels to the right
+  add   a,4                             ;8 pix to the right
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
@@ -716,6 +719,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ;set y
   ld    a,(ix+Object020Table.y)
+  add   a,21                            ;21 pix down
   ld    (iy+enemies_and_objects.y),a
 
   ld    a,(ix+Object020Table.face)
@@ -915,11 +919,9 @@ Object020Table:               ;bat spawner (BigStatueMouth)
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-
 .face: equ 3
 .speed: equ 4
 .MaxNum: equ 5
-
 .lenghtobjectdata: equ 6
 
 ;Cute Mini Bat
