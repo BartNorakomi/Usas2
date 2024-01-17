@@ -37,7 +37,7 @@ ObjectExample:
 ;db 16,140/2,140 ;omni directional platform
 ;db 0
 
-db 20,120/2,80,4 ;id,x,y,amount of bats (BigStatueMouth bat spawner)
+db 20,120/2,80,3,0,6 ;id,x,y,face, speed, amount of bats (BigStatueMouth bat spawner)
 ;db 62,16/2,100,3,1,2  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
 
 db 0
@@ -717,6 +717,9 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,(ix+Object020Table.y)
   ld    (iy+enemies_and_objects.y),a
 
+  ld    a,(ix+Object020Table.face)
+  ld    (iy+enemies_and_objects.v9),a   ;face
+
   ld    b,(ix+Object020Table.MaxNum)
   ld    (iy+enemies_and_objects.v10),b  ;max number
   
@@ -911,8 +914,10 @@ Object020Table:               ;bat spawner (BigStatueMouth)
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.MaxNum: equ 3
-.lenghtobjectdata: equ 4
+.face: equ 3
+.speed: equ 4
+.MaxNum: equ 5
+.lenghtobjectdata: equ 6
 
 ;Cute Mini Bat
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
