@@ -1978,8 +1978,8 @@ CuteMiniBat:
 ;v4=Horizontal Movement
 ;v5=repeating steps
 ;v6=pointer to movement table
-;v7=Target Y
 ;v8=face left (0) or face right (1)  
+;v9=Target Y
   call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
   call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
@@ -2027,7 +2027,7 @@ CuteMiniBat:
   ret   nz
   
   ld    a,(ix+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.v7)         ;v7=Target Y
+  cp    (ix+enemies_and_objects.v9)         ;v7=Target Y
   jr    nc,.MoveUp
   inc   (ix+enemies_and_objects.y)
   ret
@@ -2058,68 +2058,94 @@ RightCuteMiniBat:
   dw  RightCuteMiniBat2_Char
   dw  RightCuteMiniBat3_Char
 
-BigStatueMouthOpenSx: equ 0
-BigStatueMouthClosedSx: equ 14
+BigStatueMouthClosedSx: equ 00
+BigStatueMouthOpenSx:   equ 28
 BigStatueMouth:
+;v1=sx software sprite in Vram
+;v10=max number
   ld    a,3
   ld    (CopyObject+spage),a
-  ld    a,216+21
+  ld    a,216+000
   ld    (CopyObject+sy),a  
 
-  ld    a,(framecounter)
-  cp    60
-  jr    nz,.EndCheckCloseMouth
-  ld    (ix+enemies_and_objects.v1),BigStatueMouthClosedSx  
-  .EndCheckCloseMouth:
-
-  call  VramObjectsTransparantCopies
-  call  .CheckOpenMouth
-  ret
+  call  OnlyPutVramObjectDontEraseFastCopy
   
-  .CheckOpenMouth:  
-  ld    a,(framecounter)
-  or    a
-  ret   nz
-  
-  .SearchEmptySlot:
+  ;search for an open slot
   push  ix
   pop   iy
   ld    de,lenghtenemytable
-  
+
+  ld    a,(ix+enemies_and_objects.v10)  ;max number
+  dec   a
+  jr    z,.MaxNum1
+  dec   a
+  jr    z,.MaxNum2
+  dec   a
+  jr    z,.MaxNum3
+  dec   a
+  jr    z,.MaxNum4
+  dec   a
+  jr    z,.MaxNum5
+
+  .MaxNum6:
   add   ix,de
   bit   0,(ix+enemies_and_objects.Alive?)
   jr    z,.EmptySlotFound
+  .MaxNum5:
   add   ix,de
   bit   0,(ix+enemies_and_objects.Alive?)
   jr    z,.EmptySlotFound
+  .MaxNum4:
   add   ix,de
   bit   0,(ix+enemies_and_objects.Alive?)
   jr    z,.EmptySlotFound
+  .MaxNum3:
   add   ix,de
   bit   0,(ix+enemies_and_objects.Alive?)
   jr    z,.EmptySlotFound
+  .MaxNum2:
   add   ix,de
   bit   0,(ix+enemies_and_objects.Alive?)
   jr    z,.EmptySlotFound
+  .MaxNum1:
   add   ix,de
   bit   0,(ix+enemies_and_objects.Alive?)
-  ret   nz
+  jr    z,.EmptySlotFound
+  ld    a,(framecounter)
+  cp    60
+  call  z,.CloseMouth
+  ret
   
   .EmptySlotFound:
-  ld    (iy+enemies_and_objects.v1),BigStatueMouthOpenSx  
-  
+  ld    a,(framecounter)
+  or    a
+  call  z,.OpenMouth
+  cp    60
+  call  z,.CloseMouth
+  cp    50
+  ret   nz  
+  ld    a,(iy+enemies_and_objects.v1)
+  cp    BigStatueMouthOpenSx
+  ret   nz
+
   ld    (ix+enemies_and_objects.alive?),-1 
 
   ld    a,(iy+enemies_and_objects.y)
-  sub   a,2
+  add   a,15
   ld    (ix+enemies_and_objects.y),a
 
   ld    a,(iy+enemies_and_objects.x)
-  add   a,15
+  add   a,20
   ld    (ix+enemies_and_objects.x),a
   
   ld    (ix+enemies_and_objects.x+1),0
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking slow, 1=attacking)
+  ld    (ix+enemies_and_objects.v3),0       ;v3=Vertical Movement
+  ld    (ix+enemies_and_objects.v4),0       ;v4=Horizontal Movement
+  ld    (ix+enemies_and_objects.v5),0       ;v5=repeating steps
+  ld    (ix+enemies_and_objects.v6),0       ;v6=pointer to movement table
+  ld    (ix+enemies_and_objects.v8),1       ;v8=face left (0) or face right (1)  
   ld    hl,CuteMiniBat
   ld    (ix+enemies_and_objects.movementpattern),l
   ld    (ix+enemies_and_objects.movementpattern+1),h
@@ -2128,8 +2154,15 @@ BigStatueMouth:
   ld    (ix+enemies_and_objects.nrspritesTimes16),2*16
   ld    (ix+enemies_and_objects.life),1
   ret  
-  
-  
+
+.OpenMouth:
+  ld    (iy+enemies_and_objects.v1),BigStatueMouthOpenSx
+  ret
+
+.CloseMouth:
+  ld    (iy+enemies_and_objects.v1),BigStatueMouthClosedSx
+  ret
+
 SXDrippingOoze1:  equ 149
 SXDrippingOoze2:  equ 149+5
 SXDrippingOoze3:  equ 149+5+5
@@ -7528,9 +7561,31 @@ Platform:
   call  MovePlatForm
 ;  call  MovePlatFormHorizontally            ;move
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+
+  ;set platform on when jumping on it
+  bit   0,(ix+enemies_and_objects.v2)       ;v2=active?
+  ret   nz                                  ;return if already on
+
+  bit   0,(ix+enemies_and_objects.v5)       ;v5=SnapPlayer?
+  ret   z                                   ;have we already snapped to this platform yet ?
+
+  set   0,(ix+enemies_and_objects.v2)       ;v2=active?
+
+  ld    a,(ix+enemies_and_objects.nx)
+  cp    32
+  jr    z,.BigPlatform
+
+  .SmallPlatform:
+  ld    (ix+enemies_and_objects.v1),096     ;v1=sx software sprite in Vram
+  ret
+  
+  .BigPlatform:
+  ld    (ix+enemies_and_objects.v1),032     ;v1=sx software sprite in Vram
   ret
 
 MovePlatForm:
+  bit   0,(ix+enemies_and_objects.v2)       ;v2=active?
+  ret   z
   ld    a,(ix+enemies_and_objects.v10)      ;v10=speed
   dec   a
   ld    b,7
@@ -7926,6 +7981,104 @@ ret
 ;      0                                        256            
 
 
+OnlyPutVramObjectDontEraseFastCopy:
+  ld    a,(ix+enemies_and_objects.x)
+  or    a
+  jp    p,.ObjectOnLeftSideOfScreen
+
+  .ObjectOnRightSideOfScreen:
+;set sx
+  ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
+  ld    (CopyObject+sx),a  
+;set copy direction
+  ld    a,%0000 0000      ;Copy from left to right
+  ld    (CopyObject+copydirection),a
+
+;set pages to copy to and to clean from
+  ld    a,(PageOnNextVblank)
+  cp    0*32+31           ;x*32+31 (x=page)
+  ld    b,0               ;copy to page 0
+  ld    d,+000+01         ;dx offset CopyObject
+  jp    z,.pagefound
+
+  cp    1*32+31           ;x*32+31 (x=page)
+  ld    b,1               ;copy to page 1
+  ld    d,-016+01         ;dx offset CopyObject
+  jp    z,.pagefound
+
+  cp    2*32+31           ;x*32+31 (x=page)
+  ld    b,2               ;copy to page 2
+  ld    d,-032+01         ;dx offset CopyObject
+  jp    z,.pagefound
+
+  cp    3*32+31           ;x*32+31 (x=page)
+  ld    b,3               ;copy to page 3
+  ld    d,-048+01         ;dx offset CopyObject
+  jp    z,.pagefound
+
+  .ObjectOnLeftSideOfScreen:
+;set sx
+  ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
+  dec   a
+  add   a,(ix+enemies_and_objects.nx)
+  ld    (CopyObject+sx),a  
+;set copy direction
+  ld    a,%0000 0100      ;Copy from right to left
+  ld    (CopyObject+copydirection),a
+
+;set pages to copy to and to clean from
+  ld    a,(PageOnNextVblank)
+  cp    0*32+31           ;x*32+31 (x=page)
+  ld    b,0               ;copy to page 0
+  ld    d,+000            ;dx offset CopyObject
+  jr    z,.pagefoundLeft
+
+  cp    1*32+31           ;x*32+31 (x=page)
+  ld    b,1               ;copy to page 1
+  ld    d,-016            ;dx offset CopyObject
+  jr    z,.pagefoundLeft
+
+  cp    2*32+31           ;x*32+31 (x=page)
+  ld    b,2               ;copy to page 2
+  ld    d,-032            ;dx offset CopyObject
+  jr    z,.pagefoundLeft
+
+  cp    3*32+31           ;x*32+31 (x=page)
+  ld    b,3               ;copy to page 3
+  ld    d,-048            ;dx offset CopyObject
+  jr    z,.pagefoundLeft
+
+.pagefoundLeft:
+  ld    a,d
+  add   a,(ix+enemies_and_objects.nx)
+  ld    d,a
+ 
+.pagefound:
+  ld    a,b
+  ld    (CopyObject+dpage),a  
+
+;set object sy,dy,sx,dx,nx,ny
+  ld    a,(ix+enemies_and_objects.y)
+  ld    (CopyObject+dy),a
+
+  ld    a,(ix+enemies_and_objects.x)
+  add   d
+  ld    (CopyObject+dx),a
+  
+  ld    a,(ix+enemies_and_objects.nx)  
+  ld    (CopyObject+nx),a  
+  add   a,2                 ;we clean 2 more pixels, because we use fast copy ($D0) for cleaning, which is not pixel precise (Bitmap mode)
+
+  ld    a,(ix+enemies_and_objects.ny)
+  ld    (CopyObject+ny),a  
+
+  ld    a,$d0
+  ld    (CopyObject+copytype),a
+
+;put object
+  ld    hl,CopyObject
+  jp    docopy
+  
 VramObjectsTransparantCopies:
 ;first clean the object
 ;  call  BackdropRed
@@ -8285,6 +8438,5 @@ VramObjectsTransparantCopies2:
   
 ;  call  BackdropGreen
   ld    hl,CopyObject
-  call  docopy
+  jp    docopy
 ;  call  BackdropBlack
-  ret  

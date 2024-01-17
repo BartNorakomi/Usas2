@@ -18,9 +18,35 @@ loader:
 
 
 ObjectExample: 
+
+;db 11,0,0,$28,$a0,$44,16,3,3,0 ;platform
+;db 0
+
+;db 12,0,0,$28,$70,$44,16,3,3,1 ;small lighter platform on
+;db 12,0,0,$28,$a0,$44,16,3,3,0 ;small lighter platform off
+
+;db 57,0,0,$28,$70,$44,16,3,3,1 ;big platform on
+;db 57,0,0,$28,$a0,$44,16,3,3,0 ;big platform off
+
+;db 0
+
+
+;db 58,0,0,$28,$70,$44,16,3,3,1 ;small platform on
+
+;db 16,100/2,100 ;omni directional platform
+;db 16,140/2,140 ;omni directional platform
+;db 0
+
+db 20,120/2,80,4 ;id,x,y,amount of bats (BigStatueMouth bat spawner)
+;db 62,16/2,100,3,1,2  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
+
+db 0
+
+
 db 1,80/2,80 ;id,x,y (pushing stone)
-;db 1,140/2,80 ;id,x,y (pushing stone)
-;db 1,180/2,80 ;,0 ;id,x,y (pushing stone)
+db 1,140/2,80 ;id,x,y (pushing stone)
+db 1,180/2,80 ;,0 ;id,x,y (pushing stone)
+db 0
 
 
 db 11,0,0,$28,$a0,$44,16,3,3,1 ;platform
@@ -109,9 +135,17 @@ SetObjects:                             ;after unpacking the map to ram, all the
   cp    1
   jp    z,.Object001                    ;pushing stone
   cp    11
-  jp    z,.Object011                    ;platform
+  jp    z,.Object011                    ;small moving platform on (standard dark grey)
+  cp    12
+  jp    z,.Object012                    ;small moving platform (lighter version)
   cp    15
   jp    z,.Object015                    ;retracting platforms
+  cp    16
+  jp    z,.Object016                    ;omni directional platform
+  cp    20
+  jp    z,.Object020                    ;bat spawner (BigStatueMouth)
+  cp    57
+  jp    z,.Object057                    ;big moving platform
   cp    61
   jp    z,.Object061                    ;glass ball (GlassBallActivator)
   cp    62
@@ -511,7 +545,28 @@ SetObjects:                             ;after unpacking the map to ram, all the
   inc   b
   jr    .FindTotalAmountOfRetractingPlatforms
 
-  .Object011:                           ;moving platform
+  .Object057:                           ;big moving platform off
+  call  .Object011
+  ld    (iy+enemies_and_objects.nx),32  ;nx
+  ld    (iy+enemies_and_objects.v1),000 ;v1=sx software sprite in Vram off
+  ld    a,(ix+Object011Table.active)
+  ld    (iy+enemies_and_objects.v2),a   ;v2=active?
+  or    a
+  ret   z
+  ld    (iy+enemies_and_objects.v1),032 ;v1=sx software sprite in Vram on
+  ret
+
+  .Object012:                           ;small moving platform (lighter version)
+  call  .Object011
+  ld    (iy+enemies_and_objects.v1),080 ;v1=sx software sprite in Vram off
+  ld    a,(ix+Object011Table.active)
+  ld    (iy+enemies_and_objects.v2),a   ;v2=active?
+  or    a
+  ret   z
+  ld    (iy+enemies_and_objects.v1),096 ;v1=sx software sprite in Vram on
+  ret
+
+  .Object011:                           ;small moving platform on (standard dark grey)
 ;v1-2=box right (16 bit)
 ;v1-1=box right (16 bit)
 ;v1=sx software sprite in Vram
@@ -524,6 +579,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v8=box top
 ;v9=box bottom
 ;v10=speed
+
   ld    hl,Object011Table
   push  iy
   pop   de                              ;enemy object table
@@ -589,8 +645,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (iy+enemies_and_objects.v10),a  ;v10=speed
 
   ;set active
-  ld    a,(ix+Object011Table.active)
-  ld    (iy+enemies_and_objects.v2),a   ;v2=active?
+  ld    (iy+enemies_and_objects.v2),1   ;v2=active?
 
   ld    de,Object011Table.lenghtobjectdata
   ret
@@ -604,6 +659,103 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ret
   .WithinRange:
   add   hl,de
+  ret
+
+  .Object016:                           ;omni directional platform
+  ld    hl,Object016Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable
+  ldir                                  ;copy enemy table
+
+  call  SetCleanObjectNumber            ;each object has a reference cleanup table
+
+  ;set  x
+  ld    a,(ix+Object016Table.x)
+  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.x),a
+
+  ;set  y
+  ld    a,(ix+Object016Table.y)
+  ld    (iy+enemies_and_objects.y),a
+
+  ld    a,(ObjectsPresentInVram)        ;b0=omni dir. platf. | b1=big statue mouth
+  bit   0,a
+  jr    nz,.EndPutObject016
+  set   0,a
+  ld    (ObjectsPresentInVram),a
+  
+  ;write omni directional platforms to (216+16,0) page 1
+  xor   a
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$8000 + ((216+016)*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (016*256) + (128/2)        ;(ny*256) + (nx/2)
+  ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+  .EndPutObject016:
+  ld    de,Object016Table.lenghtobjectdata
+  ret
+
+  .Object020:                           ;bat spawner (BigStatueMouth)
+  ld    hl,Object020Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1
+  ldir                                  ;copy enemy table
+
+  ;set x
+  ld    a,(ix+Object020Table.x)
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.x),l
+  ld    (iy+enemies_and_objects.x+1),h
+
+  ;set y
+  ld    a,(ix+Object020Table.y)
+  ld    (iy+enemies_and_objects.y),a
+
+  ld    b,(ix+Object020Table.MaxNum)
+  ld    (iy+enemies_and_objects.v10),b  ;max number
+  
+  ld    hl,CuteMiniBatTable             ;cute mini bat
+  .AddCuteMiniBatLoop:
+  push  bc
+  call  .AddCuteMiniBat                       ;adds a cute mini bat to the room's object table
+  pop   bc
+  djnz  .AddCuteMiniBatLoop
+
+  ld    a,(ObjectsPresentInVram)              ;b0=omni dir. platf. | b1=big statue mouth
+  bit   1,a
+  jr    nz,.EndPutObject020
+  set   1,a
+  ld    (ObjectsPresentInVram),a
+  
+  ;write big statue mouth to (216,0) page 3
+  ld    a,1
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (016*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$8000 + (216*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (031*256) + (056/2)        ;(ny*256) + (nx/2)
+  ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+  .EndPutObject020:
+  ld    de,Object020Table.lenghtobjectdata
+  ret
+
+  .AddCuteMiniBat:                      ;add a cute mini bat to the room's object table 
+  ld    de,lenghtenemytable             ;lenght 1 object in object table
+  add   iy,de                           ;next object in object table
+
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable
+  ldir                                  ;copy enemy table
+
+  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
   ret
 
   .Object150:                           ;trampoline blob
@@ -715,9 +867,31 @@ SetSPATPositionForThisSprite:           ;we need to define the position this spr
                 ;y,x  1=up,   2=upright,  3=right,  4=rightdown,  5=down, 6=downleft, 7=left, 8=leftup)
 Movementtable:    db  -1,+0,  -1,+1,      +0,+1,    +1,+1,        +1,+0,  +1,-1,      +0,-1,  -1,-1  
 
+
+Object015Table:               ;retracting platform (handler)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+          db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+                              ;AppearingBlocks
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+          db 0,        0|dw AppearingBlocks     |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.lenghtobjectdata: equ 3
+
+Object016Table:               ;omni directional platform
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.lenghtobjectdata: equ 3
+;platform Omni Directionally
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+          db 1,   0|dw PlatformOmniDirectionally|db 8*11|dw 8*10|db 16,16|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+          db 1,   0|dw PlatformOmniDirectionally|db 8*19|dw 8*25|db 16,16|dw CleanOb2,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+
 Object011Table:               ;platform
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
-          db 1,        0|dw Platform            |db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+          db 1,        0|dw Platform            |db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 .ID: equ 0
 .relativex: equ 1
 .relativey: equ 2
@@ -730,16 +904,25 @@ Object011Table:               ;platform
 .active: equ 9
 .lenghtobjectdata: equ 10
 
-Object015Table:               ;retracting platform (handler)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
-          db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
-                              ;AppearingBlocks
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
-          db 0,        0|dw AppearingBlocks     |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+Object020Table:               ;bat spawner (BigStatueMouth)
+;Big Statue Mouth
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+          db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*13|db 31,28|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.lenghtobjectdata: equ 3
+.MaxNum: equ 3
+.lenghtobjectdata: equ 4
+
+;Cute Mini Bat
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+CuteMiniBatTable:
+         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,095, 0|db 001,movepatblo1| ds fill-1
+         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,180, 0|db 001,movepatblo1| ds fill-1
+         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,045, 0|db 001,movepatblo1| ds fill-1
+         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,160, 0|db 001,movepatblo1| ds fill-1
+         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,030, 0|db 001,movepatblo1| ds fill-1
+         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,110, 0|db 001,movepatblo1| ds fill-1
 
 Object061Table:               ;glass ball (& GlassBallActivator)
 .ID: equ 0

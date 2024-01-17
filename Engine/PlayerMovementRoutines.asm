@@ -380,10 +380,10 @@ BruteForceMovementRight:
   db  3, 4*8, 0
                                                    ;positioning for the SW sprites:
 LeftSittingPresentBowAnimation:                   ;  addy,subx, ny ,nx ,sy   ,sx
-  dw  PlayerSpriteData_Char_LeftSitShootArrow1 | db 002,012+63,013,003,216+19,028
-  dw  PlayerSpriteData_Char_LeftSitShootArrow2 | db 002,014+63,013,003,216+19,028
-  dw  PlayerSpriteData_Char_LeftSitShootArrow3 | db 002,014+63,013,003,216+19,028
-  dw  PlayerSpriteData_Char_LeftSitShootArrow4 | db 002,014+63,013,003,216+19,028
+  dw  PlayerSpriteData_Char_LeftSitShootArrow1 | db 002,012+63,013,003,SYBow,SXBowLeft
+  dw  PlayerSpriteData_Char_LeftSitShootArrow2 | db 002,014+63,013,003,SYBow,SXBowLeft
+  dw  PlayerSpriteData_Char_LeftSitShootArrow3 | db 002,014+63,013,003,SYBow,SXBowLeft
+  dw  PlayerSpriteData_Char_LeftSitShootArrow4 | db 002,014+63,013,003,SYBow,SXBowLeft
 
 LSitShootArrow:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
@@ -429,11 +429,11 @@ SetLSitShootArrow:
     
   ld    a,1
   ld    (SecundaryWeaponNY),a
-  ld    a,216+17
+  ld    a,SYArrowLeft
   ld    (SecundaryWeaponSY),a
-  ld    a,030
+  ld    a,SXArrowRightSide
   ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
+  ld    a,SXArrowLeftSide
   ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_L_Sit 
 
@@ -441,10 +441,10 @@ SetLSitShootArrow:
   db  3, 4*8, 1
                                                    ;positioning for the SW sprites:
 RightSittingPresentBowAnimation:                   ;  addy,subx, ny ,nx ,sy   ,sx
-  dw  PlayerSpriteData_Char_RightSitShootArrow1 | db 002,010+50,013,003,216+19,030
-  dw  PlayerSpriteData_Char_RightSitShootArrow2 | db 002,008+50,013,003,216+19,030
-  dw  PlayerSpriteData_Char_RightSitShootArrow3 | db 002,008+50,013,003,216+19,030
-  dw  PlayerSpriteData_Char_RightSitShootArrow4 | db 002,008+50,013,003,216+19,030
+  dw  PlayerSpriteData_Char_RightSitShootArrow1 | db 002,010+50,013,003,SYBow,SXBowRight
+  dw  PlayerSpriteData_Char_RightSitShootArrow2 | db 002,008+50,013,003,SYBow,SXBowRight
+  dw  PlayerSpriteData_Char_RightSitShootArrow3 | db 002,008+50,013,003,SYBow,SXBowRight
+  dw  PlayerSpriteData_Char_RightSitShootArrow4 | db 002,008+50,013,003,SYBow,SXBowRight
 
 RSitShootArrow:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
@@ -489,11 +489,11 @@ SetRSitShootArrow:
     
   ld    a,1
   ld    (SecundaryWeaponNY),a
-  ld    a,216+16
+  ld    a,SYArrowRight
   ld    (SecundaryWeaponSY),a
-  ld    a,030
+  ld    a,SXArrowRightSide
   ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
+  ld    a,SXArrowLeftSide
   ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_R_Sit  
 
@@ -501,10 +501,10 @@ SetRSitShootArrow:
   db  3, 4*8, 0
                                         ;positioning for the SW sprites:
 LeftPresentBowAnimation:                       ;  addy,subx, ny ,nx ,sy   ,sx
-  dw  PlayerSpriteData_Char_LeftShootArrow1 | db -04,011+63,013,003,216+19,028
-  dw  PlayerSpriteData_Char_LeftShootArrow2 | db -04,014+63,013,003,216+19,028
-  dw  PlayerSpriteData_Char_LeftShootArrow3 | db -04,014+63,013,003,216+19,028
-  dw  PlayerSpriteData_Char_LeftShootArrow4 | db -04,014+63,013,003,216+19,028
+  dw  PlayerSpriteData_Char_LeftShootArrow1 | db -04,011+63,013,003,SYBow,SXBowLeft
+  dw  PlayerSpriteData_Char_LeftShootArrow2 | db -04,014+63,013,003,SYBow,SXBowLeft
+  dw  PlayerSpriteData_Char_LeftShootArrow3 | db -04,014+63,013,003,SYBow,SXBowLeft
+  dw  PlayerSpriteData_Char_LeftShootArrow4 | db -04,014+63,013,003,SYBow,SXBowLeft
 
 LShootArrow:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
@@ -525,6 +525,11 @@ LShootArrow:
   ld    (PrimaryWeaponActive?),a    ;check if bow animation ended, if so, shoot arrow
   jp    SWspriteSetNYNXSYSX
 
+
+SYArrowRight:     equ 216+19
+SYArrowLeft:      equ 216+20
+SXArrowLeftSide:  equ 112+15
+SXArrowRightSide: equ 112
 SetLShootArrow:
   ;put weapon
   ld    a,-ArrowSpeed
@@ -547,22 +552,26 @@ SetLShootArrow:
 
   ld    a,1
   ld    (SecundaryWeaponNY),a
-  ld    a,216+17
+  ld    a,SYArrowLeft
   ld    (SecundaryWeaponSY),a
-  ld    a,030
+  ld    a,SXArrowRightSide
   ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
+  ld    a,SXArrowLeftSide
   ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_L_Stand  
+
+SYBow:       equ 216
+SXBowRight:       equ 097
+SXBowLeft:        equ 095
 
 ;animate every x frames, amount of frames * 2, left(0) or right(1)
   db  3, 4*8, 1
                                         ;positioning for the SW sprites:
 RightPresentBowAnimation:                       ;  addy,subx, ny ,nx ,sy   ,sx
-  dw  PlayerSpriteData_Char_RightShootArrow1 | db -04,011+50,013,003,216+19,030
-  dw  PlayerSpriteData_Char_RightShootArrow2 | db -04,008+50,013,003,216+19,030
-  dw  PlayerSpriteData_Char_RightShootArrow3 | db -04,008+50,013,003,216+19,030
-  dw  PlayerSpriteData_Char_RightShootArrow4 | db -04,008+50,013,003,216+19,030
+  dw  PlayerSpriteData_Char_RightShootArrow1 | db -04,011+50,013,003,SYBow,SXBowRight
+  dw  PlayerSpriteData_Char_RightShootArrow2 | db -04,008+50,013,003,SYBow,SXBowRight
+  dw  PlayerSpriteData_Char_RightShootArrow3 | db -04,008+50,013,003,SYBow,SXBowRight
+  dw  PlayerSpriteData_Char_RightShootArrow4 | db -04,008+50,013,003,SYBow,SXBowRight
 
 RShootArrow:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
@@ -605,11 +614,11 @@ SetRShootArrow:
     
   ld    a,1
   ld    (SecundaryWeaponNY),a
-  ld    a,216+16
+  ld    a,SYArrowRight
   ld    (SecundaryWeaponSY),a
-  ld    a,030
+  ld    a,SXArrowRightSide
   ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
+  ld    a,SXArrowLeftSide
   ld    (SecundaryWeaponSX_LeftSide),a
   jp    Set_R_Stand  
 
@@ -3303,10 +3312,10 @@ AnimateWhileJump:
   db  3, 4*8, 0
                                                     ;positioning for the SW sprites:
 LeftJumpingPresentBowAnimation:                    ;  addy,subx, ny ,nx ,sy   ,sx
-  dw  PlayerSpriteData_Char_LeftJumpShootArrow1 | db -04,011+63,013,003,216+19,028
-  dw  PlayerSpriteData_Char_LeftJumpShootArrow2 | db -04,014+63,013,003,216+19,028
-  dw  PlayerSpriteData_Char_LeftJumpShootArrow3 | db -04,014+63,013,003,216+19,028
-  dw  PlayerSpriteData_Char_LeftJumpShootArrow4 | db -04,014+63,013,003,216+19,028  
+  dw  PlayerSpriteData_Char_LeftJumpShootArrow1 | db -04,011+63,013,003,SYBow,SXBowLeft
+  dw  PlayerSpriteData_Char_LeftJumpShootArrow2 | db -04,014+63,013,003,SYBow,SXBowLeft
+  dw  PlayerSpriteData_Char_LeftJumpShootArrow3 | db -04,014+63,013,003,SYBow,SXBowLeft
+  dw  PlayerSpriteData_Char_LeftJumpShootArrow4 | db -04,014+63,013,003,SYBow,SXBowLeft  
   
 ShootArrowWhileJumpLeft:
   ld    de,30                 ;left edge
@@ -3347,11 +3356,11 @@ SetLShootArrowWhenJumping:
     
   ld    a,1
   ld    (SecundaryWeaponNY),a
-  ld    a,216+17
+  ld    a,SYArrowLeft
   ld    (SecundaryWeaponSY),a
-  ld    a,030
+  ld    a,SXArrowRightSide
   ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
+  ld    a,SXArrowLeftSide
   ld    (SecundaryWeaponSX_LeftSide),a
   .end:
   xor   a
@@ -3373,10 +3382,10 @@ SetLShootArrowWhenJumping:
   db  3, 4*8, 1
                                                     ;positioning for the SW sprites:
 RightJumpingPresentBowAnimation:                    ;  addy,subx, ny ,nx ,sy   ,sx
-  dw  PlayerSpriteData_Char_RightJumpShootArrow1 | db -05,011+50,013,003,216+19,030
-  dw  PlayerSpriteData_Char_RightJumpShootArrow2 | db -05,008+50,013,003,216+19,030
-  dw  PlayerSpriteData_Char_RightJumpShootArrow3 | db -05,008+50,013,003,216+19,030
-  dw  PlayerSpriteData_Char_RightJumpShootArrow4 | db -05,008+50,013,003,216+19,030  
+  dw  PlayerSpriteData_Char_RightJumpShootArrow1 | db -05,011+50,013,003,SYBow,SXBowRight
+  dw  PlayerSpriteData_Char_RightJumpShootArrow2 | db -05,008+50,013,003,SYBow,SXBowRight
+  dw  PlayerSpriteData_Char_RightJumpShootArrow3 | db -05,008+50,013,003,SYBow,SXBowRight
+  dw  PlayerSpriteData_Char_RightJumpShootArrow4 | db -05,008+50,013,003,SYBow,SXBowRight  
   
 ShootArrowWhileJumpRight:
   ld    de,11                 ;left edge
@@ -3418,11 +3427,11 @@ SetRShootArrowWhenJumping:
     
   ld    a,1
   ld    (SecundaryWeaponNY),a
-  ld    a,216+16
+  ld    a,SYArrowRight
   ld    (SecundaryWeaponSY),a
-  ld    a,030
+  ld    a,SXArrowRightSide
   ld    (SecundaryWeaponSX_RightSide),a
-  ld    a,030+15
+  ld    a,SXArrowLeftSide
   ld    (SecundaryWeaponSX_LeftSide),a
 
   xor   a
