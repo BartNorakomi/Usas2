@@ -34,15 +34,14 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
-BurialTilesBlock:  equ   KonarkTilesBlock+2	;ruin Taxilla (9)
+GfxObjectsForVramBlock:  equ   KonarkTilesBlock+2	;ruin Taxilla (9)
 phase	$4000
-  ;incbin "..\grapx\tilesheets\sBurial.SC5",7,208 * 128      ;208 lines
-  ;incbin "..\grapx\tilesheets\sBurialBottom48Lines.SC5",7,48 * 128 ;48 lines
+GfxObjectsForVram:
+  incbin "..\grapx\GfxObjectsForVram.SC5",7,128 * 128 ;skip header, 128 lines
 	ds		$c000-$,$ff
 dephase
 
-
-Graphicsblock4:  equ   BurialTilesBlock+2
+Graphicsblock4:  equ   GfxObjectsForVramBlock+2
 phase	$8000
 itemsKarniMataPage3:
   incbin "..\grapx\itemsKarniMataPage3.SC5",7,128 * 40 ;skip header, 40 lines
@@ -52,11 +51,11 @@ dephase
 Graphicsblock5:  equ   Graphicsblock4+1 
 phase	$8000
 scoreboard:
-  incbin "..\grapx\scoreboard\scoreboard.SC5",7,39*128  ;skip header
+  incbin "..\grapx\scoreboard\scoreboard.SC5",7,39*128  ;39 lines high
 itemsKarniMata:
-  incbin "..\grapx\itemsKarniMata.SC5",7,$1400  ;skip header
+  incbin "..\grapx\itemsKarniMata.SC5",7,40*128  ;40 lines high
 ElementalWeapons:
-  incbin "..\grapx\ElementalWeapons.SC5",7,128*22  ;=$b00 - skip header
+  incbin "..\grapx\ElementalWeapons.SC5",7,22*128  ;22 lines high
 	ds		$c000-$,$ff
 dephase
 
