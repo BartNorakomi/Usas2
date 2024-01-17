@@ -911,8 +911,8 @@ Object020Table:               ;bat spawner (BigStatueMouth)
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.MaxNum: equ 3
-.lenghtobjectdata: equ 4
+.MaxNum: equ 4
+.lenghtobjectdata: equ 6
 
 ;Cute Mini Bat
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
