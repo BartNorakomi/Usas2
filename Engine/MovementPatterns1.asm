@@ -2070,6 +2070,8 @@ BigStatueMouth:
   ld    (CopyObject+sy),a  
 
   call  OnlyPutVramObjectDontEraseFastCopy
+  ld    a,1
+  ld    (CopyObject+spage),a
   
   ;search for an open slot
   push  ix
