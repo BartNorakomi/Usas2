@@ -2064,11 +2064,10 @@ BigStatueMouth:
 ;v1=sx software sprite in Vram
 ;v9=face (3=right, 7=left, 0=random)
 ;v10=max number
-  ld    a,3
-  ld    (CopyObject+spage),a
   ld    a,216+000
   ld    (CopyObject+sy),a  
-
+  ld    a,3
+  ld    (CopyObject+spage),a
   call  OnlyPutVramObjectDontEraseFastCopy
   ld    a,1
   ld    (CopyObject+spage),a
