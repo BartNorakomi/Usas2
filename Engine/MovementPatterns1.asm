@@ -1514,21 +1514,21 @@ HugeSpiderBody:
 
   .HandlePhase:
   ld    d,0
-  ld    e,(ix+(1*lenghtenemytable)+enemies_and_objects.v1)
+  ld    e,(ix-(1*lenghtenemytable)+enemies_and_objects.v1)
   ld    hl,HugeSpiderBodyOffsets
   add   hl,de                                 ;use v1=Animation Counter of legs to find y+x offsets body
 
-  ld    a,(ix+(1*lenghtenemytable)+enemies_and_objects.y)
+  ld    a,(ix-(1*lenghtenemytable)+enemies_and_objects.y)
   add   a,(hl)
   ld    (ix+enemies_and_objects.y),a          ;check y legs and set body accordingly
   
-  ld    a,(ix+(1*lenghtenemytable)+enemies_and_objects.x)
+  ld    a,(ix-(1*lenghtenemytable)+enemies_and_objects.x)
   inc   hl
   add   a,(hl)
   ld    (ix+enemies_and_objects.x),a          ;check x legs and set body accordingly
 
   ;check if spider died
-  ld    a,(ix+(1*lenghtenemytable)+enemies_and_objects.life)
+  ld    a,(ix-(1*lenghtenemytable)+enemies_and_objects.life)
   or    a
   jp    nz,VramObjectsTransparantCopies
   ld    (ix+enemies_and_objects.Alive?),0
@@ -2552,6 +2552,7 @@ BlackHoleBaby:
 ;v2=Phase (0=walking slow, 1=attacking)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
+;v6=Gravity timer
   call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
   call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
@@ -2664,8 +2665,6 @@ RightBlackHoleBabyWalk:
 
 BlackHoleAlien:
 ;v1=Animation Counter
-;v2=Phase (0=walking slow, 1=attacking)
-;v3=Vertical Movement
 ;v4=Horizontal Movement
   call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
@@ -2689,7 +2688,7 @@ BlackHoleAlien:
   .GoAnimate:
   ld    b,15                                ;animate every x frames (based on framecounter)
   ld    c,2 * 06                            ;06 animation frame addresses
-  jp    AnimateSprite  
+  jp    AnimateSprite                       ;uses V1
 
   .Move:
   ld    a,(ix+enemies_and_objects.hit?)     ;check if enemy is hit ? If so, out white sprite
@@ -2728,7 +2727,7 @@ LancelotSword:
 ;v4=Horizontal Movement
   call  CollisionObjectPlayer               ;Check if player is hit by Vram object
 
-  ld    a,(enemies_and_objects+enemies_and_objects.v4)  ;v4=Horizontal Movement
+  ld    a,(ix-lenghtenemytable+enemies_and_objects.v4)  ;v4=Horizontal Movement
   or    a
   ld    hl,RightLancelotSwordSword
   ld    a,26                                ;sx
@@ -2738,7 +2737,7 @@ LancelotSword:
   .SetVars:
   ld    (ix+enemies_and_objects.v1),a       ;sx
 
-  ld    a,(enemies_and_objects+enemies_and_objects.v1)  ;v1=Animation Counter
+  ld    a,(ix-lenghtenemytable+enemies_and_objects.v1)  ;v1=Animation Counter
   ld    e,a
   ld    d,0
   add   hl,de
@@ -2746,7 +2745,7 @@ LancelotSword:
   ld    a,216+32
   ld    (CopyObject+sy),a  
 
-  ld    a,(enemies_and_objects+enemies_and_objects.y)
+  ld    a,(ix-lenghtenemytable+enemies_and_objects.y)
   add   a,(hl)                              ;add to y
   ld    (ix+enemies_and_objects.y),a
 
@@ -2758,16 +2757,16 @@ LancelotSword:
   dec   d
   .EndNegativeCheck:
 
-  ld    a,(enemies_and_objects+enemies_and_objects.x)
+  ld    a,(ix-lenghtenemytable+enemies_and_objects.x)
   ld    l,a
-  ld    a,(enemies_and_objects+enemies_and_objects.x+1)
+  ld    a,(ix-lenghtenemytable+enemies_and_objects.x+1)
   ld    h,a
   add   hl,de
   
   ld    (ix+enemies_and_objects.x),l
   ld    (ix+enemies_and_objects.x+1),h
 
-  ld    a,(enemies_and_objects+enemies_and_objects.life)
+  ld    a,(ix-lenghtenemytable+enemies_and_objects.life)
   or    a
   jp    nz,VramObjectsTransparantCopies
   ld    (ix+enemies_and_objects.Alive?),0
@@ -2878,7 +2877,7 @@ RightLancelot:
 
 TrampolineBlob:
 ;v1=Animation Counter
-;v2=Phase (0=walking slow, 1=attacking)
+;v2=Phase (0=TrampolineBlob Moving, 1=TrampolineBlob jumping)
 ;v4=Horizontal Movement
 ;v5=Unable to be hit duration
   ld    a,(ix+enemies_and_objects.v5)       ;v5=Unable to be hit duration
@@ -4151,8 +4150,8 @@ OctopussyBullet:                            ;forced on object positions 1-4
   .Playerwashit:
   call  VramObjectsTransparantCopiesRemoveAndClearBuffer  ;Clear buffer, so that next time the CleanOb is called buffer is empty
   ld    (ix+enemies_and_objects.Alive?),0
-  ld    a,1                                   ;Octopussy Bullet Slow Down Handler v1 = player got hit by bullet
-  ld    (lenghtenemytable*4+enemies_and_objects+enemies_and_objects.v1),a
+  ld    a,1                                   ;Octopussy Bullet Slow Down Handler
+  ld    (OctoPussyBulletSlowDownHandler),a
   ret
 
 NormalRunningTable:
@@ -4170,17 +4169,19 @@ SlowRunningTable3:
 ;StartingJumpSpeed:        db -5 ;equ -5    ;initial starting jump take off speed
 ;StartingJumpSpeedWhenHit: db -4 ;equ -5    ;initial starting jump take off speed
 OP_SlowDownHandler:                         ;forced on object position 5
-;v1 = player got hit by bullet
 ;v2 = reference to running table
 ;v3 = timer to go back to normal running speed again
   ld    a,(ix+enemies_and_objects.v2)
   or    a
   call  nz,.PlayerIsAffectedBySlowdown
 
-  bit   0,(ix+enemies_and_objects.v1)       ;v1 = player got hit by bullet
+  ld    a,(OctoPussyBulletSlowDownHandler)  ;player got hit by bullet ?
+  or    a
   ret   z
 ;at this point player got hit by a bullet. We change to a slower movement table for player and lower player's starting jump speed
-  res   0,(ix+enemies_and_objects.v1)       ;reset v1 = player got hit by bullet
+  xor   a
+  ld    (OctoPussyBulletSlowDownHandler),a
+
   ld    (ix+enemies_and_objects.v3),180     ;reset v3 = timer to enable stacking
 
   ld    a,(ix+enemies_and_objects.v2)
@@ -4285,7 +4286,6 @@ Octopussy:
   ld    hl,LeftOctopussyAttack_Char
   ret
   
-  
   OctopussyFloatingInAir:
   call  .Faceplayer
   call  .DistanceCheck                      ;out: carry->object within distance
@@ -4299,11 +4299,9 @@ Octopussy:
   jp    .GoAnimate
 
   .Near:                                    ;Player is near, so shoot bullets every x frames
-
   ld    a,r                                 ;shoot at random
   and   1
   jr    z,.OctoMayShoot
-
 
 ;  ld    a,(ix+enemies_and_objects.v6)       ;v6 wait until shooting again
 ;  dec   a
@@ -4317,9 +4315,9 @@ Octopussy:
   jr    nz,.Animate
 
 ;this could be used if we have 2 octo's in screen and one is 1 tile higher than the other. If we have only 1 octo, remove this code so he shoots faster
-  ld    a,(framecounter)
-  and   7
-  jr    nz,.Animate
+;  ld    a,(framecounter)
+;  and   7
+;  jr    nz,.Animate
 ;this could be used if we have 2 octo's in screen and one is 1 tile higher than the other. If we have only 1 octo, remove this code so he shoots faster
 
   push  ix
@@ -4357,18 +4355,12 @@ Octopussy:
 
   add   hl,de
 
-  ld    ix,enemies_and_objects
   ld    de,lenghtenemytable
+  add   ix,de                               ;bullet 1
   
   bit   0,(ix+enemies_and_objects.Alive?)
   jr    z,.EmptySlotFound
-  add   ix,de
-  bit   0,(ix+enemies_and_objects.Alive?)
-  jr    z,.EmptySlotFound
-  add   ix,de
-  bit   0,(ix+enemies_and_objects.Alive?)
-  jr    z,.EmptySlotFound
-  add   ix,de
+  add   ix,de                               ;bullet 2
   bit   0,(ix+enemies_and_objects.Alive?)
   ret   nz
   
@@ -4955,33 +4947,30 @@ Demontje:
   call  checkFacingPlayer                   ;out: c = object/enemy is facing player
   ret   nc
 
-  ld    a,(enemies_and_objects+enemies_and_objects.Alive?)
-  or    a
+  bit   0,(ix+lenghtenemytable+enemies_and_objects.Alive?)
   ret   nz
 
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=hanging in air, 1=attacking)
   ld    (ix+enemies_and_objects.v5),50      ;v5=Attack Timer
 
-  ld    a,1
-  ld    (enemies_and_objects+enemies_and_objects.Alive?),a
+  set   0,(ix+lenghtenemytable+enemies_and_objects.Alive?)
 
   ld    l,(ix+enemies_and_objects.x)
   ld    h,(ix+enemies_and_objects.x+1)
   ld    de,-16
   add   hl,de
   ld    a,l
-  ld    (enemies_and_objects+enemies_and_objects.x),a
+  ld    (ix+lenghtenemytable+enemies_and_objects.x),a
   ld    a,h
-  ld    (enemies_and_objects+enemies_and_objects.x+1),a
+  ld    (ix+lenghtenemytable+enemies_and_objects.x+1),a
 
   ld    a,(ix+enemies_and_objects.y)
   add   a,6
-  ld    (enemies_and_objects+enemies_and_objects.y),a
+  ld    (ix+lenghtenemytable+enemies_and_objects.y),a
 
-  ld    a,-1                                ;v3=Vertical Movement
-  ld    (enemies_and_objects+enemies_and_objects.v3),a
+  ld    (ix+lenghtenemytable+enemies_and_objects.v3),-1 ;vertical movement
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  ld    (enemies_and_objects+enemies_and_objects.v4),a          
+  ld    (ix+lenghtenemytable+enemies_and_objects.v4),a          
   ret  
   
 DemontjeLeftAnimation:
@@ -5128,7 +5117,6 @@ BatRightAnimation:
 
 BoringEye:
 ;v1=Animation Counter
-;v2=Phase (0=walking slow, 1=attacking)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=repeating steps
@@ -5672,16 +5660,23 @@ FireEyeFireBullet:
 
 FireEyeGreen:
 FireEyeGrey:
+FireEye:
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=v3v4tablerotator
+;v7=green fire eye(0) / grey fire eye(1)
   call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
   call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
   call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-	ld		a,FireEyeGreenSpriteblock            ;set block at $a000, page 2 - block containing sprite data
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=green fire eye(0) / grey fire eye(1)
+  or    a
+	ld		a,FireEyeGreenSpriteblock           ;set block at $a000, page 2 - block containing sprite data
+	jr    z,.BlockSet
+	ld		a,FireEyeGreySpriteblock            ;set block at $a000, page 2 - block containing sprite data
+  .BlockSet:
   ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
   ld    d,(ix+enemies_and_objects.sprnrinspat+1)
   ret

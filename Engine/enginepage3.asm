@@ -8,8 +8,8 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 ;WorldMapPositionY:  db  20
 ;WorldMapPositionX:  db  44
 
-WorldMapPositionY:  db  16
-WorldMapPositionX:  db  43
+WorldMapPositionY:  db  26
+WorldMapPositionX:  db  46
 
 
 PlayLogo:
@@ -1085,7 +1085,8 @@ PageToWriteTo: ds  1                    ;0=page 0 or 1, 1=page 2 or 3
 AddressToWriteFrom: ds  2
 AddressToWriteTo: ds  2
 NXAndNY: ds  2
-ObjectsPresentInVram:  db 0 ;b0=omni dir. platf. | b1=big statue mouth
+BigEnemyPresentInVramPage3:   db 0      ;1=big statue mouth, 2=huge blob, 3=huge spider
+ObjectPresentInVramPage1:     db 0      ;1=omni directional platform
 CopyRomToVram:                          ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
   ex    af,af'                          ;store rom block
 
@@ -1152,6 +1153,7 @@ AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
   ds    6 ;1 extra block buffer
 AmountOfAppearingBlocks:  ds  1
 
+OctoPussyBulletSlowDownHandler:   db 0
 
 
 
@@ -1232,6 +1234,7 @@ LogoAnimationTimer3:          rb    1
 LogoAnimationVar1:            rb    1
 LogoAnimationVar2:            rb    1
 LogoAnimationVar3:            rb    1
+
 
 ;RoomDataBlock structure
 roomDataBlock:	equ 0
