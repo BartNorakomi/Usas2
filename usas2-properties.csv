@@ -52,6 +52,37 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Room	regular	width	38					
 1	Usas2		Room	secret	width	38					
 1	Usas2		Room	teleport	width	32					
+1	Usas2		Room	regularSmall	engine	2					
+1	Usas2		Room	regularSmall	height	27					
+1	Usas2		Room	regularSmall	name	Regular Room Small					
+1	Usas2		Room	regularSmall	roomType	160					
+1	Usas2		Room	regularSmall	width	32					
+1	Usas2		RoomObject	zombieSpawn	uid	62					
+1	Usas2		RoomObject	zombieSpawn	objectClass	EnemySpawn					
+1	Usas2		RoomObject	classBall	uid	61					
+1	Usas2		RoomObject	classBall	objectClass	classBall					
+1	Usas2		RoomObject	retractingPlatform	uid	15					
+1	Usas2		RoomObject	retractingPlatform	objectClass	platForm					
+1	Usas2		RoomObject	smallPlatformOn	uid	13					
+1	Usas2		RoomObject	smallPlatformOn	objectClass	platForm					
+1	Usas2		RoomObject	retartedZombie	uid	143					
+1	Usas2		RoomObject	retartedZombie	objectClass	Enemy					
+1	Usas2		RoomObject	slime	uid	150					
+1	Usas2		RoomObject	slime	objectClass	Enemy					
+1	Usas2		RoomObject	spider	uid	141					
+1	Usas2		RoomObject	spider	objectClass	Enemy					
+1	Usas2		RoomObject	smallMovingPlatformDark	uid	11					
+1	Usas2		RoomObject	smallMovingPlatformDark	objectClass	movingPlatform					
+1	Usas2		RoomObject	ratFaceBatSpawn	uid	20					
+1	Usas2		RoomObject	ratFaceBatSpawn	objectClass	EnemySpawn					
+1	Usas2		RoomObject	mediumMovingPlatform	uid	57					
+1	Usas2		RoomObject	mediumMovingPlatform	objectClass	movingPlatform					
+1	Usas2		RoomObject	smallMovingPlatformLight	uid	12					
+1	Usas2		RoomObject	smallMovingPlatformLight	objectClass	movingPlatform					
+1	Usas2		RoomObject	omniDirectionalPlatform	uid	16					
+1	Usas2		RoomObject	omniDirectionalPlatform	objectClass	platForm					
+1	Usas2		RoomObject	pushStone	uid	1					
+1	Usas2		RoomObject	pushStone	objectClass	General					
 1	Usas2		Ruin	KarniMata	music	KarniMata		Default music (ID) for this ruin			
 1	Usas2		Ruin	Aggayu	music						
 1	Usas2		Ruin	Akna	music						
@@ -152,6 +183,14 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Hub	tileSet	Hub					
 1	Usas2		Ruin	Lemniscate	tileSet	Lemniscate					
 1	Usas2		Ruin	Pegu	tileSet	Pegu					
+1	Usas2		Ruin	Morana	ruinId	24					
+1	Usas2		Ruin	undefined25	ruinId	25					
+1	Usas2		Ruin	undefined26	ruinId	26					
+1	Usas2		Ruin	undefined27	ruinId	27					
+1	Usas2		Ruin	undefined28	ruinId	28					
+1	Usas2		Ruin	undefined29	ruinId	29					
+1	Usas2		Ruin	undefined30	ruinId	30					
+1	Usas2		Ruin	undefined31	ruinId	31					
 1	Usas2		Tile	Background	first	256		First number			
 1	Usas2		Tile	DiagonalStairsLeft	first	48		First number			
 1	Usas2		Tile	DiagonalStairsRight	first	50		First number			
@@ -213,36 +252,3 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Tileset	KarniMata	id	6					
 1	Usas2		Tileset	KarniMata	type	0					
 1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv					
-1	Usas2		Ruin	Morana	ruinId	24					
-1	Usas2		Ruin	undefined25	ruinId	25					
-1	Usas2		Ruin	undefined26	ruinId	26					
-1	Usas2		Ruin	undefined27	ruinId	27					
-1	Usas2		Ruin	undefined28	ruinId	28					
-1	Usas2		Ruin	undefined29	ruinId	29					
-1	Usas2		Ruin	undefined30	ruinId	30					
-1	Usas2		Ruin	undefined31	ruinId	31					
-1	Usas2		RoomObject	zombieSpawn	uid	62					
-1	Usas2		RoomObject	zombieSpawn	objectClass	EnemySpawn					
-1	Usas2		RoomObject	classBall	uid	61					
-1	Usas2		RoomObject	classBall	objectClass	classBall					
-1	Usas2		RoomObject	retractingPlatform	uid	15					
-1	Usas2		RoomObject	retractingPlatform	objectClass	platForm					
-1	Usas2		RoomObject	smallPlatformOff	uid	12					
-1	Usas2		RoomObject	smallPlatformOff	objectClass	platForm					
-1	Usas2		RoomObject	smallPlatformOn	uid	13					
-1	Usas2		RoomObject	smallPlatformOn	objectClass	platForm					
-1	Usas2		RoomObject	retartedZombie	uid	143					
-1	Usas2		RoomObject	retartedZombie	objectClass	Enemy					
-1	Usas2		RoomObject	slime	uid	150					
-1	Usas2		RoomObject	slime	objectClass	Enemy					
-1	Usas2		RoomObject	spider	uid	141					
-1	Usas2		RoomObject	spider	objectClass	Enemy					
-1	Usas2		RoomObject	smallMovingPlatform	uid	11					
-1	Usas2		RoomObject	smallMovingPlatform	objectClass	movingPlatform					
-1	Usas2		Room	regularSmall	engine	2					
-1	Usas2		Room	regularSmall	height	27					
-1	Usas2		Room	regularSmall	name	Regular Room Small					
-1	Usas2		Room	regularSmall	roomType	160					
-1	Usas2		Room	regularSmall	width	32					
-1	Usas2		RoomObject	pushStone	uid	1					
-1	Usas2		RoomObject	pushStone	objectClass	General					

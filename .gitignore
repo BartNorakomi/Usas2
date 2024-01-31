@@ -2,7 +2,6 @@ Engine/1.bat
 Engine/tniasm.out
 Engine/tniasm.sym
 Engine/tniasm.tmp
-Engine/Usas2.rom
 Engine/tniasm.txt
 *.dms
 node_modules/

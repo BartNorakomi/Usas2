@@ -262,7 +262,9 @@ BuildUpMap:
   ld    a,(slot.page12rom)            ;all RAM except page 12
   out   ($a8),a    
 
-	ld a,6	;something gets fucked here
+	;ld a,6	;something gets fucked here
+nop ;if I leave out two bytes, screenbuildup is corrup. (I replace lda a,6 with 2 nops, both 2 bytes)
+nop
 	ld a,(UnpackedRoomFile+roomdatablock.mapid)
 	and $1f
 	call getgfx			;get GfxRecordAdr
