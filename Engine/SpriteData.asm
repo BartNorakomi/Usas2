@@ -468,6 +468,7 @@ EndPlayerSprites2: | ds $c000-$,$ff | dephase
 RetardZombieSpriteblock:  equ PlayerSprites2Block+2
 SlimeSpriteblock:  equ   PlayerSprites2Block+2
 BeetleSpriteblock:  equ   PlayerSprites2Block+2
+GlassballPipeSpriteblock:  equ   PlayerSprites2Block+2
 phase	$8000
 LeftRetardZombieWalk1_Char:                 include "..\sprites\enemies\RetardZombie\LeftRetardZombieWalk1.tgs.gen"	 ;y offset, x offset   
 LeftRetardZombieWalk1_Col:                  include "..\sprites\enemies\RetardZombie\LeftRetardZombieWalk1.tcs.gen"  | db 00,00,00,00, 16,00,16,00
@@ -622,6 +623,9 @@ RightBeetleFly1_Char:                       include "..\sprites\enemies\Beetle\R
 RightBeetleFly1_Col:                        include "..\sprites\enemies\Beetle\RightBeetleFly1.tcs.gen"  | db -10,00,-10,00, 06,00,06,00, 06,16,06,16
 RightBeetleFly2_Char:                       include "..\sprites\enemies\Beetle\RightBeetleFly2.tgs.gen"	  
 RightBeetleFly2_Col:                        include "..\sprites\enemies\Beetle\RightBeetleFly2.tcs.gen"  | db -10,00,-10,00, 06,00,06,00, 06,16,06,16
+
+GlassballPipe_Char:                         include "..\sprites\enemies\GlassballPipe\GlassballPipe.tgs.gen"	 ;y offset, x offset   
+GlassballPipe_Col:                          include "..\sprites\enemies\GlassballPipe\GlassballPipe.tcs.gen"   | db 00,00,00,00, 16,00,16,00, 32,00,32,00
 	ds		$c000-$,$ff
 dephase
 
