@@ -1530,9 +1530,10 @@ HugeSpiderBody:
   ;check if spider died
   ld    a,(ix-(1*lenghtenemytable)+enemies_and_objects.life)
   or    a
-  jp    nz,VramObjectsTransparantCopies
+  jp    nz,VramObjectsTransparantCopies2
   ld    (ix+enemies_and_objects.Alive?),0
-  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+;  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+  ret
   
 HugeSpiderBodyOffsets:  ;y, x
   db    +01,-16,  +01,-16,  +02,-16,  +03,-17, +02,-18, +01,-17, +01,-16, +01,-16,  +02,-16,  +02,-17,  +02,-18, +01,-17
@@ -2232,7 +2233,7 @@ DrippingOozeDrop:
   ld    (ix+enemies_and_objects.v1),SXDrippingOoze4
   call  MoveSpriteVertically                ;Add v3 to y
   call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
-  jp    nz,VramObjectsTransparantCopies
+  jp    nz,VramObjectsTransparantCopies2
 
   ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
   ;activate DrippingOoze in the pool
@@ -2243,10 +2244,11 @@ DrippingOozeDrop:
   ld    a,(ix+enemies_and_objects.y)        ;y
   add   a,-25
   ld    (ix+(1*lenghtenemytable)+enemies_and_objects.y),a  
-  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+;  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+  ret
       
   DrippingOozeGrowing:
-  call  VramObjectsTransparantCopies
+  call  VramObjectsTransparantCopies2
 
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Grow Duration
   inc   a
@@ -2316,7 +2318,7 @@ DrippingOozeAnimation:
 WaterfallMouth:
   ld    a,216+32 
   ld    (CopyObject+sy),a  
-  jp    VramObjectsTransparantCopies
+  jp    VramObjectsTransparantCopies2
 
 WaterfallEyesYellowClosedSX: equ 67 
 WaterfallEyesYellowOpenSX: equ 53 
@@ -2360,7 +2362,7 @@ WaterfallEyesYellow:
   ld    a,216+32 
   ld    (CopyObject+sy),a  
 
-  jp    VramObjectsTransparantCopies
+  jp    VramObjectsTransparantCopies2
 
   .CheckActivateWaterFall:
   ld    a,(ix+enemies_and_objects.v2)       ;v2=Active Timer
@@ -2768,9 +2770,11 @@ LancelotSword:
 
   ld    a,(ix-lenghtenemytable+enemies_and_objects.life)
   or    a
-  jp    nz,VramObjectsTransparantCopies
+  jp    nz,VramObjectsTransparantCopies2
   ld    (ix+enemies_and_objects.Alive?),0
-  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+;  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+  ret
+
 
 LeftLancelotSwordSword:
                         ;add to y, add to x
@@ -3085,7 +3089,7 @@ Snowball:
   ld    a,(hl)                              ;nx + ny
   ld    (ix+enemies_and_objects.nx),a       ;nx  
   ld    (ix+enemies_and_objects.ny),a       ;ny  
-  jp    VramObjectsTransparantCopies
+  jp    VramObjectsTransparantCopies2
 
   .Animate:
   ld    a,(framecounter)
@@ -3128,7 +3132,7 @@ Snowball:
   ld    a,216
   .SetSY:
   ld    (CopyObject+sy),a
-  call  VramObjectsTransparantCopies
+  call  VramObjectsTransparantCopies2
 
   .CheckCollisionForeground:
   call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
@@ -3658,7 +3662,7 @@ GlassBall5:
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject1
   call  AnimateGlassBall
-;  call  RemoveGlassBallWhenOutOfScreen
+  call  RemoveGlassBallWhenOutOfScreen
   call  PutSF2Object  ;CHANGES IX    
   ret
   
@@ -3677,7 +3681,7 @@ GlassBall6:
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  restoreBackgroundObject2
   call  AnimateGlassBall
-;  call  RemoveGlassBallWhenOutOfScreen
+  call  RemoveGlassBallWhenOutOfScreen
   call  PutSF2Object2 ;CHANGES IX   
   ret
 
@@ -4039,9 +4043,11 @@ HugeBlobSWsprite:
   
   ld    a,(enemies_and_objects+enemies_and_objects.life)
   or    a
-  jp    nz,VramObjectsTransparantCopies
+  jp    nz,VramObjectsTransparantCopies2
   ld    (ix+enemies_and_objects.Alive?),0
-  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+;  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+  ret
+
                         ;sx,nx,ny,  add to y, add to x
 HugeBlobSwSprite1:  db  000,14,21,    33-5  ,   15
 HugeBlobSwSprite2:  db  014,16,19,    33-3  ,   15
@@ -4092,12 +4098,12 @@ OctopussyBullet:                            ;forced on object positions 1-4
 
   ld    a,(framecounter)
   and   7
-  jp    nz,VramObjectsTransparantCopies
+  jp    nz,VramObjectsTransparantCopies2
 
   ld    a,(hl)                              ;add to Y
   add   a,(ix+enemies_and_objects.y)
   ld    (ix+enemies_and_objects.y),a
-  jp    VramObjectsTransparantCopies
+  jp    VramObjectsTransparantCopies2
 
   .Animate:
   ld    a,(framecounter)
@@ -4135,7 +4141,7 @@ OctopussyBullet:                            ;forced on object positions 1-4
 
   ld    a,216
   ld    (CopyObject+sy),a  
-  call  VramObjectsTransparantCopies        ;put object in Vram/screen ;
+  call  VramObjectsTransparantCopies2        ;put object in Vram/screen ;
   call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
   ret   nz
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Moving, 1=Splashing)  
@@ -4801,7 +4807,7 @@ DemontjeBullet:
   ld    a,(hl)                              ;nx + ny
   ld    (ix+enemies_and_objects.nx),a       ;nx  
   ld    (ix+enemies_and_objects.ny),a       ;ny  
-  jp    VramObjectsTransparantCopies
+  jp    VramObjectsTransparantCopies2
 
   .Animate:
   ld    a,(framecounter)
@@ -4839,7 +4845,7 @@ DemontjeBullet:
   call  .Gravity
   call  .CheckCollisionForeground
   call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
-  jp    VramObjectsTransparantCopies
+  jp    VramObjectsTransparantCopies2
 
   .Animate:
   ld    a,(framecounter)
@@ -4856,10 +4862,11 @@ DemontjeBullet:
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=bullet, 1=explosion) 
   ret
   
-  jp    nz,VramObjectsTransparantCopies
-  call  VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+  jp    nz,VramObjectsTransparantCopies2
   ld    (ix+enemies_and_objects.alive?),0  
+;  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
   ret
+
 
   .Gravity:
   ld    a,(framecounter)
@@ -5408,6 +5415,14 @@ BeetleRightWalkAnimation:
   dw  RightBeetleWalk2_Char
   dw  RightBeetleWalk3_Char
   dw  RightBeetleWalk4_Char
+
+GlassballPipe:
+  ld    hl,GlassballPipe_Char
+  exx                                       ;store hl. hl now points to color data
+  ld		a,GlassballPipeSpriteblock          ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
   
 Slime:
 ;v1=Animation Counter
@@ -5618,8 +5633,8 @@ FireEyeFireBullet:
   FireEyeFireBulletFadingOut:
   ld    a,(framecounter)
   and   3
-  jp    z,VramObjectsTransparantCopies
-  call  VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+  jp    z,VramObjectsTransparantCopies2
+;  call  VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
   dec   (ix+enemies_and_objects.v5)         ;v5=Static Timer
   ret   nz
   ld    (ix+enemies_and_objects.alive?),0  
@@ -5627,7 +5642,7 @@ FireEyeFireBullet:
   
   FireEyeFireBulletStatic:
   call  CollisionObjectPlayer               ;Check if player is hit by Vram object
-  call  VramObjectsTransparantCopies        ;put object in Vram/screen  
+  call  VramObjectsTransparantCopies2        ;put object in Vram/screen  
   dec   (ix+enemies_and_objects.v5)         ;v5=Static Timer
   ret   nz
   ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=moving, 1=static on floor, 3=fading out)  
@@ -5636,7 +5651,7 @@ FireEyeFireBullet:
 
   FireEyeFireBulletMoving:
   call  CollisionObjectPlayer               ;Check if player is hit by Vram object
-  call  VramObjectsTransparantCopies        ;put object in Vram/screen
+  call  VramObjectsTransparantCopies2        ;put object in Vram/screen
   call  .Gravity
   call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
 
@@ -7490,14 +7505,23 @@ PlatformOmniDirectionally:
   ld    (ix+enemies_and_objects.v6),1       ;become active?
   .EndCheckBecomeActive:
 
-  call  VramObjectsTransparantCopies        ;put object in Vram/screen
+  call  VramObjectsTransparantCopies2        ;put object in Vram/screen
 
   bit   0,(ix+enemies_and_objects.v6)       ;become active?
   jr    z,.EndMove
   bit   0,(ix+enemies_and_objects.v7)       ;collided with wall?
   jr    nz,.EndMove
-  call  MovePlatFormHorizontallyFaster      ;move
-  call  MovePlatFormVertically              ;move
+;  call  MovePlatFormHorizontallyFaster      ;move
+;  call  MovePlatFormVertically              ;move
+
+  ld    a,(framecounter)
+  and   1
+  jr    z,.EndMove
+  ld    a,(ix+enemies_and_objects.SnapPlayer?)
+  or    a
+  call  nz,MovePlayerAlongWithObject
+  call  MoveObjectHorizontallyAndVertically
+
   .EndMove:
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  .animate                            ;rotate arrow (movement direction) when inactive, and set v3+v4 accordingly
@@ -7520,7 +7544,7 @@ PlatformOmniDirectionally:
 	srl		a                                   ;/8 (a=0,2,4,6,8,10,12,14)
   ld    d,0
   ld    e,a
-  ld    hl,v3v4Table
+  ld    hl,v3v4Table 
   add   hl,de
   ld    a,(hl)                              ;v3
   ld    (ix+enemies_and_objects.v3),a       ;Vertical Movement
@@ -7549,9 +7573,6 @@ CheckCollisionObject:                       ;checks for collision wall and if fo
   .CollisionFound:
   ld    (ix+enemies_and_objects.v7),1       ;v7=collided with wall?
   ret
-
-
-
 
 v3v4Table:  db +00,-01, -01,-01, -01,+00, -01,+01, +00,+01, +01,+01, +01,+00, +01,-01
 
@@ -7669,67 +7690,6 @@ MoveObjectHorizontallyAndVertically:
   ld    a,(ix+enemies_and_objects.x)
   add   (ix+enemies_and_objects.v4)         ;v4=x movement
   ld    (ix+enemies_and_objects.x),a
-  ret
-  
-PlatformVertically:
-  call  VramObjectsTransparantCopies        ;put object in Vram/screen
-  call  MovePlatFormVertically              ;move
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-  ret
-
-MovePlatFormVertically:
-  ld    a,(framecounter)
-  and   1
-  ret   nz
-
-  ld    a,(ix+enemies_and_objects.SnapPlayer?)
-  or    a
-  call  nz,MovePlayerAlongWithObjectVertically
-
-;move object
-  ld    a,(ix+enemies_and_objects.y)
-  add   (ix+enemies_and_objects.v3)
-  ld    (ix+enemies_and_objects.y),a  
-  cp    180
-  jr    z,.ChangeDirection
-  cp    40
-  ret   nz
-
-  .ChangeDirection:
-  ld    a,(ix+enemies_and_objects.v3)
-  neg
-  ld    (ix+enemies_and_objects.v3),a
-  ret
-
-MovePlatFormHorizontallyFaster:
-  ld    a,(framecounter)
-  and   1
-  ret   nz
-  jp    MovePlatFormHorizontally.go
-
-MovePlatFormHorizontally:
-  ld    a,(framecounter)
-  and   3
-  ret   nz
-
-  .go:
-  ld    a,(ix+enemies_and_objects.SnapPlayer?)
-  or    a
-  call  nz,MovePlayerAlongWithObjectHorizontally
-
-;move object
-  ld    a,(ix+enemies_and_objects.x)
-  add   (ix+enemies_and_objects.v4)
-  ld    (ix+enemies_and_objects.x),a  
-  cp    254
-  jr    z,.ChangeDirection
-  cp    17+16     ;17 for 32 pix wide objects, 17+16 for 16 pix wide objects
-  ret   nz
-
-  .ChangeDirection:
-  ld    a,(ix+enemies_and_objects.v4)
-  neg
-  ld    (ix+enemies_and_objects.v4),a
   ret
 
 VramObjectsPushingStone:
@@ -7969,11 +7929,11 @@ VramObjectsTransparantCopiesRemoveAndClearBuffer:
   ld    (iy+dy),a
   ret
 
-VramObjectsTransparantCopiesRemove:
-ret
-  ld    l,(ix+enemies_and_objects.ObjectNumber)
-  ld    h,(ix+enemies_and_objects.ObjectNumber+1)
-  jp    docopy
+;VramObjectsTransparantCopiesRemove:
+;ret
+;  ld    l,(ix+enemies_and_objects.ObjectNumber)
+;  ld    h,(ix+enemies_and_objects.ObjectNumber+1)
+;  jp    docopy
 
 
 
@@ -8090,187 +8050,6 @@ OnlyPutVramObjectDontEraseFastCopy:
 ;put object
   ld    hl,CopyObject
   jp    docopy
-  
-VramObjectsTransparantCopies:
-;first clean the object
-;  call  BackdropRed
-
-;which Clean Object (DoCopy) table do we use ?
-  ld    l,(ix+enemies_and_objects.ObjectNumber)
-  ld    h,(ix+enemies_and_objects.ObjectNumber+1)
-  push  hl
-;  call  docopy
-  pop   iy
-  ld    (iy+restorebackground?),1  ;all background restores should be done simultaneously at start of frame (after vblank)
-
-  ld    a,(ix+enemies_and_objects.x)
-  or    a
-  jp    p,.ObjectOnLeftSideOfScreen
-
-  .ObjectOnRightSideOfScreen:
-;set sx
-  ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
-  ld    (CopyObject+sx),a  
-;set copy direction
-  ld    a,%0000 0000      ;Copy from left to right
-  ld    (iy+copydirection),a
-  ld    (CopyObject+copydirection),a
-
-;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-016+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,3               ;clean object from vram data in page 3
-  ld    d,-032+01         ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048+01         ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jp    z,.pagefound
-
-
-  .ObjectOnLeftSideOfScreen:
-;set sx
-  ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
-  dec   a
-  add   a,(ix+enemies_and_objects.nx)
-  ld    (CopyObject+sx),a  
-;set copy direction
-  ld    a,%0000 0100      ;Copy from right to left
-  ld    (iy+copydirection),a
-  ld    (CopyObject+copydirection),a
-
-;set pages to copy to and to clean from
-  ld    a,(PageOnNextVblank)
-  cp    0*32+31           ;x*32+31 (x=page)
-  ld    b,0               ;copy to page 0
-  ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000            ;dx offset CopyObject
-  ld    e,-016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-  cp    1*32+31           ;x*32+31 (x=page)
-  ld    b,1               ;copy to page 1
-  ld    c,0               ;clean object from vram data in page 2
-  ld    d,-016            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-  cp    2*32+31           ;x*32+31 (x=page)
-  ld    b,2               ;copy to page 2
-  ld    c,1               ;clean object from vram data in page 3
-  ld    d,-032            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-  cp    3*32+31           ;x*32+31 (x=page)
-  ld    b,3               ;copy to page 3
-  ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048            ;dx offset CopyObject
-  ld    e,+016            ;sx offset CleanObject 
-  jr    z,.pagefoundLeft
-
-.pagefoundLeft:
-  ld    a,d
-  add   a,(ix+enemies_and_objects.nx)
-  ld    d,a
- 
-.pagefound:
-  ld    a,b
-  ld    (CopyObject+dpage),a  
-  ld    (iy+dpage),a
-  ld    a,c
-  ld    (iy+spage),a
-
-;set object sy,dy,sx,dx,nx,ny
-  ld    a,(ix+enemies_and_objects.y)
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-  ld    (CopyObject+dy),a
-
-  ld    a,(ix+enemies_and_objects.x)
-  add   d
-  ld    (CopyObject+dx),a
-  ld    (iy+dx),a
-  add   e
-  ld    (iy+sx),a
-  
-  ld    a,(ix+enemies_and_objects.nx)  
-  ld    (CopyObject+nx),a  
-  add   a,2                 ;we clean 2 more pixels, because we use fast copy ($D0) for cleaning, which is not pixel precise (Bitmap mode)
-  ld    (iy+nx),a  
-
-  ld    a,(ix+enemies_and_objects.ny)
-  ld    (CopyObject+ny),a  
-  ld    (iy+ny),a  
-
-  ld    a,$98
-  ld    (CopyObject+copytype),a
-
-;put object
-  ld    hl,CopyObject
-  call  docopy
-;  call  BackdropGreen
-;  ld    hl,CopyObject
-;  call  docopy
-;  call  BackdropBlack
-  ret  
-  
-
-
-MovePlatFormHorizontally2:
-  ld    a,(framecounter)
-  and   3
-  ret   nz
-
-  .go:
-  ld    a,(ix+enemies_and_objects.SnapPlayer?)
-  or    a
-  call  nz,MovePlayerAlongWithObjectHorizontally
-
-;move object
-  ld    a,(ix+enemies_and_objects.x)
-  add   (ix+enemies_and_objects.v4)
-  ld    (ix+enemies_and_objects.x),a  
-  cp    254
-;  cp    15+16+16
-  jr    z,.ChangeDirection
-  cp    15     ;17 for 32 pix wide objects, 17+16 for 16 pix wide objects
-  ret   nz
-
-  .ChangeDirection:
-  ld    a,(ix+enemies_and_objects.v4)
-  neg
-  ld    (ix+enemies_and_objects.v4),a
-  ret
-
-
-PlatformHorizontally2:
-;v1 = sx
-;v3=Vertical Movement
-;v4=Horizontal Movement
-  call  VramObjectsTransparantCopies2        ;put object in Vram/screen
-  call  MovePlatFormHorizontally2              ;move
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-  ret
 
 ;This is an updated version in which the objects can now have an x between 15-254
 VramObjectsTransparantCopies2:
@@ -8365,53 +8144,57 @@ VramObjectsTransparantCopies2:
 ;If current page is page 2 then object can only be put if x=>15 (but this is always the case, since that's our determined value)
 ;If current page is page 3 then object can only be put if x=>16
   .CurrentPageIs3:
-  ld    a,(ix+enemies_and_objects.nx)
-  cp    32
-  ld    b,16
-  jr    z,.Check
-  ld    b,32
-  .Check:
-  ld    a,(ix+enemies_and_objects.x)
-  cp    b
-  ret   c
+;  ld    a,(ix+enemies_and_objects.nx)
+;  cp    32
+;  ld    b,16
+;  jr    z,.Check
+;  ld    b,32
+;  .Check:
+;  ld    a,(ix+enemies_and_objects.x)
+;  cp    b
+;  ret   c
   ld    b,3               ;copy to page 3
   ld    c,2               ;clean object from vram data in page 2
-  ld    d,-048            ;dx offset CopyObject
+  ld    a,-048            ;dx offset CopyObject
   ld    e,+016            ;sx offset CleanObject 
   jp    .pagefoundLeft
 
   .CurrentPageIs2:
-  ld    a,(ix+enemies_and_objects.nx)
-  cp    32
-  jr    z,.EndCheck16PixWide
-  ld    a,(ix+enemies_and_objects.x)
-  cp    16
-  ret   c
-  .EndCheck16PixWide:
+;  ld    a,(ix+enemies_and_objects.nx)
+;  cp    32
+;  jr    z,.EndCheck16PixWide
+;  ld    a,(ix+enemies_and_objects.x)
+;  cp    16
+;  ret   c
+;  .EndCheck16PixWide:
   ld    b,2               ;copy to page 2
   ld    c,1               ;clean object from vram data in page 3
-  ld    d,-032            ;dx offset CopyObject
+  ld    a,-032            ;dx offset CopyObject
   ld    e,+016            ;sx offset CleanObject 
   jp    .pagefoundLeft
 
   .CurrentPageIs1:
   ld    b,1               ;copy to page 1
   ld    c,0               ;clean object from vram data in page 2
-  ld    d,-016            ;dx offset CopyObject
+  ld    a,-016            ;dx offset CopyObject
   ld    e,+016            ;sx offset CleanObject 
   jp    .pagefoundLeft
     
   .CurrentPageIs0:
   ld    b,0               ;copy to page 0
   ld    c,1               ;clean object from vram data in page 1
-  ld    d,+000            ;dx offset CopyObject
+  ld    a,+000            ;dx offset CopyObject
   ld    e,-016            ;sx offset CleanObject 
 ;  jp    .pagefoundLeft
 
 .pagefoundLeft:
-  ld    a,d
+;  ld    a,d
   add   a,(ix+enemies_and_objects.nx)
   ld    d,a
+
+  add   a,(ix+enemies_and_objects.x)
+  cp    200               ;don't put object that is on the left side of screen if x>200 (that means it went out of screen on the left)
+  ret   nc
  
 .pagefound:
   ld    a,b
@@ -8428,7 +8211,7 @@ VramObjectsTransparantCopies2:
 
   ld    a,(ix+enemies_and_objects.x)
   add   d
-  ld    (CopyObject+dx),a
+  ld    (CopyObject+dx),a  
   ld    (iy+dx),a
   add   e
   ld    (iy+sx),a

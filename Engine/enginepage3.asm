@@ -8,8 +8,8 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 ;WorldMapPositionY:  db  20
 ;WorldMapPositionX:  db  44
 
-WorldMapPositionY:  db  26
-WorldMapPositionX:  db  46
+WorldMapPositionY:  db  17
+WorldMapPositionX:  db  44
 
 
 PlayLogo:

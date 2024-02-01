@@ -19,22 +19,20 @@ loader:
 
 ObjectExample: 
 
-;db 11,0,0,$28,$a0,$44,16,3,3,0 ;platform
+;db 11,0,0,$28,$a0,$44,16,3,3,0 ;small platform on
 ;db 0
 
 ;db 12,0,0,$28,$70,$44,16,3,3,1 ;small lighter platform on
 ;db 12,0,0,$28,$a0,$44,16,3,3,0 ;small lighter platform off
 
-;db 57,0,0,$28,$70,$44,16,3,3,1 ;big platform on
-;db 57,0,0,$28,$a0,$44,16,3,3,0 ;big platform off
+;db 57,0,0,$28,$80,$44,16,3,3,1 ;big platform on
+;db 57,0,0,$28,$b0,$44,16,3,3,0 ;big platform off
 
 ;db 0
 
 
-;db 58,0,0,$28,$70,$44,16,3,3,1 ;small platform on
-
-;db 16,100/2,100 ;omni directional platform
-;db 16,140/2,140 ;omni directional platform
+;db 16,100/2,100 ;omni directional platform (PlatformOmniDirectionally)
+;db 16,140/2,140 ;omni directional platform (PlatformOmniDirectionally)
 ;db 0
 
 ;db 20,120/2,80,3,0,6 ;id,x,y,face, speed, amount of bats (BigStatueMouth bat spawner)
@@ -48,18 +46,16 @@ ObjectExample:
 ;db 1,180/2,80 ;,0 ;id,x,y (pushing stone)
 ;db 0
 
-
-;db 11,0,0,$28,$a0,$44,16,3,3,1 ;platform
 ;db $96,32/2,$b8,03,01 ;slime (TrampolineBlob) (id,x,y,face,speed) 
 ;db 0
 
-db 128,96/2,$60,03,01 ;huge blob (HugeBlob) (id,x,y,face,speed) 
-db 0
+;db 128,96/2,$60,03,01 ;huge blob (HugeBlob) (id,x,y,face,speed) 
+;db 0
 
 ;db 129,96/2,$b0,03,01 ;huge spider (HugeSpiderLegs) (id,x,y,face,speed) 
 ;db 0
 
-;db 130,120/2,$68,03,01 ;lancelot (Lancelot) (id,x,y,face,speed) 
+;db 130,40/2,$78,03,01 ;lancelot (Lancelot) (id,x,y,face,speed) 
 ;db 130,96/2,$a8,03,01 ;lancelot (Lancelot) (id,x,y,face,speed) 
 ;db 0
 
@@ -100,6 +96,7 @@ db 0
 ;db 0
 
 ;db 138,96/2,$a8,07,01 ;hunchback (Hunchback) (id,x,y,face,speed) 
+;db 138,120/2,$98,07,01 ;hunchback (Hunchback) (id,x,y,face,speed) 
 ;db 0
 
 ;db 139,96/2,$a8,03,01 ;scorpion (Scorpion) (id,x,y,face,speed) 
@@ -138,13 +135,21 @@ db 0
 ;db 153,140/2,$68,03,01 ;yellow wasp (YellowWasp) (id,x,y,face,speed) 
 ;db 0
 
-
-;db $96,100,100,03,01  ;slime
-;db $96,100,116,03,01  ;slime
+;db 61,5 ;id,balnr (
+;db 61,4 ;id,balnr (
 ;db 0
 
-;db 61,5 ;id,balnr (
-;db 61,4,0 ;id,balnr (
+
+db 61,1 ;id,balnr (
+db 61,2 ;id,balnr (
+;db 0
+
+db 159,240/2,$98,03,01 ;glassball pipe (GlassballPipe) (id,x,y,face,speed) 
+
+;db 158,140/2,$a8,03,01 ;black slime (Slime) (id,x,y,face,speed) 
+;db 158,140/2,$b8,03,01 ;black slime (Slime) (id,x,y,face,speed) 
+
+db 0
 
 ;db 62,16/2,100,3,1,4,0  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
 ;db 15,76,30,0  ;id, x,y (retracting platforms)
@@ -172,7 +177,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ld  hl,ObjectExample
   ld  bc,200
-  ldir
+;  ldir
 
 ;halt
 
@@ -215,7 +220,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   cp    15
   jp    z,.Object015                    ;retracting platforms
   cp    16
-  jp    z,.Object016                    ;omni directional platform
+  jp    z,.Object016                    ;omni directional platform (PlatformOmniDirectionally)
   cp    20
   jp    z,.Object020                    ;bat spawner (BigStatueMouth)
   cp    57
@@ -282,7 +287,10 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object156                    ;brown demontje (Demontje)
   cp    157
   jp    z,.Object157                    ;grey demontje (Demontje)
-
+  cp    158
+  jp    z,.Object158                    ;black slime (Slime)
+  cp    159
+  jp    z,.Object159                    ;glassball pipe (GlassballPipe)
   ret
 
   .Object001:                           ;pushing stone (PushingStone)
@@ -413,14 +421,29 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,(ix+Object061Table.ballnr)
   cp    5
   jr    z,.SetGlassBall5
-  ret
+
+  .SetGlassBall1:
+  ld    hl,GlassBall1Data
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*3           ;3 objects (2 balls and 1 ball activator)
+  ldir
+
+  ld    de,lenghtenemytable*2           ;lenght 2 objects in object table
+  add   iy,de                           ;next object in object table
+
+  ld    de,Object061Table.lenghtobjectdata*2
+  ret    
   
   .SetGlassBall5:
   ld    hl,GlassBall5Data
   push  iy
   pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*3
+  ld    bc,lenghtenemytable*3           ;3 objects (2 balls and 1 ball activator)
   ldir
+
+  ld    de,lenghtenemytable*2           ;lenght 2 objects in object table
+  add   iy,de                           ;next object in object table
 
   ld    de,Object061Table.lenghtobjectdata*2
   ret    
@@ -1345,6 +1368,27 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (iy+enemies_and_objects.v7),3   ;v7=Green (0) / Red(1) / Brown(2) / Grey(3)
   jp    .SetDemontjeBullet
 
+  .Object158:                           ;black slime (Slime)
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Wait timer
+  ld    hl,Object158Table
+  jp    .SetGeneralHardwareSprite
+
+  .Object159:                           ;glassball pipe (GlassballPipe)
+;v1=Animation Counter
+;v2=Phase (0=walking slow, 1=attacking)
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Wait timer
+  ld    hl,GlassBallPipeObject
+  call  .SetGeneralHardwareSprite
+  dec   (iy+enemies_and_objects.y)      ;should be 1 pixel up
+  dec   (iy+enemies_and_objects.x)      ;should be 1 pixel to the left
+  ret
+
 ;  .Object143:                           ;retarded zombie
 ;v1=Animation Counter
 ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
@@ -1494,6 +1538,14 @@ GlassBall5Data:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .object1: db 2,        0|dw GlassBall3          |db 8*19|dw 8*02|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 .object2: db 2,        0|dw GlassBall4          |db 8*19|dw 8*24|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+;Glass Ball Activator
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+GlassBall1Data:
+;Glass Ball
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.object1: db 0,        0|dw GlassBall1          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.object2: db 0,        0|dw GlassBall2          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Glass Ball Activator
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
@@ -1748,6 +1800,26 @@ Object154Table:               ;Demontje v7=Green (0) / Red(1) / Brown(2) / Grey(
          db -1,        1|dw Demontje            |db 8*20|dw 8*30|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+02,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .bullet: db 0,        0|dw DemontjeBullet      |db 8*10|dw 8*15|db 11,11|dw CleanOb1,0 db 0,0,0,                     +146,+00,-01,+02,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.face: equ 3
+.speed: equ 4
+.lenghtobjectdata: equ 5
+
+Object158Table:               ;black slime
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+         db -1,        1|dw Slime               |db 8*07|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+01,+00,+00,+00,-02,+30, 0|db 001,movepatblo1| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.face: equ 3
+.speed: equ 4
+.lenghtobjectdata: equ 5
+
+GlassBallPipeObject:
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+         db -1,        1|dw GlassballPipe       |db 8*07|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,+01,+00,+00,+00,-02,+30, 0|db 001,movepatblo1| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2
