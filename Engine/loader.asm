@@ -175,8 +175,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   .ObjectAddressFound:
   push  de
 
-  ld  hl,ObjectExample
-  ld  bc,200
+ ; ld  hl,ObjectExample
+ ; ld  bc,200
 ;  ldir
 
 ;halt

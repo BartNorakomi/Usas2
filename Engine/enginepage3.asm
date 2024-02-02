@@ -4,12 +4,9 @@ phase	enginepage3addr
 WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 
-;bt21=21,43;bt28=28,45;bt16=16,45
-;WorldMapPositionY:  db  20
-;WorldMapPositionX:  db  44
-
-WorldMapPositionY:  db  17
-WorldMapPositionX:  db  44
+;bt21=21,43;bt28=28,45;bt16=16,45;br16=16,43
+WorldMapPositionY:  db  16
+WorldMapPositionX:  db  43
 
 
 PlayLogo:
@@ -263,8 +260,8 @@ BuildUpMap:
   out   ($a8),a    
 
 	;ld a,6	;something gets fucked here
-nop ;if I leave out two bytes, screenbuildup is corrup. (I replace lda a,6 with 2 nops, both 2 bytes)
-nop
+;nop ;if I leave out two bytes, screenbuildup is corrup. (I replace lda a,6 with 2 nops, both 2 bytes)
+;nop
 	ld a,(UnpackedRoomFile+roomdatablock.mapid)
 	and $1f
 	call getgfx			;get GfxRecordAdr

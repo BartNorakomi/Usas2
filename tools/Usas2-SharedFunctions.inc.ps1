@@ -76,7 +76,7 @@ return $usas2
 # return roomName located at(x,y)
 function get-roomName
 {	param ($x,$y)
-	return $WorldMapColumnNames[$x]+"0$($y+1)".substring(([string]$y).length-1,2)
+	return $WorldMapColumnNames[$x]+"0$($y)".substring(([string]$y).length-1,2)
 }
 
 # Room
