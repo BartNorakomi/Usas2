@@ -40,6 +40,7 @@ function Convert-TmxFile
 	
 	#first, get default ruin props
 	$RoomProps=get-roomDefaultProperties -roomName $roomName
+	write-verbose "default ruinId/roomType: $($roomProps[0])"
 	#next insert optional tmxMapProperties
 	$roomProps=convert-TmxMapProperties -TiledMap $TiledMap -roomProps $roomProps
 	write-verbose "Room name: $roomName, ruinId/roomType: $($roomProps[0])"
@@ -63,8 +64,8 @@ function get-roomDefaultProperties
 	)
 	$room=$worldmap|where{$_.name -eq $roomname}
 	$ruinIdRoomType=[byte](($room.ruinid -band 0x1F) -bor ($room.roomtype -band 0xe0) -band 255)
-	$ruinIdentity=($usas2.ruin|where{$_.ruinId -eq $room.ruinid}).identity
-	$ruinProperties=get-U2ruinProperties -identity $ruinIdentity
+	#$ruinIdentity=($usas2.ruin|where{$_.ruinId -eq $room.ruinid}).identity
+	$ruinProperties=get-U2ruinProperties -ruinid $room.ruinid #-identity $ruinIdentity
 	
 	$data=[byte[]]::new(8)
 	$data[0]=$ruinIdRoomType
@@ -224,7 +225,7 @@ $usas2=get-Usas2Globals -force
 $U2objectClassDefinitions=get-U2objectClassDefinitions -force
 $WorldMap=get-roomMaps -mapsource (get-content ("..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile))
 $global:U2objectClassDefinitions=$U2objectClassDefinitions
-
+$global:worldmap=$worldmap
 
 ##### Main: #####
 #tests

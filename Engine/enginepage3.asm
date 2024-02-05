@@ -5,8 +5,8 @@ WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 
 ;bt21=21,43;bt28=28,45;bt16=16,45;br16=16,43
-WorldMapPositionY:  db  16
-WorldMapPositionX:  db  43
+WorldMapPositionY:  db  27
+WorldMapPositionX:  db  48
 
 
 PlayLogo:

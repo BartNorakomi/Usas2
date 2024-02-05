@@ -142,7 +142,7 @@ ObjectExample:
 
 db 61,1 ;id,balnr (
 db 61,2 ;id,balnr (
-;db 0
+db 0
 
 db 159,240/2,$98,03,01 ;glassball pipe (GlassballPipe) (id,x,y,face,speed) 
 
@@ -177,7 +177,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
  ; ld  hl,ObjectExample
  ; ld  bc,200
-;  ldir
+ ; ldir
 
 ;halt
 

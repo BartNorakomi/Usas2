@@ -76,7 +76,8 @@ return $usas2
 # return roomName located at(x,y)
 function get-roomName
 {	param ($x,$y)
-	return $WorldMapColumnNames[$x]+"0$($y)".substring(([string]$y).length-1,2)
+	$Y++
+	return $WorldMapColumnNames[$x]+([string]$Y).PadLeft(2,"0")
 }
 
 # Room
@@ -87,7 +88,6 @@ function get-roomLocation
 {	param ($name)
 	write-verbose "get-roomlocation for $name"
 	$x=$WorldMapColumnNames.IndexOf($name.substring(0,2).toupper())
-	#"0$($y+1)".substring(([string]$y).length-1,2)
 	$y=[uint32]$name.substring(2,2)
 	return [pscustomobject]@{x=$x;y=$y}
 }
@@ -135,7 +135,7 @@ function get-roomMaps
 	foreach ($row in $mapSource)
 	{	$x=-$sourceOffsetX
 		forEach ($column in $row.split("`t"))
-		{	#write-host $column
+		{	#write-verbose $column
 			if ($column)
 			{	$roomname=get-roomName -x $x -y $y
 				[pscustomobject]@{name=$roomname;ruinId=$column-band0x1f;roomType=$column-band0xe0;x=$x;y=$y}
@@ -218,11 +218,15 @@ function get-BitmapGfxIndex
 
 
 #RuinPropertiesTable
+#Get Ruin Properties record by ruinId or idenity (name)
 function get-U2ruinProperties
 {	param
-	(	$identity="*"
+	(	[Parameter(ParameterSetName='identity',Mandatory)]$identity,
+		[Parameter(ParameterSetName='ruinid',Mandatory)]$ruinid
 	)
-	foreach ($ruin in $usas2.ruin|where{$_.identity -like $identity})
+	if ($identity) {$ruins=$usas2.ruin|where{$_.identity -like $identity}}
+	elseif ($ruinid) {$ruins=$usas2.ruin|where{$_.ruinid -like $ruinid}}
+	foreach ($ruin in $ruins)
 	{	#$ruin|select tileset,palette,music,name
 		if (-not ($tilesetUid=($usas2.tileset|where{$_.identity -eq $ruin.tileset}).id)) {$tilesetUid=0}
 		if (-not ($paletteUid=($usas2.palette|where{$_.identity -eq $ruin.palette}).id)) {$paletteUid=0}
