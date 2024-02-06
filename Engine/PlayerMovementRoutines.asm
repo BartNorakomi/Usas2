@@ -3643,15 +3643,18 @@ Jump:
 	.set:
 	ld		(PlayerAniCount+1),a
 
+if PlayerCanJumpThroughTopOfScreen?
+else
   ;unable to jump through the top of the screen
-;  ld    a,(Clesy)
-;  cp    9
-;  jp    nc,.EndCheckTopOfScreen
-;  ld    a,(hl)              ;if vertical JumpSpeed is negative then and y<9 then skip vertical movement
-;  or    a
-;  jp    m,.SkipverticalMovement
-;  .EndCheckTopOfScreen:
+  ld    a,(Clesy)
+  cp    9
+  jp    nc,.EndCheckTopOfScreen
+  ld    a,(hl)              ;if vertical JumpSpeed is negative then and y<9 then skip vertical movement
+  or    a
+  jp    m,.SkipverticalMovement
+  .EndCheckTopOfScreen:
   ;/unable to jump through the top of the screen
+endif
   
   ;move player y
   ld    a,(Clesy)
