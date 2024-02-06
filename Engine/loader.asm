@@ -421,7 +421,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   .Object061:                           ;glass ball (GlassBallActivator)
   ld    a,(ix+Object061Table.ballnr)
   cp    4
-  jr    z,.SetGlassBall4
+  jr    nc,.SetGlassBall4
 
   .SetGlassBall1:
   ld    hl,GlassBall1Data
