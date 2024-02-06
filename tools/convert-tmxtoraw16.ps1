@@ -149,6 +149,7 @@ function convert-TmxObjects
 	write-verbose "Converting Objects"
 	[byte[]]$dataBlock=[byte]0
 	$objects=get-RoomObjects -tiledmap $tiledmap|sort Uid -Descending #sort so software sprite objects come first
+	$global:objects=$objects
 	foreach ($object in $objects)
 	{	$uid=$object.uid #get UID from map
 		if ($roomobject=$usas2.roomobject|where{$_.uid -eq $uid}) #get object info from globalVars
@@ -185,7 +186,7 @@ function convert-TmxObjects
 			$datablock=$data+$datablock
 		}
 	}
-	$datablock
+	return ,$datablock
 }
 
 # Get all valid room objects (objects with a UID) and merge all properties at object rool level
@@ -194,7 +195,7 @@ function convert-TmxObjects
 function get-RoomObjects
 {	param ($tiledMap)
 	foreach ($object in $tiledMap.map.objectgroup.object|where{($_.properties.property.name -eq "uid") -and ($_.visible -ne "0" )})
-	{	$object.properties.property|%{add-member -InputObject $object -membertype NoteProperty -name $_.name -value $_.value}
+	{	$object.properties.property|%{add-member -InputObject $object -membertype NoteProperty -name $_.name -value ([int]$_.value)}
 		$object
 	}
 }
@@ -276,8 +277,7 @@ $rawdata=Convert-TmxLayers -data $data -includeLayer $includeLayer -excludeLayer
 $global:rawdata=$rawdata
 #$rawdata|format-hex
 
-$file="C:\Users\rvand\OneDrive\Usas2\maps\BS20.tmx"
-.\convert-tmxtoraw16.ps1 -path $file
+.\convert-tmxtoraw16.ps1 -path "C:\Users\rvand\OneDrive\Usas2\maps\BS20.tmx" -verbose
 #>
 
 

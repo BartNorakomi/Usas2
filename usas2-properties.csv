@@ -35,14 +35,14 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		DsmDatalist	BitmapGfx	IndexBlock	0					
 1	Usas2		DsmDatalist	BitmapGfx	IndexSegment	32					
 1	Usas2		DsmDatalist	BitmapGfx	name	BitmapGfx					
-1	Usas2		RoomObject	black hole alien	uid	131					
-1	Usas2		RoomObject	black hole alien	objectClass	Enemy					
-1	Usas2		RoomObject	black hole alien baby	uid	146					
-1	Usas2		RoomObject	black hole alien baby	objectClass	Enemy					
-1	Usas2		RoomObject	boring eye green	uid	144					
-1	Usas2		RoomObject	boring eye green	objectClass	Enemy					
-1	Usas2		RoomObject	boring eye red	uid	145					
-1	Usas2		RoomObject	boring eye red	objectClass	Enemy					
+1	Usas2		RoomObject	blackHoleAlien	uid	131					
+1	Usas2		RoomObject	blackHoleAlien	objectClass	Enemy					
+1	Usas2		RoomObject	blackHoleAlienBaby	uid	146					
+1	Usas2		RoomObject	blackHoleAlienBaby	objectClass	Enemy					
+1	Usas2		RoomObject	boringEyeGreen	uid	144					
+1	Usas2		RoomObject	boringEyeGreen	objectClass	General					
+1	Usas2		RoomObject	boringEyeRed	uid	145					
+1	Usas2		RoomObject	boringEyeRed	objectClass	General					
 1	Usas2		Room	boss	engine	2					
 1	Usas2		Room	boss	height	27					
 1	Usas2		Room	boss	name	Boss Room					
@@ -56,10 +56,10 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Chi	name	Chi					
 1	Usas2		Ruin	Chi	Palette						
 1	Usas2		Ruin	Chi	ruinId	15					
-1	Usas2		RoomObject	circling wasp brown	uid	152					
-1	Usas2		RoomObject	circling wasp brown	objectClass	Enemy					
-1	Usas2		RoomObject	circling wasp green	uid	151					
-1	Usas2		RoomObject	circling wasp green	objectClass	Enemy					
+1	Usas2		RoomObject	waspBrown	uid	152					
+1	Usas2		RoomObject	fireEyeGreen	objectClass	General					
+1	Usas2		RoomObject	waspGreen	uid	151					
+1	Usas2		RoomObject	fireEyeGrey	objectClass	General					
 1	Usas2		TiledMap	default	name	Je Moeder					
 1	Usas2		TiledMap	default	path	jemoeder.tmx					
 1	Usas2		RoomObject	demontje brown	uid	156					
@@ -87,10 +87,10 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Fate	name	Fate					
 1	Usas2		Ruin	Fate	Palette						
 1	Usas2		Ruin	Fate	ruinId	12					
-1	Usas2		RoomObject	fire eye green	uid	132					
-1	Usas2		RoomObject	fire eye green	objectClass	Enemy					
-1	Usas2		RoomObject	fire eye grey	uid	133					
-1	Usas2		RoomObject	fire eye grey	objectClass	Enemy					
+1	Usas2		RoomObject	fireEyeGreen	uid	132					
+1	Usas2		RoomObject	glassBallPipe	objectClass	general					
+1	Usas2		RoomObject	fireEyeGrey	uid	133					
+1	Usas2		RoomObject	hugeBlob	objectClass	General					
 1	Usas2		Tile	Foreground	first	52		First number			
 1	Usas2		Tile	Foreground	groupId	1		Foreground			
 1	Usas2		Tile	Foreground	last	255		Last number			
@@ -121,7 +121,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	glassBall	uid	61					
 1	Usas2		RoomObject	glassBall	objectClass	glassBall					
 1	Usas2		RoomObject	glassBallPipe	uid	159					
-1	Usas2		RoomObject	glassBallPipe	objectClass	general					
+1	Usas2		RoomObject	octopussy	objectClass	General					
 1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv					
 1	Usas2		RoomObject	grinder	uid	136					
 1	Usas2		RoomObject	grinder	objectClass	Enemy					
@@ -139,7 +139,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		TiledWorldMap	Hub	Name	Hub					
 1	Usas2		TiledWorldMap	Hub	path	Hub.world					
 1	Usas2		RoomObject	hugeBlob	uid	128					
-1	Usas2		RoomObject	hugeBlob	objectClass	hugeBlob					
+1	Usas2		RoomObject	PushStone	objectClass	general					
 1	Usas2		RoomObject	huge spider	uid	129					
 1	Usas2		RoomObject	huge spider	objectClass	Enemy					
 1	Usas2		RoomObject	hunchback	uid	138					
@@ -172,8 +172,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Tileset	KarniMata	file	..\grapx\tilesheets\KarniMataTiles.sc5					
 1	Usas2		Tileset	KarniMata	id	6					
 1	Usas2		Tileset	KarniMata	type	0					
-1	Usas2		RoomObject	knife thrower	uid	134					
-1	Usas2		RoomObject	knife thrower	objectClass	Enemy					
+1	Usas2		RoomObject	knifeThrower	uid	134					
+1	Usas2		RoomObject	knifeThrower	objectClass	Enemy					
 1	Usas2		Ruin	Konark	music						
 1	Usas2		Ruin	Konark	name	Konark					
 1	Usas2		Ruin	Konark	Palette						
@@ -197,7 +197,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Morana	Palette						
 1	Usas2		Ruin	Morana	ruinId	24					
 1	Usas2		RoomObject	octopussy	uid	135					
-1	Usas2		RoomObject	octopussy	objectClass	Enemy					
+1	Usas2		RoomObject	sensorTentacle	objectClass	General					
 1	Usas2		Ruin	Pegu	music						
 1	Usas2		Ruin	Pegu	name	Pegu					
 1	Usas2		Ruin	Pegu	Palette						
@@ -218,7 +218,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	PlatformRetracting	uid	15					
 1	Usas2		RoomObject	PlatformRetracting	objectClass	platform					
 1	Usas2		RoomObject	PushStone	uid	1					
-1	Usas2		RoomObject	PushStone	objectClass	general					
+1	Usas2		RoomObject	waspBrown	objectClass	General					
 1	Usas2		RoomObject	ratFaceBatSpawner	uid	20					
 1	Usas2		RoomObject	ratFaceBatSpawner	objectClass	enemySpawn					
 1	Usas2		Room	regular	engine	1					
@@ -231,8 +231,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Room	regularSmall	name	Regular Room Small					
 1	Usas2		Room	regularSmall	roomType	160					
 1	Usas2		Room	regularSmall	width	32					
-1	Usas2		RoomObject	retarded zombie	uid	143					
-1	Usas2		RoomObject	retarded zombie	objectClass	Enemy					
+1	Usas2		RoomObject	retardedZombie	uid	143					
+1	Usas2		RoomObject	retardedZombie	objectClass	Enemy					
 1	Usas2		Index	Rooms	numrec	1024	attribute	Number of records in the table		.numrec: EQU 1024	
 1	Usas2		Index	Rooms	reclen	4	attribute	The length of one record		.reclen: EQU 4	
 1	Usas2		RoomObject	scorpion	uid	139					
@@ -242,18 +242,18 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Room	secret	name	Secret Room					
 1	Usas2		Room	secret	roomType	64					
 1	Usas2		Room	secret	width	38					
-1	Usas2		RoomObject	sensor tentacle	uid	149					
-1	Usas2		RoomObject	sensor tentacle	objectClass	Enemy					
+1	Usas2		RoomObject	sensorTentacle	uid	149					
+1	Usas2		RoomObject	waspGreen	objectClass	General					
 1	Usas2		Ruin	Sepa	music						
 1	Usas2		Ruin	Sepa	name	Sepa					
 1	Usas2		Ruin	Sepa	Palette						
 1	Usas2		Ruin	Sepa	ruinId	13					
-1	Usas2		RoomObject	slime black	uid	158					
-1	Usas2		RoomObject	slime black	objectClass	Enemy					
-1	Usas2		RoomObject	spider green	uid	141					
-1	Usas2		RoomObject	spider green	objectClass	Enemy					
-1	Usas2		RoomObject	spider grey	uid	142					
-1	Usas2		RoomObject	spider grey	objectClass	Enemy					
+1	Usas2		RoomObject	slimeBlack	uid	158					
+1	Usas2		RoomObject	slimeBlack	objectClass	Enemy					
+1	Usas2		RoomObject	spiderGreen	uid	141					
+1	Usas2		RoomObject	spiderGreen	objectClass	Enemy					
+1	Usas2		RoomObject	spiderGrey	uid	142					
+1	Usas2		RoomObject	spiderGrey	objectClass	Enemy					
 1	Usas2		Tile	SpikePoison	first	32		First number			
 1	Usas2		Tile	SpikePoison	groupId	3		Spike/Poison			
 1	Usas2		Tile	SpikePoison	last	39		Last number			
@@ -276,8 +276,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Tiwanaku	name	Tiwanaku					
 1	Usas2		Ruin	Tiwanaku	Palette						
 1	Usas2		Ruin	Tiwanaku	ruinId	18					
-1	Usas2		RoomObject	trampoline Slime	uid	150					
-1	Usas2		RoomObject	trampoline Slime	objectClass	Enemy					
+1	Usas2		RoomObject	trampolineSlimeGreen	uid	150					
+1	Usas2		RoomObject	trampolineSlimeGreen	objectClass	Enemy					
 1	Usas2		RoomObject	treeman	uid	137					
 1	Usas2		RoomObject	treeman	objectClass	Enemy					
 1	Usas2		Ruin	undefined00	ruinId	0					
@@ -301,10 +301,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Tile	VerticalStairs	first	1		First number			
 1	Usas2		Tile	VerticalStairs	groupId	2		VerticalStairs			
 1	Usas2		Tile	VerticalStairs	last	8		Last number			
-1	Usas2		RoomObject	wasp	uid	160					
-1	Usas2		RoomObject	wasp	objectClass	Enemy					
-1	Usas2		RoomObject	wasp yellow	uid	153					
-1	Usas2		RoomObject	wasp yellow	objectClass	Enemy					
+1	Usas2		RoomObject	waspYellow	uid	153					
+1	Usas2		RoomObject	waspYellow	objectClass	general					
 1	Usas2		DsmDatalist	Worldmap	IndexBlock	0					
 1	Usas2		DsmDatalist	Worldmap	IndexSegment	0					
 1	Usas2		DsmDatalist	Worldmap	name	Worldmap					
