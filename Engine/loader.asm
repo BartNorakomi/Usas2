@@ -50,8 +50,8 @@ ObjectTestData:
 ;db $96,32/2,$b8,03,01 ;slime (TrampolineBlob) (id,x,y,face,speed) 
 ;db 0
 
-;db 128,96/2,$58 ;huge blob (HugeBlob) (id,x,y,face,speed) 
-;db 0
+db 128,96/2,$98 ;huge blob (HugeBlob) (id,x,y,face,speed) 
+db 0
 
 ;db 129,96/2,$b0,03,01 ;huge spider (HugeSpiderLegs) (id,x,y,face,speed) 
 ;db 0
@@ -175,7 +175,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
 
-  ld    de,ObjectTestData
+;  ld    de,ObjectTestData
 
   push  de
 ;.CheckObjects: jp .CheckObjects
@@ -421,7 +421,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   .Object061:                           ;glass ball (GlassBallActivator)
   ld    a,(ix+Object061Table.ballnr)
   cp    4
-  jr    nc,.SetGlassBall4
+  jr    z,.SetGlassBall4
 
   .SetGlassBall1:
   ld    hl,GlassBall1Data
