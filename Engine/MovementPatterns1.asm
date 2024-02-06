@@ -3011,6 +3011,8 @@ TrampolineBlob:
   and   1
   ret   z
 
+  call  TurnAroundAtScreenEdges
+
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
   jr    z,.MovingRight
@@ -3812,7 +3814,7 @@ GlassBallMovementTable4:  ;repeating steps(128 = end table/repeat), move y, move
 
 HugeBlob:
 ;v1=Animation Counter
-;v2=Phase (0=walking slow, 1=attacking)
+;v2=Phase (0=walking slow, 1=jumping)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Jump to Which platform ? (1,2 or 3)
@@ -3931,6 +3933,7 @@ HugeBlob:
   ;we are now within x distance of HugeBlob
 
   ld    a,(framecounter)                    ;jump every 128 frames
+  add   a,2                                 ;add 2, cuz framecounter starts at 255, in which case huge blob instantly jumps when entering room
   and   127
   ret   nz
   
@@ -4132,6 +4135,10 @@ OctopussyBullet:                            ;forced on object positions 1-4
   cp    128
   jp    z,.Playerwashit
 
+  ld    a,216
+  ld    (CopyObject+sy),a  
+  call  VramObjectsTransparantCopies2        ;put object in Vram/screen ;
+
   ld    h,0
   ld    l,(ix+enemies_and_objects.v7)       ;v7=reference to movement table (0, 8, 16, 24, 32, 40, 48, 56)
   ld    de,OctopussyBulletMovementTable1
@@ -4139,9 +4146,8 @@ OctopussyBullet:                            ;forced on object positions 1-4
   ex    de,hl
   call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
 
-  ld    a,216
-  ld    (CopyObject+sy),a  
-  call  VramObjectsTransparantCopies2        ;put object in Vram/screen ;
+  call  RemoveSoftwareSpriteWhenOutOfScreen
+
   call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
   ret   nz
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Moving, 1=Splashing)  
@@ -4844,8 +4850,9 @@ DemontjeBullet:
   call  CollisionObjectPlayer               ;Check if player is hit by Vram object
   call  .Gravity
   call  .CheckCollisionForeground
+  call  VramObjectsTransparantCopies2
   call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
-  jp    VramObjectsTransparantCopies2
+  jp    RemoveSoftwareSpriteWhenOutOfScreen
 
   .Animate:
   ld    a,(framecounter)
@@ -5654,6 +5661,7 @@ FireEyeFireBullet:
   call  VramObjectsTransparantCopies2        ;put object in Vram/screen
   call  .Gravity
   call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
+  call  RemoveSoftwareSpriteWhenOutOfScreen
 
   call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
   ret   nz                                  ;return if background tile is NOT found

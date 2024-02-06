@@ -264,6 +264,28 @@ MoveSpriteVertically:                       ;Add v3 to y. Add v4 to x (16 bit)
   ld    (ix+enemies_and_objects.y),a  
   ret
 
+TurnAroundAtScreenEdges:
+  ld    a,(ix+enemies_and_objects.x)
+  cp    20
+  jr    c,.TurnAround
+  ld    a,(ix+enemies_and_objects.x)
+  cp    256-4
+  jr    nc,.TurnAround
+  ret
+  .TurnAround:
+  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+  neg
+  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
+  ret
+
+RemoveSoftwareSpriteWhenOutOfScreen:        ;for now only handles out of screen at the bottom (so we dont overwrite scoreboard)
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  add   a,(ix+enemies_and_objects.ny)       ;ny
+  cp    216 ;218
+  ret   c
+  ld    (ix+enemies_and_objects.alive?),0
+  ret
+
 CheckCollisionWallEnemy:                    ;checks for collision wall and if found invert horizontal movement
   ld    a,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
   add   a,8                                 ;this checks exactly at the feet of the enemy

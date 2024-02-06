@@ -17,7 +17,7 @@ loader:
   ret
 
 
-ObjectExample: 
+ObjectTestData: 
 
 ;db 11,0,0,$28,$a0,$44,16,3,3,0 ;small platform on
 ;db 0
@@ -36,9 +36,10 @@ ObjectExample:
 ;db 0
 
 ;db 20,120/2,80,3,0,6 ;id,x,y,face, speed, amount of bats (BigStatueMouth bat spawner)
+;db 0
+
 ;db 62,16/2,100,3,1,2  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
 ;db 11,0,0,$28,$a0,$44,16,3,3,1 ;platform
-;db 0
 
 
 ;db 1,80/2,80 ;id,x,y (pushing stone)
@@ -49,7 +50,7 @@ ObjectExample:
 ;db $96,32/2,$b8,03,01 ;slime (TrampolineBlob) (id,x,y,face,speed) 
 ;db 0
 
-;db 128,96/2,$60,03,01 ;huge blob (HugeBlob) (id,x,y,face,speed) 
+;db 128,96/2,$58 ;huge blob (HugeBlob) (id,x,y,face,speed) 
 ;db 0
 
 ;db 129,96/2,$b0,03,01 ;huge spider (HugeSpiderLegs) (id,x,y,face,speed) 
@@ -62,31 +63,35 @@ ObjectExample:
 ;db 131,96/2,$a8,03,01 ;black hole alien (BlackHoleAlien) (id,x,y,face,speed) 
 ;db 0
 
-;db 132,130/2,$98,03,01 ;green fire eye (FireEye) (id,x,y,face,speed) 
+;db 132,100/2,$98 ;green fire eye (FireEye) (id,x,y,face,speed) 
 ;db 0
 
-;db 133,130/2,$98,03,01 ;grey fire eye (FireEye) (id,x,y,face,speed) 
+;db 133,130/2,$98 ;grey fire eye (FireEye) (id,x,y,face,speed) 
 ;db 0
 
 ;db 134,96/2,$a8,03,01 ;knife thrower (SnowballThrower) (id,x,y,face,speed) 
 ;db 134,130/2,$68,03,01 ;knife thrower (SnowballThrower) (id,x,y,face,speed) 
 ;db 0
 
-;db 135,80/2,$78,03,01 ;octopussy (Octopussy) (id,x,y,face,speed) 
-;db 135,100/2,$78,03,01 ;octopussy (Octopussy) (id,x,y,face,speed) 
+;db $86,$5c/2,$58,03,01 ;knife thrower (SnowballThrower) (id,x,y,face,speed) 
 ;db 0
 
 
-;db 154,100/2,$78,03,01 ;green demontje (Demontje) (id,x,y,face,speed) 
+;db 135,80/2,$78 ;octopussy (Octopussy) (id,x,y,face,speed) 
+;db 135,110/2,$78 ;octopussy (Octopussy) (id,x,y,face,speed) 
 ;db 0
 
-;db 155,200/2,$78,07,01 ;red demontje (Demontje) (id,x,y,face,speed) 
+
+;db 154,100/2,$78,03,1 ;green demontje (Demontje) (id,x,y,face,speed) 
 ;db 0
 
-;db 156,100/2,$68,07,01 ;brown demontje (Demontje) (id,x,y,face,speed) 
+;db 155,200/2,$78,03,1 ;red demontje (Demontje) (id,x,y,face,speed) 
 ;db 0
 
-;db 157,200/2,$68,07,01 ;grey demontje (Demontje) (id,x,y,face,speed) 
+;db 156,140/2,$98,07,1 ;brown demontje (Demontje) (id,x,y,face,speed) 
+;db 0
+
+;db 157,200/2,$68,07,1 ;grey demontje (Demontje) (id,x,y,face,speed) 
 ;db 0
 
 ;db 136,96/2,$a8,03,01 ;grinder (Grinder) (id,x,y,face,speed) 
@@ -111,10 +116,10 @@ ObjectExample:
 ;db 142,140/2,$b8,03,01 ;green spider (GreenSpider) (id,x,y,face,speed) 
 ;db 0
 
-;db 144,140/2,$b8,03,01 ;green boring eye (BoringEye) (id,x,y,face,speed) 
+;db 144,140/2,$b8 ;green boring eye (BoringEye) (id,x,y,face,speed) 
 ;db 0
 
-;db 145,140/2,$b8,03,01 ;red boring eye (BoringEye) (id,x,y,face,speed) 
+;db 145,160/2,$b8 ;red boring eye (BoringEye) (id,x,y,face,speed) 
 ;db 0
 
 ;db 146,140/2,$b8,03,01 ;black hole alien baby (BlackHoleBaby) (id,x,y,face,speed) 
@@ -123,33 +128,33 @@ ObjectExample:
 ;db 148,140/2,$b8,03,01 ;landstrider (LandStrider) (id,x,y,face,speed) 
 ;db 0
 
-;db 149,140/2,$68,03,01 ;sensor tentacles (SensorTentacles) (id,x,y,face,speed) 
+;db 149,140/2,$68 ;sensor tentacles (SensorTentacles) (id,x,y,face,speed) 
 ;db 0
 
-;db 151,140/2,$68,03,01 ;green circling wasp (Wasp) (id,x,y,face,speed) 
+;db 151,180/2,$68 ;green circling wasp (Wasp) (id,x,y,face,speed) 
 ;db 0
 
-;db 152,140/2,$68,03,01 ;brown circling wasp (Wasp) (id,x,y,face,speed) 
+;db 152,140/2,$68 ;brown circling wasp (Wasp) (id,x,y,face,speed) 
 ;db 0
 
-;db 153,140/2,$68,03,01 ;yellow wasp (YellowWasp) (id,x,y,face,speed) 
+;db 153,140/2,$68 ;yellow wasp (YellowWasp) (id,x,y,face,speed) 
 ;db 0
 
-;db 61,5 ;id,balnr (
 ;db 61,4 ;id,balnr (
+;db 61,5 ;id,balnr (
 ;db 0
 
+;db 61,1 ;id,balnr (
+;db 61,2 ;id,balnr (
+;db 0
 
-db 61,1 ;id,balnr (
-db 61,2 ;id,balnr (
-db 0
-
-db 159,240/2,$98,03,01 ;glassball pipe (GlassballPipe) (id,x,y,face,speed) 
+;db 159,240/2,$98 ;,03,01 ;glassball pipe (GlassballPipe) (id,x,y,face,speed) 
+;db 0
 
 ;db 158,140/2,$a8,03,01 ;black slime (Slime) (id,x,y,face,speed) 
 ;db 158,140/2,$b8,03,01 ;black slime (Slime) (id,x,y,face,speed) 
 
-db 0
+;db 0
 
 ;db 62,16/2,100,3,1,4,0  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
 ;db 15,76,30,0  ;id, x,y (retracting platforms)
@@ -157,10 +162,6 @@ db 0
 ;db 0 ;3 retracting platforms (AppBlocksHandler)
 ;db 11,0,0,$28,$a0,$44,16,3,3,1 ;platform
 ;db 11,0,0,$28,$b0,$44,16,3,3,1
-;db $8f,64/2,$40,03,02 ;retard zombie
-;db $8f,$54,$50,03,02
-;db $8f,$64,$60,03,02
-;db $8f,$74,$70,03,02
 ;db $96,32/2,$80,03,01 ;slime
 ;db $96,$24,$30,03,01
 ;db 0
@@ -173,12 +174,11 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jr    z,.ObjectAddressFound
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
+
+;  ld    de,ObjectTestData
+
   push  de
-
- ; ld  hl,ObjectExample
- ; ld  bc,200
- ; ldir
-
+;.CheckObjects: jp .CheckObjects
 ;halt
 
   xor   a
@@ -267,6 +267,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object145                    ;red boring eye (BoringEye)
   cp    146
   jp    z,.Object146                    ;black hole alien baby (BlackHoleBaby)
+  ;147 = bat
   cp    148
   jp    z,.Object148                    ;landstrider (LandStrider)
   cp    149
@@ -419,8 +420,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   .Object061:                           ;glass ball (GlassBallActivator)
   ld    a,(ix+Object061Table.ballnr)
-  cp    5
-  jr    z,.SetGlassBall5
+  cp    4
+  jr    z,.SetGlassBall4
 
   .SetGlassBall1:
   ld    hl,GlassBall1Data
@@ -435,7 +436,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,Object061Table.lenghtobjectdata*2
   ret    
   
-  .SetGlassBall5:
+  .SetGlassBall4:
   ld    hl,GlassBall5Data
   push  iy
   pop   de                              ;enemy object table
@@ -917,7 +918,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   .Object128:                           ;huge blob (HugeBlob)
 ;v1=Animation Counter
-;v2=Phase (0=walking slow, 1=attacking)
+;v2=Phase (0=walking slow, 1=jumping)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Jump to Which platform ? (1,2 or 3)
@@ -928,7 +929,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   exx   
 
   ld    hl,Object128Table
-  call  .SetGeneralHardwareSprite
+  call  .SetGeneralHardwareSpriteNotMovingObject
 
   ;we also need to set a vram object, the rest of the blob's body. this is a separate object
   ld    hl,Object128Table.body
@@ -1014,7 +1015,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v5=v3v4tablerotator
 ;v7=green fire eye(0) / grey fire eye(1)
   ld    hl,Object132Table
-  call  .SetGeneralHardwareSprite
+  call  .SetGeneralHardwareSpriteNotMovingObject
 
   .SetFireEyeBullets:                   ;we also need to set 4 bullet objects
   ld    hl,Object132Table.bullet
@@ -1037,7 +1038,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v5=v3v4tablerotator
 ;v7=green fire eye(0) / grey fire eye(1)
   ld    hl,Object132Table
-  call  .SetGeneralHardwareSprite
+  call  .SetGeneralHardwareSpriteNotMovingObject
   ld    (iy+enemies_and_objects.v7),1   ;v7=green fire eye(0) / grey fire eye(1)
   jp    .SetFireEyeBullets
 
@@ -1084,7 +1085,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v4=Horizontal Movement
 ;v5=Attack phase duration
   ld    hl,Object135Table
-  call  .SetGeneralHardwareSprite
+  call  .SetGeneralHardwareSpriteNotMovingObject
 
   ld    hl,Object135Table.bullet
   call  .SetObjectBelongingToHardwareSprite
@@ -1184,7 +1185,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v6=pointer to movement table
 ;v7=Green (0) / Red(1)
   ld    hl,Object144Table
-  jp    .SetGeneralHardwareSprite
+  jp    .SetGeneralHardwareSpriteNotMovingObject
 
   .Object145:                           ;red boring eye (BoringEye)
 ;v1=Animation Counter
@@ -1194,7 +1195,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v6=pointer to movement table
 ;v7=Green (0) / Red(1)
   ld    hl,Object144Table
-  call  .SetGeneralHardwareSprite
+  call  .SetGeneralHardwareSpriteNotMovingObject
   ld    (iy+enemies_and_objects.v7),1   ;v7=Green (0) / Red(1)
   ret
 
@@ -1234,7 +1235,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v8=Starting Y
 ;v9=wait until attack timer 
   ld    hl,Object149Table
-  jp    .SetGeneralHardwareSprite
+  jp    .SetGeneralHardwareSpriteNotMovingObject
 
   .Object150:                           ;trampoline blob
 ;v1=Animation Counter
@@ -1254,7 +1255,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v7=Green Wasp(0) / Brown Wasp(1)
 ;v8=face left (-0) or face right (1)
   ld    hl,Object151Table
-  jp    .SetGeneralHardwareSprite
+  jp    .SetGeneralHardwareSpriteNotMovingObject
 
   .Object152:                           ;brown circling wasp (Wasp)
 ;v1=Animation Counter
@@ -1266,7 +1267,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v7=Green Wasp(0) / Brown Wasp(1)
 ;v8=face left (-0) or face right (1)
   ld    hl,Object151Table
-  call  .SetGeneralHardwareSprite
+  call  .SetGeneralHardwareSpriteNotMovingObject
   ld    (iy+enemies_and_objects.v7),1   ;v7=Green Wasp(0) / Brown Wasp(1)
   ret
 
@@ -1280,7 +1281,12 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v7=attack duration
 ;v8=face left (0) or face right (1) 
   ld    hl,Object153Table
-  jp    .SetGeneralHardwareSprite
+  jp    .SetGeneralHardwareSpriteNotMovingObject
+
+  .SetGeneralHardwareSpriteNotMovingObject:
+  call  .SetGeneralHardwareSprite
+  ld    de,3                            ;id, x, y, face, speed (lenght object data)
+  ret
   
   .SetGeneralHardwareSprite:
   push  iy
@@ -1312,7 +1318,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (iy+enemies_and_objects.v4),a   ;v4=Horizontal Movement
   .EndCheckMovingRight:
 
-  ld    de,Object150Table.lenghtobjectdata
+  ld    de,5                            ;id, x, y, face, speed (lenght object data)
   ret
 
   .Object154:                           ;green demontje (Demontje)
@@ -1384,7 +1390,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v4=Horizontal Movement
 ;v5=Wait timer
   ld    hl,GlassBallPipeObject
-  call  .SetGeneralHardwareSprite
+  call  .SetGeneralHardwareSpriteNotMovingObject
   dec   (iy+enemies_and_objects.y)      ;should be 1 pixel up
   dec   (iy+enemies_and_objects.x)      ;should be 1 pixel to the left
   ret
@@ -1571,9 +1577,7 @@ Object128Table:               ;huge blob
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.face: equ 3
-.speed: equ 4
-.lenghtobjectdata: equ 5
+.lenghtobjectdata: equ 3
 
 Object129Table:               ;huge spider
 ;Huge Spider Legs
@@ -1621,9 +1625,7 @@ Object132Table:               ;green fire eye
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.face: equ 3
-.speed: equ 4
-.lenghtobjectdata: equ 5
+.lenghtobjectdata: equ 3
 
 Object134Table:               ;knife thrower
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
@@ -1650,9 +1652,7 @@ Object135Table:               ;octopussy
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.face: equ 3
-.speed: equ 4
-.lenghtobjectdata: equ 5
+.lenghtobjectdata: equ 3
 
 Object136Table:               ;grinder
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
@@ -1731,9 +1731,7 @@ Object144Table:               ;Boring Eye. v6=Green (0) / Red (1)
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.face: equ 3
-.speed: equ 4
-.lenghtobjectdata: equ 5
+.lenghtobjectdata: equ 3
 
 Object146Table:               ;black hole alien baby
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
@@ -1761,9 +1759,7 @@ Object149Table:               ;sensor tentacles
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.face: equ 3
-.speed: equ 4
-.lenghtobjectdata: equ 5
+.lenghtobjectdata: equ 3
 
 Object150Table:               ;trampoline blob: v9=special width for Pushing Stone Puzzle Switch
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
@@ -1781,9 +1777,7 @@ Object151Table:               ;green circling wasp. v7=Green Wasp(0) / Brown Was
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.face: equ 3
-.speed: equ 4
-.lenghtobjectdata: equ 5
+.lenghtobjectdata: equ 3
 
 Object153Table:               ;yellow wasp
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
@@ -1791,9 +1785,7 @@ Object153Table:               ;yellow wasp
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.face: equ 3
-.speed: equ 4
-.lenghtobjectdata: equ 5
+.lenghtobjectdata: equ 3
 
 Object154Table:               ;Demontje v7=Green (0) / Red(1) / Brown(2) / Grey(3)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
@@ -1823,9 +1815,7 @@ GlassBallPipeObject:
 .ID: equ 0
 .x: equ 1
 .y: equ 2
-.face: equ 3
-.speed: equ 4
-.lenghtobjectdata: equ 5
+.lenghtobjectdata: equ 3
 
 ;Get room type [A] table record address [HL]
 getRoomType:
@@ -2050,6 +2040,12 @@ RemoveSpritesFromScreen:
   ret
 
 CopyVramObjectsPage1and3:
+  ld    a,(VramGraphicsPage1And3AlreadyInScreen?)
+  or    a
+  ret   nz
+  ld    a,1
+  ld    (VramGraphicsPage1And3AlreadyInScreen?),a
+
   ;Copy level objects to page 1
   ld    a,(slot.page12rom)        ;all RAM except page 12
   out   ($a8),a          
