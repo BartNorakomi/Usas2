@@ -6,12 +6,12 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 ;bt21=21,43;bt28=28,45;bt16=16,45;br16=16,43
 ;WorldMapPositionY:  db  17 | WorldMapPositionX:  db  44 ;ballroom 1 (with pipe)
 ;WorldMapPositionY:  db  20 | WorldMapPositionX:  db  44 ;ballroom 2
-WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
-roomX: equ 1*26 + "R"-"A"
-;WorldMapPositionY:  db  20 | WorldMapPositionX:  db  roomX
+;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
+roomX: equ 1*26 + "S"-"A"
+WorldMapPositionY:  db  28 | WorldMapPositionX:  db  roomX
 
 ClesX:      dw 86 ;$19 ;230 ;250 ;210
-ClesY:      db 180 ;144-1
+ClesY:      db 88 ;144-1
 
 
 PlayLogo:
