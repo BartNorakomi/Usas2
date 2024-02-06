@@ -6874,6 +6874,9 @@ RetardedZombie:
   .CheckFloor:
   call  CheckFloorUnderBothFeetEnemy        ;checks for floor, out z=collision found with floor
   ret   z
+  dec   a                                   ;check if zombie walks on ladder
+  ret   z
+
   ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ret

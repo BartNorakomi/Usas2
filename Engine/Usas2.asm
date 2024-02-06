@@ -4,7 +4,7 @@
 LoadSamples?: equ 0
 MusicOn?:   equ 1
 LogoOn?:    equ 0
-
+PlayerCanJumpThroughTopOfScreen?: equ 0
 
 ; GLobals
 RomBlockSize:			equ 16*1024

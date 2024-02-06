@@ -1,6 +1,5 @@
 phase	enginepage3addr
 
-
 WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
 MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 
@@ -8,8 +7,8 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 ;WorldMapPositionY:  db  17 | WorldMapPositionX:  db  44 ;ballroom 1 (with pipe)
 ;WorldMapPositionY:  db  20 | WorldMapPositionX:  db  44 ;ballroom 2
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
-roomX: equ 1*26 + "U"-"A"
-WorldMapPositionY:  db  14 | WorldMapPositionX:  db  roomX
+roomX: equ 1*26 + "R"-"A"
+WorldMapPositionY:  db  20 | WorldMapPositionX:  db  roomX
 
 
 PlayLogo:
