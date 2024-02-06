@@ -10,6 +10,9 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 roomX: equ 1*26 + "R"-"A"
 WorldMapPositionY:  db  20 | WorldMapPositionX:  db  roomX
 
+ClesX:      dw 86 ;$19 ;230 ;250 ;210
+ClesY:      db 180 ;144-1
+
 
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it

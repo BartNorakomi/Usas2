@@ -154,7 +154,7 @@ ObjectTestData:
 ;db 158,140/2,$a8,03,01 ;black slime (Slime) (id,x,y,face,speed) 
 ;db 158,140/2,$b8,03,01 ;black slime (Slime) (id,x,y,face,speed) 
 
-;db 0
+db 0
 
 ;db 62,16/2,100,3,1,4,0  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
 ;db 15,76,30,0  ;id, x,y (retracting platforms)
@@ -175,7 +175,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
 
-;  ld    de,ObjectTestData
+  ld    de,ObjectTestData
 
   push  de
 ;.CheckObjects: jp .CheckObjects

@@ -68,8 +68,6 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-ClesX:      dw 64 ;$19 ;230 ;250 ;210
-ClesY:      db 80 ;144-1
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -2603,26 +2601,26 @@ CheckMapExit:
   jp    .ExitLeftFound  
 
 .ExitBottomFound:
-;check if player was climbing stairs left up
+;check if player was climbing stairs left up/ right down
   ld    de,ClimbStairsLeftUp
   ld    hl,(PlayerSpriteStand)
   xor   a
   sbc   hl,de
   jr    nz,.EndCheckClimbStairsLeftUp1
   ld    hl,(ClesX)
-  ld    de,18
+  ld    de,18 - 8
   add   hl,de
   ld    (ClesX),hl
   .EndCheckClimbStairsLeftUp1:
 
-;check if player was climbing stairs right up
+;check if player was climbing stairs right up/left down
   ld    de,ClimbStairsRightUp
   ld    hl,(PlayerSpriteStand)
   xor   a
   sbc   hl,de
   jr    nz,.EndCheckClimbStairsRightUp1
   ld    hl,(ClesX)
-  ld    de,-18
+  ld    de,-18+ 8
   add   hl,de
   ld    (ClesX),hl
   .EndCheckClimbStairsRightUp1:
@@ -2637,17 +2635,20 @@ CheckMapExit:
   inc   a
   ld    (WorldMapPositionY),a
 
+;  .kut: jp .kut
+
+
   jp    .LoadnextMap
   
 .ExitTopFound:  
-;check if player was climbing stairs
+;check if player was climbing stairs left up
   ld    de,ClimbStairsLeftUp
   ld    hl,(PlayerSpriteStand)
   xor   a
   sbc   hl,de
   jr    nz,.EndCheckClimbStairs2
   ld    hl,(ClesX)
-  ld    de,-19
+  ld    de,-19 + 8 - 1
   add   hl,de
   ld    (ClesX),hl
   .EndCheckClimbStairs2:
@@ -2659,13 +2660,13 @@ CheckMapExit:
   sbc   hl,de
   jr    nz,.EndCheckClimbStairsRightUp2
   ld    hl,(ClesX)
-  ld    de,19
+  ld    de,12 ;19
   add   hl,de
   ld    (ClesX),hl
   .EndCheckClimbStairsRightUp2:
 
 ;  ld    de,-WorldMapDataMapLenght*WorldMapDataWidth
-  ld    a,176+8 + 24;  - 60
+  ld    a,208
   ld    (ClesY),a
   ld    a,44
   ld    (CameraY),a
@@ -2673,7 +2674,6 @@ CheckMapExit:
   ld    a,(WorldMapPositionY)
   dec   a
   ld    (WorldMapPositionY),a
-
   jp    .LoadnextMap
   
 .ExitRightFound:

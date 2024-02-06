@@ -3475,6 +3475,17 @@ CheckSnapToStairsWhileJump:
 
   ld    a,(ClesY)
   and   %1111 1000
+
+  ;We need to build an exception in case player snaps to stairs when y<8, so player doesn't clip throught the screen
+  jr    nz,.NotZero2
+  ld    hl,(ClesX)
+  ld    de,8
+  add   hl,de
+  ld    (ClesX),hl
+  ld    a,8  
+  .NotZero2:
+  ;/We need to build an exception in case player snaps to stairs when y<8, so player doesn't clip throught the screen
+
   dec   a
   ld    (ClesY),a
 
@@ -3506,6 +3517,17 @@ CheckSnapToStairsWhileJump:
 
   ld    a,(ClesY)
   and   %1111 1000
+
+  ;We need to build an exception in case player snaps to stairs when y<8, so player doesn't clip throught the screen
+  jr    nz,.NotZero
+  ld    hl,(ClesX)
+  ld    de,-8
+  add   hl,de
+  ld    (ClesX),hl
+  ld    a,8  
+  .NotZero:
+  ;/We need to build an exception in case player snaps to stairs when y<8, so player doesn't clip throught the screen
+
   dec   a
   ld    (ClesY),a
 
