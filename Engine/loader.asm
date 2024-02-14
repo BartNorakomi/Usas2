@@ -4,7 +4,6 @@ loader:
 	call SwapSpatColAndCharTable2
 	call SwapSpatColAndCharTable
 	call SwapSpatColAndCharTable2
-
 	ld de,(WorldMapPositionY) 			;WorldMapPositionX/Y:  
 	call getRoom
 ;	call SetEngineType
@@ -13,7 +12,7 @@ loader:
 	call PopulateControls			;this allows for a double jump as soon as you enter a new map
 	ld	a,RuinId.KarniMata		 		;ruinId (temp)
 	call getPalette
-	call SetMapPalette				
+	call SetMapPalette	
   ret
 
 
@@ -2275,6 +2274,9 @@ ReSetVariables:
   ld    bc,RunningTableLenght
   ldir
 
+  ld    a,0*32+31
+  ld    (PageOnNextVblank),a
+
   xor   a                              ;restore variables to put SF2 objects in play
   ld    (PutObjectInPage3?),a
   ld    a,1
@@ -2298,8 +2300,8 @@ ReSetVariables:
   ld    (PrimaryWeaponActive?),a   
   ld    hl,0
   ld    (PlayerAnicount),hl     
-  ret  
-
+  ret
+  
 .NormalRunningTable:
   dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
 ;  dw    -1,-2,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+2,+1

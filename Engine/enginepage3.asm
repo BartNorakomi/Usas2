@@ -33,7 +33,7 @@ loadGraphics:
 	out   ($a8),a
 	ld    a,Loaderblock                 ;loader routine at $4000
 	call  block12
-	call SetEngineType
+	call  SetEngineType
 
 	call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
 	call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4

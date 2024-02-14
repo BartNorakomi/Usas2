@@ -759,7 +759,8 @@ ExplosionBig:
   ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
   cp    2 * 05                              ;05 animation frame addresses
   ret   nz
-;  jp    RemoveSprite
+
+  jp    RemoveSprite ;COMMENT THIS OUT TO PUT COIN
 
   push  hl
   ld    l,(ix+enemies_and_objects.x)        ;v1=Animation Counter
