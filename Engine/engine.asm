@@ -1,6 +1,7 @@
 phase	engaddr
 
 LevelEngine:
+  call  CheckSwitchNextSong
 ;  call  BackdropBlue
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
 ;  call  BackdropBlack
@@ -68,10 +69,11 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
+RePlayerSFX_Play:                 ;in: a=sfx number
+    ret
+
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
-
-
 
 CurrentPalette: ds  32
 fadeoutsteps: equ 2
@@ -5711,6 +5713,9 @@ Set_Climb_AndResetAniCount:
   ret
 
 Set_jump:
+  ld    a,01
+  call  RePlayerSFX_Play
+
   call  SetHitBoxPlayerStanding
 
   ld    a,(ClesY)

@@ -3830,6 +3830,9 @@ endif
  
   pop   af                  ;pop the call to .VerticalMovement, this way no further checks are done
  
+  ld    a,02
+  call  RePlayerSFX_Play
+ 
   ld    a,(PlayerFacingRight?)
   or    a
   jp    z,Set_L_stand       ;on collision change to L_Stand  
