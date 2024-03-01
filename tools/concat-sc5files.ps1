@@ -14,13 +14,20 @@ screen5 bitmap files with a 7 bytes header and pallette attached
   incbin "..\grapx\tilesheets\sKarniMata.SC5",7,208 * 128      ;208 lines
   incbin "..\grapx\tilesheets\sKarniMataBottom48Lines.SC5",7,48 * 128 ;48 lines
 #>
-
 $headerSeek=0;$headerLength=7
 $bitmapSeek=0+$headerLength;$bitmapLength=256*128
 $paletteSeek=0x7680;$paletteLength=16*2
 
 
-$fsDst=[io.file]::create(($ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($dstfile)))					#create destination file (eagerly)
+#Resolve-path but without test-path (making non existing paths possible)
+#https://blog.danskingdom.com/Resolve-PowerShell-paths-that-do-not-exist/
+function resolve-NewPath
+{	param (	$path)
+	return $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)	
+}
+
+
+$fsDst=[io.file]::create((resolve-NewPath -path $dstfile))					#create destination file (eagerly)
 $fsDst
 #$rawData=[byte[]]::new($headerLength+$bitmapLength+$paletteLength)				#hdr, bitmap, pal
 #$fsDst.write($rawdata,0,$rawdata.length)
