@@ -134,7 +134,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Hub	Palette						
 1	Usas2		Ruin	Hub	ruinId	1					
 1	Usas2		Ruin	Hub	tileSet	Hub					
-1	Usas2		TiledtileSet	Hub	imageSourceFile	../../grapx/tilesheets/sHub.bmp					
+1	Usas2		TiledtileSet	Hub	imageSourceFile	./tilesheets/images/Hub.tiles.bmp					
 1	Usas2		TiledtileSet	Hub	path	tilesheets/tsHub.tsx					
 1	Usas2		TiledWorldMap	Hub	Name	Hub					
 1	Usas2		TiledWorldMap	Hub	path	Hub.world					
@@ -172,6 +172,9 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Tileset	KarniMata	file	..\grapx\tilesheets\KarniMataTiles.sc5					
 1	Usas2		Tileset	KarniMata	id	6					
 1	Usas2		Tileset	KarniMata	type	0					
+1	Usas2		Tileset	Lemniscate	file	..\grapx\tilesheets\Lemniscate.tiles.sc5					
+1	Usas2		Tileset	Lemniscate	id	2					
+1	Usas2		Tileset	Lemniscate	type	0					
 1	Usas2		RoomObject	knifeThrower	uid	134					
 1	Usas2		RoomObject	knifeThrower	objectClass	Enemy					
 1	Usas2		Ruin	Konark	music						
@@ -203,7 +206,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Pegu	Palette						
 1	Usas2		Ruin	Pegu	ruinId	4					
 1	Usas2		Ruin	Pegu	tileSet	Pegu					
-1	Usas2		TiledtileSet	Pegu	imageSourceFile	../../grapx/tilesheets/sPegu.bmp					
+1	Usas2		TiledtileSet	Pegu	imageSourceFile	./tilesheets/images/Pegu.tiles.bmp					
 1	Usas2		TiledtileSet	Pegu	path	tilesheets/tsPegu.tsx					
 1	Usas2		TiledWorldMap	Pegu	Name	Pegu					
 1	Usas2		TiledWorldMap	Pegu	path	Pegu.world					
@@ -270,7 +273,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Room	teleport	name	Teleport room					
 1	Usas2		Room	teleport	roomType	32					
 1	Usas2		Room	teleport	width	32					
-1	Usas2		TiledtileSet	teleport	imageSourceFile	../../grapx/tilesheets/sTeleport.bmp					
+1	Usas2		TiledtileSet	teleport	imageSourceFile	./tilesheets/images/Teleport.tiles.bmp					
 1	Usas2		TiledtileSet	teleport	path	tilesheets/tsTeleport.tsx					
 1	Usas2		Ruin	Tiwanaku	music						
 1	Usas2		Ruin	Tiwanaku	name	Tiwanaku					

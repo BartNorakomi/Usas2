@@ -19,7 +19,8 @@ $headerSeek=0;$headerLength=7
 $bitmapSeek=0+$headerLength;$bitmapLength=256*128
 $paletteSeek=0x7680;$paletteLength=16*2
 
-$fsDst=[io.file]::create($dstFile)					#create destination file (eagerly)
+
+$fsDst=[io.file]::create(($ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($dstfile)))					#create destination file (eagerly)
 $fsDst
 #$rawData=[byte[]]::new($headerLength+$bitmapLength+$paletteLength)				#hdr, bitmap, pal
 #$fsDst.write($rawdata,0,$rawdata.length)

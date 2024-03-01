@@ -11,6 +11,7 @@ loader:
 	;call  SetTilesInVram				;copies all the tiles to Vram
 	call PopulateControls			;this allows for a double jump as soon as you enter a new map
 	ld	a,RuinId.KarniMata		 		;ruinId (temp)
+	ld a,Ruinid.Lemniscate
 	call getPalette
 	call SetMapPalette	
   ret
@@ -1922,7 +1923,7 @@ palettes:
 .data:
 .0:				DS .reclen		;incBin filename,0,.reclen
 .1:				DS .reclen
-.2:				DS .reclen
+.2Lemniscate:	DB $06,$05,$12,$01,$32,$03,$34,$03,$20,$01,$21,$02,$07,$05,$73,$06,$05,$03,$77,$07,$53,$05,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
 .3:				DS .reclen
 .4:				DS .reclen
 .5:				DS .reclen
