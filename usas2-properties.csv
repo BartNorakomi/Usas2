@@ -165,7 +165,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	KarniMata	TiledWorldMap	KarniMata		Belongs to which Worldmap, besides the gobal worldmap			
 1	Usas2		Ruin	KarniMata	tileSet	KarniMata		Default Tileset (ID)			
 1	Usas2		TiledtileSet	KarniMata	id	6					
-1	Usas2		TiledtileSet	KarniMata	imageSourceFile	../../grapx/tilesheets/sKarniMata.bmp					
+1	Usas2		TiledtileSet	KarniMata	imageSourceFile	./tilesheets/images/Karnimata.tiles.bmp					
 1	Usas2		TiledtileSet	KarniMata	path	tilesheets/tsKarniMata.tsx					
 1	Usas2		TiledWorldMap	KarniMata	Name	Karni Mata					
 1	Usas2		TiledWorldMap	KarniMata	path	KarniMata.world					
@@ -190,7 +190,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Lemniscate	Palette						
 1	Usas2		Ruin	Lemniscate	ruinId	2					
 1	Usas2		Ruin	Lemniscate	tileSet	Lemniscate					
-1	Usas2		TiledtileSet	Lemniscate	imageSourceFile	../../grapx/tilesheets/Lemniscate-TILES-DEF.bmp					
+1	Usas2		TiledtileSet	Lemniscate	imageSourceFile	./tilesheets/images/Lemniscate.tiles.bmp					
 1	Usas2		TiledtileSet	Lemniscate	path	tilesheets/tsLemniscate.tsx					
 1	Usas2		Ruin	Morana	music						
 1	Usas2		Ruin	Morana	name	Morana					
