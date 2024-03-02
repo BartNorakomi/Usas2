@@ -24,6 +24,6 @@ if (-not (test-path $container)) {execute-cmd -cmd "new-item -Name $container -I
 foreach ($file in (get-item $filename))
 {	$newFileName=$file.basename+"."+(get-date -format yyyyMMdd)+$file.extension
 	write-verbose "renaming to: $newFileName"
-	execute-cmd -cmd "copy-item $file -destination '.\$container\$newFilename'"
+	execute-cmd -cmd "copy-item '$file' -destination '.\$container\$newFilename'"
 }
 
