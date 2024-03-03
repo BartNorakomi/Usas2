@@ -6,9 +6,12 @@
 	"license": "MIT",
 	"type": "module",
 	"dependencies": {
+		"png-js": "^1.0.0",
+		"bmp-js": "^0.1.0"
 	},
 	"private": true,
 	"scripts": {
-		"romspace": "node romspace.js ../Engine/Usas2.rom"
+		"romspace": "node romspace.js ../Engine/Usas2.rom",
+		"convertgfx": "node convertgfx/cli.js ../grapx/convertgfx.json"
 	}
 }
