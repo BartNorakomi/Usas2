@@ -6,10 +6,13 @@ import { TransformGamma, TransformQuantisePalette, TransformPrunePalette,
 import { Color } from "./Image.js";
 
 export class Resources {
-	constructor(json, path) {
+	constructor(json, path, overrides = []) {
 		this.images = [];
 		for (const group of (Array.isArray(json.groups) ? json.groups.map(group => ({...json, ...group})) : [json])) {
-			for (const image of (Array.isArray(group.images) ? group.images.map(image => ({...group, ...image})) : [])) {
+			for (const image of (Array.isArray(group.images) ? group.images.map(image => ({...group, ...image})) : [group])) {
+				for (const override of overrides) {
+					override.apply(image);
+				}
 				this.images.push(new ResourceImage(image, path));
 			}
 		}
@@ -91,4 +94,28 @@ export class ResourceImage {
 
 function resolveRelativePath(base, path) {
 	return typeof path == "string" ? fspath.resolve(fspath.dirname(base), path) : undefined;
+}
+
+export class ResourceOverride {
+	constructor(path, value) {
+		this.path = path.split(".").map(part => /^\d+$/.test(part) ? parseInt(part, 10) : part);
+		this.value = value == "true" ? true : value == "false" ? false : value == "null" ? null :
+			value == "undefined" ? undefined : /^[\-\d\[\{\"]/.test(value[0]) ? JSON.parse(value) : value;
+	}
+
+	apply(json) {
+		const path = this.path;
+		for (let i = 0; i < path.length - 1; i++) {
+			if (path[i] in json) {
+				json = json[path[i]];
+			} else if (typeof path[i + 1] == "number") {
+				json = json[path[i]] = [];
+			} else if (typeof path[i + 1] == "string") {
+				json = json[path[i]] = {};
+			} else {
+				throw new Error("Invalid path element type.");
+			}
+		}
+		json[path.at(-1)] = this.value;
+	}
 }
