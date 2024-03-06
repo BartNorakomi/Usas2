@@ -1,9 +1,10 @@
+#!/usr/bin/env node
 import fs from "fs";
 import { Resources } from "./Resources.js";
 
 async function main() {
 	if (process.argv.length < 3) {
-		console.log(`Usage: node ${process.argv[1]} resources.json`);
+		console.log(`Usage: npx convertgfx resources.json`);
 		process.exit(1);
 	}
 

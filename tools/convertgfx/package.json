@@ -1,0 +1,16 @@
+{
+	"name": "usas2-convertgfx",
+	"version": "0.0.0",
+	"description": "Usas2 BMP or PNG to MSX screen 5 converter",
+	"author": "TeamNXT",
+	"license": "MIT",
+	"type": "module",
+	"private": true,
+	"dependencies": {
+		"bmp-js": "^0.1.0",
+		"png-js": "^1.0.0"
+	},
+	"bin": {
+		"convertgfx": "./cli.js"
+	}
+}
