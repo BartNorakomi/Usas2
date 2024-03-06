@@ -5,7 +5,7 @@
 Before you begin:
 
 1. Install the latest LTS version of [Node.js](https://nodejs.org/en)
-2. Run npm install in the root of the Usas2-project.
+2. Run `npm install` in the root of the Usas2-project.
 
 Now you can run the scripts (everywhere in the project) via `npm run`:
 
