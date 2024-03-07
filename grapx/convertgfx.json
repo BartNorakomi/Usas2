@@ -47,7 +47,7 @@
 				{
 					"source": "tilesheets/sLemniscate.bmp",
 					"fixedPalette": "tilesheets/sLemniscatePalette.PL",
-					"targetScreen5": "tilesheets/sLemniscate.SC5"
+					"targetScreen5": "tilesheets/Lemniscate.tiles.SC5"
 				}
 			]
 		}
