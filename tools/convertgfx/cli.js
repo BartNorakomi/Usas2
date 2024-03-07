@@ -36,21 +36,25 @@ async function main() {
 		console.log(`Usage: npx convertgfx [<options>] [resources.json]`);
 		console.log();
 		console.log(`Options:`);
-		console.log(`  --help Show this help text`);
-		console.log(`  --source Input BMP or PNG file.`);
-		console.log(`  --targetScreen5 Output raw screen 5 pixel data file.`);
-		console.log(`  --targetPalette Output raw palette data file.`);
-		console.log(`  --targetSC5 Output MSX-BASIC format .SC5 image file to use with BLOAD ,S.`);
-		console.log(`  --targetBMP Output BMP-format file for debugging.`);
-		console.log(`  --path Base path to prefix to every file path.`);
-		console.log(`  --gamma Gamma to use when converting, default 2.2.`);
-		console.log(`  --slice Take a slice of the image, with dimensions {x: …, y: …, width: …, height: …}.`);
-		console.log(`  --swizzlePalette Map palette to new positions, with array of new indices.`);
-		console.log(`  --prunePalette De-duplicate and remove unused palette colours, if true.`);
-		console.log(`  --fixedPalette Fix colour positions in palette, with [r, g, b] array or raw palette data file.`);
+		console.log(`  --help           Show this help text`);
+		console.log(`  --source         Input BMP or PNG file.`);
+		console.log(`  --targetScreen5  Output raw screen 5 pixel data file.`);
+		console.log(`  --targetPalette  Output raw palette data file.`);
+		console.log(`  --targetSC5      Output MSX-BASIC format .SC5 image file to use with BLOAD ,S.`);
+		console.log(`  --targetBMP      Output BMP-format file for debugging.`);
+		console.log(`  --path           Base path to prefix to every file path.`);
+		console.log(`  --group          Group of images to process, with options array, inheriting from parent.`);
+		console.log(`  --gamma          Gamma to use when converting, default 2.2.`);
+		console.log(`  --slice          Take a slice of the image, with dimensions {x: …, y: …, width: …, height: …}.`);
+		console.log(`  --swizzlePalette Map palette to new positions, with new indices array.`);
+		console.log(`  --prunePalette   De-duplicate and remove unused palette colours, if true.`);
+		console.log(`  --fixedPalette   Fix colour positions in palette, with [r, g, b] array or raw palette data file.`);
 		console.log();
+		console.log(`The command-line options correspond to JSON fields.`);
 		console.log(`When options are specified the resources json is optional.`);
 		console.log(`If a resources json is provided, the options specify overrides.`);
+		console.log(`Options can use a "." to give a path into sub-objects/arrays.`);
+		console.log(`E.g. --slice.height 100 --group.0.path ../images`);
 		return 0;
 	}
 
