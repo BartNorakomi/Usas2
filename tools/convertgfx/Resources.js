@@ -6,15 +6,17 @@ import { TransformGamma, TransformQuantisePalette, TransformPrunePalette,
 import { Color } from "./Image.js";
 
 export class Resources {
-	constructor(json, path, overrides = []) {
+	constructor() {
 		this.images = [];
-		for (const group of (Array.isArray(json.groups) ? json.groups.map(group => ({...json, ...group})) : [json])) {
-			for (const image of (Array.isArray(group.images) ? group.images.map(image => ({...group, ...image})) : [group])) {
-				for (const override of overrides) {
-					override.apply(image);
-				}
-				this.images.push(new ResourceImage(image, path));
+	}
+
+	addJSON(json) {
+		if (json.group) {
+			for (const child of json.group) {
+				this.addJSON({ ...json, group: undefined, ...child, path: fspath.resolve(json.path ?? "", child.path ?? "") });
 			}
+		} else {
+			this.images.push(new ResourceImage(json));
 		}
 	}
 
@@ -24,13 +26,13 @@ export class Resources {
 }
 
 export class ResourceImage {
-	constructor(json, path) {
-		this.source = resolveRelativePath(path, json.source);
-		this.fixedPalette = resolveRelativePath(path, json.fixedPalette);
-		this.targetScreen5 = resolveRelativePath(path, json.targetScreen5);
-		this.targetPalette = resolveRelativePath(path, json.targetPalette);
-		this.targetSC5 = resolveRelativePath(path, json.targetSC5);
-		this.targetBMP = resolveRelativePath(path, json.targetBMP);
+	constructor(json) {
+		this.source = resolveRelativePath(json.path, json.source);
+		this.fixedPalette = resolveRelativePath(json.path, json.fixedPalette);
+		this.targetScreen5 = resolveRelativePath(json.path, json.targetScreen5);
+		this.targetPalette = resolveRelativePath(json.path, json.targetPalette);
+		this.targetSC5 = resolveRelativePath(json.path, json.targetSC5);
+		this.targetBMP = resolveRelativePath(json.path, json.targetBMP);
 		this.transforms = [
 			json.slice ? new TransformSlice(json.slice.x, json.slice.y, json.slice.width, json.slice.height) : [],
 			new TransformGamma(json.gamma),
@@ -93,7 +95,7 @@ export class ResourceImage {
 }
 
 function resolveRelativePath(base, path) {
-	return typeof path == "string" ? fspath.resolve(fspath.dirname(base), path) : undefined;
+	return typeof path == "string" ? fspath.resolve(base ?? "", path) : undefined;
 }
 
 export class ResourceOverride {

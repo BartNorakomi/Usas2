@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import fs from "fs";
+import fspath from "path";
 import { Resources, ResourceOverride } from "./Resources.js";
 
 async function main() {
-	let resourcesPath = undefined;
 	let resourcesJson = undefined;
 	let help = false;
 	const overrides = [];
@@ -21,15 +21,14 @@ async function main() {
 				throw new Error(`Unsupported option: ${arg}`);
 			}
 		} else if (resourcesJson === undefined) {
-			resourcesPath = arg;
-			resourcesJson = JSON.parse(await fs.promises.readFile(resourcesPath));
+			resourcesJson = JSON.parse(await fs.promises.readFile(arg));
+			resourcesJson.path = fspath.resolve(fspath.dirname(arg), resourcesJson.path ?? "");
 		} else {
 			throw new Error(`Too many arguments: ${process.argv.slice(i).join(" ")}`);
 		}
 	}
 
 	if (overrides.length > 0 && resourcesJson === undefined) {
-		resourcesPath = ".";
 		resourcesJson = {};
 	}
 
@@ -43,6 +42,7 @@ async function main() {
 		console.log(`  --targetPalette Output raw palette data file.`);
 		console.log(`  --targetSC5 Output MSX-BASIC format .SC5 image file to use with BLOAD ,S.`);
 		console.log(`  --targetBMP Output BMP-format file for debugging.`);
+		console.log(`  --path Base path to prefix to every file path.`);
 		console.log(`  --gamma Gamma to use when converting, default 2.2.`);
 		console.log(`  --slice Take a slice of the image, with dimensions {x: …, y: …, width: …, height: …}.`);
 		console.log(`  --swizzlePalette Map palette to new positions, with array of new indices.`);
@@ -54,8 +54,17 @@ async function main() {
 		return 0;
 	}
 
-	const resources = new Resources(resourcesJson, resourcesPath, overrides);
-	console.log(`Processing ${resources.images.length} images...`);
+	for (const override of overrides) {
+		override.apply(resourcesJson);
+	}
+
+	const resources = new Resources();
+	resources.addJSON(resourcesJson);
+	if (resources.images.length == 1) {
+		console.log(`Processing 1 image...`);
+	} else {
+		console.log(`Processing ${resources.images.length} images...`);
+	}
 	const images = await resources.process();
 	console.log(`Done.`);
 
