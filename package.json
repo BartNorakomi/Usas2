@@ -1,0 +1,17 @@
+{
+	"name": "usas2",
+	"version": "0.0.0",
+	"description": "Usas2",
+	"author": "TeamNXT",
+	"license": "MIT",
+	"type": "module",
+	"workspaces": [
+		"tools/romspace",
+		"tools/convertgfx"
+	],
+	"private": true,
+	"scripts": {
+		"romspace": "romspace Engine/Usas2.rom",
+		"convertgfx": "convertgfx grapx/convertgfx.json"
+	}
+}

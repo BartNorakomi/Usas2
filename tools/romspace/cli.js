@@ -1,8 +1,9 @@
+#!/usr/bin/env node
 import fs from "fs";
 
 async function main() {
 	if (process.argv.length < 3) {
-		console.log(`Usage: node ${process.argv[1]} my-ascii16.rom`);
+		console.log(`Usage: npx romspace my-ascii16.rom`);
 		process.exit(1);
 	}
 

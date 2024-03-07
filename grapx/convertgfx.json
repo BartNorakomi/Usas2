@@ -1,48 +1,48 @@
 {
-	"groups": [
+	"group": [
 		{
-			"name": "tilesheets",
+			"path": "tilesheets",
 			"gamma": 2.2,
-			"images": [
+			"group": [
 				{
-					"source": "tilesheets/KarniMata.tiles.bmp",
-					"fixedPalette": "tilesheets/sKarniMataPalette.PL",
-					"targetScreen5": "tilesheets/KarniMata.tiles.SC5"
+					"source": "KarniMata.tiles.bmp",
+					"fixedPalette": "sKarniMataPalette.PL",
+					"targetScreen5": "KarniMata.tiles.SC5"
 				},
 				{
-					"source": "tilesheets/sVoodooWasp.bmp",
-					"fixedPalette": "tilesheets/sVoodooWaspPalette.PL",
-					"targetScreen5": "tilesheets/sVoodooWasp.SC5"
+					"source": "sVoodooWasp.bmp",
+					"fixedPalette": "sVoodooWaspPalette.PL",
+					"targetScreen5": "sVoodooWasp.SC5"
 				},
 				{
-					"source": "tilesheets/sGoddess.bmp",
-					"fixedPalette": "tilesheets/sGoddessPalette.PL",
-					"targetScreen5": "tilesheets/sGoddess.SC5"
+					"source": "sGoddess.bmp",
+					"fixedPalette": "sGoddessPalette.PL",
+					"targetScreen5": "sGoddess.SC5"
 				},
 				{
-					"source": "tilesheets/sBlueTemple.bmp",
-					"fixedPalette": "tilesheets/sBlueTemplePalette.PL",
-					"targetScreen5": "tilesheets/sBlueTemple.SC5"
+					"source": "sBlueTemple.bmp",
+					"fixedPalette": "sBlueTemplePalette.PL",
+					"targetScreen5": "sBlueTemple.SC5"
 				},
 				{
-					"source": "tilesheets/sKonark.bmp",
-					"fixedPalette": "tilesheets/sKonarkPalette.PL",
-					"targetScreen5": "tilesheets/sKonark.SC5"
+					"source": "sKonark.bmp",
+					"fixedPalette": "sKonarkPalette.PL",
+					"targetScreen5": "sKonark.SC5"
 				},
 				{
-					"source": "tilesheets/sBurial.bmp",
-					"fixedPalette": "tilesheets/sBurialPalette.PL",
-					"targetScreen5": "tilesheets/sBurial.SC5"
+					"source": "sBurial.bmp",
+					"fixedPalette": "sBurialPalette.PL",
+					"targetScreen5": "sBurial.SC5"
 				},
 				{
-					"source": "tilesheets/sBossArea.bmp",
-					"fixedPalette": "tilesheets/sBossAreaPalette.PL",
-					"targetScreen5": "tilesheets/sBossArea.SC5"
+					"source": "sBossArea.bmp",
+					"fixedPalette": "sBossAreaPalette.PL",
+					"targetScreen5": "sBossArea.SC5"
 				},
 				{
-					"source": "tilesheets/sIceTemple.bmp",
-					"fixedPalette": "tilesheets/sIceTemplePalette.PL",
-					"targetScreen5": "tilesheets/sIceTemple.SC5"
+					"source": "sIceTemple.bmp",
+					"fixedPalette": "sIceTemplePalette.PL",
+					"targetScreen5": "sIceTemple.SC5"
 				},
 				{
 					"source": "tilesheets/sLemniscate.bmp",
