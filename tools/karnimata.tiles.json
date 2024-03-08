@@ -1,0 +1,15 @@
+{
+	"group": [
+		{
+			"path": "../grapx/tilesheets",
+			"gamma": 2.2,
+			"group": [
+				{
+					"source": "KarniMata.tiles.bmp",
+					"fixedPalette": "sKarniMataPalette.PL",
+					"targetScreen5": "KarniMata.tiles.SC5"
+				}
+			]
+		}
+	]
+}

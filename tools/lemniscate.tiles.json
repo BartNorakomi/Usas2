@@ -1,0 +1,15 @@
+{
+	"group": [
+		{
+			"path": "../grapx/tilesheets",
+			"gamma": 2.2,
+			"group": [
+				{
+					"source": "Lemniscate.tiles.bmp",
+					"fixedPalette": "Lemniscate.tiles.PL",
+					"targetScreen5": "Lemniscate.tiles.SC5"
+				}
+			]
+		}
+	]
+}
