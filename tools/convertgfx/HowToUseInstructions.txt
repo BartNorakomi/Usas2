@@ -1,0 +1,19 @@
+Voordat je begint, doe eenmalig het volgende:
+Verwijder de tools\node_modules directory.
+Run npm install in de root van het Usas2-project.
+Dit moet omdat ik de structuur enigszins heb gewijzigd, nu kan je Node overal in het project aanroepen en hoef je niet meer per se in de tools directory te zitten.
+Nu kun je als vanouds de scripts (overal in het project) aanroepen via npm run:
+npm run romspace
+Dit bepaalt de ongebruikte ruimte in Engine\Usas2.rom.
+npm run convertgfx
+Dit converteert alle afbeeldingen zoals opgegeven in grafx\convertgfx.json in één keer.
+Daarnaast kun je nu ook de tools direct aanroepen met je eigen command line parameters via npx (met een X van eXecute):
+npx romspace Engine\Usas2.rom
+Dit bepaalt de ongebruikte ruimte in Engine\Usas2.rom.
+npx convertgfx grafx\convertgfx.json
+Dit converteert alle afbeeldingen die zijn opgegeven in grafx\convertgfx.json in één keer.
+npx convertgfx --source KarniMata.tiles.bmp --fixedPalette sKarniMataPalette.PL --targetScreen5 KarniMata.tiles.SC5 --gamma 2.2
+(In dit specifieke voorbeeld aanroepen vanuit grapx\tilesheets waarin de files staan.)
+Dit converteert specifiek de KarniMata.tiles.bmp afbeelding met de opgegeven parameters.
+npx convertgfx --help
+Dit laat een overzicht zien van de opties voor de command line (zoals hierboven) en de JSON.

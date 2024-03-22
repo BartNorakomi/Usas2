@@ -50,8 +50,8 @@ ObjectTestData:
 ;db $96,32/2,$b8,03,01 ;slime (TrampolineBlob) (id,x,y,face,speed) 
 ;db 0
 
-db 128,96/2,$98 ;huge blob (HugeBlob) (id,x,y,face,speed) 
-db 0
+;db 128,96/2,$98 ;huge blob (HugeBlob) (id,x,y,face,speed) 
+;db 0
 
 ;db 129,96/2,$b0,03,01 ;huge spider (HugeSpiderLegs) (id,x,y,face,speed) 
 ;db 0
@@ -154,6 +154,10 @@ db 0
 ;db 158,140/2,$a8,03,01 ;black slime (Slime) (id,x,y,face,speed) 
 ;db 158,140/2,$b8,03,01 ;black slime (Slime) (id,x,y,face,speed) 
 
+;db 0
+
+db 4,$28,$48  ;poison drops (DrippingOozeDrop) (id,x,y) 
+db 4,$48,$48  ;poison drops (DrippingOozeDrop) (id,x,y) 
 db 0
 
 ;db 62,16/2,100,3,1,4,0  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
@@ -175,7 +179,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
 
-;  ld    de,ObjectTestData
+  ld    de,ObjectTestData
 
   push  de
 ;.CheckObjects: jp .CheckObjects
@@ -183,6 +187,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   xor   a
   ld    (AmountOfPushingStonesInCurrentRoom),a
+  ld    (AmountOfPoisonDropsInCurrentRoom),a
   call	clearEnemyTable
   ld    hl,CleanOb1                     ;refers to the cleanup table for 1st object. we can place 3 objects max. CleanOb1, CleanOb2 and CleanOb3 are their tables
 
@@ -213,6 +218,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   .SetObject:
   cp    1
   jp    z,.Object001                    ;pushing stone
+  cp    4
+  jp    z,.Object004                    ;poison drops (DrippingOozeDrop)
   cp    11
   jp    z,.Object011                    ;small moving platform on (standard dark grey)
   cp    12
@@ -448,6 +455,63 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ld    de,Object061Table.lenghtobjectdata*2
   ret    
+
+
+
+  .Object004:                           ;poison drops (DrippingOozeDrop)
+;v1=sx
+;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
+;v3=Vertical Movement
+;v4=Grow Duration
+;v5=Wait FOr Respawn Counter
+;v8=Y spawn
+;v9=X spawn
+  ld    hl,Object004Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1
+  ldir                                  ;copy enemy table
+
+  call  SetCleanObjectNumber            ;each object has a reference cleanup table
+
+  ;set x
+  ld    a,(ix+Object004Table.x)
+  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+  add   a,3
+  ld    (iy+enemies_and_objects.v9),a   ;v9=X spawn
+
+  ;set y
+  ld    a,(ix+Object004Table.y)
+  add   a,03                            ;32 pix down
+  ld    (iy+enemies_and_objects.v8),a   ;v8=Y spawn
+
+  ;if there is a second Poison Drop object, then the activation timer should increase, so the poison drops don't spawn at the same time
+  ld    a,(AmountOfPoisonDropsInCurrentRoom)
+  inc   a
+  ld    (AmountOfPoisonDropsInCurrentRoom),a
+  dec   a
+  jr    z,.EndCheckMultiPoisonDrops
+  ld    (iy+enemies_and_objects.v5),180 ;v5=Wait FOr Respawn Counter 
+  .EndCheckMultiPoisonDrops:
+  
+  call  .AddSplashSprite                ;we also need to set a splashing hardware sprite, when drop hits the ooze pool
+  
+  ld    de,Object004Table.lenghtobjectdata
+  ret
+
+  .AddSplashSprite:                     ;we also need to set a splashing hardware sprite, when drop hits the ooze pool
+  ld    hl,Object004Table.Splash        ;we also need to set a splashing hardware sprite, when drop hits the ooze pool
+  ld    de,lenghtenemytable             ;lenght 1 object in object table
+  add   iy,de                           ;next object in object table
+
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable
+  ldir                                  ;copy enemy table
+
+  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+  ret
+
   
   .Object062:                           ;zombie spawn point (ZombieSpawnPoint)
 ;v1=Zombie Spawn Timer
@@ -1816,6 +1880,21 @@ GlassBallPipeObject:
 .x: equ 1
 .y: equ 2
 .lenghtobjectdata: equ 3
+
+Object004Table:               ;Dripping Ooze Drop
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   ,Hit?,life 
+          db 1,        0|dw DrippingOozeDrop    |db 8*09-5|dw 8*10+3|db 08,05|dw CleanOb1,0 db 0,0,0,                 +149,+02,+03,+00,+63,+00,+00,8*09-5,8*10+3, 0|db 000,movepatblo1| ds fill-1
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.Splash: db -0,        1|dw DrippingOoze        |db 8*22|dw 8*24|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.lenghtobjectdata: equ 3
+
+
+
+
+
 
 ;Get room type [A] table record address [HL]
 getRoomType:

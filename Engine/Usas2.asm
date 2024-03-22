@@ -2,7 +2,7 @@
 
 ;Debug stuff
 LoadSamples?: equ 0
-MusicOn?:   equ 1
+MusicOn?:   equ 0
 LogoOn?:    equ 0
 PlayerCanJumpThroughTopOfScreen?: equ 0
 
