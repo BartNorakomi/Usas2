@@ -156,9 +156,18 @@ ObjectTestData:
 
 ;db 0
 
-db 4,$28,$48  ;poison drops (DrippingOozeDrop) (id,x,y) 
-db 4,$48,$48  ;poison drops (DrippingOozeDrop) (id,x,y) 
-db 0
+;db 4,$28,$48  ;poison drops (DrippingOozeDrop) (id,x,y) 
+;db 2,$58,$48  ;poison drops (DrippingOozeDrop) (id,x,y) 
+;db 2,$68,$48  ;poison drops (DrippingOozeDrop) (id,x,y) 
+;db 4,$48,$48  ;poison drops (DrippingOozeDrop) (id,x,y) 
+
+;db 0
+
+;db 2,$28,$48  ;poison drops (DrippingOozeDrop) (id,x,y) 
+;db 2,$38,$48  ;poison drops (DrippingOozeDrop) (id,x,y) 
+;db 2,$48,$48  ;poison drops (DrippingOozeDrop) (id,x,y) 
+;db 0
+
 
 ;db 62,16/2,100,3,1,4,0  ;id,x,y,face,speed,max zombies (ZombieSpawnPoint)
 ;db 15,76,30,0  ;id, x,y (retracting platforms)
@@ -188,6 +197,9 @@ SetObjects:                             ;after unpacking the map to ram, all the
   xor   a
   ld    (AmountOfPushingStonesInCurrentRoom),a
   ld    (AmountOfPoisonDropsInCurrentRoom),a
+  ld    (AmountOfWaterfallsInCurrentRoom),a
+  ld    a,1
+  ld    (CurrentActiveWaterfall),a
   call	clearEnemyTable
   ld    hl,CleanOb1                     ;refers to the cleanup table for 1st object. we can place 3 objects max. CleanOb1, CleanOb2 and CleanOb3 are their tables
 
@@ -219,7 +231,9 @@ SetObjects:                             ;after unpacking the map to ram, all the
   cp    1
   jp    z,.Object001                    ;pushing stone
   cp    2
-  jp    z,.Object002                    ;waterfall
+  jp    z,.Object002                    ;waterfall yellow statue
+  cp    3
+  jp    z,.Object003                    ;waterfall grey statue
   cp    4
   jp    z,.Object004                    ;poison drops (DrippingOozeDrop)
   cp    11
@@ -459,20 +473,17 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ret    
 
 
+  .Object003:                           ;waterfall grey statue (WaterfallEyesGrey)
+  ld    hl,Object003Table.eyes
+  jr    .EntryForObject003
 
-  .Object002:                           ;waterfall yellow (WaterfallEyesYellow)
+  .Object002:                           ;waterfall yellow statue (WaterfallEyesYellow)
 ;v1=sx
 ;v2=Active Timer
-;v3=Wait Timer
-;v4=Amount of Waterfalls
-;v5=Last Waterfalls Activated
-;v6=Y waterfall 1
-;v7=x waterfall 1
-;v8=Y waterfall 2
-;v9=x waterfall 2
-;v10=Y waterfall 3
-;v11=x waterfall 3
+;v3=wait timer in case only 1 waterfall
+;v4=Waterfall nr
   ld    hl,Object002Table.eyes
+  .EntryForObject003:
   push  iy
   pop   de                              ;enemy object table
   ld    bc,lenghtenemytable*1
@@ -482,19 +493,27 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ;set x
   ld    a,(ix+Object002Table.x)
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),l
-  ld    (iy+enemies_and_objects.x+1),h
+  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+  add   a,8
+  ld    (iy+enemies_and_objects.x),a    ;x waterfall
 
   ;set y
   ld    a,(ix+Object002Table.y)
-  ld    (iy+enemies_and_objects.y),a
+  add   a,3
+  ld    (iy+enemies_and_objects.y),a    ;Y waterfall
 
-
-
-
+  ld    a,(AmountOfWaterfallsInCurrentRoom)
+  inc   a
+  ld    (AmountOfWaterfallsInCurrentRoom),a
+  ld    (iy+enemies_and_objects.v4),a   ;v4=Waterfall nr
+  dec   a
+  jr    z,.EndCheckActivationMomentWaterfall
+  exx                                   ;a 2nd or 3d waterfall uses the same sprite position as the 1st, sprite size=8, so decrease b with 8
+  ld    a,b
+  sub   a,8
+  ld    b,a
+  exx  
+  .EndCheckActivationMomentWaterfall:
 
   ;next object (mouth)
   ld    de,lenghtenemytable             ;lenght 1 object in object table
@@ -508,19 +527,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   call  SetCleanObjectNumber            ;each object has a reference cleanup table
 
-  ;set x
-  ld    a,(ix+Object002Table.x)
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),l
-  ld    (iy+enemies_and_objects.x+1),h
-
-  ;set y
-  ld    a,(ix+Object002Table.y)
-  add   a,20
-  ld    (iy+enemies_and_objects.y),a
-  
   call  .WaterfallSprite                ;we also need to set a waterfall hardware sprite
   
   ld    de,Object002Table.lenghtobjectdata
@@ -538,7 +544,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
   ret
-
 
 
   .Object004:                           ;poison drops (DrippingOozeDrop)
@@ -576,10 +581,9 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jr    z,.EndCheckMultiPoisonDrops
   ld    (iy+enemies_and_objects.v5),180 ;v5=Wait FOr Respawn Counter 
   exx                                   ;a 2nd poison drop uses the same sprite position as the 1st, sprite size=4, so decrease b with 4
-  dec   b
-  dec   b
-  dec   b
-  dec   b
+  ld    a,b
+  sub   a,4
+  ld    b,a
   exx
   .EndCheckMultiPoisonDrops:
   
@@ -1970,19 +1974,26 @@ GlassBallPipeObject:
 .y: equ 2
 .lenghtobjectdata: equ 3
 
-Object002Table:               ;waterfall yellow (WaterfallEyesYellow)
+Object002Table:               ;waterfall yellow statue (WaterfallEyesYellow)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
 .eyes:    db 1,        0|dw WaterfallEyesYellow |db 8*15+3|dw 8*17|db 06,14|dw CleanOb1,0 db 0,0,0,                   +067,+00,+01,+01,+00,8*15+3,8*17,8*00+3,8*00,8*00+3,8*00,movepatblo1| ds fill-1
 ;Waterfall mouth
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.mouth:   db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*17+2|db 06,10|dw CleanOb2,0 db 0,0,0,                 +119,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000,movepatblo1| ds fill-1
+.mouth:   db 0,        0|dw WaterfallMouth      |db 8*16+7|dw 8*17+2|db 06,10|dw CleanOb2,0 db 0,0,0,                 +119,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000,movepatblo1| ds fill-1
 ;Waterfall
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.water:   db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
+.water:   db -0,       1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2
 .lenghtobjectdata: equ 3
+
+Object003Table:               ;waterfall grey statue (WaterfallEyesYellow)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
+.eyes:    db 1,        0|dw WaterfallEyesGrey   |db 8*15+3|dw 8*28|db 06,14|dw CleanOb3,0 db 0,0,0,                   +095,+00,200,+02,+01,8*15+3,8*06,8*15+3,8*28,8*00+3,8*00,movepatblo1| ds fill-1
+
+
+
 
 Object004Table:               ;Dripping Ooze Drop
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   ,Hit?,life 

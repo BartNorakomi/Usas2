@@ -305,6 +305,15 @@ RestoreBackground:                  ;all background restores should be done simu
   ld    hl,CleanOb4+restorebackground?
   bit   0,(hl)
   call  nz,.Restore
+
+  ld    hl,CleanOb5+restorebackground?
+  bit   0,(hl)
+  call  nz,.Restore
+
+  ld    hl,CleanOb6+restorebackground?
+  bit   0,(hl)
+  call  nz,.Restore
+
   ret
 
   .Restore:
@@ -695,17 +704,19 @@ CleanOb4:
   db    002,000,001,000   ;nx,--,ny,--
   db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
-;CleanOb5:
-;  db    000,000,000,000   ;sx,--,sy,spage
-;  db    000,000,000,000   ;dx,--,dy,dpage
-;  db    002,000,001,000   ;nx,--,ny,--
-;  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+  db    0                 ;restorebackground?
+CleanOb5:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    002,000,001,000   ;nx,--,ny,--
+  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
-;CleanOb6:
-;  db    000,000,000,000   ;sx,--,sy,spage
-;  db    000,000,000,000   ;dx,--,dy,dpage
-;  db    002,000,001,000   ;nx,--,ny,--
-;  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+  db    0                 ;restorebackground?
+CleanOb6:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,000,000   ;dx,--,dy,dpage
+  db    002,000,001,000   ;nx,--,ny,--
+  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
 PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
 PuzzleSwitchTable2: db  0,1,2,3,1,3,0,   0,0,0

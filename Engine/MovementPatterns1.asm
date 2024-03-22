@@ -2339,16 +2339,9 @@ WaterfallEyesGrey:
   
 WaterfallEyesYellow:
 ;v1=sx
-;v2=Active Timer
-;v3=Wait Timer
-;v4=Amount of Waterfalls
-;v5=Last Waterfalls Activated
-;v6=Y waterfall 1
-;v7=x waterfall 1
-;v8=Y waterfall 2
-;v9=x waterfall 2
-;v10=Y waterfall 3
-;v11=x waterfall 3
+;v2=Active?
+;v3=wait timer in case only 1 waterfall
+;v4=Waterfall nr
 
   ld    b,WaterfallMouthYellowOpenSX
   ld    c,WaterfallMouthYellowClosedSX
@@ -2356,7 +2349,7 @@ WaterfallEyesYellow:
   ld    e,WaterfallEyesYellowOpenSX
   .EntryPointForGreyEyes:
 
-  call  .OpenEyes
+  call  .CheckOpenEyes
   call  .CheckActivateWaterFall
   
   ld    a,216+32 
@@ -2389,6 +2382,7 @@ WaterfallEyesYellow:
   ret
 
   .OpenMouth:
+  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),1
   ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v1),b
   
   ld    a,(ix+enemies_and_objects.x)        ;x
@@ -2403,54 +2397,41 @@ WaterfallEyesYellow:
   ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v1),c
 
   ld    (ix+enemies_and_objects.v1),d
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Active Timer
+  ld    (ix+enemies_and_objects.v2),0       ;v2=Active?
+  
+  ld    a,(AmountOfWaterfallsInCurrentRoom)
+  inc   a
+  ld    b,a
+  ld    a,(CurrentActiveWaterfall)
+  inc   a
+  ld    (CurrentActiveWaterfall),a
+  cp    b
+  ret   nz
+  ld    a,1
+  ld    (CurrentActiveWaterfall),a
   ret
 
-  .OpenEyes:
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Active Timer
+  .CheckOpenEyes:
+  ld    a,(CurrentActiveWaterfall)
+  cp    (ix+enemies_and_objects.v4)       ;v4=Waterfalls nr
+  ret   nz
+
+  ld    a,(ix+enemies_and_objects.v2)       ;v2=Active?
   or    a
   ret   nz                                  ;return if already active. Eyes are open when active
-  
-  ld    a,(ix+enemies_and_objects.v3)       ;v3=Wait Timer
+
+  ld    a,(AmountOfWaterfallsInCurrentRoom)
   dec   a
-;  and   127
-  ld    (ix+enemies_and_objects.v3),a       ;v3=Wait Timer
+  jr    nz,.EndCheckOnly1Waterfall
+  ld    a,(ix+enemies_and_objects.v3)       ;v3=wait timer in case only 1 waterfall
+  inc   a
+  and   63
+  ld    (ix+enemies_and_objects.v3),a       ;v3=wait timer in case only 1 waterfall
   ret   nz
-  ld    (ix+enemies_and_objects.v3),200     ;v3=Wait Timer
+  .EndCheckOnly1Waterfall:
 
   ld    (ix+enemies_and_objects.v1),e
-  ld    (ix+enemies_and_objects.v2),1       ;v2=Active Timer
-
-  ld    a,(ix+enemies_and_objects.v5)       ;v5=Last Waterfalls Activated
-  inc   a
-  cp    (ix+enemies_and_objects.v4)         ;v4=Amount of Waterfalls
-  jr    nz,.SetWaterFall
-  xor   a
-  .SetWaterFall:
-  ld    (ix+enemies_and_objects.v5),a       ;v5=Last Waterfalls Activated
-  jr    z,.SetWaterFall1
-  dec   a
-  jr    z,.SetWaterFall2
-
-  .SetWaterFall3:
-  ld    a,(ix+enemies_and_objects.v11)      ;x waterfall 3
-  ld    (ix+enemies_and_objects.x),a        ;x
-  ld    a,(ix+enemies_and_objects.v10)      ;y waterfall 3
-  ld    (ix+enemies_and_objects.y),a        ;y  
-  ret
-  
-  .SetWaterFall2:
-  ld    a,(ix+enemies_and_objects.v9)       ;x waterfall 2
-  ld    (ix+enemies_and_objects.x),a        ;x
-  ld    a,(ix+enemies_and_objects.v8)       ;y waterfall 2
-  ld    (ix+enemies_and_objects.y),a        ;y
-  ret
-
-  .SetWaterFall1:
-  ld    a,(ix+enemies_and_objects.v7)       ;x waterfall 1
-  ld    (ix+enemies_and_objects.x),a        ;x
-  ld    a,(ix+enemies_and_objects.v6)       ;y waterfall 1
-  ld    (ix+enemies_and_objects.y),a        ;y
+  ld    (ix+enemies_and_objects.v2),1       ;v2=Active?
   ret
 
 Waterfall:

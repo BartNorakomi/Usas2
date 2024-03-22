@@ -1270,7 +1270,9 @@ LogoAnimationVar1:            rb    1
 LogoAnimationVar2:            rb    1
 LogoAnimationVar3:            rb    1
 
-AmountOfPoisonDropsInCurrentRoom:            rb    1
+AmountOfPoisonDropsInCurrentRoom:   rb    1
+AmountOfWaterfallsInCurrentRoom:    rb    1
+CurrentActiveWaterfall:             rb    1
 
 
 ;RoomDataBlock structure
