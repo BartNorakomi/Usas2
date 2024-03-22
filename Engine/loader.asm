@@ -11,7 +11,7 @@ loader:
 	;call  SetTilesInVram				;copies all the tiles to Vram
 	call PopulateControls			;this allows for a double jump as soon as you enter a new map
 	ld	a,RuinId.KarniMata		 		;ruinId (temp)
-	ld a,Ruinid.Lemniscate
+;	ld a,Ruinid.Lemniscate
 	call getPalette
 	call SetMapPalette	
   ret
