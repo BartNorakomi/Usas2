@@ -191,7 +191,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   call	clearEnemyTable
   ld    hl,CleanOb1                     ;refers to the cleanup table for 1st object. we can place 3 objects max. CleanOb1, CleanOb2 and CleanOb3 are their tables
 
-  ld    a,(scrollEngine)              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
+  ld    a,(scrollEngine)                ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
   cp    2
   ld    b,12+10                         ;first hardware object sprite nr (sprite 0-11 are border masking sprites, after this start the hardware sprite objects)
   jp    z,.EngineTypeFound
@@ -218,6 +218,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   .SetObject:
   cp    1
   jp    z,.Object001                    ;pushing stone
+  cp    2
+  jp    z,.Object002                    ;waterfall
   cp    4
   jp    z,.Object004                    ;poison drops (DrippingOozeDrop)
   cp    11
@@ -458,6 +460,87 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
 
 
+  .Object002:                           ;waterfall yellow (WaterfallEyesYellow)
+;v1=sx
+;v2=Active Timer
+;v3=Wait Timer
+;v4=Amount of Waterfalls
+;v5=Last Waterfalls Activated
+;v6=Y waterfall 1
+;v7=x waterfall 1
+;v8=Y waterfall 2
+;v9=x waterfall 2
+;v10=Y waterfall 3
+;v11=x waterfall 3
+  ld    hl,Object002Table.eyes
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1
+  ldir                                  ;copy enemy table
+
+  call  SetCleanObjectNumber            ;each object has a reference cleanup table
+
+  ;set x
+  ld    a,(ix+Object002Table.x)
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.x),l
+  ld    (iy+enemies_and_objects.x+1),h
+
+  ;set y
+  ld    a,(ix+Object002Table.y)
+  ld    (iy+enemies_and_objects.y),a
+
+
+
+
+
+  ;next object (mouth)
+  ld    de,lenghtenemytable             ;lenght 1 object in object table
+  add   iy,de                           ;next object in object table
+
+  ld    hl,Object002Table.mouth
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1
+  ldir                                  ;copy enemy table
+
+  call  SetCleanObjectNumber            ;each object has a reference cleanup table
+
+  ;set x
+  ld    a,(ix+Object002Table.x)
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.x),l
+  ld    (iy+enemies_and_objects.x+1),h
+
+  ;set y
+  ld    a,(ix+Object002Table.y)
+  add   a,20
+  ld    (iy+enemies_and_objects.y),a
+  
+  call  .WaterfallSprite                ;we also need to set a waterfall hardware sprite
+  
+  ld    de,Object002Table.lenghtobjectdata
+  ret
+
+  .WaterfallSprite:                     ;we also need to set a waterfall hardware sprite
+  ld    hl,Object002Table.water         ;we also need to set a waterfall hardware sprite
+  ld    de,lenghtenemytable             ;lenght 1 object in object table
+  add   iy,de                           ;next object in object table
+
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable
+  ldir                                  ;copy enemy table
+
+  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+  ret
+
+
+
   .Object004:                           ;poison drops (DrippingOozeDrop)
 ;v1=sx
 ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
@@ -492,6 +575,12 @@ SetObjects:                             ;after unpacking the map to ram, all the
   dec   a
   jr    z,.EndCheckMultiPoisonDrops
   ld    (iy+enemies_and_objects.v5),180 ;v5=Wait FOr Respawn Counter 
+  exx                                   ;a 2nd poison drop uses the same sprite position as the 1st, sprite size=4, so decrease b with 4
+  dec   b
+  dec   b
+  dec   b
+  dec   b
+  exx
   .EndCheckMultiPoisonDrops:
   
   call  .AddSplashSprite                ;we also need to set a splashing hardware sprite, when drop hits the ooze pool
@@ -1876,6 +1965,20 @@ Object158Table:               ;black slime
 GlassBallPipeObject:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
          db -1,        1|dw GlassballPipe       |db 8*07|dw 8*20|db 16,16|dw 12*16,spat+(12*2)|db 72-(06*6),06  ,06*16,+00,+00,+00,+01,+00,+00,+00,-02,+30, 0|db 001,movepatblo1| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.lenghtobjectdata: equ 3
+
+Object002Table:               ;waterfall yellow (WaterfallEyesYellow)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
+.eyes:    db 1,        0|dw WaterfallEyesYellow |db 8*15+3|dw 8*17|db 06,14|dw CleanOb1,0 db 0,0,0,                   +067,+00,+01,+01,+00,8*15+3,8*17,8*00+3,8*00,8*00+3,8*00,movepatblo1| ds fill-1
+;Waterfall mouth
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.mouth:   db 1,        0|dw WaterfallMouth      |db 8*16+7|dw 8*17+2|db 06,10|dw CleanOb2,0 db 0,0,0,                 +119,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000,movepatblo1| ds fill-1
+;Waterfall
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.water:   db -0,        1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2
