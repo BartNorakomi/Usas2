@@ -313,3 +313,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	ZombieSpawnPoint	objectClass	enemySpawn					
 1	Usas2		RoomObject	PoisonDrop	uid	4					
 1	Usas2		RoomObject	PoisonDrop	objectClass	General					
+1	Usas2		RoomObject	Waterfall1	uid	2					
+1	Usas2		RoomObject	Waterfall1	objectClass	General					
+1	Usas2		RoomObject	Waterfall2	uid	3					
+1	Usas2		RoomObject	Waterfall2	objectClass	General					
