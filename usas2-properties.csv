@@ -311,5 +311,5 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		DsmDatalist	Worldmap	name	Worldmap					
 1	Usas2		RoomObject	ZombieSpawnPoint	uid	62					
 1	Usas2		RoomObject	ZombieSpawnPoint	objectClass	enemySpawn					
-1	Usas2		RoomObject	PoisonDrop	uid	160					
+1	Usas2		RoomObject	PoisonDrop	uid	4					
 1	Usas2		RoomObject	PoisonDrop	objectClass	General					
