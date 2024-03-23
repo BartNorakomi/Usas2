@@ -1,0 +1,16 @@
+#Create usas2.rom from scratch
+
+#New DSM
+. .\dsm.ps1
+$dsmName="Usas2.Rom"
+$DSM=new-DSM -name $dsmName -BlockSize 16KB -size 256 -SegmentSize 128 -firstblock 0xb7
+$dsm|exclude-dsmblock -block 0 #exlcude first block for index
+$dsm|save-dsm
+$DSM|create-DSMFileSpace -verbose -force -path "$(resolve-path ".\")\usas2.rom"
+
+#Add  Karnimata
+.\add-u2maps.ps1 -ruinId 6 -convertTiledMap
+.\add-u2gfx.ps1 -path "C:\Users\rvand\GIT\Usas2\grapx\tilesheets\KarniMata.tiles.SC5"
+
+#.\add-u2maps.ps1 -roomname bs28 -convertTiledMap -Verbose
+#.\convert-tmxtoraw16.ps1 -verboseMore -verbose -path "C:\Users\rvand\OneDrive\Usas2\maps\Bs28.tmx"
