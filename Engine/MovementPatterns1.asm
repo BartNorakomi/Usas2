@@ -7484,45 +7484,62 @@ PlatformOmniDirectionally:
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=snap player?
-;v6=become active?
-;v7=collided with wall?
+;v6=copy x (16bit)
+;v7=copy x (16bit)
+;v8=copy y
   ld    a,216 + 16
   ld    (CopyObject+sy),a  
 
-  ;once player has jumped on top of object, the object becomes active and starts to move
-  bit   0,(ix+enemies_and_objects.v6)       ;become active?
-  jr    nz,.EndCheckBecomeActive            ;don't check if object is already active
-  bit   0,(ix+enemies_and_objects.v5)       ;snap player?
-  jr    z,.EndCheckBecomeActive             ;don't check if player is not snapped to the top of the object
-  ld    (ix+enemies_and_objects.v6),1       ;become active?
-  .EndCheckBecomeActive:
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
 
-  call  VramObjectsTransparantCopies2        ;put object in Vram/screen
-
-  bit   0,(ix+enemies_and_objects.v6)       ;become active?
-  jr    z,.EndMove
-  bit   0,(ix+enemies_and_objects.v7)       ;collided with wall?
-  jr    nz,.EndMove
-;  call  MovePlatFormHorizontallyFaster      ;move
-;  call  MovePlatFormVertically              ;move
-
+  call  .animate                            ;rotate arrow (movement direction) when inactive, and set v3+v4 accordingly
+  call  VramObjectsTransparantCopies2       ;put object in Vram/screen
+  bit   0,(ix+enemies_and_objects.SnapPlayer?)
+  ret   z
   ld    a,(framecounter)
   and   1
-  jr    z,.EndMove
-  ld    a,(ix+enemies_and_objects.SnapPlayer?)
-  or    a
-  call  nz,MovePlayerAlongWithObject
+  ret   z
+
+  call  .StoreCoordinates
   call  MoveObjectHorizontallyAndVertically
 
-  .EndMove:
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-  call  .animate                            ;rotate arrow (movement direction) when inactive, and set v3+v4 accordingly
-  call  CheckCollisionObject                ;checks for collision wall and if found sets v7 (collided with wall?)
+  ld    a,(ix+enemies_and_objects.x)
+  cp    18
+  jr    c,.RecallOldCoordinates
+  cp    253
+  jr    nc,.RecallOldCoordinates
+  ld    a,(ix+enemies_and_objects.y)
+  cp    32
+  jr    c,.RecallOldCoordinates
+  cp    200
+  jr    nc,.RecallOldCoordinates
+
+
+  call  .CheckCollisionObject               ;checks for collision wall and if found sets v7 (collided with wall?)
+  jp    nz,MovePlayerAlongWithObject
+
+  .RecallOldCoordinates:
+  ld    a,(ix+enemies_and_objects.v6)       ;x
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ld    a,(ix+enemies_and_objects.v7)       ;x
+  ld    (ix+enemies_and_objects.x+1),a      ;x
+  ld    a,(ix+enemies_and_objects.v8)       ;y
+  ld    (ix+enemies_and_objects.y),a        ;y
+  ret
+
+  .StoreCoordinates:
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  ld    (ix+enemies_and_objects.v6),a       ;x
+  ld    a,(ix+enemies_and_objects.x+1)      ;x
+  ld    (ix+enemies_and_objects.v7),a       ;x
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  ld    (ix+enemies_and_objects.v8),a       ;y
   ret
 
   .animate:                                 ;rotate arrow (movement direction) when inactive
-  bit   0,(ix+enemies_and_objects.v6)       ;become active?
+  bit   0,(ix+enemies_and_objects.SnapPlayer?)       ;become active?
   ret   nz
+
   ld    a,(framecounter)
   and   15
   ret   nz
@@ -7545,26 +7562,38 @@ PlatformOmniDirectionally:
   ld    (ix+enemies_and_objects.v4),a       ;Horizontal Movement    
   ret
 
-CheckCollisionObject:                       ;checks for collision wall and if found invert horizontal movement
+  .CheckCollisionObject:                    ;checks for collision wall. out: z=collision found
+  ;check if tip of head player touches a ceiling
   ld    a,-16                               ;add to y (y is expressed in pixels)
   ld    hl,+00                              ;add to x to check right side of sprite for collision
   call  .Docheck
+
+  ;check if tip of platform touches a wall
+  ld    a,+16                               ;add to y (y is expressed in pixels)
+  ld    hl,+00                              ;add to x to check right side of sprite for collision
+  call  .Docheck
+
+  ;check if bottom of platform touches a wall
   ld    a,+32                               ;add to y (y is expressed in pixels)
   ld    hl,+00                              ;add to x to check right side of sprite for collision
-  
+  call  .Docheck
+  ret
+
   .Docheck:
   call  CheckTileEnemyInHL                  ;out z=collision found with wall  
-  jr    z,.CollisionFound
+  jr    z,.ForegroundFound
 
   inc   hl
   inc   hl
-  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
-  dec   a                   ;1 = wall
-  ret   nz
-
-  .CollisionFound:
-  ld    (ix+enemies_and_objects.v7),1       ;v7=collided with wall?
+  ld    a,(hl)                              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+  dec   a                                   ;1 = wall
+  jr    z,.ForegroundFound
   ret
+
+  .ForegroundFound:
+  pop   bc                                  ;no need to do the other checks
+  ret
+
 
 v3v4Table:  db +00,-01, -01,-01, -01,+00, -01,+01, +00,+01, +01,+01, +01,+00, +01,-01
 

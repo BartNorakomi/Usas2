@@ -179,6 +179,9 @@ ObjectTestData:
 ;db $96,$24,$30,03,01
 ;db 0
 
+db $0a,$14,$70,$14,$20,$40,$a0,$03,$03,$01
+db 0
+
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
   ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
