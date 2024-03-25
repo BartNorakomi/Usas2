@@ -10,7 +10,7 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 roomX: equ 1*26 + "S"-"A"
 WorldMapPositionY:  db  28 | WorldMapPositionX:  db  roomX
 
-ClesX:      dw 060 ;$19 ;230 ;250 ;210
+ClesX:      dw 020 ;$19 ;230 ;250 ;210
 ClesY:      db 180 ;144-1
 
 
@@ -1272,6 +1272,7 @@ LogoAnimationVar3:            rb    1
 
 AmountOfPoisonDropsInCurrentRoom:   rb    1
 AmountOfWaterfallsInCurrentRoom:    rb    1
+AmountOfSF2ObjectsCurrentRoom:      rb    1
 CurrentActiveWaterfall:             rb    1
 
 

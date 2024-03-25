@@ -3557,6 +3557,7 @@ SensorTentaclesAnimation:
 HugeBlock:                              ;
 ;v1-2=box right (16 bit)
 ;v1-1=box right (16 bit)
+;v2=framenumber to handle this object on
 ;v3=y movement
 ;v4=x movement
 ;v5=SnapPlayer?
@@ -3564,25 +3565,47 @@ HugeBlock:                              ;
 ;v7=box left (16 bit)
 ;v8=box top
 ;v9=box bottom
-;v10=speed
 
-;  ld    a,(HugeObjectFrame)
-;  inc   a
-;  ld    (HugeObjectFrame),a
-;  jp    nz,CheckCollisionObjectPlayer
+;when putting our first object, increase frame counter
+  ld    a,(ix+enemies_and_objects.v2)         ;v2=framenumber to handle this object on
+  or    a
+  jr    nz,.EndCheckFirstObject
 
-;  ld    de,HugeBlockMovementTable1
-  call  .MovePlatForm             
-  
+  ld    a,(AmountOfSF2ObjectsCurrentRoom)
+  ld    b,a
+
+  ld    a,(HugeObjectFrame)
+  inc   a
+  cp    b
+  jr    nz,.EndCheckLastFramePassed
+  xor   a
+  .EndCheckLastFramePassed:
+  ld    (HugeObjectFrame),a
+  .EndCheckFirstObject:
+;/when putting our first object, increase frame counter
+
+;check if this object has to be put this frame. If not, then only check collision with player
+  ld    a,(HugeObjectFrame)
+  cp    (ix+enemies_and_objects.v2)         ;v2=framenumber to handle this object on
+  jp    nz,CheckCollisionObjectPlayer
+;/check if this object has to be put this frame. If not, then only check collision with player
+
+  call  .MovePlatForm               
   ld    a,(ix+enemies_and_objects.SnapPlayer?)
   or    a
   call  nz,MovePlayerAlongWithObject
-
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
-  call  restoreBackgroundObject1
+  call  RestoreBackgroundForObjectInCurrentFrame
   call  .AnimateHugeBlock
-  call  PutSF2Object ;CHANGES IX   
-  call  switchpageSF2Engine  
+
+  push  ix
+  call  PutSF2ObjectInCurrentFrame ;CHANGES IX   
+  pop   ix
+
+  ld    a,(AmountOfSF2ObjectsCurrentRoom)
+  dec   a
+  cp    (ix+enemies_and_objects.v2)         ;v2=framenumber to handle this object on  
+  jp    z,switchpageSF2Engine               ;when last object of this frame is handled, switch page
   ret
 
   .MovePlatForm:
@@ -3612,9 +3635,33 @@ HugeBlock:                              ;
   .HugeBlockFrame:
   dw ryupage0frame000 | db ryuframelistblock, ryuspritedatablock
 
+RestoreBackgroundForObjectInCurrentFrame:
+  ld    a,(HugeObjectFrame)
+  or    a
+  jp    z,restoreBackgroundObject1
+  dec   a
+  jp    z,restoreBackgroundObject2
+  dec   a
+  jp    z,restoreBackgroundObject3
+  dec   a
+  jp    z,restoreBackgroundObject4
+;  dec   a
+;  jp    z,restoreBackgroundObject3
+  jp    restoreBackgroundObject5
 
-
-
+PutSF2ObjectInCurrentFrame:
+  ld    a,(HugeObjectFrame)
+  or    a
+  jp    z,PutSF2Object
+  dec   a
+  jp    z,PutSF2Object2
+  dec   a
+  jp    z,PutSF2Object3
+  dec   a
+  jp    z,PutSF2Object4
+;  dec   a
+;  jp    z,restoreBackgroundObject3
+  jp    PutSF2Object5
 
 
 GlassBall1:

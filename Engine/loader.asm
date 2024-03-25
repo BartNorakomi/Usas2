@@ -179,11 +179,12 @@ ObjectTestData:
 ;db $96,$24,$30,03,01
 ;db 0
 
-db $0a,$00,$70,$14,$20,$40,$a0,$03,$03,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
-db $0a,$10,$70,$14,$20,$40,$a0,$03,$03,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
-;db 153,140/2,$68 ;yellow wasp (YellowWasp) (id,x,y,face,speed) 
+db $0a,$00,$70,$14,$20,$40,$a0,$03,$01,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
+db $0a,$10,$60,$14,$20,$40,$a0,$03,$02,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
+db $0a,$20,$50,$14,$20,$40,$a0,$03,$03,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
+db $0a,$30,$40,$14,$20,$40,$a0,$03,$04,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
+db 153,140/2,$68 ;yellow wasp (YellowWasp) (id,x,y,face,speed) 
 db 0
-
 
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
@@ -194,7 +195,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
 
-  ld    de,ObjectTestData
+;  ld    de,ObjectTestData
 
   push  de
 ;.CheckObjects: jp .CheckObjects
@@ -204,6 +205,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    (AmountOfPushingStonesInCurrentRoom),a
   ld    (AmountOfPoisonDropsInCurrentRoom),a
   ld    (AmountOfWaterfallsInCurrentRoom),a
+  ld    (AmountOfSF2ObjectsCurrentRoom),a
   ld    a,1
   ld    (CurrentActiveWaterfall),a
   call	clearEnemyTable
@@ -894,8 +896,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   .Object010:                           ;huge block ()
 ;v1-2=box right (16 bit)
 ;v1-1=box right (16 bit)
-;v1=sx software sprite in Vram
-;v2=active?
+;v2=framenumber to handle this object on
 ;v3=y movement
 ;v4=x movement
 ;v5=SnapPlayer?
@@ -903,12 +904,16 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v7=box left (16 bit)
 ;v8=box top
 ;v9=box bottom
-;v10=speed
   ld    hl,Object010Table
   push  iy
   pop   de                              ;enemy object table
   ld    bc,lenghtenemytable*1           ;1 objects
   ldir
+
+  ld    a,(AmountOfSF2ObjectsCurrentRoom)
+  ld    (iy+enemies_and_objects.v2),a   ;v2=framenumber to handle this object on
+  inc   a
+  ld    (AmountOfSF2ObjectsCurrentRoom),a
 
   ;set x (relative to box)
   ld    a,(ix+Object011Table.xbox)
@@ -957,14 +962,29 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    hl,Movementtable-2
   add   hl,de
   ld    a,(hl)                          ;y
-  ld    (iy+enemies_and_objects.v3),a   ;v3=y movement
+
+  ;We multiplay the vertical movement with the object speed
+  ld    b,0
+  ld    c,(ix+Object011Table.speed)     ;object speed
+  push  hl
+  call  checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
+  or    a
+  sbc   hl,de                           ;AAAAAAAAAAAAAAAAAAAAAAH
+  ld    (iy+enemies_and_objects.v3),l   ;v3=y movement
+  pop   hl
+
   inc   hl
   ld    a,(hl)                          ;x
-  ld    (iy+enemies_and_objects.v4),a   ;v4=x movement
-  
-  ;set speed
-  ld    a,(ix+Object011Table.speed)
-  ld    (iy+enemies_and_objects.v10),a  ;v10=speed
+
+  ;We multiplay the horizontal movement with the object speed
+  ld    b,0
+  ld    c,(ix+Object011Table.speed)     ;object speed
+;  push  hl
+  call  checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
+  or    a
+  sbc   hl,de                           ;AAAAAAAAAAAAAAAAAAAAAAH
+  ld    (iy+enemies_and_objects.v4),l   ;v4=x movement
+;  pop   hl
 
   ld    de,Object010Table.lenghtobjectdata
   ret   
@@ -2504,16 +2524,6 @@ SetEngineType:                        ;sets engine type (1= 304x216 engine  2=25
   inc   hl		;skip width
   inc   hl		;skip heigth
   ld    a,(hl)
-  
-  
-  
-  
-  
-  ld a,2
-  
-  
-  
-  
   ld    (scrollEngine),a              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
   dec   a
   jp    z,.Engine304x216
@@ -2604,6 +2614,16 @@ ReSetVariables:
 
   xor   a                              ;restore variables to put SF2 objects in play
   ld    (PutObjectInPage3?),a
+
+  ld    (CleanOb1-1),a
+  ld    (CleanOb2-1),a
+  ld    (CleanOb3-1),a
+  ld    (CleanOb4-1),a
+  ld    (CleanOb5-1),a
+  ld    (CleanOb6-1),a
+  ld    (CleanPlayerProjectile-1),a
+  ld    (CleanPlayerWeapon-1),a
+
   ld    a,1
   ld    (RestoreBackgroundSF2Object?),a
 
