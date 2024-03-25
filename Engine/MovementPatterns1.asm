@@ -3554,6 +3554,69 @@ SensorTentaclesAnimation:
   dw  SensorTentacles4_Char
   dw  SensorTentacles5_Char
 
+HugeBlock:                              ;
+;v1-2=box right (16 bit)
+;v1-1=box right (16 bit)
+;v3=y movement
+;v4=x movement
+;v5=SnapPlayer?
+;v6=box left (16 bit)
+;v7=box left (16 bit)
+;v8=box top
+;v9=box bottom
+;v10=speed
+
+;  ld    a,(HugeObjectFrame)
+;  inc   a
+;  ld    (HugeObjectFrame),a
+;  jp    nz,CheckCollisionObjectPlayer
+
+;  ld    de,HugeBlockMovementTable1
+  call  .MovePlatForm             
+  
+  ld    a,(ix+enemies_and_objects.SnapPlayer?)
+  or    a
+  call  nz,MovePlayerAlongWithObject
+
+  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+  call  restoreBackgroundObject1
+  call  .AnimateHugeBlock
+  call  PutSF2Object ;CHANGES IX   
+  call  switchpageSF2Engine  
+  ret
+
+  .MovePlatForm:
+;  ld    a,(ix+enemies_and_objects.v10)        ;v10=speed
+  call  MoveObjectHorizontallyAndVertically
+  call  ChangeDirectionWhenOutOfBox
+  ld    a,(ix+enemies_and_objects.y)          ;y object
+  ld    (Object1y),a
+  ld    a,(ix+enemies_and_objects.x)          ;x object
+  ld    (Object1x),a
+  ret
+
+  .AnimateHugeBlock:
+  ld    hl,.HugeBlockFrame
+  
+  ld    a,(hl)
+  ld    (Player1Frame),a
+  inc   hl
+  ld    a,(hl)
+  ld    (Player1Frame+1),a
+  inc   hl
+  ld    b,(hl)                              ;frame list block
+  inc   hl
+  ld    c,(hl)                              ;sprite data block
+  ret
+
+  .HugeBlockFrame:
+  dw ryupage0frame000 | db ryuframelistblock, ryuspritedatablock
+
+
+
+
+
+
 GlassBall1:
 ;v1=repeating steps
 ;v2=pointer to movement table

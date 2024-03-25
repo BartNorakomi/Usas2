@@ -179,8 +179,11 @@ ObjectTestData:
 ;db $96,$24,$30,03,01
 ;db 0
 
-db $0a,$14,$70,$14,$20,$40,$a0,$03,$03,$01
+db $0a,$00,$70,$14,$20,$40,$a0,$03,$03,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
+db $0a,$10,$70,$14,$20,$40,$a0,$03,$03,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
+;db 153,140/2,$68 ;yellow wasp (YellowWasp) (id,x,y,face,speed) 
 db 0
+
 
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
@@ -191,7 +194,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
 
-;  ld    de,ObjectTestData
+  ld    de,ObjectTestData
 
   push  de
 ;.CheckObjects: jp .CheckObjects
@@ -239,6 +242,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object003                    ;waterfall grey statue
   cp    4
   jp    z,.Object004                    ;poison drops (DrippingOozeDrop)
+  cp    10
+  jp    z,.Object010                    ;poison drops (DrippingOozeDrop)
   cp    11
   jp    z,.Object011                    ;small moving platform on (standard dark grey)
   cp    12
@@ -878,6 +883,94 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ret   z
   ld    (iy+enemies_and_objects.v1),096 ;v1=sx software sprite in Vram on
   ret
+
+
+
+
+
+
+
+
+  .Object010:                           ;huge block ()
+;v1-2=box right (16 bit)
+;v1-1=box right (16 bit)
+;v1=sx software sprite in Vram
+;v2=active?
+;v3=y movement
+;v4=x movement
+;v5=SnapPlayer?
+;v6=box left (16 bit)
+;v7=box left (16 bit)
+;v8=box top
+;v9=box bottom
+;v10=speed
+  ld    hl,Object010Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1           ;1 objects
+  ldir
+
+  ;set x (relative to box)
+  ld    a,(ix+Object011Table.xbox)
+  add   a,(ix+Object011Table.relativex)
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.x),l
+  ld    (iy+enemies_and_objects.x+1),h
+
+  ;set y (relative to box)
+  ld    a,(ix+Object011Table.ybox)
+  add   a,(ix+Object011Table.relativey)
+  ld    (iy+enemies_and_objects.y),a
+
+  ;set box x left
+  ld    l,(ix+Object011Table.xbox)
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.v6),l   ;v6 and v7=box left (16bit)
+  ld    (iy+enemies_and_objects.v7),h   ;v6 and v7=box left (16bit)
+
+  ;set box x right
+  ld    a,(ix+Object011Table.xbox)
+  add   a,(ix+Object011Table.widthbox)
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  call  .CheckIfObjectMovementIsWithinAllowedRange
+  ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
+  ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
+
+  ;set box y top
+  ld    a,(ix+Object011Table.ybox)
+  ld    (iy+enemies_and_objects.v8),a   ;v8=box top
+
+  ;set box y bottom
+  add   a,(ix+Object011Table.heightbox)
+  ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
+
+  ;set facing direction
+  ld    a,(ix+Object011Table.face)
+  add   a,a
+  ld    d,0
+  ld    e,a
+  ld    hl,Movementtable-2
+  add   hl,de
+  ld    a,(hl)                          ;y
+  ld    (iy+enemies_and_objects.v3),a   ;v3=y movement
+  inc   hl
+  ld    a,(hl)                          ;x
+  ld    (iy+enemies_and_objects.v4),a   ;v4=x movement
+  
+  ;set speed
+  ld    a,(ix+Object011Table.speed)
+  ld    (iy+enemies_and_objects.v10),a  ;v10=speed
+
+  ld    de,Object010Table.lenghtobjectdata
+  ret   
+
+
+
 
   .Object011:                           ;small moving platform on (standard dark grey)
 ;v1-2=box right (16 bit)
@@ -1637,6 +1730,31 @@ Object001Table:               ;pushing stone (PushingStone)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
           db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks4Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
+
+
+
+
+
+Object010Table:               ;platform
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
+          db 2,        0|dw HugeBlock           |db 8*06|dw 8*09|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movepatblo1| ds fill-1
+.ID: equ 0
+.relativex: equ 1
+.relativey: equ 2
+.xbox: equ 3
+.ybox: equ 4
+.widthbox: equ 5
+.heightbox: equ 6
+.face: equ 7
+.speed: equ 8
+.active: equ 9
+.lenghtobjectdata: equ 10
+
+
+
+
+
+
 Object011Table:               ;platform
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
           db 1,        0|dw Platform            |db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movepatblo1| ds fill-1
@@ -2386,6 +2504,16 @@ SetEngineType:                        ;sets engine type (1= 304x216 engine  2=25
   inc   hl		;skip width
   inc   hl		;skip heigth
   ld    a,(hl)
+  
+  
+  
+  
+  
+  ld a,2
+  
+  
+  
+  
   ld    (scrollEngine),a              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
   dec   a
   jp    z,.Engine304x216
