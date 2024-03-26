@@ -3554,9 +3554,17 @@ SensorTentaclesAnimation:
   dw  SensorTentacles4_Char
   dw  SensorTentacles5_Char
 
-HugeBlock:                              ;
+HugeBlock:
+
+;  call  BackdropRed
+;call .go
+;  call  BackdropBlack
+;ret
+
+;.go:
 ;v1-2=box right (16 bit)
 ;v1-1=box right (16 bit)
+;v1=0 normal total block, v1=1 top half, v1=2 bottom half
 ;v2=framenumber to handle this object on
 ;v3=y movement
 ;v4=x movement
@@ -3566,7 +3574,7 @@ HugeBlock:                              ;
 ;v8=box top
 ;v9=box bottom
 
-;when putting our first object, increase frame counter
+;when putting our first object, increase block frame counter
   ld    a,(ix+enemies_and_objects.v2)         ;v2=framenumber to handle this object on
   or    a
   jr    nz,.EndCheckFirstObject
@@ -3619,7 +3627,15 @@ HugeBlock:                              ;
   ret
 
   .AnimateHugeBlock:
+  ld    a,(ix+enemies_and_objects.v1)         ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
+  or    a
   ld    hl,.HugeBlockFrame
+  jr    z,.HugeBlockVersionFound
+  dec   a
+  ld    hl,.HugeBlockTopHalfFrame
+  jr    z,.HugeBlockVersionFound
+  ld    hl,.HugeBlockBottomHalfFrame
+  .HugeBlockVersionFound:
   
   ld    a,(hl)
   ld    (Player1Frame),a
@@ -3634,6 +3650,10 @@ HugeBlock:                              ;
 
   .HugeBlockFrame:
   dw ryupage0frame000 | db ryuframelistblock, ryuspritedatablock
+  .HugeBlockTopHalfFrame:
+  dw ryupage0frame001 | db ryuframelistblock, ryuspritedatablock
+  .HugeBlockBottomHalfFrame:
+  dw ryupage0frame002 | db ryuframelistblock, ryuspritedatablock
 
 RestoreBackgroundForObjectInCurrentFrame:
   ld    a,(HugeObjectFrame)

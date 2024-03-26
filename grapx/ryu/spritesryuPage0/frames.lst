@@ -18,7 +18,7 @@ ryuPage0frame000:
   db 084h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0157Fh,base+02587h
+  dw 0157Fh,base+01D43h
   dw 01780h,base+00F7Fh
   dw 01780h,base+00F96h
   dw 01780h,base+00FADh
@@ -65,14 +65,74 @@ ryuPage0frame000:
   dw 01780h,base+0135Ch
   dw 01780h,base+01373h
   dw 01781h,base+0138Ah
-  dw 01500h,base+02587h
+  dw 01500h,base+01D43h
 
 ryuPage0frame001:
+  db 02Eh,018h,082h,000h
+  db 084h
+  db 000h,000h,000h,000h,000h
+  db 000h,000h
+  dw 0157Fh,base+01D43h
+  dw 01780h,base+00F7Fh
+  dw 01780h,base+00F96h
+  dw 01780h,base+00FADh
+  dw 01780h,base+00FC4h
+  dw 01780h,base+00FDBh
+  dw 01780h,base+00FF2h
+  dw 01780h,base+01009h
+  dw 01780h,base+01020h
+  dw 01780h,base+01037h
+  dw 01780h,base+0104Eh
+  dw 01780h,base+01065h
+  dw 01780h,base+0107Ch
+  dw 01780h,base+01093h
+  dw 01780h,base+010AAh
+  dw 01780h,base+010C1h
+  dw 01780h,base+010D8h
+  dw 01780h,base+010EFh
+  dw 01780h,base+01106h
+  dw 01780h,base+0111Dh
+  dw 01780h,base+01134h
+  dw 01780h,base+0114Bh
+  dw 01780h,base+01162h
+  dw 01700h,base+01179h
+
+ryuPage0frame002:
+  db 02Eh,018h,082h,018h
+  db 082h
+  db 000h,000h,0E8h,000h,000h
+  db 000h,000h
+  dw 01780h,base+01190h
+  dw 01780h,base+011A7h
+  dw 01780h,base+011BEh
+  dw 01780h,base+011D5h
+  dw 01780h,base+011ECh
+  dw 01780h,base+01203h
+  dw 01780h,base+0121Ah
+  dw 01780h,base+01231h
+  dw 01780h,base+01248h
+  dw 01780h,base+0125Fh
+  dw 01780h,base+01276h
+  dw 01780h,base+0128Dh
+  dw 01780h,base+012A4h
+  dw 01780h,base+012BBh
+  dw 01780h,base+012D2h
+  dw 01780h,base+012E9h
+  dw 01780h,base+01300h
+  dw 01780h,base+01317h
+  dw 01780h,base+0132Eh
+  dw 01780h,base+01345h
+  dw 01780h,base+0135Ch
+  dw 01780h,base+01373h
+  dw 01781h,base+0138Ah
+  dw 01500h,base+01D43h
+
+ryuPage0frame003:
   db 02Eh,030h,082h,000h
   db 084h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0157Fh,base+0259Ch
+  dw 0157Fh,base+01D58h
   dw 01780h,base+013A1h
   dw 01780h,base+013B8h
   dw 01780h,base+013CFh
@@ -119,137 +179,29 @@ ryuPage0frame001:
   dw 01780h,base+0177Eh
   dw 01780h,base+01795h
   dw 01781h,base+017ACh
-  dw 01500h,base+025B1h
-
-ryuPage0frame002:
-  db 02Eh,030h,082h,000h
-  db 084h
-  db 000h,000h,000h,000h,000h
-  db 000h,000h
-  dw 0157Fh,base+025C6h
-  dw 01780h,base+017C3h
-  dw 01780h,base+017DAh
-  dw 01780h,base+017F1h
-  dw 01780h,base+01808h
-  dw 01780h,base+0181Fh
-  dw 01780h,base+01836h
-  dw 01780h,base+0184Dh
-  dw 01780h,base+01864h
-  dw 01780h,base+0187Bh
-  dw 01780h,base+01892h
-  dw 01780h,base+018A9h
-  dw 01780h,base+018C0h
-  dw 01780h,base+018D7h
-  dw 01780h,base+018EEh
-  dw 01780h,base+01905h
-  dw 01780h,base+0191Ch
-  dw 01780h,base+01933h
-  dw 01780h,base+0194Ah
-  dw 01780h,base+01961h
-  dw 01780h,base+01978h
-  dw 01780h,base+0198Fh
-  dw 01780h,base+019A6h
-  dw 01780h,base+019BDh
-  dw 01780h,base+019D4h
-  dw 01780h,base+019EBh
-  dw 01780h,base+01A02h
-  dw 01780h,base+01A19h
-  dw 01780h,base+01A30h
-  dw 01780h,base+01A47h
-  dw 01780h,base+01A5Eh
-  dw 01780h,base+01A75h
-  dw 01780h,base+01A8Ch
-  dw 01780h,base+01AA3h
-  dw 01780h,base+01ABAh
-  dw 01780h,base+01AD1h
-  dw 01780h,base+01AE8h
-  dw 01780h,base+01AFFh
-  dw 01780h,base+01B16h
-  dw 01780h,base+01B2Dh
-  dw 01780h,base+01B44h
-  dw 01780h,base+01B5Bh
-  dw 01780h,base+01B72h
-  dw 01780h,base+01B89h
-  dw 01780h,base+01BA0h
-  dw 01780h,base+01BB7h
-  dw 01781h,base+01BCEh
-  dw 01500h,base+025DBh
-
-ryuPage0frame003:
-  db 02Eh,030h,082h,000h
-  db 084h
-  db 000h,000h,000h,000h,000h
-  db 000h,000h
-  dw 0157Fh,base+025F0h
-  dw 01780h,base+01BE5h
-  dw 01780h,base+01BFCh
-  dw 01780h,base+01C13h
-  dw 01780h,base+01C2Ah
-  dw 01780h,base+01C41h
-  dw 01780h,base+01C58h
-  dw 01780h,base+01C6Fh
-  dw 01780h,base+01C86h
-  dw 01780h,base+01C9Dh
-  dw 01780h,base+01CB4h
-  dw 01780h,base+01CCBh
-  dw 01780h,base+01CE2h
-  dw 01780h,base+01CF9h
-  dw 01780h,base+01D10h
-  dw 01780h,base+01D27h
-  dw 01780h,base+01D3Eh
-  dw 01780h,base+01D55h
-  dw 01780h,base+01D6Ch
-  dw 01780h,base+01D83h
-  dw 01780h,base+01D9Ah
-  dw 01780h,base+01DB1h
-  dw 01780h,base+01DC8h
-  dw 01780h,base+01DDFh
-  dw 01780h,base+01DF6h
-  dw 01780h,base+01E0Dh
-  dw 01780h,base+01E24h
-  dw 01780h,base+01E3Bh
-  dw 01780h,base+01E52h
-  dw 01780h,base+01E69h
-  dw 01780h,base+01E80h
-  dw 01780h,base+01E97h
-  dw 01780h,base+01EAEh
-  dw 01780h,base+01EC5h
-  dw 01780h,base+01EDCh
-  dw 01780h,base+01EF3h
-  dw 01780h,base+01F0Ah
-  dw 01780h,base+01F21h
-  dw 01780h,base+01F38h
-  dw 01780h,base+01F4Fh
-  dw 01780h,base+01F66h
-  dw 01780h,base+01F7Dh
-  dw 01780h,base+01F94h
-  dw 01780h,base+01FABh
-  dw 01780h,base+01FC2h
-  dw 01780h,base+01FD9h
-  dw 01781h,base+01FF0h
-  dw 01500h,base+02605h
+  dw 01500h,base+01D6Dh
 
 ryuPage0frame004:
   db 030h,030h,080h,000h
   db 092h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0067Fh,base+030BAh
-  dw 0087Eh,base+02E9Bh
-  dw 00C80h,base+02EFAh
-  dw 00C7Fh,base+02F06h
-  dw 00E7Fh,base+02E1Ah
-  dw 01080h,base+02C1Ah
-  dw 0107Fh,base+02C2Ah
-  dw 01280h,base+029DAh
-  dw 0127Fh,base+029ECh
-  dw 01480h,base+0261Ah
-  dw 01480h,base+0262Eh
-  dw 0147Fh,base+02642h
-  dw 01680h,base+02007h
-  dw 01680h,base+0201Dh
-  dw 01680h,base+02033h
-  dw 0167Fh,base+02049h
+  dw 0067Fh,base+02822h
+  dw 0087Eh,base+02603h
+  dw 00C80h,base+02662h
+  dw 00C7Fh,base+0266Eh
+  dw 00E7Fh,base+02582h
+  dw 01080h,base+02382h
+  dw 0107Fh,base+02392h
+  dw 01280h,base+02142h
+  dw 0127Fh,base+02154h
+  dw 01480h,base+01D82h
+  dw 01480h,base+01D96h
+  dw 0147Fh,base+01DAAh
+  dw 01680h,base+017C3h
+  dw 01680h,base+017D9h
+  dw 01680h,base+017EFh
+  dw 0167Fh,base+01805h
   dw 01880h,base+0037Fh
   dw 01880h,base+00397h
   dw 01880h,base+003AFh
@@ -266,44 +218,44 @@ ryuPage0frame004:
   dw 01880h,base+004B7h
   dw 01880h,base+004CFh
   dw 01881h,base+004E7h
-  dw 01680h,base+0205Fh
-  dw 01680h,base+02075h
-  dw 01680h,base+0208Bh
-  dw 01681h,base+020A1h
-  dw 01480h,base+02656h
-  dw 01480h,base+0266Ah
-  dw 01481h,base+0267Eh
-  dw 01280h,base+029FEh
-  dw 01281h,base+02A10h
-  dw 01080h,base+02C3Ah
-  dw 01081h,base+02C4Ah
-  dw 00E81h,base+02E28h
-  dw 00C80h,base+02F12h
-  dw 00C82h,base+02F1Eh
-  dw 00881h,base+02367h
-  dw 00600h,base+030BAh
+  dw 01680h,base+0181Bh
+  dw 01680h,base+01831h
+  dw 01680h,base+01847h
+  dw 01681h,base+0185Dh
+  dw 01480h,base+01DBEh
+  dw 01480h,base+01DD2h
+  dw 01481h,base+01DE6h
+  dw 01280h,base+02166h
+  dw 01281h,base+02178h
+  dw 01080h,base+023A2h
+  dw 01081h,base+023B2h
+  dw 00E81h,base+02590h
+  dw 00C80h,base+0267Ah
+  dw 00C82h,base+02686h
+  dw 00881h,base+01B23h
+  dw 00600h,base+02822h
 
 ryuPage0frame005:
   db 030h,030h,080h,000h
   db 092h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0067Fh,base+02465h
-  dw 0087Eh,base+0307Ah
-  dw 00C80h,base+02F2Ah
-  dw 00C7Fh,base+02F36h
-  dw 00E7Fh,base+02E36h
-  dw 01080h,base+02C5Ah
-  dw 0107Fh,base+02C6Ah
-  dw 01280h,base+02A22h
-  dw 0127Fh,base+02A34h
-  dw 01480h,base+02692h
-  dw 01480h,base+026A6h
-  dw 0147Fh,base+026BAh
-  dw 01680h,base+020B7h
-  dw 01680h,base+020CDh
-  dw 01680h,base+020E3h
-  dw 0167Fh,base+020F9h
+  dw 0067Fh,base+01C21h
+  dw 0087Eh,base+027E2h
+  dw 00C80h,base+02692h
+  dw 00C7Fh,base+0269Eh
+  dw 00E7Fh,base+0259Eh
+  dw 01080h,base+023C2h
+  dw 0107Fh,base+023D2h
+  dw 01280h,base+0218Ah
+  dw 0127Fh,base+0219Ch
+  dw 01480h,base+01DFAh
+  dw 01480h,base+01E0Eh
+  dw 0147Fh,base+01E22h
+  dw 01680h,base+01873h
+  dw 01680h,base+01889h
+  dw 01680h,base+0189Fh
+  dw 0167Fh,base+018B5h
   dw 01880h,base+004FFh
   dw 01880h,base+00517h
   dw 01880h,base+0052Fh
@@ -320,44 +272,44 @@ ryuPage0frame005:
   dw 01880h,base+00637h
   dw 01880h,base+0064Fh
   dw 01881h,base+00667h
-  dw 01680h,base+0210Fh
-  dw 01680h,base+02125h
-  dw 01680h,base+0213Bh
-  dw 01681h,base+02151h
-  dw 01480h,base+026CEh
-  dw 01480h,base+026E2h
-  dw 01481h,base+026F6h
-  dw 01280h,base+02A46h
-  dw 01281h,base+02A58h
-  dw 01080h,base+02C7Ah
-  dw 01081h,base+02C8Ah
-  dw 00E81h,base+02E44h
-  dw 00C80h,base+02F42h
-  dw 00C82h,base+02F4Eh
-  dw 00881h,base+02367h
-  dw 00600h,base+02465h
+  dw 01680h,base+018CBh
+  dw 01680h,base+018E1h
+  dw 01680h,base+018F7h
+  dw 01681h,base+0190Dh
+  dw 01480h,base+01E36h
+  dw 01480h,base+01E4Ah
+  dw 01481h,base+01E5Eh
+  dw 01280h,base+021AEh
+  dw 01281h,base+021C0h
+  dw 01080h,base+023E2h
+  dw 01081h,base+023F2h
+  dw 00E81h,base+025ACh
+  dw 00C80h,base+026AAh
+  dw 00C82h,base+026B6h
+  dw 00881h,base+01B23h
+  dw 00600h,base+01C21h
 
 ryuPage0frame006:
   db 030h,030h,080h,000h
   db 092h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0067Fh,base+02AC1h
-  dw 0087Eh,base+03082h
-  dw 00C80h,base+02F5Ah
-  dw 00C7Fh,base+02F66h
-  dw 00E7Fh,base+02E52h
-  dw 01080h,base+02C9Ah
-  dw 0107Fh,base+02CAAh
-  dw 01280h,base+02A6Ah
-  dw 0127Fh,base+02A7Ch
-  dw 01480h,base+0270Ah
-  dw 01480h,base+0271Eh
-  dw 0147Fh,base+02732h
-  dw 01680h,base+02167h
-  dw 01680h,base+0217Dh
-  dw 01680h,base+02193h
-  dw 0167Fh,base+021A9h
+  dw 0067Fh,base+02229h
+  dw 0087Eh,base+027EAh
+  dw 00C80h,base+026C2h
+  dw 00C7Fh,base+026CEh
+  dw 00E7Fh,base+025BAh
+  dw 01080h,base+02402h
+  dw 0107Fh,base+02412h
+  dw 01280h,base+021D2h
+  dw 0127Fh,base+021E4h
+  dw 01480h,base+01E72h
+  dw 01480h,base+01E86h
+  dw 0147Fh,base+01E9Ah
+  dw 01680h,base+01923h
+  dw 01680h,base+01939h
+  dw 01680h,base+0194Fh
+  dw 0167Fh,base+01965h
   dw 01880h,base+0067Fh
   dw 01880h,base+00697h
   dw 01880h,base+006AFh
@@ -374,44 +326,44 @@ ryuPage0frame006:
   dw 01880h,base+007B7h
   dw 01880h,base+007CFh
   dw 01881h,base+007E7h
-  dw 01680h,base+021BFh
-  dw 01680h,base+021D5h
-  dw 01680h,base+021EBh
-  dw 01681h,base+02201h
-  dw 01480h,base+02746h
-  dw 01480h,base+0275Ah
-  dw 01481h,base+0276Eh
-  dw 01280h,base+02A8Eh
-  dw 01281h,base+02AA0h
-  dw 01080h,base+02CBAh
-  dw 01081h,base+02CCAh
-  dw 00E81h,base+02E60h
-  dw 00C80h,base+02F72h
-  dw 00C82h,base+02F7Eh
-  dw 00881h,base+02367h
-  dw 00600h,base+02AC1h
+  dw 01680h,base+0197Bh
+  dw 01680h,base+01991h
+  dw 01680h,base+019A7h
+  dw 01681h,base+019BDh
+  dw 01480h,base+01EAEh
+  dw 01480h,base+01EC2h
+  dw 01481h,base+01ED6h
+  dw 01280h,base+021F6h
+  dw 01281h,base+02208h
+  dw 01080h,base+02422h
+  dw 01081h,base+02432h
+  dw 00E81h,base+025C8h
+  dw 00C80h,base+026DAh
+  dw 00C82h,base+026E6h
+  dw 00881h,base+01B23h
+  dw 00600h,base+02229h
 
 ryuPage0frame007:
   db 030h,030h,080h,000h
   db 092h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0067Fh,base+030C0h
-  dw 0087Eh,base+0308Ah
-  dw 00C80h,base+02F8Ah
-  dw 00C7Fh,base+02F96h
-  dw 00E7Fh,base+02E6Eh
-  dw 01080h,base+02CDAh
-  dw 0107Fh,base+02CEAh
-  dw 01280h,base+02AB2h
-  dw 0127Fh,base+02AC4h
-  dw 01480h,base+02782h
-  dw 01480h,base+02796h
-  dw 0147Fh,base+027AAh
-  dw 01680h,base+02217h
-  dw 01680h,base+0222Dh
-  dw 01680h,base+02243h
-  dw 0167Fh,base+02259h
+  dw 0067Fh,base+02828h
+  dw 0087Eh,base+027F2h
+  dw 00C80h,base+026F2h
+  dw 00C7Fh,base+026FEh
+  dw 00E7Fh,base+025D6h
+  dw 01080h,base+02442h
+  dw 0107Fh,base+02452h
+  dw 01280h,base+0221Ah
+  dw 0127Fh,base+0222Ch
+  dw 01480h,base+01EEAh
+  dw 01480h,base+01EFEh
+  dw 0147Fh,base+01F12h
+  dw 01680h,base+019D3h
+  dw 01680h,base+019E9h
+  dw 01680h,base+019FFh
+  dw 0167Fh,base+01A15h
   dw 01880h,base+007FFh
   dw 01880h,base+00817h
   dw 01880h,base+0082Fh
@@ -428,44 +380,44 @@ ryuPage0frame007:
   dw 01880h,base+00937h
   dw 01880h,base+0094Fh
   dw 01881h,base+00967h
-  dw 01680h,base+0226Fh
-  dw 01680h,base+02285h
-  dw 01680h,base+0229Bh
-  dw 01681h,base+022B1h
-  dw 01480h,base+027BEh
-  dw 01480h,base+027D2h
-  dw 01481h,base+027E6h
-  dw 01280h,base+02AD6h
-  dw 01281h,base+02AE8h
-  dw 01080h,base+02CFAh
-  dw 01081h,base+02D0Ah
-  dw 00E81h,base+02E7Ch
-  dw 00C80h,base+02FA2h
-  dw 00C82h,base+02FAEh
-  dw 00881h,base+02367h
-  dw 00600h,base+030C0h
+  dw 01680h,base+01A2Bh
+  dw 01680h,base+01A41h
+  dw 01680h,base+01A57h
+  dw 01681h,base+01A6Dh
+  dw 01480h,base+01F26h
+  dw 01480h,base+01F3Ah
+  dw 01481h,base+01F4Eh
+  dw 01280h,base+0223Eh
+  dw 01281h,base+02250h
+  dw 01080h,base+02462h
+  dw 01081h,base+02472h
+  dw 00E81h,base+025E4h
+  dw 00C80h,base+0270Ah
+  dw 00C82h,base+02716h
+  dw 00881h,base+01B23h
+  dw 00600h,base+02828h
 
 ryuPage0frame008:
   db 030h,030h,080h,000h
   db 092h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0067Fh,base+0240Eh
-  dw 0087Eh,base+03092h
-  dw 00C80h,base+02FBAh
-  dw 00C7Fh,base+02FC6h
-  dw 00E7Fh,base+02E8Ah
-  dw 01080h,base+02D1Ah
-  dw 0107Fh,base+02D2Ah
-  dw 01280h,base+02AFAh
-  dw 0127Fh,base+02B0Ch
-  dw 01480h,base+027FAh
-  dw 01480h,base+0280Eh
-  dw 0147Fh,base+02822h
-  dw 01680h,base+022C7h
-  dw 01680h,base+022DDh
-  dw 01680h,base+022F3h
-  dw 0167Fh,base+02309h
+  dw 0067Fh,base+01BCAh
+  dw 0087Eh,base+027FAh
+  dw 00C80h,base+02722h
+  dw 00C7Fh,base+0272Eh
+  dw 00E7Fh,base+025F2h
+  dw 01080h,base+02482h
+  dw 0107Fh,base+02492h
+  dw 01280h,base+02262h
+  dw 0127Fh,base+02274h
+  dw 01480h,base+01F62h
+  dw 01480h,base+01F76h
+  dw 0147Fh,base+01F8Ah
+  dw 01680h,base+01A83h
+  dw 01680h,base+01A99h
+  dw 01680h,base+01AAFh
+  dw 0167Fh,base+01AC5h
   dw 01880h,base+0097Fh
   dw 01880h,base+00997h
   dw 01880h,base+009AFh
@@ -482,44 +434,44 @@ ryuPage0frame008:
   dw 01880h,base+00AB7h
   dw 01880h,base+00ACFh
   dw 01881h,base+00AE7h
-  dw 01680h,base+0231Fh
-  dw 01680h,base+02335h
-  dw 01680h,base+0234Bh
-  dw 01681h,base+02361h
-  dw 01480h,base+02836h
-  dw 01480h,base+0284Ah
-  dw 01481h,base+0285Eh
-  dw 01280h,base+02B1Eh
-  dw 01281h,base+02B30h
-  dw 01080h,base+02D3Ah
-  dw 01081h,base+02D4Ah
-  dw 00E81h,base+02E98h
-  dw 00C80h,base+02FD2h
-  dw 00C82h,base+02FDEh
-  dw 00881h,base+02367h
-  dw 00600h,base+0240Eh
+  dw 01680h,base+01ADBh
+  dw 01680h,base+01AF1h
+  dw 01680h,base+01B07h
+  dw 01681h,base+01B1Dh
+  dw 01480h,base+01F9Eh
+  dw 01480h,base+01FB2h
+  dw 01481h,base+01FC6h
+  dw 01280h,base+02286h
+  dw 01281h,base+02298h
+  dw 01080h,base+024A2h
+  dw 01081h,base+024B2h
+  dw 00E81h,base+02600h
+  dw 00C80h,base+0273Ah
+  dw 00C82h,base+02746h
+  dw 00881h,base+01B23h
+  dw 00600h,base+01BCAh
 
 ryuPage0frame009:
   db 030h,030h,080h,000h
   db 092h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0067Fh,base+0240Eh
-  dw 0087Eh,base+0309Ah
-  dw 00C80h,base+02FEAh
-  dw 00C7Fh,base+02FF6h
-  dw 00E7Fh,base+02EA6h
-  dw 01080h,base+02D5Ah
-  dw 0107Fh,base+02D6Ah
-  dw 01280h,base+02B42h
-  dw 0127Fh,base+02B54h
-  dw 01480h,base+02872h
-  dw 01480h,base+02886h
-  dw 0147Fh,base+0289Ah
-  dw 01680h,base+02377h
-  dw 01680h,base+0238Dh
-  dw 01680h,base+023A3h
-  dw 0167Fh,base+023B9h
+  dw 0067Fh,base+01BCAh
+  dw 0087Eh,base+02802h
+  dw 00C80h,base+02752h
+  dw 00C7Fh,base+0275Eh
+  dw 00E7Fh,base+0260Eh
+  dw 01080h,base+024C2h
+  dw 0107Fh,base+024D2h
+  dw 01280h,base+022AAh
+  dw 0127Fh,base+022BCh
+  dw 01480h,base+01FDAh
+  dw 01480h,base+01FEEh
+  dw 0147Fh,base+02002h
+  dw 01680h,base+01B33h
+  dw 01680h,base+01B49h
+  dw 01680h,base+01B5Fh
+  dw 0167Fh,base+01B75h
   dw 01880h,base+00AFFh
   dw 01880h,base+00B17h
   dw 01880h,base+00B2Fh
@@ -536,44 +488,44 @@ ryuPage0frame009:
   dw 01880h,base+00C37h
   dw 01880h,base+00C4Fh
   dw 01881h,base+00C67h
-  dw 01680h,base+023CFh
-  dw 01680h,base+023E5h
-  dw 01680h,base+023FBh
-  dw 01681h,base+02411h
-  dw 01480h,base+028AEh
-  dw 01480h,base+028C2h
-  dw 01481h,base+028D6h
-  dw 01280h,base+02B66h
-  dw 01281h,base+02B78h
-  dw 01080h,base+02D7Ah
-  dw 01081h,base+02D8Ah
-  dw 00E81h,base+02EB4h
-  dw 00C80h,base+03002h
-  dw 00C82h,base+0300Eh
-  dw 00881h,base+02367h
-  dw 00600h,base+0240Eh
+  dw 01680h,base+01B8Bh
+  dw 01680h,base+01BA1h
+  dw 01680h,base+01BB7h
+  dw 01681h,base+01BCDh
+  dw 01480h,base+02016h
+  dw 01480h,base+0202Ah
+  dw 01481h,base+0203Eh
+  dw 01280h,base+022CEh
+  dw 01281h,base+022E0h
+  dw 01080h,base+024E2h
+  dw 01081h,base+024F2h
+  dw 00E81h,base+0261Ch
+  dw 00C80h,base+0276Ah
+  dw 00C82h,base+02776h
+  dw 00881h,base+01B23h
+  dw 00600h,base+01BCAh
 
 ryuPage0frame010:
   db 030h,030h,080h,000h
   db 092h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0067Fh,base+03001h
-  dw 0087Eh,base+030A2h
-  dw 00C80h,base+0301Ah
-  dw 00C7Fh,base+03026h
-  dw 00E7Fh,base+02EC2h
-  dw 01080h,base+02D9Ah
-  dw 0107Fh,base+02DAAh
-  dw 01280h,base+02B8Ah
-  dw 0127Fh,base+02B9Ch
-  dw 01480h,base+028EAh
-  dw 01480h,base+028FEh
-  dw 0147Fh,base+02912h
-  dw 01680h,base+02427h
-  dw 01680h,base+0243Dh
-  dw 01680h,base+02453h
-  dw 0167Fh,base+02469h
+  dw 0067Fh,base+02769h
+  dw 0087Eh,base+0280Ah
+  dw 00C80h,base+02782h
+  dw 00C7Fh,base+0278Eh
+  dw 00E7Fh,base+0262Ah
+  dw 01080h,base+02502h
+  dw 0107Fh,base+02512h
+  dw 01280h,base+022F2h
+  dw 0127Fh,base+02304h
+  dw 01480h,base+02052h
+  dw 01480h,base+02066h
+  dw 0147Fh,base+0207Ah
+  dw 01680h,base+01BE3h
+  dw 01680h,base+01BF9h
+  dw 01680h,base+01C0Fh
+  dw 0167Fh,base+01C25h
   dw 01880h,base+00C7Fh
   dw 01880h,base+00C97h
   dw 01880h,base+00CAFh
@@ -590,44 +542,44 @@ ryuPage0frame010:
   dw 01880h,base+00DB7h
   dw 01880h,base+00DCFh
   dw 01881h,base+00DE7h
-  dw 01680h,base+0247Fh
-  dw 01680h,base+02495h
-  dw 01680h,base+024ABh
-  dw 01681h,base+024C1h
-  dw 01480h,base+02926h
-  dw 01480h,base+0293Ah
-  dw 01481h,base+0294Eh
-  dw 01280h,base+02BAEh
-  dw 01281h,base+02BC0h
-  dw 01080h,base+02DBAh
-  dw 01081h,base+02DCAh
-  dw 00E81h,base+02ED0h
-  dw 00C80h,base+03032h
-  dw 00C82h,base+0303Eh
-  dw 00881h,base+030AAh
-  dw 00600h,base+03001h
+  dw 01680h,base+01C3Bh
+  dw 01680h,base+01C51h
+  dw 01680h,base+01C67h
+  dw 01681h,base+01C7Dh
+  dw 01480h,base+0208Eh
+  dw 01480h,base+020A2h
+  dw 01481h,base+020B6h
+  dw 01280h,base+02316h
+  dw 01281h,base+02328h
+  dw 01080h,base+02522h
+  dw 01081h,base+02532h
+  dw 00E81h,base+02638h
+  dw 00C80h,base+0279Ah
+  dw 00C82h,base+027A6h
+  dw 00881h,base+02812h
+  dw 00600h,base+02769h
 
 ryuPage0frame011:
   db 030h,030h,080h,000h
   db 092h
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 0067Fh,base+030BAh
-  dw 0087Eh,base+030B2h
-  dw 00C80h,base+0304Ah
-  dw 00C7Fh,base+03056h
-  dw 00E7Fh,base+02EDEh
-  dw 01080h,base+02DDAh
-  dw 0107Fh,base+02DEAh
-  dw 01280h,base+02BD2h
-  dw 0127Fh,base+02BE4h
-  dw 01480h,base+02962h
-  dw 01480h,base+02976h
-  dw 0147Fh,base+0298Ah
-  dw 01680h,base+024D7h
-  dw 01680h,base+024EDh
-  dw 01680h,base+02503h
-  dw 0167Fh,base+02519h
+  dw 0067Fh,base+02822h
+  dw 0087Eh,base+0281Ah
+  dw 00C80h,base+027B2h
+  dw 00C7Fh,base+027BEh
+  dw 00E7Fh,base+02646h
+  dw 01080h,base+02542h
+  dw 0107Fh,base+02552h
+  dw 01280h,base+0233Ah
+  dw 0127Fh,base+0234Ch
+  dw 01480h,base+020CAh
+  dw 01480h,base+020DEh
+  dw 0147Fh,base+020F2h
+  dw 01680h,base+01C93h
+  dw 01680h,base+01CA9h
+  dw 01680h,base+01CBFh
+  dw 0167Fh,base+01CD5h
   dw 01880h,base+00DFFh
   dw 01880h,base+00E17h
   dw 01880h,base+00E2Fh
@@ -644,22 +596,22 @@ ryuPage0frame011:
   dw 01880h,base+00F37h
   dw 01880h,base+00F4Fh
   dw 01881h,base+00F67h
-  dw 01680h,base+0252Fh
-  dw 01680h,base+02545h
-  dw 01680h,base+0255Bh
-  dw 01681h,base+02571h
-  dw 01480h,base+0299Eh
-  dw 01480h,base+029B2h
-  dw 01481h,base+029C6h
-  dw 01280h,base+02BF6h
-  dw 01281h,base+02C08h
-  dw 01080h,base+02DFAh
-  dw 01081h,base+02E0Ah
-  dw 00E81h,base+02EECh
-  dw 00C80h,base+03062h
-  dw 00C82h,base+0306Eh
-  dw 00881h,base+030A9h
-  dw 00600h,base+030BAh
+  dw 01680h,base+01CEBh
+  dw 01680h,base+01D01h
+  dw 01680h,base+01D17h
+  dw 01681h,base+01D2Dh
+  dw 01480h,base+02106h
+  dw 01480h,base+0211Ah
+  dw 01481h,base+0212Eh
+  dw 01280h,base+0235Eh
+  dw 01281h,base+02370h
+  dw 01080h,base+02562h
+  dw 01081h,base+02572h
+  dw 00E81h,base+02654h
+  dw 00C80h,base+027CAh
+  dw 00C82h,base+027D6h
+  dw 00881h,base+02811h
+  dw 00600h,base+02822h
 
 ryuPage0frame012:
   db 002h,001h,0AEh,000h
