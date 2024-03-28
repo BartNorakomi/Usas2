@@ -1,5 +1,5 @@
 #Convert Tiled map files to raw data file, and pack it with BB to .map.pck
-#20231009-20231221;RomanVanDerMeulen aka shadow@fuzzylogic
+#20231009-20240328;RomanVanDerMeulen aka shadow@fuzzylogic
 <#
 Example: convert all BX maps
 .\convert-tmxtoraw16.ps1 -path "C:\Users\$($env:username)\OneDrive\Usas2\maps\Bx*.tmx" -targetPath ".\" -includeLayer ".*" -excludeLayer "(Objects|room numbers)" -pack
@@ -194,7 +194,9 @@ function convert-TmxObjects
 #out:	Array of objects
 function get-RoomObjects
 {	param ($tiledMap)
-	foreach ($object in $tiledMap.map.objectgroup.object|where{($_.properties.property.name -eq "uid") -and ($_.visible -ne "0" )})
+	#$tiledMap.map.objectgroup.object
+	$objects=($tiledMap.map.objectgroup|where{-not $_.visible}).object|where{($_.properties.property.name -eq "uid") -and ($_.visible -ne "0" )}
+	foreach ($object in $objects)
 	{	$object.properties.property|%{add-member -InputObject $object -membertype NoteProperty -name $_.name -value ([int]$_.value)}
 		$object
 	}
