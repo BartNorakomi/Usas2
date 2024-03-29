@@ -5221,7 +5221,7 @@ Set_L_SilhouetteKick:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  jp    SetHitBoxPlayerStanding
   
 Set_R_SilhouetteKick:
 	ld		hl,RSilhouetteKick
@@ -5229,7 +5229,7 @@ Set_R_SilhouetteKick:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  jp    SetHitBoxPlayerStanding
 
 Set_L_SitShootArrow:
 	ld		hl,LSitShootArrow
@@ -5432,7 +5432,7 @@ Set_Charging:
 ;  ld    a,(ClesX+1)
 ;  bit   7,a
 ;  ret   nz                  ;no need to perform tilecheck when player is out of screen on the left side
-
+  .PerformCheckTile:
   call  checktile           ;out z=collision found with wall
   ret   z
   ;now do the same check, but 2 tiles lower
@@ -5446,28 +5446,14 @@ Set_Charging:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl  
-  ret  
+  jp    SetHitBoxPlayerStanding
 
   .FacingRight:
   ;check at height of waiste if player is near on the right side
   ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
   ld    de,XaddRightPlayer+16 ;add 15 to x to check right side of player for collision (player moved right)
-  call  checktile           ;out z=collision found with wall
-  ret   z  
-  ;now do the same check, but 2 tiles lower 
-	add		hl,bc               ;1 tile lower
-	add		hl,bc               ;1 tile lower
-  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
-  dec   a                   ;1 = wall
-  ret   z
+  jr    .PerformCheckTile
   
-	ld		hl,Charging
-	ld		(PlayerSpriteStand),hl
-
-  ld    hl,0 
-  ld    (PlayerAniCount),hl  
-  ret
-
 Set_Dying:
 	ld		hl,Dying
 	ld		(PlayerSpriteStand),hl
@@ -5616,6 +5602,13 @@ Set_R_Rolling:
   .SkipPlayerAniCount:
 	ld		hl,RRolling
 	ld		(PlayerSpriteStand),hl
+  jp    ResetForceVerticalMovementCamera
+
+ResetForceVerticalMovementCamera:
+  xor   a
+  ld    (ForceVerticalMovementCamera?),a  
+  ld    (ForceVerticalMovementCameraTimer),a
+  ld    (ForceVerticalMovementCameraTimerBackup),a
   ret
 
 Set_L_Rolling:
@@ -5626,7 +5619,7 @@ Set_L_Rolling:
   .SkipPlayerAniCount:
 	ld		hl,LRolling
 	ld		(PlayerSpriteStand),hl
-  ret
+  jp    ResetForceVerticalMovementCamera
 
 Set_Stairs_Climb_RightUp:
   call  SetHitBoxPlayerStanding

@@ -179,12 +179,16 @@ ObjectTestData:
 ;db $96,$24,$30,03,01
 ;db 0
 
-db $0a,$00,$70,$14,$20,$40,$a0,$03,$01,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
-db $0a,$10,$60,$14,$20,$40,$a0,$03,$02,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
-db $0a,$20,$50,$14,$20,$40,$a0,$03,$03,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
-db $0a,$30,$40,$14,$20,$40,$a0,$03,$04,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
-db 153,140/2,$68 ;yellow wasp (YellowWasp) (id,x,y,face,speed) 
-db 0
+
+;db $0a,$00,$00,56/2,88-16,$48,$30,$03,$01,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
+;db 0
+
+;db $0a,$00,$70,$14,$20,$40,$a0,$03,$01,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
+;db $0a,$10,$60,$14,$20,$40,$a0,$03,$02,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
+;db $0a,$20,$50,$14,$20,$40,$a0,$03,$03,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
+;db $0a,$30,$40,$14,$20,$40,$a0,$03,$04,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
+;db 153,140/2,$68 ;yellow wasp (YellowWasp) (id,x,y,face,speed) 
+;db 0
 
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
@@ -867,6 +871,18 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   .Object057:                           ;big moving platform off
   call  .Object011
+
+  ;set box x right
+  ld    a,(ix+Object011Table.xbox)
+  add   a,(ix+Object011Table.widthbox)
+  sub   a,32/2                          ;subtract width platform
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  call  .CheckIfObjectMovementIsWithinAllowedRange
+  ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
+  ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
+
   ld    (iy+enemies_and_objects.nx),32  ;nx
   ld    (iy+enemies_and_objects.v1),000 ;v1=sx software sprite in Vram off
   ld    a,(ix+Object011Table.active)
@@ -893,7 +909,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
 
 
-  .Object010:                           ;huge block ()
+  .Object010:                           ;huge block (HugeBlock)
 ;v1-2=box right (16 bit)
 ;v1-1=box right (16 bit)
 ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
@@ -944,19 +960,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ;set y (relative to box)
   ld    a,(ix+Object010Table.ybox)
   add   a,(ix+Object010Table.relativey)
-
-
-
-
-
-  sub   a,.HeightHugeBlock/2
-
-
-
-
-
-
-
+;  sub   a,.HeightHugeBlock/2
   ld    (iy+enemies_and_objects.y),a
 
   ;set box x left
@@ -1070,6 +1074,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ;set box x right
   ld    a,(ix+Object011Table.xbox)
   add   a,(ix+Object011Table.widthbox)
+  sub   a,16/2                          ;subtract width platform
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
@@ -1083,6 +1088,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   ;set box y bottom
   add   a,(ix+Object011Table.heightbox)
+  sub   a,16                            ;subtract height platform
   ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
 
   ;set facing direction

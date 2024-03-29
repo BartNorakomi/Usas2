@@ -1322,6 +1322,9 @@ SetCoordinatesPuzzlePushingStones:          ;if v7=0 then set coordinates
 PushingStone:
   ld    a,1
   ld    (CopyObject+sPage),a 
+
+  ld    a,216
+  ld    (CopyObject+sy),a
   
   ld    a,(ix+enemies_and_objects.v7)       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
   dec   a
