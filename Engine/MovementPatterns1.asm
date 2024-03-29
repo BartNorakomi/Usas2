@@ -7740,6 +7740,8 @@ Platform:
 ;v8=box top
 ;v9=box bottom
 ;v10=speed
+  ld    a,216
+  ld    (CopyObject+sy),a
 
   call  VramObjectsTransparantCopies2       ;put object in Vram/screen
   call  MovePlatForm
