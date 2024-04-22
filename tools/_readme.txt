@@ -52,7 +52,7 @@ dsmName:		Path to the DSM meta file, default is "Usas2.Rom.dsm" (note: should be
 datalistName:		Name of the DSM datalist this file belongs to, default  is "WorldMap"
 mapslocation:		Base directory of .map files. Default is "..\maps"
 TileMapsLocation:	Base directore of .tmx files. Default is "C:\Users\$($env:username)\OneDrive\Usas2\maps"
-convertTiledMap:	Switch to pre-convert .tmx file to .map before putting it in DSM and the ROM
+convertTiledMap:	[Switch] pre-convert .tmx file to .map before storing it in DSM and the ROM
 
 * use only one of these option as room input
 
