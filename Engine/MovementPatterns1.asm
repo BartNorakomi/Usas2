@@ -2957,7 +2957,7 @@ TrampolineBlob:
   call  Set_jump
 ;	ld    a,(StartingJumpSpeed)
 ;	sub   a,2  
-  ld    a,-6
+  ld    a,-7
 	ld		(JumpSpeed),a
 	
 	ld		a,(Controls)                        ;up pressed

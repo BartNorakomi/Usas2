@@ -4388,14 +4388,15 @@ AttackRotator:  db 0
 
 InitiateNewAttack?:  db  0
 
-StartingJumpSpeedEqu:     equ -5    ;initial starting jump take off speed
-StartingJumpSpeed:        db -5 ;equ -5    ;initial starting jump take off speed
+StartingJumpSpeedEqu:     equ -6    ;initial starting jump take off speed
+StartingJumpSpeed:        db -6 ;equ -5    ;initial starting jump take off speed
+StartingDoubleJumpSpeed:  db -4 ;equ -5    ;initial starting jump take off speed
 StartingJumpSpeedWhenHit: db -4 ;equ -5    ;initial starting jump take off speed
 FallingJumpSpeed:         equ 1
 JumpSpeed:                db  0
 MaxDownwardFallSpeed:     equ 5
 GravityTimer:             equ 4     ;every x frames gravity changes jump speed
-YaddHeadPLayer:           equ 2
+YaddHeadPLayer:           equ 2 + 6 ;(changed) player can now jump further into ceilings above
 YaddmiddlePLayer:         equ 17
 YaddFeetPlayer:           equ 33
 XaddLeftPlayer:           equ 00 - 8
@@ -5722,9 +5723,9 @@ Set_jump:
 
   call  SetHitBoxPlayerStanding
 
-  ld    a,(ClesY)
-  sub   a,3
-  ld    (ClesY),a
+;  ld    a,(ClesY)
+;  sub   a,3
+;  ld    (ClesY),a
   
 ;  xor   a
 ;  ld    (EnableHitbox?),a
@@ -5743,8 +5744,13 @@ Set_jump:
   or    a
   ret   nz                                                      ;don't reset PlayerAnicount if we initiate a double jump while primary attack is used
 
-  ld    hl,0
-	ld		(PlayerAniCount),hl
+;  ld    hl,0
+;	ld		(PlayerAniCount),hl
+
+  xor   a
+	ld		(PlayerAniCount),a
+  ld    a,3
+	ld		(PlayerAniCount+1),a
   ret
 
 Set_Fall: 

@@ -3859,7 +3859,7 @@ endif
   .SnapToCeilingAbove:
   ld    a,(Clesy)           ;on collision snap y player to ceiling above
   and   %1111 1000
-  add   a,6
+  add   a,6 + 2             ;(changed) player can now jump further into ceilings above
   ld    (Clesy),a
   ret
 
@@ -3906,10 +3906,10 @@ endif
 
 ;this code is new, and decreases the 2nd jump height
   call  Set_jump.SkipTurnOnDoubleJump
-	ld    a,(StartingJumpSpeed)
-;	inc   a
-  add   a,2
+	ld    a,(StartingDoubleJumpSpeed)
 	ld		(JumpSpeed),a
+  xor   a
+	ld		(PlayerAniCount+1),a
   ret
 ;/this code is new, and decreases the 2nd jump height
 
