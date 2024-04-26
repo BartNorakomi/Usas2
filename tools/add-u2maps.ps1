@@ -1,7 +1,7 @@
 # Put maps into the datalist, and write to the ROM
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
-# 20231128-20231205
+# 20231128-202426
 
 [CmdletBinding()]
 param
@@ -12,7 +12,7 @@ param
 	$datalistName="WorldMap",
 	$mapslocation="..\maps",
 	$TiledMapsLocation="C:\Users\$($env:username)\OneDrive\Usas2\maps",
-	[switch]$convertTiledMap
+	[switch]$convertTiledMap=$true
 )
 
 ##### Includes #####

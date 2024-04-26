@@ -9,7 +9,8 @@ param
 	#[Parameter(ParameterSetName='room')]$roomname,
 	[Parameter(ParameterSetName='file')]$path, #="..\grapx\tilesheets\KarniMata.Tiles.sc5",
 	$dsmName="Usas2.Rom.dsm",
-	$datalistName="BitMapGfx"
+	$datalistName="BitMapGfx",
+	[switch]$convertGfx=$true
 )
 
 ##### Includes #####
