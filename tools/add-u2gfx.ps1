@@ -2,10 +2,11 @@
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
 # 20231207-20231207
+#Invoke-Expression  "dir $($usas2.tiledtileset[4].defaultLocation)$($usas2.tiledtileset[4].imagesourcefile)"
 
 [CmdletBinding()]
 param
-(	#[Parameter(ParameterSetName='ruin')]$ruinId,
+(	[Parameter(ParameterSetName='ruin')]$ruinId,
 	#[Parameter(ParameterSetName='room')]$roomname,
 	[Parameter(ParameterSetName='file')]$path, #="..\grapx\tilesheets\KarniMata.Tiles.sc5",
 	$dsmName="Usas2.Rom.dsm",
@@ -25,6 +26,7 @@ $romfile="$(resolve-path "..\Engine\usas2.rom")" #\usas2.rom"
 ##### Functions #####
 
 
+
 ##### MAIN #####
 $DataListProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistname}
 write-verbose "DSM: $dsmname, Datalist:$datalistname"
@@ -35,9 +37,23 @@ if (-not ($dsm=load-dsm -path $dsmname))
 {	$null=$DSM|open-DSMFileSpace -path $romfile
 	$datalist=add-DSMDataList -dsm $dsm -name $datalistname
 
-	#Add to DSM and inject to ROM
-	$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $path -updateFileSpace
-	
+	#Add FILE to DSM and inject to ROM
+	if ($path)
+	{	write-verbose "Adding File(s) $path"
+		$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $path -updateFileSpace
+	}
+
+	#Add ruin file
+	if ($ruinid)
+	{	write-verbose "Adding Ruin(s) $ruinid"
+		foreach ($id in $ruinId)
+		{	$ruinProps=$usas2.ruin|where{$_.ruinid  -eq $id}
+			$tilesetProps=$usas2.tileset|where{$_.identity -eq $ruinprops.tileset}
+			write-verbose "RuinId $id, Filename: $($tilesetProps.file)"
+			$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $tilesetProps.file -updateFileSpace
+		}
+	}
+
 	#Make index and inject into ROM
 	$BitmapGfxIndex=get-BitmapGfxIndex -dsm $dsm -datalist $datalistname
 	write-verbose ($BitmapGfxIndex.indexPointerTable -join(",")); write-verbose ($BitmapGfxIndex.index -join(","))
