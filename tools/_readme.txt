@@ -57,6 +57,18 @@ convertTiledMap:	[Switch] pre-convert .tmx file to .map before storing it in DSM
 * use only one of these option as room input
 
 
+voorbeelden:
+add (dan druk tab voor auto completion)
+.\add-u2maps.ps1
+voor hulp
+help .\add-u2maps.ps1
+
+hele ruin:
+.\add-u2maps.ps1 -ruinid 4 -convertTiledMap
+
+-verbose voor aanvullende info (is wel trager)
+b.v.: .\add-u2maps.ps1 -ruinid 4 -convertTiledMap -Verbose
+
 
 
 
