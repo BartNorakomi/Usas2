@@ -244,6 +244,8 @@ MoveSpriteHorizontallyAndVertically:        ;Add v3 to y. Add v4 to x (16 bit)
 ;	ld		a,(Controls)
 ;	bit		6,a                                 ;F1 pressed ?
 ;	ret   nz
+
+  call  TurnAroundAtScreenEdges  
 	
   ld    l,(ix+enemies_and_objects.x)  
   ld    h,(ix+enemies_and_objects.x+1)      ;x
