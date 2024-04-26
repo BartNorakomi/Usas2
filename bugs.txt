@@ -1,3 +1,6 @@
+octopussy bullet vertragen je, maar als dat afgelopen is dan ben je niet compleet gereset, 
+de juiste endtable wordt niet ingeladen
+
 stairs lopen - het scherm uit gaat niet goed. Van D6 naar D8 een keer (2x al gebeurd)
 waarschijnlijk wordt er 2x gechecked:
 ga je 'normaal' het scherm uit aan de onderkant EN 

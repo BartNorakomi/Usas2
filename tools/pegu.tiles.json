@@ -6,7 +6,7 @@
 			"group": [
 				{
 					"source": "pegu.tiles.bmp",
-					"fixedPalette": "sKarniMataPalette.PL",
+					"fixedPalette": "Pegu.tile.PL",
 					"targetScreen5": "pegu.tiles.SC5"
 				}
 			]

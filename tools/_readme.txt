@@ -69,6 +69,11 @@ hele ruin:
 -verbose voor aanvullende info (is wel trager)
 b.v.: .\add-u2maps.ps1 -ruinid 4 -convertTiledMap -Verbose
 
+losse room:
+.\add-u2maps.ps1 -roomname AY23 -convertTiledMap
 
+convert palette:
+.\convert-paltoasm.ps1 -path "C:\Users\bartf\Documents\GitHub\Usas2\grapx\tilesheets\Pegu.tile.PL"
 
-
+convert gfx:
+npx convertgfx .\pegu.tiles.json
