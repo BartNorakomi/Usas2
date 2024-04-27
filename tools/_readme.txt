@@ -3,8 +3,8 @@ The "tools" directory contains external tooling files for the Usas2 project. It 
 In the case of Powershell, only the Powershell host (CLI) is needed and comes default with Windows. There's also a Linux and Mac version, but need to be installed manually. Node.js files need to have the js parser installed, which isn't a default Windows program.
 
 #The following Powershell tools are available
-add-u2gfx.ps1	;add a bitmap gfx file to usas2.rom using DSM
-add-u2maps.ps1	;add one or more room map files to usas2.rom using DSM
+add-u2gfx.ps1	;add a bitmap gfx file to usas2.rom using DSM (updated 20240427)
+add-u2maps.ps1	;add one or more room map files to usas2.rom using DSM (updated 20240427)
 archive-file.ps1	;archive one or more files to "versions\"
 commit.ps1		;shortcut for <<git add -A;git commit -m "x">>
 concat-sc5files.ps1	;temp tool to concatenate two .sc5 files (*obsolete when Laurens his image convertor tool is available)
@@ -29,32 +29,49 @@ romspace	;get the available ROM space and statistics, based on old ROM format (*
 add-u2gfx.ps1
 =============
 Add one or more graphic files to usas2.rom. The files will be indexed as Ruin bitmap graphics in a datalist (default "BitMapGfx"). Files get split into sections of max 16K.
+You either give the -path to an .sc5 files, or give the -ruinid. The latter can will also convert bmp to sc5 by default.
 
-> add-u2gfx.ps1 [-path <Object>] [-dsmName <Object>] [-datalistName <Object>] [<CommonParameters>]
+add-u2gfx.ps1 [-ruinId <Object>] [-dsmName <Object>] [-datalistName <Object>] [-convertGfx] [-resetGlobals] [-updateIndex] [<CommonParameters>]
+add-u2gfx.ps1 [-path <Object>] [-dsmName <Object>] [-datalistName <Object>] [-convertGfx] [-resetGlobals] [-updateIndex] [<CommonParameters>]
 
-path:		Path to the graphic file. example: -path "..\grapx\tilesheets\KarniMata.Tiles.sc5"
+path*:		Path to the graphic file to be inserted in the ROM. example: -path "..\grapx\tilesheets\KarniMata.Tiles.sc5"
+ruinId*:		One or more ruinId number(s). This will also convert to sc5 first (if not disabled)
 dsmName:	Path to the DSM meta file, default is "Usas2.Rom.dsm" (note: should be changed to -dsmPath)
 datalistName:	Name of the DSM datalist this file belongs to, default  is "BitMapGfx"
+convertGfx:	Convert BMP to SC5 file first (only when using -ruinId as input0, enabled by default
+resetGlobals:	clear known globals (use when updating global properties file in between adding)
+updateIndex:	update the ROM index for this datalist, enabled by default (used for debugging)
+* use only one of these option as input
+
+example: the next example will convert the Pegu (ruin 4) bmp file to sc5, insert it into ROM, and update the index. This is the most simple way to quickly add tileset image file(s)
+> add-u2gfx.ps1 -ruinId 4
+you can also use more than one id, like: -ruinId 4,6. This will add Pegu and Karnimate files
 
 
 add-u2maps.ps1
 ==============
 Add one or more Usas2 .map files to usas2.rom. Map files are converted from Tiled and compressed using pack.exe (bitbuster) first before added to the DSM datalist and to the ROM file. Rooms, or maps, are either selected using a direct path to the .map file(s), room name(s), or ruinID(s).
 
-add-u2maps.ps1 [-ruinId <Object>] [-dsmName <Object>] [-datalistName <Object>] [-mapslocation <Object>] [-TiledMapsLocation <Object>] [-convertTiledMap] [<CommonParameters>]
-add-u2maps.ps1 [-roomname <Object>] [-dsmName <Object>] [-datalistName <Object>] [-mapslocation <Object>] [-TiledMapsLocation <Object>] [-convertTiledMap] [<CommonParameters>]
-add-u2maps.ps1 [-path <Object>] [-dsmName <Object>] [-datalistName <Object>] [-mapslocation <Object>] [-TiledMapsLocation <Object>] [-convertTiledMap] [<CommonParameters>]
+add-u2maps.ps1 [-ruinId <Object>] [-dsmName <Object>] [-datalistName <Object>] [-mapslocation <Object>] [-TiledMapsLocation <Object>] [-convertTiledMap] [-resetGlobals] [-updateIndex] [<CommonParameters>]
+add-u2maps.ps1 [-roomname <Object>] [-dsmName <Object>] [-datalistName <Object>] [-mapslocation <Object>] [-TiledMapsLocation <Object>] [-convertTiledMap] [-resetGlobals] [-updateIndex] [<CommonParameters>]
+add-u2maps.ps1 [-path <Object>] [-dsmName <Object>] [-datalistName <Object>] [-mapslocation <Object>] [-TiledMapsLocation <Object>] [-convertTiledMap] [-resetGlobals] [-updateIndex] [<CommonParameters>]
+add-u2maps.ps1 [-newest <Object>] [-dsmName <Object>] [-datalistName <Object>] [-mapslocation <Object>] [-TiledMapsLocation <Object>] [-convertTiledMap] [-resetGlobals] [-updateIndex] [<CommonParameters>]
 
 ruinID*:		One or more ruin numbers. For example -ruinID 2,6 for both Lemniscate and Karnimata.
 roomName*:		One or more room names. For example -roomname AT24 for map AT24.
 path*:			- unused atm
+newest*:			Take the most recent Tiled files, convert them and put them in the ROM
 dsmName:		Path to the DSM meta file, default is "Usas2.Rom.dsm" (note: should be changed to -dsmPath)
 datalistName:		Name of the DSM datalist this file belongs to, default  is "WorldMap"
 mapslocation:		Base directory of .map files. Default is "..\maps"
 TileMapsLocation:	Base directore of .tmx files. Default is "C:\Users\$($env:username)\OneDrive\Usas2\maps"
-convertTiledMap:	[Switch] pre-convert .tmx file to .map before storing it in DSM and the ROM
-
+convertTiledMap:	[Switch] pre-convert .tmx file to .map before storing it in DSM and the ROM, enabled by default
+resetGlobals:		clear known globals (use when updating global properties file in between adding)
+updateIndex:		update the ROM index for this datalist, enabled by default (used for debugging)
 * use only one of these option as room input
+
+Example: use this to add the most recent (1) edited Tiled maps to the ROM
+.\add-u2maps.ps1 -newest 1
 
 
 voorbeelden:
