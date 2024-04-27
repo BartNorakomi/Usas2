@@ -8,11 +8,14 @@ param
 (	[Parameter(ParameterSetName='ruin')]$ruinId,
 	[Parameter(ParameterSetName='room')]$roomname,
 	[Parameter(ParameterSetName='file')]$path,
+	[Parameter(ParameterSetName='latestFile')]$newest,
 	$dsmName="Usas2.Rom.dsm",
 	$datalistName="WorldMap",
 	$mapslocation="..\maps",
 	$TiledMapsLocation="C:\Users\$($env:username)\OneDrive\Usas2\maps",
-	[switch]$convertTiledMap=$true
+	[switch]$convertTiledMap=$true,
+	[switch]$resetGlobals=$false,
+	[switch]$updateIndex=$true
 )
 
 ##### Includes #####
@@ -21,6 +24,7 @@ param
 
 
 ##### Global properties #####
+if ($resetGlobals) {$global:usas2=$null}
 $global:usas2=get-Usas2Globals
 $romfile="$(resolve-path "..\Engine\usas2.rom")" #\usas2.rom"
 
@@ -75,13 +79,34 @@ if (-not ($dsm=load-dsm -path $dsmname))
 		write-warning "add TMX file (path) not yet supported"
 	}
 
-	#Make new maps index and inject into ROM
-	$indexRecords=get-WorldMapRoomIndex -dsm $dsm -datalistname $dataListName
-	if ($DatalistProperties)
-	{	$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
-		write-verbose "Writing Index to block:$indexblock, segment:$indexsegment"
-		write-DSMFileSpace -dsm $dsm -block $indexBlock -segment $indexSegment -data $indexrecords
+	#Add most recent TILED map files
+	elseif ($newest)
+	{	write-verbose "Adding most recent $newest Tiled Map files (.tmx)"
+		$files=gci $Tiledmapslocation\*.tmx|Sort-Object -Property lastWriteTime -Descending|select -first $newest
+		foreach ($file in $files)
+		{	write-verbose "File: $($file.fullname)"
+			if ($convertTiledMap)
+			{	$tiledMapPath=$file.fullname
+				.\convert-tmxtoraw16.ps1 -path $tiledMapPath -targetPath $mapsLocation -includeLayer ".*" -excludeLayer "(Objects|object|room numbers)" -pack
+			}
+			#Add to DSM and inject to ROM
+			$pckPath="$mapslocation\$($file.basename).map.pck"
+			#write-verbose $pckpath
+			$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $pckpath -name $pckpath -updateFileSpace
+		}
 	}
+
+
+	#Make new maps index and inject into ROM
+	if ($updateIndex)
+	{	$indexRecords=get-WorldMapRoomIndex -dsm $dsm -datalistname $dataListName
+		if ($DatalistProperties)
+		{	$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
+			write-verbose "Writing Index to block:$indexblock, segment:$indexsegment"
+			write-DSMFileSpace -dsm $dsm -block $indexBlock -segment $indexSegment -data $indexrecords
+		}
+	}
+
 	#close the ROM file and save DSM
 	$null=$DSM|close-DSMFileSpace
 	save-dsm -dsm $dsm

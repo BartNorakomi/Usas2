@@ -11,7 +11,9 @@ param
 	[Parameter(ParameterSetName='file')]$path, #="..\grapx\tilesheets\KarniMata.Tiles.sc5",
 	$dsmName="Usas2.Rom.dsm",
 	$datalistName="BitMapGfx",
-	[switch]$convertGfx=$true
+	[switch]$convertGfx=$true,
+	[switch]$resetGlobals=$false,
+	[switch]$updateIndex=$true
 )
 
 ##### Includes #####
@@ -20,11 +22,18 @@ param
 
 
 ##### Global properties #####
+if ($resetGlobals) {$global:usas2=$null}
 $global:usas2=get-Usas2Globals
 $romfile="$(resolve-path "..\Engine\usas2.rom")" #\usas2.rom"
 
 ##### Functions #####
 
+function convert-BmpToSc5
+{	param ($bmpfile,$sc5file,$palfile)
+	#npx convertgfx --source "../grapx/tilesheets/pegu.tiles.bmp" --fixedPalette "../grapx/tilesheets/pegu.tiles.pl" --targetScreen5 "../grapx/tilesheets/pegu.tiles.sc5"
+	write-verbose "Converting `"$bmpfile`" to `"$sc5file`""
+	npx convertgfx --source $bmpfile --fixedPalette $palfile --targetScreen5 $sc5file --gamma 2.2
+}
 
 
 ##### MAIN #####
@@ -49,20 +58,24 @@ if (-not ($dsm=load-dsm -path $dsmname))
 		foreach ($id in $ruinId)
 		{	$ruinProps=$usas2.ruin|where{$_.ruinid  -eq $id}
 			$tilesetProps=$usas2.tileset|where{$_.identity -eq $ruinprops.tileset}
+			if ($convertGfx) {$x=convert-BmpToSc5 -bmpfile $tilesetProps.imageSourceFile -sc5file $tilesetProps.file -palfile $tilesetProps.paletteSourceFile}
 			write-verbose "RuinId $id, Filename: $($tilesetProps.file)"
 			$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $tilesetProps.file -updateFileSpace
 		}
 	}
 
 	#Make index and inject into ROM
-	$BitmapGfxIndex=get-BitmapGfxIndex -dsm $dsm -datalist $datalistname
-	write-verbose ($BitmapGfxIndex.indexPointerTable -join(",")); write-verbose ($BitmapGfxIndex.index -join(","))
-	$data=($BitmapGfxIndex.indexPointerTable+$BitmapGfxIndex.index)
-	if ($DataListProperties)
-	{	$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
-		write-verbose "Writing Index to block:$indexblock, segment:$indexsegment"
-		write-DSMFileSpace -dsm $dsm -block $indexBlock -segment $indexSegment -data $data
+	if ($updateIndex)
+	{	$BitmapGfxIndex=get-BitmapGfxIndex -dsm $dsm -datalist $datalistname
+		write-verbose ($BitmapGfxIndex.indexPointerTable -join(",")); write-verbose ($BitmapGfxIndex.index -join(","))
+		$data=($BitmapGfxIndex.indexPointerTable+$BitmapGfxIndex.index)
+		if ($DataListProperties)
+		{	$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
+			write-verbose "Writing Index to block:$indexblock, segment:$indexsegment"
+			write-DSMFileSpace -dsm $dsm -block $indexBlock -segment $indexSegment -data $data
+		}
 	}
+	
 	#close the ROM file and save DSM
 	$null=$DSM|close-DSMFileSpace
 	save-dsm -dsm $dsm

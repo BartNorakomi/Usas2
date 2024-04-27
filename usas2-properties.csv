@@ -318,7 +318,9 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Tileset	Lemniscate	file	..\grapx\tilesheets\Lemniscate.tiles.sc5					
 1	Usas2		Tileset	Lemniscate	id	2					
 1	Usas2		Tileset	Lemniscate	type	0					
-1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv					
+1	Usas2		Tileset	Pegu	imageSourceFile	..\grapx\tilesheets\Pegu.Tiles.bmp					
+1	Usas2		Tileset	Pegu	paletteSourceFile	..\grapx\tilesheets\Pegu.Tiles.pl					
 1	Usas2		Tileset	Pegu	file	..\grapx\tilesheets\Pegu.Tiles.sc5					
 1	Usas2		Tileset	Pegu	id	4					
 1	Usas2		Tileset	Pegu	type	0					
+1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv					
