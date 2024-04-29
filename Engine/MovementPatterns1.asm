@@ -6895,6 +6895,8 @@ RetardedZombie:
   call  .IncreaseFallingSpeed
   call  MoveSpriteVertically  
   call  .CheckFloorFalling                  ;checks for collision wall and if found invert direction
+  call  CheckOutOfMapVertically             ;remove sprite from play when leaving the map
+
 ;  jp    .Animate                            ;out hl -> sprite character data to out to Vram
   .Animate:
   ld    e,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
@@ -6958,7 +6960,7 @@ RetardedZombie:
   call  .CheckTurning  
   ld    a,(framecounter)
   rrca
-  call  c,MoveSpriteHorizontally
+  call  c,MoveSpriteHorizontallyWithoutTurningAroundAtEdges
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
   call  .CheckFloor                         ;checks for collision Floor and if found fall
   call  CheckOutOfMap                       ;remove sprite from play when leaving the map

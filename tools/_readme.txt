@@ -94,3 +94,7 @@ convert palette:
 
 convert gfx:
 npx convertgfx .\pegu.tiles.json
+.\add-u2gfx.ps1 -ruinId 4 (Deze zet de Pegu bmp om naar SC5 en pleurt'm in de ROM)
+
+convert latest:
+.\add-u2maps.ps1 -newest 1

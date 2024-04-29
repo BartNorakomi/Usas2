@@ -232,6 +232,12 @@ CheckOutOfMap:
   ld    (ix+enemies_and_objects.y),217+2    ;y  
   ret
 
+CheckOutOfMapVertically:
+  ld    a,(ix+enemies_and_objects.y)  
+  cp    200
+  ret   c
+  jr    RemoveSprite
+
 MoveSpriteHorizontallyAndVertically:        ;Add v3 to y. Add v4 to x (16 bit)
   call  MoveSpriteVertically
 
@@ -246,7 +252,8 @@ MoveSpriteHorizontallyAndVertically:        ;Add v3 to y. Add v4 to x (16 bit)
 ;	ret   nz
 
   call  TurnAroundAtScreenEdges  
-	
+
+  MoveSpriteHorizontallyWithoutTurningAroundAtEdges:                   ;Add v3 to y. Add v4 to x (16 bit)	
   ld    l,(ix+enemies_and_objects.x)  
   ld    h,(ix+enemies_and_objects.x+1)      ;x
 
@@ -267,13 +274,16 @@ MoveSpriteVertically:                       ;Add v3 to y. Add v4 to x (16 bit)
   ret
 
 TurnAroundAtScreenEdges:
-  ld    a,(ix+enemies_and_objects.x)
-  cp    20
-  jr    c,.TurnAround
-  ld    a,(ix+enemies_and_objects.x)
-  cp    256-4
+  ld    e,(ix+enemies_and_objects.x)
+  ld    d,(ix+enemies_and_objects.x+1)
+  ld    hl,20                               ;turn around when x<20
+  sbc   hl,de
   jr    nc,.TurnAround
-  ret
+
+  ld    hl,300                              ;turn around when x>300
+  sbc   hl,de
+  ret   nc
+
   .TurnAround:
   ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   neg
