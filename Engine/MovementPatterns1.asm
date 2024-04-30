@@ -3534,11 +3534,7 @@ SensorTentacles:
   ret   nz
 
   ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Hanging, 1=Attacking)  
-
-  bit   0,(ix+enemies_and_objects.v8)       ;v8=Starting Y
   ld    (ix+enemies_and_objects.v3),3       ;v3=Vertical Movement
-  ret   z
-  ld    (ix+enemies_and_objects.v3),4       ;v3=Vertical Movement
   ret
   
 SensorTentaclesMovementTable:  ;repeating steps(128 = end table/repeat), move y, move x
