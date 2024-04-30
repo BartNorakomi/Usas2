@@ -7,11 +7,11 @@ MapDataCopiedToRam:  ds  WorldMapDataMapLenght
 ;WorldMapPositionY:  db  17 | WorldMapPositionX:  db  44 ;ballroom 1 (with pipe)
 ;WorldMapPositionY:  db  20 | WorldMapPositionX:  db  44 ;ballroom 2
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
-roomX: equ ("A"-"A")*26 + "V"-"A"
-WorldMapPositionY:  db  21 | WorldMapPositionX:  db  roomX
+roomX: equ ("A"-"A")*26 + "Y"-"A"
+WorldMapPositionY:  db  25 | WorldMapPositionX:  db  roomX
 
-ClesX:      dw 080 ;$19 ;230 ;250 ;210
-ClesY:      db 112 ;144-1
+ClesX:      dw 60 ;$19 ;230 ;250 ;210
+ClesY:      db 160 ;144-1
 
 
 PlayLogo:

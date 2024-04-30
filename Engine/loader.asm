@@ -882,16 +882,18 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
   call  .CheckIfObjectMovementIsWithinAllowedRange
+  ld    de,Object011Table.lenghtobjectdata
   ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
   ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
 
   ld    (iy+enemies_and_objects.nx),32  ;nx
-  ld    (iy+enemies_and_objects.v1),000 ;v1=sx software sprite in Vram off
-  ld    a,(ix+Object011Table.active)
-  ld    (iy+enemies_and_objects.v2),a   ;v2=active?
-  or    a
-  ret   z
+  ld    (iy+enemies_and_objects.v2),001 ;v2=active?
   ld    (iy+enemies_and_objects.v1),032 ;v1=sx software sprite in Vram on
+  ld    a,(ix+Object011Table.active)
+  cp    1
+  ret   z
+  ld    (iy+enemies_and_objects.v1),000 ;v1=sx software sprite in Vram off
+  ld    (iy+enemies_and_objects.v2),000 ;v2=active?
   ret
 
   .Object012:                           ;small moving platform (lighter version)
@@ -1548,7 +1550,11 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v8=Starting Y
 ;v9=wait until attack timer 
   ld    hl,Object149Table
-  jp    .SetGeneralHardwareSpriteNotMovingObject
+  call  .SetGeneralHardwareSpriteNotMovingObject
+  ld    a,(iy+enemies_and_objects.y)    ;y
+  ld    (iy+enemies_and_objects.v8),a   ;v8=Starting Y
+  ret
+
 
   .Object150:                           ;trampoline blob
 ;v1=Animation Counter

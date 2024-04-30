@@ -234,7 +234,7 @@ CheckOutOfMap:
 
 CheckOutOfMapVertically:
   ld    a,(ix+enemies_and_objects.y)  
-  cp    200
+  cp    200 ;%%%%% if we increase this number we get issues with spriteflicker in room AV17. If we DON'T increase this number zombies dont die or properly fall out of screen ? where was it ? room AW24 maybe ?
   ret   c
   jr    RemoveSprite
 
