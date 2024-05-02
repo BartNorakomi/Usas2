@@ -58,9 +58,14 @@ if (-not ($dsm=load-dsm -path $dsmname))
 		foreach ($id in $ruinId)
 		{	$ruinProps=$usas2.ruin|where{$_.ruinid  -eq $id}
 			$tilesetProps=$usas2.tileset|where{$_.identity -eq $ruinprops.tileset}
-			if ($convertGfx) {$x=convert-BmpToSc5 -bmpfile $tilesetProps.imageSourceFile -sc5file $tilesetProps.file -palfile $tilesetProps.paletteSourceFile}
-			write-verbose "RuinId $id, Filename: $($tilesetProps.file)"
-			$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $tilesetProps.file -updateFileSpace
+			$sc5File=($usas2.file|where{$_.identity -eq $tilesetprops.file}).path
+			if ($convertGfx)
+			{	$bmpFile=($usas2.file|where{$_.identity -eq $tilesetprops.imagesourcefile}).path
+				$palFile=($usas2.file|where{$_.identity -eq $tilesetprops.paletteSourceFile}).path
+				$x=convert-BmpToSc5 -bmpfile $bmpfile -sc5file $sc5file -palfile $palFile
+			}
+			write-verbose "RuinId $id, Filename: $sc5file"
+			$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $sc5file -updateFileSpace
 		}
 	}
 

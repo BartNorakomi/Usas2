@@ -63,15 +63,16 @@ function get-roomDefaultProperties
 	(	$roomName
 	)
 	$room=$worldmap|where{$_.name -eq $roomname}
-	$ruinIdRoomType=[byte](($room.ruinid -band 0x1F) -bor ($room.roomtype -band 0xe0) -band 255)
 	#$ruinIdentity=($usas2.ruin|where{$_.ruinId -eq $room.ruinid}).identity
-	$ruinProperties=get-U2ruinProperties -ruinid $room.ruinid #-identity $ruinIdentity
+	$ruinIdRoomType=[byte](($room.ruinid -band 0x1F) -bor ($room.roomtype -band 0xe0) -band 255)
+	#$ruinProperties=get-U2ruinProperties -ruinid $room.ruinid #-identity $ruinIdentity
 	
 	$data=[byte[]]::new(8)
 	$data[0]=$ruinIdRoomType
-	$data[1]=$ruinProperties.tileset
-	$data[2]=$ruinProperties.music
-	$data[3]=$ruinProperties.palette
+	# 20240430;ro;this should be "0" (null, or default). So, I rem'd them out
+	#$data[1]=$ruinProperties.tileset
+	#$data[2]=$ruinProperties.music
+	#$data[3]=$ruinProperties.palette
 	return ,$data
 }
 

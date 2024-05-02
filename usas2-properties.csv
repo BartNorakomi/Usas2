@@ -13,6 +13,24 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		DsmDatalist	Worldmap	IndexBlock	0					
 1	Usas2		DsmDatalist	Worldmap	IndexSegment	0					
 1	Usas2		DsmDatalist	Worldmap	name	Worldmap					
+1	Usas2		file	KarniMata.tiles.bmp	path	..\grapx\tilesheets\KarniMata.tiles.bmp					
+1	Usas2		file	KarniMata.tiles.bmp	type	7					
+1	Usas2		file	KarniMata.tiles.sc5	path	..\grapx\tilesheets\KarniMata.tiles.sc5					
+1	Usas2		file	KarniMata.tiles.sc5	type	1					
+1	Usas2		file	KarniMata.tiles.pl	path	..\grapx\tilesheets\KarniMata.tiles.pl					
+1	Usas2		file	KarniMata.tiles.pl	type	2					
+1	Usas2		file	Lemniscate.tiles.bmp	path	..\grapx\tilesheets\Lemniscate.tiles.bmp					
+1	Usas2		file	Lemniscate.tiles.bmp	type	7					
+1	Usas2		file	Lemniscate.tiles.sc5	path	..\grapx\tilesheets\Lemniscate.tiles.sc5					
+1	Usas2		file	Lemniscate.tiles.sc5	type	1					
+1	Usas2		file	Lemniscate.tiles.pl	path	..\grapx\tilesheets\Lemniscate.tiles.pl					
+1	Usas2		file	Lemniscate.tiles.pl	type	2					
+1	Usas2		file	Pegu.tiles.bmp	path	..\grapx\tilesheets\Pegu.tiles.bmp					
+1	Usas2		file	Pegu.tiles.bmp	type	7					
+1	Usas2		file	Pegu.tiles.sc5	path	..\grapx\tilesheets\Pegu.tiles.sc5					
+1	Usas2		file	Pegu.tiles.sc5	type	1					
+1	Usas2		file	Pegu.tiles.pl	path	..\grapx\tilesheets\Pegu.tiles.pl					
+1	Usas2		file	Pegu.tiles.pl	type	2					
 1	Usas2		Index	GfxIndexPointer	numrec	32	attribute	Number of records in the table		.numrec: EQU 32	
 1	Usas2		Index	GfxIndexPointer	reclen	2	attribute	The length of one record		.reclen: EQU 2	
 1	Usas2		Index	GfxIndexTable	block	2	attribute	Offset of property "block" in the table		.block: EQU 2	
@@ -24,9 +42,9 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Index	Rooms	numrec	1024	attribute	Number of records in the table		.numrec: EQU 1024	
 1	Usas2		Index	Rooms	reclen	4	attribute	The length of one record		.reclen: EQU 4	
 1	Usas2		music	KarniMata	id	3					
-1	Usas2		music	KarniMata	filename	.\music\karnimata.vgm					
-1	Usas2		Palette	KarniMata	file	karnimata.pl					
-1	Usas2		Palette	KarniMata	id	6					
+1	Usas2		music	KarniMata	file	KarniMata.vgm					
+1	Usas2		Palette	KarniMata.tiles	file	Karnimata.tiles.pl					
+1	Usas2		Palette	KarniMata.tiles	id	6					
 1	Usas2		Room	boss	engine	2					
 1	Usas2		Room	boss	height	27					
 1	Usas2		Room	boss	name	Boss Room					
@@ -69,10 +87,6 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	boringEyeGreen	objectClass	General					
 1	Usas2		RoomObject	boringEyeRed	uid	145					
 1	Usas2		RoomObject	boringEyeRed	objectClass	General					
-1	Usas2		RoomObject	waspBrown	uid	152					
-1	Usas2		RoomObject	fireEyeGreen	objectClass	General					
-1	Usas2		RoomObject	waspGreen	uid	151					
-1	Usas2		RoomObject	fireEyeGrey	objectClass	General					
 1	Usas2		RoomObject	demontje brown	uid	156					
 1	Usas2		RoomObject	demontje brown	objectClass	Enemy					
 1	Usas2		RoomObject	demontje green	uid	154					
@@ -81,20 +95,20 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	demontje grey	objectClass	Enemy					
 1	Usas2		RoomObject	demontje red	uid	155					
 1	Usas2		RoomObject	demontje red	objectClass	Enemy					
+1	Usas2		RoomObject	fireEyeGreen	objectClass	General					
 1	Usas2		RoomObject	fireEyeGreen	uid	132					
-1	Usas2		RoomObject	glassBallPipe	objectClass	general					
+1	Usas2		RoomObject	fireEyeGrey	objectClass	General					
 1	Usas2		RoomObject	fireEyeGrey	uid	133					
-1	Usas2		RoomObject	hugeBlob	objectClass	General					
 1	Usas2		RoomObject	glassBall	uid	61					
 1	Usas2		RoomObject	glassBall	objectClass	glassBall					
+1	Usas2		RoomObject	glassBallPipe	objectClass	general					
 1	Usas2		RoomObject	glassBallPipe	uid	159					
-1	Usas2		RoomObject	octopussy	objectClass	General					
 1	Usas2		RoomObject	grinder	uid	136					
 1	Usas2		RoomObject	grinder	objectClass	Enemy					
-1	Usas2		RoomObject	hugeBlob	uid	128					
-1	Usas2		RoomObject	PushStone	objectClass	general					
 1	Usas2		RoomObject	huge spider	uid	129					
 1	Usas2		RoomObject	huge spider	objectClass	Enemy					
+1	Usas2		RoomObject	hugeBlob	objectClass	General					
+1	Usas2		RoomObject	hugeBlob	uid	128					
 1	Usas2		RoomObject	hunchback	uid	138					
 1	Usas2		RoomObject	hunchback	objectClass	Enemy					
 1	Usas2		RoomObject	knifeThrower	uid	134					
@@ -103,8 +117,10 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	lancelot	objectClass	Enemy					
 1	Usas2		RoomObject	landstrider	uid	148					
 1	Usas2		RoomObject	landstrider	objectClass	Enemy					
+1	Usas2		RoomObject	octopussy	objectClass	General					
 1	Usas2		RoomObject	octopussy	uid	135					
-1	Usas2		RoomObject	sensorTentacle	objectClass	General					
+1	Usas2		RoomObject	PlatformMovingLarge	uid	10					
+1	Usas2		RoomObject	PlatformMovingLarge	objectClass	MovingPlatform					
 1	Usas2		RoomObject	PlatformMovingMedium	uid	57					
 1	Usas2		RoomObject	PlatformMovingMedium	objectClass	MovingPlatform					
 1	Usas2		RoomObject	PlatformMovingSmall	uid	11					
@@ -115,16 +131,18 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	PlatformMovingSmallSwitch	objectClass	MovingPlatform					
 1	Usas2		RoomObject	PlatformRetracting	uid	15					
 1	Usas2		RoomObject	PlatformRetracting	objectClass	platform					
+1	Usas2		RoomObject	PoisonDrop	uid	4					
+1	Usas2		RoomObject	PoisonDrop	objectClass	General					
+1	Usas2		RoomObject	PushStone	objectClass	general					
 1	Usas2		RoomObject	PushStone	uid	1					
-1	Usas2		RoomObject	waspBrown	objectClass	General					
 1	Usas2		RoomObject	ratFaceBatSpawner	uid	20					
 1	Usas2		RoomObject	ratFaceBatSpawner	objectClass	enemySpawn					
 1	Usas2		RoomObject	retardedZombie	uid	143					
 1	Usas2		RoomObject	retardedZombie	objectClass	Enemy					
 1	Usas2		RoomObject	scorpion	uid	139					
 1	Usas2		RoomObject	scorpion	objectClass	Enemy					
+1	Usas2		RoomObject	sensorTentacle	objectClass	General					
 1	Usas2		RoomObject	sensorTentacle	uid	149					
-1	Usas2		RoomObject	waspGreen	objectClass	General					
 1	Usas2		RoomObject	slimeBlack	uid	158					
 1	Usas2		RoomObject	slimeBlack	objectClass	Enemy					
 1	Usas2		RoomObject	spiderGreen	uid	141					
@@ -135,18 +153,18 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	trampolineSlimeGreen	objectClass	Enemy					
 1	Usas2		RoomObject	treeman	uid	137					
 1	Usas2		RoomObject	treeman	objectClass	Enemy					
+1	Usas2		RoomObject	waspBrown	uid	152					
+1	Usas2		RoomObject	waspBrown	objectClass	General					
+1	Usas2		RoomObject	waspGreen	uid	151					
+1	Usas2		RoomObject	waspGreen	objectClass	General					
 1	Usas2		RoomObject	waspYellow	uid	153					
 1	Usas2		RoomObject	waspYellow	objectClass	general					
-1	Usas2		RoomObject	ZombieSpawnPoint	uid	62					
-1	Usas2		RoomObject	ZombieSpawnPoint	objectClass	enemySpawn					
-1	Usas2		RoomObject	PoisonDrop	uid	4					
-1	Usas2		RoomObject	PoisonDrop	objectClass	General					
 1	Usas2		RoomObject	Waterfall1	uid	2					
 1	Usas2		RoomObject	Waterfall1	objectClass	General					
 1	Usas2		RoomObject	Waterfall2	uid	3					
 1	Usas2		RoomObject	Waterfall2	objectClass	General					
-1	Usas2		RoomObject	PlatformMovingLarge	uid	10					
-1	Usas2		RoomObject	PlatformMovingLarge	objectClass	MovingPlatform					
+1	Usas2		RoomObject	ZombieSpawnPoint	uid	62					
+1	Usas2		RoomObject	ZombieSpawnPoint	objectClass	enemySpawn					
 1	Usas2		Ruin	Aggayu	music						
 1	Usas2		Ruin	Aggayu	name	Aggayu					
 1	Usas2		Ruin	Aggayu	Palette						
@@ -206,7 +224,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Ka	ruinId	20					
 1	Usas2		Ruin	KarniMata	music	KarniMata		Default music (ID) for this ruin			
 1	Usas2		Ruin	KarniMata	name	Karni Mata		The display name			
-1	Usas2		Ruin	KarniMata	palette	KarniMata		Default Palette			
+1	Usas2		Ruin	KarniMata	palette	KarniMata.tiles		Default Palette			
 1	Usas2		Ruin	KarniMata	ruinId	6		Identifier for this Ruin			
 1	Usas2		Ruin	KarniMata	TiledTileSet	KarniMata		Default TiledTileset (ID)			
 1	Usas2		Ruin	KarniMata	TiledWorldMap	KarniMata		Belongs to which Worldmap, besides the gobal worldmap			
@@ -312,15 +330,19 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		TiledWorldMap	KarniMata	path	KarniMata.world					
 1	Usas2		TiledWorldMap	Pegu	Name	Pegu					
 1	Usas2		TiledWorldMap	Pegu	path	Pegu.world					
-1	Usas2		Tileset	KarniMata	file	..\grapx\tilesheets\KarniMata.Tiles.sc5					
+1	Usas2		Tileset	KarniMata	file	KarniMata.Tiles.sc5					
 1	Usas2		Tileset	KarniMata	id	6					
 1	Usas2		Tileset	KarniMata	type	0					
-1	Usas2		Tileset	Lemniscate	file	..\grapx\tilesheets\Lemniscate.tiles.sc5					
+1	Usas2		Tileset	KarniMata	imageSourceFile	KarniMata.Tiles.bmp					
+1	Usas2		Tileset	KarniMata	paletteSourceFile	KarniMata.Tiles.pl					
+1	Usas2		Tileset	Lemniscate	imageSourceFile	Lemniscate.tiles.bmp					
+1	Usas2		Tileset	Lemniscate	paletteSourceFile	Lemniscate.tiles.pl					
+1	Usas2		Tileset	Lemniscate	file	Lemniscate.tiles.sc5					
 1	Usas2		Tileset	Lemniscate	id	2					
 1	Usas2		Tileset	Lemniscate	type	0					
-1	Usas2		Tileset	Pegu	imageSourceFile	..\grapx\tilesheets\Pegu.Tiles.bmp					
-1	Usas2		Tileset	Pegu	paletteSourceFile	..\grapx\tilesheets\Pegu.Tiles.pl					
-1	Usas2		Tileset	Pegu	file	..\grapx\tilesheets\Pegu.Tiles.sc5					
-1	Usas2		Tileset	Pegu	id	4					
-1	Usas2		Tileset	Pegu	type	0					
+1	Usas2		Tileset	Pegu	imageSourceFile	Pegu.Tiles.bmp		Source files			
+1	Usas2		Tileset	Pegu	paletteSourceFile	Pegu.Tiles.pl		Source palette			
+1	Usas2		Tileset	Pegu	file	Pegu.Tiles.sc5		Destination file for ROM			
+1	Usas2		Tileset	Pegu	id	4		RuinID			
+1	Usas2		Tileset	Pegu	type	0		FileType=Tileset			
 1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv					

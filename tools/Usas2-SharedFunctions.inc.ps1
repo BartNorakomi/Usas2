@@ -198,8 +198,9 @@ function get-BitmapGfxIndex
 		$indexPointerTable[$index*2]=$l
 		$indexPointerTable[$index*2+1]=$h
 		if ($tileset=$usas2.tileset|where{$_.id -eq $index})
-		{	write-verbose  "index:$index, $($tileset)"
-			$claims=$datalist.allocations|where{$_.name -eq (split-path -path $tileset.file -leaf)}|sort part
+		{	$sc5File=($usas2.file|where{$_.identity -eq $tileset.file}).path
+			write-verbose "index:$index, $($tileset.file)=$sc5file"
+			$claims=$datalist.allocations|where{$_.name -eq (split-path -path $sc5file -leaf)}|sort part
 			$parts=$claims.count
 			$indexRecords.add(0)	#palette
 			$indexRecords.add($parts)	#parts

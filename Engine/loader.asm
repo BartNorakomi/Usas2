@@ -2259,16 +2259,16 @@ roomTypes:
 ;Get room [DE] ROM location, block[A] address[HL]
 getRoom:
 		call GetWorldMapRoomLocation
-		add a,Dsm.firstBlock+dsm.indexBlock	;offset (temp)
+		add a,Dsm.firstBlock ;+dsm.indexBlock	;offset (temp)
 		ld bc,$8000							;destination
 		add hl,bc
 		ld ix,MapDataCopiedToRam
-		ld (ix),a ;block
-		ld (ix+1),l ;adr
-		ld (ix+2),h
-		ld (ix+3),1 ;engine
-		ld (ix+4),0 ;tileSet
-		ld (ix+5),0 ;pal
+		ld (ix+MapDataCopiedToRam.block),a
+		ld (ix+MapDataCopiedToRam.address+0),l
+		ld (ix+MapDataCopiedToRam.address+1),h
+		ld (ix+MapDataCopiedToRam.engine),1	;unused, I hope
+		ld (ix+MapDataCopiedToRam.tileset),0 ;unused
+		ld (ix+MapDataCopiedToRam.palette),0 ;unused
 ret
 
 
@@ -2276,7 +2276,7 @@ ret
 ;In:	DE=IndexID (D=X,E=Y)
 ;out:	HL=Address(relative, 0-3fff), A=block(relative)
 GetWorldMapRoomLocation:
-		ld    a,Dsm.firstBlock+dsm.indexBlock
+		ld    a,Dsm.firstBlock ;+dsm.indexBlock
 		call  block34
         LD    HL,roomindex.data
         LD    BC,roomindex.reclen-1
@@ -2338,6 +2338,60 @@ palettes:
 .5:				DS .reclen
 .6KarniMata:	DB 71,5,18,1,32,5,52,3,32,1,0,3,80,3,115,6,0,2,119,7,64,6,35,2,69,4,112,5,112,2,0,0
 .7:				DS .reclen
+
+;Get Ruin properties
+;in:	A=ruinId
+;out:	HL=adr
+GetRuin:
+push bc
+		LD	h,0
+		ld	l,A
+		add	hl,hl	;x2
+		add	hl,hl	;4
+		add hl,hl	;8
+		add	hl,hl	;16
+		ld	bc,RuinPropertiesLUT.data
+		add	hl,bc
+		pop bc
+ret
+
+;RuinPropertiesLUT
+RuinPropertiesLUT:
+.reclen:		equ 16
+.numrec:		equ 32
+.data:
+	DB 0,0,0,"             "
+	DB 0,0,0,"Hub          "
+	DB 2,0,0,"Lemniscate   "
+	DB 0,0,0,"Bos Stenen Wa"
+	DB 4,0,0,"Pegu         "
+	DB 0,0,0,"Bio          "
+	DB 6,6,3,"Karni Mata   "
+	DB 0,0,0,"Konark       "
+	DB 0,0,0,"Ashoka   hell"
+	DB 0,0,0,"Taxilla      "
+	DB 0,0,0,"Euderus Set  "
+	DB 0,0,0,"Akna         "
+	DB 0,0,0,"Fate         "
+	DB 0,0,0,"Sepa         "
+	DB 0,0,0,"undefined    "
+	DB 0,0,0,"Chi          "
+	DB 0,0,0,"Sui          "
+	DB 0,0,0,"Grot         "
+	DB 0,0,0,"Tiwanaku     "
+	DB 0,0,0,"Aggayu       "
+	DB 0,0,0,"Ka           "
+	DB 0,0,0,"Genbu        "
+	DB 0,0,0,"Fuu          "
+	DB 0,0,0,"Indra        "
+	DB 0,0,0,"Morana       "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
 
 
 
@@ -2599,19 +2653,6 @@ SetEngineType:                        ;sets engine type (1= 304x216 engine  2=25
   inc   hl		;skip width
   inc   hl		;skip heigth
   ld    a,(hl)
-
-
-
-
-
-;ld a,2
-
-
-
-
-
-
-
   ld    (scrollEngine),a              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
   dec   a
   jp    z,.Engine304x216
