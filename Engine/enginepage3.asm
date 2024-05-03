@@ -310,8 +310,8 @@ BuildUpMap:
 
 		;rom->vram copy 14 rows to page 0
 		ld    b,14                          ;14 rows
-.loop6:	call  .Put8lines
-		djnz  .loop6
+.loop6:	call  .Put8blines
+;		djnz  .loop6
 
 		;vdp copy these 14 rows to page 1
 		ld    hl,.CopyPage0to1first14rows
@@ -319,8 +319,8 @@ BuildUpMap:
 
 		;rom->vram copy the last 13 rows to page 0
 		ld    b,13                          ;13 rows
-.loop7:	call  .Put8lines
-		djnz  .loop7
+.loop7:	call  .Put8blines
+;		djnz  .loop7
 
 		;vdp copy these 13 rows to page 1
 		ld    hl,.CopyPage0to1second13rows
@@ -334,8 +334,8 @@ BuildUpMap:
 		;rom->vram copy 7 rows to page 3
 		ld    ix,UnpackedRoomFile.tiledata	;reset source
 		ld    b,07                          ;7 rows
-.loop8:	call  .Put8lines
-		djnz  .loop8
+.loop8:	call  .Put8blines
+	;	djnz  .loop8
 
 		;vdp copy page 0 to page 2
 		ld    hl,.CopyPage0to2
@@ -343,8 +343,8 @@ BuildUpMap:
 
 		;rom->vram copy the next 14 rows to page 3
 		ld    b,14                          ;14 rows
-.loop9: call  .Put8lines
-		djnz  .loop9
+.loop9: call  .Put8blines
+;		djnz  .loop9
 
 		;vdp copy the last 5 rows to page 3
 		ld    hl,.CopyPage0to3last6rows
@@ -352,29 +352,28 @@ BuildUpMap:
 
 		ld    a,Loaderblock                 ;loader routine at $4000
 		call  block12
-  ret
+ret
 
 .CopyPage0to1first14rows:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,001   ;dx,--,dy,dpage
-  db    000,001,14*8,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy
+		db    000,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,001   ;dx,--,dy,dpage
+		db    000,001,14*8,000   ;nx,--,ny,--
+		db    000,000,$D0       ;fast copy
 .CopyPage0to1second13rows:
-  db    000,000,14*8,000   ;sx,--,sy,spage
-  db    000,000,14*8,001   ;dx,--,dy,dpage
-  db    000,001,13*8,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy
+		db    000,000,14*8,000   ;sx,--,sy,spage
+		db    000,000,14*8,001   ;dx,--,dy,dpage
+		db    000,001,13*8,000   ;nx,--,ny,--
+		db    000,000,$D0       ;fast copy
 .CopyPage0to2:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,002   ;dx,--,dy,dpage
-  db    000,001,216,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
+		db    000,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,002   ;dx,--,dy,dpage
+		db    000,001,216,000   ;nx,--,ny,--
+		db    000,000,$D0       ;fast copy   
 .CopyPage0to3last6rows:
-  db    000,000,21*8,000   ;sx,--,sy,spage
-  db    000,000,21*8,003   ;dx,--,dy,dpage
-  db    000,001,6*8,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
-
+		db    000,000,21*8,000   ;sx,--,sy,spage
+		db    000,000,21*8,003   ;dx,--,dy,dpage
+		db    000,001,6*8,000   ;nx,--,ny,--
+		db    000,000,$D0       ;fast copy   
 
 
 .buildupMap38x27:
@@ -383,8 +382,8 @@ BuildUpMap:
 
 		;rom->vram copy 14 rows to page 0
 		ld    b,14                          ;14 rows
-.loop1:	call  .Put8lines
-		djnz  .loop1
+.loop1:	call  .Put8blines
+	;	djnz  .loop1
 
 		;vdp copy these 14 rows to page 2
 		ld    hl,.Page0toPage2first14rows
@@ -392,8 +391,8 @@ BuildUpMap:
 
 		;rom->vram copy the last 13 rows to page 0
 		ld    b,13                          ;13 rows
-.loop4:	call  .Put8lines
-		djnz  .loop4
+.loop4:	call  .Put8blines
+;		djnz  .loop4
 
 		;vdp copy these last 13 rows to page 2
 		ld    hl,.Page0toPage2second13rows
@@ -407,8 +406,8 @@ BuildUpMap:
 		;rom->vram copy 6 rows to page 3
 		ld    ix,UnpackedRoomFile.tiledata + 12
 		ld    b,06                          ;6 rows
-.loop2: call  .Put8lines
-		djnz  .loop2
+.loop2: call  .Put8blines
+;		djnz  .loop2
 
 		;vdp copy page 0 to page 1
 		ld    hl,.Page0toPage1
@@ -416,8 +415,8 @@ BuildUpMap:
 
 		;rom->vram copy the next 14 rows to page 3
 		ld    b,14                          ;14 rows
-.loop3: call  .Put8lines
-		djnz  .loop3
+.loop3: call  .Put8blines
+;		djnz  .loop3
 
 		;vdp copy a 20 rows of a strip (32x160) page 3 to page 2
 		ld    hl,.Page3toPage2_StripOf32first20rows
@@ -425,8 +424,8 @@ BuildUpMap:
 
 		;rom->vram copy the last 7 rows to page 3
 		ld    b,07                          ;7 rows
-.loop5: call  .Put8lines
-		djnz  .loop5
+.loop5: call  .Put8blines
+;		djnz  .loop5
 
 		;vdp copy the remaining 2 small copies
 		ld    hl,.Page3toPage2_StripOf32second7rows
@@ -436,44 +435,46 @@ BuildUpMap:
 
 		ld    a,Loaderblock                 ;loader routine at $4000
 		call  block12
-  ret
+ret
 
 .Page0toPage1:
-  db    016,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,001   ;dx,--,dy,dpage
-  db    240,000,216,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
+		db    016,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,001   ;dx,--,dy,dpage
+		db    240,000,216,000   ;nx,--,ny,--
+		db    000,000,$D0       ;fast copy   
 
 .Page0toPage2first14rows:
-  db    032,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,002   ;dx,--,dy,dpage
-  db    224,000,14*8,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
+		db    032,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,002   ;dx,--,dy,dpage
+		db    224,000,14*8,000   ;nx,--,ny,--
+		db    000,000,$D0       ;fast copy   
 
 .Page0toPage2second13rows:
-  db    032,000,14*8,000   ;sx,--,sy,spage
-  db    000,000,14*8,002   ;dx,--,dy,dpage
-  db    224,000,13*8,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
+		db    032,000,14*8,000   ;sx,--,sy,spage
+		db    000,000,14*8,002   ;dx,--,dy,dpage
+		db    224,000,13*8,000   ;nx,--,ny,--
+		db    000,000,$D0       ;fast copy   
 
 .Page3toPage1_StripOf16:
-  db    208,000,000,003   ;sx,--,sy,spage
-  db    240,000,000,001   ;dx,--,dy,dpage
-  db    016,000,216,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
+		db    208,000,000,003   ;sx,--,sy,spage
+		db    240,000,000,001   ;dx,--,dy,dpage
+		db    016,000,216,000   ;nx,--,ny,--
+		db    000,000,$D0       ;fast copy   
 
 .Page3toPage2_StripOf32first20rows:
-  db    208,000,000,003   ;sx,--,sy,spage
-  db    224,000,000,002   ;dx,--,dy,dpage
-  db    032,000,20*8,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
+		db    208,000,000,003   ;sx,--,sy,spage
+		db    224,000,000,002   ;dx,--,dy,dpage
+		db    032,000,20*8,000   ;nx,--,ny,--
+		db    000,000,$D0       ;fast copy   
 
 .Page3toPage2_StripOf32second7rows:
-  db    208,000,20*8,003   ;sx,--,sy,spage
-  db    224,000,20*8,002   ;dx,--,dy,dpage
-  db    032,000,7*8,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
+		db    208,000,20*8,003   ;sx,--,sy,spage
+		db    224,000,20*8,002   ;dx,--,dy,dpage
+		db    032,000,7*8,000   ;nx,--,ny,--
+		db    000,000,$D0       ;fast copy   
 
+;Put [B] rows of 32 tiles on screen 20240502
+.Put8Blines:
 .Put8lines:
 		push  bc
 
@@ -500,13 +501,14 @@ BuildUpMap:
 		dec   a
 		jp    nz,.MainLoop
 
-		ld    sp,(spatpointer)              ;recall stack pointer
 		ei
+		ld    sp,(spatpointer)              ;recall stack pointer
 
 .SelfModifyingCodeMapLenght: equ $+1  
 		ld    de,000
 		add   ix,de                         ;go to next row of tiles
 		pop   bc
+		djnz .put8blines
 		ret
 
 
@@ -514,26 +516,26 @@ BuildUpMap:
 ;Get GFX location, and set blocks at page 1,2
 GetTilesetBitmap: 
 ;		LD    BC,TileSetIndex
-		LD 	BC,dsm.bitmapGfxindexAdr	; $9000 		;start of the gfx index (temp)
-        LD    L,A
-        LD    H,0
-        ADD   HL,HL
-        ADD   HL,BC
+		LD	BC,dsm.bitmapGfxindexAdr	; $9000 		;start of the gfx index (temp)
+        LD	L,A
+        LD	H,0
+        ADD	HL,HL
+        ADD	HL,BC
 		LD A,dsm.firstblock+dsm.indexblock 		;indexblock (temp)
 		call block34							;map it to p2
-        LD    A,(HL)
-        INC   HL
-        LD    H,(HL)
-        LD    L,A
-		ld bc,dsm.bitmapGfxindexAdr+dsm.bitmapGfxRecords ;$9000+64
-		add hl,bc
+        LD	A,(HL)
+        INC	HL
+        LD	H,(HL)
+        LD	L,A
+		ld	bc,dsm.bitmapGfxindexAdr+dsm.bitmapGfxRecords ;$9000+64
+		add	hl,bc
 ;rm: voorlopig zo, met raw sc5 uitgaande van volledige 32K
 		LD    A,(HL)          ;pal
 		INC   HL
 ;		LD    B,(HL)          ;parts
 		INC   HL
 		LD    A,(HL)          ;block part 1
-		add a,dsm.firstblock ;temp
+		add	a,dsm.firstblock ;temp
 		Call	block12
 		INC   HL
 ;	    LD    D,(HL)          ;seg
