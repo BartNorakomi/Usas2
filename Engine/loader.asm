@@ -4,18 +4,19 @@ loader:
 	call SwapSpatColAndCharTable2
 	call SwapSpatColAndCharTable
 	call SwapSpatColAndCharTable2
+	call PopulateControls			;this allows for a double jump as soon as you enter a new map
 	ld de,(WorldMapPositionY) 			;WorldMapPositionX/Y:  
 	call getRoom
 ;	call SetEngineType
-
 	;call  SetTilesInVram				;copies all the tiles to Vram
-	call PopulateControls			;this allows for a double jump as soon as you enter a new map
-
 ;	ld	a,RuinId.KarniMata		 		;ruinId (temp)
 ;	ld a,Ruinid.Lemniscate
+ ret
 	ld a,Ruinid.Pegu
+;	ld a,(UnpackedRoomFile+roomDataBlock.mapid)
+;	and #1f
 	call getPalette
-	call SetMapPalette	
+	call SetMapPalette
   ret
 
 
@@ -2260,15 +2261,16 @@ roomTypes:
 getRoom:
 		call GetWorldMapRoomLocation
 		add a,Dsm.firstBlock ;+dsm.indexBlock	;offset (temp)
-		ld bc,$8000							;destination
-		add hl,bc
-		ld ix,MapDataCopiedToRam
-		ld (ix+MapDataCopiedToRam.block),a
-		ld (ix+MapDataCopiedToRam.address+0),l
-		ld (ix+MapDataCopiedToRam.address+1),h
-		ld (ix+MapDataCopiedToRam.engine),1	;unused, I hope
-		ld (ix+MapDataCopiedToRam.tileset),0 ;unused
-		ld (ix+MapDataCopiedToRam.palette),0 ;unused
+;		ld bc,$8000							;destination
+;		add hl,bc
+		set 7,h
+;		ld ix,MapDataCopiedToRam
+;		ld (ix+MapDataCopiedToRam.block),a
+;		ld (ix+MapDataCopiedToRam.address+0),l
+;		ld (ix+MapDataCopiedToRam.address+1),h
+;		ld (ix+MapDataCopiedToRam.engine),1	;unused, I hope
+;		ld (ix+MapDataCopiedToRam.tileset),0 ;unused
+;		ld (ix+MapDataCopiedToRam.palette),0 ;unused
 ret
 
 
@@ -2299,7 +2301,7 @@ GWMR.0: ADD   HL,BC
         JP    GWMR.1
 
 
-;store and set palette for this room
+;store and set palette as current pal
 SetMapPalette:
 		push  hl
 		ld    de,CurrentPalette
@@ -2311,7 +2313,7 @@ ret
 
 ;Get palette location
 ;in:	A=palId
-;out:	HL=adr
+;out:	HL=adr of 32byes palbuffer
 getPalette:
 		push bc
 		LD	h,0
@@ -2783,7 +2785,7 @@ ReSetVariables:
 ;  dw    -1,-0,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+0,+1
 ;  dw    -1,-0,-0,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+0,+0,+1
   
-  ruinProperties:
+ruinProperties:
 .reclen:		equ 16		;[attribute]The length of one record
 .numrec:		equ 32		;[attribute]Number of records
 .tileset:		equ +0		;[property]Default Tileset ID
