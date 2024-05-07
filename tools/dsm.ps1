@@ -348,7 +348,7 @@ function add-DSMData
             write-verbose $result
         }   
         if ($updateFileSpace -and $DSM.filespace)
-        {	write-verbose "updating file space / block:$($alloc.block) segment:$($alloc.segment) len:$($alloc.length)"
+        {	write-verbose "[add-DSMData] updating file space / block:$($alloc.block) segment:$($alloc.segment) len:$($alloc.length)"
             $null=$DSM|write-DSMFileSpace -block $alloc.block -segment $alloc.segment -data $data
         }
         $alloc
@@ -375,12 +375,12 @@ function add-DSMFile
     foreach ($file in $Files)
     {   if ($datalist -and -not (get-DsmDataListAllocation -dataList $datalist -name $file.name))
         {   $fileSize=$file.length
-            write-verbose "Adding file:$($file.fullname) size:$fileSize to DSM"
+				write-verbose "[add-DSMFile] Adding file:$($file.fullname) size:$fileSize to DSM"
             $fs=[io.file]::open($file.fullname,$filemodes["open"])
             $part=0
             while ($filesize)
             {   if ($filesize -gt 16KB) {$length=16KB}else{$length=$filesize}
-                write-verbose "Writing part $part, $length"
+                write-verbose "[add-DSMFile] Writing part $part, $length"
                 #$data=get-content $file -Encoding byte|select -first $length
                 $Data=[byte[]]::new($length)
                 $fs.read($data,0,$data.length)
@@ -390,7 +390,7 @@ function add-DSMFile
             }
             $fs.close()
         } else
-        {   write-warning "file $($file.name) already in datalist $($datalist.name)" 
+        {   write-warning "[add-DSMFile] file $($file.name) already in datalist $($datalist.name)" 
         }
     }
 }
@@ -526,7 +526,7 @@ function add-DSMDataListAllocation
         #write-verbose $allocation
         return $allocation
 	} else
-    {   write-warning "add-DSMDataListAllocation: Datalist Allocation already exists"        
+    {   write-warning "[add-DSMDataListAllocation] Datalist Allocation already exists"        
     }
 }    
 

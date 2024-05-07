@@ -198,15 +198,16 @@ function get-BitmapGfxIndex
 		$indexPointerTable[$index*2]=$l
 		$indexPointerTable[$index*2+1]=$h
 		if ($tileset=$usas2.tileset|where{$_.id -eq $index})
-		{	$sc5File=($usas2.file|where{$_.identity -eq $tileset.file}).path
-			write-verbose "index:$index, $($tileset.file)=$sc5file"
+		{	write-verbose ">> $($tileset.file)"
+			$sc5File=($usas2.file|where{$_.identity -eq $tileset.file}).path
+			write-verbose "[get-BitmapGfxIndex] index:$index, $($tileset.file)=$sc5file"
 			$claims=$datalist.allocations|where{$_.name -eq (split-path -path $sc5file -leaf)}|sort part
 			$parts=$claims.count
 			$indexRecords.add(0)	#palette
 			$indexRecords.add($parts)	#parts
-			write-verbose "Palette: 0, Parts: $parts"
+			write-verbose "[get-BitmapGfxIndex] Palette: 0, Parts: $parts"
 			foreach ($claim in $claims)
-			{	write-verbose "Block: $($claim.block), segment:$($claim.segment)"
+			{	write-verbose "[get-BitmapGfxIndex] Block: $($claim.block), segment:$($claim.segment)"
 				$indexRecords.add($claim.block)
 				$indexRecords.add($claim.segment)
 			}

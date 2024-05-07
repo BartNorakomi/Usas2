@@ -178,6 +178,11 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		file	KarniMata.tiles.sc5	type	1					
 1	Usas2		RoomObject	knifeThrower	uid	134					
 1	Usas2		RoomObject	knifeThrower	objectClass	Enemy					
+1	Usas2		Tileset	Konark	file	Konark.tiles.sc5					
+1	Usas2		Tileset	Konark	id	7					
+1	Usas2		Tileset	Konark	type	0					
+1	Usas2		Tileset	Konark	imageSourceFile	Konark.tiles.bmp					
+1	Usas2		Tileset	Konark	paletteSourceFile	Konark.tiles.pl					
 1	Usas2		TiledtileSet	Konark	id	7					
 1	Usas2		TiledtileSet	Konark	imageSourceFile	./tilesheets/images/Konark.tiles.bmp					
 1	Usas2		TiledtileSet	Konark	path	tilesheets/tsKonark.tsx					
@@ -187,11 +192,17 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		music	Konark	file	Konark.vgm					
 1	Usas2		Ruin	Konark	music	Konark		Default music (ID) for this ruin			
 1	Usas2		Ruin	Konark	name	Konark		The display name			
-1	Usas2		Ruin	Konark	palette	Konark.tiles		Default Palette			
+1	Usas2		Ruin	Konark	palette	Konark.tiles.pl		Default Palette			
 1	Usas2		Ruin	Konark	ruinId	7		Identifier for this Ruin			
 1	Usas2		Ruin	Konark	TiledTileSet	Konark		Default TiledTileset (ID)			
 1	Usas2		Ruin	Konark	TiledWorldMap	Konark		Designated ruin worldmap in Tiled			
 1	Usas2		Ruin	Konark	tileSet	Konark		Default Tileset (ID)			
+1	Usas2		file	Konark.tiles.bmp	path	..\grapx\tilesheets\Konark.tiles.bmp					
+1	Usas2		file	Konark.tiles.bmp	type	7					
+1	Usas2		file	Konark.tiles.pl	path	..\grapx\tilesheets\Konark.tiles.pl					
+1	Usas2		file	Konark.tiles.pl	type	2					
+1	Usas2		file	Konark.tiles.sc5	path	..\grapx\tilesheets\Konark.tiles.sc5					
+1	Usas2		file	Konark.tiles.sc5	type	1					
 1	Usas2		RoomObject	lancelot	uid	130					
 1	Usas2		RoomObject	lancelot	objectClass	Enemy					
 1	Usas2		RoomObject	landstrider	uid	148					
