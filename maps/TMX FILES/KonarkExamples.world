@@ -1,0 +1,111 @@
+{
+    "maps": [
+        {
+            "fileName": "C10.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 3968,
+            "y": -464
+        },
+        {
+            "fileName": "C13.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 3968,
+            "y": 184
+        },
+        {
+            "fileName": "C11.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 3968,
+            "y": -248
+        },
+        {
+            "fileName": "C12.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 3968,
+            "y": -32
+        },
+        {
+            "fileName": "D13.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 4272,
+            "y": 184
+        },
+        {
+            "fileName": "E12.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 4576,
+            "y": -32
+        },
+        {
+            "fileName": "E13.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 4576,
+            "y": 184
+        },
+        {
+            "fileName": "B12.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 3664,
+            "y": -32
+        },
+        {
+            "fileName": "B11.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 3664,
+            "y": -248
+        },
+        {
+            "fileName": "B10.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 3664,
+            "y": -464
+        },
+        {
+            "fileName": "B13.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 3664,
+            "y": 184
+        },
+        {
+            "fileName": "A12.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 3360,
+            "y": -32
+        },
+        {
+            "fileName": "A11.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 3360,
+            "y": -248
+        },
+        {
+            "fileName": "A10.tmx",
+            "height": 216,
+            "width": 304,
+            "x": 3360,
+            "y": -464
+        },
+        {
+            "fileName": "A13.tmx",
+            "height": 216,
+            "width": 256,
+            "x": 3408,
+            "y": 184
+        }
+    ],
+    "onlyShowAdjacentMaps": false,
+    "type": "world"
+}

@@ -20,6 +20,7 @@ param
 	[switch]$openWorldMap=$false,
 	[switch]$printWorldMap=$false,
 	[switch]$forceOverWrite,
+	[switch]$resetGlobals=$false,
 	$masterMap, #="..\Usas2-WorldMap.csv",
 	$usas2PropertiesFile="..\usas2-properties.csv"
 )
@@ -35,6 +36,7 @@ write-verbose "maps location: $TiledMapsLocation"
 . .\Usas2-SharedFunctions.inc.ps1
 
 ##### Global properties #####
+if ($resetGlobals) {$global:usas2=$null}
 $global:usas2=get-Usas2Globals
 if (-not $mastermap) {$mastermap="..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile}
 
