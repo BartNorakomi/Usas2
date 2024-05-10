@@ -369,3 +369,5 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		DsmDatalist	Worldmap	name	Worldmap					
 1	Usas2		RoomObject	ZombieSpawnPoint	uid	62					
 1	Usas2		RoomObject	ZombieSpawnPoint	objectClass	enemySpawn					
+1	Usas2		RoomObject	AreaSign	uid	5					
+1	Usas2		RoomObject	AreaSign	objectClass	General					
