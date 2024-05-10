@@ -15,7 +15,7 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  17 | WorldMapPositionX:  db  44 ;ballroom 1 (with pipe)
 ;WorldMapPositionY:  db  20 | WorldMapPositionX:  db  44 ;ballroom 2
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
-roomX: equ ("B"-"A")*26 + "Q"-"A"
+roomX: equ ("B"-"A")*26 + "P"-"A"
 WorldMapPositionY:  db  18 | WorldMapPositionX:  db  roomX
 
 ClesX:      dw 60 ;$19 ;230 ;250 ;210
@@ -103,6 +103,10 @@ loadGraphics:
 
   ld    a,1
   ld    (AmountOfFramesUntilScreenTurnsOn?),a
+
+	ld    a,(UnpackedRoomFile+roomDataBlock.mapid)
+	and   $1f
+  ld    (PreviousRuin),a
 
   jp    LevelEngine
 
@@ -1226,6 +1230,8 @@ AmountOfPoisonDropsInCurrentRoom:   rb    1
 AmountOfWaterfallsInCurrentRoom:    rb    1
 AmountOfSF2ObjectsCurrentRoom:      rb    1
 CurrentActiveWaterfall:             rb    1
+
+PreviousRuin:                 rb    1 ;Ruin we were in before current room
 
 
 ;RoomDataBlock structure

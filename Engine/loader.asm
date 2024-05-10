@@ -182,6 +182,7 @@ ObjectTestData:
 ;db $96,$24,$30,03,01
 ;db 0
 
+;db 5,0 (area sign)
 
 ;db $0a,$00,$00,56/2,88-16,$48,$30,$03,$01,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
 ;db 0
@@ -251,6 +252,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object003                    ;waterfall grey statue
   cp    4
   jp    z,.Object004                    ;poison drops (DrippingOozeDrop)
+  cp    5
+  jp    z,.Object005                    ;area sign (AreaSign)
   cp    10
   jp    z,.Object010                    ;huge block (HugeBlock)
   cp    11
@@ -622,7 +625,44 @@ SetObjects:                             ;after unpacking the map to ram, all the
   call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
   ret
 
+  .Object005:                           ;area sign (AreaSign)
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=put line in all 3 pages
+;v7=sprite frame
+;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
+;v9=wait timer / bottom of area sign
+  ld    hl,Object005Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1           ;1 objects
+  ldir
+
+  ld    a,(PreviousRuin)
+  ld    b,a                             ;current ruin ID
+	ld    a,(UnpackedRoomFile+roomDataBlock.mapid)
+	and   $1f
+  cp    b
+  jr    z,.DontSetAreaSign              ;if current ruin ID is the same as previous ruin ID, then don't set area sign in play
+
+  push  ix
+  push  iy
+dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
+  call  CheckSwitchNextSong.EndCheckLastSong
+  pop   iy
+  pop   ix
+
+  ld    de,Object005Table.lenghtobjectdata
+  ret   
   
+  .DontSetAreaSign:
+  ld    (iy+enemies_and_objects.Alive?),0
+  ld    de,Object005Table.lenghtobjectdata
+  ret   
+
   .Object062:                           ;zombie spawn point (ZombieSpawnPoint)
 ;v1=Zombie Spawn Timer
 ;v2=Max Number Of Zombies
@@ -1797,10 +1837,13 @@ Object001Table:               ;pushing stone (PushingStone)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
           db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks4Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movepatblo1| ds fill-1
 
-
-
-
-
+Object005Table:               ;Area sign
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+          db 2,        0|dw AreaSign             |db 8*05|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+00,+00,190, 0|db 016,movepatblo1| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.lenghtobjectdata: equ 3
 
 Object010Table:               ;platform
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
