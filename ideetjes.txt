@@ -1,7 +1,10 @@
+In de speciaal rooms kun je max hp+mp items vinden
+max hp+mp gaat ook omhoog als je een boss verslaat
+de items die je vindt op de worldmap zijn de primaire en secundaire items
+
 de grote blokken die je zelf kunt sturen als je erop mediteert
 of.. stel er zijn 2 grote blokken in een room en 2 meditatie shrines
 de blokken bewegen dan alleen als je mediteert per shrine
-
 
 het normale punch wapen kun je gebruiken om walls te testen op een secret.
 je hoort dan een speciale sfx.

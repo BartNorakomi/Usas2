@@ -655,6 +655,8 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
   pop   iy
   pop   ix
 
+  call  ResetPushStones
+
   ld    de,Object005Table.lenghtobjectdata
   ret   
   
@@ -2438,8 +2440,16 @@ RuinPropertiesLUT:
 	DB 0,0,0,"             "
 	DB 0,0,0,"             "
 
-
-
+ResetPushStones:
+  ld    hl,PuzzleBlocks1Y+3             ;y stone 1
+  ld    de,4
+  ld    b,31
+  xor   a
+  .loop:
+  ld    (hl),a
+  add   hl,de
+  djnz  .loop
+  ret
 
 PutSpatToVramSlow:
 	ld		hl,(invisspratttableaddress)		;sprite attribute table in VRAM ($17600)

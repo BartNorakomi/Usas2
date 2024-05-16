@@ -750,7 +750,7 @@ CopySwitch2:
 
 AmountOfPushingStonesInCurrentRoom: ds  1
                     ;y                        x     room (x,y)
-PuzzleBlocks1Y: db  100 | PuzzleBlocks1X: db  100 | dw 0
+PuzzleBlocks1Y: db  000 | PuzzleBlocks1X: db  000 | dw 0
 PuzzleBlocks2Y: db  000 | PuzzleBlocks2X: db  000 | dw 0
 PuzzleBlocks3Y: db  000 | PuzzleBlocks3X: db  000 | dw 0
 PuzzleBlocks4Y: db  000 | PuzzleBlocks4X: db  000 | dw 0
@@ -789,7 +789,7 @@ PuzzleBlocks29Y:db  000 | PuzzleBlocks29X:db  000 | dw 0
 
 PuzzleBlocks30Y:db  000 | PuzzleBlocks30X:db  000 | dw 0
 
-PuzzleBlocksEmpty:db  000 | PuzzleBlocksEmptyX:db  00*8+1 | dw 0
+PuzzleBlocksEmpty:db 000 | PuzzleBlocksEmptyX:db 000 | dw 0
 
 
 ;PuzzleBlocks1Y: db  032 | PuzzleBlocks1X: db  111
