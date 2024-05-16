@@ -13,12 +13,18 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		DsmDatalist	Worldmap	IndexBlock	0					
 1	Usas2		DsmDatalist	Worldmap	IndexSegment	0					
 1	Usas2		DsmDatalist	Worldmap	name	Worldmap					
-1	Usas2		file	KarniMata.tiles.bmp	path	..\grapx\tilesheets\KarniMata.tiles.bmp					
 1	Usas2		file	KarniMata.tiles.bmp	fileTypeId	7					
-1	Usas2		file	KarniMata.tiles.pl	path	..\grapx\tilesheets\KarniMata.tiles.pl					
 1	Usas2		file	KarniMata.tiles.pl	fileTypeId	2					
-1	Usas2		file	KarniMata.tiles.sc5	path	..\grapx\tilesheets\KarniMata.tiles.sc5					
 1	Usas2		file	KarniMata.tiles.sc5	fileTypeId	1					
+1	Usas2		file	Hub.tiles.bmp	fileTypeId	7					
+1	Usas2		file	Hub.tiles.pl	fileTypeId	2					
+1	Usas2		file	Hub.tiles.sc5	fileTypeId	1					
+1	Usas2		file	KarniMata.tiles.bmp	path	..\grapx\tilesheets\KarniMata.tiles.bmp					
+1	Usas2		file	KarniMata.tiles.pl	path	..\grapx\tilesheets\KarniMata.tiles.pl					
+1	Usas2		file	KarniMata.tiles.sc5	path	..\grapx\tilesheets\KarniMata.tiles.sc5					
+1	Usas2		file	Hub.tiles.bmp	path	..\grapx\tilesheets\Hub.tiles.bmp					
+1	Usas2		file	Hub.tiles.pl	path	..\grapx\tilesheets\Hub.tiles.pl					
+1	Usas2		file	Hub.tiles.sc5	path	..\grapx\tilesheets\Hub.tiles.sc5					
 1	Usas2		file	Konark.tiles.bmp	path	..\grapx\tilesheets\Konark.tiles.bmp					
 1	Usas2		file	Konark.tiles.bmp	fileTypeId	7					
 1	Usas2		file	Konark.tiles.pl	path	..\grapx\tilesheets\Konark.tiles.pl					
@@ -37,14 +43,20 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		file	Pegu.tiles.pl	fileTypeId	2					
 1	Usas2		file	Pegu.tiles.sc5	path	..\grapx\tilesheets\Pegu.tiles.sc5					
 1	Usas2		file	Pegu.tiles.sc5	fileTypeId	1					
+1	Usas2		file	ruin3.tiles.bmp	path	..\grapx\tilesheets\ruin3.tiles.bmp					
+1	Usas2		file	ruin3.tiles.bmp	fileTypeId	7					
+1	Usas2		file	ruin3.tiles.pl	path	..\grapx\tilesheets\ruin3.tiles.pl					
+1	Usas2		file	ruin3.tiles.pl	fileTypeId	2					
+1	Usas2		file	ruin3.tiles.sc5	path	..\grapx\tilesheets\ruin3.tiles.sc5					
+1	Usas2		file	ruin3.tiles.sc5	fileTypeId	1					
 1	Usas2		FileType	default	id	0					
-1	Usas2		FileType	Tileset	id	1					
 1	Usas2		FileType	Palette	id	2					
-1	Usas2		FileType	TiledMap	id	3					
 1	Usas2		FileType	Room	id	4					
 1	Usas2		FileType	RoomPacked	id	5					
+1	Usas2		FileType	TiledMap	id	3					
 1	Usas2		FileType	TiledTileSet	id	6					
 1	Usas2		FileType	TiledTileSetImage	id	7					
+1	Usas2		FileType	Tileset	id	1					
 1	Usas2		Index	GfxIndexPointer	numrec	32	attribute	Number of records in the table		.numrec: EQU 32	
 1	Usas2		Index	GfxIndexPointer	reclen	2	attribute	The length of one record		.reclen: EQU 2	
 1	Usas2		Index	GfxIndexTable	block	2	attribute	Offset of property "block" in the table		.block: EQU 2	
@@ -55,12 +67,15 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Index	GfxIndexTable	segmentSize	3	attribute	Offset of property "segmentSize" in the table		.segmentSize: EQU 3	
 1	Usas2		Index	Rooms	numrec	1024	attribute	Number of records in the table		.numrec: EQU 1024	
 1	Usas2		Index	Rooms	reclen	4	attribute	The length of one record		.reclen: EQU 4	
-1	Usas2		music	KarniMata	id	3					
 1	Usas2		music	KarniMata	file	KarniMata.vgm					
+1	Usas2		music	KarniMata	id	3					
 1	Usas2		music	Konark	id	7					
 1	Usas2		music	Konark	file	Konark.vgm					
 1	Usas2		Palette	KarniMata.tiles	file	Karnimata.tiles.pl					
+1	Usas2		Palette	Hub.tiles	file	Hub.tiles.pl					
 1	Usas2		Palette	KarniMata.tiles	id	6					
+1	Usas2		Palette	Hub.tiles	id	1					
+1	Usas2		Palette	ruin3.tiles	file	ruin3.tiles.pl					
 1	Usas2		Room	boss	engine	2					
 1	Usas2		Room	boss	height	27					
 1	Usas2		Room	boss	name	Boss Room					
@@ -91,6 +106,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Room	teleport	name	Teleport room					
 1	Usas2		Room	teleport	roomType	32					
 1	Usas2		Room	teleport	width	32					
+1	Usas2		RoomObject	AreaSign	uid	5					
+1	Usas2		RoomObject	AreaSign	objectClass	General					
 1	Usas2		RoomObject	bat	uid	147					
 1	Usas2		RoomObject	bat	objectClass	Enemy					
 1	Usas2		RoomObject	beetle	uid	140					
@@ -181,8 +198,6 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	Waterfall2	objectClass	General					
 1	Usas2		RoomObject	ZombieSpawnPoint	uid	62					
 1	Usas2		RoomObject	ZombieSpawnPoint	objectClass	enemySpawn					
-1	Usas2		RoomObject	AreaSign	uid	5					
-1	Usas2		RoomObject	AreaSign	objectClass	General					
 1	Usas2		Ruin	Aggayu	music						
 1	Usas2		Ruin	Aggayu	name	Aggayu					
 1	Usas2		Ruin	Aggayu	Palette						
@@ -199,10 +214,6 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Bio	name	Bio					
 1	Usas2		Ruin	Bio	Palette						
 1	Usas2		Ruin	Bio	ruinId	5					
-1	Usas2		Ruin	BosStenenWater	music						
-1	Usas2		Ruin	BosStenenWater	name	Bos Stenen Water					
-1	Usas2		Ruin	BosStenenWater	Palette						
-1	Usas2		Ruin	BosStenenWater	ruinId	3					
 1	Usas2		Ruin	Chi	music						
 1	Usas2		Ruin	Chi	name	Chi					
 1	Usas2		Ruin	Chi	Palette						
@@ -228,10 +239,11 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Grot	Palette						
 1	Usas2		Ruin	Grot	ruinId	17					
 1	Usas2		Ruin	Hub	music						
+1	Usas2		Ruin	KarniMata	music	KarniMata		Default music (ID) for this ruin			
 1	Usas2		Ruin	Hub	name	Hub					
-1	Usas2		Ruin	Hub	Palette						
-1	Usas2		Ruin	Hub	ruinId	1					
-1	Usas2		Ruin	Hub	tileSet	Hub					
+1	Usas2		Ruin	KarniMata	name	Karni Mata		The display name			
+1	Usas2		Ruin	Hub	palette	hub.tiles		Palette Identity			
+1	Usas2		Ruin	KarniMata	palette	KarniMata.tiles		Default Palette			
 1	Usas2		Ruin	Indra	music						
 1	Usas2		Ruin	Indra	name	Indra					
 1	Usas2		Ruin	Indra	Palette						
@@ -240,13 +252,13 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Ka	name	Ka					
 1	Usas2		Ruin	Ka	Palette						
 1	Usas2		Ruin	Ka	ruinId	20					
-1	Usas2		Ruin	KarniMata	music	KarniMata		Default music (ID) for this ruin			
-1	Usas2		Ruin	KarniMata	name	Karni Mata		The display name			
-1	Usas2		Ruin	KarniMata	palette	KarniMata.tiles		Default Palette			
+1	Usas2		Ruin	Hub	ruinId	1					
 1	Usas2		Ruin	KarniMata	ruinId	6		Identifier for this Ruin			
 1	Usas2		Ruin	KarniMata	TiledTileSet	KarniMata		Default TiledTileset (ID)			
 1	Usas2		Ruin	KarniMata	TiledWorldMap	KarniMata		Designated ruin worldmap in Tiled			
-1	Usas2		Ruin	KarniMata	tileSet	KarniMata		Default Tileset (ID)			
+1	Usas2		Ruin	Hub	TiledTileSet	Hub		TiledTileset identity			
+1	Usas2		Ruin	Hub	TiledWorldMap	Hub		TiledWorldmap Identity			
+1	Usas2		Ruin	Hub	tileset	Hub		Tileset identity			
 1	Usas2		Ruin	Konark	music	Konark		Default music (ID) for this ruin			
 1	Usas2		Ruin	Konark	name	Konark		The display name			
 1	Usas2		Ruin	Konark	palette	Konark.tiles.pl		Default Palette			
@@ -270,6 +282,13 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Pegu	tileSet	Pegu		Default Tileset (ID)			
 1	Usas2		Ruin	Pegu	TiledTileSet	Pegu		Default TiledTileset (ID)			
 1	Usas2		Ruin	Pegu	TiledWorldMap	Pegu		Designated ruin worldmap in Tiled			
+1	Usas2		Ruin	ruin3	TiledWorldMap	ruin3		Designated ruin worldmap in Tiled			
+1	Usas2		Ruin	ruin3	tileSet	ruin3		Default Tileset (ID)			
+1	Usas2		Ruin	ruin3	music						
+1	Usas2		Ruin	ruin3	name	Bos Stenen Water					
+1	Usas2		Ruin	ruin3	Palette	ruin3.tiles					
+1	Usas2		Ruin	ruin3	ruinId	3					
+1	Usas2		Ruin	ruin3	TiledTileSet	ruin3		Default TiledTileset (ID)			
 1	Usas2		Ruin	Sepa	music						
 1	Usas2		Ruin	Sepa	name	Sepa					
 1	Usas2		Ruin	Sepa	Palette						
@@ -334,12 +353,12 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2	 	TiledtileSet	.*	tileCount	1024					
 1	Usas2		TiledtileSet	.*	tileHeight	8					
 1	Usas2		TiledtileSet	.*	tileWidth	8					
-1	Usas2		TiledtileSet	Hub	imageSourceFile	./tilesheets/images/Hub.tiles.bmp					
-1	Usas2		TiledtileSet	Hub	path	tilesheets/tsHub.tsx					
-1	Usas2		TiledtileSet	Indra	path	tilesheets/tsKarniMata.tsx					
+1	Usas2		TiledtileSet	Akna	imageSourceFile	./tilesheets/images/Akna.tiles.bmp					
+1	Usas2		TiledtileSet	Akna	path	tilesheets/Akna.tsx					
+1	Usas2		Ruin	KarniMata	tileSet	KarniMata		Default Tileset (ID)			
 1	Usas2		TiledtileSet	KarniMata	id	6					
-1	Usas2		TiledtileSet	KarniMata	imageSourceFile	./tilesheets/images/Karnimata.tiles.bmp					
-1	Usas2		TiledtileSet	KarniMata	path	tilesheets/tsKarniMata.tsx					
+1	Usas2		TiledtileSet	Hub	imageSourceFile	./tilesheets/images/hub.tiles.bmp		Direct path to file			
+1	Usas2		TiledtileSet	KarniMata	imageSourceFile	./tilesheets/images/Karnimata.tiles.bmp		Direct path to file			
 1	Usas2		TiledtileSet	Konark	id	7					
 1	Usas2		TiledtileSet	Konark	imageSourceFile	./tilesheets/images/Konark.tiles.bmp					
 1	Usas2		TiledtileSet	Konark	path	tilesheets/tsKonark.tsx					
@@ -347,22 +366,30 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		TiledtileSet	Lemniscate	path	tilesheets/tsLemniscate.tsx					
 1	Usas2		TiledtileSet	Pegu	imageSourceFile	./tilesheets/images/Pegu.tiles.bmp					
 1	Usas2		TiledtileSet	Pegu	path	tilesheets/tsPegu.tsx					
+1	Usas2		TiledtileSet	Ruin3	imageSourceFile	./tilesheets/images/Ruin3.tiles.bmp					
+1	Usas2		TiledtileSet	Ruin3	path	tilesheets/Ruin3.tsx					
 1	Usas2		TiledtileSet	teleport	imageSourceFile	./tilesheets/images/Teleport.tiles.bmp					
 1	Usas2		TiledtileSet	teleport	path	tilesheets/tsTeleport.tsx					
 1	Usas2		TiledWorldMap	.*	defaultLocation	C:\Users\$($env:username)\OneDrive\Usas2\maps					
+1	Usas2		TiledtileSet	Hub	path	tilesheets/hub.tsx		Direct path to file			
+1	Usas2		TiledtileSet	KarniMata	path	tilesheets/tsKarniMata.tsx		Direct path to file			
 1	Usas2		TiledWorldMap	Hub	Name	Hub					
-1	Usas2		TiledWorldMap	Hub	path	Hub.world					
 1	Usas2		TiledWorldMap	KarniMata	Name	Karni Mata					
-1	Usas2		TiledWorldMap	KarniMata	path	KarniMata.world					
 1	Usas2		TiledWorldMap	Konark	Name	Konark					
 1	Usas2		TiledWorldMap	Konark	path	Konark.world					
 1	Usas2		TiledWorldMap	Pegu	Name	Pegu					
 1	Usas2		TiledWorldMap	Pegu	path	Pegu.world					
+1	Usas2		TiledWorldMap	ruin3	Name	ruin3					
+1	Usas2		TiledWorldMap	ruin3	path	ruin3.world					
+1	Usas2		TiledWorldMap	Hub	path	Hub.world					
+1	Usas2		TiledWorldMap	KarniMata	path	KarniMata.world					
 1	Usas2		Tileset	KarniMata	file	KarniMata.Tiles.sc5					
 1	Usas2		Tileset	KarniMata	id	6					
-1	Usas2		Tileset	KarniMata	type	0					
+1	Usas2		Tileset	Hub	imageSourceFile	Hub.Tiles.bmp					
 1	Usas2		Tileset	KarniMata	imageSourceFile	KarniMata.Tiles.bmp					
+1	Usas2		Tileset	Hub	paletteSourceFile	Hub.Tiles.pl					
 1	Usas2		Tileset	KarniMata	paletteSourceFile	KarniMata.Tiles.pl					
+1	Usas2		Tileset	KarniMata	type	0					
 1	Usas2		Tileset	Konark	file	Konark.tiles.sc5					
 1	Usas2		Tileset	Konark	id	7					
 1	Usas2		Tileset	Konark	type	0					
@@ -378,4 +405,9 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Tileset	Pegu	file	Pegu.Tiles.sc5		Destination file for ROM			
 1	Usas2		Tileset	Pegu	id	4		RuinID			
 1	Usas2		Tileset	Pegu	type	0		FileType=Tileset			
+1	Usas2		Tileset	ruin3	file	ruin3.Tiles.sc5					
+1	Usas2		Tileset	ruin3	id	6					
+1	Usas2		Tileset	ruin3	type	0					
+1	Usas2		Tileset	ruin3	imageSourceFile	ruin3.Tiles.bmp					
+1	Usas2		Tileset	ruin3	paletteSourceFile	ruin3.Tiles.pl					
 1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv					

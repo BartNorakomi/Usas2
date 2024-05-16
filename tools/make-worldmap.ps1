@@ -1,7 +1,17 @@
 # Create a Tiled.worldmap files and optional its maps
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
-# 20231015-20231128
+# 20231015-20240516
+
+<#
+required manifest properties:
+ ruin.<identity>.name
+ ruin.<identity>.ruinId
+ ruin.<identity>.TiledTileset
+ worldmap.global.sourcefile
+ room.*
+ tiledTileSet.<identity>.path
+#>
 
 [CmdletBinding()]
 param
@@ -26,8 +36,8 @@ param
 )
 
 $worldMapFile=$targetLocation+$name+".world"
-write-verbose "input file: $masterMap"
-write-verbose "output file: $worldMapFile"
+#write-verbose "input file: $masterMap"
+if ($name) {write-verbose "output file: $worldMapFile"}
 write-verbose "maps location: $TiledMapsLocation"
 
 
@@ -73,8 +83,8 @@ function new-Usas2RoomTiledMapFile
 	$roomProps=$usas2.room|where{$_.roomType -eq $roomType}
 	$width=$roomProps.width 
 	$height=$roomProps.height
-	$tileSet=$ruinProps.Tileset
-	
+	if (-not ($tileSet=$ruinProps.TiledTileset)) {write-warning "Error: Tileset not defined";return}
+	#write-verbose " * $width, $height, $tileset"
 	if (-not ($width -and $height -and $tileSet))
 	{	write-warning "Roomproperties not defined for $($roomProps.identity), cannot create room"
 	} else
