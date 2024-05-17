@@ -385,6 +385,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		TiledWorldMap	KarniMata	path	KarniMata.world					
 1	Usas2		Tileset	KarniMata	file	KarniMata.Tiles.sc5					
 1	Usas2		Tileset	KarniMata	id	6					
+1	Usas2		Tileset	Hub	id	1					
 1	Usas2		Tileset	Hub	imageSourceFile	Hub.Tiles.bmp					
 1	Usas2		Tileset	KarniMata	imageSourceFile	KarniMata.Tiles.bmp					
 1	Usas2		Tileset	Hub	paletteSourceFile	Hub.Tiles.pl					
@@ -406,7 +407,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Tileset	Pegu	id	4		RuinID			
 1	Usas2		Tileset	Pegu	type	0		FileType=Tileset			
 1	Usas2		Tileset	ruin3	file	ruin3.Tiles.sc5					
-1	Usas2		Tileset	ruin3	id	6					
+1	Usas2		Tileset	ruin3	id	3					
 1	Usas2		Tileset	ruin3	type	0					
 1	Usas2		Tileset	ruin3	imageSourceFile	ruin3.Tiles.bmp					
 1	Usas2		Tileset	ruin3	paletteSourceFile	ruin3.Tiles.pl					
