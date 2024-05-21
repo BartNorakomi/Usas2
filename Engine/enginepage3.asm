@@ -295,13 +295,20 @@ CheckTile304x216MapLenght:  equ 38 + 2
 MapData:	ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
 
 
+;Return the correct tile ID
+GetRoomTilesetId:
+		ld a,(UnpackedRoomFile+roomdatablock.tileset)	;tileset overwrite?
+		and $1f
+		ret nz
+		ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
+		and $1f
+ret
 
 BuildUpMap:
 		;Set ROM with tileset blocks to p1,p2
 		ld    a,(slot.page12rom)
 		out   ($a8),a
-		ld a,(UnpackedRoomFile+roomdatablock.mapid)
-		and $1f
+		call GetRoomTilesetId
 		call GetTilesetBitmap
 
 		;start writing VDP at 0,0,0 
