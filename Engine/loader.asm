@@ -2370,7 +2370,7 @@ getPalette:
 		add hl,hl	;32
 		ld	bc,palettes.data
 		add	hl,bc
-		pop bc
+		pop bc		
 ret
 
 palettes:
@@ -2385,10 +2385,11 @@ palettes:
 .5:				DS .reclen
 .6KarniMata:	DB 71,5,18,1,32,5,52,3,32,1,0,3,80,3,115,6,0,2,119,7,64,6,35,2,69,4,112,5,112,2,0,0
 .7Konark:		DB $77,$04,$12,$01,$42,$03,$34,$03,$20,$01,$31,$02,$61,$03,$73,$06,$41,$02,$77,$07,$53,$04,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
-.8-15:			DS .reclen,.reclen,.reclen,.reclen,.reclen,.reclen,.reclen,.reclen
-.16-23:			DS .reclen,.reclen,.reclen,.reclen,.reclen,.reclen,.reclen,.reclen
-.24-30:			DS .reclen,.reclen,.reclen,.reclen,.reclen,.reclen,.reclen
-.31Teleport:	DB 71,5,18,1,32,5,52,3,32,1,0,3,80,3,115,6,0,2,119,7,64,6,35,2,69,4,112,5,112,2,0,0
+.815:			DS .reclen
+.1623:			DS .reclen
+.2430:			DS .reclen
+.31Teleport: DB $00,$00,$12,$01,$50,$02,$34,$03,$20,$00,$30,$01,$00,$00,$73,$06,$00,$00,$77,$07,$70,$04,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
+
 
 
 
