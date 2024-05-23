@@ -4390,7 +4390,7 @@ InitiateNewAttack?:  db  0
 
 StartingJumpSpeedEqu:     equ -6    ;initial starting jump take off speed
 StartingJumpSpeed:        db -6 ;equ -5    ;initial starting jump take off speed
-StartingDoubleJumpSpeed:  db -3 ;4 ;equ -5    ;initial starting jump take off speed
+StartingDoubleJumpSpeed:  db -3 ;-4 ;equ -5    ;initial starting jump take off speed
 StartingJumpSpeedWhenHit: db -4 ;equ -5    ;initial starting jump take off speed
 FallingJumpSpeed:         equ 1
 JumpSpeed:                db  0
