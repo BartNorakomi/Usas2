@@ -42,15 +42,10 @@ loadGraphics:
 ;	ld a,Loaderblock                 ;loader routine at $4000
 ;	call block12
 ;	ld a,Ruinid.Pegu
-	ld a,(UnpackedRoomFile+roomDataBlock.mapid)
-	and $1f
+	call GetRoomPaletteId
 	call getPalette
-
-
 ;Force teleport room palette !!!!!!!!
 ;		ld hl,palettes.31Teleport
-
-
 	call SetMapPalette
 	call SetEngineType
 
@@ -301,7 +296,7 @@ CheckTile304x216MapLenght:  equ 38 + 2
 MapData:	ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
 
 
-;Return the correct tile ID
+;Return the correct tile ID for this room
 GetRoomTilesetId:
 		ld a,(UnpackedRoomFile+roomdatablock.tileset)	;tileset overwrite?
 		and $1f
@@ -309,6 +304,16 @@ GetRoomTilesetId:
 		ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
 		and $1f
 ret
+
+;Return the correct palette ID for this room
+GetRoomPaletteId:
+		ld a,(UnpackedRoomFile+roomdatablock.palette)	;tileset overwrite?
+		and $1f
+		ret nz
+		ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
+		and $1f
+ret
+
 
 BuildUpMap:
 		;Set ROM with tileset blocks to p1,p2
