@@ -223,3 +223,14 @@ phase	$0000
 	ds		$4000-$,$ff
 dephase
 
+Teleportframelistblock:            equ BossZombieCaterpillarDyingPart2spritedatablock+1
+phase	$8000
+  incbin "..\grapx\TeleportRoom\frames.lst"
+	ds		$c000-$,$ff
+
+Teleportspritedatablock:           equ Teleportframelistblock+1
+phase	$0000
+  incbin "..\grapx\TeleportRoom\frames.dat"
+	ds		$4000-$,$ff
+dephase
+

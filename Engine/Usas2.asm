@@ -535,12 +535,12 @@ SpriteDataStartBlock: equ $7c
 SpriteDataEndBlock:   equ SpriteDataStartBlock+$13
 include "SpriteData.asm"
 
-; block $90 - $B8             (software sprites)
+; block $90 - $B8+2             (software sprites)
 BossSpritesDataStartBlock:  equ $8f
-BossSpritesDataEndBlock:  equ BossSpritesDataStartBlock+$28
+BossSpritesDataEndBlock:  equ BossSpritesDataStartBlock+$28+2
 include "BossSpriteData.asm"
 
-;B8
+;B8+2
 	;incbin "..\tools\U2WorldMapMatrix.dsm.space"
 	;incbin "..\tools\Usas2.Rom.dsm.space"
 lastblock: equ $ and $ffc000/RomBlockSize
