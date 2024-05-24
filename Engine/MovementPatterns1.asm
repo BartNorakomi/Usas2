@@ -66,6 +66,7 @@
 ;BossVoodooWasp
 ;BossZombieCaterpillar
 ;PlatformOmniDirectionally
+;Teleport
 
 ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer
@@ -3678,6 +3679,69 @@ PutSF2ObjectInCurrentFrame:
 ;  dec   a
 ;  jp    z,restoreBackgroundObject3
   jp    PutSF2Object5
+
+
+SetObjectXY:                                  ;non moving objects start at (0,0). Use this routine to set your own coordinates
+; call  MoveObjectHorizontallyAndVertically
+;  call  ChangeDirectionWhenOutOfBox
+  ld    a,(ix+enemies_and_objects.y)          ;y object
+  ld    (Object1y),a
+  ld    a,(ix+enemies_and_objects.x)          ;x object
+  ld    (Object1x),a
+  ret
+
+Teleport:
+;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object 
+  call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
+  call  RestoreBackgroundForObjectInCurrentFrame 
+  call  .AnimateHugeBlock
+
+  push  ix
+  call  PutSF2ObjectInCurrentFrame ;CHANGES IX   
+  pop   ix
+
+;  ld    a,(AmountOfSF2ObjectsCurrentRoom)
+;  dec   a
+;  cp    (ix+enemies_and_objects.v2)         ;v2=framenumber to handle this object on  
+;  jp    z,switchpageSF2Engine               ;when last object of this frame is handled, switch page
+
+  jp    switchpageSF2Engine               ;when last object of this frame is handled, switch page
+  ret
+
+  .AnimateHugeBlock:
+  ld    a,(ix+enemies_and_objects.v1)         ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
+  or    a
+  ld    hl,.HugeBlockFrame
+  jr    z,.HugeBlockVersionFound
+  dec   a
+  ld    hl,.HugeBlockTopHalfFrame
+  jr    z,.HugeBlockVersionFound
+  ld    hl,.HugeBlockBottomHalfFrame
+  .HugeBlockVersionFound:
+  
+  ld    a,(hl)
+  ld    (Player1Frame),a
+  inc   hl
+  ld    a,(hl)
+  ld    (Player1Frame+1),a
+  inc   hl
+  ld    b,(hl)                              ;frame list block
+  inc   hl
+  ld    c,(hl)                              ;sprite data block
+  ret
+
+  .HugeBlockFrame:
+  dw ryupage0frame000 | db ryuframelistblock, ryuspritedatablock
+  .HugeBlockTopHalfFrame:
+  dw ryupage0frame001 | db ryuframelistblock, ryuspritedatablock
+  .HugeBlockBottomHalfFrame:
+  dw ryupage0frame002 | db ryuframelistblock, ryuspritedatablock
+  ret
+
+
+
+
+
 
 
 GlassBall1:
