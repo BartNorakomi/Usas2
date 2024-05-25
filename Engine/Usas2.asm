@@ -525,20 +525,10 @@ SpriteDataStartBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $7
 ;SpriteDataEndBlock:		equ SpriteDataStartBlock+$13
 						include "SpriteData.asm"
 
-<<<<<<< Updated upstream
 BossSpritesDataStartBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 ;BossSpritesDataEndBlock:	equ BossSpritesDataStartBlock+$28+2
 							include "BossSpriteData.asm"
 
 
-;EOF markers
-=======
-;          (software sprites)
-BossSpritesDataStartBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $8f
-BossSpritesDataEndBlock:	equ BossSpritesDataStartBlock+$28+2
-							include "BossSpriteData.asm"
-
-
->>>>>>> Stashed changes
 lastblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$ and $ffc000/RomBlockSize
 totallenght:	Equ	$-Usas2
