@@ -185,10 +185,11 @@ AreaSignsspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 ;Teleporter
 Teleportframelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 							phase	$8000
-							incbin "..\grapx\TeleportRoom\frames.lst"
+							include "..\grapx\TeleportRoom\frames.lst"
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 							dephase
 Teleportspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 							incbin "..\grapx\TeleportRoom\frames.dat"
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+
 

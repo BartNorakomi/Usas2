@@ -3692,53 +3692,151 @@ SetObjectXY:                                  ;non moving objects start at (0,0)
   ld    (Object1x),a
   ret
 
+
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+;v7=sprite frame
+;v8=phase
+
 Teleport:
 ;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object 
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
   call  RestoreBackgroundForObjectInCurrentFrame 
-  call  .AnimateHugeBlock
+  call  .Animate
+  ld    de,.TeleportFrame1a
+  jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
-  push  ix
-  call  PutSF2ObjectInCurrentFrame ;CHANGES IX   
-  pop   ix
-
-;  ld    a,(AmountOfSF2ObjectsCurrentRoom)
-;  dec   a
-;  cp    (ix+enemies_and_objects.v2)         ;v2=framenumber to handle this object on  
-;  jp    z,switchpageSF2Engine               ;when last object of this frame is handled, switch page
-
-  jp    switchpageSF2Engine               ;when last object of this frame is handled, switch page
-  ret
-
-  .AnimateHugeBlock:
-  ld    a,(ix+enemies_and_objects.v1)         ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
-  or    a
-  ld    hl,.HugeBlockFrame
-  jr    z,.HugeBlockVersionFound
-  dec   a
-  ld    hl,.HugeBlockTopHalfFrame
-  jr    z,.HugeBlockVersionFound
-  ld    hl,.HugeBlockBottomHalfFrame
-  .HugeBlockVersionFound:
+  .Animate:
+  ld    a,(HugeObjectFrame)
+  cp    2
+  ret   nz
   
-  ld    a,(hl)
-  ld    (Player1Frame),a
-  inc   hl
-  ld    a,(hl)
-  ld    (Player1Frame+1),a
-  inc   hl
-  ld    b,(hl)                              ;frame list block
-  inc   hl
-  ld    c,(hl)                              ;sprite data block
-  ret
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  add   a,3
+  cp    16*3
+  jr    nz,.notzero
+  xor   a
+  .notzero:  
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret  
 
-  .HugeBlockFrame:
-  dw ryupage0frame000 | db ryuframelistblock, ryuspritedatablock
-  .HugeBlockTopHalfFrame:
-  dw ryupage0frame001 | db ryuframelistblock, ryuspritedatablock
-  .HugeBlockBottomHalfFrame:
-  dw ryupage0frame002 | db ryuframelistblock, ryuspritedatablock
-  ret
+  .TeleportFrame1a:
+  dw Teleportframe000 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame1b:
+  dw Teleportframe001 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame1c:
+  dw Teleportframe002 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame2a:
+  dw Teleportframe003 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame2b:
+  dw Teleportframe004 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame2c:
+  dw Teleportframe005 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame3a:
+  dw Teleportframe006 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame3b:
+  dw Teleportframe007 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame3c:
+  dw Teleportframe008 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame4a:
+  dw Teleportframe009 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame4b:
+  dw Teleportframe010 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame4c:
+  dw Teleportframe011 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame5a:
+  dw Teleportframe012 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame5b:
+  dw Teleportframe013 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame5c:
+  dw Teleportframe014 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame6a:
+  dw Teleportframe015 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame6b:
+  dw Teleportframe016 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame6c:
+  dw Teleportframe017 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame7a:
+  dw Teleportframe018 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame7b:
+  dw Teleportframe019 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame7c:
+  dw Teleportframe020 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame8a:
+  dw Teleportframe021 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame8b:
+  dw Teleportframe022 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame8c:
+  dw Teleportframe023 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame9a:
+  dw Teleportframe024 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame9b:
+  dw Teleportframe025 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame9c:
+  dw Teleportframe026 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame10a:
+  dw Teleportframe027 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame10b:
+  dw Teleportframe028 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame10c:
+  dw Teleportframe029 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame11a:
+  dw Teleportframe030 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame11b:
+  dw Teleportframe031 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame11c:
+  dw Teleportframe032 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame12a:
+  dw Teleportframe033 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame12b:
+  dw Teleportframe034 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame12c:
+  dw Teleportframe035 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame13a:
+  dw Teleportframe036 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame13b:
+  dw Teleportframe037 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame13c:
+  dw Teleportframe038 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame14a:
+  dw Teleportframe039 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame14b:
+  dw Teleportframe040 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame14c:
+  dw Teleportframe041 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame15a:
+  dw Teleportframe042 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame15b:
+  dw Teleportframe043 | db Teleportframelistblock, Teleportspritedatablock
+  .TeleportFrame15c:
+  dw Teleportframe044 | db Teleportframelistblock, Teleportspritedatablock
+
+  .TeleportFrame16a:
+  dw ryupage0frame013 | db ryuframelistblock, ryuspritedatablock
+  .TeleportFrame16b:
+  dw ryupage0frame014 | db ryuframelistblock, ryuspritedatablock
+  .TeleportFrame16c:
+  dw ryupage0frame015 | db ryuframelistblock, ryuspritedatablock
+
+
 
 
 
