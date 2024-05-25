@@ -44,8 +44,6 @@ loadGraphics:
 ;	ld a,Ruinid.Pegu
 	call GetRoomPaletteId
 	call getPalette
-;Force teleport room palette !!!!!!!!
-;		ld hl,palettes.31Teleport
 	call SetMapPalette
 	call SetEngineType
 

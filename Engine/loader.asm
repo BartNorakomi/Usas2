@@ -185,7 +185,7 @@ ObjectTestData:
 ;db 0
 
 ;db 5,0 (area sign)
-db 255,0  ;(teleport)
+;db 255,0  ;(teleport)
 
 ;db $0a,$00,$00,56/2,88-16,$48,$30,$03,$01,$01 ;Huge Block (ix,relativex,relativey,xbox,ybox,widthbox,heightbox,face,speed,active)
 ;db 0
@@ -206,7 +206,11 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
 
+<<<<<<< Updated upstream
   ;ld    de,ObjectTestData
+=======
+;  ld    de,ObjectTestData
+>>>>>>> Stashed changes
 
   push  de
 ;.CheckObjects: jp .CheckObjects
@@ -235,6 +239,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;  ld    ix,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
 
   ld    iy,enemies_and_objects          ;start object table in iy
+
+  ;Check if we are in teleport room (roomtype=1)
+  ld    a,(UnpackedRoomFile+roomDataBlock.mapid)  ;tttrrrrr (t=type,r=ruin)
+  rlca
+  rlca
+  rlca
+  and   7
+  cp    1
+  jp    z,.Object255                    ;teleport room (Teleport)
 
   .loop:
   ld    a,(ix)
@@ -338,7 +351,9 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object158                    ;black slime (Slime)
   cp    159
   jp    z,.Object159                    ;glassball pipe (GlassballPipe)
-  cp    255
+
+
+  xor   a
   jp    z,.Object255                    ;teleport room (Teleport)
   ret
 
@@ -353,8 +368,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
   pop   de                              ;enemy object table
   ld    bc,lenghtenemytable*1           ;1 objects
   ldir
-
-  ld    de,Object255Table.lenghtobjectdata
   ret    
 
 
@@ -2292,7 +2305,7 @@ Object004Table:               ;Dripping Ooze Drop
 
 Object255Table:               ;Teleport
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   ,Hit?,life 
-          db 2,        0|dw Teleport            |db 8*09-5|dw 8*10+3|db 08,05|dw CleanOb1,0 db 0,0,0,                 +149,+02,+03,+00,+63,+00,+00,8*09-5,8*10+3, 0|db 000,movementpatterns1block| ds fill-1
+          db 2,        0|dw Teleport            |db 8*02  |dw 8*17  |db 08,05|dw CleanOb1,0 db 0,0,0,                 +149,+02,+03,+00,+63,+00,+00,8*09-5,8*10+3, 0|db 000,movementpatterns1block| ds fill-1
 .ID: equ 0
 .lenghtobjectdata: equ 1
 
