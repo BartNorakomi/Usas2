@@ -1,4 +1,5 @@
-;at $4000 page 1
+phase	f1MenuAddress ;at $4000 page 1
+
 F1MenuRoutine:
   jp    CheckIfF1MenuIsAccessable
   F1MenuIsAccessable:
@@ -775,3 +776,5 @@ SelectWeapon:                         ;just set the next magic weapon
   nop | nop | nop                     ;magic 12 (nothing)
   nop | nop | nop                     ;magic 13 (nothing)
   
+
+  dephase

@@ -1,4 +1,6 @@
-;This is at $4000 inside a block (movementpatternsblock)
+;This is at $4000 inside a block (movementpatternsblock) > no it's not, it's 8000
+phase MovementPatterns1Address
+
 ;PlatformVertically              
 ;PlatformHorizontally            
 ;Sf2Hugeobject1                  
@@ -8450,3 +8452,6 @@ VramObjectsTransparantCopies2:
   ld    hl,CopyObject
   jp    docopy
 ;  call  BackdropBlack
+
+
+	dephase

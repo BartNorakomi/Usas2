@@ -445,9 +445,8 @@ tempisr:
 ;  ret
 
 
-RomSize: equ 8*1024*1024
+
 ; ROM block 00-01: boot, enginepage3, enginepage0
-engineRomBlock: 			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 enginepage3:				include	"enginepage3.asm"
 enginepage3RomEndAddress:	EQU $-1-RomStartAddress
 
@@ -456,7 +455,7 @@ enginepage0RomEndAddress: 	equ $-1-RomStartAddress
 							ds	2*RomBlockSize - $ and $3fff,$ff		; fill remainder of blocks 00-01
 
 ; ROM block 02-02: f1menu
-F1Menublock:				equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$02
+F1Menublock:				equ $02
 f1MenuRomAddress:			equ $-RomStartAddress
 phase	$4000	;should be in f1menu.asm source(!)
 							include	"F1Menu.asm"	
@@ -467,7 +466,7 @@ f1MenuRomEndAddress:		equ $-1-RomStartAddress ;08572
 							ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; ROM block 03-03: loader
-Loaderblock:  				equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$03
+Loaderblock:  				equ $03
 loaderRomStartAddress:		equ $-RomStartAddress
 phase	$4000	;should be in loader.asm source (!)
 StartLoaderRoutine:			include	"loader.asm"
@@ -478,37 +477,37 @@ loaderRomEndAddress:		equ $-1-$4000
 							ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; block $4
-PlayerMovementRoutinesBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$04
+PlayerMovementRoutinesBlock:	equ $04
 phase	$4000	
 include "PlayerMovementRoutines.asm" | endPlayerMovementRoutines:  
 dephase
 ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; block $5
-movementpatterns1block:		equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$05
-movepatblo1:  				equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$05
+movementpatterns1block:		equ   $05
+movepatblo1:  				equ   $05
 	phase	$8000
 	include "MovementPatterns1.asm"
 	dephase
 	ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; block $6
-MovementPatternsFixedPage1block:	equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$6
+MovementPatternsFixedPage1block:	equ   $6
 	phase	$4000
 	include "MovementPatternsFixedPage1.asm"
 	dephase
 	ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; block $7
-movementpatterns2block:	equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$7
-movepatblo2:			equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$7
+movementpatterns2block:	equ   $7
+movepatblo2:			equ   $7
 	phase	$8000
 	include "MovementPatterns2.asm"
 	dephase
 	ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; block $08
-teamNXTlogoblock:  equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$8
+teamNXTlogoblock:  equ $8
 	phase	$8000
 	include "teamNXTlogo.asm"
 	dephase
@@ -517,33 +516,33 @@ teamNXTlogoblock:  equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$8
 ; block $09
 ;EX worldmap matrix) 20131201;RM;VERVALLEN
 ;FREE
-;	ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
+	ds	1*RomBlockSize - $ and $3fff,$ff	;Fill remainder of this block
 
 ; block $0A-$5F VGM
-usas2repBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $0a
+usas2repBlock:  equ   $0a
 phase	$0000
 	incbin "usas2.rep"
 	ds		$56*RomBlockSize-$,$ff
 dephase
 
 ; block $60 - $7b             (sc5 tilesheets)
-GraphicsSc5DataStartBlock:  equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $60
+GraphicsSc5DataStartBlock:  equ $60
 GraphicsSc5DataEndBlock:    equ GraphicsSc5DataStartBlock+$1b
 include "GraphicsSc5Data.asm"
 
 ; block $7c - $8f             (hardware sprites)
-SpriteDataStartBlock: equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $7c
+SpriteDataStartBlock: equ $7c
 SpriteDataEndBlock:   equ SpriteDataStartBlock+$13
 include "SpriteData.asm"
 
-; block $90 - $B8+2             (software sprites)
-BossSpritesDataStartBlock:  equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $8f
-BossSpritesDataEndBlock:  equ BossSpritesDataStartBlock+$28+2
+; block $90 - $B8             (software sprites)
+BossSpritesDataStartBlock:  equ $8f
+BossSpritesDataEndBlock:  equ BossSpritesDataStartBlock+$28
 include "BossSpriteData.asm"
 
 ;B8+2
 	;incbin "..\tools\U2WorldMapMatrix.dsm.space"
 	;incbin "..\tools\Usas2.Rom.dsm.space"
-lastblock: 		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$ and $ffc000/RomBlockSize
+lastblock: equ $ and $ffc000/RomBlockSize
 totallenght:	Equ	$-Usas2
 ;	ds		(256*RomBlockSize)-totallenght

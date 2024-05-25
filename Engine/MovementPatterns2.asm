@@ -1,3 +1,5 @@
+phase	movementpatterns2Address
+
 ;BossGoat
 ;PutSf2Object5Frames
 ;PutSf2Object4Frames
@@ -3257,3 +3259,5 @@ BossVoodooWasp:
 ;  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
 ;  ret
 
+	dephase
+	

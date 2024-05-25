@@ -1173,20 +1173,19 @@ enginepage3length:	Equ	$-enginepage3
 
 variables: org $c000+enginepage3length
 slot:						
-.ram:		                    equ	  $e000
-.page1rom:	                equ	  slot.ram+1
-.page2rom:	                equ	  slot.ram+2
-.page12rom:	                equ	  slot.ram+3
+.ram:				equ	  $e000
+.page1rom:			equ	  slot.ram+1
+.page2rom:			equ	  slot.ram+2
+.page12rom:			equ	  slot.ram+3
 memblocks:
-.1:			                    equ	  slot.ram+4
-.2:			                    equ	  slot.ram+5
-.3:			                    equ	  slot.ram+6
-.4:			                    equ	  slot.ram+7	
-VDP_0:		                  equ   $F3DF
-VDP_8:		                  equ   $FFE7
-engaddr:	                  equ	  $03e
-loader.address:             equ   $8000
-enginepage3addr:            equ   $c000
+.1:					equ	  slot.ram+4
+.2:					equ	  slot.ram+5
+.3:					equ	  slot.ram+6
+.4:					equ	  slot.ram+7	
+VDP_0:				equ   $F3DF
+VDP_8:				equ   $FFE7
+
+
 sx:                         equ   0
 sy:                         equ   2
 spage:                      equ   3

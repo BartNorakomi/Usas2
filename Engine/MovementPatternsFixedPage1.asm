@@ -1,3 +1,5 @@
+	phase	MovementPatternsFixedPage1Address
+
 ;CheckOutOfMap
 ;MoveSpriteHorizontallyAndVertically
 ;CheckCollisionWallEnemy
@@ -1753,4 +1755,4 @@ checktileObject:                            ;same as checktile for player, but n
   add   a,b
   jp    CheckTile.XandYset
 
-  
+  	dephase

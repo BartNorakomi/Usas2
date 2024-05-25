@@ -4,6 +4,8 @@
 
 ;SetPrimaryWeaponHitBoxLeftSitting,SetPrimaryWeaponHitBoxRightSitting,SetPrimaryWeaponHitBoxLeftStanding,SetPrimaryWeaponHitBoxRightStanding
 
+Phase PlayerMovementRoutinesAddress
+
 SetPrimaryWeaponHitBoxLeftSitting:
   ;activate primary weapon - which enables it's hitbox detection with enemies
   ld    a,1
@@ -4267,4 +4269,4 @@ CheckClimbLadderUp:;
 
 
 
-    
+dephase
