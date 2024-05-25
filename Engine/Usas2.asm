@@ -535,9 +535,9 @@ SpriteDataStartBlock: equ $7c
 SpriteDataEndBlock:   equ SpriteDataStartBlock+$13
 include "SpriteData.asm"
 
-; block $90 - $B8+2             (software sprites)
+; block $90 - $B8             (software sprites)
 BossSpritesDataStartBlock:  equ $8f
-BossSpritesDataEndBlock:  equ BossSpritesDataStartBlock+$28+2
+BossSpritesDataEndBlock:  equ BossSpritesDataStartBlock+$28
 include "BossSpriteData.asm"
 
 ;B8+2
