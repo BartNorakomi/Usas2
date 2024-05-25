@@ -206,7 +206,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
 
-  ld    de,ObjectTestData
+  ;ld    de,ObjectTestData
 
   push  de
 ;.CheckObjects: jp .CheckObjects

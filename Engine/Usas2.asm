@@ -536,17 +536,14 @@ GraphicsSc5DataEndBlock:    equ GraphicsSc5DataStartBlock+$1b
 
 ; block $7c - $8f             (hardware sprites)
 SpriteDataStartBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $7c
-SpriteDataEndBlock:		equ SpriteDataStartBlock+$13
+;SpriteDataEndBlock:		equ SpriteDataStartBlock+$13
 						include "SpriteData.asm"
 
-; block $90 - $B8+2             (software sprites)
-BossSpritesDataStartBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $8f
-BossSpritesDataEndBlock:	equ BossSpritesDataStartBlock+$28+2
+BossSpritesDataStartBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+;BossSpritesDataEndBlock:	equ BossSpritesDataStartBlock+$28+2
 							include "BossSpriteData.asm"
 
-;B8+2
-	;incbin "..\tools\U2WorldMapMatrix.dsm.space"
-	;incbin "..\tools\Usas2.Rom.dsm.space"
+
+;EOF markers
 lastblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$ and $ffc000/RomBlockSize
 totallenght:	Equ	$-Usas2
-;	ds		(256*RomBlockSize)-totallenght
