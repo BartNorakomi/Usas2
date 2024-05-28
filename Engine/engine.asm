@@ -4302,7 +4302,7 @@ PlayerInvulnerable?:    db  0
 
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
-;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing
+;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing, Teleporting
 PlayerSpriteStand: dw  Rstanding
 
 PlayerAniCount:     db  0,0

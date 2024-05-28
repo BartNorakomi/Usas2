@@ -19,7 +19,7 @@ roomX: equ ("B"-"A")*26 + "O"-"A"
 WorldMapPositionY:  db  19 | WorldMapPositionX:  db  roomX
 
 ClesX:      dw 60 ;$19 ;230 ;250 ;210
-ClesY:      db 130 ;144-1
+ClesY:      db 160 ;144-1
 
 
 PlayLogo:

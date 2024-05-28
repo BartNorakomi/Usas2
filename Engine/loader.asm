@@ -362,8 +362,12 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    hl,Object255Table
   push  iy
   pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1           ;1 objects
+  ld    bc,lenghtenemytable*1           ;1 object(s)
   ldir
+
+  ld    de,lenghtenemytable             ;lenght 1 object in object table
+  add   iy,de                           ;next object in object table
+  jp    .loop
   ret    
 
 
@@ -2300,8 +2304,8 @@ Object004Table:               ;Dripping Ooze Drop
 .lenghtobjectdata: equ 3
 
 Object255Table:               ;Teleport
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   ,Hit?,life 
-          db 2,        0|dw Teleport            |db 8*02  |dw 8*17  |db 08,05|dw CleanOb1,0 db 0,0,0,                 +149,+02,+03,+00,+63,+00,+00,8*09-5,8*10+3, 0|db 000,movementpatterns1block| ds fill-1
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+          db 2,        0|dw Teleport            |db 8*02  |dw 8*17  |db 64,64|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 .ID: equ 0
 .lenghtobjectdata: equ 1
 

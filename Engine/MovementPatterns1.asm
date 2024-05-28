@@ -3701,14 +3701,53 @@ SetObjectXY:                                  ;non moving objects start at (0,0)
 ;v6=active on which frame ?  
 ;v7=sprite frame
 ;v8=phase
+;v9=already entered?
 
 Teleport:
-;  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object 
+  call  .CheckCollision                     ;check collision with player - and handle interaction of player with object 
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
   call  RestoreBackgroundForObjectInCurrentFrame 
   call  .Animate
   ld    de,.TeleportFrame1a
   jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+
+  .CheckCollision:                          ;hitbox teleport=(120,100)-(150,130)
+	ld		hl,(PlayerSpriteStand)
+  ld    de,ExitTeleport
+  or    a
+  sbc   hl,de
+  ret   z
+
+  bit   0,(ix+enemies_and_objects.v9)       ;v9=already entered?
+  ret   nz
+
+  ld    a,(ClesY)
+  sub   100
+  ret   c
+
+  ld    a,(ClesY)
+  sub   130
+  ret   nc
+
+  ld    hl,-120
+  ld    de,(ClesX)                    ;hl: x player (165)
+  add   hl,de
+  ret   nc
+
+  ld    hl,-150
+  ld    de,(ClesX)                    ;hl: x player (165)
+  add   hl,de
+  ret   c
+
+  set   0,(ix+enemies_and_objects.v9)       ;v9=already entered?
+
+  xor   a
+  ld    (PlayerAniCount),a
+  ld    a,10                          ;we don't need the first 10 frames in which player floats up only
+  ld    (PlayerAniCount+1),a
+	ld		hl,EnterTeleport
+	ld		(PlayerSpriteStand),hl
+  ret
 
   .Animate:
   ld    a,(HugeObjectFrame)
