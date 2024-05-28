@@ -1,10 +1,215 @@
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
 ;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing, LSwordAttack, RSwordAttack, LDaggerAttack, RDaggerAttack, LAxeAttack, RAxeAttack, LSpearAttack, RSpearAttack
+;EnterTeleport,ExitTeleport
 
 ;SetPrimaryWeaponHitBoxLeftSitting,SetPrimaryWeaponHitBoxRightSitting,SetPrimaryWeaponHitBoxLeftStanding,SetPrimaryWeaponHitBoxRightStanding
 
 Phase PlayerMovementRoutinesAddress
+
+ExitTeleport:
+  ld    a,(PlayerFacingRight?)
+  or    a
+  ld    hl,RightMeditateAnimation ;- 2
+  jr    nz,.DirectionFound
+  ld    hl,LeftMeditateAnimation ;- 2
+  .DirectionFound:
+  call  AnimateEnterTeleport        ;animate
+  call  LMeditate.VerticalMovement
+  call  .FlickerSprite
+
+  ld    a,(PlayerAniCount+1)
+  cp    121-1
+  ret   nz                          ;at end of meditate go to stand
+
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jp    nz,Set_R_stand               ;at end of meditate change to L_Stand
+  jp    Set_L_stand               ;at end of meditate change to L_Stand
+
+  .FlickerSprite:
+  ld    a,(PlayerAniCount+1)
+  cp    20
+  jp    c,EnterTeleport.PutEmptySprite
+  cp    40
+  jr    c,.Phase4
+  cp    60
+  jr    c,.Phase3
+  cp    80
+  jr    c,.Phase2
+  cp    100
+  jr    c,.Phase1
+  ret
+
+  .Phase4:
+  ld    a,(framecounter)
+  and   7
+  jp    nz,EnterTeleport.PutEmptySprite
+  ret
+
+  .Phase3:
+  ld    a,(framecounter)
+  and   3
+  jp    nz,EnterTeleport.PutEmptySprite
+  ret
+
+  .Phase2:
+  ld    a,(framecounter)
+  and   1
+  jp    z,EnterTeleport.PutEmptySprite
+  ret
+
+  .Phase1:
+  ld    a,(framecounter)
+  and   3
+  jp    z,EnterTeleport.PutEmptySprite
+  ret
+
+
+
+EnterTeleport:
+  ld    a,(PlayerFacingRight?)
+  or    a
+  ld    hl,RightMeditateAnimation ;- 2
+  jr    nz,.DirectionFound
+  ld    hl,LeftMeditateAnimation ;- 2
+  .DirectionFound:
+  call  AnimateEnterTeleport        ;animate
+  call  LMeditate.VerticalMovement
+  call  .MoveToCenter               ;slowly move to the center of the portal
+  call  .FlickerSprite
+
+  ld    a,(PlayerAniCount+1)
+  cp    121-1
+  ret   nz                          ;at end of meditate change room
+
+  xor   a
+  ld    (PlayerAniCount),a
+  ld    a,10                          ;we don't need the first 10 frames in which player floats up only
+  ld    (PlayerAniCount+1),a
+	ld		hl,ExitTeleport
+	ld		(PlayerSpriteStand),hl
+
+  call  .SetNewMapPosition
+  jp    CheckMapExit.LoadnextMap
+
+  .SetNewMapPosition:
+  ld    a,(WorldMapPositionY)
+  cp    22
+  jr    z,.GoToBX14
+  cp    14
+  jr    z,.GoToBU20
+  cp    20
+  jr    z,.GoToBH12
+
+  .GoToBK22:
+  ld    a,26*("B"-"A") + "K"-"A"
+  ld    (WorldMapPositionX),a
+  ld    a,22
+  ld    (WorldMapPositionY),a
+  ret
+
+  .GoToBX14:
+  ld    a,26*("B"-"A") + "X"-"A"
+  ld    (WorldMapPositionX),a
+  ld    a,14
+  ld    (WorldMapPositionY),a
+  ret
+
+  .GoToBU20:
+  ld    a,26*("B"-"A") + "U"-"A"
+  ld    (WorldMapPositionX),a
+  ld    a,20
+  ld    (WorldMapPositionY),a
+  ret
+
+  .GoToBH12:
+  ld    a,26*("B"-"A") + "H"-"A"
+  ld    (WorldMapPositionX),a
+  ld    a,12
+  ld    (WorldMapPositionY),a
+  ret
+
+  .FlickerSprite:
+  ld    a,(PlayerAniCount+1)
+  cp    100
+  jr    nc,.PutEmptySprite
+  cp    80
+  jr    nc,.Phase4
+  cp    60
+  jr    nc,.Phase3
+  cp    40
+  jr    nc,.Phase2
+  cp    20
+  jr    nc,.Phase1
+  ret
+
+  .Phase4:
+  ld    a,(framecounter)
+  and   7
+  jr    nz,.PutEmptySprite
+  ret
+
+  .Phase3:
+  ld    a,(framecounter)
+  and   3
+  jr    nz,.PutEmptySprite
+  ret
+
+  .Phase2:
+  ld    a,(framecounter)
+  and   1
+  jr    z,.PutEmptySprite
+  ret
+
+  .Phase1:
+  ld    a,(framecounter)
+  and   3
+  jr    z,.PutEmptySprite
+  ret
+
+  .PutEmptySprite:
+  ld    hl,PlayerSpriteData_Char_Empty
+	ld		(standchar),hl
+  ret
+
+  .MoveToCenter:
+  call  .MoveHorizontally
+  
+  ld    a,(ClesY)
+  cp    120
+  jr    nc,.MoveUp
+  cp    110
+  ret   nc
+  inc   a
+  ld    (ClesY),a
+  ret
+
+  .MoveUp:
+  dec   a
+  ld    (ClesY),a
+  ret
+  
+  .MoveHorizontally:
+  ld    a,(ClesX)
+  cp    134
+  jr    c,.MoveRight
+  cp    136
+  ret   c
+
+  .MoveLeft:
+  dec   a
+  ld    (ClesX),a
+  xor   a
+  ld    (PlayerFacingRight?),a
+  ret
+
+  .MoveRight:
+  inc   a
+  ld    (ClesX),a
+  ld    a,1
+  ld    (PlayerFacingRight?),a
+  ret
 
 SetPrimaryWeaponHitBoxLeftSitting:
   ;activate primary weapon - which enables it's hitbox detection with enemies
@@ -3915,8 +4120,17 @@ endif
   ret
 ;/this code is new, and decreases the 2nd jump height
 
+AnimateEnterTeleport:
+  ld    a,(framecounter)          ;animate every 8 frames
+  and   07
+  ld    a,(PlayerAniCount)
+  jr    nz,AnimateRun.SetPlayerAniCount
+  
+  add   a,2                       ;2 bytes used for pointer to sprite frame address
+  jr    AnimateRun.SetPlayerAniCount
+
 AnimateMeditating:
-  ld    a,(framecounter)          ;animate every 4 frames
+  ld    a,(framecounter)          ;animate every 8 frames
   and   07
   ret   nz
   
@@ -3925,7 +4139,7 @@ AnimateMeditating:
   jr    AnimateRun.SetPlayerAniCount
 
 AnimateCharging:
-  ld    a,(framecounter)          ;animate every 4 frames
+  ld    a,(framecounter)          ;animate every 2 frames
   and   1
   ret   nz
   
@@ -3945,7 +4159,7 @@ AnimateRolling:
   jr    AnimateRun.reset
   
 AnimatePushing:
-  ld    a,(framecounter)          ;animate every 4 frames
+  ld    a,(framecounter)          ;animate every 8 frames
   and   7
   ret   nz
   
