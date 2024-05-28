@@ -93,7 +93,12 @@ EnterTeleport:
   call  .SetNewMapPosition
   jp    CheckMapExit.LoadnextMap
 
-  .SetNewMapPosition:
+.SetNewMapPosition:
+  		ld de,(WorldMapPositionY)
+		call	GetTeleportDestination
+		ld (WorldMapPositionY),DE
+		ret
+
   ld    a,(WorldMapPositionY)
   cp    22
   jr    z,.GoToBX14
@@ -210,6 +215,34 @@ EnterTeleport:
   ld    a,1
   ld    (PlayerFacingRight?),a
   ret
+
+;Get TeleportDestinationMapRoom
+;In:	DE=IndexID (D=X,E=Y) of current room
+;out:	DE=IndexID of destination room
+GetTeleportDestination:
+        LD    HL,TeleportRingTable.data
+;        LD    BC,TeleportRingTable.reclen-1
+GTD.1:	LD    A,D             ;x
+        CP    (HL)
+        INC   HL
+        JR    NZ,GTD.0
+        LD    A,E             ;y
+        CP    (HL)
+        JR    NZ,GTD.0
+        INC   HL
+        LD    D,(HL)          ;X
+        INC   HL
+        LD    E,(HL)          ;Y
+        RET
+GTD.0:	INC HL	;ADD   HL,BC
+        JP    GTD.1
+
+TeleportRingTable:
+.reclen:	Equ	2
+;				BH12			BK22			BX14			BU20
+.data:		DB	26+"H"-"A",12,	26+"K"-"A",22,	26+"X"-"A",14,	26+"U"-"A",20
+			DB	26+"H"-"A",12	;end with first room to make the ring complete
+
 
 SetPrimaryWeaponHitBoxLeftSitting:
   ;activate primary weapon - which enables it's hitbox detection with enemies
