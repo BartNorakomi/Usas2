@@ -3703,6 +3703,10 @@ SetObjectXY:                                  ;non moving objects start at (0,0)
 ;v8=phase
 ;v9=already entered?(bit0)/activate ring(bit1)
 ;v10=activate ring flicker
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 Teleport:
   call  .CheckCollision                     ;check collision with player - and handle interaction of player with object 
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates

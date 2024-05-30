@@ -129,6 +129,71 @@ PutSf2Object3Frames:
   call  SetFrameBoss
   jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
 
+PutSf2Object5Frames:
+  ld    a,(HugeObjectFrame)
+  inc   a
+  cp    5
+  jr    nz,.SetFrame
+  xor   a
+  .SetFrame:
+  ld    (HugeObjectFrame),a
+
+  or    a  
+  jr    z,.Part1
+  dec   a
+  jr    z,.Part2
+  dec   a
+  jr    z,.Part3
+  dec   a
+  jr    z,.Part4
+
+  .Part5:
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject5
+  ld    a,(ix+enemies_and_objects.v7)
+  add   a,4
+  call  SetFrameBoss
+  jp    PutSF2Object5                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+  .Part4:
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject4
+  ld    a,(ix+enemies_and_objects.v7)
+  add   a,3
+  call  SetFrameBoss
+  jp    PutSF2Object4                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+  .Part3:
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject3
+  ld    a,(ix+enemies_and_objects.v7)
+  add   a,2
+  call  SetFrameBoss
+  jp    PutSF2Object3                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  
+  .Part2:
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject2
+  ld    a,(ix+enemies_and_objects.v7)
+  inc   a
+  call  SetFrameBoss
+  jp    PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  
+  .Part1:
+  ld    a,(RestoreBackgroundSF2Object?)
+  or    a  
+  call  nz,restoreBackgroundObject1
+  ld    a,(ix+enemies_and_objects.v7)
+  call  SetFrameBoss
+  call  PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  jp    switchpageSF2Engine
+
+
+
 SetFrameBoss:
   ld    l,a                                 ;v7=sprite frame
   ld    h,0                                  ;hl=sprite frame

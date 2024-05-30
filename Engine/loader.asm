@@ -209,7 +209,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;  ld    de,ObjectTestData
 
   push  de
-;.CheckObjects: jp .CheckObjects
+.CheckObjects: jp .CheckObjects
 ;halt
 
   xor   a
@@ -237,12 +237,21 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    iy,enemies_and_objects          ;start object table in iy
 
   ;Check if we are in teleport room (roomtype=1)
+<<<<<<< Updated upstream
 ;  ld    a,(UnpackedRoomFile+roomDataBlock.mapid)  ;tttrrrrr (t=type,r=ruin)
 ;  rlca
 ;  rlca
 ;  rlca
 ;  and   7
 ;  cp    1
+=======
+  ld    a,(UnpackedRoomFile+roomDataBlock.mapid)  ;tttrrrrr (t=type,r=ruin)
+  rlca
+  rlca
+  rlca
+  and   7
+  cp    1
+>>>>>>> Stashed changes
 ;  jp    z,.Object255                    ;teleport room (Teleport)
 
   .loop:
@@ -349,6 +358,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object158                    ;black slime (Slime)
   cp    159
   jp    z,.Object159                    ;glassball pipe (GlassballPipe)
+<<<<<<< Updated upstream
   ret
 
   .Object006:                           ;teleport room (Teleport)
@@ -363,6 +373,21 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v9=already entered?(bit0)/activate ring(bit1)
 ;v10=activate ring flicker
   ld    hl,Object006Table
+=======
+  cp    255
+  jp    z,.Object255                    ;teleport room (Teleport)
+  ret
+
+  .Object255:                           ;teleport room (Teleport)
+  .Object006:                           ;teleport room (Teleport)
+  jp .Object255
+;v1=
+;v2=
+;v3=
+;v4=
+;v5=
+  ld    hl,Object255Table
+>>>>>>> Stashed changes
   push  iy
   pop   de                              ;enemy object table
   ld    bc,lenghtenemytable*1           ;1 object(s)

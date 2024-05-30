@@ -125,7 +125,7 @@ PutSf2Object2Frames:
   call  SetFrameBoss
   jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
 
-PutSf2Object5Frames:
+PutSf2Object5FramesGoat:
   ld    a,(HugeObjectFrame)
   inc   a
   cp    5
@@ -1968,7 +1968,7 @@ BossGoat:
 ;  ld    (ix+enemies_and_objects.v7),175/5   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
 
   ld    de,BossGoatIdleAndWalk00
-  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+  jp    PutSf2Object5FramesGoat                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
   .HandlePhase:
   ld    de,NonMovingObjectMovementTable

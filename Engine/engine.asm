@@ -8,9 +8,9 @@ LevelEngine:
 ;  call  BackdropRed
   call  Sf2EngineObjects          ;di, restore background object, handle action object, put object in screen, handle interaction object and player, prepare page to be set on Vblank, ei 
 ;  call  BackdropBlack
-  call  BackdropRed
+;  call  BackdropRed
   call  Handle_HardWareSprite_Enemies_And_objects ;handle movement, out character, color and spat data
-  call  BackdropBlack
+;  call  BackdropBlack
 ;  call  BackdropGreen
 ;.SelfModifyingCallBMS:
   call  SetBorderMaskingSprites   ;set border masking sprites position in Spat
@@ -24,9 +24,9 @@ LevelEngine:
 ;  call  BackdropBlack
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
   call  CheckF1Menu               ;check if F1 is pressed and the menu can be entered
-  call  BackdropBlue
+;  call  BackdropBlue
   call  RePlayer_Tick             ;music routine
-  call  BackdropBlack
+;  call  BackdropBlack
 
 ;Routines starting at lineint:
   xor   a                         ;wait for lineint flag to be set. It's better (for now) to put the VRAM objects directly after the lineint
@@ -38,20 +38,20 @@ LevelEngine:
 
   call  SwapSpatColAndCharTable2
 
-  call  BackdropGreen
+;  call  BackdropGreen
   call  RestoreBackground         ;remove all vdp copies/software sprites that were put in screen last frame
   
   ;DEZE ROUTINE KAN INDIEN NODIG HELEMAAL NAAR MovementPatternsFixedPage1.asm
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
   call  HandlePlayerWeapons       ;arrow, fireball, iceweapon, earthweapon, waterweapon
-  call  BackdropBlack
+;  call  BackdropBlack
 
   xor   a
   ld    (SnapToPlatForm?),a
 
-  call  BackdropOrange
+;  call  BackdropOrange
 	call	handle_enemies_and_objects  ;handle software sprites
-  call  BackdropBlack
+;  call  BackdropBlack
 
   call  PopulateControls
 ;  call  FadeOutScreenEdges        ;routine that fades out the screen the closer you are to the edges
