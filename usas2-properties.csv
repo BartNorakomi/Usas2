@@ -114,6 +114,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Room	teleport	width	32					
 1	Usas2		RoomObject	AreaSign	uid	5					
 1	Usas2		RoomObject	AreaSign	objectClass	General					
+1	Usas2		RoomObject	TeleportVortex	uid	6					
+1	Usas2		RoomObject	TeleportVortex	objectClass	General					
 1	Usas2		RoomObject	bat	uid	147					
 1	Usas2		RoomObject	bat	objectClass	Enemy					
 1	Usas2		RoomObject	beetle	uid	140					
