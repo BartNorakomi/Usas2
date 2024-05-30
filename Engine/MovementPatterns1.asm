@@ -3703,10 +3703,6 @@ SetObjectXY:                                  ;non moving objects start at (0,0)
 ;v8=phase
 ;v9=already entered?(bit0)/activate ring(bit1)
 ;v10=activate ring flicker
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 Teleport:
   call  .CheckCollision                     ;check collision with player - and handle interaction of player with object 
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
@@ -3733,21 +3729,32 @@ Teleport:
   ret   nz
 
   ld    a,(ClesY)
-  sub   100
+  add   (ix+enemies_and_objects.y)        ;y portal
+  cp    100+16  
   ret   c
 
   ld    a,(ClesY)
-  sub   130
+  add   (ix+enemies_and_objects.y)        ;y portal
+  cp    130+16  
   ret   nc
 
-  ld    hl,-120
-  ld    de,(ClesX)                    ;hl: x player (165)
+
+  ld    h,0
+  ld    l,(ix+enemies_and_objects.x)       ;x portal
+  ld    de,-16
   add   hl,de
+  ld    de,(ClesX)                    ;hl: x player (165)
+  or    a
+  sbc   hl,de
   ret   nc
 
-  ld    hl,-150
-  ld    de,(ClesX)                    ;hl: x player (165)
+  ld    h,0
+  ld    l,(ix+enemies_and_objects.x)       ;x portal
+  ld    de,-16+30
   add   hl,de
+  ld    de,(ClesX)                    ;hl: x player (165)
+  or    a
+  sbc   hl,de
   ret   c
 
   set   0,(ix+enemies_and_objects.v9)       ;v9=already entered?(bit0)/activate ring(bit1)

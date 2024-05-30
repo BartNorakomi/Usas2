@@ -17,6 +17,7 @@ ExitTeleport:
   call  AnimateEnterTeleport        ;animate
   call  LMeditate.VerticalMovement
   call  .FlickerSprite
+  call  .SetPlayerToCentreTeleportOnExit
 
   ld    a,(PlayerAniCount+1)
   cp    121-1
@@ -65,7 +66,25 @@ ExitTeleport:
   jp    z,EnterTeleport.PutEmptySprite
   ret
 
+.SetPlayerToCentreTeleportOnExit:
+  ld    a,(PlayerAniCount+1)
+  cp    10
+  ret   c
 
+  ld    a,(enemies_and_objects+enemies_and_objects.y)
+  add   a,116
+  ld    (ClesY),a
+
+  ld    a,(enemies_and_objects+enemies_and_objects.x)
+  ld    h,0
+  ld    l,a
+  ld    (ClesX),hl
+  ret
+
+
+
+
+  
 
 EnterTeleport:
   ld    a,(PlayerFacingRight?)
@@ -180,38 +199,39 @@ EnterTeleport:
 
   .MoveToCenter:
   call  .MoveHorizontally
-  
-  ld    a,(ClesY)
-  cp    120
+  ld    hl,ClesY
+  ld    a,(enemies_and_objects+enemies_and_objects.y)
+  add   a,(hl)  
+  cp    120+16
   jr    nc,.MoveUp
-  cp    110
+  cp    110+16
   ret   nc
-  inc   a
-  ld    (ClesY),a
+  inc   (hl)
   ret
-
   .MoveUp:
-  dec   a
-  ld    (ClesY),a
+  dec   (hl)
   ret
   
   .MoveHorizontally:
-  ld    a,(ClesX)
-  cp    134
-  jr    c,.MoveRight
-  cp    136
-  ret   c
+  ld    hl,ClesX
+
+  ld    a,(enemies_and_objects+enemies_and_objects.x)
+  sub   (hl)
+  jr    nc,.MoveRight
+
+  ld    a,(enemies_and_objects+enemies_and_objects.x)
+  add   a,2
+  sub   (hl)
+  ret   nc
 
   .MoveLeft:
-  dec   a
-  ld    (ClesX),a
+  dec   (hl)
   xor   a
   ld    (PlayerFacingRight?),a
   ret
 
   .MoveRight:
-  inc   a
-  ld    (ClesX),a
+  inc   (hl)
   ld    a,1
   ld    (PlayerFacingRight?),a
   ret
