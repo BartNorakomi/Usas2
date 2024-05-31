@@ -1694,103 +1694,96 @@ HugeObjectFrame:  db  -1
 
 blitpage:                     db  0
 screenpage:                   db  2
-;Player1Spritedatablock:       db  ryuspritedatablock
-
-;Player1Framelistblock:        db  ryuframelistblock
-Player1Frame:                 dw  ryupage0frame000
+Player1Frame:                 dw  0 ;ryupage0frame000
 ;Player1FramePage:             db  0
-
 Object1y:                     db  000
 Object1x:                     db  000
 
-  ;if screenpage=0 then blit in page 1
-  ;if screenpage=1 then blit in page 2
-  ;if screenpage=2 then blit in page 0
-PutSF2Object:                 ;in b->framelistblock, c->spritedatablock
-  ld    a,(screenpage)
-  or    a                     ;if current page =0 then que page 1 to be restored
-  ld    ix,RestoreBackgroundObject1Page1
-  jp    z,.startsetupque
-  dec   a                     ;if current page =1 then que page 2 to be restored
-  ld    ix,RestoreBackgroundObject1Page2
-  jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
-  ld    ix,RestoreBackgroundObject1Page0
-  .startsetupque:
 
+;in b->framelistblock, c->spritedatablock
+PutSF2Object:     
+	ld    a,(screenpage)
+	or    a                     ;if current page =0 then que page 1 to be restored
+	ld    ix,RestoreBackgroundObject1Page1
+	jp    z,.startsetupque
+	dec   a                     ;if current page =1 then que page 2 to be restored
+	ld    ix,RestoreBackgroundObject1Page2
+	jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
+	ld    ix,RestoreBackgroundObject1Page0
+.startsetupque:
 	ld		a,(slot.page12rom)    ;all RAM except page 1+2
 	out		($a8),a	
-
 	ld		a,(memblocks.2)
-	push  af                    ;store movement pattern block of current object
-
-  ;set framedata in page 1 in rom ($4000 - $7fff)
+	push	af                    ;store current block
+;set framedata in page 1 in rom ($4000 - $7fff)
 	ld    a,c
-  call	block12
-  ;set framelist in page 2 in rom ($8000 - $bfff)
+	call	block12
+;set framelist in page 2 in rom ($8000 - $bfff)
 	ld    a,b
-  call	block34
+	call	block34
  
-  di
-  call  GoPutSF2Object
-  ei
+	di
+	call  GoPutSF2Object
+	ei
 
 ;edit: general movement pattern block is not required anymore at this point
-  ;set the general movement pattern block at address $4000 in page 1
-  di
-  ld    a,MovementPatternsFixedPage1block
-	ld		(memblocks.1),a
-	ld		($6000),a
-  ;*** LITTLE CORRECTION for PutSf2Object3Frames when using   jp    switchpageSF2Engine after putting SF2 object
-  ;set the movement pattern block of this enemy/object at address $8000 in page 2 
-	pop   af                    ;recall movement pattern block of current object
-	ld		(memblocks.2),a
-	ld		($7000),a
-	ei
-  ret
+;set the general movement pattern block at address $4000 in page 1
+;	di
+	ld	a,MovementPatternsFixedPage1block
+	ld	(memblocks.1),a
+	ld	($6000),a
+;*** LITTLE CORRECTION for PutSf2Object3Frames when using   jp    switchpageSF2Engine after putting SF2 object
+;set the movement pattern block of this enemy/object at address $8000 in page 2 
+	pop	af                    ;recall movement pattern block of current object
+	ld	(memblocks.2),a
+	ld	($7000),a
+;	ei
+ret
 
-PutSF2Object2:                ;in b->framelistblock, c->spritedatablock
-  ld    a,(screenpage)
-  or    a                     ;if current page =0 then que page 1 to be restored
-  ld    ix,RestoreBackgroundObject2Page1
-  jp    z,PutSF2Object.startsetupque
-  dec   a                     ;if current page =1 then que page 2 to be restored
-  ld    ix,RestoreBackgroundObject2Page2
-  jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
-  ld    ix,RestoreBackgroundObject2Page0
-  jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+;in b->framelistblock, c->spritedatablock
+PutSF2Object2:
+	ld    a,(screenpage)
+	or    a                     ;if current page =0 then que page 1 to be restored
+	ld    ix,RestoreBackgroundObject2Page1
+	jp    z,PutSF2Object.startsetupque
+	dec   a                     ;if current page =1 then que page 2 to be restored
+	ld    ix,RestoreBackgroundObject2Page2
+	jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+	ld    ix,RestoreBackgroundObject2Page0
+	jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
 
-PutSF2Object3:                ;in b->framelistblock, c->spritedatablock
-  ld    a,(screenpage)
-  or    a                     ;if current page =0 then que page 1 to be restored
-  ld    ix,RestoreBackgroundObject3Page1
-  jp    z,PutSF2Object.startsetupque
-  dec   a                     ;if current page =1 then que page 2 to be restored
-  ld    ix,RestoreBackgroundObject3Page2
-  jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
-  ld    ix,RestoreBackgroundObject3Page0
-  jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+PutSF2Object3: 
+	ld    a,(screenpage)
+	or    a                     ;if current page =0 then que page 1 to be restored
+	ld    ix,RestoreBackgroundObject3Page1
+	jp    z,PutSF2Object.startsetupque
+	dec   a                     ;if current page =1 then que page 2 to be restored
+	ld    ix,RestoreBackgroundObject3Page2
+	jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+	ld    ix,RestoreBackgroundObject3Page0
+	jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
 
-PutSF2Object4:                ;in b->framelistblock, c->spritedatablock
-  ld    a,(screenpage)
-  or    a                     ;if current page =0 then que page 1 to be restored
-  ld    ix,RestoreBackgroundObject4Page1
-  jp    z,PutSF2Object.startsetupque
-  dec   a                     ;if current page =1 then que page 2 to be restored
-  ld    ix,RestoreBackgroundObject4Page2
-  jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
-  ld    ix,RestoreBackgroundObject4Page0
-  jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+PutSF2Object4: 
+	ld    a,(screenpage)
+	or    a                     ;if current page =0 then que page 1 to be restored
+	ld    ix,RestoreBackgroundObject4Page1
+	jp    z,PutSF2Object.startsetupque
+	dec   a                     ;if current page =1 then que page 2 to be restored
+	ld    ix,RestoreBackgroundObject4Page2
+	jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+	ld    ix,RestoreBackgroundObject4Page0
+	jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
 
-PutSF2Object5:                ;in b->framelistblock, c->spritedatablock
-  ld    a,(screenpage)
-  or    a                     ;if current page =0 then que page 1 to be restored
-  ld    ix,RestoreBackgroundObject5Page1
-  jp    z,PutSF2Object.startsetupque
-  dec   a                     ;if current page =1 then que page 2 to be restored
-  ld    ix,RestoreBackgroundObject5Page2
-  jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
-  ld    ix,RestoreBackgroundObject5Page0
-  jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+PutSF2Object5: 
+	ld    a,(screenpage)
+	or    a                     ;if current page =0 then que page 1 to be restored
+	ld    ix,RestoreBackgroundObject5Page1
+	jp    z,PutSF2Object.startsetupque
+	dec   a                     ;if current page =1 then que page 2 to be restored
+	ld    ix,RestoreBackgroundObject5Page2
+	jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+	ld    ix,RestoreBackgroundObject5Page0
+	jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
 
 
 ;Frameinfo looks like this:
@@ -1798,8 +1791,6 @@ PutSF2Object5:                ;in b->framelistblock, c->spritedatablock
 ;x offset for first line
 ;lenght ($1f)+increment ($80) next spriteline, source address (base+00000h etc)
 ;  dw 01F80h,base+00000h
-
-
 PutObjectInPage3?:				db  0
 RestoreBackgroundSF2Object?:	db  1
 ScreenLimitxRight:				equ 256-10
@@ -1907,7 +1898,9 @@ PutSpriteleftSideOfScreen:
 
 ;The old list files had unused bytes, skip if that version is used.
 SkipFrameBytes:
+	inc   hl
 	ld    a,(hl)
+	dec   hl
 	and   A
 	ret   nz
 	ld    bc,7			;skip unused bytes
@@ -1934,7 +1927,7 @@ putplayer_noclip:		;in: HL=frameHeader.frameOffset
 	cp    3
 	jr    nz,.not3
 	xor   a
-.not3:  
+.not3: 
 	add   a,a
 	bit   7,d
 	jp    z,.setpage
@@ -1965,10 +1958,10 @@ putplayer_noclip:		;in: HL=frameHeader.frameOffset
 	ld    a,l                   ;totalLength (numpix+whitespace)
 	pop   hl                    ;pop array address
 	otir
-	or    a						;next is white space?
+	or    a						;is there more?
 	jr    z,.exit
 
-	add   a,e                   ;add increment to x
+	add   a,e                   ;To next array
 	ld    e,a                   ;new x
 	jr    nc,.loop
 	inc   d                     ;0100 0000

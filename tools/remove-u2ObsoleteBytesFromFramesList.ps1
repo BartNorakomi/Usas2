@@ -13,6 +13,6 @@ foreach ($file in $files)
 {	$newFile="$($file.directoryname)\$($file.basename).new$($file.extension)"
 	write "Converting `"$($file.fullname)`" > `"$newfile`""
 	$lst=get-content $file
-	$lst|where{$_ -notmatch "db (\d{3}h,\d{3}h,\d{3}h,\d{3}h,\d{3}h|\d{3}h,\d{3}h)"}|Out-File $newfile -encoding ascii
+	$lst|where{$_ -notmatch "db (000h,...h,...h,...h,...h$|...h,...h$)"}|Out-File $newfile -encoding ascii
 
 }
