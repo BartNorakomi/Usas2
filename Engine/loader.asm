@@ -374,7 +374,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   sub   72
   ld    (iy+enemies_and_objects.y),a
 
-  ld    de,Object061Table.lenghtobjectdata
+  ld    de,Object006Table.lenghtobjectdata
   ret    
 
 
@@ -2312,7 +2312,7 @@ Object004Table:               ;Dripping Ooze Drop
 
 Object006Table:               ;Teleport
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 2,        0|dw Teleport            |db 8*02  |dw 8*17  |db 64,64|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+          db 2,        0|dw Teleport            |db 8*02  |dw 8*17  |db 64,64|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2

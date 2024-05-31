@@ -3702,7 +3702,7 @@ SetObjectXY:                                  ;non moving objects start at (0,0)
 ;v7=sprite frame
 ;v8=phase
 ;v9=already entered?(bit0)/activate ring(bit1)
-;v10=activate ring flicker
+;v10=unable to enter directly after exiting timer
 Teleport:
   call  .CheckCollision                     ;check collision with player - and handle interaction of player with object 
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
@@ -3710,12 +3710,12 @@ Teleport:
   call  .Animate
   call  .CheckActivateRing
 
-;  ld    (ix+enemies_and_objects.v7),05*5       ;v7=sprite frame
+;  ld    (ix+enemies_and_objects.v7),13*5       ;v7=sprite frame
 
-  ld    de,TeleportPart1AnimationFrames
-  bit   1,(ix+enemies_and_objects.v9)       ;v9=already entered?(bit0)/activate ring(bit1)
+  ld    de,TeleportPart4AnimationFrames
+  bit   0,(ix+enemies_and_objects.v9)       ;v9=already entered?(bit0)/activate ring(bit1)
   jp    nz,PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
-  ld    de,TeleportPart2AnimationFrames
+  ld    de,TeleportPart3AnimationFrames
   jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
   .CheckCollision:                          ;hitbox teleport=(120,100)-(150,130)
@@ -3723,21 +3723,29 @@ Teleport:
   ld    de,ExitTeleport
   or    a
   sbc   hl,de
+  jr    nz,.EndCheckExitingTeleport
+  ld    (ix+enemies_and_objects.v10),20     ;v10=unable to enter directly after exiting timer
   ret   z
+  .EndCheckExitingTeleport:
+  ld    a,(ix+enemies_and_objects.v10)      ;v10=unable to enter directly after exiting timer
+  dec   a
+  jr    z,.AbleToEnter
+  ld    (ix+enemies_and_objects.v10),a      ;v10=unable to enter directly after exiting timer
+  ret
+  .AbleToEnter:
 
   bit   0,(ix+enemies_and_objects.v9)       ;v9=already entered?(bit0)/activate ring(bit1)
   ret   nz
 
   ld    a,(ClesY)
-  add   (ix+enemies_and_objects.y)        ;y portal
-  cp    100+16  
+  sub   (ix+enemies_and_objects.y)        ;y portal
+  cp    100-16
   ret   c
 
   ld    a,(ClesY)
-  add   (ix+enemies_and_objects.y)        ;y portal
-  cp    130+16  
+  sub   (ix+enemies_and_objects.y)        ;y portal
+  cp    130-16
   ret   nc
-
 
   ld    h,0
   ld    l,(ix+enemies_and_objects.x)       ;x portal
@@ -3772,38 +3780,27 @@ Teleport:
   or    a
   ret   nz
 
-;  res   1,(ix+enemies_and_objects.v9)       ;v9=already entered?(bit0)/activate ring(bit1)
+  res   0,(ix+enemies_and_objects.v9)       ;v9=already entered?(bit0)/activate ring(bit1)
 
 	ld		hl,(PlayerSpriteStand)
 	ld		de,EnterTeleport
   or    a
   sbc   hl,de
-  jr    z,.ActivateRingPlayerJustEntered
+  jr    z,.ActivateRing
 
 	ld		hl,(PlayerSpriteStand)
 	ld		de,ExitTeleport
   or    a
   sbc   hl,de
-  jr    z,.ActivateRing
-  res   1,(ix+enemies_and_objects.v9)       ;v9=already entered?(bit0)/activate ring(bit1)
-  ret
+  ret   nz
 
-  .ActivateRingPlayerJustEntered:
-  res   1,(ix+enemies_and_objects.v9)       ;v9=already entered?(bit0)/activate ring(bit1)
-  ld    a,(ix+enemies_and_objects.v10)      ;v10=activate ring flicker
-  inc   a
-  ld    (ix+enemies_and_objects.v10),a      ;v10=activate ring flicker
-  cp    2
-  ret   z
-  cp    4
-  ret   z
   .ActivateRing:
-  set   1,(ix+enemies_and_objects.v9)       ;v9=already entered?(bit0)/activate ring(bit1)
+  set   0,(ix+enemies_and_objects.v9)       ;v9=already entered?(bit0)/activate ring(bit1)
   ret
 
   .Animate:
   ld    a,(HugeObjectFrame)
-  cp    2
+  or    a
   ret   nz
   
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
@@ -3815,209 +3812,411 @@ Teleport:
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret  
 
-  TeleportPart2AnimationFrames:
-  dw TeleportPart2frame000 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame001 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame002 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame003 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame004 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame005 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame006 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame007 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame008 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame009 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame010 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame011 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame012 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame013 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame014 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame015 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame016 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame017 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame018 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame019 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame020 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame021 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame022 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame023 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame024 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame025 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame026 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame027 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame028 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame029 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame030 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame031 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame032 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame033 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame034 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame035 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame036 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame037 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame038 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame039 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame040 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame041 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame042 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame043 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame044 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame045 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame046 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame047 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame048 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame049 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame050 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame051 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame052 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame053 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame054 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame055 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame056 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame057 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame058 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame059 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame060 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame061 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame062 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame063 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame064 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame065 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame066 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame067 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame068 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame069 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame070 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame071 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame072 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame073 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame074 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-
-  dw TeleportPart2frame075 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame076 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame077 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame078 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame079 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
 
 
 
 
 
+  TeleportPart4AnimationFrames:
+  dw TeleportPart3frame080 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame081 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame082 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame083 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame084 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame085 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame086 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame087 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame088 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame089 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame090 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame091 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame092 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame093 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame094 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame095 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame096 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame097 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame098 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame099 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame100 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame101 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame102 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame103 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame104 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame105 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame106 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame107 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame108 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame109 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame110 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame111 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame112 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame113 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame114 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame115 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame116 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame117 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame118 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame119 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame120 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame121 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame122 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame123 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame124 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame125 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame126 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame127 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame128 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame129 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame130 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame131 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame132 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame133 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame134 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame135 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame136 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame137 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame138 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame139 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame140 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame141 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame142 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame143 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame144 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw ryupage0frame013 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame014 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame015 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame016 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame017 | db ryuframelistblock, ryuspritedatablock
+
+  dw ryupage0frame018 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame019 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame020 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame021 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame022 | db ryuframelistblock, ryuspritedatablock
+
+  dw ryupage0frame023 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame024 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame025 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame026 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame027 | db ryuframelistblock, ryuspritedatablock
+
+  TeleportPart3AnimationFrames:
+  dw TeleportPart3frame000 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame001 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame002 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame003 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame004 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame005 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame006 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame007 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame008 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame009 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame010 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame011 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame012 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame013 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame014 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame015 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame016 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame017 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame018 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame019 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame020 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame021 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame022 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame023 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame024 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame025 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame026 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame027 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame028 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame029 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame030 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame031 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame032 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame033 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame034 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame035 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame036 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame037 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame038 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame039 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame040 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame041 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame042 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame043 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame044 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame045 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame046 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame047 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame048 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame049 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame050 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame051 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame052 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame053 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame054 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame055 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame056 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame057 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame058 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame059 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame060 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame061 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame062 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame063 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame064 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame065 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame066 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame067 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame068 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame069 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame070 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame071 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame072 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame073 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame074 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+  dw TeleportPart3frame075 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame076 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame077 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame078 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+  dw TeleportPart3frame079 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
+
+
+
+
+;  TeleportPart2AnimationFrames:
+;  dw TeleportPart2frame000 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame001 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame002 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame003 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame004 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame005 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame006 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame007 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame008 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame009 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame010 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame011 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame012 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame013 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame014 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame015 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame016 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame017 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame018 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame019 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame020 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame021 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame022 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame023 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame024 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame025 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame026 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame027 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame028 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame029 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame030 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame031 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame032 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame033 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame034 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame035 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame036 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame037 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame038 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame039 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame040 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame041 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame042 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame043 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame044 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame045 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame046 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame047 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame048 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame049 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame050 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame051 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame052 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame053 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame054 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame055 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame056 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame057 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame058 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame059 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame060 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame061 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame062 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame063 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame064 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame065 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame066 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame067 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame068 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame069 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame070 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame071 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame072 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame073 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame074 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame075 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame076 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame077 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame078 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame079 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
 
 
 
 
 
 
-  TeleportPart1AnimationFrames:
-  dw TeleportPart1frame000 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame001 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame002 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame003 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame004 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame005 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame006 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame007 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame008 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame009 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame010 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame011 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame012 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame013 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame014 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame015 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame016 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame017 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame018 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame019 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame020 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame021 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame022 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame023 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame024 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame025 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame026 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame027 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame028 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame029 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  TeleportPart1AnimationFrames:
+;  dw TeleportPart1frame000 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame001 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame002 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame003 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame004 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame030 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame031 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame032 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame033 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame034 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame005 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame006 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame007 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame008 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame009 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame035 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame036 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame037 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame038 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame039 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame010 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame011 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame012 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame013 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame014 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame040 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame041 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame042 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame043 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame044 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame015 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame016 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame017 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame018 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame019 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame045 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame046 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame047 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame048 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame049 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame020 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame021 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame022 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame023 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame024 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame050 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame051 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame052 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame053 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame054 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame025 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame026 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame027 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame028 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame029 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame055 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame056 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame057 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame058 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame059 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame030 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame031 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame032 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame033 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame034 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart1frame060 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame061 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame062 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame063 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
-  dw TeleportPart1frame064 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame035 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame036 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame037 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame038 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame039 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart2frame080 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame081 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame082 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame083 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame084 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart1frame040 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame041 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame042 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame043 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame044 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart2frame085 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame086 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame087 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame088 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame089 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart1frame045 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame046 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame047 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame048 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame049 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
 
-  dw TeleportPart2frame085 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame086 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame087 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame088 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
-  dw TeleportPart2frame089 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart1frame050 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame051 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame052 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame053 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame054 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+
+;  dw TeleportPart1frame055 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame056 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame057 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame058 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame059 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+
+;  dw TeleportPart1frame060 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame061 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame062 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame063 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+;  dw TeleportPart1frame064 | db TeleportPart1framelistblock, TeleportPart1spritedatablock
+
+;  dw TeleportPart2frame080 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame081 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame082 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame083 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame084 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame085 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame086 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame087 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame088 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame089 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+
+;  dw TeleportPart2frame085 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame086 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame087 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame088 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
+;  dw TeleportPart2frame089 | db TeleportPart2framelistblock, TeleportPart2spritedatablock
 
 
 GlassBall1:

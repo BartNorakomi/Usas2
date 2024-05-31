@@ -202,3 +202,13 @@ TeleportPart2spritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockS
 							incbin "..\grapx\TeleportRoom\Part2\frames.dat"
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
+;Teleporter part 3
+TeleportPart3framelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+							phase	$8000
+							include "..\grapx\TeleportRoom\Part3\frames.lst"
+							.kut:
+							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+							dephase
+TeleportPart3spritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+							incbin "..\grapx\TeleportRoom\Part3\frames.dat"
+							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block

@@ -72,7 +72,7 @@ ExitTeleport:
   ret   c
 
   ld    a,(enemies_and_objects+enemies_and_objects.y)
-  add   a,116
+  add   a,100
   ld    (ClesY),a
 
   ld    a,(enemies_and_objects+enemies_and_objects.x)
@@ -201,10 +201,11 @@ EnterTeleport:
   call  .MoveHorizontally
   ld    hl,ClesY
   ld    a,(enemies_and_objects+enemies_and_objects.y)
+  neg
   add   a,(hl)  
-  cp    120+16
+  cp    120-16
   jr    nc,.MoveUp
-  cp    110+16
+  cp    110-16
   ret   nc
   inc   (hl)
   ret
