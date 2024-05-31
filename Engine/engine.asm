@@ -1691,7 +1691,7 @@ RestoreBackgroundObject5Page2:
 HugeObjectFrame:  db  -1
 
 
-moveplayerleftinscreen:       equ 128
+
 blitpage:                     db  0
 screenpage:                   db  2
 ;Player1Spritedatablock:       db  ryuspritedatablock
@@ -1794,506 +1794,454 @@ PutSF2Object5:                ;in b->framelistblock, c->spritedatablock
 
 
 ;Frameinfo looks like this:
-
-  ;width, height, offset x, offset y
-  ;x offset for first line
-  
-;ryuPage0frame000:
-;  db 024h,04Eh,06Ch,036h
-;  db 082h
-;  db 068h,022h,037h,06Bh,024h
-;  db 000h,000h
-;  db 000h,000h
-
-  ;lenght ($1f) + increment ($80) first spriteline, source address (base+00000h etc)
+;width, height, offset x, offset y
+;x offset for first line
+;lenght ($1f)+increment ($80) next spriteline, source address (base+00000h etc)
 ;  dw 01F80h,base+00000h
-;  dw 01F80h,base+0001Fh
-;  dw 01F80h,base+0003Eh
-;  dw 01F80h,base+0005Dh
 
 
-ScreenLimitxRight:  equ 256-10
-ScreenLimitxLeft:   equ 10
+PutObjectInPage3?:				db  0
+RestoreBackgroundSF2Object?:	db  1
+ScreenLimitxRight:				equ 256-10
+ScreenLimitxLeft:				equ 10
+moveplayerleftinscreen:			equ 128
+
 GoPutSF2Object:
-  ld    bc,Object1x
-  ld    hl,(Player1Frame)     ;points to object width
-  ld    iy,Player1SxB1        ;player collision detection blocks
+	ld    bc,Object1x
+	ld    hl,(Player1Frame)     ;points to object width
+	ld    iy,Player1SxB1        ;player collision detection blocks
 
-;screen limit right
-  ld    a,(bc)                ;object x
-  cp    ScreenLimitxRight
-  jp    c,.LimitRight
-  ld    a,ScreenLimitxRight
-;  ld    (bc),a
-  .LimitRight:
-;screen limit left
-  ld    a,(bc)                ;object x
-  cp    ScreenLimitxLeft
-  jp    nc,.LimitLeft
-  ld    a,ScreenLimitxLeft
-;  ld    (bc),a
-  .LimitLeft:
+;20240531;ro;removed as it didn't do anything, really
+;;screen limit right
+;	ld    a,(bc)                ;object x
+;	cp    ScreenLimitxRight
+;	jp    c,.LimitRight
+;	ld    a,ScreenLimitxRight
+;;	ld    (bc),a
+;.LimitRight:
+;;screen limit left
+;	ld    a,(bc)                ;object x
+;	cp    ScreenLimitxLeft
+;	jp    nc,.LimitLeft
+;	ld    a,ScreenLimitxLeft
+;; 	ld    (bc),a
+;.LimitLeft:
 
-  Putprojectile:              ;projectiles use the same routine as Putplayer
-  or    a
-  jp    p,PutSpriteleftSideOfScreen
+;Putprojectile:              ;projectiles use the same routine as Putplayer
+;Set up restore background que player
+;set width
+	ld    a,(hl)		;FrameWidth
+	inc   hl
+	ld    (ix+nx),a		;set object width to be restored by background
+;set height
+	ld    a,(hl)		;FrameHeight
+	inc   hl
+	ld    (ix+ny),a		;set object height to be restored by background
+;set sy,dy by adding offset y to object y
+;	inc   hl
+	dec   bc
+	ld    a,(bc)		;object Y
+	inc   bc
+	inc   hl
+	add   a,(hl)		;FrameY
+	dec   hl
+	ld    d,a
+	ld    (ix+sy),a		;set sy/dy to restore by background
+	ld    (ix+dy),a
+	ld    (iy+1),a		;Player1SyB1 (set block 1 sy)
+;set sx,dx by adding frame.x to object.x
+	ld    e,(hl)		;FrameX
+	inc   hl
+	ld    a,(bc)		;object x
+	or    a
+	jp    p,PutSpriteleftSideOfScreen
 
 PutSpriteRightSideOfScreen:
-  ;Set up restore background que player
-  ;set width
-  ld    a,(hl)                ;object width
-  ld    (ix+nx),a             ;set object width to be restored by background
-    ;set height
-  inc   hl                    ;object height
-  ld    a,(hl)
-  ld    (ix+ny),a             ;set object height to be restored by background
-    ;set sx,dx by adding offset x to object x
-  inc   hl                    ;offset x
-  ld    e,(hl)                ;offset x
-  ld    a,(bc)                ;object x
-  sub   a,moveplayerleftinscreen
-  add   a,e
+	sub   a,moveplayerleftinscreen
+	add   a,e
+	jp    c,putplayer_clipright_totallyoutofscreenright
 
-  jp    c,putplayer_clipright_totallyoutofscreenright
+	ld    (ix+sx),a		;set sx/dx to restore by background
+	ld    (ix+dx),a
 
-  ld    (ix+sx),a             ;set sx/dx to restore by background
-  ld    (ix+dx),a
-    ;set sy,dy by adding offset y to player y
-  inc   hl                    ;player y offset
-  dec   bc                    ;player y
-  ld    a,(bc)
-  add   a,(hl)
-  ld    d,a
-  ld    (ix+sy),a             ;set sy/dy to restore by background
-  ld    (ix+dy),a
-  ld    (iy+1),a              ;Player1SyB1 (set block 1 sy)
-  ;/Set up restore background que player
-  inc   hl                    ;player x offset for first line
-  inc   bc                    ;player x
+;Set up restore background que player
+	inc   hl			;=FrameOffset
+;	inc   bc			;=object x
+;clipping check
+	ld    a,(bc)		;object X
+	sub   moveplayerleftinscreen
+	add   a,e			;object.X+frame.X
+	add   a,(ix+nx)
+	jp    c,putplayer_clipright
 
-  ;clipping check
-  ld    a,(bc)                ;player x
-  sub   moveplayerleftinscreen
-  add   a,e                   ;player x + offset x
-  add   a,(ix+nx)
-  jp    c,putplayer_clipright
-  jp    putplayer_noclip
+	jp    putplayer_noclip
 
-
-PutObjectInPage3?:            db  0
-RestoreBackgroundSF2Object?:  db  1
-  
+ 
 PutSpriteleftSideOfScreen:
-  ;Set up restore background que player
-    ;set width
-  ld    a,(hl)                ;player width
-  ld    (ix+nx),a             ;set player width to be restored by background
-    ;set height
-  inc   hl                    ;player height
-  ld    a,(hl)
-  ld    (ix+ny),a             ;set player height to be restored by background
-    ;set sx,dx by adding offset x to player x
-  inc   hl                    ;offset x
-  ld    e,(hl)                ;offset x
-  ld    a,(bc)                ;player x
-  sub   a,moveplayerleftinscreen
-  add   a,e
-  jr    c,.carry
-  xor   a
-  .carry:
-  ld    (ix+sx),a             ;set sx/dx to restore by background
-  ld    (ix+dx),a
-    ;set sy,dy by adding offset y to player y
-  inc   hl                    ;player y offset
-  dec   bc                    ;player y
-  ld    a,(bc)
-  add   a,(hl)
-  ld    d,a
-  ld    (ix+sy),a             ;set sy/dy to restore by background
-  ld    (ix+dy),a
-  ld    (iy+1),a              ;Player1SyB1 (set block 1 sy)
-  ;/Set up restore background que player
-  inc   hl                    ;player x offset for first line
-  inc   bc                    ;player x
-
-  ;clipping check
-  ld    a,(bc)                ;player x
-  sub   a,moveplayerleftinscreen
-  add   a,e                   ;player x + offset x
-  jp    nc,putplayer_clipleft
-  ;/clipping check
+	sub   a,moveplayerleftinscreen
+	add   a,e
+	jr    c,.carry
+	xor   a
+.carry:
+	ld    (ix+sx),a             ;set sx/dx to restore by background
+	ld    (ix+dx),a
+;set sy,dy by adding offset y to object y
+;	inc   hl
+;	dec   bc
+;	ld    a,(bc)		;object Y
+;	add   a,(hl)		;FrameY
+;	ld    d,a
+;	ld    (ix+sy),a		;set sy/dy to restore by background
+;	ld    (ix+dy),a
+;	ld    (iy+1),a		;Player1SyB1 (set block 1 sy)
+;Set up restore background que player
+	inc   hl			;=FrameOffset
+;	inc   bc			;=object x
+;clipping check
+	ld    a,(bc)		;object X
+	sub   a,moveplayerleftinscreen
+	add   a,e			;object.X+frame.X
+	jp    nc,putplayer_clipleft
+	jp    putplayer_noclip
 
 
-putplayer_noclip:
-  ld    a,(bc)                ;player x
-  add   a,(hl)                ;add offset x  for first line to destination x
-  sub   a,moveplayerleftinscreen
-  ld    e,a
-;  call  SetOffsetBlocksAndAttackpoints
-  ld    bc,8 ;10
-  add   hl,bc  
-;  inc   hl                    ;lenght + increment first spriteline
+;The old list files had unused bytes, skip if that version is used.
+SkipFrameBytes:
+	ld    a,(hl)
+	and   A
+	ret   nz
+	ld    bc,7			;skip unused bytes
+	add   hl,bc  
+	ret
 
-  ld    a,(PutObjectInPage3?)
-  or    a
-  jr    nz,.not3
+putplayer_noclip:		;in: HL=frameHeader.frameOffset
+	ld    a,(bc)		;object.X
+	add   a,(hl)		;add frameOffset for first line to destination x
+	inc   hl
+	sub   a,moveplayerleftinscreen
+	ld    e,a
 
+	call	SkipFrameBytes
+
+	ld    a,(PutObjectInPage3?)
+	or    a
+	jr    nz,.not3
   ;if screenpage=0 then blit in page 1
   ;if screenpage=1 then blit in page 2
   ;if screenpage=2 then blit in page 0
-  ld    a,(screenpage)
-  inc   a
-  cp    3
-  jr    nz,.not3
-  xor   a
-  .not3:  
-  add   a,a
+	ld    a,(screenpage)
+	inc   a
+	cp    3
+	jr    nz,.not3
+	xor   a
+.not3:  
+	add   a,a
+	bit   7,d
+	jp    z,.setpage
+	inc   a
+.setpage:
+	ld    (blitpage),a
+	out   ($99),a               ;write page instellen
+	ld    a,14+128
+	out   ($99),a
 
-  bit   7,d
+	srl   d                     ;write addres is de/2
+	rr    e
+	set   6,d                   ;set write access
 
-  jp    z,.setpage
-  inc   a
-  .setpage:
-  ld    (blitpage),a
-  out   ($99),a               ;write page instellen
-  ld    a,14+128
-  out   ($99),a
+;Transfer pixel array to screen
+	ld    (spatpointer),sp  
+	ld    sp,hl
 
-  srl   d                     ;write addres is de/2
-  rr    e
+	ld    a,e
+	ld    c,$98
+.loop:
+	out   ($99),a               ;set x to write to
+	ld    a,d
+	out   ($99),a               ;set y to write to
 
-  set   6,d                   ;write access
+	pop   hl                    ;  
+	ld    b,h                   ;numPix
+	ld    a,l                   ;totalLength (numpix+whitespace)
+	pop   hl                    ;pop array address
+	otir
+	or    a						;next is white space?
+	jr    z,.exit
 
-;dec hl
-;dec hl
+	add   a,e                   ;add increment to x
+	ld    e,a                   ;new x
+	jr    nc,.loop
+	inc   d                     ;0100 0000
+	jp    p,.loop
 
+	set   6,d
+	res   7,d
 
-  ld    (spatpointer),sp  
-  ld    sp,hl
+	ld    a,(blitpage)
+	xor   1
+	out   ($99),a               ;write page instellen
+	ld    a,14+128
+	out   ($99),a
 
-  ld    a,e
-  ld    c,$98
-  .loop:
-  out   ($99),a               ;set x to write to
-  ld    a,d
-  out   ($99),a               ;set y to write to
+	ld    a,e
+	jp    .loop
 
-  pop   hl                    ;pop lenght + increment  
-  ld    b,h                   ;length
-  ld    a,l                   ;increment
-  pop   hl                    ;pop source address
-
-  otir
-  or    a
-  jr    z,.exit
-
-  add   a,e                   ;add increment to x
-  ld    e,a                   ;new x
-  jr    nc,.loop
-  inc   d                     ;0100 0000
-
-  jp    p,.loop
-
-  set   6,d
-  res   7,d
-
-  ld    a,(blitpage)
-  xor   1
-  out   ($99),a               ;write page instellen
-  ld    a,14+128
-  out   ($99),a
+.exit:
+	ld    sp,(spatpointer)
+	ret
   
-  ld    a,e
-  jp    .loop
 
-  .exit:
-  ld    sp,(spatpointer)
-  ret
-  
 putplayer_clipright_totallyoutofscreenright:
-  inc   hl                    ;player y offset
-  inc   hl                    ;player x offset for first line
-  inc   hl                    ;player x offset for first line
-  inc   bc                    ;player x
-  ld    a,(bc)                ;player x
-  sub   a,moveplayerleftinscreen
-  add   a,(hl)                ;add player x offset for first line
-  ld    e,a
-;  jp    SetOffsetBlocksAndAttackpoints
+;20240531;ro;this does absolutely nothing...
+;  inc   hl                    ;player y offset
+;  inc   hl                    ;=frameOffset
+;  inc   hl                    ;=...
+;  inc   bc                    ;player x
+;  ld    a,(bc)                ;player x
+;  sub   a,moveplayerleftinscreen
+;  add   a,(hl)                ;add player x offset for first line
+;  ld    e,a
+;;  jp    SetOffsetBlocksAndAttackpoints
   ret
   
 putplayer_clipright:
-  ld    a,(bc)                ;player x
-  sub   a,moveplayerleftinscreen
-  add   a,(hl)                ;add player x offset for first line
-  ld    e,a
-;  call  SetOffsetBlocksAndAttackpoints
-  ld    bc,8 ;10
-  add   hl,bc  
-;  inc   hl                    ;lenght + increment first spriteline
+	ld    a,(bc)		;object.X
+	add   a,(hl)		;add frameOffset for first line to destination x
+	inc   hl
+	sub   a,moveplayerleftinscreen
+	ld    e,a
 
-  ld    a,(PutObjectInPage3?)
-  or    a
-  jr    nz,.not3
+	call  SkipFrameBytes
 
-  ;if screenpage=0 then blit in page 1
-  ;if screenpage=1 then blit in page 2
-  ;if screenpage=2 then blit in page 0
-  ld    a,(screenpage)
-  inc   a
-  cp    3
-  jr    nz,.not3
-  xor   a
-  .not3:  
-  add   a,a
-
-  bit   7,d
-
-  jp    z,.setpage
-  inc   a
+	ld    a,(PutObjectInPage3?)
+	or    a
+	jr    nz,.not3
+;if screenpage=0 then blit in page 1
+;if screenpage=1 then blit in page 2
+;if screenpage=2 then blit in page 0
+	ld    a,(screenpage)
+	inc   a
+	cp    3
+	jr    nz,.not3
+	xor   a
+.not3:  
+	add   a,a
+	bit   7,d
+	jp    z,.setpage
+	inc   a
   .setpage:
-  ld    (blitpage),a
-  out   ($99),a               ;write page instellen
-  ld    a,14+128
-  out   ($99),a
+	ld    (blitpage),a
+	out   ($99),a               ;write page instellen
+	ld    a,14+128
+	out   ($99),a
 
-  srl   d                     ;write addres is de/2
-  rr    e
+	srl   d                     ;write addres is de/2
+	rr    e
+	set   6,d                   ;write access
 
-  set   6,d                   ;write access
+;Transfer pixel array to screen
+	ld    (spatpointer),sp  
+	ld    sp,hl
 
-;dec hl
-;dec hl
+	ld    a,e
+	ld    c,$98
+.loop:
+	out   ($99),a               ;set x to write to
+	ld    a,d
+	out   ($99),a               ;set y to write to
 
-  ld    (spatpointer),sp  
-  ld    sp,hl
+	pop   hl                    ;pop lenght + increment  
+	ld    b,h                   ;length
 
-  ld    a,e
-  ld    c,$98
-  .loop:
-  out   ($99),a               ;set x to write to
-  ld    a,d
-  out   ($99),a               ;set y to write to
+;extra code in case of clipping right
+;first check if total piece is out of screen right (or x<64)
+	bit   6,e                   
+	jr    z,.totallyoutofscreenright
+;check if piece is fully within screen
+	ld    a,e                   ;x
+	or    %1000 0000
+	add   a,b
+	jr    nc,.endoverflowcheck1  ;nc-> piece is fully within screen
+	sub   a,b
+	neg
+	ld    b,a
+.endoverflowcheck1:
+;/extra code in case of clipping right
 
-  pop   hl                    ;pop lenght + increment  
-  ld    b,h                   ;length
-
-  ;extra code in case of clipping right
-    ;first check if total piece is out of screen right (or x<64)
-  bit   6,e                   
-  jr    z,.totallyoutofscreenright
-  
-    ;check if piece is fully within screen
-  ld    a,e                   ;x
-  or    %1000 0000
-
-  add   a,b
-  jr    nc,.endoverflowcheck1  ;nc-> piece is fully within screen
-    
-  sub   a,b
-  neg
-  ld    b,a
-  .endoverflowcheck1:
-  ;/extra code in case of clipping right
-
-  ld    a,l                   ;increment
-  pop   hl                    ;pop source address
-
-  otir
+	ld    a,l                   ;totalLength (numpix+whitespace)
+	pop   hl                    ;pop array address
+	otir
   .skipotir:
-  or    a
-  jr    z,.exit
+	or    a
+	jr    z,.exit
 
-  add   a,e                   ;add increment to x
-  ld    e,a                   ;new x
-  jr    nc,.loop
-  inc   d                     ;0100 0000
+	add   a,e                   ;add increment to x
+	ld    e,a                   ;new x
+	jr    nc,.loop
+	inc   d                     ;0100 0000
+	jp    p,.loop
 
-  jp    p,.loop
+	set   6,d
+	res   7,d
 
-  set   6,d
-  res   7,d
+	ld    a,(blitpage)
+	xor   1
+	out   ($99),a               ;write page instellen
+	ld    a,14+128
+	out   ($99),a
 
-  ld    a,(blitpage)
-  xor   1
-  out   ($99),a               ;write page instellen
-  ld    a,14+128
-  out   ($99),a
-  
-  ld    a,e
-  jp    .loop
+	ld    a,e
+	jp    .loop
 
-  .exit:
-  ld    sp,(spatpointer)
-  ret
+.exit:
+	ld    sp,(spatpointer)
+	ret
 
 .totallyoutofscreenright:
-  ld    a,l
-  pop   hl
-  jp    .skipotir             ;piece is totally out of screen, dont otir
+	ld    a,l
+	pop   hl
+	jp    .skipotir             ;piece is totally out of screen, dont otir
 
 
 putplayer_clipleft:
-  ld    a,(bc)
-  add   a,(hl)
-  sub   a,moveplayerleftinscreen
-  ld    e,a
-  jp    nc,.notcarry
-  dec   d
-  .notcarry:
-;  call  SetOffsetBlocksAndAttackpoints
-  ld    bc,8 ;10
-  add   hl,bc  
-;  inc   hl                    ;lenght + increment first spriteline
+	ld    a,(bc)
+	add   a,(hl)
+	inc   hl
+	sub   a,moveplayerleftinscreen
+	ld    e,a
+	jp    nc,.notcarry
+	dec   d
+.notcarry:
+	call	SkipFrameBytes
 
-  ld    a,(PutObjectInPage3?)
-  or    a
-  jr    nz,.not3
-
+	ld    a,(PutObjectInPage3?)
+	or    a
+	jr    nz,.not3
   ;if screenpage=0 then blit in page 1
   ;if screenpage=1 then blit in page 2
   ;if screenpage=2 then blit in page 0
-  ld    a,(screenpage)
-  inc   a
-  cp    3
-  jr    nz,.not3
-  xor   a
-  .not3:  
-  add   a,a
+	ld    a,(screenpage)
+	inc   a
+	cp    3
+	jr    nz,.not3
+	xor   a
+.not3:  
+	add   a,a
+	bit   7,d
+	jp    z,.setpage
+	inc   a
+.setpage:
+	ld    (blitpage),a
+	out   ($99),a               ;write page instellen
+	ld    a,14+128
+	out   ($99),a
 
-  bit   7,d
+	srl   d                     ;write addres is de/2
+	rr    e
+	set   6,d                   ;set write access
 
-  jp    z,.setpage
-  inc   a
-  .setpage:
-  ld    (blitpage),a
-  out   ($99),a               ;write page instellen
-  ld    a,14+128
-  out   ($99),a
+;Transfer pixel array to screen
+	ld    (spatpointer),sp  
+	ld    sp,hl
 
-  srl   d                     ;write addres is de/2
-  rr    e
+	ld    a,e
+	ld    c,$98
+.loop:
+	pop   hl                    ;pop lenght + increment  
+	ld    b,h                   ;length
 
-  set   6,d                   ;write access
+;check if piece is fully in screen
+	bit   6,e                   ;first check if total piece is in screen left (or x<64)
+	jr    z,.totallyinscreen    ;z-> piece is fully within screen left
 
-;dec hl
-;dec hl
+	;look at current x, add lenght, set new lenght accordingly, and then dont output if piece is totally out of screen
+	ld    a,e
+	or    %1000 0000
+	ld    h,a
+	add   a,b
+	ld    b,a                   ;set new lenght (this is the part that is in screen)
+	dec   a
+	jp    m,.totallyoutofscreen
 
-  ld    (spatpointer),sp  
-  ld    sp,hl
+	;set new write address
+	ld    a,h
+	neg
+	ld    h,a                   ;distance from x to border of screen
+	add   a,e
+	out   ($99),a               ;set x to write to
+	ld    a,d
+	adc   a,0
+	jp    p,.nopageoverflow
 
-  ld    a,e
-  ld    c,$98
-  .loop:
+	set   6,a
+	res   7,a
+	out   ($99),a               ;set y to write to
 
-  pop   hl                    ;pop lenght + increment  
-  ld    b,h                   ;length
-
-  ;check if piece is fully in screen
-  bit   6,e                   ;first check if total piece is in screen left (or x<64)
-  jr    z,.totallyinscreen    ;z-> piece is fully within screen left
-
-  ;look at current x, add lenght, set new lenght accordingly, and then dont output if piece is totally out of screen
-  ld    a,e
-  or    %1000 0000
-  ld    h,a
-  add   a,b
-  ld    b,a                   ;set new lenght (this is the part that is in screen)
-  dec   a
-  jp    m,.totallyoutofscreen
-
-  ;set new write address
-  ld    a,h
-  neg
-  ld    h,a                   ;distance from x to border of screen
-  add   a,e
-  out   ($99),a               ;set x to write to
-  ld    a,d
-  adc   a,0
-
-  jp    p,.nopageoverflow
-
-  set   6,a
-  res   7,a
-  out   ($99),a               ;set y to write to
-
-  ld    a,(blitpage)
-  xor   1
-  out   ($99),a               ;write page instellen
-  ld    a,14+128
+	ld    a,(blitpage)
+	xor   1
+	out   ($99),a               ;write page instellen
+	ld    a,14+128
   .nopageoverflow:
-
-  out   ($99),a               ;set y to write to
+	out   ($99),a               ;set y to write to
 
   .gosourceaddress:
-  ;set new source address
-  ld    a,l                   ;increment
-  ex    af,af'                ;store increment
-  ld    a,h                   ;distance from x to border of screen
+;set new source address
+	ld    a,l                   ;increment
+	ex    af,af'                ;store increment
+	ld    a,h                   ;distance from x to border of screen
 
-  pop   hl                    ;source address
-  add   a,l                   ;add distance from x to border of screen to source address
-  ld    l,a
-  jr    nc,.noinch
-  inc   h
-  .noinch:
-
+	pop   hl                    ;source address
+	add   a,l                   ;add distance from x to border of screen to source address
+	ld    l,a
+	jr    nc,.noinch
+	inc   h
+.noinch:
   ex    af,af'                ;recall stored increment
-  otir
-  jp    .skipotir
+	otir
+	jp    .skipotir
 
-  .totallyoutofscreen:
-  ld    a,l
-  pop   hl
-  jp    .skipotir             ;piece is totally out of screen, dont otir
+.totallyoutofscreen:
+	ld    a,l
+	pop   hl
+	jp    .skipotir             ;piece is totally out of screen, dont otir
 
-  .totallyinscreen:
-  ld    a,e
-  out   ($99),a               ;set x to write to
-  ld    a,d
-  out   ($99),a               ;set y to write to
+.totallyinscreen:
+	ld    a,e
+	out   ($99),a               ;set x to write to
+	ld    a,d
+	out   ($99),a               ;set y to write to
 
-  ld    a,l                   ;increment
-  pop   hl                    ;pop source address
+	ld    a,l                   ;increment
+	pop   hl                    ;pop source address
 
-  otir
-  .skipotir:
-  or    a                     ;check increment
-  jr    z,.exit
+	otir
+.skipotir:
+	or    a                     ;check increment
+	jr    z,.exit
 
-  add   a,e                   ;add increment to x
-  ld    e,a                   ;new x
-  jr    nc,.loop
+	add   a,e                   ;add increment to x
+	ld    e,a                   ;new x
+	jr    nc,.loop
 
-  inc   d                     ;01xx xxxx
+	inc   d                     ;01xx xxxx
 
-  jp    p,.loop
+	jp    p,.loop
 
-  set   6,d
-  res   7,d
+	set   6,d
+	res   7,d
 
-  ld    a,(blitpage)
-  xor   1
-  out   ($99),a               ;write page instellen
-  ld    a,14+128
-  out   ($99),a
-  
-  ld    a,e
-  jp    .loop
+	ld    a,(blitpage)
+	xor   1
+	out   ($99),a               ;write page instellen
+	ld    a,14+128
+	out   ($99),a
+
+	ld    a,e
+	jp    .loop
 
   .exit:
-  ld    sp,(spatpointer)
-  ret  
-
-
-
-
-
-
-
-
-
-
+	ld    sp,(spatpointer)
+	ret  
 
 
 

@@ -1,0 +1,301 @@
+  dw AreaSignsframe000
+  dw AreaSignsframe001
+  dw AreaSignsframe002
+  dw AreaSignsframe003
+  dw AreaSignsframe004
+  dw AreaSignsframe005
+  dw AreaSignsframe006
+  dw AreaSignsframe007
+  dw AreaSignsframe008
+  dw AreaSignsframe009
+  dw AreaSignsframe010
+  dw AreaSignsframe011
+  dw AreaSignsframe012
+  dw AreaSignsframe013
+  dw AreaSignsframe014
+  dw AreaSignsframe015
+  dw AreaSignsframe016
+  dw AreaSignsframe017
+  dw AreaSignsframe018
+  dw AreaSignsframe019
+  dw AreaSignsframe020
+  dw AreaSignsframe021
+  dw AreaSignsframe022
+  dw AreaSignsframe023
+  dw AreaSignsframe024
+  dw AreaSignsframe025
+  dw AreaSignsframe026
+  dw AreaSignsframe027
+  dw AreaSignsframe028
+  dw AreaSignsframe029
+  dw AreaSignsframe030
+  dw AreaSignsframe031
+  dw AreaSignsframe032
+  dw AreaSignsframe033
+  dw AreaSignsframe034
+  dw AreaSignsframe035
+  dw AreaSignsframe036
+  dw AreaSignsframe037
+  dw AreaSignsframe038
+  dw AreaSignsframe039
+  dw AreaSignsframe040
+  dw AreaSignsframe041
+  dw AreaSignsframe042
+  dw AreaSignsframe043
+  dw AreaSignsframe044
+  dw AreaSignsframe045
+  dw AreaSignsframe046
+  dw AreaSignsframe047
+
+AreaSignsframe000:
+  db 00Ah,001h,022h,000h		;width,height,ofsetX,offsetY
+  db 022h				;offsetXFirstLine
+  dw 00500h,base+00F00h			;Increment(0),Length(5bytes),DataPoiner
+
+AreaSignsframe001:
+  db 00Ah,001h,022h,001h
+  db 022h
+  dw 00500h,base+00F05h
+
+AreaSignsframe002:
+  db 00Ah,001h,022h,002h
+  db 022h
+  dw 00500h,base+00F0Ah
+
+AreaSignsframe003:
+  db 00Ah,001h,022h,003h
+  db 022h
+  dw 00500h,base+00F0Fh
+
+AreaSignsframe004:
+  db 00Ah,001h,022h,004h
+  db 022h
+  dw 00203h,base+00061h
+  dw 00200h,base+00061h
+
+AreaSignsframe005:
+  db 0C2h,001h,022h,005h
+  db 022h
+  dw 06100h,base+00000h
+
+AreaSignsframe006:
+  db 0C2h,001h,022h,006h
+  db 022h
+  dw 06100h,base+00061h
+
+AreaSignsframe007:
+  db 0C2h,001h,022h,007h
+  db 022h
+  dw 06100h,base+000C2h
+
+AreaSignsframe008:
+  db 0C2h,001h,022h,008h
+  db 022h
+  dw 06100h,base+00123h
+
+AreaSignsframe009:
+  db 0C2h,001h,022h,009h
+  db 022h
+  dw 05E5Fh,base+00610h
+  dw 00200h,base+00061h
+
+AreaSignsframe010:
+  db 0C2h,001h,022h,00Ah
+  db 022h
+  dw 05E5Fh,base+0066Eh
+  dw 00200h,base+00061h
+
+AreaSignsframe011:
+  db 0C2h,001h,022h,00Bh
+  db 022h
+  dw 06100h,base+00184h
+
+AreaSignsframe012:
+  db 0C2h,001h,022h,00Ch
+  db 022h
+  dw 06100h,base+001E5h
+
+AreaSignsframe013:
+  db 0C2h,001h,022h,00Dh
+  db 022h
+  dw 06100h,base+00246h
+
+AreaSignsframe014:
+  db 0C2h,001h,022h,00Eh
+  db 022h
+  dw 06100h,base+002A7h
+
+AreaSignsframe015:
+  db 0BCh,001h,022h,00Fh
+  db 022h
+  dw 05E00h,base+006CCh
+
+AreaSignsframe016:
+  db 0BCh,001h,022h,010h
+  db 022h
+  dw 05E00h,base+0072Ah
+
+AreaSignsframe017:
+  db 0BCh,001h,022h,011h
+  db 022h
+  dw 05E00h,base+00788h
+
+AreaSignsframe018:
+  db 0BCh,001h,022h,012h
+  db 022h
+  dw 05E00h,base+007E6h
+
+AreaSignsframe019:
+  db 0BCh,001h,022h,013h
+  db 022h
+  dw 05E00h,base+00844h
+
+AreaSignsframe020:
+  db 0BCh,001h,022h,014h
+  db 022h
+  dw 05E00h,base+008A2h
+
+AreaSignsframe021:
+  db 0BCh,001h,022h,015h
+  db 022h
+  dw 05E00h,base+00900h
+
+AreaSignsframe022:
+  db 0BCh,001h,022h,016h
+  db 022h
+  dw 05E00h,base+0095Eh
+
+AreaSignsframe023:
+  db 0BCh,001h,022h,017h
+  db 022h
+  dw 05E00h,base+009BCh
+
+AreaSignsframe024:
+  db 0BCh,001h,022h,018h
+  db 022h
+  dw 05E00h,base+00A1Ah
+
+AreaSignsframe025:
+  db 0BCh,001h,022h,019h
+  db 022h
+  dw 05E00h,base+00A78h
+
+AreaSignsframe026:
+  db 0BCh,001h,022h,01Ah
+  db 022h
+  dw 05E00h,base+00AD6h
+
+AreaSignsframe027:
+  db 0BCh,001h,022h,01Bh
+  db 022h
+  dw 05E00h,base+00B34h
+
+AreaSignsframe028:
+  db 0BCh,001h,022h,01Ch
+  db 022h
+  dw 05E00h,base+00B92h
+
+AreaSignsframe029:
+  db 0BCh,001h,022h,01Dh
+  db 022h
+  dw 05E00h,base+00BF0h
+
+AreaSignsframe030:
+  db 0BCh,001h,022h,01Eh
+  db 022h
+  dw 05E00h,base+00C4Eh
+
+AreaSignsframe031:
+  db 0BCh,001h,022h,01Fh
+  db 022h
+  dw 05E00h,base+00CACh
+
+AreaSignsframe032:
+  db 0BCh,001h,022h,020h
+  db 022h
+  dw 05E00h,base+00D0Ah
+
+AreaSignsframe033:
+  db 0C2h,001h,01Ch,021h
+  db 01Ch
+  dw 06100h,base+00308h
+
+AreaSignsframe034:
+  db 0C2h,001h,01Ch,022h
+  db 01Ch
+  dw 06100h,base+00369h
+
+AreaSignsframe035:
+  db 0C2h,001h,01Ch,023h
+  db 01Ch
+  dw 06100h,base+003CAh
+
+AreaSignsframe036:
+  db 0C2h,001h,01Ch,024h
+  db 01Ch
+  dw 06100h,base+0042Bh
+
+AreaSignsframe037:
+  db 0C2h,001h,01Ch,025h
+  db 01Ch
+  dw 00203h,base+00061h
+  dw 05E00h,base+00D68h
+
+AreaSignsframe038:
+  db 0C2h,001h,01Ch,026h
+  db 01Ch
+  dw 00203h,base+00061h
+  dw 05E00h,base+00DC6h
+
+AreaSignsframe039:
+  db 0C2h,001h,01Ch,027h
+  db 01Ch
+  dw 06100h,base+0048Ch
+
+AreaSignsframe040:
+  db 0C2h,001h,01Ch,028h
+  db 01Ch
+  dw 06100h,base+004EDh
+
+AreaSignsframe041:
+  db 0C2h,001h,01Ch,029h
+  db 01Ch
+  dw 06100h,base+0054Eh
+
+AreaSignsframe042:
+  db 0C2h,001h,01Ch,02Ah
+  db 01Ch
+  dw 06100h,base+005AFh
+
+AreaSignsframe043:
+  db 08Ah,001h,054h,02Bh
+  db 054h
+  dw 02C40h,base+00E24h
+  dw 00203h,base+00307h
+  dw 00200h,base+00061h
+
+AreaSignsframe044:
+  db 08Ah,001h,054h,02Ch
+  db 054h
+  dw 02C40h,base+00E50h
+  dw 00500h,base+00F14h
+
+AreaSignsframe045:
+  db 08Ah,001h,054h,02Dh
+  db 054h
+  dw 02C40h,base+00E7Ch
+  dw 00500h,base+00F19h
+
+AreaSignsframe046:
+  db 08Ah,001h,054h,02Eh
+  db 054h
+  dw 02C40h,base+00EA8h
+  dw 00500h,base+00F1Eh
+
+AreaSignsframe047:
+  db 08Ah,001h,054h,02Fh
+  db 054h
+  dw 02C40h,base+00ED4h
+  dw 00500h,base+00F00h
+
+
