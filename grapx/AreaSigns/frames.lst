@@ -48,11 +48,11 @@
   dw AreaSignsframe047
 
 AreaSignsframe000:
-  db 00Ah,001h,022h,000h
-  db 022h
+  db 00Ah,001h,022h,000h		;width,height,ofsetX,offsetY
+  db 022h				;offsetXFirstLine
   db 000h,000h,000h,000h,000h
   db 000h,000h
-  dw 00500h,base+00F00h
+  dw 00500h,base+00F00h			;Increment(0),Length(5bytes),DataPoiner
 
 AreaSignsframe001:
   db 00Ah,001h,022h,001h

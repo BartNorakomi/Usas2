@@ -5,6 +5,17 @@
 5. choose Convert - Save - frames.dat and then frames.lst
 
 
+.lst file
++00 pointerTable to frames
+
+AreaSignsframe000:
+  db 00Ah,001h,022h,000h		;width(10),height(1),ofsetX(34),offsetY(0)
+  db 022h				;offsetXFirstLine
+  db 000h,000h,000h,000h,000h
+  db 000h,000h
+  dw 00500h,base+00F00h			;Increment(0=last),Length(5bytes),DataPoiner
+
+
 
 
 *Update this is not needed anymore
