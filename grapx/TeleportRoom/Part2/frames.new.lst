@@ -1,0 +1,1618 @@
+  dw TeleportPart2frame000
+  dw TeleportPart2frame001
+  dw TeleportPart2frame002
+  dw TeleportPart2frame003
+  dw TeleportPart2frame004
+  dw TeleportPart2frame005
+  dw TeleportPart2frame006
+  dw TeleportPart2frame007
+  dw TeleportPart2frame008
+  dw TeleportPart2frame009
+  dw TeleportPart2frame010
+  dw TeleportPart2frame011
+  dw TeleportPart2frame012
+  dw TeleportPart2frame013
+  dw TeleportPart2frame014
+  dw TeleportPart2frame015
+  dw TeleportPart2frame016
+  dw TeleportPart2frame017
+  dw TeleportPart2frame018
+  dw TeleportPart2frame019
+  dw TeleportPart2frame020
+  dw TeleportPart2frame021
+  dw TeleportPart2frame022
+  dw TeleportPart2frame023
+  dw TeleportPart2frame024
+  dw TeleportPart2frame025
+  dw TeleportPart2frame026
+  dw TeleportPart2frame027
+  dw TeleportPart2frame028
+  dw TeleportPart2frame029
+  dw TeleportPart2frame030
+  dw TeleportPart2frame031
+  dw TeleportPart2frame032
+  dw TeleportPart2frame033
+  dw TeleportPart2frame034
+  dw TeleportPart2frame035
+  dw TeleportPart2frame036
+  dw TeleportPart2frame037
+  dw TeleportPart2frame038
+  dw TeleportPart2frame039
+  dw TeleportPart2frame040
+  dw TeleportPart2frame041
+  dw TeleportPart2frame042
+  dw TeleportPart2frame043
+  dw TeleportPart2frame044
+  dw TeleportPart2frame045
+  dw TeleportPart2frame046
+  dw TeleportPart2frame047
+  dw TeleportPart2frame048
+  dw TeleportPart2frame049
+  dw TeleportPart2frame050
+  dw TeleportPart2frame051
+  dw TeleportPart2frame052
+  dw TeleportPart2frame053
+  dw TeleportPart2frame054
+  dw TeleportPart2frame055
+  dw TeleportPart2frame056
+  dw TeleportPart2frame057
+  dw TeleportPart2frame058
+  dw TeleportPart2frame059
+  dw TeleportPart2frame060
+  dw TeleportPart2frame061
+  dw TeleportPart2frame062
+  dw TeleportPart2frame063
+  dw TeleportPart2frame064
+  dw TeleportPart2frame065
+  dw TeleportPart2frame066
+  dw TeleportPart2frame067
+  dw TeleportPart2frame068
+  dw TeleportPart2frame069
+  dw TeleportPart2frame070
+  dw TeleportPart2frame071
+  dw TeleportPart2frame072
+  dw TeleportPart2frame073
+  dw TeleportPart2frame074
+  dw TeleportPart2frame075
+  dw TeleportPart2frame076
+  dw TeleportPart2frame077
+  dw TeleportPart2frame078
+  dw TeleportPart2frame079
+  dw TeleportPart2frame080
+  dw TeleportPart2frame081
+  dw TeleportPart2frame082
+  dw TeleportPart2frame083
+  dw TeleportPart2frame084
+  dw TeleportPart2frame085
+  dw TeleportPart2frame086
+  dw TeleportPart2frame087
+  dw TeleportPart2frame088
+  dw TeleportPart2frame089
+
+TeleportPart2frame000:
+  db 01Ch,005h,074h,051h
+  db 07Ch
+  dw 00103h,base+00002h
+  dw 0017Ch,base+00002h
+  dw 00708h,base+01A95h
+  dw 00175h,base+00005h
+  dw 00D80h,base+03754h
+  dw 00E80h,base+035BEh
+  dw 00E00h,base+035CCh
+
+TeleportPart2frame001:
+  db 02Eh,00Ch,068h,056h
+  db 072h
+  dw 00F7Fh,base+033FCh
+  dw 01081h,base+031ACh
+  dw 0107Fh,base+031BCh
+  dw 0117Eh,base+02F15h
+  dw 00102h,base+00005h
+  dw 0127Fh,base+02B5Bh
+  dw 0137Fh,base+02675h
+  dw 00102h,base+00005h
+  dw 0127Eh,base+02B6Dh
+  dw 0147Fh,base+020E9h
+  dw 00102h,base+00005h
+  dw 0147Fh,base+020FDh
+  dw 0157Fh,base+019F0h
+  dw 0167Fh,base+00BC2h
+  dw 01700h,base+00533h
+
+TeleportPart2frame002:
+  db 030h,00Ch,068h,062h
+  db 068h
+  dw 01880h,base+003FBh
+  dw 01781h,base+0054Ah
+  dw 0177Fh,base+00561h
+  dw 01781h,base+00578h
+  dw 0177Fh,base+0058Fh
+  dw 01781h,base+005A6h
+  dw 0177Fh,base+005BDh
+  dw 01781h,base+005D4h
+  dw 0177Fh,base+005EBh
+  dw 01781h,base+00602h
+  dw 0177Fh,base+00619h
+  dw 01700h,base+00630h
+
+TeleportPart2frame003:
+  db 02Eh,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01681h,base+00BD8h
+  dw 01581h,base+01A05h
+  dw 01580h,base+01A1Ah
+  dw 0147Eh,base+02111h
+  dw 00102h,base+00005h
+  dw 0157Eh,base+01A2Fh
+  dw 01481h,base+02125h
+  dw 01480h,base+02139h
+  dw 01380h,base+02688h
+  dw 01380h,base+0269Bh
+  dw 01381h,base+026AEh
+  dw 01280h,base+02B7Fh
+  dw 01100h,base+02F26h
+
+TeleportPart2frame004:
+  db 070h
+  dw 01080h,base+031CCh
+  dw 00F82h,base+0340Bh
+  dw 00D81h,base+03761h
+  dw 00B80h,base+03684h
+  dw 0097Fh,base+03AB9h
+  dw 00984h,base+03AC2h
+  dw 00100h,base+00005h
+
+TeleportPart2frame005:
+  db 07Ah
+  dw 00203h,base+00083h
+  dw 0017Ch,base+00002h
+  dw 0087Fh,base+037B8h
+  dw 00B80h,base+0397Ch
+  dw 00D7Ch,base+0376Eh
+  dw 00102h,base+00002h
+  dw 00F00h,base+0341Ah
+
+TeleportPart2frame006:
+  db 02Eh,00Ch,068h,056h
+  db 072h
+  dw 0107Fh,base+031DCh
+  dw 01180h,base+02F37h
+  dw 0127Fh,base+02B91h
+  dw 00102h,base+00002h
+  dw 0117Eh,base+02F48h
+  dw 0137Fh,base+026C1h
+  dw 01481h,base+0214Dh
+  dw 0147Fh,base+02161h
+  dw 0147Fh,base+02175h
+  dw 0167Fh,base+00BEEh
+  dw 01781h,base+00647h
+  dw 01680h,base+00C04h
+  dw 01600h,base+00C1Ah
+
+TeleportPart2frame007:
+  db 030h,00Ch,068h,062h
+  db 06Ah
+  dw 01680h,base+00C30h
+  dw 01680h,base+00C46h
+  dw 0177Fh,base+0065Eh
+  dw 01781h,base+00675h
+  dw 01780h,base+0068Ch
+  dw 01680h,base+00C5Ch
+  dw 01680h,base+00C72h
+  dw 01680h,base+00C88h
+  dw 01680h,base+00C9Eh
+  dw 01680h,base+00CB4h
+  dw 0167Fh,base+00CCAh
+  dw 00102h,base+00002h
+  dw 01500h,base+01A44h
+
+TeleportPart2frame008:
+  db 02Ch,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01680h,base+00CE0h
+  dw 01680h,base+00CF6h
+  dw 01680h,base+00D0Ch
+  dw 01681h,base+00D22h
+  dw 01580h,base+01A59h
+  dw 01580h,base+01A6Eh
+  dw 01580h,base+01A83h
+  dw 01481h,base+02189h
+  dw 01213h,base+02BA3h
+  dw 0016Dh,base+00005h
+  dw 01112h,base+02F59h
+  dw 0016Fh,base+00002h
+  dw 01080h,base+031ECh
+  dw 00F00h,base+03429h
+
+TeleportPart2frame009:
+  db 01Ch,006h,072h,07Ah
+  db 074h
+  dw 00D7Fh,base+0377Bh
+  dw 00E80h,base+035DAh
+  dw 00E80h,base+035E8h
+  dw 00D81h,base+03788h
+  dw 00A81h,base+03A37h
+  dw 00102h,base+00002h
+  dw 00103h,base+00002h
+  dw 00100h,base+00002h
+
+TeleportPart2frame010:
+  db 01Ah,005h,072h,051h
+  db 078h
+  dw 0057Eh,base+01928h
+  dw 00304h,base+00043h
+  dw 0057Bh,base+015CBh
+  dw 00203h,base+00083h
+  dw 0077Dh,base+03B21h
+  dw 00304h,base+00043h
+  dw 00708h,base+03B28h
+  dw 00174h,base+00005h
+  dw 00D00h,base+03795h
+
+TeleportPart2frame011:
+  db 02Eh,00Ch,068h,056h
+  db 072h
+  dw 00F7Fh,base+03438h
+  dw 01080h,base+031FCh
+  dw 0117Fh,base+02F6Ah
+  dw 0127Eh,base+02BB5h
+  dw 00102h,base+00005h
+  dw 0137Eh,base+026D4h
+  dw 00102h,base+00002h
+  dw 0137Eh,base+026E7h
+  dw 0157Fh,base+01A98h
+  dw 01681h,base+00D38h
+  dw 01680h,base+00D4Eh
+  dw 01680h,base+00D64h
+  dw 01680h,base+00D7Ah
+  dw 01600h,base+00D90h
+
+TeleportPart2frame012:
+  db 02Ch,00Ch,06Ah,062h
+  db 06Ch
+  dw 0157Fh,base+01AADh
+  dw 01680h,base+00DA6h
+  dw 01680h,base+00DBCh
+  dw 01680h,base+00DD2h
+  dw 01680h,base+00DE8h
+  dw 01681h,base+00DFEh
+  dw 0157Fh,base+01AC2h
+  dw 01680h,base+00E14h
+  dw 01680h,base+00E2Ah
+  dw 01680h,base+00E40h
+  dw 01680h,base+00E56h
+  dw 01600h,base+00E6Ch
+
+TeleportPart2frame013:
+  db 02Ch,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01680h,base+00E82h
+  dw 01681h,base+00E98h
+  dw 0157Fh,base+01AD7h
+  dw 01681h,base+00EAEh
+  dw 01580h,base+01AECh
+  dw 01481h,base+0219Dh
+  dw 0137Fh,base+026FAh
+  dw 01480h,base+021B1h
+  dw 00102h,base+00005h
+  dw 0137Eh,base+0270Dh
+  dw 00102h,base+00002h
+  dw 0127Fh,base+02BC7h
+  dw 00102h,base+00005h
+  dw 0117Eh,base+02F7Bh
+  dw 01200h,base+02BD9h
+
+TeleportPart2frame014:
+  db 070h
+  dw 01180h,base+02F8Ch
+  dw 00E0Fh,base+035F6h
+  dw 00172h,base+00002h
+  dw 00D0Eh,base+037A2h
+  dw 00173h,base+00005h
+  dw 00A82h,base+03A41h
+  dw 00102h,base+00005h
+  dw 00683h,base+01A95h
+  dw 00200h,base+00083h
+
+TeleportPart2frame015:
+  db 01Ah,006h,070h,050h
+  db 07Ah
+  dw 00102h,base+00005h
+  dw 00205h,base+00043h
+  dw 00178h,base+00005h
+  dw 00203h,base+00083h
+  dw 00204h,base+00083h
+  dw 00278h,base+00083h
+  dw 00A7Fh,base+03A4Bh
+  dw 00305h,base+00083h
+  dw 00479h,base+02123h
+  dw 00102h,base+00005h
+  dw 00A80h,base+039C8h
+  dw 00A00h,base+03A55h
+
+TeleportPart2frame016:
+  db 02Eh,00Ch,068h,056h
+  db 06Eh
+  dw 00103h,base+00005h
+  dw 00C7Ch,base+03928h
+  dw 00203h,base+00083h
+  dw 00E7Dh,base+03604h
+  dw 00203h,base+00043h
+  dw 0107Ch,base+0320Ch
+  dw 00203h,base+00083h
+  dw 0107Eh,base+0321Ch
+  dw 00102h,base+00005h
+  dw 0127Eh,base+02BEBh
+  dw 01380h,base+02720h
+  dw 01480h,base+021C5h
+  dw 01480h,base+021D9h
+  dw 01580h,base+01B01h
+  dw 0147Fh,base+021EDh
+  dw 0167Fh,base+00EC4h
+  dw 00102h,base+00002h
+  dw 01400h,base+02201h
+
+TeleportPart2frame017:
+  db 02Eh,00Ch,068h,062h
+  db 068h
+  dw 01780h,base+006A3h
+  dw 01781h,base+006BAh
+  dw 0167Fh,base+00EDAh
+  dw 01681h,base+00EF0h
+  dw 0167Fh,base+00F06h
+  dw 01781h,base+006D1h
+  dw 0167Fh,base+00F1Ch
+  dw 01781h,base+006E8h
+  dw 0167Fh,base+00F32h
+  dw 01781h,base+006FFh
+  dw 0167Fh,base+00F48h
+  dw 01700h,base+00716h
+
+TeleportPart2frame018:
+  db 02Ch,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01680h,base+00F5Eh
+  dw 01680h,base+00F74h
+  dw 01680h,base+00F8Ah
+  dw 01682h,base+00FA0h
+  dw 0147Eh,base+02215h
+  dw 01581h,base+01B16h
+  dw 01480h,base+02229h
+  dw 01381h,base+02733h
+  dw 0137Fh,base+02746h
+  dw 01381h,base+02759h
+  dw 01280h,base+02BFDh
+  dw 01100h,base+02F9Dh
+
+TeleportPart2frame019:
+  db 070h
+  dw 01180h,base+02FAEh
+  dw 01082h,base+0322Ch
+  dw 00D80h,base+037AFh
+  dw 00103h,base+00002h
+  dw 00980h,base+03ACBh
+  dw 00980h,base+03770h
+  dw 00680h,base+0397Fh
+  dw 00200h,base+00043h
+
+TeleportPart2frame020:
+  db 01Eh,007h,06Eh,04Fh
+  db 082h
+  dw 0027Ch,base+00083h
+  dw 0067Fh,base+01A95h
+  dw 0077Eh,base+03B2Fh
+  dw 0090Bh,base+03AD4h
+  dw 00173h,base+00005h
+  dw 00203h,base+00083h
+  dw 00B7Dh,base+03987h
+  dw 00708h,base+02FBBh
+  dw 00577h,base+02FD9h
+  dw 00E00h,base+03612h
+
+TeleportPart2frame021:
+  db 02Eh,00Ch,068h,056h
+  db 070h
+  dw 00D7Fh,base+037BCh
+  dw 00F80h,base+03447h
+  dw 0117Fh,base+02FBFh
+  dw 01281h,base+02C0Fh
+  dw 0137Fh,base+0276Ch
+  dw 01381h,base+0277Fh
+  dw 0127Eh,base+02C21h
+  dw 01580h,base+01B2Bh
+  dw 0157Fh,base+01B40h
+  dw 01681h,base+00FB6h
+  dw 01680h,base+00FCCh
+  dw 01500h,base+01B55h
+
+TeleportPart2frame022:
+  db 02Eh,00Ch,068h,062h
+  db 06Ah
+  dw 0167Fh,base+00FE2h
+  dw 01681h,base+00FF8h
+  dw 01680h,base+0100Eh
+  dw 01680h,base+01024h
+  dw 01680h,base+0103Ah
+  dw 01580h,base+01B6Ah
+  dw 0167Fh,base+01050h
+  dw 01681h,base+01066h
+  dw 0167Fh,base+0107Ch
+  dw 01681h,base+01092h
+  dw 01680h,base+010A8h
+  dw 01500h,base+01B7Fh
+
+TeleportPart2frame023:
+  db 02Ch,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01680h,base+010BEh
+  dw 01580h,base+01B94h
+  dw 01580h,base+01BA9h
+  dw 01581h,base+01BBEh
+  dw 01480h,base+0223Dh
+  dw 01480h,base+02251h
+  dw 01480h,base+02265h
+  dw 01481h,base+02279h
+  dw 01480h,base+0228Dh
+  dw 01281h,base+02C33h
+  dw 01280h,base+02C45h
+  dw 01000h,base+0323Ch
+
+TeleportPart2frame024:
+  db 074h
+  dw 00F7Fh,base+03456h
+  dw 00E81h,base+03620h
+  dw 00D81h,base+037C9h
+  dw 00B80h,base+03992h
+  dw 0097Fh,base+03AB9h
+  dw 00984h,base+03AC2h
+  dw 00100h,base+00005h
+
+TeleportPart2frame025:
+  db 07Eh
+  dw 00103h,base+00005h
+  dw 0027Ah,base+00043h
+  dw 0087Eh,base+03B01h
+  dw 00B7Fh,base+0399Dh
+  dw 00D80h,base+037D6h
+  dw 00304h,base+00312h
+  dw 00A7Bh,base+03A5Fh
+  dw 00E0Fh,base+0362Eh
+  dw 00100h,base+00002h
+
+TeleportPart2frame026:
+  db 02Ah,00Ch,06Ah,056h
+  db 070h
+  dw 01180h,base+02FD0h
+  dw 00E10h,base+0363Ch
+  dw 00170h,base+00002h
+  dw 00F7Dh,base+03465h
+  dw 00102h,base+00002h
+  dw 0117Fh,base+02FE1h
+  dw 0137Fh,base+02792h
+  dw 01480h,base+022A1h
+  dw 01580h,base+01BD3h
+  dw 01480h,base+022B5h
+  dw 01580h,base+01BE8h
+  dw 01580h,base+01BFDh
+  dw 01580h,base+01C12h
+  dw 01500h,base+01C27h
+
+TeleportPart2frame027:
+  db 02Ch,00Ch,06Ah,062h
+  db 06Ah
+  dw 01680h,base+010D4h
+  dw 01580h,base+01C3Ch
+  dw 01680h,base+010EAh
+  dw 01680h,base+01100h
+  dw 01580h,base+01C51h
+  dw 01580h,base+01C66h
+  dw 01680h,base+01116h
+  dw 01580h,base+01C7Bh
+  dw 01680h,base+0112Ch
+  dw 01680h,base+01142h
+  dw 01680h,base+01158h
+  dw 01500h,base+01C90h
+
+TeleportPart2frame028:
+  db 02Ch,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01680h,base+0116Eh
+  dw 01580h,base+01CA5h
+  dw 01580h,base+01CBAh
+  dw 01481h,base+022C9h
+  dw 01480h,base+022DDh
+  dw 01381h,base+027A5h
+  dw 0137Fh,base+027B8h
+  dw 01381h,base+027CBh
+  dw 01380h,base+027DEh
+  dw 01281h,base+02C57h
+  dw 01180h,base+02FF2h
+  dw 01000h,base+0324Ch
+
+TeleportPart2frame029:
+  db 074h
+  dw 00F7Fh,base+03474h
+  dw 00F80h,base+03483h
+  dw 00F80h,base+03492h
+  dw 00D81h,base+037E3h
+  dw 00A81h,base+03A69h
+  dw 00102h,base+00002h
+  dw 00304h,base+0031Eh
+  dw 00200h,base+00083h
+
+TeleportPart2frame030:
+  db 088h
+  dw 00278h,base+00043h
+  dw 00607h,base+02BD5h
+  dw 00379h,base+0031Eh
+  dw 00B7Ch,base+039A8h
+  dw 00102h,base+00002h
+  dw 00B7Eh,base+039B3h
+  dw 00102h,base+00005h
+  dw 00C7Dh,base+03934h
+  dw 00102h,base+00002h
+  dw 00D00h,base+037F0h
+
+TeleportPart2frame031:
+  db 02Ch,00Ch,06Ah,056h
+  db 06Eh
+  dw 0117Fh,base+03003h
+  dw 01280h,base+02C69h
+  dw 0137Fh,base+027F1h
+  dw 01481h,base+022F1h
+  dw 01380h,base+02804h
+  dw 01112h,base+03014h
+  dw 0016Eh,base+00002h
+  dw 01480h,base+02305h
+  dw 01480h,base+02319h
+  dw 0157Fh,base+01CCFh
+  dw 01681h,base+01184h
+  dw 0157Fh,base+01CE4h
+  dw 01600h,base+0119Ah
+
+TeleportPart2frame032:
+  db 02Eh,00Ch,068h,062h
+  db 06Ch
+  dw 0147Fh,base+0232Dh
+  dw 01680h,base+011B0h
+  dw 0167Fh,base+011C6h
+  dw 01681h,base+011DCh
+  dw 01680h,base+011F2h
+  dw 01681h,base+01208h
+  dw 0157Eh,base+01CF9h
+  dw 01781h,base+0072Dh
+  dw 01680h,base+0121Eh
+  dw 01580h,base+01D0Eh
+  dw 0167Fh,base+01234h
+  dw 01700h,base+00744h
+
+TeleportPart2frame033:
+  db 02Ah,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01580h,base+01D23h
+  dw 01481h,base+02341h
+  dw 0137Fh,base+02817h
+  dw 01481h,base+02355h
+  dw 01380h,base+0282Ah
+  dw 01381h,base+0283Dh
+  dw 0127Fh,base+02C7Bh
+  dw 01280h,base+02C8Dh
+  dw 00102h,base+00005h
+  dw 0107Eh,base+0325Ch
+  dw 00102h,base+00002h
+  dw 0107Fh,base+0326Ch
+  dw 01180h,base+03025h
+  dw 01100h,base+03036h
+
+TeleportPart2frame034:
+  db 070h
+  dw 01080h,base+0327Ch
+  dw 00F81h,base+034A1h
+  dw 00E80h,base+0364Ah
+  dw 00D81h,base+037FDh
+  dw 00102h,base+00005h
+  dw 00881h,base+039C9h
+  dw 00100h,base+00002h
+
+TeleportPart2frame035:
+  db 082h
+  dw 0017Ch,base+00002h
+  dw 0067Fh,base+01A95h
+  dw 00709h,base+032C9h
+  dw 00175h,base+00002h
+  dw 0090Bh,base+03A38h
+  dw 00274h,base+00043h
+  dw 00E7Fh,base+03658h
+  dw 0107Fh,base+0328Ch
+  dw 01200h,base+02C9Fh
+
+TeleportPart2frame036:
+  db 02Eh,00Ch,068h,056h
+  db 070h
+  dw 00F7Fh,base+034B0h
+  dw 01080h,base+0329Ch
+  dw 01112h,base+03047h
+  dw 0016Dh,base+00005h
+  dw 01281h,base+02CB1h
+  dw 0127Fh,base+02CC3h
+  dw 01380h,base+02850h
+  dw 01380h,base+02863h
+  dw 01481h,base+02369h
+  dw 0137Fh,base+02876h
+  dw 0157Eh,base+01D38h
+  dw 01780h,base+0075Bh
+  dw 01700h,base+00772h
+
+TeleportPart2frame037:
+  db 030h,00Ch,068h,062h
+  db 068h
+  dw 01880h,base+00413h
+  dw 01781h,base+00789h
+  dw 01516h,base+01D4Dh
+  dw 00169h,base+00005h
+  dw 01681h,base+0124Ah
+  dw 0177Fh,base+007A0h
+  dw 01681h,base+01260h
+  dw 0167Fh,base+01276h
+  dw 01781h,base+007B7h
+  dw 0177Fh,base+007CEh
+  dw 01781h,base+007E5h
+  dw 0177Fh,base+007FCh
+  dw 01600h,base+0128Ch
+
+TeleportPart2frame038:
+  db 02Ch,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01680h,base+012A2h
+  dw 01580h,base+01D62h
+  dw 01680h,base+012B8h
+  dw 01314h,base+02889h
+  dw 0016Dh,base+00002h
+  dw 0127Fh,base+02CD5h
+  dw 01381h,base+0289Ch
+  dw 01380h,base+028AFh
+  dw 01381h,base+028C2h
+  dw 0127Fh,base+02CE7h
+  dw 01281h,base+02CF9h
+  dw 01080h,base+032ACh
+  dw 01000h,base+032BCh
+
+TeleportPart2frame039:
+  db 01Eh,006h,070h,07Ah
+  db 070h
+  dw 00F80h,base+034BFh
+  dw 00E82h,base+03666h
+  dw 00C7Fh,base+03940h
+  dw 00B81h,base+039BEh
+  dw 00405h,base+00303h
+  dw 00203h,base+00043h
+  dw 00279h,base+00043h
+  dw 00102h,base+00002h
+  dw 00100h,base+00002h
+
+TeleportPart2frame040:
+  db 082h
+  dw 0017Ch,base+00002h
+  dw 0097Fh,base+03ADDh
+  dw 0097Eh,base+03AE6h
+  dw 00B7Fh,base+035BFh
+  dw 00D80h,base+0380Ah
+  dw 00F7Fh,base+034CEh
+  dw 01000h,base+032CCh
+
+TeleportPart2frame041:
+  db 02Eh,00Ch,068h,056h
+  db 070h
+  dw 0117Fh,base+03058h
+  dw 01280h,base+02D0Bh
+  dw 01380h,base+028D5h
+  dw 01380h,base+028E8h
+  dw 0137Fh,base+028FBh
+  dw 01481h,base+0237Dh
+  dw 0147Dh,base+02391h
+  dw 01516h,base+01D77h
+  dw 0016Bh,base+00002h
+  dw 0147Fh,base+023A5h
+  dw 01581h,base+01D8Ch
+  dw 01580h,base+01DA1h
+  dw 01600h,base+012CEh
+
+TeleportPart2frame042:
+  db 030h,00Ch,068h,062h
+  db 06Ah
+  dw 0177Fh,base+00813h
+  dw 01781h,base+0082Ah
+  dw 0177Fh,base+00841h
+  dw 01781h,base+00858h
+  dw 0177Fh,base+0086Fh
+  dw 01781h,base+00886h
+  dw 0177Fh,base+0089Dh
+  dw 01781h,base+008B4h
+  dw 0177Fh,base+008CBh
+  dw 01781h,base+008E2h
+  dw 0177Fh,base+008F9h
+  dw 01800h,base+0042Bh
+
+TeleportPart2frame043:
+  db 02Eh,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01780h,base+00910h
+  dw 01680h,base+012E4h
+  dw 01580h,base+01DB6h
+  dw 01415h,base+023B9h
+  dw 0016Ch,base+00002h
+  dw 01480h,base+023CDh
+  dw 01213h,base+02D1Dh
+  dw 0016Dh,base+00002h
+  dw 01380h,base+0290Eh
+  dw 01213h,base+02D2Fh
+  dw 0016Eh,base+00002h
+  dw 01180h,base+03069h
+  dw 01081h,base+032DCh
+  dw 01080h,base+032ECh
+  dw 00F00h,base+034DDh
+
+TeleportPart2frame044:
+  db 01Ch,005h,070h,07Ah
+  db 070h
+  dw 00E80h,base+03674h
+  dw 00E81h,base+03682h
+  dw 00D81h,base+03817h
+  dw 00102h,base+00002h
+  dw 00782h,base+02BD5h
+  dw 00103h,base+00005h
+  dw 00100h,base+00005h
+
+TeleportPart2frame045:
+  db 01Ch,006h,072h,050h
+  db 07Eh
+  dw 00103h,base+00005h
+  dw 00102h,base+00005h
+  dw 00178h,base+00005h
+  dw 00A7Eh,base+0397Fh
+  dw 00D7Fh,base+03824h
+  dw 00E80h,base+03690h
+  dw 00E80h,base+0369Eh
+  dw 00D00h,base+03831h
+
+TeleportPart2frame046:
+  db 02Ch,00Ch,06Ah,056h
+  db 072h
+  dw 00F7Fh,base+034ECh
+  dw 0107Eh,base+032FCh
+  dw 00102h,base+00005h
+  dw 0117Dh,base+0307Ah
+  dw 00102h,base+00002h
+  dw 0127Fh,base+02D41h
+  dw 0147Fh,base+023E1h
+  dw 01580h,base+01DCBh
+  dw 01580h,base+01DE0h
+  dw 01580h,base+01DF5h
+  dw 01680h,base+012FAh
+  dw 01680h,base+01310h
+  dw 01680h,base+01326h
+  dw 01600h,base+0133Ch
+
+TeleportPart2frame047:
+  db 030h,00Ch,068h,062h
+  db 06Ah
+  dw 01516h,base+01E0Ah
+  dw 0016Ah,base+00005h
+  dw 01680h,base+01352h
+  dw 01680h,base+01368h
+  dw 01680h,base+0137Eh
+  dw 01680h,base+01394h
+  dw 01680h,base+013AAh
+  dw 0167Fh,base+013C0h
+  dw 01781h,base+00927h
+  dw 0177Fh,base+0093Eh
+  dw 01781h,base+00955h
+  dw 01680h,base+013D6h
+  dw 01600h,base+013ECh
+
+TeleportPart2frame048:
+  db 02Eh,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01680h,base+01402h
+  dw 01680h,base+01418h
+  dw 01780h,base+0096Ch
+  dw 01681h,base+0142Eh
+  dw 0147Fh,base+023F5h
+  dw 01481h,base+02409h
+  dw 01480h,base+0241Dh
+  dw 01380h,base+02921h
+  dw 01112h,base+0308Bh
+  dw 0016Eh,base+00005h
+  dw 01281h,base+02D53h
+  dw 01180h,base+0309Ch
+  dw 01000h,base+0330Ch
+
+TeleportPart2frame049:
+  db 070h
+  dw 00F10h,base+034FBh
+  dw 00170h,base+00005h
+  dw 00D82h,base+0383Eh
+  dw 00B82h,base+039C9h
+  dw 00883h,base+0360Fh
+  dw 00102h,base+00005h
+  dw 00200h,base+00043h
+
+TeleportPart2frame050:
+  db 07Ah
+  dw 0027Fh,base+00043h
+  dw 00607h,base+02BD5h
+  dw 00179h,base+00002h
+  dw 00A7Ch,base+03A73h
+  dw 00102h,base+00002h
+  dw 00D7Eh,base+0384Bh
+  dw 00102h,base+00005h
+  dw 00E7Dh,base+036ACh
+  dw 01100h,base+030ADh
+
+TeleportPart2frame051:
+  db 02Ch,00Ch,06Ah,056h
+  db 06Eh
+  dw 0127Fh,base+02D65h
+  dw 01112h,base+030BEh
+  dw 0016Eh,base+00002h
+  dw 01213h,base+02D77h
+  dw 0016Ch,base+00005h
+  dw 01314h,base+02934h
+  dw 0016Dh,base+00002h
+  dw 01480h,base+02431h
+  dw 01380h,base+02947h
+  dw 0147Fh,base+02445h
+  dw 01580h,base+01E1Fh
+  dw 01680h,base+01444h
+  dw 01580h,base+01E34h
+  dw 01680h,base+0145Ah
+  dw 01600h,base+01470h
+
+TeleportPart2frame052:
+  db 02Ch,00Ch,06Ah,062h
+  db 06Ah
+  dw 01680h,base+01486h
+  dw 01680h,base+0149Ch
+  dw 01680h,base+014B2h
+  dw 01680h,base+014C8h
+  dw 01680h,base+014DEh
+  dw 01580h,base+01E49h
+  dw 01680h,base+014F4h
+  dw 01680h,base+0150Ah
+  dw 01680h,base+01520h
+  dw 01680h,base+01536h
+  dw 01680h,base+0154Ch
+  dw 01500h,base+01E5Eh
+
+TeleportPart2frame053:
+  db 02Eh,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01680h,base+01562h
+  dw 01680h,base+01578h
+  dw 01680h,base+0158Eh
+  dw 01681h,base+015A4h
+  dw 01680h,base+015BAh
+  dw 01580h,base+01E73h
+  dw 01314h,base+0295Ah
+  dw 0016Ch,base+00005h
+  dw 01314h,base+0296Dh
+  dw 0016Dh,base+00002h
+  dw 01280h,base+02D89h
+  dw 01181h,base+030CFh
+  dw 01080h,base+0331Ch
+  dw 00F00h,base+0350Ah
+
+TeleportPart2frame054:
+  db 01Ah,005h,074h,07Ah
+  db 074h
+  dw 00D80h,base+03858h
+  dw 00102h,base+00002h
+  dw 00708h,base+03B36h
+  dw 00379h,base+0031Eh
+  dw 00708h,base+03B3Dh
+  dw 00278h,base+00043h
+  dw 00506h,base+00D38h
+  dw 0037Ch,base+0031Eh
+  dw 00500h,base+012B5h
+
+TeleportPart2frame055:
+  db 082h
+  dw 0027Ch,base+00083h
+  dw 0067Dh,base+038A1h
+  dw 00980h,base+03840h
+  dw 0090Bh,base+03AEFh
+  dw 00174h,base+00005h
+  dw 00D7Fh,base+03865h
+  dw 0107Fh,base+0332Ch
+  dw 01100h,base+030E0h
+
+TeleportPart2frame056:
+  db 02Ch,00Ch,06Ah,056h
+  db 070h
+  dw 0117Fh,base+030F1h
+  dw 01280h,base+02D9Bh
+  dw 0137Fh,base+02980h
+  dw 01381h,base+02993h
+  dw 0137Fh,base+029A6h
+  dw 01480h,base+02459h
+  dw 0157Fh,base+01E88h
+  dw 01480h,base+0246Dh
+  dw 01680h,base+015D0h
+  dw 01680h,base+015E6h
+  dw 01680h,base+015FCh
+  dw 01600h,base+01612h
+
+TeleportPart2frame057:
+  db 02Eh,00Ch,06Ah,062h
+  db 06Ah
+  dw 01780h,base+00983h
+  dw 01680h,base+01628h
+  dw 01780h,base+0099Ah
+  dw 01680h,base+0163Eh
+  dw 01780h,base+009B1h
+  dw 01680h,base+01654h
+  dw 01780h,base+009C8h
+  dw 01681h,base+0166Ah
+  dw 0167Fh,base+01680h
+  dw 01680h,base+01696h
+  dw 01780h,base+009DFh
+  dw 01700h,base+009F6h
+
+TeleportPart2frame058:
+  db 02Eh,00Ch,06Ah,06Eh
+  db 06Ch
+  dw 01415h,base+02481h
+  dw 0016Ah,base+00005h
+  dw 01681h,base+016ACh
+  dw 0147Fh,base+02495h
+  dw 01581h,base+01E9Dh
+  dw 01480h,base+024A9h
+  dw 01481h,base+024BDh
+  dw 0137Fh,base+029B9h
+  dw 01213h,base+02DADh
+  dw 0016Fh,base+00002h
+  dw 01011h,base+0333Ch
+  dw 0026Eh,base+00043h
+  dw 01011h,base+0334Ch
+  dw 00271h,base+00083h
+  dw 00E0Fh,base+036BAh
+  dw 00272h,base+00043h
+  dw 00C0Eh,base+0394Ch
+  dw 00100h,base+00002h
+
+TeleportPart2frame059:
+  db 01Ah,006h,076h,07Ah
+  db 078h
+  dw 00A80h,base+03A7Dh
+  dw 00A0Bh,base+03A87h
+  dw 00176h,base+00002h
+  dw 00406h,base+023A3h
+  dw 00378h,base+00575h
+  dw 00A80h,base+03A91h
+  dw 00204h,base+00043h
+  dw 00203h,base+00043h
+  dw 00279h,base+00043h
+  dw 00104h,base+00002h
+  dw 00203h,base+00083h
+  dw 00100h,base+00002h
+
+TeleportPart2frame060:
+  db 082h
+  dw 0017Ch,base+00002h
+  dw 0097Fh,base+03ADCh
+  dw 0097Eh,base+03AE6h
+  dw 00B7Fh,base+039D4h
+  dw 00D80h,base+03872h
+  dw 00E7Eh,base+036C8h
+  dw 00F00h,base+03519h
+
+TeleportPart2frame061:
+  db 02Ch,00Ch,06Ah,056h
+  db 070h
+  dw 0107Eh,base+0335Ch
+  dw 01281h,base+02DBFh
+  dw 0127Eh,base+02DD1h
+  dw 01481h,base+024D1h
+  dw 01480h,base+024E5h
+  dw 01480h,base+024F9h
+  dw 01480h,base+0250Dh
+  dw 01480h,base+02521h
+  dw 01580h,base+01EB2h
+  dw 01580h,base+01EC7h
+  dw 0157Fh,base+01EDCh
+  dw 01600h,base+016C2h
+
+TeleportPart2frame062:
+  db 02Eh,00Ch,06Ah,062h
+  db 06Ch
+  dw 0157Fh,base+01EF1h
+  dw 01681h,base+016D8h
+  dw 0167Fh,base+016EEh
+  dw 01681h,base+01704h
+  dw 0167Fh,base+0171Ah
+  dw 01681h,base+01730h
+  dw 0157Fh,base+01F06h
+  dw 01680h,base+01746h
+  dw 01680h,base+0175Ch
+  dw 01681h,base+01772h
+  dw 0167Fh,base+01788h
+  dw 01600h,base+0179Eh
+
+TeleportPart2frame063:
+  db 02Eh,00Ch,06Ah,06Eh
+  db 06Ch
+  dw 0157Fh,base+01F1Bh
+  dw 01681h,base+017B4h
+  dw 01680h,base+017CAh
+  dw 01580h,base+01F30h
+  dw 01581h,base+01F45h
+  dw 01280h,base+02DE3h
+  dw 0137Fh,base+029CCh
+  dw 01382h,base+029DFh
+  dw 01280h,base+02DF5h
+  dw 01182h,base+03102h
+  dw 00F81h,base+03528h
+  dw 00D00h,base+0387Fh
+
+TeleportPart2frame064:
+  db 01Eh,007h,074h,07Ah
+  db 076h
+  dw 00E80h,base+036D6h
+  dw 00506h,base+00B53h
+  dw 00779h,base+03416h
+  dw 00B0Ch,base+039DFh
+  dw 00274h,base+00043h
+  dw 00103h,base+00002h
+  dw 00980h,base+03AF8h
+  dw 00780h,base+03B44h
+  dw 00680h,base+02BD5h
+  dw 00200h,base+00043h
+
+TeleportPart2frame065:
+  db 07Ah
+  dw 00203h,base+00043h
+  dw 00304h,base+00043h
+  dw 00178h,base+00005h
+  dw 00A7Eh,base+03A9Bh
+  dw 00D7Eh,base+0388Ch
+  dw 00F80h,base+03537h
+  dw 00F7Fh,base+03546h
+  dw 00F00h,base+03555h
+
+TeleportPart2frame066:
+  db 02Ch,00Ch,06Ah,056h
+  db 070h
+  dw 0107Fh,base+0336Ch
+  dw 01180h,base+03113h
+  dw 0127Fh,base+02E07h
+  dw 01381h,base+029F2h
+  dw 0137Fh,base+02A05h
+  dw 01381h,base+02A18h
+  dw 0137Fh,base+02A2Bh
+  dw 01481h,base+02535h
+  dw 0147Fh,base+02549h
+  dw 01580h,base+01F5Ah
+  dw 0157Fh,base+01F6Fh
+  dw 01600h,base+017E0h
+
+TeleportPart2frame067:
+  db 02Ch,00Ch,06Ah,062h
+  db 06Ch
+  dw 0157Fh,base+01F84h
+  dw 01680h,base+017F6h
+  dw 01680h,base+0180Ch
+  dw 01681h,base+01822h
+  dw 0157Fh,base+01F99h
+  dw 01681h,base+001D0h
+  dw 01580h,base+01FAEh
+  dw 0157Fh,base+01FC3h
+  dw 01680h,base+01838h
+  dw 01681h,base+0184Eh
+  dw 0157Fh,base+01FD8h
+  dw 01600h,base+0021Ch
+
+TeleportPart2frame068:
+  db 02Ah,00Ch,06Ch,06Eh
+  db 06Ch
+  dw 01580h,base+00236h
+  dw 01580h,base+0029Dh
+  dw 01580h,base+002B6h
+  dw 01581h,base+01FEDh
+  dw 0147Fh,base+0255Dh
+  dw 01581h,base+02002h
+  dw 01480h,base+02571h
+  dw 01381h,base+02A3Eh
+  dw 01112h,base+00304h
+  dw 0016Fh,base+00005h
+  dw 00F7Eh,base+0031Eh
+  dw 00103h,base+00005h
+  dw 00E7Dh,base+036E4h
+  dw 01100h,base+03124h
+
+TeleportPart2frame069:
+  db 070h
+  dw 00102h,base+00005h
+  dw 00E7Fh,base+036F2h
+  dw 00A0Bh,base+03AA5h
+  dw 00376h,base+0032Ah
+  dw 00D81h,base+03899h
+  dw 00B81h,base+039EAh
+  dw 00880h,base+03B09h
+  dw 00204h,base+00083h
+  dw 00100h,base+00002h
+
+TeleportPart2frame070:
+  db 084h
+  dw 0017Ah,base+00005h
+  dw 00809h,base+0397Fh
+  dw 00175h,base+00002h
+  dw 00D7Fh,base+038A6h
+  dw 00E80h,base+03700h
+  dw 00F7Fh,base+03564h
+  dw 01000h,base+0337Ch
+
+TeleportPart2frame071:
+  db 02Ah,00Ch,06Ch,056h
+  db 070h
+  dw 01180h,base+03135h
+  dw 01180h,base+03146h
+  dw 01011h,base+0338Ch
+  dw 0016Fh,base+00005h
+  dw 01011h,base+02EDFh
+  dw 0016Fh,base+00002h
+  dw 0127Fh,base+02E19h
+  dw 01280h,base+02E2Bh
+  dw 01380h,base+02A51h
+  dw 01380h,base+02A64h
+  dw 01480h,base+02585h
+  dw 01380h,base+020D4h
+  dw 0147Fh,base+02599h
+  dw 01500h,base+02017h
+
+TeleportPart2frame072:
+  db 02Eh,00Ch,06Ah,062h
+  db 06Ah
+  dw 01780h,base+00A0Dh
+  dw 01681h,base+01864h
+  dw 0157Fh,base+0202Ch
+  dw 01680h,base+0187Ah
+  dw 01780h,base+00A24h
+  dw 01580h,base+00399h
+  dw 01680h,base+01890h
+  dw 01681h,base+018A6h
+  dw 0167Fh,base+018BCh
+  dw 01680h,base+018D2h
+  dw 01681h,base+018E8h
+  dw 01400h,base+025ADh
+
+TeleportPart2frame073:
+  db 02Ch,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01680h,base+00044h
+  dw 01580h,base+0026Fh
+  dw 01680h,base+018FEh
+  dw 01581h,base+02041h
+  dw 01480h,base+025C1h
+  dw 01481h,base+025D5h
+  dw 00102h,base+00005h
+  dw 0117Eh,base+03157h
+  dw 01380h,base+02A77h
+  dw 01480h,base+025E9h
+  dw 01381h,base+02A8Ah
+  dw 01280h,base+02E3Dh
+  dw 01100h,base+03168h
+
+TeleportPart2frame074:
+  db 074h
+  dw 00D0Eh,base+038B3h
+  dw 00172h,base+00005h
+  dw 00C0Dh,base+03958h
+  dw 00174h,base+00002h
+  dw 00B0Ch,base+039F5h
+  dw 00172h,base+00005h
+  dw 00B81h,base+03A00h
+  dw 00304h,base+00043h
+  dw 0067Ch,base+01A95h
+  dw 00200h,base+00083h
+
+TeleportPart2frame075:
+  db 01Eh,006h,072h,050h
+  db 084h
+  dw 00102h,base+00005h
+  dw 00178h,base+00005h
+  dw 00203h,base+00083h
+  dw 00203h,base+00083h
+  dw 0047Ah,base+0031Eh
+  dw 00B7Eh,base+03A0Bh
+  dw 00C80h,base+03964h
+  dw 00E7Fh,base+0370Eh
+  dw 00F00h,base+03573h
+
+TeleportPart2frame076:
+  db 02Ch,00Ch,06Ah,056h
+  db 072h
+  dw 01080h,base+0339Ch
+  dw 0107Fh,base+033ACh
+  dw 0127Fh,base+02E4Fh
+  dw 01280h,base+02E61h
+  dw 01380h,base+02A9Dh
+  dw 01381h,base+02AB0h
+  dw 01380h,base+02AC3h
+  dw 0127Eh,base+02E73h
+  dw 00102h,base+00005h
+  dw 0137Dh,base+02AD6h
+  dw 01681h,base+01914h
+  dw 0157Fh,base+02056h
+  dw 01600h,base+0192Ah
+
+TeleportPart2frame077:
+  db 030h,00Ch,068h,062h
+  db 06Ch
+  dw 0167Eh,base+01940h
+  dw 01781h,base+00A3Bh
+  dw 0177Fh,base+00A52h
+  dw 01781h,base+00A69h
+  dw 01780h,base+00A80h
+  dw 01681h,base+01956h
+  dw 0167Eh,base+0196Ch
+  dw 01782h,base+00A97h
+  dw 0167Eh,base+01982h
+  dw 00102h,base+00002h
+  dw 0157Fh,base+0206Bh
+  dw 0177Fh,base+00AAEh
+  dw 01800h,base+00443h
+
+TeleportPart2frame078:
+  db 02Eh,00Ch,06Ah,06Eh
+  db 06Ah
+  dw 01780h,base+00AC5h
+  dw 01780h,base+00ADCh
+  dw 01581h,base+02080h
+  dw 01380h,base+02AE9h
+  dw 01481h,base+025FDh
+  dw 01380h,base+02AFCh
+  dw 01380h,base+02B0Fh
+  dw 01281h,base+02E85h
+  dw 0127Eh,base+02E97h
+  dw 00102h,base+00002h
+  dw 01181h,base+03179h
+  dw 01080h,base+033BCh
+  dw 00F00h,base+03582h
+
+TeleportPart2frame079:
+  db 06Eh
+  dw 01281h,base+02EA9h
+  dw 01081h,base+033CCh
+  dw 00E80h,base+0371Ch
+  dw 00204h,base+00083h
+  dw 0097Dh,base+0397Fh
+  dw 00103h,base+00005h
+  dw 00780h,base+031D8h
+  dw 00681h,base+02BD5h
+  dw 00100h,base+00005h
+
+TeleportPart2frame080:
+  db 02Eh,00Eh,066h,048h
+  db 07Eh
+  dw 0047Fh,base+019B7h
+  dw 0057Dh,base+03B66h
+  dw 00103h,base+00005h
+  dw 0057Fh,base+03B6Bh
+  dw 00380h,base+03BFEh
+  dw 00305h,base+03C01h
+  dw 0017Ah,base+00005h
+  dw 00405h,base+03BB6h
+  dw 00276h,base+00111h
+  dw 00104h,base+00005h
+  dw 00A0Dh,base+03AAFh
+  dw 0016Eh,base+00005h
+  dw 00104h,base+00002h
+  dw 00C0Eh,base+03970h
+  dw 0026Eh,base+0075Ah
+  dw 00103h,base+00006h
+  dw 00D10h,base+038C0h
+  dw 0016Ch,base+00006h
+  dw 00204h,base+01B01h
+  dw 00203h,base+0014Dh
+  dw 00B0Dh,base+03A16h
+  dw 0016Ch,base+00002h
+  dw 00204h,base+00672h
+  dw 00F7Fh,base+03591h
+  dw 0107Fh,base+033DCh
+  dw 0117Ch,base+0318Ah
+  dw 00203h,base+0075Ah
+  dw 01200h,base+02EBBh
+
+TeleportPart2frame081:
+  db 040h,00Ch,060h,056h
+  db 066h
+  dw 00203h,base+00360h
+  dw 01317h,base+02B22h
+  dw 00165h,base+00005h
+  dw 0171Ah,base+00AF3h
+  dw 00266h,base+03C28h
+  dw 0181Ah,base+0045Bh
+  dw 00267h,base+03C2Ah
+  dw 01719h,base+00B0Ah
+  dw 00266h,base+03C2Ch
+  dw 00405h,base+03BBAh
+  dw 01315h,base+02B35h
+  dw 00265h,base+0075Ah
+  dw 00103h,base+00002h
+  dw 0177Dh,base+00B21h
+  dw 00203h,base+0075Ah
+  dw 00203h,base+00000h
+  dw 01416h,base+02611h
+  dw 00264h,base+03C2Eh
+  dw 00103h,base+00002h
+  dw 01819h,base+00473h
+  dw 00264h,base+03C30h
+  dw 00103h,base+00005h
+  dw 00203h,base+03C32h
+  dw 01516h,base+02095h
+  dw 00263h,base+03C34h
+  dw 00104h,base+00002h
+  dw 01819h,base+0048Bh
+  dw 00264h,base+00111h
+  dw 00102h,base+00005h
+  dw 0191Ah,base+00284h
+  dw 00365h,base+03C04h
+  dw 01A1Bh,base+001B4h
+  dw 00200h,base+00080h
+
+TeleportPart2frame082:
+  db 040h,00Ch,060h,062h
+  db 064h
+  dw 00304h,base+03C07h
+  dw 01617h,base+01998h
+  dw 00365h,base+03C0Ah
+  dw 00203h,base+03C36h
+  dw 01B7Bh,base+00163h
+  dw 00102h,base+00006h
+  dw 00203h,base+03C22h
+  dw 01B7Bh,base+0017Eh
+  dw 01E1Fh,base+0007Eh
+  dw 00161h,base+00002h
+  dw 00506h,base+03B70h
+  dw 0187Ah,base+004A3h
+  dw 00203h,base+03C38h
+  dw 01A1Ch,base+001CEh
+  dw 00161h,base+00002h
+  dw 00203h,base+00318h
+  dw 01A1Ch,base+001E8h
+  dw 00161h,base+00005h
+  dw 02080h,base+00000h
+  dw 02080h,base+00020h
+  dw 01C1Dh,base+000F3h
+  dw 00363h,base+03C0Dh
+  dw 00406h,base+03BBEh
+  dw 01A7Ah,base+00202h
+  dw 00405h,base+03BC2h
+  dw 01A00h,base+0021Ch
+
+TeleportPart2frame083:
+  db 040h,00Ch,060h,06Eh
+  db 062h
+  dw 00405h,base+00040h
+  dw 01A7Ah,base+00236h
+  dw 00506h,base+0026Ah
+  dw 0197Bh,base+0029Dh
+  dw 00405h,base+03BC6h
+  dw 0197Ah,base+002B6h
+  dw 00203h,base+00084h
+  dw 00203h,base+00473h
+  dw 0197Bh,base+002CFh
+  dw 00102h,base+00005h
+  dw 00204h,base+03C30h
+  dw 0187Ch,base+004BBh
+  dw 0191Ah,base+002E8h
+  dw 00267h,base+00956h
+  dw 01819h,base+004D3h
+  dw 00267h,base+0075Ah
+  dw 01718h,base+00B38h
+  dw 00269h,base+00084h
+  dw 01980h,base+00301h
+  dw 01980h,base+0031Ah
+  dw 01981h,base+00333h
+  dw 01700h,base+00B4Fh
+
+TeleportPart2frame084:
+  db 02Eh,00Eh,06Ch,07Ah
+  db 06Eh
+  dw 01681h,base+019AEh
+  dw 00B0Ch,base+03A21h
+  dw 00506h,base+03B75h
+  dw 0026Fh,base+00B1Fh
+  dw 00E11h,base+0372Ah
+  dw 0026Fh,base+001AFh
+  dw 00D10h,base+038CDh
+  dw 0026Dh,base+03C3Ah
+  dw 00103h,base+00005h
+  dw 00D10h,base+038DAh
+  dw 0026Dh,base+0075Ah
+  dw 00203h,base+0007Eh
+  dw 00D10h,base+038E7h
+  dw 0016Dh,base+00002h
+  dw 01480h,base+02625h
+  dw 00809h,base+03B11h
+  dw 00405h,base+03BCAh
+  dw 00573h,base+03B7Ah
+  dw 00709h,base+03B4Bh
+  dw 00204h,base+01B01h
+  dw 00574h,base+03B7Fh
+  dw 0050Bh,base+03B84h
+  dw 00477h,base+03BCEh
+  dw 00407h,base+03BD2h
+  dw 0057Ah,base+03B89h
+  dw 00405h,base+03BD6h
+  dw 0057Ch,base+03B8Eh
+  dw 00304h,base+001AEh
+  dw 0047Dh,base+03BDAh
+  dw 00203h,base+0075Ah
+  dw 00300h,base+003E6h
+
+TeleportPart2frame085:
+  db 028h,00Eh,06Ah,048h
+  db 07Ah
+  dw 00203h,base+00084h
+  dw 0037Dh,base+00312h
+  dw 00203h,base+019DAh
+  dw 0027Dh,base+0075Ah
+  dw 00380h,base+03C10h
+  dw 00308h,base+03C13h
+  dw 00178h,base+00002h
+  dw 00380h,base+03C16h
+  dw 00305h,base+03C19h
+  dw 00105h,base+00008h
+  dw 00170h,base+00002h
+  dw 00106h,base+00005h
+  dw 0070Bh,base+03B52h
+  dw 0016Eh,base+00005h
+  dw 00204h,base+0075Ah
+  dw 00B0Eh,base+03A2Ch
+  dw 0016Eh,base+00002h
+  dw 00103h,base+00006h
+  dw 00D7Ch,base+038F4h
+  dw 00204h,base+01B01h
+  dw 00E7Ch,base+03738h
+  dw 00204h,base+03C3Ch
+  dw 00F7Ch,base+035A0h
+  dw 00203h,base+03C3Ah
+  dw 0107Eh,base+033ECh
+  dw 0137Fh,base+02B48h
+  dw 01400h,base+02639h
+
+TeleportPart2frame086:
+  db 040h,00Ch,060h,056h
+  db 066h
+  dw 01719h,base+00B66h
+  dw 00266h,base+0075Ah
+  dw 0181Ah,base+004EBh
+  dw 00266h,base+03C38h
+  dw 00506h,base+03B93h
+  dw 01214h,base+02ECDh
+  dw 00267h,base+03C2Ah
+  dw 00305h,base+03C1Ch
+  dw 01214h,base+02EDFh
+  dw 00267h,base+000B1h
+  dw 00305h,base+03C1Fh
+  dw 01215h,base+02EF1h
+  dw 00164h,base+00006h
+  dw 00103h,base+00002h
+  dw 00203h,base+00B21h
+  dw 01416h,base+0264Dh
+  dw 00264h,base+0007Eh
+  dw 00203h,base+0075Ah
+  dw 00203h,base+00000h
+  dw 01416h,base+02661h
+  dw 00264h,base+0037Eh
+  dw 00103h,base+00002h
+  dw 00203h,base+00B21h
+  dw 01516h,base+020AAh
+  dw 00264h,base+00B1Fh
+  dw 00103h,base+00038h
+  dw 00203h,base+03C3Eh
+  dw 01516h,base+020BFh
+  dw 00363h,base+03C22h
+  dw 00204h,base+019DAh
+  dw 00203h,base+0009Dh
+  dw 01516h,base+020D4h
+  dw 00363h,base+002E8h
+  dw 00203h,base+02625h
+  dw 00304h,base+00147h
+  dw 01979h,base+0034Ch
+  dw 00203h,base+00083h
+  dw 01D00h,base+0009Ch
+
+TeleportPart2frame087:
+  db 040h,00Ch,060h,062h
+  db 066h
+  dw 01D7Dh,base+000B9h
+  dw 00103h,base+00006h
+  dw 01D7Dh,base+000D6h
+  dw 00103h,base+0001Ch
+  dw 00203h,base+001AFh
+  dw 01A7Ah,base+00250h
+  dw 00103h,base+00008h
+  dw 0191Ch,base+00365h
+  dw 00161h,base+00002h
+  dw 00103h,base+00005h
+  dw 0197Dh,base+0037Eh
+  dw 00103h,base+00006h
+  dw 0191Ch,base+00397h
+  dw 00161h,base+00002h
+  dw 00103h,base+00005h
+  dw 0191Bh,base+003B0h
+  dw 00262h,base+03C40h
+  dw 01C1Eh,base+0010Fh
+  dw 00262h,base+03C42h
+  dw 00506h,base+03B98h
+  dw 01618h,base+019C4h
+  dw 00262h,base+03C2Ah
+  dw 00405h,base+03BDEh
+  dw 01718h,base+00B7Dh
+  dw 00363h,base+03C25h
+  dw 00405h,base+03BE2h
+  dw 01B7Bh,base+00199h
+  dw 00406h,base+03BC2h
+  dw 01415h,base+025ADh
+  dw 00500h,base+03B9Dh
+
+TeleportPart2frame088:
+  db 040h,00Ch,060h,06Eh
+  db 062h
+  dw 01F7Fh,base+00040h
+  dw 01A1Bh,base+0026Ah
+  dw 00466h,base+03BE6h
+  dw 01F7Fh,base+0005Fh
+  dw 00203h,base+00084h
+  dw 01C7Eh,base+0012Bh
+  dw 00102h,base+00005h
+  dw 01C81h,base+00147h
+  dw 01819h,base+00503h
+  dw 00267h,base+00956h
+  dw 00405h,base+03BEAh
+  dw 01214h,base+02F03h
+  dw 00267h,base+00313h
+  dw 01718h,base+00B94h
+  dw 00269h,base+00EC5h
+  dw 01980h,base+003C9h
+  dw 01981h,base+003E2h
+  dw 01880h,base+0051Bh
+  dw 01700h,base+00BABh
+
+TeleportPart2frame089:
+  db 02Eh,00Eh,06Ch,07Ah
+  db 06Eh
+  dw 01681h,base+019DAh
+  dw 01112h,base+0319Bh
+  dw 0026Fh,base+00DD2h
+  dw 00F11h,base+035AFh
+  dw 0026Fh,base+00313h
+  dw 00D11h,base+03901h
+  dw 0016Ch,base+00006h
+  dw 00103h,base+00005h
+  dw 00D11h,base+0390Eh
+  dw 0016Ch,base+00005h
+  dw 00103h,base+00002h
+  dw 00D7Dh,base+0391Bh
+  dw 00203h,base+01B01h
+  dw 00E7Dh,base+03746h
+  dw 00809h,base+03B19h
+  dw 00405h,base+03BEEh
+  dw 00473h,base+03BF2h
+  dw 0070Ah,base+03B59h
+  dw 00103h,base+00005h
+  dw 00574h,base+03BA2h
+  dw 0050Bh,base+03BA7h
+  dw 00577h,base+03BACh
+  dw 00407h,base+03BF6h
+  dw 0067Ah,base+03B60h
+  dw 00305h,base+0009Ch
+  dw 0057Ch,base+03BB1h
+  dw 00204h,base+00672h
+  dw 0047Dh,base+03BFAh
+  dw 00103h,base+00002h
+  dw 00200h,base+00006h
+
+

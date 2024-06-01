@@ -61,7 +61,7 @@ BossGoatDying2spritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlock
 								incbin "..\grapx\BossGoat\Dying2\frames.dat"
 								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-;20250525;ro;What is this?
+;20250525;ro;What is this? > it contains big objects, like big block and balls
 ryuframelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 					phase	$8000
 					include "..\grapx\ryu\spritesryuPage0\frames.lst" 
@@ -175,7 +175,7 @@ BossZombieCaterpillarDyingPart2spritedatablock:	equ ($-RomStartAddress) and (rom
 ;Area Sign
 AreaSignsframelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 							phase $8000
-							include "..\grapx\AreaSigns\frames.lst" 
+							include "..\grapx\AreaSigns\frames.new.lst" 
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 							dephase
 AreaSignsspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
@@ -183,32 +183,31 @@ AreaSignsspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 ;Teleporter part 1
-TeleportPart1framelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-							phase	$8000
-							include "..\grapx\TeleportRoom\Part1\frames.lst"
-							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-							dephase
-TeleportPart1spritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-							incbin "..\grapx\TeleportRoom\Part1\frames.dat"
-							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+;TeleportPart1framelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+;								phase	$8000
+; 								include "..\grapx\TeleportRoom\Part1\frames.new.lst"
+; 								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+; 								dephase
+; TeleportPart1spritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+; 								incbin "..\grapx\TeleportRoom\Part1\frames.dat"
+; 								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-;Teleporter part 2
-TeleportPart2framelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-							phase	$8000
-							include "..\grapx\TeleportRoom\Part2\frames.lst"
-							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-							dephase
-TeleportPart2spritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-							incbin "..\grapx\TeleportRoom\Part2\frames.dat"
-							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+; ;Teleporter part 2
+; TeleportPart2framelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+; 								phase	$8000
+; 								include "..\grapx\TeleportRoom\Part2\frames.new.lst"
+; 								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+; 								dephase
+; TeleportPart2spritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+; 								incbin "..\grapx\TeleportRoom\Part2\frames.dat"
+; 								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 ;Teleporter part 3
-TeleportPart3framelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-							phase	$8000
-							include "..\grapx\TeleportRoom\Part3\frames.lst"
-							.kut:
-							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-							dephase
+TeleportPart3framelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+								phase	$8000
+								include "..\grapx\TeleportRoom\Part3\frames.new.lst"
+								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+								dephase
 TeleportPart3spritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-							incbin "..\grapx\TeleportRoom\Part3\frames.dat"
-							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+								incbin "..\grapx\TeleportRoom\Part3\frames.dat"
+								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
