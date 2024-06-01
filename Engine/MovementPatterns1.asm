@@ -3709,6 +3709,7 @@ Teleport:
   call  RestoreBackgroundForObjectInCurrentFrame 
   call  .Animate
   call  .CheckActivateRing
+  call  PaletteAnimationTeleport
 
 ;  ld    (ix+enemies_and_objects.v7),13*5       ;v7=sprite frame
 
@@ -3812,10 +3813,75 @@ Teleport:
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret  
 
+  PaletteAnimationTeleport:
+  ;in 3 steps
+  ld    a,(framecounter)
+  and   31
+
+  cp    10
+  ld    hl,.Anim1
+  jr    c,.WriteColors
+
+  cp    21
+  ld    hl,.Anim2
+  jr    c,.WriteColors
+
+  ld    hl,.Anim3
+  jr    .WriteColors
+
+  ;in 4 steps
+;  ld    a,(framecounter)
+;  and   %0001 1000
+;  ld    hl,.Anim1
+;  jr    z,.WriteColors
+;  cp    %0000 1000
+;  ld    hl,.Anim2
+;  jr    z,.WriteColors
+;  cp    %0001 0000
+;  ld    hl,.Anim3
+;  jr    z,.WriteColors
+;  ld    hl,.Anim2
+  
+  .WriteColors:
+	xor		a                         ;start writing to palette color 0
+  call  .WriteColor
+	ld    a,6                       ;start writing to palette color 6
+  call  .WriteColor
+	ld    a,8                       ;start writing to palette color 8
+  
+  .WriteColor:
+	di
+	out		($99),a
+	ld		a,16+128
+	out		($99),a  
+  
+  ld    c,$9a
+  outi                            ;red + blue
+  outi                            ;green
+  ei
+  ret
+
+
+  ;color0                 color 6         colo 8
+  .Anim1:
+  ;     R*16+B , G
+  db    5*16+0,2        ,3*16+0,1        ,3*16+0,1
+  .Anim2:
+  db    3*16+0,1        ,5*16+0,2        ,3*16+0,1
+  .Anim3:
+  db    3*16+0,1        ,3*16+0,1        ,5*16+0,2
 
 
 
 
+  ;color0                 color 6         colo 8
+;  .Anim1:
+  ;     R*16+B , G
+  db    5*16+0,2        ,3*16+0,1        ,3*16+0,1
+;  .Anim2:
+  db    3*16+0,1        ,5*16+0,2        ,3*16+0,1
+;  .Anim3:
+  db    3*16+0,1        ,3*16+0,1        ,5*16+0,2
 
   TeleportPart4AnimationFrames:
   dw TeleportPart3frame080 | db TeleportPart3framelistblock, TeleportPart3spritedatablock

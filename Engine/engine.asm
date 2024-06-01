@@ -313,7 +313,6 @@ RestoreBackground:                  ;all background restores should be done simu
   ld    hl,CleanOb6+restorebackground?
   bit   0,(hl)
   call  nz,.Restore
-
   ret
 
   .Restore:
