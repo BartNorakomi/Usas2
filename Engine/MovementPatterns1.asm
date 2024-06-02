@@ -3871,18 +3871,6 @@ Teleport:
   .Anim3:
   db    3*16+0,1        ,3*16+0,1        ,5*16+0,2
 
-
-
-
-  ;color0                 color 6         colo 8
-;  .Anim1:
-  ;     R*16+B , G
-  db    5*16+0,2        ,3*16+0,1        ,3*16+0,1
-;  .Anim2:
-  db    3*16+0,1        ,5*16+0,2        ,3*16+0,1
-;  .Anim3:
-  db    3*16+0,1        ,3*16+0,1        ,5*16+0,2
-
   TeleportPart4AnimationFrames:
   dw TeleportPart3frame080 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
   dw TeleportPart3frame081 | db TeleportPart3framelistblock, TeleportPart3spritedatablock
