@@ -560,7 +560,7 @@ SDMika:
 ;v10=add to dy character (text to screen)
   .HandlePhase:
   ld    a,1
-  call  switchpageSF2Engine.SetPage         ;force page 1 to be the active page at all times
+  call  SetSF2DisplayPage         ;force page 1 to be the active page at all times
 
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=set text background and font, 1=set character portrait, 2=wait player, 3=show text backdrop, 4=put text, 5=restore scoreboard)
   or    a

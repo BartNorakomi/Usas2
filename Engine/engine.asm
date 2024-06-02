@@ -321,24 +321,23 @@ RestoreBackground:                  ;all background restores should be done simu
   jp    DoCopy  
   
 
-switchpageSF2Engine:
 ;switch to next page
-  ld    a,(screenpage)
-  inc   a
-  cp    3
-  jr    nz,.SetPage
-  xor   a
-  .SetPage:  
-  ld    (screenpage),a
-
-  add   a,a                   ;x32
-  add   a,a
-  add   a,a
-  add   a,a
-  add   a,a
-  add   a,31
-  ld    (PageOnNextVblank),a
-  ret
+switchpageSF2Engine:
+	ld    a,(screenpage)
+	inc   a
+	cp    3
+	jr    nz,SetSF2DisplayPage
+	xor   a
+SetSF2DisplayPage:
+	ld    (screenpage),a
+	add   a,a                   ;x32
+	add   a,a
+	add   a,a
+	add   a,a
+	add   a,a
+	add   a,31
+	ld    (PageOnNextVblank),a
+ret
 
 Handle_HardWareSprite_Enemies_And_objects:  ;handle movement, out character, color and spat data
 ;several optimizations are possible here:
@@ -1700,7 +1699,7 @@ Object1x:                     db  000
 
 
 ;in b->framelistblock, c->spritedatablock
-PutSF2Object:     
+PutSF2Object:
 	ld    a,(screenpage)
 	or    a                     ;if current page =0 then que page 1 to be restored
 	ld    ix,RestoreBackgroundObject1Page1
@@ -1710,15 +1709,13 @@ PutSF2Object:
 	jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
 	ld    ix,RestoreBackgroundObject1Page0
 .startsetupque:
-	ld		a,(slot.page12rom)    ;all RAM except page 1+2
+	ld		a,(slot.page12rom)		;all RAM except page 1+2
 	out		($a8),a	
 	ld		a,(memblocks.2)
-	push	af                    ;store current block
-;set framedata in page 1 in rom ($4000 - $7fff)
-	ld    a,c
+	push	af		;store current block
+	ld		a,c		;set framedata in page 1 in rom ($4000 - $7fff)
 	call	block12
-;set framelist in page 2 in rom ($8000 - $bfff)
-	ld    a,b
+	ld		a,b		;set framelist in page 2 in rom ($8000 - $bfff)
 	call	block34
  
 	di
@@ -1797,7 +1794,7 @@ ScreenLimitxLeft:				equ 10
 moveplayerleftinscreen:			equ 128
 
 GoPutSF2Object:
-	ld    bc,Object1x
+	ld    bc,Object1y
 	ld    hl,(Player1Frame)     ;points to object width
 	ld    iy,Player1SxB1        ;player collision detection blocks
 
@@ -1829,7 +1826,6 @@ GoPutSF2Object:
 	ld    (ix+ny),a		;set object height to be restored by background
 ;set sy,dy by adding offset y to object y
 ;	inc   hl
-	dec   bc
 	ld    a,(bc)		;object Y
 	inc   bc
 	inc   hl
@@ -1856,7 +1852,6 @@ PutSpriteRightSideOfScreen:
 
 ;Set up restore background que player
 	inc   hl			;=FrameOffset
-;	inc   bc			;=object x
 ;clipping check
 	ld    a,(bc)		;object X
 	sub   moveplayerleftinscreen
