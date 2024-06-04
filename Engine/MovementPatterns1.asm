@@ -2072,6 +2072,12 @@ BigStatueMouth:
   ld    (CopyObject+sy),a  
   ld    a,3
   ld    (CopyObject+spage),a
+
+
+;  ld    (ix+enemies_and_objects.v1),BigStatueMouthOpenSx
+;  ld    (ix+enemies_and_objects.v1),BigStatueMouthClosedSx
+
+
   call  OnlyPutVramObjectDontEraseFastCopy
   ld    a,1
   ld    (CopyObject+spage),a
@@ -4520,6 +4526,10 @@ HugeBlob:
 ;v5=Jump to Which platform ? (1,2 or 3)
 ;v6=Gravity timer
 ;v7=Dont Check Land Platform First x Frames
+;v8=Has Player Been Hit While on the outer right ladder?
+
+  call  .HandlePlayerFallingOutOfScreenAfterDamaged
+
   call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
   exx                                       ;store hl. hl now points to color data
   call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
@@ -4530,6 +4540,35 @@ HugeBlob:
 	ld		a,HugeBlobWhiteSpriteblock          ;set block at $a000, page 2 - block containing sprite data
   ret   nz
 	ld		a,HugeBlobSpriteblock               ;set block at $a000, page 2 - block containing sprite data
+  ret
+  
+  .HandlePlayerFallingOutOfScreenAfterDamaged:
+  bit   0,(ix+enemies_and_objects.v8)       ;v8=Has Player Been Hit While on the outer right ladder?
+;  jp    nz,PopulateControls.FreezeControls
+  jr    nz,.FreezeControls
+  ld    a,(ShakeScreen?)
+  or    a
+  ret   z
+
+  .CheckPlayerOnRightLadder:
+  ld    hl,(ClesX)
+  ld    de,275
+  sbc   hl,de
+  ret   c
+  set   0,(ix+enemies_and_objects.v8)       ;v8=Has Player Been Hit?
+  jp    CollisionEnemyPlayer.PlayerIsHit
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  .FreezeControls:
+	ld		a,(Controls)
+  and   %00001100                           ;only able to move right and left
+	ld		(Controls),a
+	ld		a,(NewPrContr)
+  and   %00001100                           ;only able to move right and left
+	ld		(NewPrContr),a
   ret
   
   .HandlePhase:
@@ -5346,7 +5385,7 @@ Hunchback:
   dec   a
   jp    z,HunchbackInitiateJump
 
-  HunchbackJumping:
+  HunchbackJumping:;
   call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
   call  .Gravity
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction / out z=collision found with wall  
@@ -5707,127 +5746,124 @@ DemontjeRightAnimation:
 
 
 
-BatSpawner:
+;BatSpawner:
 ;v1=Y spawnpoint
 ;v2=max Y to add to Y spawnpoint
 ;v3=Previous Y spawn
 ;v4=wait timer
-  dec   (ix+enemies_and_objects.v4)         ;v4=wait timer
-  ret   nz
-  ld    (ix+enemies_and_objects.v4),100     ;v4=wait timer
+;  dec   (ix+enemies_and_objects.v4)         ;v4=wait timer
+;  ret   nz
+;  ld    (ix+enemies_and_objects.v4),100     ;v4=wait timer
 
-  ld    a,(ix+enemies_and_objects.v1)       ;v1=pointer to Y spawnpoint table
-  inc   a
-  and   15
-  ld    (ix+enemies_and_objects.v1),a       ;v1=pointer to Y spawnpoint table
+;  ld    a,(ix+enemies_and_objects.v1)       ;v1=pointer to Y spawnpoint table
+;  inc   a
+;  and   15
+;  ld    (ix+enemies_and_objects.v1),a       ;v1=pointer to Y spawnpoint table
 
-  .SearchEmptySlot:
-  ld    de,lenghtenemytable
+;  .SearchEmptySlot:
+;  ld    de,lenghtenemytable
   
-  add   ix,de
-  bit   0,(ix+enemies_and_objects.Alive?)
-  jr    z,.EmptySlotFound
-  add   ix,de
-  bit   0,(ix+enemies_and_objects.Alive?)
-  ret   nz
+;  add   ix,de
+;  bit   0,(ix+enemies_and_objects.Alive?)
+;  jr    z,.EmptySlotFound
+;  add   ix,de
+;  bit   0,(ix+enemies_and_objects.Alive?)
+;  ret   nz
   
-  .EmptySlotFound:
-  ld    d,0
-  ld    e,a
-  ld    hl,.SpawnpointTable
-  add   hl,de
-  ld    a,(hl)
-  ld    (ix+enemies_and_objects.y),a  
-  ld    (ix+enemies_and_objects.alive?),-1 
-  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ld    hl,Bat
-  ld    (ix+enemies_and_objects.movementpattern),l
-  ld    (ix+enemies_and_objects.movementpattern+1),h
-  ld    (ix+enemies_and_objects.nrsprites),72-(08*6)
-  ld    (ix+enemies_and_objects.nrspritesSimple),8
-  ld    (ix+enemies_and_objects.nrspritesTimes16),8*16
-  ld    (ix+enemies_and_objects.life),1
-  
-  ld    hl,(ClesX)
-  ld    de,304/2
-  sbc   hl,de               ;take x Cles and subtract the x camera  
-  jr    c,.PlayerIsLeftSideOfMap
-
-  .PlayerIsLRightSideOfMap:
-  ld    (ix+enemies_and_objects.x),000
-  ld    (ix+enemies_and_objects.x+1),0
-;  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase ( )
-  ld    (ix+enemies_and_objects.v4),2       ;v4=Horizontal Movement
-  ret  
-  
-  .PlayerIsLeftSideOfMap:
-  ld    (ix+enemies_and_objects.x),060
-  ld    (ix+enemies_and_objects.x+1),1
+;  .EmptySlotFound:
+;  ld    d,0
+;  ld    e,a
+;  ld    hl,.SpawnpointTable
+;  add   hl,de
+;  ld    a,(hl)
+;  ld    (ix+enemies_and_objects.y),a  
+;  ld    (ix+enemies_and_objects.alive?),-1 
 ;  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-;  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase ( )
-  ld    (ix+enemies_and_objects.v4),-2      ;v4=Horizontal Movement
-  ret
-
-.SpawnpointTable:
-  db    008,090,150,040, 100,166,020,120
-  db    060,110,140,080, 030,160,050,130
+;  ld    hl,Bat
+;  ld    (ix+enemies_and_objects.movementpattern),l
+;  ld    (ix+enemies_and_objects.movementpattern+1),h
+;  ld    (ix+enemies_and_objects.nrsprites),72-(08*6)
+;  ld    (ix+enemies_and_objects.nrspritesSimple),8
+;  ld    (ix+enemies_and_objects.nrspritesTimes16),8*16
+;  ld    (ix+enemies_and_objects.life),1
   
-Bat:
+;  ld    hl,(ClesX)
+;  ld    de,304/2
+;  sbc   hl,de               ;take x Cles and subtract the x camera  
+;  jr    c,.PlayerIsLeftSideOfMap
+
+;  .PlayerIsLRightSideOfMap:
+;  ld    (ix+enemies_and_objects.x),000
+;  ld    (ix+enemies_and_objects.x+1),0
+;  ld    (ix+enemies_and_objects.v4),2       ;v4=Horizontal Movement
+;  ret  
+  
+;  .PlayerIsLeftSideOfMap:
+;  ld    (ix+enemies_and_objects.x),060
+;  ld    (ix+enemies_and_objects.x+1),1
+;  ld    (ix+enemies_and_objects.v4),-2      ;v4=Horizontal Movement
+;  ret
+
+;.SpawnpointTable:
+;  db    008,090,150,040, 100,166,020,120
+;  db    060,110,140,080, 030,160,050,130
+  
+;Bat:
 ;v1=Animation Counter
 ;v2=
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
-  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
-  exx                                       ;store hl. hl now points to color data
-  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
-  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-	ld		a,BatSpriteblock                    ;set block at $a000, page 2 - block containing sprite data
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-  ret
+;  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+;  exx                                       ;store hl. hl now points to color data
+;  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+;  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+;	ld		a,BatSpriteblock                    ;set block at $a000, page 2 - block containing sprite data
+;  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+;  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+;  ret
   
-  .HandlePhase:
-  call  .Move  
-  call  CheckOutOfMap
+;  .HandlePhase:
+;  call  .Move  
+;  call  CheckOutOfMap
 
-  .Animate:
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  ld    hl,BatRightAnimation
-  jp    z,.GoAnimate
-  ld    hl,BatLeftAnimation
-  .GoAnimate:
-  ld    b,03                                ;animate every x frames (based on framecounter)
-  ld    c,2 * 04                            ;04 animation frame addresses
-  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+;  .Animate:
+;  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+;  ld    hl,BatRightAnimation
+;  jp    z,.GoAnimate
+;  ld    hl,BatLeftAnimation
+;  .GoAnimate:
+;  ld    b,03                                ;animate every x frames (based on framecounter)
+;  ld    c,2 * 04                            ;04 animation frame addresses
+;  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
-  .Move:
-  call  MoveSpriteHorizontally
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  push  af
-  ld    (ix+enemies_and_objects.v4),0       ;v4=Horizontal Movement
-  ld    de,BatMovementTable
-  call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
-  pop   af
-  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
-  ret
+;  .Move:
+;  call  MoveSpriteHorizontally
+;  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+;  push  af
+;  ld    (ix+enemies_and_objects.v4),0       ;v4=Horizontal Movement
+;  ld    de,BatMovementTable
+;  call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+;  pop   af
+;  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
+;  ret
 
-BatMovementTable:  ;repeating steps(128 = end table/repeat), move y, move x
-  db  05,-1,-0,  01,-0,-0,  02,-1,-0,  01,-0,-0,  01,-1,-0,  02,-0,-0
-  db  01,+1,-0,  01,-0,-0,  02,+1,-0,  01,-0,-0,  05,+1,-0,  02,-0,-0
-  db  02,+1,-0,  01,-0,-0,  01,+1,-0,  02,-0,-0,  01,-1,-0,  01,-0,-0,  02,-1,-0
-  db  128
+;BatMovementTable:  ;repeating steps(128 = end table/repeat), move y, move x
+;  db  05,-1,-0,  01,-0,-0,  02,-1,-0,  01,-0,-0,  01,-1,-0,  02,-0,-0
+;  db  01,+1,-0,  01,-0,-0,  02,+1,-0,  01,-0,-0,  05,+1,-0,  02,-0,-0
+;  db  02,+1,-0,  01,-0,-0,  01,+1,-0,  02,-0,-0,  01,-1,-0,  01,-0,-0,  02,-1,-0
+;  db  128
 
-BatLeftAnimation:
-  dw  LeftBat1_Char
-  dw  LeftBat2_Char
-  dw  LeftBat3_Char
-  dw  LeftBat4_Char
+;BatLeftAnimation:
+;  dw  LeftBat1_Char
+;  dw  LeftBat2_Char
+;  dw  LeftBat3_Char
+;  dw  LeftBat4_Char
 
-BatRightAnimation:
-  dw  RightBat1_Char
-  dw  RightBat2_Char
-  dw  RightBat3_Char
-  dw  RightBat4_Char
+;BatRightAnimation:
+;  dw  RightBat1_Char
+;  dw  RightBat2_Char
+;  dw  RightBat3_Char
+;  dw  RightBat4_Char
 
 BoringEye:
 ;v1=Animation Counter

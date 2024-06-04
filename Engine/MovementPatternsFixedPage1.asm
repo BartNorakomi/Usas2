@@ -347,7 +347,25 @@ TurnAroundAtScreenEdges:
   sbc   hl,de
   jr    nc,.TurnAround
 
-  ld    hl,300                              ;turn around when x>300
+  ;272-width=240 for SF2 engine 32 wide
+  ;272-width=256 for SF2 engine 16 wide
+
+  ;320-width=288 for normal engine 32 wide
+  ;320-width=304 for normal engine 16 wide
+  
+  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    hl,320                              ;normal engine x right border=320
+  jr    z,.SetRightBorder
+  ld    hl,272                              ;SF2 engine x right border=272
+  .SetRightBorder:
+
+  ld    b,0
+  ld    c,(ix+enemies_and_objects.nx)
+  or    a
+  sbc   hl,bc
+  
+;  ld    hl,240                              ;turn around when x>300
   sbc   hl,de
   ret   nc
 

@@ -1301,6 +1301,23 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
   ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
+;call screenon
+;	ld    a,3*32+31         ;set page 0
+;di
+;	out   ($99),a
+;	ld    a,2+128
+;	out   ($99),a
+
+
+;	ld    a,100 
+;	out   ($99),a
+;	ld    a,23+128
+;	out   ($99),a
+;ei
+
+
+;.kut: jp .kut
+
   .EndPutObject020:
   ld    de,Object020Table.lenghtobjectdata
   ret
@@ -1978,7 +1995,7 @@ Object016Table:               ;omni directional platform
 Object020Table:               ;bat spawner (BigStatueMouth)
 ;Big Statue Mouth
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*13|db 31,28|dw CleanOb1,0 db 0,0,0,                     +014,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+          db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*13|db 31,28|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2

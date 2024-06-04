@@ -15,11 +15,11 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  17 | WorldMapPositionX:  db  44 ;ballroom 1 (with pipe)
 ;WorldMapPositionY:  db  20 | WorldMapPositionX:  db  44 ;ballroom 2
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
-roomX: equ ("B"-"A")*26 + "K"-"A"
-WorldMapPositionY:  db  22 | WorldMapPositionX:  db  roomX
+roomX: equ ("B"-"A")*26 + "R"-"A"
+WorldMapPositionY:  db  19 | WorldMapPositionX:  db  roomX
 
-ClesX:      dw 60 ;$19 ;230 ;250 ;210
-ClesY:      db 160 ;144-1
+ClesX:      dw 280 ;$19 ;230 ;250 ;210
+ClesY:      db 60 ;144-1
 
 
 PlayLogo:
@@ -49,12 +49,15 @@ loadGraphics:
 
 	call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
 	call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
+
+	call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
+	call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
+
+
 	call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 
 ;	ld    a,(slot.page12rom)            ;all RAM except page 12
 ;	out   ($a8),a       
-	call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
-	call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
 
 ;	ld    a,(slot.page12rom)            ;all RAM except page 12
 ;	out   ($a8),a
