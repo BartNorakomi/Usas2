@@ -1685,21 +1685,32 @@ RestoreBackgroundObject5Page2:
 	db    0,0,0,2
 	db    $02,0,$02,0
 	db    0,0,$d0  
-			
-HugeObjectFrame:  db  -1
 
 
-
-blitpage:                     db  0
-screenpage:                   db  2
-Player1Frame:                 dw  0 ;ryupage0frame000
+;SF2 global properties for current object and frame
+HugeObjectFrame:	db  -1
+blitpage:			db  0
+screenpage:			db  2
+Player1Frame:		dw  0 ;ryupage0frame000
 ;Player1FramePage:             db  0
-Object1y:                     db  000
-Object1x:                     db  000
+Object1y:			db  0
+Object1x:			db  0
+PutObjectInPage3?:				db  0
+RestoreBackgroundSF2Object?:	db  1
 
+;Frameinfo looks like this:
+;width, height, offset x, offset y
+;x offset for first line
+;lenght ($1f)+increment ($80) next spriteline, source address (base+00000h etc)
+;  dw 01F80h,base+00000h
+ScreenLimitxRight:				equ 256-10
+ScreenLimitxLeft:				equ 10
+moveplayerleftinscreen:			equ 128
 
+;Put a section of an SF2 object on screen, max 5 sections.
 ;in b->framelistblock, c->spritedatablock
-PutSF2Object:
+
+PutSF2Object:	;section#1
 	ld    a,(screenpage)
 	or    a                     ;if current page =0 then que page 1 to be restored
 	ld    ix,RestoreBackgroundObject1Page1
@@ -1736,8 +1747,7 @@ PutSF2Object:
 ;	ei
 ret
 
-;in b->framelistblock, c->spritedatablock
-PutSF2Object2:
+PutSF2Object2:	;section#2
 	ld    a,(screenpage)
 	or    a                     ;if current page =0 then que page 1 to be restored
 	ld    ix,RestoreBackgroundObject2Page1
@@ -1782,19 +1792,10 @@ PutSF2Object5:
 	jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
 
 
-;Frameinfo looks like this:
-;width, height, offset x, offset y
-;x offset for first line
-;lenght ($1f)+increment ($80) next spriteline, source address (base+00000h etc)
-;  dw 01F80h,base+00000h
-PutObjectInPage3?:				db  0
-RestoreBackgroundSF2Object?:	db  1
-ScreenLimitxRight:				equ 256-10
-ScreenLimitxLeft:				equ 10
-moveplayerleftinscreen:			equ 128
+
 
 GoPutSF2Object:
-	ld    bc,Object1y
+	ld    bc,(object1y)	;b=x,c=y ;bc,Object1y
 	ld    hl,(Player1Frame)     ;points to object width
 	ld    iy,Player1SxB1        ;player collision detection blocks
 
@@ -1826,8 +1827,8 @@ GoPutSF2Object:
 	ld    (ix+ny),a		;set object height to be restored by background
 ;set sy,dy by adding offset y to object y
 ;	inc   hl
-	ld    a,(bc)		;object Y
-	inc   bc
+	ld    a,c ;(bc)		;object Y
+;	inc   bc
 	inc   hl
 	add   a,(hl)		;FrameY
 	dec   hl
@@ -1838,7 +1839,7 @@ GoPutSF2Object:
 ;set sx,dx by adding frame.x to object.x
 	ld    e,(hl)		;FrameX
 	inc   hl
-	ld    a,(bc)		;object x
+	ld    a,b ;(bc)		;object x
 	or    a
 	jp    p,PutSpriteleftSideOfScreen
 
@@ -1853,7 +1854,7 @@ PutSpriteRightSideOfScreen:
 ;Set up restore background que player
 	inc   hl			;=FrameOffset
 ;clipping check
-	ld    a,(bc)		;object X
+	ld    a,b ;(bc)		;object X
 	sub   moveplayerleftinscreen
 	add   a,e			;object.X+frame.X
 	add   a,(ix+nx)
@@ -1864,7 +1865,7 @@ PutSpriteRightSideOfScreen:
  
 PutSpriteleftSideOfScreen:
 	sub   a,moveplayerleftinscreen
-	add   a,e
+	add   a,e	;e=frame.X
 	jr    c,.carry
 	xor   a
 .carry:
@@ -1883,7 +1884,7 @@ PutSpriteleftSideOfScreen:
 	inc   hl			;=FrameOffset
 ;	inc   bc			;=object x
 ;clipping check
-	ld    a,(bc)		;object X
+	ld    a,b ;(bc)		;object X
 	sub   a,moveplayerleftinscreen
 	add   a,e			;object.X+frame.X
 	jp    nc,putplayer_clipleft
@@ -1902,7 +1903,7 @@ SkipFrameBytes:
 	ret
 
 putplayer_noclip:		;in: HL=frameHeader.frameOffset
-	ld    a,(bc)		;object.X
+	ld    a,b ;(bc)		;object.X
 	add   a,(hl)		;add frameOffset for first line to destination x
 	inc   hl
 	sub   a,moveplayerleftinscreen
@@ -1992,7 +1993,7 @@ putplayer_clipright_totallyoutofscreenright:
   ret
   
 putplayer_clipright:
-	ld    a,(bc)		;object.X
+	ld    a,b ;(bc)		;object.X
 	add   a,(hl)		;add frameOffset for first line to destination x
 	inc   hl
 	sub   a,moveplayerleftinscreen
@@ -2091,7 +2092,7 @@ putplayer_clipright:
 
 
 putplayer_clipleft:
-	ld    a,(bc)
+	ld    a,b ;X (bc)
 	add   a,(hl)
 	inc   hl
 	sub   a,moveplayerleftinscreen
@@ -2168,10 +2169,10 @@ putplayer_clipleft:
 	xor   1
 	out   ($99),a               ;write page instellen
 	ld    a,14+128
-  .nopageoverflow:
+.nopageoverflow:
 	out   ($99),a               ;set y to write to
 
-  .gosourceaddress:
+.gosourceaddress:
 ;set new source address
 	ld    a,l                   ;increment
 	ex    af,af'                ;store increment
