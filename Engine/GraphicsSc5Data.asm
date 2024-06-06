@@ -112,3 +112,26 @@ CharacterPortraits:
 	ds		$8000-$,$ff
 dephase
 
+WaterfallSceneBlock1:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+phase	$4000
+  incbin "..\grapx\WaterfallScene\Backdrop1.SC5",7,212 * 128      ;212 lines
+	ds		$c000-$,$ff
+dephase
+
+WaterfallSceneBlock2:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+phase	$4000
+  incbin "..\grapx\WaterfallScene\Backdrop2.SC5",7,212 * 128      ;212 lines
+	ds		$c000-$,$ff
+dephase
+
+WaterfallSceneBlock3:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+phase	$4000
+  incbin "..\grapx\WaterfallScene\Backdrop3.SC5",7,212 * 128      ;212 lines
+	ds		$c000-$,$ff
+dephase
+
+WaterfallSceneBlock4:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+phase	$4000
+  incbin "..\grapx\WaterfallScene\Backdrop4.SC5",7,212 * 128      ;212 lines
+	ds		$c000-$,$ff
+dephase

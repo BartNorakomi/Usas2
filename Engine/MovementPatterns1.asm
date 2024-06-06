@@ -69,6 +69,7 @@ phase MovementPatterns1Address
 ;BossZombieCaterpillar
 ;PlatformOmniDirectionally
 ;Teleport
+;WaterfallScene
 
 ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer
@@ -3699,6 +3700,16 @@ SetObjectXY:                                  ;non moving objects start at (0,0)
   ret
 
 
+
+WaterfallPalette:
+  incbin "..\grapx\tilesheets\Waterfall.tiles.PL"
+  
+WaterfallScene:
+  ld    hl,WaterfallPalette
+  call  SetPalette
+  ret
+
+
 ;v1=repeating steps
 ;v2=pointer to movement table
 ;v3=Vertical Movement
@@ -3715,7 +3726,13 @@ Teleport:
   call  RestoreBackgroundForObjectInCurrentFrame 
   call  .Animate
   call  .CheckActivateRing
-  call  PaletteAnimationTeleport
+;  call  PaletteAnimationTeleport
+
+
+call WaterfallScene
+
+
+
 
 ;  ld    (ix+enemies_and_objects.v7),13*5       ;v7=sprite frame
 

@@ -197,6 +197,8 @@ ObjectTestData:
 ;db 153,140/2,$68 ;yellow wasp (YellowWasp) (id,x,y,face,speed) 
 ;db 0
 
+;db 200,100,100,0    ;WaterfallBoss, x,y
+
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
   ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
@@ -343,6 +345,25 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object159                    ;glassball pipe (GlassballPipe)
   ret
 
+  .Object200:                           ;Waterfall Boss (WaterfallBoss)
+  ld    hl,Object200Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1           ;1 object(s)
+  ldir
+
+  ;write big statue mouth to (216,0) page 3
+  ld    a,0
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$0000 + (032*128) + (040/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (168*256) + (176/2)        ;(ny*256) + (nx/2)
+  ld    a,WaterfallSceneBlock1              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+  ld    de,Object200Table.lenghtobjectdata
+  ret    
+
   .Object006:                           ;teleport room (Teleport)
 ;v1=repeating steps
 ;v2=pointer to movement table
@@ -373,6 +394,56 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,(ix+Object020Table.y)
   sub   72
   ld    (iy+enemies_and_objects.y),a
+
+
+
+
+
+
+
+
+
+  ;put waterfall backdrop in all 4 pages
+  ld    a,0
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$0000 + (032*128) + (040/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (112*256) + (176/2)        ;(ny*256) + (nx/2)
+  ld    a,WaterfallSceneBlock1              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+  ld    a,0
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$8000 + (032*128) + (040/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (112*256) + (176/2)        ;(ny*256) + (nx/2)
+  ld    a,WaterfallSceneBlock2              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+  ld    a,1
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$0000 + (032*128) + (040/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (112*256) + (176/2)        ;(ny*256) + (nx/2)
+  ld    a,WaterfallSceneBlock3              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+  ld    a,1
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$8000 + (032*128) + (040/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (112*256) + (176/2)        ;(ny*256) + (nx/2)
+  ld    a,WaterfallSceneBlock4              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+
+
+
+
+
+
+
+
 
   ld    de,Object006Table.lenghtobjectdata
   ret    
@@ -2335,7 +2406,13 @@ Object006Table:               ;Teleport
 .y: equ 2
 .lenghtobjectdata: equ 3
 
-
+Object200Table:               ;Waterfall Scene
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+          db 2,        0|dw WaterfallScene      |db 8*02  |dw 8*17  |db 64,64|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.lenghtobjectdata: equ 3
 
 
 ;Get room type [A] table record address [HL]
