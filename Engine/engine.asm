@@ -325,7 +325,7 @@ RestoreBackground:                  ;all background restores should be done simu
 switchpageSF2Engine:
 	ld    a,(screenpage)
 	inc   a
-	cp    3
+	cp    3 ;4 would be the new way
 	jr    nz,SetSF2DisplayPage
 	xor   a
 SetSF2DisplayPage:
