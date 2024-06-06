@@ -3707,7 +3707,21 @@ WaterfallPalette:
 WaterfallScene:
   ld    hl,WaterfallPalette
   call  SetPalette
-  ret
+
+  call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
+  call  RestoreBackgroundForObjectInCurrentFrame 
+
+;  ld    (ix+enemies_and_objects.v7),13*5       ;v7=sprite frame
+
+  ld    de,.EmptyFrames
+  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+
+  .EmptyFrames:
+  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
+  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
 
 
 ;v1=repeating steps
@@ -3726,14 +3740,7 @@ Teleport:
   call  RestoreBackgroundForObjectInCurrentFrame 
   call  .Animate
   call  .CheckActivateRing
-;  call  PaletteAnimationTeleport
-
-
-call WaterfallScene
-
-
-
-
+  call  PaletteAnimationTeleport
 ;  ld    (ix+enemies_and_objects.v7),13*5       ;v7=sprite frame
 
   ld    de,TeleportPart4AnimationFrames

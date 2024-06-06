@@ -262,6 +262,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object005                    ;area sign (AreaSign)
   cp    6
   jp    z,.Object006                    ;teleport room (Teleport)
+  cp    7
+  jp    z,.Object007                    ;waterfall scene (WaterfallScene)
   cp    10
   jp    z,.Object010                    ;huge block (HugeBlock)
   cp    11
@@ -345,63 +347,14 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object159                    ;glassball pipe (GlassballPipe)
   ret
 
-  .Object200:                           ;Waterfall Boss (WaterfallBoss)
-  ld    hl,Object200Table
+
+  .Object007:                           ;waterfall scene (WaterfallScene)
+;jp .Object007
+  ld    hl,Object007Table
   push  iy
   pop   de                              ;enemy object table
   ld    bc,lenghtenemytable*1           ;1 object(s)
   ldir
-
-  ;write big statue mouth to (216,0) page 3
-  ld    a,0
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$0000 + (032*128) + (040/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (168*256) + (176/2)        ;(ny*256) + (nx/2)
-  ld    a,WaterfallSceneBlock1              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-  ld    de,Object200Table.lenghtobjectdata
-  ret    
-
-  .Object006:                           ;teleport room (Teleport)
-;v1=repeating steps
-;v2=pointer to movement table
-;v3=Vertical Movement
-;v4=Horizontal Movement
-;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
-;v6=active on which frame ?  
-;v7=sprite frame
-;v8=phase
-;v9=already entered?(bit0)/activate ring(bit1)
-;v10=activate ring flicker
-  ld    hl,Object006Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1           ;1 object(s)
-  ldir
-
-  ;set x
-  ld    a,(ix+Object020Table.x)
-  add   a,16                             ;10 pix to the right
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),l
-  ld    (iy+enemies_and_objects.x+1),h
-
-  ;set y
-  ld    a,(ix+Object020Table.y)
-  sub   72
-  ld    (iy+enemies_and_objects.y),a
-
-
-
-
-
-
-
-
 
   ;put waterfall backdrop in all 4 pages
   ld    a,0
@@ -436,14 +389,39 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,WaterfallSceneBlock4              ;block to copy graphics from
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
+  ld    de,Object007Table.lenghtobjectdata
+  ret   
 
+  .Object006:                           ;teleport room (Teleport)
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+;v7=sprite frame
+;v8=phase
+;v9=already entered?(bit0)/activate ring(bit1)
+;v10=activate ring flicker
+  ld    hl,Object006Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1           ;1 object(s)
+  ldir
 
+  ;set x
+  ld    a,(ix+Object020Table.x)
+  add   a,16                             ;10 pix to the right
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.x),l
+  ld    (iy+enemies_and_objects.x+1),h
 
-
-
-
-
-
+  ;set y
+  ld    a,(ix+Object020Table.y)
+  sub   72
+  ld    (iy+enemies_and_objects.y),a
 
   ld    de,Object006Table.lenghtobjectdata
   ret    
@@ -2406,7 +2384,7 @@ Object006Table:               ;Teleport
 .y: equ 2
 .lenghtobjectdata: equ 3
 
-Object200Table:               ;Waterfall Scene
+Object007Table:               ;Waterfall Scene
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
           db 2,        0|dw WaterfallScene      |db 8*02  |dw 8*17  |db 64,64|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
 .ID: equ 0
