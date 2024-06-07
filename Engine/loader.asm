@@ -198,7 +198,7 @@ ObjectTestData:
 ;db 0
 
 ;db 200,100,100,0    ;WaterfallBoss, x,y
-db 8,100,100,0    ;Boss Demon, x,y
+;db 8,100,100,0    ;Boss Demon, x,y
 
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
@@ -209,7 +209,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
 
-  ld    de,ObjectTestData
+;  ld    de,ObjectTestData
 
   push  de
 ;.CheckObjects: jp .CheckObjects
@@ -266,7 +266,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   cp    7
   jp    z,.Object007                    ;waterfall scene (WaterfallScene)
   cp    8
-  jp    z,.Object008                    ;boss demon (   )
+  jp    z,.Object008                    ;boss demon (BossDemon)
   cp    10
   jp    z,.Object010                    ;huge block (HugeBlock)
   cp    11
@@ -350,7 +350,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object159                    ;glassball pipe (GlassballPipe)
   ret
 
-  .Object008:                           ;boss demon (WaterfallScene)
+  .Object008:                           ;boss demon (BossDemon)
   ld    hl,Object008Table
   push  iy
   pop   de                              ;enemy object table
