@@ -1207,6 +1207,24 @@ BossDemonWalkRightMovementTable: ;repeating steps(128 = end table/repeat), move 
   db    40,0,+2, 128
 
   
+BossDemon:
+  call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
+  call  RestoreBackgroundForObjectInCurrentFrame 
+
+;  ld    (ix+enemies_and_objects.v7),13*5       ;v7=sprite frame
+
+  ld    de,.BossDemonIdle00
+  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+
+;sprite 0-5
+.BossDemonIdle00:   dw ryupage1frame000 | db BossDemonframelistblock, BossDemonspritedatablock
+.BossDemonIdle01:   dw ryupage1frame001 | db BossDemonframelistblock, BossDemonspritedatablock
+.BossDemonIdle02:   dw ryupage1frame002 | db BossDemonframelistblock, BossDemonspritedatablock
+.BossDemonIdle03:   dw ryupage1frame000 | db BossDemonframelistblock, BossDemonspritedatablock
+.BossDemonIdle04:   dw ryupage1frame000 | db BossDemonframelistblock, BossDemonspritedatablock
+
+
+
 BossDemon1:
 ;v1=repeating steps
 ;v2=pointer to movement table

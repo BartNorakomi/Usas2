@@ -198,6 +198,7 @@ ObjectTestData:
 ;db 0
 
 ;db 200,100,100,0    ;WaterfallBoss, x,y
+db 8,100,100,0    ;Boss Demon, x,y
 
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
@@ -208,7 +209,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
 
-;  ld    de,ObjectTestData
+  ld    de,ObjectTestData
 
   push  de
 ;.CheckObjects: jp .CheckObjects
@@ -264,6 +265,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object006                    ;teleport room (Teleport)
   cp    7
   jp    z,.Object007                    ;waterfall scene (WaterfallScene)
+  cp    8
+  jp    z,.Object008                    ;boss demon (   )
   cp    10
   jp    z,.Object010                    ;huge block (HugeBlock)
   cp    11
@@ -347,9 +350,17 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object159                    ;glassball pipe (GlassballPipe)
   ret
 
+  .Object008:                           ;boss demon (WaterfallScene)
+  ld    hl,Object008Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1           ;1 object(s)
+  ldir
+
+  ld    de,Object008Table.lenghtobjectdata
+  ret   
 
   .Object007:                           ;waterfall scene (WaterfallScene)
-;jp .Object007
   ld    hl,Object007Table
   push  iy
   pop   de                              ;enemy object table
@@ -2392,6 +2403,14 @@ Object007Table:               ;Waterfall Scene
 .y: equ 2
 .lenghtobjectdata: equ 3
 
+Object008Table:               ;Boss Demon
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+          db 2,        0|dw BossDemon           |db 8*00|dw 8*10|db 80,60|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,-01, 0|db 010,movementpatterns1block| ds fill-1
+
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.lenghtobjectdata: equ 3
 
 ;Get room type [A] table record address [HL]
 getRoomType:
