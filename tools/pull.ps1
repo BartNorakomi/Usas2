@@ -1,2 +1,2 @@
 .\commit.ps1
-git pull --rabase
+git pull --rebase
