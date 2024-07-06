@@ -63,18 +63,18 @@
   dw ryuPage1frame062
 
 ryuPage1frame000:
-  db 026h,019h,06Ah,02Fh
-  db 07Ch
-  db 000h,000h,0D1h,000h,000h
-  db 000h,000h
-  dw 00179h,base+00000h
-  dw 00106h,base+00000h
-  dw 00179h,base+00000h
-  dw 00107h,base+00000h
-  dw 00179h,base+00000h
-  dw 00106h,base+00000h
-  dw 00179h,base+00006h
-  dw 00206h,base+00009h
+  db 026h,019h,06Ah,02Fh	;w=38,h=25,x=106,y=47
+  db 07Ch			;o=124
+  db 000h,000h,0D1h,000h,000h	;unused
+  db 000h,000h			;unused
+  dw 00179h,base+00000h		;d=121,p=1
+  dw 00106h,base+00000h		;d=6,p=1
+  dw 00179h,base+00000h		;d=121,p=1
+  dw 00107h,base+00000h		;d=7,p=1
+  dw 00179h,base+00000h		;d=121,p=1
+  dw 00106h,base+00000h		;6,1
+  dw 00179h,base+00006h		;121,1
+  dw 00206h,base+00009h		;6,2
   dw 0027Ah,base+00008h
   dw 00106h,base+00000h
   dw 0027Ah,base+00008h
