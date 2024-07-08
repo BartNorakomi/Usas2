@@ -1,8 +1,8 @@
 		fname	"Usas2.rom",0	;Append code to existing Usas2.Rom file
 
 ;Debug stuff
-LoadSamples?: equ 0
-MusicOn?:   equ 0
+LoadSamples?: equ 1
+MusicOn?:   equ 1
 LogoOn?:    equ 0
 PlayerCanJumpThroughTopOfScreen?: equ 0
 
