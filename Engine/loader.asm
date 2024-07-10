@@ -357,6 +357,54 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    bc,lenghtenemytable*1           ;1 object(s)
   ldir
 
+
+
+
+
+  ;put lava animation backdrop in all 4 pages
+  ld    a,0
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$0000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
+  ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+  ld    a,0
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (040*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$8000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
+  ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+  ld    a,1
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (080*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$0000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
+  ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+  ld    a,1
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (120*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$8000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
+  ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+
+
+
+
+
+
+
+
+
+
+
   ld    de,Object008Table.lenghtobjectdata
   ret   
 
@@ -2405,7 +2453,7 @@ Object007Table:               ;Waterfall Scene
 
 Object008Table:               ;Boss Demon
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 2,        0|dw BossDemon           |db 8*00|dw 8*10|db 80,60|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,-01, 0|db 010,movementpatterns1block| ds fill-1
+          db 2,        0|dw BossDemon           |db 8*02|dw 8*06|db 80,60|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,-01, 0|db 010,movementpatterns1block| ds fill-1
 
 .ID: equ 0
 .x: equ 1

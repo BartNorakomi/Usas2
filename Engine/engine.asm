@@ -325,7 +325,7 @@ RestoreBackground:                  ;all background restores should be done simu
 switchpageSF2Engine:
 	ld    a,(screenpage)
 	inc   a
-	cp    3 ;4 would be the new way
+	cp    4 ;4 would be the new way, 3 is the old way
 	jr    nz,SetSF2DisplayPage
 	xor   a
 SetSF2DisplayPage:
@@ -1553,58 +1553,73 @@ Sf2EngineObjects:
 
 restoreBackgroundObject1:
   ld    a,(screenpage)
-  or    a                     ;if current page =0 then restore page 2
-  ld    hl,RestoreBackgroundObject1Page2
-  jp    z,DoCopy
-  dec   a                     ;if current page =1 then restore page 0
+  or    a                     
+  ld    hl,RestoreBackgroundObject1Page3
+  jp    z,DoCopy              ;if current page =0 then restore page 3
+  dec   a                     
   ld    hl,RestoreBackgroundObject1Page0
-  jp    z,DoCopy         ;if current page =2 then restore page 1
+  jp    z,DoCopy              ;if current page =1 then restore page 0      
+  dec   a                     
   ld    hl,RestoreBackgroundObject1Page1
-  jp    DoCopy
+  jp    z,DoCopy              ;if current page =2 then restore page 1
+  ld    hl,RestoreBackgroundObject1Page2
+  jp    DoCopy                ;if current page =3 then restore page 2
 
 restoreBackgroundObject2:
   ld    a,(screenpage)
-  or    a                     ;if current page =0 then restore page 2
-  ld    hl,RestoreBackgroundObject2Page2
-  jp    z,DoCopy
-  dec   a                     ;if current page =1 then restore page 0
+  or    a                     
+  ld    hl,RestoreBackgroundObject2Page3
+  jp    z,DoCopy              ;if current page =0 then restore page 3
+  dec   a                     
   ld    hl,RestoreBackgroundObject2Page0
-  jp    z,DoCopy         ;if current page =2 then restore page 1
+  jp    z,DoCopy              ;if current page =1 then restore page 0      
+  dec   a                     
   ld    hl,RestoreBackgroundObject2Page1
-  jp    DoCopy
+  jp    z,DoCopy              ;if current page =2 then restore page 1
+  ld    hl,RestoreBackgroundObject2Page2
+  jp    DoCopy                ;if current page =3 then restore page 2
 
 restoreBackgroundObject3:
   ld    a,(screenpage)
-  or    a                     ;if current page =0 then restore page 2
-  ld    hl,RestoreBackgroundObject3Page2
-  jp    z,DoCopy
-  dec   a                     ;if current page =1 then restore page 0
+  or    a                     
+  ld    hl,RestoreBackgroundObject3Page3
+  jp    z,DoCopy              ;if current page =0 then restore page 3
+  dec   a                     
   ld    hl,RestoreBackgroundObject3Page0
-  jp    z,DoCopy         ;if current page =2 then restore page 1
+  jp    z,DoCopy              ;if current page =1 then restore page 0      
+  dec   a                     
   ld    hl,RestoreBackgroundObject3Page1
-  jp    DoCopy
+  jp    z,DoCopy              ;if current page =2 then restore page 1
+  ld    hl,RestoreBackgroundObject3Page2
+  jp    DoCopy                ;if current page =3 then restore page 2
 
 restoreBackgroundObject4:
   ld    a,(screenpage)
-  or    a                     ;if current page =0 then restore page 2
-  ld    hl,RestoreBackgroundObject4Page2
-  jp    z,DoCopy
-  dec   a                     ;if current page =1 then restore page 0
+  or    a                     
+  ld    hl,RestoreBackgroundObject4Page3
+  jp    z,DoCopy              ;if current page =0 then restore page 3
+  dec   a                     
   ld    hl,RestoreBackgroundObject4Page0
-  jp    z,DoCopy         ;if current page =2 then restore page 1
+  jp    z,DoCopy              ;if current page =1 then restore page 0      
+  dec   a                     
   ld    hl,RestoreBackgroundObject4Page1
-  jp    DoCopy
+  jp    z,DoCopy              ;if current page =2 then restore page 1
+  ld    hl,RestoreBackgroundObject4Page2
+  jp    DoCopy                ;if current page =3 then restore page 2
 
 restoreBackgroundObject5:
   ld    a,(screenpage)
-  or    a                     ;if current page =0 then restore page 2
-  ld    hl,RestoreBackgroundObject5Page2
-  jp    z,DoCopy
-  dec   a                     ;if current page =1 then restore page 0
+  or    a                     
+  ld    hl,RestoreBackgroundObject5Page3
+  jp    z,DoCopy              ;if current page =0 then restore page 3
+  dec   a                     
   ld    hl,RestoreBackgroundObject5Page0
-  jp    z,DoCopy         ;if current page =2 then restore page 1
+  jp    z,DoCopy              ;if current page =1 then restore page 0      
+  dec   a                     
   ld    hl,RestoreBackgroundObject5Page1
-  jp    DoCopy
+  jp    z,DoCopy              ;if current page =2 then restore page 1
+  ld    hl,RestoreBackgroundObject5Page2
+  jp    DoCopy                ;if current page =3 then restore page 2
   
 RestoreBackgroundObject1Page0:
 	db    0,0,0,3
@@ -1612,13 +1627,18 @@ RestoreBackgroundObject1Page0:
 	db    $02,0,$02,0
 	db    0,0,$d0  
 RestoreBackgroundObject1Page1:
-	db    0,0,0,3
+	db    0,0,0,0
 	db    0,0,0,1
 	db    $02,0,$02,0
 	db    0,0,$d0  
 RestoreBackgroundObject1Page2:
-	db    0,0,0,3
+	db    0,0,0,1
 	db    0,0,0,2
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject1Page3:
+	db    0,0,0,2
+	db    0,0,0,3
 	db    $02,0,$02,0
 	db    0,0,$d0  
 
@@ -1628,13 +1648,18 @@ RestoreBackgroundObject2Page0:
 	db    $02,0,$02,0
 	db    0,0,$d0  
 RestoreBackgroundObject2Page1:
-	db    0,0,0,3
+	db    0,0,0,0
 	db    0,0,0,1
 	db    $02,0,$02,0
 	db    0,0,$d0  
 RestoreBackgroundObject2Page2:
-	db    0,0,0,3
+	db    0,0,0,1
 	db    0,0,0,2
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject2Page3:
+	db    0,0,0,2
+	db    0,0,0,3
 	db    $02,0,$02,0
 	db    0,0,$d0  
 
@@ -1644,45 +1669,60 @@ RestoreBackgroundObject3Page0:
 	db    $02,0,$02,0
 	db    0,0,$d0  
 RestoreBackgroundObject3Page1:
-	db    0,0,0,3
+	db    0,0,0,0
 	db    0,0,0,1
 	db    $02,0,$02,0
 	db    0,0,$d0  
 RestoreBackgroundObject3Page2:
-	db    0,0,0,3
+	db    0,0,0,1
 	db    0,0,0,2
 	db    $02,0,$02,0
 	db    0,0,$d0  
-	
+RestoreBackgroundObject3Page3:
+	db    0,0,0,2
+	db    0,0,0,3
+	db    $02,0,$02,0
+	db    0,0,$d0
+
 RestoreBackgroundObject4Page0:
 	db    0,0,0,3
 	db    0,0,0,0
 	db    $02,0,$02,0
 	db    0,0,$d0  
 RestoreBackgroundObject4Page1:
-	db    0,0,0,3
+	db    0,0,0,0
 	db    0,0,0,1
 	db    $02,0,$02,0
 	db    0,0,$d0  
 RestoreBackgroundObject4Page2:
-	db    0,0,0,3
+	db    0,0,0,1
 	db    0,0,0,2
 	db    $02,0,$02,0
 	db    0,0,$d0  
-	
+RestoreBackgroundObject4Page3:
+	db    0,0,0,2
+	db    0,0,0,3
+	db    $02,0,$02,0
+	db    0,0,$d0  
+
 RestoreBackgroundObject5Page0:
 	db    0,0,0,3
 	db    0,0,0,0
 	db    $02,0,$02,0
 	db    0,0,$d0  
 RestoreBackgroundObject5Page1:
-	db    0,0,0,3
+	db    0,0,0,0
 	db    0,0,0,1
 	db    $02,0,$02,0
 	db    0,0,$d0  
 RestoreBackgroundObject5Page2:
-	db    0,0,0,3
+	db    0,0,0,1
 	db    0,0,0,2
+	db    $02,0,$02,0
+	db    0,0,$d0  
+RestoreBackgroundObject5Page3:
+	db    0,0,0,2
+	db    0,0,0,3
 	db    $02,0,$02,0
 	db    0,0,$d0  
 
@@ -1717,7 +1757,10 @@ PutSF2Object:	;section#1
 	jp    z,.startsetupque
 	dec   a                     ;if current page =1 then que page 2 to be restored
 	ld    ix,RestoreBackgroundObject1Page2
-	jp    z,.startsetupque      ;if current page =2 then que page 0 to be restored
+	jp    z,.startsetupque      
+	dec   a                     ;if current page =2 then que page 3 to be restored
+	ld    ix,RestoreBackgroundObject1Page3
+	jp    z,.startsetupque      ;if current page =3 then que page 0 to be restored
 	ld    ix,RestoreBackgroundObject1Page0
 .startsetupque:
 	ld		a,(slot.page12rom)		;all RAM except page 1+2
@@ -1749,50 +1792,59 @@ ret
 
 PutSF2Object2:	;section#2
 	ld    a,(screenpage)
-	or    a                     ;if current page =0 then que page 1 to be restored
-	ld    ix,RestoreBackgroundObject2Page1
+	or    a                     
+	ld    ix,RestoreBackgroundObject2Page1  ;if current page =0 then que page 1 to be restored
 	jp    z,PutSF2Object.startsetupque
-	dec   a                     ;if current page =1 then que page 2 to be restored
-	ld    ix,RestoreBackgroundObject2Page2
-	jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
-	ld    ix,RestoreBackgroundObject2Page0
-	jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+	dec   a                     
+	ld    ix,RestoreBackgroundObject2Page2  ;if current page =1 then que page 2 to be restored
+	jp    z,PutSF2Object.startsetupque      
+	dec   a                     
+	ld    ix,RestoreBackgroundObject2Page3  ;if current page =2 then que page 3 to be restored
+	jp    z,PutSF2Object.startsetupque      
+	ld    ix,RestoreBackgroundObject2Page0  ;if current page =3 then que page 0 to be restored
+	jp    PutSF2Object.startsetupque      
 
 PutSF2Object3: 
 	ld    a,(screenpage)
-	or    a                     ;if current page =0 then que page 1 to be restored
-	ld    ix,RestoreBackgroundObject3Page1
+	or    a                     
+	ld    ix,RestoreBackgroundObject3Page1  ;if current page =0 then que page 1 to be restored
 	jp    z,PutSF2Object.startsetupque
-	dec   a                     ;if current page =1 then que page 2 to be restored
-	ld    ix,RestoreBackgroundObject3Page2
-	jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
-	ld    ix,RestoreBackgroundObject3Page0
-	jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+	dec   a                     
+	ld    ix,RestoreBackgroundObject3Page2  ;if current page =1 then que page 2 to be restored
+	jp    z,PutSF2Object.startsetupque      
+	dec   a                     
+	ld    ix,RestoreBackgroundObject3Page3  ;if current page =2 then que page 3 to be restored
+	jp    z,PutSF2Object.startsetupque      
+	ld    ix,RestoreBackgroundObject3Page0  ;if current page =3 then que page 0 to be restored
+	jp    PutSF2Object.startsetupque      
 
 PutSF2Object4: 
 	ld    a,(screenpage)
-	or    a                     ;if current page =0 then que page 1 to be restored
-	ld    ix,RestoreBackgroundObject4Page1
+	or    a                     
+	ld    ix,RestoreBackgroundObject4Page1  ;if current page =0 then que page 1 to be restored
 	jp    z,PutSF2Object.startsetupque
-	dec   a                     ;if current page =1 then que page 2 to be restored
-	ld    ix,RestoreBackgroundObject4Page2
-	jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
-	ld    ix,RestoreBackgroundObject4Page0
-	jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
+	dec   a                     
+	ld    ix,RestoreBackgroundObject4Page2  ;if current page =1 then que page 2 to be restored
+	jp    z,PutSF2Object.startsetupque      
+	dec   a                     
+	ld    ix,RestoreBackgroundObject4Page3  ;if current page =2 then que page 3 to be restored
+	jp    z,PutSF2Object.startsetupque      
+	ld    ix,RestoreBackgroundObject4Page0  ;if current page =3 then que page 0 to be restored
+	jp    PutSF2Object.startsetupque      
 
 PutSF2Object5: 
 	ld    a,(screenpage)
-	or    a                     ;if current page =0 then que page 1 to be restored
-	ld    ix,RestoreBackgroundObject5Page1
+	or    a                     
+	ld    ix,RestoreBackgroundObject5Page1  ;if current page =0 then que page 1 to be restored
 	jp    z,PutSF2Object.startsetupque
-	dec   a                     ;if current page =1 then que page 2 to be restored
-	ld    ix,RestoreBackgroundObject5Page2
-	jp    z,PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
-	ld    ix,RestoreBackgroundObject5Page0
-	jp    PutSF2Object.startsetupque      ;if current page =2 then que page 0 to be restored
-
-
-
+	dec   a                     
+	ld    ix,RestoreBackgroundObject5Page2  ;if current page =1 then que page 2 to be restored
+	jp    z,PutSF2Object.startsetupque      
+	dec   a                     
+	ld    ix,RestoreBackgroundObject5Page3  ;if current page =2 then que page 3 to be restored
+	jp    z,PutSF2Object.startsetupque      
+	ld    ix,RestoreBackgroundObject5Page0  ;if current page =3 then que page 0 to be restored
+	jp    PutSF2Object.startsetupque      
 
 GoPutSF2Object:
 	ld    bc,(object1y)	;b=x,c=y ;bc,Object1y
@@ -1916,10 +1968,11 @@ putplayer_noclip:		;in: HL=frameHeader.frameOffset
 	jr    nz,.not3
   ;if screenpage=0 then blit in page 1
   ;if screenpage=1 then blit in page 2
-  ;if screenpage=2 then blit in page 0
+  ;if screenpage=2 then blit in page 3
+  ;if screenpage=3 then blit in page 0
 	ld    a,(screenpage)
 	inc   a
-	cp    3
+	cp    4 ;4 would be the new way, 3 is the old way
 	jr    nz,.not3
 	xor   a
 .not3: 
@@ -2009,7 +2062,7 @@ putplayer_clipright:
 ;if screenpage=2 then blit in page 0
 	ld    a,(screenpage)
 	inc   a
-	cp    3
+	cp    4 ;4 would be the new way, 3 is the old way
 	jr    nz,.not3
 	xor   a
 .not3:  
@@ -2110,7 +2163,7 @@ putplayer_clipleft:
   ;if screenpage=2 then blit in page 0
 	ld    a,(screenpage)
 	inc   a
-	cp    3
+	cp    4 ;4 would be the new way, 3 is the old way
 	jr    nz,.not3
 	xor   a
 .not3:  

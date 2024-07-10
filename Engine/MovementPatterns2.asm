@@ -238,51 +238,6 @@ SetFrameBossGoat:
   ld    c,(hl)                              ;sprite data block
   ret
 
-
-PutSf2Object4Frames:
-  ld    a,(HugeObjectFrame)
-  inc   a
-  cp    4
-  jr    nz,.SetFrame
-  xor   a
-  .SetFrame:
-  ld    (HugeObjectFrame),a
-
-  or    a  
-  jr    z,.Part1
-  dec   a
-  jr    z,.Part2
-  dec   a
-  jr    z,.Part3
-
-  .Part4:
-  call  restoreBackgroundObject4
-  ld    a,(ix+enemies_and_objects.v7)
-  add   a,3
-  call  SetFrameBoss
-  call  PutSF2Object4                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
-  jp    switchpageSF2Engine
-
-  .Part3:
-  call  restoreBackgroundObject3
-  ld    a,(ix+enemies_and_objects.v7)
-  add   a,2
-  call  SetFrameBoss
-  jp    PutSF2Object3                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
-  
-  .Part2:
-  call  restoreBackgroundObject2
-  ld    a,(ix+enemies_and_objects.v7)
-  inc   a
-  call  SetFrameBoss
-  jp    PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
-  
-  .Part1:
-  call  restoreBackgroundObject1
-  ld    a,(ix+enemies_and_objects.v7)
-  call  SetFrameBoss
-  jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
-
 CheckPlayerHitByGoat:
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
   cp    4

@@ -125,3 +125,9 @@ phase	$4000
   incbin "..\grapx\WaterfallScene\Backdrop4.SC5",7,128 * 128      ;128 lines
 	ds		$c000-$,$ff
 dephase
+
+KonarkLavaSceneBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+phase	$4000
+  incbin "..\grapx\animated backgrounds\KonarkLava\KonarkLava4Steps.SC5",7,160 * 128      ;160 lines
+	ds		$c000-$,$ff
+dephase

@@ -25,9 +25,9 @@
 					"targetScreen5": "sBlueTemple.SC5"
 				},
 				{
-					"source": "sKonark.bmp",
-					"fixedPalette": "sKonarkPalette.PL",
-					"targetScreen5": "sKonark.SC5"
+					"source": "Konark.Tiles.bmp",
+					"fixedPalette": "Konark.tiles.PL",
+					"targetScreen5": "Konark.tiles.SC5"
 				},
 				{
 					"source": "sBurial.bmp",

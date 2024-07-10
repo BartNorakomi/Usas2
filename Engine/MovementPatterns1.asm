@@ -1213,17 +1213,22 @@ BossDemon:
 
 ;  ld    (ix+enemies_and_objects.v7),13*5       ;v7=sprite frame
 
+	ld    a,(HugeObjectFrame)
+  or    a
+  ld    de,BossDemonWalkRightMovementTable
+  call  z,MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+
+
+
   ld    de,.BossDemonIdle00
-  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+  jp    PutSf2Object8Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
 ;sprite 0-5
-.BossDemonIdle00:   dw ryupage1frame000 | db BossDemonframelistblock, BossDemonspritedatablock
-.BossDemonIdle01:   dw ryupage1frame001 | db BossDemonframelistblock, BossDemonspritedatablock
-.BossDemonIdle02:   dw ryupage1frame002 | db BossDemonframelistblock, BossDemonspritedatablock
-.BossDemonIdle03:   dw ryupage1frame000 | db BossDemonframelistblock, BossDemonspritedatablock
-.BossDemonIdle04:   dw ryupage1frame000 | db BossDemonframelistblock, BossDemonspritedatablock
-
-
+.BossDemonIdle00:   dw BossDemonIdleNewframe000 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
+.BossDemonIdle01:   dw BossDemonIdleNewframe001 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
+.BossDemonIdle02:   dw BossDemonIdleNewframe002 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
+.BossDemonIdle03:   dw BossDemonIdleNewframe003 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
+.BossDemonIdle04:   dw BossDemonIdleNewframe003 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
 
 BossDemon1:
 ;v1=repeating steps

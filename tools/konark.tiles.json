@@ -1,0 +1,15 @@
+{
+	"group": [
+		{
+			"path": "../grapx/tilesheets",
+			"gamma": 2.2,
+			"group": [
+				{
+					"source": "Konark.Tiles.bmp",
+					"fixedPalette": "Konark.tiles.PL",
+					"targetScreen5": "Konark.tiles.SC5"
+				}
+			]
+		}
+	]
+}
