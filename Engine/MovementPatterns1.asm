@@ -1219,16 +1219,30 @@ BossDemon:
   call  z,MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
 
 
+;  ld    de,BossDemonOld
+;  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
-  ld    de,.BossDemonIdle00
-  jp    PutSf2Object8Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+  ld    de,BossDemonNew
+  jp    PutSf2Object7Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
-;sprite 0-5
+;sprite 0-4 (5 slices)
+BossDemonOld:
 .BossDemonIdle00:   dw BossDemonIdleNewframe000 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
 .BossDemonIdle01:   dw BossDemonIdleNewframe001 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
 .BossDemonIdle02:   dw BossDemonIdleNewframe002 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
 .BossDemonIdle03:   dw BossDemonIdleNewframe003 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
 .BossDemonIdle04:   dw BossDemonIdleNewframe003 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
+
+;sprite 0-6 (7 slices)
+BossDemonNew:
+.BossDemonIdle00:   dw BossDemonIddle_0_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+.BossDemonIdle01:   dw BossDemonIddle_0_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+.BossDemonIdle02:   dw BossDemonIddle_0_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+.BossDemonIdle03:   dw BossDemonIddle_0_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+.BossDemonIdle04:   dw BossDemonIddle_0_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+.BossDemonIdle05:   dw BossDemonIddle_0_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+.BossDemonIdle06:   dw BossDemonIddle_0_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+
 
 BossDemon1:
 ;v1=repeating steps

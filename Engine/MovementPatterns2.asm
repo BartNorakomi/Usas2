@@ -386,33 +386,33 @@ GoatCheckIfDead:
 
 
 ;PutSf2Object2Frames:
-  ld    a,(HugeObjectFrame)
-  inc   a
-  cp    2
-  jr    nz,.SetFrame
-  xor   a
-  .SetFrame:
-  ld    (HugeObjectFrame),a
-  or    a
-  jr    z,.Part1
+;  ld    a,(HugeObjectFrame)
+;  inc   a
+;  cp    2
+;  jr    nz,.SetFrame
+;  xor   a
+;  .SetFrame:
+;  ld    (HugeObjectFrame),a
+;  or    a
+;  jr    z,.Part1
   
-  .Part2:
-  ld    a,(RestoreBackgroundSF2Object?)
-  or    a  
-  call  nz,restoreBackgroundObject2
-  ld    a,(ix+enemies_and_objects.v7)
-  inc   a
-  call  SetFrameBoss
-  call  PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
-  jp    switchpageSF2Engine
+;  .Part2:
+;  ld    a,(RestoreBackgroundSF2Object?)
+;  or    a  
+;  call  nz,restoreBackgroundObject2
+;  ld    a,(ix+enemies_and_objects.v7)
+;  inc   a
+;  call  SetFrameBoss
+;  call  PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+;  jp    switchpageSF2Engine
 
-  .Part1:
-  ld    a,(RestoreBackgroundSF2Object?)
-  or    a  
-  call  nz,restoreBackgroundObject1
-  ld    a,(ix+enemies_and_objects.v7)
-  call  SetFrameBoss
-  jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+;  .Part1:
+;  ld    a,(RestoreBackgroundSF2Object?)
+;  or    a  
+;  call  nz,restoreBackgroundObject1
+;  ld    a,(ix+enemies_and_objects.v7)
+;  call  SetFrameBoss
+;  jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
 
 
 

@@ -176,7 +176,7 @@ PutSf2Object4Frames:
 
 
 
-PutSf2Object8Frames:
+PutSf2Object7Frames:
 	ld    a,(HugeObjectFrame)
 	inc   a
 	cp    7
@@ -199,6 +199,28 @@ PutSf2Object5Frames:
 	jr    z,.Part3
 	dec   a
 	jr    z,.Part4
+	dec   a
+	jr    z,.Part5
+	dec   a
+	jr    z,.Part6
+
+.Part7:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject7
+	ld    a,(ix+enemies_and_objects.v7)
+	add   a,6
+	call  SetFrameBoss
+	jp    PutSF2Object7                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+.Part6:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject6
+	ld    a,(ix+enemies_and_objects.v7)
+	add   a,5
+	call  SetFrameBoss
+	jp    PutSF2Object6                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
 
 .Part5:
 	ld    a,(RestoreBackgroundSF2Object?)
