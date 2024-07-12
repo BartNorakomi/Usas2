@@ -2453,7 +2453,7 @@ Object007Table:               ;Waterfall Scene
 
 Object008Table:               ;Boss Demon
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 2,        0|dw BossDemon           |db 8*02|dw 8*06|db 80,60|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,-01, 0|db 010,movementpatterns1block| ds fill-1
+          db 2,        0|dw BossDemon           |db 8*02+1|dw 8*06|db 80,60|dw 00000000,0 db 0,0,0,                    +00,+00,+00,+00,+00,+00,+00,+00,-01, 0|db 010,movementpatterns1block| ds fill-1
 
 .ID: equ 0
 .x: equ 1

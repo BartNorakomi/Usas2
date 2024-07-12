@@ -1206,42 +1206,135 @@ BossDemonWalkLeftMovementTable: ;repeating steps(128 = end table/repeat), move y
 BossDemonWalkRightMovementTable: ;repeating steps(128 = end table/repeat), move y, move x
   db    40,0,+2, 128
 
-  
+
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=
+;v7=sprite frame
+;v8=phase
+;v9=move left (-1) or right (0)  
 BossDemon:
+;  ld    de,NonMovingObjectMovementTable
+;  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
   call  RestoreBackgroundForObjectInCurrentFrame 
 
-;  ld    (ix+enemies_and_objects.v7),13*5       ;v7=sprite frame
+  call  .HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
 
-	ld    a,(HugeObjectFrame)
-  or    a
-  ld    de,BossDemonWalkRightMovementTable
-  call  z,MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
+;	ld    (ix+enemies_and_objects.v7),5*7
 
-
-;  ld    de,BossDemonOld
-;  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
-
-  ld    de,BossDemonNew
+  ld    de,BossDemonIdle_0
   jp    PutSf2Object7Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
-;sprite 0-4 (5 slices)
-BossDemonOld:
-.BossDemonIdle00:   dw BossDemonIdleNewframe000 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
-.BossDemonIdle01:   dw BossDemonIdleNewframe001 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
-.BossDemonIdle02:   dw BossDemonIdleNewframe002 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
-.BossDemonIdle03:   dw BossDemonIdleNewframe003 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
-.BossDemonIdle04:   dw BossDemonIdleNewframe003 | db BossDemonIdleframelistblock, BossDemonIdlespritedatablock
+  .HandlePhase:
+  ld    a,(Bossframecounter)
+  inc   a
+  ld    (Bossframecounter),a
 
-;sprite 0-6 (7 slices)
-BossDemonNew:
-.BossDemonIdle00:   dw BossDemonIddle_0_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-.BossDemonIdle01:   dw BossDemonIddle_0_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-.BossDemonIdle02:   dw BossDemonIddle_0_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-.BossDemonIdle03:   dw BossDemonIddle_0_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-.BossDemonIdle04:   dw BossDemonIddle_0_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-.BossDemonIdle05:   dw BossDemonIddle_0_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-.BossDemonIdle06:   dw BossDemonIddle_0_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  or    a
+  jp    z,BossDemonIdle
+  dec   a
+  jp    z,BossDemonWalking
+  dec   a
+  jp    z,BossDemonAttacking
+  dec   a
+  jp    z,BossDemonHit
+  dec   a
+  jp    z,BossDemonDead
+
+
+
+  BossDemonIdle:
+;  ld    de,NonMovingObjectMovementTable
+;  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
+;  call  CollisionObjectPlayerDemon         ;Check if player is hit by Vram object                            
+;  call  CheckPlayerPunchesEnemyDemon       ;Check if player hit's enemy
+  
+;  ld    a,r
+;  and   31
+;  jr    nz,.EndCheckStartWalking
+;  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
+;  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table    
+;  ld    (ix+enemies_and_objects.v7),6       ;v7=sprite frame
+;  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+;  ret
+;  .EndCheckStartWalking:
+
+;  call  BossDemonCheckIfDead                ;call gets popped if dead
+;  call  BossDemonCheckIfHit                 ;call gets popped if hit
+
+  ;animate
+  ld    a,(HugeObjectFrame)
+  or    a
+  ret   nz
+
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  add   a,7
+  cp    6*7                                 ;sprite 0-5 are idle
+  jr    nz,.notzero
+  xor   a
+  .notzero:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  ret
+
+
+
+
+;sprite 0-5 (7 slices)
+BossDemonIdle_0:
+  dw    BossDemonIddle_0_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_0_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_0_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_0_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_0_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_0_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_0_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+BossDemonIdle_1:
+  dw    BossDemonIddle_1_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_1_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_1_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_1_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_1_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_1_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_1_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+BossDemonIdle_2:
+  dw    BossDemonIddle_2_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_2_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_2_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_2_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_2_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_2_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_2_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+BossDemonIdle_3:
+  dw    BossDemonIddle_3_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_3_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_3_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_3_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_3_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_3_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_3_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+BossDemonIdle_4:
+  dw    BossDemonIddle_4_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_4_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_4_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_4_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_4_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_4_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_4_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+BossDemonIdle_5:
+  dw    BossDemonIddle_5_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_5_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_5_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_5_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_5_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_5_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIddle_5_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+
 
 
 BossDemon1:
@@ -1411,37 +1504,7 @@ BossDemon1:
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret
 
-  BossDemonIdle:
-  ld    de,NonMovingObjectMovementTable
-  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
-  call  CollisionObjectPlayerDemon         ;Check if player is hit by Vram object                            
-  call  CheckPlayerPunchesEnemyDemon       ;Check if player hit's enemy
-  
-  ld    a,r
-  and   31
-  jr    nz,.EndCheckStartWalking
-  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
-  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table    
-  ld    (ix+enemies_and_objects.v7),6       ;v7=sprite frame
-  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-  ret
-  .EndCheckStartWalking:
 
-  call  BossDemonCheckIfDead                ;call gets popped if dead
-  call  BossDemonCheckIfHit                 ;call gets popped if hit
-
-  ;animate
-  ld    a,(Bossframecounter)
-  and   3
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
-  inc   a
-  cp    6                                   ;sprite 0-5 are idle
-  jr    nz,.notzero
-  xor   a
-  .notzero:
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
-  ret
 
   BossDemonCheckIfHit:
   ld    a,(ix+enemies_and_objects.hit?)

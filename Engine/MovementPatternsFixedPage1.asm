@@ -191,7 +191,6 @@ PutSf2Object5Frames:
 	xor   a
 	.SetFrame:
 	ld    (HugeObjectFrame),a
-	;or    a  
 	jr    z,.Part1
 	dec   a
 	jr    z,.Part2
