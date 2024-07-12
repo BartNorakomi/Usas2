@@ -1220,14 +1220,16 @@ BossDemon:
 ;  ld    de,NonMovingObjectMovementTable
 ;  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
 
-  call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
   call  RestoreBackgroundForObjectInCurrentFrame 
 
-  call  .HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
+  ld    a,(HugeObjectFrame)
+  or    a
+  call  z,.HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
 
 ;	ld    (ix+enemies_and_objects.v7),5*7
 
   ld    de,BossDemonIdle_0
+  call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
   jp    PutSf2Object7Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
 
   .HandlePhase:
@@ -1269,9 +1271,12 @@ BossDemon:
 ;  call  BossDemonCheckIfHit                 ;call gets popped if hit
 
   ;animate
-  ld    a,(HugeObjectFrame)
-  or    a
-  ret   nz
+;  ld    a,(HugeObjectFrame)
+ ; or    a
+  ;ret   nz
+		ld   a,(ix+enemies_and_objects.x)  
+		 add a,2
+		ld   (ix+enemies_and_objects.x),a  
 
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   add   a,7
@@ -3762,18 +3767,20 @@ HugeBlock:
   dw ryupage0frame002 | db ryuframelistblock, ryuspritedatablock
 
 RestoreBackgroundForObjectInCurrentFrame:
-  ld    a,(HugeObjectFrame)
-  or    a
-  jp    z,restoreBackgroundObject1
-  dec   a
-  jp    z,restoreBackgroundObject2
-  dec   a
-  jp    z,restoreBackgroundObject3
-  dec   a
-  jp    z,restoreBackgroundObject4
-;  dec   a
-;  jp    z,restoreBackgroundObject3
-  jp    restoreBackgroundObject5
+	ld    a,(HugeObjectFrame)
+	or    a
+	jp    z,restoreBackgroundObject1
+	dec   a
+	jp    z,restoreBackgroundObject2
+	dec   a
+	jp    z,restoreBackgroundObject3
+	dec   a
+	jp    z,restoreBackgroundObject4
+	dec   a
+	jp    z,restoreBackgroundObject5
+	dec   a
+	jp    z,restoreBackgroundObject6
+	jp    restoreBackgroundObject7
 
 PutSF2ObjectInCurrentFrame:
   ld    a,(HugeObjectFrame)

@@ -1928,9 +1928,9 @@ PutSF2ObjectSlice:
 
 
 GoPutSF2Object:
-	ld    bc,(object1y)	;b=x,c=y ;bc,Object1y
-	ld    hl,(Player1Frame)     ;points to object width
-	ld    iy,Player1SxB1        ;player collision detection blocks
+	ld    bc,(object1y)		;b=x,c=y ;bc,Object1y
+	ld    hl,(Player1Frame)	;points to object width
+	ld    iy,Player1SxB1	;player collision detection blocks
 
 ;20240531;ro;removed as it didn't do anything, really
 ;;screen limit right
@@ -1948,30 +1948,30 @@ GoPutSF2Object:
 ;; 	ld    (bc),a
 ;.LimitLeft:
 
-;Putprojectile:              ;projectiles use the same routine as Putplayer
-;Set up restore background que player
+;Prep restore-copy for this slice. IX=copyTable
 ;set width
-	ld    a,(hl)		;FrameWidth
+	ld    a,(hl)		;(sliceWidth)
 	inc   hl
-	ld    (ix+nx),a		;set object width to be restored by background
+	ld    (ix+nx),a		
 ;set height
-	ld    a,(hl)		;FrameHeight
+	ld    a,(hl)		;(sliceHeight)
 	inc   hl
-	ld    (ix+ny),a		;set object height to be restored by background
+	ld    (ix+ny),a
 ;set sy,dy by adding offset y to object y
 ;	inc   hl
 	ld    a,c ;(bc)		;object Y
 ;	inc   bc
 	inc   hl
-	add   a,(hl)		;FrameY
+	add   a,(hl)		;(sliceY)
 	dec   hl
 	ld    d,a
-	ld    (ix+sy),a		;set sy/dy to restore by background
+	ld    (ix+sy),a
 	ld    (ix+dy),a
 	ld    (iy+1),a		;Player1SyB1 (set block 1 sy)
-;set sx,dx by adding frame.x to object.x
-	ld    e,(hl)		;FrameX
-	inc   hl
+;set sx,dx by adding slice.x to object.x
+	ld    e,(hl)		;(sliceX)
+	inc   hl			;=sliceY
+	inc   hl			;=sliceOffset
 	ld    a,b ;(bc)		;object x
 	or    a
 	jp    p,PutSpriteleftSideOfScreen
@@ -1984,15 +1984,12 @@ PutSpriteRightSideOfScreen:
 	ld    (ix+sx),a		;set sx/dx to restore by background
 	ld    (ix+dx),a
 
-;Set up restore background que player
-	inc   hl			;=FrameOffset
 ;clipping check
-	ld    a,b ;(bc)		;object X
+	ld    a,b			;(bc)		;object X
 	sub   moveplayerleftinscreen
 	add   a,e			;object.X+frame.X
 	add   a,(ix+nx)
 	jp    c,putplayer_clipright
-
 	jp    putplayer_noclip
 
  
@@ -2014,10 +2011,9 @@ PutSpriteleftSideOfScreen:
 ;	ld    (ix+dy),a
 ;	ld    (iy+1),a		;Player1SyB1 (set block 1 sy)
 ;Set up restore background que player
-	inc   hl			;=FrameOffset
 ;	inc   bc			;=object x
 ;clipping check
-	ld    a,b ;(bc)		;object X
+	ld    a,b		;(bc)		;object X
 	sub   a,moveplayerleftinscreen
 	add   a,e			;object.X+frame.X
 	jp    nc,putplayer_clipleft
@@ -2057,8 +2053,7 @@ putplayer_noclip:		;in: HL=frameHeader.frameOffset
 ;	cp    4 ;4 would be the new way, 3 is the old way
 ;	jr    nz,.not3
 ;	xor   a
-  and   3
-
+	and   3
 .not3: 
 	add   a,a
 	bit   7,d
@@ -2127,7 +2122,7 @@ putplayer_clipright_totallyoutofscreenright:
 ;  add   a,(hl)                ;add player x offset for first line
 ;  ld    e,a
 ;;  jp    SetOffsetBlocksAndAttackpoints
-  ret
+	ret
   
 putplayer_clipright:
 	ld    a,b ;(bc)		;object.X
@@ -2146,13 +2141,10 @@ putplayer_clipright:
 ;if screenpage=2 then blit in page 0
 	ld    a,(screenpage)
 	inc   a
-
 ;	cp    4 ;4 would be the new way, 3 is the old way
 ;	jr    nz,.not3
 ;	xor   a
-  and   3
-
-
+	and   3
 .not3:  
 	add   a,a
 	bit   7,d
@@ -2233,7 +2225,7 @@ putplayer_clipright:
 
 
 putplayer_clipleft:
-	ld    a,b ;X (bc)
+	ld    a,b	;X (bc)
 	add   a,(hl)
 	inc   hl
 	sub   a,moveplayerleftinscreen
@@ -2251,12 +2243,10 @@ putplayer_clipleft:
   ;if screenpage=2 then blit in page 0
 	ld    a,(screenpage)
 	inc   a
-
 ;	cp    4 ;4 would be the new way, 3 is the old way
 ;	jr    nz,.not3
 ;	xor   a
-  and   3
-
+	and   3
 .not3:  
 	add   a,a
 	bit   7,d
@@ -2374,7 +2364,6 @@ putplayer_clipleft:
   .exit:
 	ld    sp,(spatpointer)
 	ret  
-
 
 
 
