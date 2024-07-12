@@ -165,8 +165,8 @@ BossDemonIdleNewframe002:
   dw 01200h,base+002BBh
 
 BossDemonIdleNewframe003:
-  db 026h,017h,072h,02Eh
-  db 082h
+  db 026h,017h,072h,02Eh	;w=38,h=23,x=114,y=46
+  db 082h			;o=130
   db 000h,000h,0D2h,000h,000h
   db 000h,000h
   dw 00180h,base+00050h
