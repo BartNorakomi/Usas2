@@ -176,11 +176,8 @@ PutSf2Object4Frames:
 
 
 
-PutSf2Object7Frames:
-	ld    a,(HugeObjectFrame)
-	inc   a
-	cp    7
-  jr    PutSf2Object5Frames.entry
+
+
 
 PutSf2Object5Frames:
 	ld    a,(HugeObjectFrame)
@@ -266,6 +263,123 @@ PutSf2Object5Frames:
 	call  PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
 	jp    switchpageSF2Engine
 
+
+
+
+
+PutSf2Object7Frames:
+	ld    a,(HugeObjectFrame)
+	inc   a
+	cp    7
+	jr    nz,.SetFrame
+	xor   a
+	.SetFrame:
+	ld    (HugeObjectFrame),a
+	jp    z,.Part1
+	dec   a
+	jp    z,.Part2
+	dec   a
+	jp    z,.Part3
+	dec   a
+	jp    z,.Part4
+	dec   a
+	jp    z,.Part5
+	dec   a
+	jp    z,.Part6
+
+.Part7:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject7
+  call  MultV7Times28
+  ld    bc,06*4
+	call  SetFrameBossNew
+	jp    PutSF2Object7                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+.Part6:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject6
+  call  MultV7Times28
+  ld    bc,05*4
+	call  SetFrameBossNew
+	jp    PutSF2Object6                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+.Part5:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject5
+  call  MultV7Times28
+  ld    bc,04*4
+	call  SetFrameBossNew
+	jp    PutSF2Object5                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+.Part4:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject4
+  call  MultV7Times28
+  ld    bc,03*4
+	call  SetFrameBossNew
+	jp    PutSF2Object4                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+.Part3:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject3
+  call  MultV7Times28
+  ld    bc,02*4
+	call  SetFrameBossNew
+	jp    PutSF2Object3                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  
+.Part2:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject2
+  call  MultV7Times28
+  ld    bc,01*4
+	call  SetFrameBossNew
+	jp    PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  
+.Part1:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject1
+  call  MultV7Times28
+  ld    bc,00*4
+	call  SetFrameBossNew
+	call  PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+	jp    switchpageSF2Engine
+
+MultV7Times28:                              ;each frame= 7 slices*4 bytes data per slice = 28 bytes
+	ld    l,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+	ld    h,0                                 ;hl=sprite frame
+  add   hl,hl                               ;*2
+  add   hl,hl                               ;*4
+  push  hl
+  add   hl,hl                               ;*8
+  push  hl
+  add   hl,hl                               ;*16
+  pop   bc
+  add   hl,bc                               ;*24
+  pop   bc
+  add   hl,bc                               ;*28 (sprite frame * 28)
+  ret
+
+SetFrameBossNew:
+  add   hl,bc                               ;slice
+	add   hl,de                               ;first frame of this Boss
+.SetFrameSF2Object:
+	ld    a,(hl)
+	ld    (Player1Frame),a
+	inc   hl
+	ld    a,(hl)
+	ld    (Player1Frame+1),a
+	inc   hl
+	ld    b,(hl)                              ;frame list block
+	inc   hl
+	ld    c,(hl)                              ;sprite data block
+  ret
 
 SetFrameBoss:
 	ld    l,a                                 ;v7=sprite frame

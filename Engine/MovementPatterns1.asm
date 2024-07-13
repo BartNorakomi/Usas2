@@ -192,7 +192,7 @@ TemplateBoss:
 
   call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ld    de,BossZombieCaterpillarIdle00
-  jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+  jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, MIdle and then Bottom
 
   .HandlePhase:                            ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
 
@@ -485,7 +485,7 @@ BossZombieCaterpillar:
   
   call  .HandlePhase                        ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ld    de,BossZombieCaterpillarIdle00
-  jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+  jp    PutSf2Object3Frames                 ;CHANGES IX - puts object in 3 frames, Top, MIdle and then Bottom
 
   .HandlePhase:                            ;(0=idle sitting, 1=idle flying, 2=attacking, 3=hit, 4=dead)
   ld    de,NonMovingObjectMovementTable
@@ -1226,11 +1226,11 @@ BossDemon:
   or    a
   call  z,.HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
 
-;	ld    (ix+enemies_and_objects.v7),5*7
+;	ld    (ix+enemies_and_objects.v7),DemonStartingFrameIdle
 
   ld    de,BossDemonIdle_0
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
-  jp    PutSf2Object7Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+  jp    PutSf2Object7Frames                 ;CHANGES IX - puts object in 3 frames, Top, MIdle and then Bottom
 
   .HandlePhase:
   ld    a,(Bossframecounter)
@@ -1270,28 +1270,43 @@ BossDemon:
 ;  call  BossDemonCheckIfDead                ;call gets popped if dead
 ;  call  BossDemonCheckIfHit                 ;call gets popped if hit
 
-<<<<<<< Updated upstream
-  ;animate
-;  ld    a,(HugeObjectFrame)
- ; or    a
-  ;ret   nz
-		ld   a,(ix+enemies_and_objects.x)  
-		 add a,2
-		ld   (ix+enemies_and_objects.x),a  
-=======
-  ld    b,0*7                               ;starting frame Idle
-  ld    c,6*7                               ;ending frame Idle
-  call  BossDemonAnimate
-  ret
+  ;animate dying
+  ld    b,DemonStartingFrameDying
+  ld    c,DemonStartingFrameDying+DemonTotalFramesDying
+  jp    BossDemonAnimate
+
+  ;animate casting
+  ld    b,DemonStartingFrameCasting
+  ld    c,DemonStartingFrameCasting+DemonTotalFramesCasting
+  jp    BossDemonAnimate
+
+  ;animate cleave
+  ld    b,DemonStartingFrameCleave
+  ld    c,DemonStartingFrameCleave+DemonTotalFramesCleave
+  jp    BossDemonAnimate
+
+  ;animate hit
+  ld    b,DemonStartingFrameHit
+  ld    c,DemonStartingFrameHit+DemonTotalFramesHit
+  jp    BossDemonAnimate
+
+  ;animate walk
+  ld    b,DemonStartingFrameWalk
+  ld    c,DemonStartingFrameWalk+DemonTotalFramesWalk
+  jp    BossDemonAnimate
+
+  ;animate idle
+  ld    b,DemonStartingFrameIdle
+  ld    c,DemonStartingFrameIdle+DemonTotalFramesIdle
+  jp    BossDemonAnimate
 
   BossDemonAnimate:
   ld    a,(HugeObjectFrame)
   or    a
   ret   nz
->>>>>>> Stashed changes
 
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
-  add   a,7
+  inc   a
   cp    c                                   ;c=ending frame
   jr    nz,.notzero
   ld    a,b                                 ;b=starting frame
@@ -1301,58 +1316,475 @@ BossDemon:
 
 
 
-
+DemonStartingFrameIdle:   equ 00
+DemonTotalFramesIdle:     equ (BossDemonWalk_0-BossDemonIdle_0)/(4*7)
 ;sprite 0-5 (7 slices)
 BossDemonIdle_0:
-  dw    BossDemonIddle_0_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_0_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_0_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_0_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_0_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_0_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_0_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_0_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_0_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_0_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_0_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_0_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_0_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_0_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
 BossDemonIdle_1:
-  dw    BossDemonIddle_1_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_1_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_1_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_1_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_1_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_1_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_1_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_1_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_1_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_1_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_1_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_1_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_1_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_1_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
 BossDemonIdle_2:
-  dw    BossDemonIddle_2_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_2_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_2_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_2_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_2_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_2_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_2_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_2_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_2_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_2_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_2_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_2_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_2_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_2_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
 BossDemonIdle_3:
-  dw    BossDemonIddle_3_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_3_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_3_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_3_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_3_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_3_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_3_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_3_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_3_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_3_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_3_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_3_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_3_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_3_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
 BossDemonIdle_4:
-  dw    BossDemonIddle_4_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_4_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_4_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_4_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_4_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_4_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_4_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_4_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_4_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_4_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_4_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_4_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_4_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_4_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
 BossDemonIdle_5:
-  dw    BossDemonIddle_5_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_5_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_5_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_5_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_5_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_5_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
-  dw    BossDemonIddle_5_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_5_0 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_5_1 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_5_2 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_5_3 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_5_4 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_5_5 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+  dw    BossDemonIdle_5_6 | db BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock
+
+DemonStartingFrameWalk:   equ DemonStartingFrameIdle+DemonTotalFramesIdle
+DemonTotalFramesWalk:     equ (BossDemonHit_0-BossDemonWalk_0)/(4*7)
+;sprite 0-11 (7 slices)
+BossDemonWalk_0:
+  dw    BossDemonWalk_0_0 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_0_1 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_0_2 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_0_3 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_0_4 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_0_5 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_0_6 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+BossDemonWalk_1:
+  dw    BossDemonWalk_1_0 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_1_1 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_1_2 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_1_3 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_1_4 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_1_5 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_1_6 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+BossDemonWalk_2:
+  dw    BossDemonWalk_2_0 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_2_1 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_2_2 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_2_3 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_2_4 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_2_5 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_2_6 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+BossDemonWalk_3:
+  dw    BossDemonWalk_3_0 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_3_1 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_3_2 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_3_3 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_3_4 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_3_5 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_3_6 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+BossDemonWalk_4:
+  dw    BossDemonWalk_4_0 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_4_1 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_4_2 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_4_3 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_4_4 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_4_5 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_4_6 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+BossDemonWalk_5:
+  dw    BossDemonWalk_5_0 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_5_1 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_5_2 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_5_3 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_5_4 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_5_5 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_5_6 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+BossDemonWalk_6:
+  dw    BossDemonWalk_6_0 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_6_1 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_6_2 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_6_3 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_6_4 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_6_5 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_6_6 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+BossDemonWalk_7:
+  dw    BossDemonWalk_7_0 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_7_1 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_7_2 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_7_3 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_7_4 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_7_5 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_7_6 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+BossDemonWalk_8:
+  dw    BossDemonWalk_8_0 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_8_1 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_8_2 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_8_3 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_8_4 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_8_5 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_8_6 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+BossDemonWalk_9:
+  dw    BossDemonWalk_9_0 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_9_1 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_9_2 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_9_3 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_9_4 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_9_5 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+  dw    BossDemonWalk_9_6 | db BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock
+
+DemonStartingFrameHit:    equ DemonStartingFrameWalk+DemonTotalFramesWalk
+DemonTotalFramesHit:      equ (BossDemonCleave0to5_0-BossDemonHit_0)/(4*7)
+;sprite 0-4 (7 slices)
+BossDemonHit_0:
+  dw    BossDemonHit_0_0 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_0_1 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_0_2 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_0_3 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_0_4 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_0_5 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_0_6 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+BossDemonHit_1:
+  dw    BossDemonHit_1_0 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_1_1 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_1_2 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_1_3 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_1_4 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_1_5 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_1_6 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+BossDemonHit_2:
+  dw    BossDemonHit_2_0 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_2_1 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_2_2 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_2_3 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_2_4 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_2_5 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_2_6 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+BossDemonHit_3:
+  dw    BossDemonHit_3_0 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_3_1 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_3_2 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_3_3 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_3_4 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_3_5 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_3_6 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+BossDemonHit_4:
+  dw    BossDemonHit_4_0 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_4_1 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_4_2 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_4_3 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_4_4 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_4_5 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+  dw    BossDemonHit_4_6 | db BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock
+
+DemonStartingFrameCleave:    equ DemonStartingFrameHit+DemonTotalFramesHit
+DemonTotalFramesCleave:      equ (BossDemonCasting_0-BossDemonCleave0to5_0)/(4*7)
+;sprite 0-5 (7 slices)
+BossDemonCleave0to5_0:
+  dw    BossDemonCleave0to5_0_0 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_0_1 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_0_2 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_0_3 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_0_4 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_0_5 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_0_6 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+BossDemonCleave0to5_1:
+  dw    BossDemonCleave0to5_1_0 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_1_1 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_1_2 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_1_3 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_1_4 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_1_5 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_1_6 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+BossDemonCleave0to5_2:
+  dw    BossDemonCleave0to5_2_0 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_2_1 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_2_2 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_2_3 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_2_4 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_2_5 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_2_6 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+BossDemonCleave0to5_3:
+  dw    BossDemonCleave0to5_3_0 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_3_1 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_3_2 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_3_3 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_3_4 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_3_5 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_3_6 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+BossDemonCleave0to5_4:
+  dw    BossDemonCleave0to5_4_0 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_4_1 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_4_2 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_4_3 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_4_4 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_4_5 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_4_6 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+BossDemonCleave0to5_5:
+  dw    BossDemonCleave0to5_5_0 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_5_1 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_5_2 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_5_3 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_5_4 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_5_5 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+  dw    BossDemonCleave0to5_5_6 | db BossDemonCleave0to5Newframelistblock, BossDemonCleave0to5Newspritedatablock
+
+;sprite 6-7 (7 slices)
+BossDemonCleave6to7_0:
+  dw    BossDemonCleave6to7_0_0 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_0_1 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_0_2 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_0_3 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_0_4 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_0_5 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_0_6 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+BossDemonCleave6to7_1:
+  dw    BossDemonCleave6to7_1_0 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_1_1 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_1_2 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_1_3 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_1_4 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_1_5 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+  dw    BossDemonCleave6to7_1_6 | db BossDemonCleave6to7Newframelistblock, BossDemonCleave6to7Newspritedatablock
+
+;sprite 8-12 (7 slices)
+BossDemonCleave8to12_0:
+  dw    BossDemonCleave8to12_0_0 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_0_1 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_0_2 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_0_3 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_0_4 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_0_5 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_0_6 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+BossDemonCleave8to12_1:
+  dw    BossDemonCleave8to12_1_0 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_1_1 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_1_2 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_1_3 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_1_4 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_1_5 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_1_6 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+BossDemonCleave8to12_2:
+  dw    BossDemonCleave8to12_2_0 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_2_1 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_2_2 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_2_3 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_2_4 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_2_5 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_2_6 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+BossDemonCleave8to12_3:
+  dw    BossDemonCleave8to12_3_0 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_3_1 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_3_2 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_3_3 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_3_4 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_3_5 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_3_6 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+BossDemonCleave8to12_4:
+  dw    BossDemonCleave8to12_4_0 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_4_1 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_4_2 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_4_3 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_4_4 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_4_5 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+  dw    BossDemonCleave8to12_4_6 | db BossDemonCleave8to12Newframelistblock, BossDemonCleave8to12Newspritedatablock
+
+DemonStartingFrameCasting:   equ DemonStartingFrameCleave+DemonTotalFramesCleave
+DemonTotalFramesCasting:     equ (BossDemonDying1to4_0-BossDemonCasting_0)/(4*7)
+;sprite 0-11 (7 slices)
+BossDemonCasting_0:
+  dw    BossDemonCasting_0_0 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_0_1 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_0_2 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_0_3 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_0_4 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_0_5 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_0_6 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+BossDemonCasting_1:
+  dw    BossDemonCasting_1_0 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_1_1 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_1_2 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_1_3 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_1_4 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_1_5 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_1_6 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+BossDemonCasting_2:
+  dw    BossDemonCasting_2_0 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_2_1 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_2_2 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_2_3 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_2_4 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_2_5 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_2_6 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+BossDemonCasting_3:
+  dw    BossDemonCasting_3_0 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_3_1 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_3_2 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_3_3 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_3_4 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_3_5 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_3_6 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+BossDemonCasting_4:
+  dw    BossDemonCasting_4_0 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_4_1 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_4_2 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_4_3 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_4_4 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_4_5 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_4_6 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+BossDemonCasting_5:
+  dw    BossDemonCasting_5_0 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_5_1 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_5_2 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_5_3 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_5_4 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_5_5 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+  dw    BossDemonCasting_5_6 | db BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock
+
+DemonStartingFrameDying:        equ DemonStartingFrameCasting+DemonTotalFramesCasting
+DemonTotalFramesDying:          equ (BossDemonEnd-BossDemonDying1to4_0)/(4*7)
+;sprite 1-4 (7 slices)
+BossDemonDying1to4_0:
+  dw    BossDemonDying1to4_0_0 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_0_1 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_0_2 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_0_3 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_0_4 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_0_5 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_0_6 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+BossDemonDying1to4_1:
+  dw    BossDemonDying1to4_1_0 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_1_1 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_1_2 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_1_3 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_1_4 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_1_5 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_1_6 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+BossDemonDying1to4_2:
+  dw    BossDemonDying1to4_2_0 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_2_1 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_2_2 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_2_3 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_2_4 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_2_5 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_2_6 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+BossDemonDying1to4_3:
+  dw    BossDemonDying1to4_3_0 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_3_1 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_3_2 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_3_3 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_3_4 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_3_5 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+  dw    BossDemonDying1to4_3_6 | db BossDemonDying1to4Newframelistblock, BossDemonDying1to4Newspritedatablock
+
+;sprite 4-14 (7 slices)
+BossDemonDying4to14_0:
+  dw    BossDemonDying4to14_0_0 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_0_1 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_0_2 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_0_3 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_0_4 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_0_5 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_0_6 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+BossDemonDying4to14_1:
+  dw    BossDemonDying4to14_1_0 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_1_1 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_1_2 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_1_3 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_1_4 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_1_5 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_1_6 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+BossDemonDying4to14_2:
+  dw    BossDemonDying4to14_2_0 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_2_1 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_2_2 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_2_3 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_2_4 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_2_5 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_2_6 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+BossDemonDying4to14_3:
+  dw    BossDemonDying4to14_3_0 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_3_1 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_3_2 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_3_3 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_3_4 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_3_5 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_3_6 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+BossDemonDying4to14_4:
+  dw    BossDemonDying4to14_4_0 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_4_1 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_4_2 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_4_3 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_4_4 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_4_5 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_4_6 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+BossDemonDying4to14_5:
+  dw    BossDemonDying4to14_5_0 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_5_1 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_5_2 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_5_3 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_5_4 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_5_5 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_5_6 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+BossDemonDying4to14_6:
+  dw    BossDemonDying4to14_6_0 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_6_1 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_6_2 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_6_3 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_6_4 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_6_5 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_6_6 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+BossDemonDying4to14_7:
+  dw    BossDemonDying4to14_7_0 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_7_1 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_7_2 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_7_3 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_7_4 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_7_5 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_7_6 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+BossDemonDying4to14_8:
+  dw    BossDemonDying4to14_8_0 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_8_1 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_8_2 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_8_3 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_8_4 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_8_5 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_8_6 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+BossDemonDying4to14_9:
+  dw    BossDemonDying4to14_9_0 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_9_1 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_9_2 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_9_3 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_9_4 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_9_5 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
+  dw    BossDemonDying4to14_9_6 | db BossDemonDying4to14Newframelistblock, BossDemonDying4to14Newspritedatablock
 
 
+
+
+
+
+
+BossDemonEnd:
 
 BossDemon1:
 ;v1=repeating steps
@@ -3833,7 +4265,7 @@ WaterfallScene:
 ;  ld    (ix+enemies_and_objects.v7),13*5       ;v7=sprite frame
 
   ld    de,.EmptyFrames
-  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, MIdle and then Bottom
 
   .EmptyFrames:
   dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
@@ -3864,9 +4296,9 @@ Teleport:
 
   ld    de,TeleportPart4AnimationFrames
   bit   0,(ix+enemies_and_objects.v9)       ;v9=already entered?(bit0)/activate ring(bit1)
-  jp    nz,PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+  jp    nz,PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, MIdle and then Bottom
   ld    de,TeleportPart3AnimationFrames
-  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, Middle and then Bottom
+  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, MIdle and then Bottom
 
   .CheckCollision:                          ;hitbox teleport=(120,100)-(150,130)
 	ld		hl,(PlayerSpriteStand)
