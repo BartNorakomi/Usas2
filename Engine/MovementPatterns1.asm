@@ -1270,6 +1270,7 @@ BossDemon:
 ;  call  BossDemonCheckIfDead                ;call gets popped if dead
 ;  call  BossDemonCheckIfHit                 ;call gets popped if hit
 
+<<<<<<< Updated upstream
   ;animate
 ;  ld    a,(HugeObjectFrame)
  ; or    a
@@ -1277,12 +1278,23 @@ BossDemon:
 		ld   a,(ix+enemies_and_objects.x)  
 		 add a,2
 		ld   (ix+enemies_and_objects.x),a  
+=======
+  ld    b,0*7                               ;starting frame Idle
+  ld    c,6*7                               ;ending frame Idle
+  call  BossDemonAnimate
+  ret
+
+  BossDemonAnimate:
+  ld    a,(HugeObjectFrame)
+  or    a
+  ret   nz
+>>>>>>> Stashed changes
 
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   add   a,7
-  cp    6*7                                 ;sprite 0-5 are idle
+  cp    c                                   ;c=ending frame
   jr    nz,.notzero
-  xor   a
+  ld    a,b                                 ;b=starting frame
   .notzero:
   ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
   ret
