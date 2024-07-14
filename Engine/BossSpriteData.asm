@@ -225,79 +225,81 @@ BossDemonIdlespritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockS
 
 BossDemonIdleNewframelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 									phase	$8000
-									include "..\grapx\BossDemon\IdleNew\BossDemonIdle.asm" 
+									include "..\grapx\BossDemon\BossDemonIdle.asm" 
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 									dephase
 BossDemonIdleNewspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									incbin "..\grapx\BossDemon\IdleNew\BossDemonIdle.dat"
+									incbin "..\grapx\BossDemon\BossDemonIdle.dat"
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block								
 
 BossDemonWalkNewframelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 									phase	$8000
-									include "..\grapx\BossDemon\IdleNew\BossDemonWalk.asm" 
+									include "..\grapx\BossDemon\BossDemonWalk.asm" 
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 									dephase
 BossDemonWalkNewspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									incbin "..\grapx\BossDemon\IdleNew\BossDemonWalk.dat"
+									incbin "..\grapx\BossDemon\BossDemonWalk.dat"
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
 
 BossDemonHitNewframelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 									phase	$8000
-									include "..\grapx\BossDemon\IdleNew\BossDemonHit.asm" 
+									include "..\grapx\BossDemon\BossDemonHit.asm" 
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 									dephase
-BossDemonHitNewspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									incbin "..\grapx\BossDemon\IdleNew\BossDemonHit.dat"
+BossDemonHitNewspritedatablock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+									incbin "..\grapx\BossDemon\BossDemonHit.dat"
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
-BossDemonCleave0to5Newframelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									phase	$8000
-									include "..\grapx\BossDemon\IdleNew\BossDemonCleave0to5.asm" 
-									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-									dephase
+
+BossDemonCleave0to5Newframelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+										phase	$8000
+										include "..\grapx\BossDemon\BossDemonCleave0to5.asm" 
+										DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+										dephase
 BossDemonCleave0to5Newspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									incbin "..\grapx\BossDemon\IdleNew\BossDemonCleave0to5.dat"
-									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
+										incbin "..\grapx\BossDemon\BossDemonCleave0to5.dat"
+										DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
 
-BossDemonCleave6to7Newframelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									phase	$8000
-									include "..\grapx\BossDemon\IdleNew\BossDemonCleave6to7.asm" 
-									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-									dephase
+BossDemonCleave6to7Newframelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+										phase	$8000
+										include "..\grapx\BossDemon\BossDemonCleave6to7.asm" 
+										DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+										dephase
 BossDemonCleave6to7Newspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									incbin "..\grapx\BossDemon\IdleNew\BossDemonCleave6to7.dat"
-									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
+										incbin "..\grapx\BossDemon\BossDemonCleave6to7.dat"
+										DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
 
-BossDemonCleave8to12Newframelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									phase	$8000
-									include "..\grapx\BossDemon\IdleNew\BossDemonCleave8to12.asm" 
-									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-									dephase
+BossDemonCleave8to12Newframelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+										phase	$8000
+										include "..\grapx\BossDemon\BossDemonCleave8to12.asm" 
+										DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+										dephase
 BossDemonCleave8to12Newspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									incbin "..\grapx\BossDemon\IdleNew\BossDemonCleave8to12.dat"
-									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
+										incbin "..\grapx\BossDemon\BossDemonCleave8to12.dat"
+										DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
+										
 BossDemonCastingNewframelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 									phase	$8000
-									include "..\grapx\BossDemon\IdleNew\BossDemonCasting.asm" 
+									include "..\grapx\BossDemon\BossDemonCasting.asm" 
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 									dephase
 BossDemonCastingNewspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									incbin "..\grapx\BossDemon\IdleNew\BossDemonCasting.dat"
+									incbin "..\grapx\BossDemon\BossDemonCasting.dat"
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
 BossDemonDying1to4Newframelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 									phase	$8000
-									include "..\grapx\BossDemon\IdleNew\BossDemonDying1to4.asm" 
+									include "..\grapx\BossDemon\BossDemonDying1to4.asm" 
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 									dephase
 BossDemonDying1to4Newspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									incbin "..\grapx\BossDemon\IdleNew\BossDemonDying1to4.dat"
+									incbin "..\grapx\BossDemon\BossDemonDying1to4.dat"
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
 BossDemonDying4to14Newframelistblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 									phase	$8000
-									include "..\grapx\BossDemon\IdleNew\BossDemonDying5to14.asm" 
+									include "..\grapx\BossDemon\BossDemonDying5to14.asm" 
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 									dephase
 BossDemonDying4to14Newspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									incbin "..\grapx\BossDemon\IdleNew\BossDemonDying5to14.dat"
+									incbin "..\grapx\BossDemon\BossDemonDying5to14.dat"
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
 
 TotallyWhiteSpritedatablock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
