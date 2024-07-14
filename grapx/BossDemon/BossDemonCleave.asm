@@ -1,5 +1,5 @@
 ;SF2object
-BossDemonCleave0to5_0_0:	; Frame 0, Slice 0
+BossDemonCleave_0_0:	; Frame 0, Slice 0
 DB	22,13,128,43,128 ;w,h,x,y,o
 DW	0x0180,base+0x0000
 DW	0x0107,base+0x0001
@@ -26,7 +26,7 @@ DW	0x0306,base+0x0013
 DW	0x027A,base+0x0007
 DW	0x0306,base+0x0013
 DW	0x0200,base+0x0007
-BossDemonCleave0to5_0_1:	; Frame 0, Slice 1
+BossDemonCleave_0_1:	; Frame 0, Slice 1
 DB	32,13,118,56,134 ;w,h,x,y,o
 DW	0x0306,base+0x0013
 DW	0x027A,base+0x0007
@@ -49,7 +49,7 @@ DW	0x0B7E,base+0x0035
 DW	0x0C7F,base+0x0040
 DW	0x0D7F,base+0x004C
 DW	0x0F00,base+0x0059
-BossDemonCleave0to5_0_2:	; Frame 0, Slice 2
+BossDemonCleave_0_2:	; Frame 0, Slice 2
 DB	46,13,106,69,118 ;w,h,x,y,o
 DW	0x0F7F,base+0x0068
 DW	0x1180,base+0x0077
@@ -64,7 +64,7 @@ DW	0x157F,base+0x010E
 DW	0x1680,base+0x0123
 DW	0x157F,base+0x0139
 DW	0x1600,base+0x014E
-BossDemonCleave0to5_0_3:	; Frame 0, Slice 3
+BossDemonCleave_0_3:	; Frame 0, Slice 3
 DB	52,13,100,82,106 ;w,h,x,y,o
 DW	0x167F,base+0x0164
 DW	0x1680,base+0x017A
@@ -88,7 +88,7 @@ DW	0x056B,base+0x025C
 DW	0x0407,base+0x0261
 DW	0x0A0E,base+0x0265
 DW	0x0500,base+0x026F
-BossDemonCleave0to5_0_4:	; Frame 0, Slice 4
+BossDemonCleave_0_4:	; Frame 0, Slice 4
 DB	76,13,88,95,100 ;w,h,x,y,o
 DW	0x0408,base+0x0158
 DW	0x080D,base+0x0274
@@ -128,7 +128,7 @@ DW	0x045F,base+0x0357
 DW	0x191E,base+0x035B
 DW	0x0304,base+0x02CB
 DW	0x0300,base+0x0374
-BossDemonCleave0to5_0_5:	; Frame 0, Slice 5
+BossDemonCleave_0_5:	; Frame 0, Slice 5
 DB	72,13,92,108,92 ;w,h,x,y,o
 DW	0x191D,base+0x0377
 DW	0x0304,base+0x02CB
@@ -158,7 +158,7 @@ DW	0x0E15,base+0x0448
 DW	0x056B,base+0x0456
 DW	0x1015,base+0x045B
 DW	0x0500,base+0x046B
-BossDemonCleave0to5_0_6:	; Frame 0, Slice 6
+BossDemonCleave_0_6:	; Frame 0, Slice 6
 DB	60,14,92,121,96 ;w,h,x,y,o
 DW	0x1214,base+0x0470
 DW	0x066C,base+0x0482
@@ -186,7 +186,7 @@ DW	0x0510,base+0x0409
 DW	0x0E71,base+0x0567
 DW	0x0511,base+0x0575
 DW	0x0C00,base+0x057A
-BossDemonCleave0to5_1_0:	; Frame 1, Slice 0
+BossDemonCleave_1_0:	; Frame 1, Slice 0
 DB	18,13,106,43,110 ;w,h,x,y,o
 DW	0x0104,base+0x0008
 DW	0x017C,base+0x0328
@@ -214,7 +214,7 @@ DW	0x0207,base+0x002C
 DW	0x0279,base+0x0002
 DW	0x0207,base+0x002C
 DW	0x0200,base+0x0002
-BossDemonCleave0to5_1_1:	; Frame 1, Slice 1
+BossDemonCleave_1_1:	; Frame 1, Slice 1
 DB	36,13,106,56,106 ;w,h,x,y,o
 DW	0x0207,base+0x0004
 DW	0x0279,base+0x0002
@@ -239,7 +239,7 @@ DW	0x0B80,base+0x059C
 DW	0x0C0D,base+0x05A7
 DW	0x0372,base+0x0003
 DW	0x1200,base+0x05B3
-BossDemonCleave0to5_1_2:	; Frame 1, Slice 2
+BossDemonCleave_1_2:	; Frame 1, Slice 2
 DB	58,13,88,69,104 ;w,h,x,y,o
 DW	0x137F,base+0x05C5
 DW	0x1580,base+0x05D8
@@ -254,7 +254,7 @@ DW	0x1A80,base+0x0694
 DW	0x1B7F,base+0x06AE
 DW	0x1C7F,base+0x06C9
 DW	0x1D00,base+0x06E5
-BossDemonCleave0to5_1_3:	; Frame 1, Slice 3
+BossDemonCleave_1_3:	; Frame 1, Slice 3
 DB	82,13,72,82,86 ;w,h,x,y,o
 DW	0x1E80,base+0x0702
 DW	0x191A,base+0x0720
@@ -294,7 +294,7 @@ DW	0x065F,base+0x083D
 DW	0x0511,base+0x070D
 DW	0x0910,base+0x0843
 DW	0x0600,base+0x084C
-BossDemonCleave0to5_1_4:	; Frame 1, Slice 4
+BossDemonCleave_1_4:	; Frame 1, Slice 4
 DB	92,13,74,95,74 ;w,h,x,y,o
 DW	0x0612,base+0x0852
 DW	0x0811,base+0x0858
@@ -337,7 +337,7 @@ DW	0x0459,base+0x0947
 DW	0x1C24,base+0x094B
 DW	0x0203,base+0x0003
 DW	0x0300,base+0x0967
-BossDemonCleave0to5_1_5:	; Frame 1, Slice 5
+BossDemonCleave_1_5:	; Frame 1, Slice 5
 DB	78,13,82,108,82 ;w,h,x,y,o
 DW	0x1C23,base+0x096A
 DW	0x045D,base+0x0986
@@ -364,7 +364,7 @@ DW	0x0C11,base+0x0A75
 DW	0x076F,base+0x0A81
 DW	0x0C12,base+0x0A88
 DW	0x0600,base+0x0A94
-BossDemonCleave0to5_1_6:	; Frame 1, Slice 6
+BossDemonCleave_1_6:	; Frame 1, Slice 6
 DB	58,14,88,121,96 ;w,h,x,y,o
 DW	0x0608,base+0x02F3
 DW	0x040A,base+0x0002
@@ -395,7 +395,7 @@ DW	0x0617,base+0x0ABC
 DW	0x0669,base+0x049A
 DW	0x0617,base+0x0980
 DW	0x0500,base+0x08AA
-BossDemonCleave0to5_2_0:	; Frame 2, Slice 0
+BossDemonCleave_2_0:	; Frame 2, Slice 0
 DB	22,13,92,44,112 ;w,h,x,y,o
 DW	0x0179,base+0x0000
 DW	0x0106,base+0x0000
@@ -422,7 +422,7 @@ DW	0x0205,base+0x0022
 DW	0x027B,base+0x0029
 DW	0x0205,base+0x0022
 DW	0x0200,base+0x0029
-BossDemonCleave0to5_2_1:	; Frame 2, Slice 1
+BossDemonCleave_2_1:	; Frame 2, Slice 1
 DB	44,13,90,57,92 ;w,h,x,y,o
 DW	0x0205,base+0x0022
 DW	0x027B,base+0x0029
@@ -446,7 +446,7 @@ DW	0x1280,base+0x0AEA
 DW	0x137E,base+0x0AFC
 DW	0x1580,base+0x0B0F
 DW	0x1600,base+0x0B24
-BossDemonCleave0to5_2_2:	; Frame 2, Slice 2
+BossDemonCleave_2_2:	; Frame 2, Slice 2
 DB	66,13,74,70,82 ;w,h,x,y,o
 DW	0x0203,base+0x0004
 DW	0x177C,base+0x0B3A
@@ -467,7 +467,7 @@ DW	0x0308,base+0x0002
 DW	0x1978,base+0x0C71
 DW	0x030B,base+0x0061
 DW	0x1600,base+0x0C8A
-BossDemonCleave0to5_2_3:	; Frame 2, Slice 3
+BossDemonCleave_2_3:	; Frame 2, Slice 3
 DB	86,13,70,83,72 ;w,h,x,y,o
 DW	0x050C,base+0x088C
 DW	0x171A,base+0x0CA0
@@ -510,7 +510,7 @@ DW	0x045A,base+0x0DD3
 DW	0x0916,base+0x0DD7
 DW	0x0812,base+0x0DE0
 DW	0x0200,base+0x000A
-BossDemonCleave0to5_2_4:	; Frame 2, Slice 4
+BossDemonCleave_2_4:	; Frame 2, Slice 4
 DB	84,13,70,96,70 ;w,h,x,y,o
 DW	0x0A16,base+0x0DE8
 DW	0x0811,base+0x0DF2
@@ -536,7 +536,7 @@ DW	0x1480,base+0x0E9A
 DW	0x147F,base+0x0EAE
 DW	0x1680,base+0x0EC2
 DW	0x1600,base+0x0ED8
-BossDemonCleave0to5_2_5:	; Frame 2, Slice 5
+BossDemonCleave_2_5:	; Frame 2, Slice 5
 DB	54,13,90,109,92 ;w,h,x,y,o
 DW	0x0E0F,base+0x0EEE
 DW	0x0871,base+0x0EFC
@@ -564,7 +564,7 @@ DW	0x0514,base+0x015B
 DW	0x066C,base+0x0F76
 DW	0x0514,base+0x015B
 DW	0x0600,base+0x0F7C
-BossDemonCleave0to5_2_6:	; Frame 2, Slice 6
+BossDemonCleave_2_6:	; Frame 2, Slice 6
 DB	62,13,86,122,92 ;w,h,x,y,o
 DW	0x0514,base+0x015B
 DW	0x066C,base+0x0F68
@@ -592,7 +592,7 @@ DW	0x0819,base+0x0FBA
 DW	0x0566,base+0x07DB
 DW	0x0819,base+0x0FC2
 DW	0x0500,base+0x0784
-BossDemonCleave0to5_3_0:	; Frame 3, Slice 0
+BossDemonCleave_3_0:	; Frame 3, Slice 0
 DB	22,13,90,44,110 ;w,h,x,y,o
 DW	0x0179,base+0x0002
 DW	0x0107,base+0x0002
@@ -619,7 +619,7 @@ DW	0x0205,base+0x0357
 DW	0x037B,base+0x0AC5
 DW	0x0205,base+0x0357
 DW	0x0300,base+0x0AC5
-BossDemonCleave0to5_3_1:	; Frame 3, Slice 1
+BossDemonCleave_3_1:	; Frame 3, Slice 1
 DB	58,13,74,57,90 ;w,h,x,y,o
 DW	0x0205,base+0x0357
 DW	0x037B,base+0x0AC5
@@ -645,7 +645,7 @@ DW	0x1277,base+0x0FFD
 DW	0x0507,base+0x016A
 DW	0x1578,base+0x100F
 DW	0x1D00,base+0x1024
-BossDemonCleave0to5_3_2:	; Frame 3, Slice 2
+BossDemonCleave_3_2:	; Frame 3, Slice 2
 DB	92,13,66,70,72 ;w,h,x,y,o
 DW	0x1F80,base+0x1041
 DW	0x1F80,base+0x1060
@@ -678,7 +678,7 @@ DW	0x080E,base+0x11BA
 DW	0x171A,base+0x11C2
 DW	0x0102,base+0x000A
 DW	0x0300,base+0x0293
-BossDemonCleave0to5_3_3:	; Frame 3, Slice 3
+BossDemonCleave_3_3:	; Frame 3, Slice 3
 DB	88,13,68,83,68 ;w,h,x,y,o
 DW	0x080E,base+0x11D9
 DW	0x1619,base+0x11E1
@@ -710,7 +710,7 @@ DW	0x0473,base+0x0002
 DW	0x0981,base+0x12A6
 DW	0x0880,base+0x12AF
 DW	0x0900,base+0x12B7
-BossDemonCleave0to5_3_4:	; Frame 3, Slice 4
+BossDemonCleave_3_4:	; Frame 3, Slice 4
 DB	44,13,94,96,114 ;w,h,x,y,o
 DW	0x087F,base+0x12C0
 DW	0x0980,base+0x12C8
@@ -725,7 +725,7 @@ DW	0x137F,base+0x130B
 DW	0x1480,base+0x131E
 DW	0x157F,base+0x1332
 DW	0x1600,base+0x1347
-BossDemonCleave0to5_3_5:	; Frame 3, Slice 5
+BossDemonCleave_3_5:	; Frame 3, Slice 5
 DB	54,13,90,109,94 ;w,h,x,y,o
 DW	0x0D0E,base+0x0EEF
 DW	0x0871,base+0x0EFC
@@ -753,7 +753,7 @@ DW	0x0615,base+0x030F
 DW	0x066C,base+0x0F76
 DW	0x0614,base+0x02DD
 DW	0x0600,base+0x0F7C
-BossDemonCleave0to5_3_6:	; Frame 3, Slice 6
+BossDemonCleave_3_6:	; Frame 3, Slice 6
 DB	60,13,88,122,92 ;w,h,x,y,o
 DW	0x0614,base+0x049A
 DW	0x066D,base+0x0F68
@@ -781,7 +781,7 @@ DW	0x0919,base+0x138A
 DW	0x0567,base+0x07DB
 DW	0x0718,base+0x01F4
 DW	0x0500,base+0x0784
-BossDemonCleave0to5_4_0:	; Frame 4, Slice 0
+BossDemonCleave_4_0:	; Frame 4, Slice 0
 DB	22,12,90,45,110 ;w,h,x,y,o
 DW	0x0179,base+0x0000
 DW	0x0106,base+0x0000
@@ -806,7 +806,7 @@ DW	0x0205,base+0x0022
 DW	0x027B,base+0x0029
 DW	0x0205,base+0x0022
 DW	0x0200,base+0x0029
-BossDemonCleave0to5_4_1:	; Frame 4, Slice 1
+BossDemonCleave_4_1:	; Frame 4, Slice 1
 DB	64,12,66,57,90 ;w,h,x,y,o
 DW	0x0205,base+0x0022
 DW	0x027B,base+0x0029
@@ -835,7 +835,7 @@ DW	0x060D,base+0x13A1
 DW	0x1275,base+0x0AEA
 DW	0x040B,base+0x13A7
 DW	0x1300,base+0x0AFC
-BossDemonCleave0to5_4_2:	; Frame 4, Slice 2
+BossDemonCleave_4_2:	; Frame 4, Slice 2
 DB	86,12,70,69,70 ;w,h,x,y,o
 DW	0x0709,base+0x13AB
 DW	0x1577,base+0x0B0F
@@ -860,7 +860,7 @@ DW	0x015E,base+0x000A
 DW	0x1A1D,base+0x0C3D
 DW	0x0203,base+0x0586
 DW	0x0300,base+0x0572
-BossDemonCleave0to5_4_3:	; Frame 4, Slice 3
+BossDemonCleave_4_3:	; Frame 4, Slice 3
 DB	70,12,86,81,86 ;w,h,x,y,o
 DW	0x1A1D,base+0x14A0
 DW	0x0203,base+0x0586
@@ -888,7 +888,7 @@ DW	0x0D10,base+0x0D61
 DW	0x0671,base+0x049A
 DW	0x0C10,base+0x0D80
 DW	0x0400,base+0x02DF
-BossDemonCleave0to5_4_4:	; Frame 4, Slice 4
+BossDemonCleave_4_4:	; Frame 4, Slice 4
 DB	38,12,102,93,106 ;w,h,x,y,o
 DW	0x0A0F,base+0x0D9E
 DW	0x0273,base+0x0004
@@ -903,7 +903,7 @@ DW	0x0C7F,base+0x1505
 DW	0x0D7E,base+0x1511
 DW	0x0F7F,base+0x0E63
 DW	0x1100,base+0x151E
-BossDemonCleave0to5_4_5:	; Frame 4, Slice 5
+BossDemonCleave_4_5:	; Frame 4, Slice 5
 DB	52,12,90,105,102 ;w,h,x,y,o
 DW	0x117F,base+0x152F
 DW	0x127F,base+0x1540
@@ -925,7 +925,7 @@ DW	0x0914,base+0x15BB
 DW	0x066C,base+0x0F49
 DW	0x0614,base+0x15C4
 DW	0x0600,base+0x0F4F
-BossDemonCleave0to5_4_6:	; Frame 4, Slice 6
+BossDemonCleave_4_6:	; Frame 4, Slice 6
 DB	60,18,88,117,90 ;w,h,x,y,o
 DW	0x0614,base+0x15CA
 DW	0x076C,base+0x0F5B
@@ -963,7 +963,7 @@ DW	0x0818,base+0x0FBA
 DW	0x0567,base+0x07DB
 DW	0x0818,base+0x0FC2
 DW	0x0500,base+0x0784
-BossDemonCleave0to5_5_0:	; Frame 5, Slice 0
+BossDemonCleave_5_0:	; Frame 5, Slice 0
 DB	40,12,70,46,108 ;w,h,x,y,o
 DW	0x0179,base+0x0002
 DW	0x0107,base+0x0002
@@ -992,7 +992,7 @@ DW	0x0372,base+0x0AC5
 DW	0x0609,base+0x15ED
 DW	0x0205,base+0x0357
 DW	0x0300,base+0x0AC5
-BossDemonCleave0to5_5_1:	; Frame 5, Slice 1
+BossDemonCleave_5_1:	; Frame 5, Slice 1
 DB	60,12,68,58,70 ;w,h,x,y,o
 DW	0x0609,base+0x0D3A
 DW	0x0205,base+0x0357
@@ -1028,7 +1028,7 @@ DW	0x0309,base+0x0061
 DW	0x1277,base+0x0FEB
 DW	0x040A,base+0x0CC4
 DW	0x1200,base+0x0FFD
-BossDemonCleave0to5_5_2:	; Frame 5, Slice 2
+BossDemonCleave_5_2:	; Frame 5, Slice 2
 DB	84,12,72,70,72 ;w,h,x,y,o
 DW	0x0508,base+0x016A
 DW	0x1578,base+0x100F
@@ -1055,7 +1055,7 @@ DW	0x1B1F,base+0x170A
 DW	0x0562,base+0x031F
 DW	0x1A1E,base+0x1725
 DW	0x0500,base+0x030F
-BossDemonCleave0to5_5_3:	; Frame 5, Slice 3
+BossDemonCleave_5_3:	; Frame 5, Slice 3
 DB	68,12,86,82,86 ;w,h,x,y,o
 DW	0x191D,base+0x173F
 DW	0x0564,base+0x030F
@@ -1081,7 +1081,7 @@ DW	0x0E11,base+0x1282
 DW	0x0571,base+0x015B
 DW	0x0C0F,base+0x1290
 DW	0x0400,base+0x023E
-BossDemonCleave0to5_5_4:	; Frame 5, Slice 4
+BossDemonCleave_5_4:	; Frame 5, Slice 4
 DB	34,12,104,94,104 ;w,h,x,y,o
 DW	0x0A0F,base+0x129C
 DW	0x0273,base+0x0002
@@ -1096,7 +1096,7 @@ DW	0x0C7F,base+0x1512
 DW	0x0D7F,base+0x1792
 DW	0x0F7F,base+0x179F
 DW	0x1000,base+0x17AE
-BossDemonCleave0to5_5_5:	; Frame 5, Slice 5
+BossDemonCleave_5_5:	; Frame 5, Slice 5
 DB	52,12,92,106,102 ;w,h,x,y,o
 DW	0x117F,base+0x17BE
 DW	0x137F,base+0x17CF
@@ -1118,7 +1118,7 @@ DW	0x0813,base+0x0F35
 DW	0x066D,base+0x0F4F
 DW	0x0613,base+0x0F3D
 DW	0x0700,base+0x0F5B
-BossDemonCleave0to5_5_6:	; Frame 5, Slice 6
+BossDemonCleave_5_6:	; Frame 5, Slice 6
 DB	58,17,90,118,92 ;w,h,x,y,o
 DW	0x0513,base+0x101F
 DW	0x076D,base+0x0F68
@@ -1154,7 +1154,7 @@ DW	0x0918,base+0x138A
 DW	0x0568,base+0x07DB
 DW	0x0717,base+0x01F4
 DW	0x0500,base+0x0784
-BossDemonCleave0to5_6_0:	; Frame 6, Slice 0
+BossDemonCleave_6_0:	; Frame 6, Slice 0
 DB	28,16,78,21,98 ;w,h,x,y,o
 DW	0x027F,base+0x0004
 DW	0x037F,base+0x0002
@@ -1172,7 +1172,7 @@ DW	0x0D80,base+0x18A0
 DW	0x0C7F,base+0x18AD
 DW	0x0B80,base+0x18B9
 DW	0x0A00,base+0x1889
-BossDemonCleave0to5_6_1:	; Frame 6, Slice 1
+BossDemonCleave_6_1:	; Frame 6, Slice 1
 DB	40,16,70,37,78 ;w,h,x,y,o
 DW	0x0A80,base+0x18C4
 DW	0x087F,base+0x098F
@@ -1203,7 +1203,7 @@ DW	0x0271,base+0x000A
 DW	0x0309,base+0x0895
 DW	0x0205,base+0x0004
 DW	0x0300,base+0x0A07
-BossDemonCleave0to5_6_2:	; Frame 6, Slice 2
+BossDemonCleave_6_2:	; Frame 6, Slice 2
 DB	58,16,68,53,70 ;w,h,x,y,o
 DW	0x040A,base+0x0002
 DW	0x0205,base+0x0004
@@ -1252,7 +1252,7 @@ DW	0x0409,base+0x02DF
 DW	0x1176,base+0x0FDA
 DW	0x050A,base+0x1911
 DW	0x1200,base+0x0FEB
-BossDemonCleave0to5_6_3:	; Frame 6, Slice 3
+BossDemonCleave_6_3:	; Frame 6, Slice 3
 DB	86,16,70,69,70 ;w,h,x,y,o
 DW	0x060B,base+0x1916
 DW	0x1275,base+0x0FFD
@@ -1287,7 +1287,7 @@ DW	0x191B,base+0x119D
 DW	0x0667,base+0x049A
 DW	0x1719,base+0x11C2
 DW	0x0500,base+0x015B
-BossDemonCleave0to5_6_4:	; Frame 6, Slice 4
+BossDemonCleave_6_4:	; Frame 6, Slice 4
 DB	58,16,94,85,94 ;w,h,x,y,o
 DW	0x1617,base+0x11E1
 DW	0x0669,base+0x030F
@@ -1315,7 +1315,7 @@ DW	0x0A81,base+0x177F
 DW	0x0980,base+0x1789
 DW	0x0A80,base+0x0E25
 DW	0x0A00,base+0x12D2
-BossDemonCleave0to5_6_5:	; Frame 6, Slice 5
+BossDemonCleave_6_5:	; Frame 6, Slice 5
 DB	50,16,92,101,112 ;w,h,x,y,o
 DW	0x0B7F,base+0x12DE
 DW	0x0C7F,base+0x1512
@@ -1340,7 +1340,7 @@ DW	0x0A13,base+0x0F2B
 DW	0x066D,base+0x0F49
 DW	0x0813,base+0x0F35
 DW	0x0600,base+0x0F4F
-BossDemonCleave0to5_6_6:	; Frame 6, Slice 6
+BossDemonCleave_6_6:	; Frame 6, Slice 6
 DB	58,18,90,117,92 ;w,h,x,y,o
 DW	0x0613,base+0x0F3D
 DW	0x076D,base+0x0F5B
@@ -1378,7 +1378,7 @@ DW	0x0918,base+0x138A
 DW	0x0568,base+0x07DB
 DW	0x0717,base+0x01F4
 DW	0x0500,base+0x0784
-BossDemonCleave0to5_7_0:	; Frame 7, Slice 0
+BossDemonCleave_7_0:	; Frame 7, Slice 0
 DB	38,15,78,24,106 ;w,h,x,y,o
 DW	0x047E,base+0x023E
 DW	0x077E,base+0x0F24
@@ -1396,7 +1396,7 @@ DW	0x1280,base+0x1AB2
 DW	0x0D10,base+0x1AC4
 DW	0x026F,base+0x0407
 DW	0x0C00,base+0x1AD1
-BossDemonCleave0to5_7_1:	; Frame 7, Slice 1
+BossDemonCleave_7_1:	; Frame 7, Slice 1
 DB	40,15,70,39,78 ;w,h,x,y,o
 DW	0x0B7F,base+0x0438
 DW	0x0B80,base+0x1ADD
@@ -1428,7 +1428,7 @@ DW	0x0371,base+0x0A07
 DW	0x040A,base+0x1B14
 DW	0x0205,base+0x0004
 DW	0x0300,base+0x0021
-BossDemonCleave0to5_7_2:	; Frame 7, Slice 2
+BossDemonCleave_7_2:	; Frame 7, Slice 2
 DB	58,15,68,54,70 ;w,h,x,y,o
 DW	0x0409,base+0x02F5
 DW	0x0206,base+0x0357
@@ -1475,7 +1475,7 @@ DW	0x0609,base+0x0184
 DW	0x1177,base+0x0FDA
 DW	0x0709,base+0x1B2F
 DW	0x1200,base+0x0FEB
-BossDemonCleave0to5_7_3:	; Frame 7, Slice 3
+BossDemonCleave_7_3:	; Frame 7, Slice 3
 DB	84,15,72,69,72 ;w,h,x,y,o
 DW	0x0708,base+0x0D0E
 DW	0x1479,base+0x1B36
@@ -1507,7 +1507,7 @@ DW	0x191D,base+0x1C41
 DW	0x0564,base+0x030F
 DW	0x191B,base+0x119D
 DW	0x0600,base+0x049A
-BossDemonCleave0to5_7_4:	; Frame 7, Slice 4
+BossDemonCleave_7_4:	; Frame 7, Slice 4
 DB	60,15,92,84,92 ;w,h,x,y,o
 DW	0x1719,base+0x11C2
 DW	0x0568,base+0x015B
@@ -1535,7 +1535,7 @@ DW	0x0981,base+0x12A6
 DW	0x0880,base+0x12AF
 DW	0x0A81,base+0x177F
 DW	0x0900,base+0x1789
-BossDemonCleave0to5_7_5:	; Frame 7, Slice 5
+BossDemonCleave_7_5:	; Frame 7, Slice 5
 DB	46,15,94,99,112 ;w,h,x,y,o
 DW	0x0A80,base+0x0E25
 DW	0x0A80,base+0x12D2
@@ -1556,7 +1556,7 @@ DW	0x0B11,base+0x182A
 DW	0x066F,base+0x0C17
 DW	0x0A12,base+0x1835
 DW	0x0500,base+0x046B
-BossDemonCleave0to5_7_6:	; Frame 7, Slice 6
+BossDemonCleave_7_6:	; Frame 7, Slice 6
 DB	58,21,90,114,92 ;w,h,x,y,o
 DW	0x0B13,base+0x1374
 DW	0x066D,base+0x0F43
@@ -1600,7 +1600,7 @@ DW	0x0918,base+0x138A
 DW	0x0568,base+0x07DB
 DW	0x0717,base+0x01F4
 DW	0x0500,base+0x0784
-BossDemonCleave0to5_8_0:	; Frame 8, Slice 0
+BossDemonCleave_8_0:	; Frame 8, Slice 0
 DB	110,11,124,56,156 ;w,h,x,y,o
 DW	0x0180,base+0x0000
 DW	0x0107,base+0x0001
@@ -1629,7 +1629,7 @@ DW	0x0713,base+0x03C3
 DW	0x0306,base+0x0013
 DW	0x021D,base+0x0007
 DW	0x0100,base+0x03F5
-BossDemonCleave0to5_8_1:	; Frame 8, Slice 1
+BossDemonCleave_8_1:	; Frame 8, Slice 1
 DB	130,11,110,67,124 ;w,h,x,y,o
 DW	0x0813,base+0x03C4
 DW	0x0306,base+0x0013
@@ -1678,7 +1678,7 @@ DW	0x060D,base+0x0199
 DW	0x0A0B,base+0x0728
 DW	0x0927,base+0x1C97
 DW	0x0200,base+0x0407
-BossDemonCleave0to5_8_2:	; Frame 8, Slice 2
+BossDemonCleave_8_2:	; Frame 8, Slice 2
 DB	134,11,108,78,108 ;w,h,x,y,o
 DW	0x060C,base+0x0CB7
 DW	0x0C0D,base+0x1CA0
@@ -1727,7 +1727,7 @@ DW	0x0345,base+0x1D34
 DW	0x1937,base+0x1D81
 DW	0x0304,base+0x1D34
 DW	0x0300,base+0x1D34
-BossDemonCleave0to5_8_3:	; Frame 8, Slice 3
+BossDemonCleave_8_3:	; Frame 8, Slice 3
 DB	134,11,108,89,118 ;w,h,x,y,o
 DW	0x1938,base+0x1D9A
 DW	0x0203,base+0x0407
@@ -1763,7 +1763,7 @@ DW	0x0643,base+0x1E7A
 DW	0x0A0E,base+0x02AF
 DW	0x192E,base+0x1EA4
 DW	0x0700,base+0x1EBD
-BossDemonCleave0to5_8_4:	; Frame 8, Slice 4
+BossDemonCleave_8_4:	; Frame 8, Slice 4
 DB	142,11,100,100,108 ;w,h,x,y,o
 DW	0x0A0F,base+0x1EC4
 DW	0x192A,base+0x1ECE
@@ -1812,7 +1812,7 @@ DW	0x0C21,base+0x03B7
 DW	0x0511,base+0x03AB
 DW	0x0203,base+0x0406
 DW	0x0800,base+0x1FA9
-BossDemonCleave0to5_8_5:	; Frame 8, Slice 5
+BossDemonCleave_8_5:	; Frame 8, Slice 5
 DB	146,11,96,111,100 ;w,h,x,y,o
 DW	0x070B,base+0x0F24
 DW	0x0B21,base+0x03CC
@@ -1861,7 +1861,7 @@ DW	0x1850,base+0x2045
 DW	0x0614,base+0x205D
 DW	0x061D,base+0x0482
 DW	0x1700,base+0x2063
-BossDemonCleave0to5_8_6:	; Frame 8, Slice 6
+BossDemonCleave_8_6:	; Frame 8, Slice 6
 DB	156,13,92,122,96 ;w,h,x,y,o
 DW	0x0614,base+0x2003
 DW	0x061D,base+0x049A
@@ -1907,7 +1907,7 @@ DW	0x0C43,base+0x216E
 DW	0x0516,base+0x0575
 DW	0x0729,base+0x01F4
 DW	0x0800,base+0x217A
-BossDemonCleave0to5_9_0:	; Frame 9, Slice 0
+BossDemonCleave_9_0:	; Frame 9, Slice 0
 DB	22,11,156,55,156 ;w,h,x,y,o
 DW	0x0180,base+0x0000
 DW	0x0107,base+0x0001
@@ -1930,7 +1930,7 @@ DW	0x0306,base+0x0013
 DW	0x027A,base+0x0007
 DW	0x0306,base+0x0013
 DW	0x0200,base+0x0007
-BossDemonCleave0to5_9_1:	; Frame 9, Slice 1
+BossDemonCleave_9_1:	; Frame 9, Slice 1
 DB	52,11,126,66,162 ;w,h,x,y,o
 DW	0x0306,base+0x0013
 DW	0x027A,base+0x0007
@@ -1959,7 +1959,7 @@ DW	0x0405,base+0x0028
 DW	0x036A,base+0x0019
 DW	0x0F10,base+0x1C70
 DW	0x0900,base+0x1C97
-BossDemonCleave0to5_9_2:	; Frame 9, Slice 2
+BossDemonCleave_9_2:	; Frame 9, Slice 2
 DB	56,11,120,77,124 ;w,h,x,y,o
 DW	0x1011,base+0x218A
 DW	0x096F,base+0x0037
@@ -1974,7 +1974,7 @@ DW	0x1880,base+0x2227
 DW	0x187F,base+0x223F
 DW	0x1980,base+0x2257
 DW	0x1800,base+0x2270
-BossDemonCleave0to5_9_3:	; Frame 9, Slice 3
+BossDemonCleave_9_3:	; Frame 9, Slice 3
 DB	60,11,108,88,118 ;w,h,x,y,o
 DW	0x1980,base+0x2288
 DW	0x1980,base+0x22A1
@@ -1988,7 +1988,7 @@ DW	0x187E,base+0x232A
 DW	0x1A80,base+0x2342
 DW	0x1B7F,base+0x235C
 DW	0x1D00,base+0x2377
-BossDemonCleave0to5_9_4:	; Frame 9, Slice 4
+BossDemonCleave_9_4:	; Frame 9, Slice 4
 DB	142,11,100,99,108 ;w,h,x,y,o
 DW	0x0B0E,base+0x2394
 DW	0x1171,base+0x239F
@@ -2033,7 +2033,7 @@ DW	0x0709,base+0x2478
 DW	0x0417,base+0x02DF
 DW	0x0103,base+0x08A6
 DW	0x0300,base+0x1D34
-BossDemonCleave0to5_9_5:	; Frame 9, Slice 5
+BossDemonCleave_9_5:	; Frame 9, Slice 5
 DB	146,11,96,110,100 ;w,h,x,y,o
 DW	0x070B,base+0x0F24
 DW	0x0B17,base+0x180A
@@ -2092,7 +2092,7 @@ DW	0x061B,base+0x24F5
 DW	0x0F12,base+0x24FB
 DW	0x0304,base+0x1D34
 DW	0x0300,base+0x0417
-BossDemonCleave0to5_9_6:	; Frame 9, Slice 6
+BossDemonCleave_9_6:	; Frame 9, Slice 6
 DB	158,13,92,121,96 ;w,h,x,y,o
 DW	0x0614,base+0x2003
 DW	0x061B,base+0x049A
@@ -2142,7 +2142,7 @@ DW	0x0335,base+0x25BD
 DW	0x0516,base+0x0575
 DW	0x0727,base+0x01F4
 DW	0x0200,base+0x007A
-BossDemonCleave0to5_10_0:	; Frame 10, Slice 0
+BossDemonCleave_10_0:	; Frame 10, Slice 0
 DB	22,11,156,57,156 ;w,h,x,y,o
 DW	0x0180,base+0x0000
 DW	0x0107,base+0x0001
@@ -2165,7 +2165,7 @@ DW	0x0306,base+0x0013
 DW	0x027A,base+0x0007
 DW	0x0306,base+0x0013
 DW	0x0200,base+0x0007
-BossDemonCleave0to5_10_1:	; Frame 10, Slice 1
+BossDemonCleave_10_1:	; Frame 10, Slice 1
 DB	42,11,136,68,162 ;w,h,x,y,o
 DW	0x0306,base+0x0013
 DW	0x027A,base+0x0007
@@ -2194,7 +2194,7 @@ DW	0x0405,base+0x0028
 DW	0x036F,base+0x0019
 DW	0x0A0B,base+0x1C5C
 DW	0x0900,base+0x1C97
-BossDemonCleave0to5_10_2:	; Frame 10, Slice 2
+BossDemonCleave_10_2:	; Frame 10, Slice 2
 DB	58,11,118,79,132 ;w,h,x,y,o
 DW	0x0C0D,base+0x25C0
 DW	0x0972,base+0x0037
@@ -2209,7 +2209,7 @@ DW	0x1980,base+0x263B
 DW	0x197F,base+0x2654
 DW	0x1A80,base+0x266D
 DW	0x1900,base+0x2687
-BossDemonCleave0to5_10_3:	; Frame 10, Slice 3
+BossDemonCleave_10_3:	; Frame 10, Slice 3
 DB	62,11,106,90,116 ;w,h,x,y,o
 DW	0x1A80,base+0x26A0
 DW	0x1A80,base+0x26BA
@@ -2225,7 +2225,7 @@ DW	0x1B80,base+0x2746
 DW	0x1C7F,base+0x2761
 DW	0x0B0F,base+0x277D
 DW	0x0F00,base+0x2788
-BossDemonCleave0to5_10_4:	; Frame 10, Slice 4
+BossDemonCleave_10_4:	; Frame 10, Slice 4
 DB	92,11,100,101,106 ;w,h,x,y,o
 DW	0x0A10,base+0x2797
 DW	0x106F,base+0x27A1
@@ -2256,7 +2256,7 @@ DW	0x060B,base+0x015B
 DW	0x0B16,base+0x03B8
 DW	0x0709,base+0x2478
 DW	0x0400,base+0x02DF
-BossDemonCleave0to5_10_5:	; Frame 10, Slice 5
+BossDemonCleave_10_5:	; Frame 10, Slice 5
 DB	158,11,94,112,98 ;w,h,x,y,o
 DW	0x070D,base+0x284C
 DW	0x0A16,base+0x03CD
@@ -2297,7 +2297,7 @@ DW	0x0615,base+0x28CB
 DW	0x051B,base+0x015B
 DW	0x0F1D,base+0x24FB
 DW	0x0100,base+0x2891
-BossDemonCleave0to5_10_6:	; Frame 10, Slice 6
+BossDemonCleave_10_6:	; Frame 10, Slice 6
 DB	160,12,92,123,94 ;w,h,x,y,o
 DW	0x0615,base+0x28D1
 DW	0x051B,base+0x02DE
@@ -2336,7 +2336,7 @@ DW	0x0945,base+0x2978
 DW	0x0516,base+0x03D7
 DW	0x0827,base+0x0FC2
 DW	0x0700,base+0x0F24
-BossDemonCleave0to5_11_0:	; Frame 11, Slice 0
+BossDemonCleave_11_0:	; Frame 11, Slice 0
 DB	22,11,154,56,154 ;w,h,x,y,o
 DW	0x0180,base+0x0002
 DW	0x0207,base+0x0891
@@ -2359,7 +2359,7 @@ DW	0x0205,base+0x0011
 DW	0x027B,base+0x000E
 DW	0x0205,base+0x0011
 DW	0x0200,base+0x000E
-BossDemonCleave0to5_11_1:	; Frame 11, Slice 1
+BossDemonCleave_11_1:	; Frame 11, Slice 1
 DB	40,11,136,67,162 ;w,h,x,y,o
 DW	0x0205,base+0x0011
 DW	0x027B,base+0x000E
@@ -2387,7 +2387,7 @@ DW	0x0506,base+0x2981
 DW	0x036F,base+0x000B
 DW	0x0A0B,base+0x0A64
 DW	0x0900,base+0x2986
-BossDemonCleave0to5_11_2:	; Frame 11, Slice 2
+BossDemonCleave_11_2:	; Frame 11, Slice 2
 DB	56,11,118,78,132 ;w,h,x,y,o
 DW	0x157E,base+0x298F
 DW	0x177F,base+0x29A4
@@ -2400,7 +2400,7 @@ DW	0x1980,base+0x2A32
 DW	0x187F,base+0x2A4B
 DW	0x1980,base+0x2A63
 DW	0x1900,base+0x2A7C
-BossDemonCleave0to5_11_3:	; Frame 11, Slice 3
+BossDemonCleave_11_3:	; Frame 11, Slice 3
 DB	60,11,108,89,116 ;w,h,x,y,o
 DW	0x1A80,base+0x2A95
 DW	0x1980,base+0x2AAF
@@ -2415,7 +2415,7 @@ DW	0x1780,base+0x2B4F
 DW	0x177F,base+0x2B66
 DW	0x0A0D,base+0x2B7D
 DW	0x0A00,base+0x2B87
-BossDemonCleave0to5_11_4:	; Frame 11, Slice 4
+BossDemonCleave_11_4:	; Frame 11, Slice 4
 DB	60,11,100,100,108 ;w,h,x,y,o
 DW	0x0A0D,base+0x02BD
 DW	0x0872,base+0x2B91
@@ -2442,7 +2442,7 @@ DW	0x090A,base+0x1FA0
 DW	0x0C0D,base+0x2C37
 DW	0x0203,base+0x0002
 DW	0x0400,base+0x0357
-BossDemonCleave0to5_11_5:	; Frame 11, Slice 5
+BossDemonCleave_11_5:	; Frame 11, Slice 5
 DB	72,11,96,111,100 ;w,h,x,y,o
 DW	0x070B,base+0x0F24
 DW	0x0B0C,base+0x2C43
@@ -2471,7 +2471,7 @@ DW	0x0615,base+0x203F
 DW	0x0E6B,base+0x1A82
 DW	0x0614,base+0x205D
 DW	0x1000,base+0x2C90
-BossDemonCleave0to5_11_6:	; Frame 11, Slice 6
+BossDemonCleave_11_6:	; Frame 11, Slice 6
 DB	90,13,92,122,96 ;w,h,x,y,o
 DW	0x0614,base+0x2003
 DW	0x116C,base+0x2CA0
@@ -2507,7 +2507,7 @@ DW	0x095F,base+0x25B4
 DW	0x0516,base+0x0575
 DW	0x070D,base+0x01F4
 DW	0x0700,base+0x0F24
-BossDemonCleave0to5_12_0:	; Frame 12, Slice 0
+BossDemonCleave_12_0:	; Frame 12, Slice 0
 DB	22,12,134,47,134 ;w,h,x,y,o
 DW	0x0180,base+0x0000
 DW	0x0107,base+0x0001
@@ -2532,7 +2532,7 @@ DW	0x0306,base+0x0013
 DW	0x027A,base+0x0007
 DW	0x0306,base+0x0013
 DW	0x0200,base+0x0007
-BossDemonCleave0to5_12_1:	; Frame 12, Slice 1
+BossDemonCleave_12_1:	; Frame 12, Slice 1
 DB	28,12,128,59,140 ;w,h,x,y,o
 DW	0x0306,base+0x0013
 DW	0x027A,base+0x0007
@@ -2555,7 +2555,7 @@ DW	0x037A,base+0x0019
 DW	0x097E,base+0x002C
 DW	0x0B7E,base+0x0035
 DW	0x0C00,base+0x0040
-BossDemonCleave0to5_12_2:	; Frame 12, Slice 2
+BossDemonCleave_12_2:	; Frame 12, Slice 2
 DB	44,12,114,71,126 ;w,h,x,y,o
 DW	0x0D7F,base+0x2D08
 DW	0x0E80,base+0x0059
@@ -2569,7 +2569,7 @@ DW	0x147F,base+0x2D7D
 DW	0x1580,base+0x2D91
 DW	0x157F,base+0x2DA6
 DW	0x1600,base+0x2DBB
-BossDemonCleave0to5_12_3:	; Frame 12, Slice 3
+BossDemonCleave_12_3:	; Frame 12, Slice 3
 DB	50,12,108,83,114 ;w,h,x,y,o
 DW	0x167F,base+0x2DD1
 DW	0x1780,base+0x2DE7
@@ -2584,7 +2584,7 @@ DW	0x1780,base+0x2E9C
 DW	0x1780,base+0x2EB3
 DW	0x1112,base+0x2ECA
 DW	0x0500,base+0x0212
-BossDemonCleave0to5_12_4:	; Frame 12, Slice 4
+BossDemonCleave_12_4:	; Frame 12, Slice 4
 DB	66,12,102,95,106 ;w,h,x,y,o
 DW	0x1114,base+0x2EDB
 DW	0x046C,base+0x016B
@@ -2612,7 +2612,7 @@ DW	0x1018,base+0x2F69
 DW	0x0768,base+0x02C7
 DW	0x1119,base+0x2F79
 DW	0x0700,base+0x02DC
-BossDemonCleave0to5_12_5:	; Frame 12, Slice 5
+BossDemonCleave_12_5:	; Frame 12, Slice 5
 DB	74,12,96,107,102 ;w,h,x,y,o
 DW	0x131A,base+0x2F8A
 DW	0x0766,base+0x02F2
@@ -2646,7 +2646,7 @@ DW	0x070A,base+0x1FF0
 DW	0x1076,base+0x303F
 DW	0x070A,base+0x2002
 DW	0x1000,base+0x304F
-BossDemonCleave0to5_12_6:	; Frame 12, Slice 6
+BossDemonCleave_12_6:	; Frame 12, Slice 6
 DB	68,16,92,119,96 ;w,h,x,y,o
 DW	0x070A,base+0x2020
 DW	0x1076,base+0x305F
