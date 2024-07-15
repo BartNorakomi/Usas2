@@ -43,7 +43,7 @@ LevelEngine:
   
   ;DEZE ROUTINE KAN INDIEN NODIG HELEMAAL NAAR MovementPatternsFixedPage1.asm
   call  HandlePlayerSprite        ;handles all stands, moves player, checks collision, prepares sprite offsets
-  call  HandlePlayerWeapons       ;arrow, fireball, iceweapon, earthweapon, waterweapon
+  call  HandlePlayerWeapons       ;primary (sword, spear, axe, dagger) and secondary weapons (arrow, fireball, iceweapon, earthweapon, waterweapon)
 ;  call  BackdropBlack
 
   xor   a
@@ -2107,9 +2107,12 @@ putplayer_noclip:		;in: HL=frameHeader.frameOffset
 	jp    .loop
 
 .exit:
+  ld    (Player1Frame),sp     ;store end of this slice (when will be the start of the next slice)
 	ld    sp,(spatpointer)
 	ret
   
+  
+;Player1Frame: ds  2
 
 putplayer_clipright_totallyoutofscreenright:
 ;20240531;ro;this does absolutely nothing...
@@ -2215,6 +2218,7 @@ putplayer_clipright:
 	jp    .loop
 
 .exit:
+  ld    (Player1Frame),sp
 	ld    sp,(spatpointer)
 	ret
 
@@ -2362,6 +2366,7 @@ putplayer_clipleft:
 	jp    .loop
 
   .exit:
+  ld    (Player1Frame),sp
 	ld    sp,(spatpointer)
 	ret  
 
@@ -4313,10 +4318,11 @@ PlayerWeaponSf2Engine:
   ld    (iy+copydirection),a
   ld    (CopyPlayerProjectile+copydirection),a  
 
-  ld    a,(screenpage)
+  ld    a,(screenpage)                ;we put weapon/projectile in current page
   ld    (CopyPlayerProjectile+dpage),a  
   ld    (iy+dpage),a
-  ld    a,3                           ;clean object from vram data in page 3 (buffer page)
+  add   a,2                           ;we put weapon/projectile in current page + 2 (this is always a clean buffer page)
+  and   3
   ld    (iy+spage),a
 
 ;set object sy,dy,sx,dx,nx,ny
