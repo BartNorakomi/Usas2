@@ -261,3 +261,6 @@ TotallyWhiteSpritedatablock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockS
 									ds	$4000,9+9*16
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block								
 
+TotallyRedSpritedatablock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+									ds	$4000,14+14*16
+									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	

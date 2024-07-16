@@ -1877,6 +1877,12 @@ PutSF2Object7:	;section#5
 ;if we are in page 2 we prepare to restore page 3 in the next frame
 ;if we are in page 3 we prepare to restore page 0 in the next frame
 PutSF2ObjectSlice:
+  bit   0,(ix+enemies_and_objects.v1-1)     ;v1-1=boss was hit, blink during 1 frame
+  jr    z,.NotHit
+;  ld    c,TotallyWhiteSpritedatablock
+;  ld    c,TotallyRedSpritedatablock
+  .NotHit:
+
 	ld    a,(screenpage)
   add   a,a
   ld    d,0
@@ -1901,7 +1907,7 @@ PutSF2ObjectSlice:
 	out		($a8),a	
 	ld		a,(memblocks.2)
 	push	af		;store current block
-	ld		a,c		;set framedata in page 1 in rom ($4000 - $7fff)
+	ld		a,c		;set framedata in page 1 in rom ($4000 - $7fff)  
 	call	block12
 	ld		a,b		;set framelist in page 2 in rom ($8000 - $bfff)
 	call	block34

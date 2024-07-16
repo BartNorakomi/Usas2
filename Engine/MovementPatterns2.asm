@@ -302,7 +302,7 @@ GoatCheckIfHit:
   ld    a,(ix+enemies_and_objects.x)        ;x
   sub   a,26
   ld    (ix+enemies_and_objects.x),a        ;x
-  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CheckPlayerPunchesEnemy             ;Check if player hits enemy
   ld    a,(ix+enemies_and_objects.y)        ;y
   sub   a,30
   ld    (ix+enemies_and_objects.y),a        ;y
