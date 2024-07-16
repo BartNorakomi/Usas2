@@ -69,9 +69,6 @@ LevelEngine:
   ld    (lineintflag),a
   jp    LevelEngine
 
-RePlayerSFX_Play:                 ;in: a=sfx number
-    ret
-
 ;herospritenrTimes2:       equ 12*2
 herospritenrTimes2:       equ 28*2
 
@@ -5803,7 +5800,7 @@ Set_Climb_AndResetAniCount:
   ret
 
 Set_jump:
-  ld    a,01
+  ld    bc,SFX_jump
   call  RePlayerSFX_Play
 
   call  SetHitBoxPlayerStanding

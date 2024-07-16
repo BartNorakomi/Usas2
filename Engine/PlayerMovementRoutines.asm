@@ -4091,7 +4091,7 @@ endif
  
   pop   af                  ;pop the call to .VerticalMovement, this way no further checks are done
  
-  ld    a,02
+  ld    bc,SFX_land
   call  RePlayerSFX_Play
  
   ld    a,(PlayerFacingRight?)
