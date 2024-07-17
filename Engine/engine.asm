@@ -3845,6 +3845,10 @@ ld a,e
   or    a
   ret   nz
 
+  ld    a,(PlayerDead?)
+  or    a
+  ret   nz
+
   ld    a,(PlayerFacingRight?)
   or    a
   jp    z,Set_L_BeingHit

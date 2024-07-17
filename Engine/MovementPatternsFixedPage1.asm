@@ -446,6 +446,19 @@ AnimateSprite:
   ex    de,hl                               ;out hl -> sprite character data to out to Vram
   ret	
 
+CheckOutOfMapSf2Engine:
+  ld    a,(ix+enemies_and_objects.y)  
+  cp    212
+  jr    nc,RemoveSprite
+
+  ld    l,(ix+enemies_and_objects.x)  
+  ld    h,(ix+enemies_and_objects.x+1)      ;x  
+  ld    de,256+16                           ;map width + offset
+  xor   a
+  sbc   hl,de
+  ret   c
+  jr    RemoveSprite
+
 ;Generic Enemy/Object Routines ##############################################################################
 CheckOutOfMap:  
   ld    l,(ix+enemies_and_objects.x)  
@@ -720,18 +733,15 @@ CheckPrimaryWeaponHitsEnemy:
 
 ;if the right side of the weapon is left from the left side of the enemy = no hit
   ld    hl,(PrimaryWeaponXRightSide)        ;hl = x hitbox
-  ld    bc,32
+
+  ld    a,(scrollEngine)                    ;1= 304x216 engine  2=256x216 SF2 engine
+  dec   a
+  ld    bc,32                               ;normal engine
+  jr    z,.engineFound
+  ld    bc,32 - 16                          ;sf2 engine (46 - 14 for arrows)
+  .engineFound:
   add   hl,bc                               ;right side of primary weapon (inclusing offset)
-  
-;Moet deze code er misschien TOCH in voor de SF2 engine ?
-;  ld    a,(scrollEngine)                    ;1= 304x216 engine  2=256x216 SF2 engine
-;  dec   a
-;  ld    bc,46                               ;normal engine
-;  jr    z,.engineFound
-;  ld    bc,46 - 16                          ;sf2 engine (46 - 14 for arrows)
-;  .engineFound:
-;  add   hl,bc                               ;right side of primary weapon (inclusing offset)
-  
+
   ld    e,(ix+enemies_and_objects.x)  
   ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
   sbc   hl,de
@@ -745,14 +755,6 @@ CheckPrimaryWeaponHitsEnemy:
 
   ld    hl,(PrimaryWeaponX)                 ;hl = x hitbox 
   add   hl,bc                               ;left side of primary weapon (inclusing weird)
-
-;  ld    a,(scrollEngine)                    ;1= 304x216 engine  2=256x216 SF2 engine
-;  dec   a
-;  ld    bc,46                               ;normal engine
-;  jr    z,.engineFound2
-;  ld    bc,46 - 16                          ;sf2 engine (46 - 14 for arrows)
-;  .engineFound2:
-;  add   hl,bc                               ;left side of primary weapon (inclusing offset for engine type)
 
   sbc   hl,de
   ret   nc
@@ -795,7 +797,7 @@ CheckSecundaryWeaponHitsEnemy:
   dec   a
   ld    bc,46                               ;normal engine
   jr    z,.engineFound
-  ld    bc,46 - 18                          ;sf2 engine (46 - 14 for arrows)
+  ld    bc,46 - 16                          ;sf2 engine (46 - 14 for arrows)
   .engineFound:
 
   add   hl,bc
@@ -859,38 +861,6 @@ CheckPlayerPunchesBossWithYOffset:                ;in b=Y offset
   ld    (SecundaryWeaponYBottom),a                ;a = y bot hitbox
   ret
   
-CheckPlayerPunchesBoss:
-CheckPlayerPunchesEnemyDemon:
-;  ld    hl,(ClesX)
-  
-  ;adjust hitbox when facing left or right (this only applies to bossfights)
-;  ld    a,(PlayerFacingRight?)
-;  or    a
-;  ld    de,43
-;  jr    nz,.PlayerFacingDirectionFound
-;  ld    de,43-34  
-;  .PlayerFacingDirectionFound:
-  
-;  add   hl,de
-;  ld    (HitBoxSX),hl
-;  ld    a,16
-;  ld    (HitBoxNX),a
-;  ld    a,12
-;  ld    (HitBoxNY),a
-;  ld    a,(ClesY)
-;  add   a,17 - 6 - 60
-;  ld    (HitBoxSY),a
-  
-;  ld    a,(SecundaryWeaponY)                       ;a = y hitbox
-;  sub   a,60
-;  ld    (SecundaryWeaponY),a                       ;a = y hitbox
-  call  CheckPlayerPunchesEnemy
-;  ld    a,(SecundaryWeaponY)                       ;a = y hitbox
-;  add   a,60
-;  ld    (SecundaryWeaponY),a                       ;a = y hitbox
-  ret
-;  jp    CheckPlayerPunchesEnemy
-
 BlinkDurationWhenHit: equ 31  
 CheckPlayerPunchesEnemy:  
   ld    a,(ix+enemies_and_objects.hit?)     ;reduce enemy is hit counter
