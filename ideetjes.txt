@@ -4,7 +4,8 @@ Met al de rest heeft het geen effect
 Er is 1 item die je primairy wapen buffen met elk element, zodat je de boss ook damage kunt doen met je primairy wapen
 
 Er is 1 boss die heel snel en veel leven verliest, maar heel snelle passieve hp regen heeft
-
+- Een boss die automatisch hp regened over time.
+Alleen als je 'm snel genoeg kunt slopen kun je deze boss verslaan. Om m snel genoeg te kunnen slopen moet je bv een item hebben waardoor je mana sneller regened.
 
 In de speciaal rooms kun je max hp+mp items vinden
 max hp+mp gaat ook omhoog als je een boss verslaat

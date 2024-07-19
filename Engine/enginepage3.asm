@@ -127,9 +127,11 @@ CheckSwitchNextSong:
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
   ld    a,(NewPrContr)	
-	bit		5,a           ;F1 pressed ?
+	bit		6,a           ;F1 pressed ?
   ret   z
 
+	.GoSwitchNextSong:
+  call  RePlayer_Stop
   ld    a,(CurrentSongBeingPlayed)
   inc   a
   cp    7
@@ -139,9 +141,6 @@ CheckSwitchNextSong:
   ld    (CurrentSongBeingPlayed),a
   ld    c,a
   ld    b,0
-  push  bc
-  call  RePlayer_Stop
-  pop   bc                            ;track nr
 ;  ld    bc,3                          ;track nr
   ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
   ld    hl,$8000+1
@@ -154,14 +153,16 @@ LoadSamplesAndPlaySong0:
 	and   a
 	ret   nz
 
-  xor   a
+  ld		a,1
   ld    (CurrentSongBeingPlayed),a
   call  RePlayer_Stop
-  ld    bc,0                          ;track nr
+  ld    bc,1                          ;track nr
   ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
   ld    hl,$8000+1
   call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
   call  RePlayer_Tick                 ;initialise, load samples
+
+;	call	CheckSwitchNextSong.GoSwitchNextSong
   ret
 
 
@@ -207,6 +208,7 @@ VGMRePlay:
   ld    hl,$8000+1
   call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
   call	RePlayer_Tick
+  call	RePlayer_Stop
   ret
 
 Main_Loop:
@@ -1162,9 +1164,11 @@ AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
   ds    7 * 6 ;7 blocks maximum, 6 bytes per block
   ds    6 ;1 extra block buffer
 AmountOfAppearingBlocks:  ds  1
-
 OctoPussyBulletSlowDownHandler:   db 0
 
+
+SaveGameVariables:						;Here we store all variables that are required when saving game
+BossDead?:			db	%0000 0000		;bit 0=demon, bit 1=voodoo wasp, bit 2=zombie caterpillar, bit 3=ice goat
 
 
 

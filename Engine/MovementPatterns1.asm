@@ -1080,25 +1080,33 @@ BulletMovementTable8:  ;repeating steps(128 = end table/repeat), move y, move x
 ;v8=phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
 ;v9=timer until next phase
 BossDemon:
-;  ld    de,NonMovingObjectMovementTable
-;  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
-
   call  CheckPlayerHitByDemon                ;Check if player gets hit by boss
-  ;Check if boss gets hit by player
   call  BossDemonCheckIfHit                  ;Check if boss is hit, and if so set being hit phase
-  ;Check if boss is dead
-;  call  GoatCheckIfDead                     ;Check if boss is dead, and if so set dying phase
   ld    a,(HugeObjectFrame)
   cp    7-1                                   ;only handle phase when all 7 slices have been put
   call  z,.HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
-
-;	ld    (ix+enemies_and_objects.v7),DemonStartingFrameDeath+7
-
+  call  .CheckBossDead                        ; check if boss is already dead. If so, just permanently show last frame. IF we just entered the room (then boss is in Idle, then ALSO set x to 94)
   ld    de,BossDemonIdle_0
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
   jp    PutSf2Object7Frames                   ;CHANGES IX - puts object in 7 frames
 
+  .CheckBossDead:
+  ;now we check if boss is already dead. If so, just permanently show last frame. IF we just entered the room (then boss is in Idle, then ALSO set x to 94)
+  ld    a,(BossDead?)                       ;bit 0=demon, bit 1=voodoo wasp, bit 2=zombie caterpillar, bit 3=ice goat
+  bit   0,a
+  ret    z
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
+  or    a
+  jr    nz,.EndCheckBossIdle
+  ld    (ix+enemies_and_objects.x),94      ;boss x
+  .EndCheckBossIdle:               
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
+  ld    (ix+enemies_and_objects.v7),DemonStartingFrameDeath+DemonTotalFramesDeath-1       ;v7=sprite frame
+  ret
+
   .HandlePhase:
+  call  BossDemonCheckIfDead
+
   ld    a,(Bossframecounter)
   inc   a
   ld    (Bossframecounter),a
@@ -1116,6 +1124,30 @@ BossDemon:
   jp    z,BossDemonDead
   dec   a
   jp    z,BossDemonShoot
+
+  BossDemonDead:
+  ;animate
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
+  inc   a
+  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
+  cp    DemonStartingFrameDeath+DemonTotalFramesDeath
+  ret   nz
+  ld    a,(BossDead?)                       ;bit 0=demon, bit 1=voodoo wasp, bit 2=zombie caterpillar, bit 3=ice goat
+  set   0,a
+  ld    (BossDead?),a                       ;bit 0=demon, bit 1=voodoo wasp, bit 2=zombie caterpillar, bit 3=ice goat
+  ret
+
+  BossDemonCheckIfDead:
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
+  cp    4
+  ret   z                                   ;don't check if already dead
+
+  ld    a,(ix+enemies_and_objects.life)
+  dec   a
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
+  ld    (ix+enemies_and_objects.v7),DemonStartingFrameDeath-1       ;v7=sprite frame
+  ret
 
   BossDemonShoot:
   push  ix
@@ -1165,22 +1197,10 @@ CheckPlayerHitByDemon:
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
   cp    4
   ret   z                                   ;don't check if boss is dead
-;  cp    3
-;  ret   z                                   ;don't check if boss is hit
   cp    2
   jr    z,.CleaveAttack
 
-;  .CheckArms:                               ;when Goat is idle and walking, check arms and body separately
-  ;check arms
-;  ld    (ix+enemies_and_objects.nx),106     ;nx
-;  ld    (ix+enemies_and_objects.ny),080     ;ny
-;  xor   a
-;  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
-;  ld    bc,50                               ;reduction to hitbox sx (left side)
-;  call  CollisionEnemyPlayer.ObjectEntry
-
   .CheckBody:                               ;check if player is hit by body
-  ;check body
   ld    (ix+enemies_and_objects.nx),60      ;nx
   ld    (ix+enemies_and_objects.ny),080     ;ny
 
@@ -1217,11 +1237,7 @@ CheckPlayerHitByDemon:
   ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
   ret
 
-
-
   BossDemonCleaveAttack:
-;  call  .CollisionObjectPlayerDemonAttacking
-
   ;animate
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   inc   a
@@ -1237,20 +1253,6 @@ CheckPlayerHitByDemon:
   ld    a,20
   ld    (ShakeScreen?),a 
   ret
-
-;  .CollisionObjectPlayerDemonAttacking:
-;  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
-;  cp    24
-;  jp    nz,CollisionObjectPlayerDemon       ;Check if player is hit by Vram object                            
-;  ld    a,(ix+enemies_and_objects.x)        ;x
-;  sub   a,74
-;  ld    (ix+enemies_and_objects.x),a        ;x
-;  call  CollisionObjectPlayerDemon          ;Check if player is hit by Vram object                            
-;  ld    a,(ix+enemies_and_objects.x)        ;x
-;  add   a,74
-;  ld    (ix+enemies_and_objects.x),a        ;x
-;  ret
-
 
   BossDemonWalking:
   ;animate
@@ -1276,53 +1278,6 @@ CheckPlayerHitByDemon:
   ld    (ix+enemies_and_objects.v9),020     ;v9=timer until next phase
   ret
 
-;  bit   7,(ix+enemies_and_objects.v9)       ;v9=move left (-1) or right (0)
- ; ld    de,BossDemonWalkLeftMovementTable
-;  jr    nz,.GoMove
- ; ld    de,BossDemonWalkRightMovementTable
-;  .GoMove:
-;  call  MoveObjectWithStepTable             ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
-
-;  call  CollisionObjectPlayerDemon         ;Check if player is hit by Vram object                            
-;  call  CheckPlayerPunchesEnemyDemon       ;Check if player hit's enemy
-
-;  ld    a,(ix+enemies_and_objects.x)        ;x
-;  cp    116
-;  jr    nz,.endcheckStartAttacking
-;  ld    (ix+enemies_and_objects.v7),16      ;v7=sprite frame
-;  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
-;  ld    (ix+enemies_and_objects.v9),0       ;v9=move left (-1) or right (0)
-;  ret  
-;  .endcheckStartAttacking:
-
-;  cp    8*26 + 2
-;  jr    nz,.endcheckStartBackToIdle
-;  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
-;  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table    
-;  ld    (ix+enemies_and_objects.v7),00      ;v7=sprite frame
-;  ld    (ix+enemies_and_objects.v8),0       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
-;  ld    (ix+enemies_and_objects.v9),-1      ;v9=move left (-1) or right (0)
-;  ret  
-;  .endcheckStartBackToIdle:
-
-;  call  BossDemonCheckIfDead                ;call gets popped if dead
-;  call  BossDemonCheckIfHit                 ;call gets popped if hit
-
-;  ld    a,(Bossframecounter)
-;  and   1
-;  ret   nz
-    
-;  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
-;  inc   a
-;  cp    16                                  ;sprite 6-15 are walking
-;  jr    nz,.notzero
-;  ld    a,6
-;  .notzero:  
-;  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
-;  ret
-
-
-
   BossDemonHit:
   ;animate
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
@@ -1339,8 +1294,6 @@ CheckPlayerHitByDemon:
 
   cp    2                                   ;cleave attack ?
   jr    z,.BossWasAttackingCleave
-;  cp    5                                   ;shooting ?
-;  ret   z
 
   ;after being hit, there is a 50% chance that boss will cleave attack (even if NOT in range)
   ld    a,r
@@ -1417,8 +1370,6 @@ CheckPlayerHitByDemon:
   ld    (ix+enemies_and_objects.v6),-1      ;v6=Bullet Movement
   ret
 
-
-
   BossDemonAmountFramesUnableToBeHitAfterBeingHit:  equ 09
   BossDemonCheckIfHit:
   ld    a,(ix+enemies_and_objects.hit?)
@@ -1435,12 +1386,7 @@ CheckPlayerHitByDemon:
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
   cp    DemonStartingFrameCleave+8
   ret   z
-;  cp    DemonStartingFrameCleave+9
-;  ret   z
   .GoCheck:
-
-;  ld    (ix+enemies_and_objects.ny),060     ;ny  
-;  ld    (ix+enemies_and_objects.nx),110     ;nx
   ld    a,(ix+enemies_and_objects.x)        ;x
   sub   a,16
   ld    (ix+enemies_and_objects.x),a        ;x
@@ -1471,50 +1417,6 @@ CheckPlayerHitByDemon:
   ld    (ix+enemies_and_objects.v7),DemonStartingFrameHit-1   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
   ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
   ret
-
-;  ld    de,NonMovingObjectMovementTable
-;  call  MoveObjectWithStepTable            ;v1=repeating steps, v2=pointer to  movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit  
-;  call  CollisionObjectPlayerDemon         ;Check if player is hit by Vram object                            
-;  call  CheckPlayerPunchesEnemyDemon       ;Check if player hit's enemy
-  
-;  ld    a,r
-;  and   31
-;  jr    nz,.EndCheckStartWalking
-;  ld    (ix+enemies_and_objects.v1),0       ;v1=repeating steps
-;  ld    (ix+enemies_and_objects.v2),0       ;v2=pointer to movement table    
-;  ld    (ix+enemies_and_objects.v7),6       ;v7=sprite frame
-;  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
-;  ret
-;  .EndCheckStartWalking:
-
-;  call  BossDemonCheckIfDead                ;call gets popped if dead
-;  call  BossDemonCheckIfHit                 ;call gets popped if hit
-
-  ;animate dying
-  ld    b,DemonStartingFrameDeath
-  ld    b,DemonStartingFrameIdle
-  ld    c,DemonStartingFrameDeath+DemonTotalFramesDeath
-  jp    BossDemonAnimate
-
-  ;animate casting
-  ld    b,DemonStartingFrameCasting
-  ld    c,DemonStartingFrameCasting+DemonTotalFramesCasting
-  jp    BossDemonAnimate
-
-  ;animate cleave
-  ld    b,DemonStartingFrameCleave
-  ld    c,DemonStartingFrameCleave+DemonTotalFramesCleave
-  jp    BossDemonAnimate
-
-  ;animate hit
-  ld    b,DemonStartingFrameHit
-  ld    c,DemonStartingFrameHit+DemonTotalFramesHit
-  jp    BossDemonAnimate
-
-  ;animate walk
-  ld    b,DemonStartingFrameWalk
-  ld    c,DemonStartingFrameWalk+DemonTotalFramesWalk
-  jp    BossDemonAnimate
 
   BossDemonAnimate:
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
@@ -1680,96 +1582,6 @@ BossDemonDeath_16:
 BossDemonDeath_17:
   db    BossDemonDeath2framelistblock, BossDemonDeath2spritedatablock | dw    BossDemonDeath2_2_0
 BossDemonEnd:
-
-BossDemon1:
-;v1=repeating steps
-;v2=pointer to movement table
-;v3=Vertical Movement
-;v4=Horizontal Movement
-;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
-;v6=active on which frame ?  
-;v7=sprite frame
-;v8=phase
-;v9=move left (-1) or right (0)
-  ld    a,(HugeObjectFrame)
-  inc   a
-  and   3
-  ld    (HugeObjectFrame),a
-  cp    (ix+enemies_and_objects.v6)         ;v6=active on which frame ?  
-  ret   nz
-
-;  call  BackdropOrange  
-  call  restoreBackgroundObject1
-
-  call  .HandlePhase                        ;(0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-
- ; ld    bc,BossDemonIdle00
-;  call  SetFrameBossDemon
-  jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
-  
-;  ld    b,(hl)                              ;frame list block
-;  inc   hl
-;  ld    c,(hl)                              ;sprite data block
-;  ret  
-  
-  
-  .HandlePhase:                             ;(0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-  ld    a,(Bossframecounter)
-  inc   a
-  ld    (Bossframecounter),a
-
-  ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-  or    a
-  jp    z,BossDemonIdle
-  dec   a
-  jp    z,BossDemonWalking
-  dec   a
-;  jp    z,BossDemonAttacking
-  dec   a
-  jp    z,BossDemonHit
-  dec   a
-  jp    z,BossDemonDead
-    
-  BossDemonDead:
-  ld    a,(Bossframecounter)
-  and   1
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
-  cp    54                                  ;sprite 34-54 are dead
-  jr    z,.LastSprite
-  inc   a
-  .LastSprite:  
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
-  ret
-  
-
-  
-  
-  
-
-
-
-;  BossDemonCheckIfHit:
-;  ld    a,(ix+enemies_and_objects.hit?)
-;  or    a
-;  ret   z
-;  pop   af                                  ;pop call  
-;  ld    (ix+enemies_and_objects.hit?),0
-;  ld    (ix+enemies_and_objects.v7),29      ;v7=sprite frame
-;  ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-;  ret
-
-  BossDemonCheckIfDead:
-  ld    a,(ix+enemies_and_objects.life)
-  dec   a
-  ret   nz
-  pop   af                                  ;pop call
-  ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle, 1=walking, 2=attacking, 3=hit, 4=dead)
-  ld    a,34
-  ld    (ix+enemies_and_objects.v7),a       ;v7=sprite frame
-  ret
-
-
 
 HugeSpiderLegs:
 ;v1=Animation Counter

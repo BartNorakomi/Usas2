@@ -4331,7 +4331,7 @@ PlayerWeaponSf2Engine:
   ld    a,(screenpage)                ;we put weapon/projectile in current page
   ld    (CopyPlayerProjectile+dpage),a  
   ld    (iy+dpage),a
-  add   a,2                           ;we put weapon/projectile in current page + 2 (this is always a clean buffer page)
+  add   a,2                           ;we restore weapon/projectile from current page + 2 (this is always a clean buffer page)
   and   3
   ld    (iy+spage),a
 
