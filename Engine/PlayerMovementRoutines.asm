@@ -2566,7 +2566,10 @@ RBeingHit:
   ret
 
 RRolling:
-  call  SetPrimaryWeaponHitBoxRightSitting
+  ld    a,(framecounter)
+  and   15
+  ld    bc,SFX_roll
+  call  z,RePlayerSFX_Play
 
   ld    a,(PlayerAniCount+1)
   inc   a
@@ -2683,6 +2686,11 @@ RRolling:
   jp    Set_Fall
 
 LRolling:
+  ld    a,(framecounter)
+  and   15
+  ld    bc,SFX_roll
+  call  z,RePlayerSFX_Play
+
   call  SetPrimaryWeaponHitBoxLeftSitting
 
   ld    a,(PlayerAniCount+1)
@@ -3852,7 +3860,9 @@ Jump:
   ld    (PrimaryWeaponActivatedWhileJumping?),a
   xor   a
   ld    (PlayerAniCount),a
-  ret
+
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
 
 .SetShootMagicWhileJump:
   ld    a,(PrimaryWeaponActivatedWhileJumping?)
@@ -3878,7 +3888,8 @@ Jump:
   ld    (PlayerAniCount),a  
   ld    a,1
   ld    (ShootMagicWhileJump?),a  
-  ret
+  ld    bc,SFX_shoot1
+  jp    RePlayerSFX_Play
 
   .Arrow:
   ld    a,(ShootArrowWhileJump?)
@@ -3892,7 +3903,8 @@ Jump:
   ld    (PlayerAniCount),a    
   ld    a,1
   ld    (ShootArrowWhileJump?),a
-  ret
+  ld    bc,SFX_arrow
+  jp    RePlayerSFX_Play
 
 .VerticalMovement:
   ;as soon as up is released, player stops jumping up. This way the jump height can be controlled

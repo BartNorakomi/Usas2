@@ -18,13 +18,13 @@ RePlayerSFX_Initialize_Loop:
 
 ; bc = sfx
 RePlayerSFX_Play:
-	ld ix,RePlayerSFX_channels
+	ld iy,RePlayerSFX_channels
 	di
-	ld (ix + 0),c
-	ld (ix + 1),b
-	ld (ix + 2),usas2sfxrepBlock
+	ld (iy + 0),c
+	ld (iy + 1),b
+	ld (iy + 2),usas2sfxrepBlock
 	ei
-	ld (ix + 3),1
+	ld (iy + 3),1
 	ret
 
 RePlayerSFX_Tick:
@@ -66,21 +66,29 @@ RePlayerSFX_channels:
 
 ; Sound effects list (base address + 4 * track nr)
 SFX_nop: equ 8001H + 4 * 0
-SFX_land: equ 8001H + 4 * 1
+SFX_click: equ 8001H + 4 * 1
 SFX_jump: equ 8001H + 4 * 2
-SFX_test3: equ 8001H + 4 * 3
-SFX_test4: equ 8001H + 4 * 4
-SFX_test5: equ 8001H + 4 * 5
-SFX_test6: equ 8001H + 4 * 6
-SFX_test7: equ 8001H + 4 * 7
-SFX_test8: equ 8001H + 4 * 8
+SFX_land: equ 8001H + 4 * 3
+SFX_coin: equ 8001H + 4 * 4
+SFX_meditate: equ 8001H + 4 * 4
+SFX_dash: equ 8001H + 4 * 5
+SFX_punch: equ 8001H + 4 * 6
+SFX_bouncingback: equ 8001H + 4 * 7
+SFX_beinghit: equ 8001H + 4 * 8
 SFX_test9: equ 8001H + 4 * 9
-SFX_test10: equ 8001H + 4 * 10
-SFX_test11: equ 8001H + 4 * 11
-SFX_test12: equ 8001H + 4 * 12
-SFX_test13: equ 8001H + 4 * 13
-SFX_test14: equ 8001H + 4 * 14
-SFX_test15: equ 8001H + 4 * 15
+SFX_shoot1: equ 8001H + 4 * 10
+SFX_shoot2: equ 8001H + 4 * 11
+SFX_enemyhit: equ 8001H + 4 * 11
+SFX_shoot3: equ 8001H + 4 * 12
+SFX_enemyexplosionsmall: equ 8001H + 4 * 12
+SFX_shoot4: equ 8001H + 4 * 13
+SFX_enemyexplosionbig: equ 8001H + 4 * 13
+SFX_bossdemonshoot: equ 8001H + 4 * 13
+SFX_arrow: equ 8001H + 4 * 14
+SFX_roll: equ 8001H + 4 * 15
 SFX_test16: equ 8001H + 4 * 16
+SFX_bossdemoncleaveattack: equ 8001H + 4 * 16
 SFX_test17: equ 8001H + 4 * 17
+SFX_bossdemonbeinghit: equ 8001H + 4 * 17
 SFX_test18: equ 8001H + 4 * 18
+SFX_bossdemondead: equ 8001H + 4 * 18

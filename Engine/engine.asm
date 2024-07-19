@@ -1,7 +1,7 @@
 phase	engaddr
 
 LevelEngine:
-  call  CheckSwitchNextSong
+;  call  CheckSwitchNextSong
 ;  call  BackdropBlue
   call  CameraEngine              ;Move camera in relation to Player's position. prepare R18, R19, R23 and page to be set on Vblank.
 ;  call  BackdropBlack
@@ -4186,15 +4186,9 @@ HandlePlayerWeapons:
   add   a,e
   ld    (iy+sx),a
 
-
-
-
-
-
   ld    a,(PrimaryWeaponActive?)
   or    a
   jr    nz,.GoPutWeaponRightSideScreen
-
  
   ld    a,(ix+0)            ;SecundaryWeaponActive? / movement speed
   or    a
@@ -4318,45 +4312,107 @@ HandlePlayerWeapons:
   ld    (CleanPlayerProjectile+restorebackground?),a   
   ret
 
-PlayerWeaponSf2Engine:  
-  ld    a,(ix+5)                      ;SX right side
-  ld    (CopyPlayerProjectile+sx),a  
-  ld    a,%0000 0000                  ;set copy direction. Copy from left to right
-  ld    (iy+copydirection),a
-  ld    (CopyPlayerProjectile+copydirection),a  
+;this is the old version of the routine, that restores the background from current page + 2
+;PlayerWeaponSf2Engine:  
+;  ld    a,(ix+5)                      ;SX right side
+;  ld    (CopyPlayerProjectile+sx),a  
+;  ld    a,%0000 0000                  ;set copy direction. Copy from left to right
+;  ld    (iy+copydirection),a
+;  ld    (CopyPlayerProjectile+copydirection),a  
 
+;  ld    a,(screenpage)                ;we put weapon/projectile in current page
+;  ld    (CopyPlayerProjectile+dpage),a  
+;  ld    (iy+dpage),a
+;  add   a,2                           ;we restore weapon/projectile from current page + 2 (this is always a clean buffer page)
+;  and   3
+;  ld    (iy+spage),a
+
+;set object sy,dy,sx,dx,nx,ny
+;  ld    a,(ix+1)                      ;y
+;  ld    (iy+sy),a
+;  ld    (iy+dy),a
+;  ld    (CopyPlayerProjectile+dy),a
+  
+;  ld    a,(ix+2)                      ;x
+;  ld    (CopyPlayerProjectile+dx),a
+;  ld    (iy+dx),a
+;  ld    (iy+sx),a
+  ;remove weapon when going out of screen
+;  ld    a,(ix+2)                      ;x
+;  cp    7
+;  jp    c,GoHandlePlayerWeapon.RemoveWeapon
+;  cp    255-7
+;  jp    nc,GoHandlePlayerWeapon.RemoveWeapon
+
+  ;put object
+;  ld    hl,CopyPlayerProjectile
+;  call  docopy
+
+  ;remove object at start of next frame
+;  ld    a,1                           ;all background restores should be done simultaneously at start of frame (after vblank)
+;  ld    (CleanPlayerProjectile+restorebackground?),a   
+;  ret
+
+PlayerWeaponSf2Engine:  
   ld    a,(screenpage)                ;we put weapon/projectile in current page
-  ld    (CopyPlayerProjectile+dpage),a  
-  ld    (iy+dpage),a
-  add   a,2                           ;we restore weapon/projectile from current page + 2 (this is always a clean buffer page)
-  and   3
-  ld    (iy+spage),a
+  ld    (BackupBackground+spage),a  
 
 ;set object sy,dy,sx,dx,nx,ny
   ld    a,(ix+1)                      ;y
-  ld    (iy+sy),a
-  ld    (iy+dy),a
-  ld    (CopyPlayerProjectile+dy),a
+  ld    (BackupBackground+sy),a
   
   ld    a,(ix+2)                      ;x
-  ld    (CopyPlayerProjectile+dx),a
-  ld    (iy+dx),a
-  ld    (iy+sx),a
+  ld    (BackupBackground+sx),a
   ;remove weapon when going out of screen
-  ld    a,(ix+2)                      ;x
+;  ld    a,(ix+2)                      ;x
   cp    7
   jp    c,GoHandlePlayerWeapon.RemoveWeapon
   cp    255-7
   jp    nc,GoHandlePlayerWeapon.RemoveWeapon
-  
+
+  ;backup background where we will put object
+  ld    a,(CopyPlayerProjectile+nx)
+  ld    (BackupBackground+nx),a
+  ld    a,(CopyPlayerProjectile+ny)
+  ld    (BackupBackground+ny),a
+  ld    hl,BackupBackground           ;a backup of the background piece where we will place our software sprite will be stored at (0,216) in page 3
+  call  docopy
+
+  ld    (iy+sy),216                   ;a backup of the background piece will be stored at (0,216) in page 3
+  ld    (iy+sx),0                     ;a backup of the background piece will be stored at (0,216) in page 3
+  ld    (iy+spage),3
+  ld    (iy+copydirection),0
+  ld    a,(BackupBackground+sy)
+  ld    (CopyPlayerProjectile+dy),a
+  ld    (iy+dy),a
+  ld    a,(BackupBackground+sx)
+  ld    (CopyPlayerProjectile+dx),a
+  ld    (iy+dx),a
+  ld    a,(screenpage)                ;we put weapon/projectile in current page
+  ld    (CopyPlayerProjectile+dpage),a  
+  ld    (iy+dpage),a
+  ld    a,%0000 0000                  ;set copy direction. Copy from left to right
+  ld    (CopyPlayerProjectile+copydirection),a  
+  ld    a,(ix+5)                      ;SX right side
+  ld    (CopyPlayerProjectile+sx),a  
+  xor   a
+  ld    (BigEnemyPresentInVramPage3),a;we are using the same vram space big enemies get, so these enemies are now no longer present
+
   ;put object
   ld    hl,CopyPlayerProjectile
   call  docopy
+
   ;remove object at start of next frame
   ld    a,1                           ;all background restores should be done simultaneously at start of frame (after vblank)
   ld    (CleanPlayerProjectile+restorebackground?),a   
   ret
- 
+
+BackupBackground:
+  db    000,000,000,000   ;sx,--,sy,spage
+  db    000,000,216,003   ;dx,--,dy,dpage
+  db    016,000,001,000   ;nx,--,ny,--
+  db    000,%0000 0000,$90       ;fast copy -> Copy from left to right
+
   db    0                 ;restorebackground?
 CleanPlayerProjectile:                                       ;this is used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)
   db    000,000,000,000   ;sx,--,sy,spage
@@ -5289,16 +5345,26 @@ Rstanding:
   .SetTimer:
   ld    (ForceVerticalMovementCameraTimer),a  
   ret
-    
+
+PlayShootSfx:    
+  ld    bc,SFX_shoot1
+  jp    RePlayerSFX_Play
+
+PlayShootArrowSfx:
+  ld    bc,SFX_arrow
+  jp    RePlayerSFX_Play
+
 Set_R_ShootKineticEnergy:
 	ld		hl,RShootKineticEnergy
 	ld		(PlayerSpriteStand),hl
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  jp    PlayShootSfx
 
 Set_L_SilhouetteKick:
+  call  PlayShootSfx
+
 	ld		hl,LSilhouetteKick
 	ld		(PlayerSpriteStand),hl
 
@@ -5307,6 +5373,8 @@ Set_L_SilhouetteKick:
   jp    SetHitBoxPlayerStanding
   
 Set_R_SilhouetteKick:
+  call  PlayShootSfx
+
 	ld		hl,RSilhouetteKick
 	ld		(PlayerSpriteStand),hl
 
@@ -5323,7 +5391,7 @@ Set_L_SitShootArrow:
 
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a  
-  ret
+  jp    PlayShootArrowSfx
 
 Set_R_SitShootArrow:
 	ld		hl,RSitShootArrow
@@ -5334,7 +5402,7 @@ Set_R_SitShootArrow:
 
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a  
-  ret
+  jp    PlayShootArrowSfx
 
 Set_L_ShootWater:
 	ld		hl,LShootWater
@@ -5345,7 +5413,7 @@ Set_L_ShootWater:
  
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a
-  ret
+  jp    PlayShootSfx
 
 Set_R_ShootWater:
 	ld		hl,RShootWater
@@ -5356,7 +5424,7 @@ Set_R_ShootWater:
  
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a
-  ret
+  jp    PlayShootSfx
   
 Set_L_ShootEarth:
 	ld		hl,LShootEarth
@@ -5367,7 +5435,7 @@ Set_L_ShootEarth:
  
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a
-  ret
+  jp    PlayShootSfx
 
 Set_R_ShootEarth:
 	ld		hl,RShootEarth
@@ -5378,7 +5446,7 @@ Set_R_ShootEarth:
  
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a
-  ret
+  jp    PlayShootSfx
 
 Set_L_ShootIce:
 	ld		hl,LShootIce
@@ -5389,7 +5457,7 @@ Set_L_ShootIce:
  
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a
-  ret
+  jp    PlayShootSfx
 
 Set_R_ShootIce:
 	ld		hl,RShootIce
@@ -5400,7 +5468,7 @@ Set_R_ShootIce:
  
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a
-  ret
+  jp    PlayShootSfx
 
 Set_L_ShootFireball:
 	ld		hl,LShootFireball
@@ -5411,7 +5479,7 @@ Set_L_ShootFireball:
  
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a
-  ret
+  jp    PlayShootSfx
 
 Set_R_ShootFireball:
 	ld		hl,RShootFireball
@@ -5422,7 +5490,7 @@ Set_R_ShootFireball:
  
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a
-  ret
+  jp    PlayShootSfx
   
 Set_L_ShootArrow:
 	ld		hl,LShootArrow
@@ -5433,7 +5501,7 @@ Set_L_ShootArrow:
 
 ;  ld    a,RunningTablePointerCenter
 ;  ld    (RunningTablePointer),a  
-  ret
+  jp    PlayShootArrowSfx
 
 Set_R_ShootArrow:
 ;  ld    a,(ArrowActive?)                    ;remove arrow when enemy is hit
@@ -5448,7 +5516,7 @@ Set_R_ShootArrow:
  
 ;  ld    a,RunningTablePointerCenter
 ;  ld    (RunningTablePointer),a
-  ret
+  jp    PlayShootArrowSfx
 
 Set_L_Meditate:
 	ld		hl,LMeditate
@@ -5456,7 +5524,8 @@ Set_L_Meditate:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  ld    bc,SFX_meditate
+  jp    RePlayerSFX_Play
 
 Set_R_Meditate:
 	ld		hl,RMeditate
@@ -5464,7 +5533,8 @@ Set_R_Meditate:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  ld    bc,SFX_meditate
+  jp    RePlayerSFX_Play
 
 Set_L_BouncingBack:
   xor   a
@@ -5482,7 +5552,8 @@ Set_L_BouncingBack:
   ld    (PlayerAniCount),hl
   ld    a,(StartingJumpSpeedWhenHit)
 	ld		(JumpSpeed),a
-  ret
+  ld    bc,SFX_bouncingback
+  jp    RePlayerSFX_Play
   
 Set_R_BouncingBack:
   xor   a
@@ -5500,9 +5571,13 @@ Set_R_BouncingBack:
   ld    (PlayerAniCount),hl
   ld    a,(StartingJumpSpeedWhenHit)
 	ld		(JumpSpeed),a
-  ret
+  ld    bc,SFX_bouncingback
+  jp    RePlayerSFX_Play
 
 Set_Charging:
+  ld    bc,SFX_dash
+  call  RePlayerSFX_Play
+
   ld    a,(PlayerFacingRight?)
   or    a
   jr    nz,.FacingRight
@@ -5546,6 +5621,9 @@ Set_Dying:
   ret
 
 Set_R_attack:
+  ld    bc,SFX_punch
+  call  RePlayerSFX_Play
+
   ld    a,(AttackRotator)
   inc   a
   cp    5
@@ -5573,7 +5651,8 @@ Set_L_Sword_attack:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
 
 Set_R_Sword_attack:
 	ld		hl,RSwordAttack
@@ -5584,7 +5663,9 @@ Set_R_Sword_attack:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
+
 
 Set_L_Dagger_attack:
   ld    a,r
@@ -5598,7 +5679,8 @@ Set_L_Dagger_attack:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
 
 Set_R_Dagger_attack:
   ld    a,r
@@ -5612,7 +5694,8 @@ Set_R_Dagger_attack:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
 
 Set_L_Axe_attack:
 	ld		hl,LAxeAttack
@@ -5623,7 +5706,8 @@ Set_L_Axe_attack:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
 
 Set_R_Axe_attack:
 	ld		hl,RAxeAttack
@@ -5634,7 +5718,8 @@ Set_R_Axe_attack:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
 
 Set_L_Spear_attack:
 	ld		hl,LSpearAttack
@@ -5645,7 +5730,8 @@ Set_L_Spear_attack:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
 
 Set_R_Spear_attack:
 	ld		hl,RSpearAttack
@@ -5656,8 +5742,9 @@ Set_R_Spear_attack:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
-  
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
+
 Set_L_Attack:
   ld    a,(AttackRotator)
   inc   a
@@ -5675,9 +5762,12 @@ Set_L_Attack:
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
-  ret
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
 
 Set_R_Rolling:
+;  ld    bc,SFX_roll
+;  call  RePlayerSFX_Play
   call  SetHitBoxPlayerRolling
 
   ld    hl,0 
@@ -5695,6 +5785,8 @@ ResetForceVerticalMovementCamera:
   ret
 
 Set_L_Rolling:
+;  ld    bc,SFX_roll
+;  call  RePlayerSFX_Play
   call  SetHitBoxPlayerRolling
 
   ld    hl,0 
@@ -6147,6 +6239,8 @@ Set_R_Push:
   ret
 
 Set_L_BeingHit:
+  ld    bc,SFX_beinghit
+  call  RePlayerSFX_Play
   call  SetHitBoxPlayerStanding
   
 	ld		hl,LBeingHit
@@ -6174,6 +6268,8 @@ Set_L_BeingHit:
   ret
 
 Set_R_BeingHit:
+  ld    bc,SFX_beinghit
+  call  RePlayerSFX_Play
   call  SetHitBoxPlayerStanding
   
 	ld		hl,RBeingHit
@@ -6208,7 +6304,8 @@ Set_L_SitPunch:
   xor   a
   ld    (PlayerFacingRight?),a	
 	ld		(PlayerAniCount),a
-  ret
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
 
 Set_R_SitPunch:
   call  SetHitBoxPlayerSitting
@@ -6221,7 +6318,8 @@ Set_R_SitPunch:
 	
   xor   a
 	ld		(PlayerAniCount),a
-  ret
+  ld    bc,SFX_punch
+  jp    RePlayerSFX_Play
 
 
 SetBorderMaskingSprites:

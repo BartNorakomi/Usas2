@@ -153,10 +153,10 @@ LoadSamplesAndPlaySong0:
 	and   a
 	ret   nz
 
-  ld		a,1
+  ld		a,3
   ld    (CurrentSongBeingPlayed),a
   call  RePlayer_Stop
-  ld    bc,1                          ;track nr
+  ld    bc,3                          ;track nr
   ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
   ld    hl,$8000+1
   call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)

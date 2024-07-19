@@ -764,6 +764,9 @@ CheckPrimaryWeaponHitsEnemy:
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
 
+  ld    bc,SFX_enemyhit
+  call  RePlayerSFX_Play
+
 	ld		de,(PlayerSpriteStand)
 	ld		hl,Charging
   xor   a
@@ -775,7 +778,6 @@ CheckPrimaryWeaponHitsEnemy:
   or    a
   jp    nz,Set_R_BouncingBack
   jp    Set_L_BouncingBack
-  ret
 
 CheckSecundaryWeaponHitsEnemy:
 ;if the bottom of the weapon is above the top of the enemy = no hit
@@ -825,7 +827,8 @@ CheckSecundaryWeaponHitsEnemy:
   ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
-  ret
+  ld    bc,SFX_enemyhit
+  jp    RePlayerSFX_Play
 
 CheckPlayerPunchesBossWithYOffset:                ;in b=Y offset
   ld    a,(PrimaryWeaponY)                        ;a = y top phitbox
@@ -930,7 +933,8 @@ CheckPlayerPunchesEnemy:
   ld    (ix+enemies_and_objects.nrsprites),72-(08*6)
   ld    (ix+enemies_and_objects.nrspritesSimple),8
   ld    (ix+enemies_and_objects.nrspritesTimes16),8*16  
-  ret
+  ld    bc,SFX_enemyexplosionbig
+  jp    RePlayerSFX_Play
   
   .ExplosionSmall:
   ld    hl,ExplosionSmall
@@ -961,7 +965,9 @@ CheckPlayerPunchesEnemy:
   ld    (ix+enemies_and_objects.v2),a       ;y backup
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ld    (ix+enemies_and_objects.y),218      ;y
-  ret
+  ld    bc,SFX_enemyexplosionsmall
+  jp    RePlayerSFX_Play
+
   
 ;/Generic Enemy Routines ##############################################################################
 ExplosionBig:
@@ -1310,7 +1316,8 @@ Coin:
 
   ld    (ix+enemies_and_objects.v1),00      ;v1=Animation Counter
   ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player, 3=coin afterglow)
-  ret
+  ld    bc,SFX_coin
+  jp    RePlayerSFX_Play
 
 CoinIAnimation:
   dw  CoinI1_Char

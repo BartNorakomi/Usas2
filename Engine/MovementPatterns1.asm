@@ -1147,7 +1147,8 @@ BossDemon:
   ret   nz
   ld    (ix+enemies_and_objects.v8),4       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
   ld    (ix+enemies_and_objects.v7),DemonStartingFrameDeath-1       ;v7=sprite frame
-  ret
+  ld    bc,SFX_bossdemondead
+  jp    RePlayerSFX_Play
 
   BossDemonShoot:
   push  ix
@@ -1191,7 +1192,8 @@ BossDemon:
   ld    (ix+enemies_and_objects.x),b        ;boss x
   ld    (ix+enemies_and_objects.x+1),0      ;boss x
   ld    (ix+enemies_and_objects.y),c        ;boss y
-  ret
+  ld    bc,SFX_bossdemonshoot
+  jp    RePlayerSFX_Play
 
 CheckPlayerHitByDemon:
   ld    a,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
@@ -1251,8 +1253,9 @@ CheckPlayerHitByDemon:
 
   .ShakeScreen:
   ld    a,20
-  ld    (ShakeScreen?),a 
-  ret
+  ld    (ShakeScreen?),a
+  ld    bc,SFX_bossdemoncleaveattack
+  jp    RePlayerSFX_Play
 
   BossDemonWalking:
   ;animate
@@ -1370,7 +1373,7 @@ CheckPlayerHitByDemon:
   ld    (ix+enemies_and_objects.v6),-1      ;v6=Bullet Movement
   ret
 
-  BossDemonAmountFramesUnableToBeHitAfterBeingHit:  equ 09
+  BossDemonAmountFramesUnableToBeHitAfterBeingHit:  equ 14 ;09
   BossDemonCheckIfHit:
   ld    a,(ix+enemies_and_objects.hit?)
   cp    BlinkDurationWhenHit                ;Check if Boss was hit previous frame
@@ -1416,7 +1419,8 @@ CheckPlayerHitByDemon:
   ld    (ix+enemies_and_objects.hit?),BossDemonAmountFramesUnableToBeHitAfterBeingHit
   ld    (ix+enemies_and_objects.v7),DemonStartingFrameHit-1   ;v7=sprite frame (0= idle, 50=walk, 110=attacking, 215-245=hit, 240-299 = dying)
   ld    (ix+enemies_and_objects.v8),3       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
-  ret
+  ld    bc,SFX_bossdemonbeinghit
+  jp    RePlayerSFX_Play
 
   BossDemonAnimate:
   ld    a,(ix+enemies_and_objects.v7)       ;v7=sprite frame
