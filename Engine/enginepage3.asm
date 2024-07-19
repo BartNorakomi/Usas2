@@ -200,6 +200,7 @@ VGMRePlay:
   
   ld    a,FormatOPL4_ID
   call  RePlayer_Detect               ;detect moonsound
+  call  RePlayerSFX_Initialize
   ld a,LoadSamples?	;debug function to skip sample load
   and A
   ret z
