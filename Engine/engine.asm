@@ -5353,11 +5353,11 @@ Rstanding:
 
 PlayShootSfx:    
   ld    bc,SFX_shoot1
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 PlayShootArrowSfx:
   ld    bc,SFX_arrow
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_R_ShootKineticEnergy:
 	ld		hl,RShootKineticEnergy
@@ -5530,7 +5530,7 @@ Set_L_Meditate:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ld    bc,SFX_meditate
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_R_Meditate:
 	ld		hl,RMeditate
@@ -5539,7 +5539,7 @@ Set_R_Meditate:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ld    bc,SFX_meditate
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_L_BouncingBack:
   xor   a
@@ -5558,7 +5558,7 @@ Set_L_BouncingBack:
   ld    a,(StartingJumpSpeedWhenHit)
 	ld		(JumpSpeed),a
   ld    bc,SFX_bouncingback
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
   
 Set_R_BouncingBack:
   xor   a
@@ -5577,11 +5577,11 @@ Set_R_BouncingBack:
   ld    a,(StartingJumpSpeedWhenHit)
 	ld		(JumpSpeed),a
   ld    bc,SFX_bouncingback
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_Charging:
   ld    bc,SFX_dash
-  call  RePlayerSFX_Play
+  call  RePlayerSFX_PlayCh1
 
   ld    a,(PlayerFacingRight?)
   or    a
@@ -5627,7 +5627,7 @@ Set_Dying:
 
 Set_R_attack:
   ld    bc,SFX_punch
-  call  RePlayerSFX_Play
+  call  RePlayerSFX_PlayCh1
 
   ld    a,(AttackRotator)
   inc   a
@@ -5657,7 +5657,7 @@ Set_L_Sword_attack:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ld    bc,SFX_punch
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_R_Sword_attack:
 	ld		hl,RSwordAttack
@@ -5669,7 +5669,7 @@ Set_R_Sword_attack:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ld    bc,SFX_punch
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 
 Set_L_Dagger_attack:
@@ -5685,7 +5685,7 @@ Set_L_Dagger_attack:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ld    bc,SFX_punch
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_R_Dagger_attack:
   ld    a,r
@@ -5700,7 +5700,7 @@ Set_R_Dagger_attack:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ld    bc,SFX_punch
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_L_Axe_attack:
 	ld		hl,LAxeAttack
@@ -5712,7 +5712,7 @@ Set_L_Axe_attack:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ld    bc,SFX_punch
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_R_Axe_attack:
 	ld		hl,RAxeAttack
@@ -5724,7 +5724,7 @@ Set_R_Axe_attack:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ld    bc,SFX_punch
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_L_Spear_attack:
 	ld		hl,LSpearAttack
@@ -5736,7 +5736,7 @@ Set_L_Spear_attack:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ld    bc,SFX_punch
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_R_Spear_attack:
 	ld		hl,RSpearAttack
@@ -5748,7 +5748,7 @@ Set_R_Spear_attack:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ld    bc,SFX_punch
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_L_Attack:
   ld    a,(AttackRotator)
@@ -5768,11 +5768,11 @@ Set_L_Attack:
   ld    hl,0 
   ld    (PlayerAniCount),hl
   ld    bc,SFX_punch
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_R_Rolling:
 ;  ld    bc,SFX_roll
-;  call  RePlayerSFX_Play
+;  call  RePlayerSFX_PlayCh1
   call  SetHitBoxPlayerRolling
 
   ld    hl,0 
@@ -5791,7 +5791,7 @@ ResetForceVerticalMovementCamera:
 
 Set_L_Rolling:
 ;  ld    bc,SFX_roll
-;  call  RePlayerSFX_Play
+;  call  RePlayerSFX_PlayCh1
   call  SetHitBoxPlayerRolling
 
   ld    hl,0 
@@ -5898,7 +5898,7 @@ Set_Climb_AndResetAniCount:
 
 Set_jump:
   ld    bc,SFX_jump
-  call  RePlayerSFX_Play
+  call  RePlayerSFX_PlayCh1
 
   call  SetHitBoxPlayerStanding
 
@@ -6245,7 +6245,7 @@ Set_R_Push:
 
 Set_L_BeingHit:
   ld    bc,SFX_beinghit
-  call  RePlayerSFX_Play
+  call  RePlayerSFX_PlayCh1
   call  SetHitBoxPlayerStanding
   
 	ld		hl,LBeingHit
@@ -6274,7 +6274,7 @@ Set_L_BeingHit:
 
 Set_R_BeingHit:
   ld    bc,SFX_beinghit
-  call  RePlayerSFX_Play
+  call  RePlayerSFX_PlayCh1
   call  SetHitBoxPlayerStanding
   
 	ld		hl,RBeingHit
@@ -6310,7 +6310,7 @@ Set_L_SitPunch:
   ld    (PlayerFacingRight?),a	
 	ld		(PlayerAniCount),a
   ld    bc,SFX_punch
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 Set_R_SitPunch:
   call  SetHitBoxPlayerSitting
@@ -6324,7 +6324,7 @@ Set_R_SitPunch:
   xor   a
 	ld		(PlayerAniCount),a
   ld    bc,SFX_punch
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh1
 
 
 SetBorderMaskingSprites:

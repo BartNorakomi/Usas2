@@ -765,7 +765,7 @@ CheckPrimaryWeaponHitsEnemy:
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
 
   ld    bc,SFX_enemyhit
-  call  RePlayerSFX_Play
+  call  RePlayerSFX_PlayCh2
 
 	ld		de,(PlayerSpriteStand)
 	ld		hl,Charging
@@ -828,7 +828,7 @@ CheckSecundaryWeaponHitsEnemy:
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
   ld    bc,SFX_enemyhit
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh2
 
 CheckPlayerPunchesBossWithYOffset:                ;in b=Y offset
   ld    a,(PrimaryWeaponY)                        ;a = y top phitbox
@@ -934,7 +934,7 @@ CheckPlayerPunchesEnemy:
   ld    (ix+enemies_and_objects.nrspritesSimple),8
   ld    (ix+enemies_and_objects.nrspritesTimes16),8*16  
   ld    bc,SFX_enemyexplosionbig
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh2
   
   .ExplosionSmall:
   ld    hl,ExplosionSmall
@@ -966,7 +966,7 @@ CheckPlayerPunchesEnemy:
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ld    (ix+enemies_and_objects.y),218      ;y
   ld    bc,SFX_enemyexplosionsmall
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh2
 
   
 ;/Generic Enemy Routines ##############################################################################
@@ -1317,7 +1317,7 @@ Coin:
   ld    (ix+enemies_and_objects.v1),00      ;v1=Animation Counter
   ld    (ix+enemies_and_objects.v2),3       ;v2=Phase (0=falling, 1=lying still, 2=flying towards player, 3=coin afterglow)
   ld    bc,SFX_coin
-  jp    RePlayerSFX_Play
+  jp    RePlayerSFX_PlayCh2
 
 CoinIAnimation:
   dw  CoinI1_Char

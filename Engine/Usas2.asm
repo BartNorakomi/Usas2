@@ -509,9 +509,15 @@ teamNXTlogoblock:  equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$8
 						DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 
-usas2sfxrepBlock:	equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+usas2sfx1repBlock:	equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
 					phase	$0000
-					incbin "usas2sfx.rep"
+					incbin "usas2sfx1.rep"
+					dephase
+					DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+
+usas2sfx2repBlock:	equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+					phase	$0000
+					incbin "usas2sfx2.rep"
 					dephase
 					DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 

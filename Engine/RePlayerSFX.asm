@@ -1,7 +1,7 @@
 ;
 ; Re-Play player for sound effects
 ;
-RePlayerSFX_CHANNEL_COUNT: equ 1
+RePlayerSFX_CHANNEL_COUNT: equ 2
 
 RePlayerSFX_Initialize:
 	ld de,4
@@ -10,19 +10,36 @@ RePlayerSFX_Initialize:
 RePlayerSFX_Initialize_Loop:
 	ld (ix + 0),SFX_nop and 0FFH
 	ld (ix + 1),SFX_nop >> 8
-	ld (ix + 2),usas2sfxrepBlock
+	ld (ix + 2),usas2sfx1repBlock
 	ld (ix + 3),1
 	add ix,de
 	djnz RePlayerSFX_Initialize_Loop
 	ret
 
+; Play sound effect on stream channel 1.
+; Recommended for sounds originating from player.
+; For example: player attacks, player impacts, jump, land.
 ; bc = sfx
-RePlayerSFX_Play:
+RePlayerSFX_PlayCh1:
 	ld iy,RePlayerSFX_channels
 	di
 	ld (iy + 0),c
 	ld (iy + 1),b
-	ld (iy + 2),usas2sfxrepBlock
+	ld (iy + 2),usas2sfx1repBlock
+	ei
+	ld (iy + 3),1
+	ret
+
+; Play sound effect on stream channel 2.
+; Recommended for sounds not originating from player.
+; For example: enemy attacks, enemy impacts, coins.
+; bc = sfx
+RePlayerSFX_PlayCh2:
+	ld iy,RePlayerSFX_channels + 4
+	di
+	ld (iy + 0),c
+	ld (iy + 1),b
+	ld (iy + 2),usas2sfx2repBlock
 	ei
 	ld (iy + 3),1
 	ret
