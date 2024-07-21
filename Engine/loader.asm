@@ -357,10 +357,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    bc,lenghtenemytable*4           ;1 object(s)
   ldir
 
-
-
-
-
   ;put lava animation backdrop in all 4 pages
   ld    a,0
   ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
@@ -393,17 +389,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
   ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-
-
-
-
-
-
-
-
-
-
 
   ld    de,Object008Table.lenghtobjectdata
   ret   
@@ -792,6 +777,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    bc,lenghtenemytable*1           ;1 objects
   ldir
 
+  ;set x
+  ld    a,(ix+Object062Table.x)
+  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.x),a
+
+  ;set y
+  ld    a,(ix+Object062Table.y)
+  ld    (iy+enemies_and_objects.y),a
+
   ld    a,(PreviousRuin)
   ld    b,a                             ;current ruin ID
 	ld    a,(UnpackedRoomFile+roomDataBlock.mapid)
@@ -799,6 +793,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   cp    b
   jr    z,.DontSetAreaSign              ;if current ruin ID is the same as previous ruin ID, then don't set area sign in play
 
+  ;music changes when area sign is being displayed
   push  ix
   push  iy
 dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
@@ -807,6 +802,38 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
   pop   ix
 
   call  ResetPushStones
+
+  ;put area sign in page 1 (this still has the pink background)
+  ld    a,0
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$8000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (048*256) + (200/2)        ;(ny*256) + (nx/2)
+  ld    a,AreaSignTestBlock                   ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+  ;now copy (transparant) area sign from page 1 to page 3 at it's coordinates
+  ld    a,$98
+  ld    (FreeToUseFastCopy+copytype),a
+  xor   a
+  ld    (FreeToUseFastCopy+sx),a
+  ld    (FreeToUseFastCopy+sy),a
+  ld    a,1
+  ld    (FreeToUseFastCopy+sPage),a
+  ld    a,3
+  ld    (FreeToUseFastCopy+dPage),a  
+  ld    a,(iy+enemies_and_objects.x)
+  ld    (FreeToUseFastCopy+dx),a
+  ld    a,(iy+enemies_and_objects.y)
+  ld    (FreeToUseFastCopy+dy),a
+  ld    a,200
+  ld    (FreeToUseFastCopy+nx),a
+  ld    a,48
+  ld    (FreeToUseFastCopy+ny),a
+  ld    hl,FreeToUseFastCopy
+  call  DoCopy
+  ld    a,$d0
+  ld    (FreeToUseFastCopy+copytype),a
 
   ld    de,Object005Table.lenghtobjectdata
   ret   
@@ -2998,7 +3025,7 @@ ReSetVariables:
 
   xor   a                              ;restore variables to put SF2 objects in play
   ld    (PutObjectInPage3?),a
-
+  ld    (screenpage),a                    ;we (hack)force screen 1 to be active at all time
   ld    (CleanOb1-1),a
   ld    (CleanOb2-1),a
   ld    (CleanOb3-1),a

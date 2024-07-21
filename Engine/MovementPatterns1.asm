@@ -1728,93 +1728,87 @@ AreaSign:                                 ;Displays the name of the world in scr
 ;v4=Horizontal Movement
 ;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
 ;v6=put line in all 3 pages
-;v7=sprite frame
+;v7=step
 ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
 ;v9=wait timer / bottom of area sign
   .HandlePhase:  
-  ld    a,(ix+enemies_and_objects.v8)     ;v8=Phase (0=build up area sign line by line, then wait when finished, 1=remove all the lines line by line)
+  ld    a,(ix+enemies_and_objects.v8)     ;v8=Phase (0=build up area sign line by line, 1=wait, 2=remove area sign line by line)
   or    a
-  jr    z,PutAreaSignLine                 ;0=put a new line for 3 frames
-
-  RemoveAreaSign:
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.v7)     ;v7=sprite frame - check for last frame
-  ld    hl,AreaSignSyTable
-  add   hl,de
-  ld    a,(hl)
-  ld    (FreeToUseFastCopy+sy),a
-  ld    (FreeToUseFastCopy+dy),a
-  xor   a
+  jr    z,PutAreaSignLine                 ;0=show area sign
+  dec   a
+  jr    z,WaitUntilRemoveAreaSign         ;1=wait
+  RemoveAreaSign:                         ;2=remove area sign
+  ld    a,2                               ;copy from page 2 (where the area sign is NOT displayed)
   ld    (FreeToUseFastCopy+sPage),a
-  inc   a
-  ld    (FreeToUseFastCopy+dPage),a  
-  ld    hl,FreeToUseFastCopy
-  call  docopy
-  ld    a,3
-  ld    (FreeToUseFastCopy+dPage),a
-  ld    hl,FreeToUseFastCopy
-  call  docopy
 
-  dec   (ix+enemies_and_objects.v7)       ;v7=sprite frame
-  ret   p
-  ld    (ix+enemies_and_objects.alive?),0 ;end     
+  ld    a,(ix+enemies_and_objects.v7)     ;v7=step
+  dec   a
+  ld    (ix+enemies_and_objects.v7),a     ;v7=step
+  jr    nz,.EndCheckEndPhase2
+  ld    (ix+enemies_and_objects.alive?),0 ;end   
+  ret
+  .EndCheckEndPhase2:
+
+  ;area sign height=48 pixels. area sign starts from the middle and gets build up 1 line per frame (up AND down)
+  add   a,23
+  add   a,(ix+enemies_and_objects.y)
+  call  PutAreaSignLine.GoPutLine         ;put line going from the center to the bottom
+
+  ;put line going from the center to the top
+  ld    a,(ix+enemies_and_objects.y)
+  add   a,24
+  sub   a,(ix+enemies_and_objects.v7)     ;v7=step
+  jp    PutAreaSignLine.GoPutLine         ;put line going from the center to the bottom
+
+  WaitUntilRemoveAreaSign:
+  ld    a,(ix+enemies_and_objects.v7)     ;v7=step
+  inc   a
+  ld    (ix+enemies_and_objects.v7),a     ;v7=step
+  cp    140
+  ret   nz
+  ld    (ix+enemies_and_objects.v7),25    ;v7=step
+  ld    (ix+enemies_and_objects.v8),2     ;v8=Phase (0=build up area sign line by line, 1=wait, 2=remove area sign line by line)
   ret
 
   PutAreaSignLine:
-  ld    de,NonMovingObjectMovementTable
-  call  MoveObjectWithStepTable           ;v1=repeating steps, v2=pointer to movement table, v3=y movement, v4=x movement. out: y->(Object1y), x->(Object1x). Movement x=8bit
-  ld    bc,TextKarniMata
-  ld    a,(ix+enemies_and_objects.v7)
-  call  SetFrameAltar                     ;in: hl->frame. out: b=frame list block, c=sprite data block  
+  ld    a,3                               ;copy from page 3 (where the area sign is displayed in total)
+  ld    (FreeToUseFastCopy+sPage),a
 
-  xor   a
-  ld    (screenpage),a                    ;we (hack)force screen 1 to be active at all time
-  call  switchpageSF2Engine               ;this now switches from page 0 to page 1
-  xor   a
-  ld    (screenpage),a                    ;set screen 0, so object gets put in page 1
+  ld    a,(ix+enemies_and_objects.v7)     ;v7=step
+  inc   a
+  ld    (ix+enemies_and_objects.v7),a     ;v7=step
+  cp    24+1
+  jr    nz,.EndCheckEndPhase0
+  ld    (ix+enemies_and_objects.v8),1     ;v8=Phase (0=build up area sign line by line, 1=wait, 2=remove area sign line by line)
+  ret
+  .EndCheckEndPhase0:
 
-  push  ix
-  call  PutSF2Object                      ;in: b=frame list block, c=sprite data block. CHANGES IX 
-  pop   ix
+  ;area sign height=48 pixels. area sign starts from the middle and gets build up 1 line per frame (up AND down)
+  add   a,23
+  add   a,(ix+enemies_and_objects.y)
+  call  .GoPutLine                        ;put line going from the center to the bottom
 
-  ld    a,1
-  ld    (screenpage),a                    ;set screen 1, so player's weapons get put in page 1
+  ;put line going from the center to the top
+  ld    a,(ix+enemies_and_objects.y)
+  add   a,24
+  sub   a,(ix+enemies_and_objects.v7)     ;v7=step
 
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.v7)     ;v7=sprite frame - check for last frame
-  ld    hl,AreaSignSyTable
-  add   hl,de
-  ld    a,(hl)
+  .GoPutLine:
   ld    (FreeToUseFastCopy+sy),a
   ld    (FreeToUseFastCopy+dy),a
-  ld    a,36
+
+  ld    a,(ix+enemies_and_objects.x)
   ld    (FreeToUseFastCopy+sx),a
   ld    (FreeToUseFastCopy+dx),a
-  ld    a,1
-  ld    (FreeToUseFastCopy+ny),a
+  xor   a                                 
+  ;copy to page 0 (this page is permanently active)
+  ld    (FreeToUseFastCopy+dPage),a  
   ld    a,200
   ld    (FreeToUseFastCopy+nx),a
   ld    a,1
-  ld    (FreeToUseFastCopy+sPage),a
-  ld    a,3
-  ld    (FreeToUseFastCopy+dPage),a
-  
+  ld    (FreeToUseFastCopy+ny),a
   ld    hl,FreeToUseFastCopy
-  call  docopy
-
-  inc   (ix+enemies_and_objects.v7)       ;v7=sprite frame
-  ld    a,(ix+enemies_and_objects.v7)     ;v7=sprite frame - check for last frame
-  cp    48
-  ret   nz
-  dec   (ix+enemies_and_objects.v7)       ;v7=sprite frame
-  dec   (ix+enemies_and_objects.v9)       ;v9=wait timer
-  ret   nz
-  ld    (ix+enemies_and_objects.v8),1     ;v8=Phase (0=build up area sign line by line, then wait when finished, 1=remove all the lines line by line)  
-  ret
-AreaSignSyTable:
-  db    63,64,62,65,61,66,60,67,59,68,58,69,57,70,56,71
-  db    55,72,54,73,53,74,52,75,51,76,50,77,49,78,48,79
-  db    47,80,46,81,45,82,44,83,43,84,42,85,41,86,40,87
+  jp    DoCopy
 
 AppBlocksHandler:
 ;v1 = activate block timer
@@ -3826,20 +3820,29 @@ WaterfallScene:
   ld    hl,WaterfallPalette
   call  SetPalette
 
+  ld    (ix+enemies_and_objects.x),70         ;x object
+  ld    (ix+enemies_and_objects.y),73         ;y object
+
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
   call  RestoreBackgroundForObjectInCurrentFrame 
 
-;  ld    (ix+enemies_and_objects.v7),13*5       ;v7=sprite frame
+;  ld    (ix+enemies_and_objects.v7),0 ;13*5       ;v7=sprite frame
 
-  ld    de,.EmptyFrames
+  ld    de,BossDemonIdle_0
+  jp    PutSf2Object7Frames                   ;CHANGES IX - puts object in 7 frames
+
+
+
+  ld    de,TeleportPart3AnimationFrames
+;  ld    de,.EmptyFrames
   jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, MIdle and then Bottom
 
-  .EmptyFrames:
-  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
-  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
-  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
-  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
-  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
+;  .EmptyFrames:
+;  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
+;  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
+;  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
+;  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
+;  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
 
 
 ;v1=repeating steps

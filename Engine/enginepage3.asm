@@ -15,11 +15,11 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  17 | WorldMapPositionX:  db  44 ;ballroom 1 (with pipe)
 ;WorldMapPositionY:  db  20 | WorldMapPositionX:  db  44 ;ballroom 2
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
-roomX: equ ("B"-"A")*26 + "G"-"A"
-WorldMapPositionY:  db  12 | WorldMapPositionX:  db  roomX
+roomX: equ ("B"-"A")*26 + "Q"-"A"
+WorldMapPositionY:  db  18 | WorldMapPositionX:  db  roomX
 
-ClesX:      dw 200 ;$19 ;230 ;250 ;210
-ClesY:      db 60 ;144-1
+ClesX:      dw 230 ;$19 ;230 ;250 ;210
+ClesY:      db 160 ;144-1
 
 
 PlayLogo:

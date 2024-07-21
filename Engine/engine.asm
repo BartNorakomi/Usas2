@@ -3054,6 +3054,11 @@ vblank:
   ld    a,(PageOnNextVblank)  ;set page
 
 
+
+
+
+
+
 ;  ld    a,3*32+31           ;x*32+31 (x=page)
 
 
