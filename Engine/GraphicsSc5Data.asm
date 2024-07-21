@@ -134,6 +134,6 @@ dephase
 
 AreaSignTestBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
 phase	$4000
-  incbin "..\grapx\AreaSigns\\AreaSignsTest.SC5",7,048 * 128      ;048 lines
+  incbin "..\grapx\AreaSigns\AreaSignsTest.SC5",7,048 * 128      ;048 lines
 	ds		$c000-$,$ff
 dephase

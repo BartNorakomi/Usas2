@@ -1669,58 +1669,6 @@ WorldTextStepTable2:  ;repeating steps(128 = end table/repeat), move y, move x
   db  128
 
   
-TextKarniMata:
-  dw AreaSignsframe023 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe024 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe022 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe025 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe021 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe026 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe020 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe027 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe019 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe028 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe018 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe029 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe017 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe030 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe016 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe031 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe015 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe032 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe014 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe033 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe013 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe034 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe012 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe035 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe011 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe036 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe010 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe037 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe009 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe038 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe008 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe039 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe007 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe040 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe006 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe041 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe005 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe042 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe004 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe043 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe003 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe044 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe002 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe045 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe001 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe046 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe000 | db AreaSignsframelistblock, AreaSignsspritedatablock
-  dw AreaSignsframe047 | db AreaSignsframelistblock, AreaSignsspritedatablock
-
-
-
 AreaSign:                                 ;Displays the name of the world in screen when entering that world 
 ;v1=repeating steps
 ;v2=pointer to movement table

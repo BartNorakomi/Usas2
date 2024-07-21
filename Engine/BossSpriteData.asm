@@ -137,14 +137,14 @@ BossZombieCaterpillarDyingPart2spritedatablock:	equ ($-RomStartAddress) and (rom
 												DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 ;Area Sign
-AreaSignsframelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-							phase $8000
-							include "..\grapx\AreaSigns\frames.new.lst" 
-							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-							dephase
-AreaSignsspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-							incbin "..\grapx\AreaSigns\frames.dat"
-							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+;AreaSignsframelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+;							phase $8000
+;							include "..\grapx\AreaSigns\frames.new.lst" 
+;							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+;							dephase
+;AreaSignsspritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+;							incbin "..\grapx\AreaSigns\frames.dat"
+;							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 ;Teleporter part 1
 ;TeleportPart1framelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
