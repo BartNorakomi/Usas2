@@ -25,3 +25,10 @@ Additionally you can also run the scripts individually with your own command lin
   * This specifically converts the **KarniMata.tiles.bmp** image with the given parameters.
 * `npx convertgfx --help`
   * This shows an overview of the options for the command line (as seen above) and the JSON.
+
+
+#ro
+npx convertgfx --path "..\grapx\AreaSigns" --source ".\01-Hub.bmp" --targetScreen5 ".\01-hub.sc5" --fixedPalette "C:\Users\rvand\GIT\Usas2\grapx\tilesheets\Karnimata.tiles.PL"
+
+gci "..\grapx\AreaSigns\*-*.bmp"|%{npx convertgfx --path "..\grapx\AreaSigns" --source ".\$($_.basename).bmp" --targetScreen5 ".\$($_.basename).sc5" --fixedPalette "C:\Users\rvand\GIT\Usas2\grapx\tilesheets\Karnimata.tiles.PL"}
+
