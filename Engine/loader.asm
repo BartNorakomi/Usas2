@@ -803,14 +803,23 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
 
   call  ResetPushStones
 
-  ;put area sign in page 1 (this still has the pink background)
-  ld    a,0
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$8000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (048*256) + (200/2)        ;(ny*256) + (nx/2)
-  ld    a,AreaSignTestBlock                   ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+  call  UnpackAreaSign
+
+  ;start writing at (0,0) page 1 
+  xor   a
+  ld    hl,$8000
+  call	SetVdp_Write	
+
+  ld    hl,$8000
+  ld    c,$98                           ;out port
+  ld    d,24
+  .Outiloop:
+  call  outix256
+  dec   d
+  jp    nz,.Outiloop
+
+	ld    a,(slot.page12rom)            ;RAMROMROMRAM
+	out   ($a8),a
 
   ;now copy (transparant) area sign from page 1 to page 3 at it's coordinates
   ld    a,$98
@@ -2480,7 +2489,7 @@ Object007Table:               ;Waterfall Scene
 
 Object008Table:               ;Boss Demon
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 2,        0|dw BossDemon           |db 8*02+1|dw 8*06|db 00,00|dw 00000000,0 db 0,0,0,                    +00,+00,+00,+00,+00,+00,+00,+00,+20, 0|db 21,movementpatterns1block| ds fill-1
+          db 2,        0|dw BossDemon           |db 8*02+1|dw 8*06|db 00,00|dw 00000000,0 db 0,0,0,                    +00,+00,+00,+00,+00,+00,+00,+00,+20, 0|db 2,movementpatterns1block| ds fill-1
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
          db -0,        1|dw BossDemonBullet     |db 8*10|dw 8*22|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
          db -0,        1|dw BossDemonBullet     |db 8*12|dw 8*22|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1

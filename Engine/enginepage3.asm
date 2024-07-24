@@ -15,11 +15,11 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  17 | WorldMapPositionX:  db  44 ;ballroom 1 (with pipe)
 ;WorldMapPositionY:  db  20 | WorldMapPositionX:  db  44 ;ballroom 2
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
-roomX: equ ("B"-"A")*26 + "Q"-"A"
-WorldMapPositionY:  db  18 | WorldMapPositionX:  db  roomX
+roomX: equ ("B"-"A")*26 + "T"-"A"
+WorldMapPositionY:  db  12 | WorldMapPositionX:  db  roomX
 
 ClesX:      dw 230 ;$19 ;230 ;250 ;210
-ClesY:      db 160 ;144-1
+ClesY:      db 130 ;144-1
 
 
 PlayLogo:
@@ -112,7 +112,41 @@ loadGraphics:
 
   jp    LevelEngine
 
+AreaSignList:	dw	AreaSign01,AreaSign02,AreaSign03,AreaSign04,AreaSign05,AreaSign06,AreaSign07,AreaSign08,AreaSign09,AreaSign10,AreaSign11,AreaSign12,AreaSign13,AreaSign14,AreaSign15,AreaSign16,AreaSign17,AreaSign18,AreaSign19
+UnpackAreaSign:
+	ld    a,(slot.page1rom)            ;RAMROMROMRAM
+	out   ($a8),a	
 
+	ld    a,AreaSignTestBlock			;packed area signs at $4000
+	call  block12
+
+	exx
+	push	bc
+	push	hl
+
+	ld    a,(UnpackedRoomFile+roomDataBlock.mapid)
+	and   $1f
+	add		a,a
+	ld		hl,AreaSignList
+	ld		d,0
+	ld		e,a
+	add		hl,de
+	ld		a,(hl)
+	inc		hl
+	ld		h,(hl)
+	ld		l,a
+
+;	ld		hl,AreaSign02
+	ld		de,$8000
+	call	Depack						;In: HL: source, DE: destination
+
+	pop		hl
+	pop		bc
+	exx
+
+	ld    a,Loaderblock                 ;loader routine at $4000
+	call  block12
+	ret
 
 
 VramGraphicsPage1And3AlreadyInScreen?: db  0

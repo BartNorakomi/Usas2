@@ -25,7 +25,6 @@ DW	0x0102,base+0x0000
 DW	0x0168,base+0x0000
 DW	0x2785,base+0x0044
 DW	0x2700,base+0x006B
-<<<<<<< HEAD
 
 DB	116,11,48,124,120 ;w,h,x,y,o
 DW	0x017F,base+0x0000
@@ -187,8 +186,6 @@ DW	0x2700,base+0x006B
 
 
 
-=======
->>>>>>> 7348df1 (x)
 BossDemonDeath2_1_0:	; Frame 1, Slice 0
 DB	116,3,48,132,70 ;w,h,x,y,o
 DW	0x0709,base+0x003D
@@ -196,7 +193,6 @@ DW	0x026C,base+0x0042
 DW	0x3584,base+0x0092
 DW	0x1012,base+0x0096
 DW	0x2400,base+0x006E
-<<<<<<< HEAD
 
 DB	116,3,48,132,70 ;w,h,x,y,o
 DW	0x0709,base+0x003D
@@ -249,13 +245,10 @@ DW	0x2400,base+0x006E
 
 
 
-=======
->>>>>>> 7348df1 (x)
 BossDemonDeath2_2_0:	; Frame 2, Slice 0
 DB	116,2,48,133,54 ;w,h,x,y,o
 DW	0x327D,base+0x00C7
 DW	0x3A00,base+0x00F9
-<<<<<<< HEAD
 
 DB	116,2,48,133,54 ;w,h,x,y,o
 DW	0x327D,base+0x00C7
@@ -285,5 +278,3 @@ DW	0x3A00,base+0x00F9
 
 
 
-=======
->>>>>>> 7348df1 (x)
