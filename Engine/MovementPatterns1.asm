@@ -1448,143 +1448,85 @@ CheckPlayerHitByDemon:
 DemonStartingFrameIdle:   equ 00
 DemonTotalFramesIdle:     equ (BossDemonWalk_0-BossDemonIdle_0)/4
 ;sprite 0-5 (7 slices)
-BossDemonIdle_0:
-  db    BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock | dw    BossDemonIdle_0_0
-BossDemonIdle_1:
-  db    BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock | dw    BossDemonIdle_1_0
-BossDemonIdle_2:
-  db    BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock | dw    BossDemonIdle_2_0
-BossDemonIdle_3:
-  db    BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock | dw    BossDemonIdle_3_0
-BossDemonIdle_4:
-  db    BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock | dw    BossDemonIdle_4_0
-BossDemonIdle_5:
-  db    BossDemonIdleNewframelistblock, BossDemonIdleNewspritedatablock | dw    BossDemonIdle_5_0
+BossDemonIdle_0:  db    BossDemonIdleListBlock, BossDemonIdleWalkDataBlock | dw    BossDemonIdle_0_0
+BossDemonIdle_1:  db    BossDemonIdleListBlock, BossDemonIdleWalkDataBlock | dw    BossDemonIdle_1_0
+BossDemonIdle_2:  db    BossDemonIdleListBlock, BossDemonIdleWalkDataBlock | dw    BossDemonIdle_2_0
+BossDemonIdle_3:  db    BossDemonIdleListBlock, BossDemonIdleWalkDataBlock | dw    BossDemonIdle_3_0
+BossDemonIdle_4:  db    BossDemonIdleListBlock, BossDemonIdleWalkDataBlock | dw    BossDemonIdle_4_0
+BossDemonIdle_5:  db    BossDemonIdleListBlock, BossDemonIdleWalkDataBlock | dw    BossDemonIdle_5_0
 
 DemonStartingFrameWalk:   equ DemonStartingFrameIdle+DemonTotalFramesIdle
 DemonTotalFramesWalk:     equ (BossDemonHit_0-BossDemonWalk_0)/4
 ;sprite 0-11 (7 slices)
-BossDemonWalk_0:
-  db    BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock | dw    BossDemonWalk_0_0
-BossDemonWalk_1:
-  db    BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock | dw    BossDemonWalk_1_0
-BossDemonWalk_2:
-  db    BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock | dw    BossDemonWalk_2_0
-BossDemonWalk_3:
-  db    BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock | dw    BossDemonWalk_3_0
-BossDemonWalk_4:
-  db    BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock | dw    BossDemonWalk_4_0
-BossDemonWalk_5:
-  db    BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock | dw    BossDemonWalk_5_0
-BossDemonWalk_6:
-  db    BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock | dw    BossDemonWalk_6_0
-BossDemonWalk_7:
-  db    BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock | dw    BossDemonWalk_7_0
-BossDemonWalk_8:
-  db    BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock | dw    BossDemonWalk_8_0
-BossDemonWalk_9:
-  db    BossDemonWalkNewframelistblock, BossDemonWalkNewspritedatablock | dw    BossDemonWalk_9_0
+BossDemonWalk_0:  db    BossDemonWalklistblock, BossDemonIdleWalkDataBlock | dw    BossDemonWalk_0_0
+BossDemonWalk_1:  db    BossDemonWalklistblock, BossDemonIdleWalkDataBlock | dw    BossDemonWalk_1_0
+BossDemonWalk_2:  db    BossDemonWalklistblock, BossDemonIdleWalkDataBlock | dw    BossDemonWalk_2_0
+BossDemonWalk_3:  db    BossDemonWalklistblock, BossDemonIdleWalkDataBlock | dw    BossDemonWalk_3_0
+BossDemonWalk_4:  db    BossDemonWalklistblock, BossDemonIdleWalkDataBlock | dw    BossDemonWalk_4_0
+BossDemonWalk_5:  db    BossDemonWalklistblock, BossDemonIdleWalkDataBlock | dw    BossDemonWalk_5_0
+BossDemonWalk_6:  db    BossDemonWalklistblock, BossDemonIdleWalkDataBlock | dw    BossDemonWalk_6_0
+BossDemonWalk_7:  db    BossDemonWalklistblock, BossDemonIdleWalkDataBlock | dw    BossDemonWalk_7_0
+BossDemonWalk_8:  db    BossDemonWalklistblock, BossDemonIdleWalkDataBlock | dw    BossDemonWalk_8_0
+BossDemonWalk_9:  db    BossDemonWalklistblock, BossDemonIdleWalkDataBlock | dw    BossDemonWalk_9_0
 
 DemonStartingFrameHit:    equ DemonStartingFrameWalk+DemonTotalFramesWalk
 DemonTotalFramesHit:      equ (BossDemonCleave_0-BossDemonHit_0)/4
 ;sprite 0-4 (7 slices)
-BossDemonHit_0:
-  db    BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock | dw    BossDemonHit_0_0
-BossDemonHit_1:
-  db    BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock | dw    BossDemonHit_1_0
-BossDemonHit_2:
-  db    BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock | dw    BossDemonHit_2_0
-BossDemonHit_3:
-  db    BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock | dw    BossDemonHit_3_0
-BossDemonHit_4:
-  db    BossDemonHitNewframelistblock, BossDemonHitNewspritedatablock | dw    BossDemonHit_4_0
+BossDemonHit_0:  db    BossDemonHitlistblock, BossDemonHitCleaveDataBlock | dw    BossDemonHit_0_0
+BossDemonHit_1:  db    BossDemonHitlistblock, BossDemonHitCleaveDataBlock | dw    BossDemonHit_1_0
+BossDemonHit_2:  db    BossDemonHitlistblock, BossDemonHitCleaveDataBlock | dw    BossDemonHit_2_0
+BossDemonHit_3:  db    BossDemonHitlistblock, BossDemonHitCleaveDataBlock | dw    BossDemonHit_3_0
+BossDemonHit_4:  db    BossDemonHitlistblock, BossDemonHitCleaveDataBlock | dw    BossDemonHit_4_0
 
 DemonStartingFrameCleave:    equ DemonStartingFrameHit+DemonTotalFramesHit
 DemonTotalFramesCleave:      equ (BossDemonCasting_0-BossDemonCleave_0)/4
-BossDemonCleave_0:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_0_0
-BossDemonCleave_1:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_1_0
-BossDemonCleave_2:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_2_0
-BossDemonCleave_3:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_3_0
-BossDemonCleave_4:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_4_0
-BossDemonCleave_5:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_5_0
-BossDemonCleave_6:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_6_0
-BossDemonCleave_7:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_7_0
-BossDemonCleave_8:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_8_0
-BossDemonCleave_9:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_9_0
-BossDemonCleave_10:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_10_0
-BossDemonCleave_11:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_11_0
-BossDemonCleave_12:
-  db    BossDemonCleaveframelistblock, BossDemonCleavespritedatablock | dw    BossDemonCleave_12_0
+BossDemonCleave_0:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_0_0
+BossDemonCleave_1:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_1_0
+BossDemonCleave_2:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_2_0
+BossDemonCleave_3:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_3_0
+BossDemonCleave_4:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_4_0
+BossDemonCleave_5:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_5_0
+BossDemonCleave_6:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_6_0
+BossDemonCleave_7:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_7_0
+BossDemonCleave_8:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_8_0
+BossDemonCleave_9:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_9_0
+BossDemonCleave_10:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_10_0
+BossDemonCleave_11:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_11_0
+BossDemonCleave_12:  db    BossDemonCleaveListBlock, BossDemonHitCleaveDataBlock | dw    BossDemonCleave_12_0
 
 DemonStartingFrameCasting:   equ DemonStartingFrameCleave+DemonTotalFramesCleave
 DemonTotalFramesCasting:     equ (BossDemonDeath_0-BossDemonCasting_0)/4
 ;sprite 0-11 (7 slices)
-BossDemonCasting_0:
-  db    BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock | dw    BossDemonCasting_0_0
-BossDemonCasting_1:
-  db    BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock | dw    BossDemonCasting_1_0
-BossDemonCasting_2:
-  db    BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock | dw    BossDemonCasting_2_0
-BossDemonCasting_3:
-  db    BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock | dw    BossDemonCasting_3_0
-BossDemonCasting_4:
-  db    BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock | dw    BossDemonCasting_4_0
-BossDemonCasting_5:
-  db    BossDemonCastingNewframelistblock, BossDemonCastingNewspritedatablock | dw    BossDemonCasting_5_0
+BossDemonCasting_0:  db    BossDemonCastListBlock, BossDemonCastDeathDataBlock | dw    BossDemonCasting_0_0
+BossDemonCasting_1:  db    BossDemonCastListBlock, BossDemonCastDeathDataBlock | dw    BossDemonCasting_1_0
+BossDemonCasting_2:  db    BossDemonCastListBlock, BossDemonCastDeathDataBlock | dw    BossDemonCasting_2_0
+BossDemonCasting_3:  db    BossDemonCastListBlock, BossDemonCastDeathDataBlock | dw    BossDemonCasting_3_0
+BossDemonCasting_4:  db    BossDemonCastListBlock, BossDemonCastDeathDataBlock | dw    BossDemonCasting_4_0
+BossDemonCasting_5:  db    BossDemonCastListBlock, BossDemonCastDeathDataBlock | dw    BossDemonCasting_5_0
 
 DemonStartingFrameDeath:        equ DemonStartingFrameCasting+DemonTotalFramesCasting
 DemonTotalFramesDeath:          equ (BossDemonEnd-BossDemonDeath_0)/4
 ;sprite 1-4 (7 slices)
-BossDemonDeath_0:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_0_0
-BossDemonDeath_1:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_1_0
-BossDemonDeath_2:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_2_0
-BossDemonDeath_3:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_3_0
-BossDemonDeath_4:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_4_0
-BossDemonDeath_5:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_5_0
-BossDemonDeath_6:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_6_0
-BossDemonDeath_7:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_7_0
-BossDemonDeath_8:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_8_0
-BossDemonDeath_9:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_9_0
-BossDemonDeath_10:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_10_0
-BossDemonDeath_11:
-  db    BossDemonDeath0framelistblock, BossDemonDeath0spritedatablock | dw    BossDemonDeath0_11_0
+BossDemonDeath_0:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_0_0
+BossDemonDeath_1:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_1_0
+BossDemonDeath_2:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_2_0
+BossDemonDeath_3:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_3_0
+BossDemonDeath_4:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_4_0
+BossDemonDeath_5:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_5_0
+BossDemonDeath_6:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_6_0
+BossDemonDeath_7:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_7_0
+BossDemonDeath_8:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_8_0
+BossDemonDeath_9:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_9_0
+BossDemonDeath_10:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_10_0
+BossDemonDeath_11:  db    BossDemonDeath0ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath0_11_0
 
-BossDemonDeath_12:
-  db    BossDemonDeath1framelistblock, BossDemonDeath1spritedatablock | dw    BossDemonDeath1_0_0
-BossDemonDeath_13:
-  db    BossDemonDeath1framelistblock, BossDemonDeath1spritedatablock | dw    BossDemonDeath1_1_0
-BossDemonDeath_14:
-  db    BossDemonDeath1framelistblock, BossDemonDeath1spritedatablock | dw    BossDemonDeath1_2_0
+BossDemonDeath_12:  db    BossDemonDeath1ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath1_0_0
+BossDemonDeath_13:  db    BossDemonDeath1ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath1_1_0
+BossDemonDeath_14:  db    BossDemonDeath1ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath1_2_0
 
-BossDemonDeath_15:
-  db    BossDemonDeath2framelistblock, BossDemonDeath2spritedatablock | dw    BossDemonDeath2_2_0
-BossDemonDeath_16:
-  db    BossDemonDeath2framelistblock, BossDemonDeath2spritedatablock | dw    BossDemonDeath2_2_0
-BossDemonDeath_17:
-  db    BossDemonDeath2framelistblock, BossDemonDeath2spritedatablock | dw    BossDemonDeath2_2_0
+BossDemonDeath_15:  db    BossDemonDeath2ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath2_2_0
+BossDemonDeath_16:  db    BossDemonDeath2ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath2_2_0
+BossDemonDeath_17:  db    BossDemonDeath2ListBlock, BossDemonCastDeathDataBlock | dw    BossDemonDeath2_2_0
 BossDemonEnd:
 
 HugeSpiderLegs:
