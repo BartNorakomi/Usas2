@@ -15,8 +15,13 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  17 | WorldMapPositionX:  db  44 ;ballroom 1 (with pipe)
 ;WorldMapPositionY:  db  20 | WorldMapPositionX:  db  44 ;ballroom 2
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
+<<<<<<< Updated upstream
 roomX: equ ("A"-"A")*26 + "W"-"A"
 WorldMapPositionY:  db  27 | WorldMapPositionX:  db  roomX
+=======
+roomX: equ ("B"-"A")*26 + "G"-"A"
+WorldMapPositionY:  db  12 | WorldMapPositionX:  db  roomX
+>>>>>>> Stashed changes
 
 ClesX:      dw 230 ;$19 ;230 ;250 ;210
 ClesY:      db 80 ;144-1
@@ -187,10 +192,10 @@ LoadSamplesAndPlaySong0:
 	and   a
 	ret   nz
 
-  ld		a,3
+  ld		a,2
   ld    (CurrentSongBeingPlayed),a
   call  RePlayer_Stop
-  ld    bc,3                          ;track nr
+  ld    bc,2                          ;track nr
   ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
   ld    hl,$8000+1
   call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)

@@ -2489,7 +2489,7 @@ Object007Table:               ;Waterfall Scene
 
 Object008Table:               ;Boss Demon
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 2,        0|dw BossDemon           |db 8*02+1|dw 8*06|db 00,00|dw 00000000,0 db 0,0,0,                    +00,+00,+00,+00,+00,+00,+00,+00,+20, 0|db 2,movementpatterns1block| ds fill-1
+          db 2,        0|dw BossDemon           |db 8*02+1|dw 8*06|db 00,00|dw 00000000,0 db 0,0,0,                    +00,+00,+00,+00,+00,+00,+00,+00,+20, 0|db 21,movementpatterns1block| ds fill-1
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
          db -0,        1|dw BossDemonBullet     |db 8*10|dw 8*22|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
          db -0,        1|dw BossDemonBullet     |db 8*12|dw 8*22|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
