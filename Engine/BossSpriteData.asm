@@ -176,16 +176,6 @@ TeleportPart3spritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockS
 								incbin "..\grapx\TeleportRoom\Part3\frames.dat"
 								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-BossDemonIdleframelistblock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-								phase	$8000
-								include "..\grapx\BossDemon\Idle\frames.lst" 
-								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-								dephase
-BossDemonIdlespritedatablock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-								incbin "..\grapx\BossDemon\Idle\frames.dat"
-								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-
-
 ;Boss Demon Konark
 BossDemonIdleListBlock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 BossDemonWalkListBlock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
