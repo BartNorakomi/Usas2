@@ -20,6 +20,11 @@ param
 
 ##### Functions #####
 
+<#
+#lemniscate:
+$colors=0xff5200,0xffba00,0xffe073,0x272752,0x525273,0x73739b,0x9b9bba,0xffffff,0x0079bd,0x00a0e2,0x00bdfe,0x383711,0x5b5930,0x78784d,0xaaa37d,0x000000
+$text="DW ";$colors|%{$text+=",0x{0:X4}" -f (([math]::floor($_ -shr 8 -band 0x0000ff /255 *7) -shl 8) -bor ([math]::floor($_ -shr 16 -band 0x0000ff /255 *7) -shl 4) -bor ([math]::floor($_ -band 0x0000ff /255 *7)))}
+#>
 
 
 ##### Main #####
