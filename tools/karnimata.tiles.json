@@ -6,7 +6,7 @@
 			"group": [
 				{
 					"source": "KarniMata.tiles.bmp",
-					"fixedPalette": "sKarniMataPalette.PL",
+					"fixedPalette": "KarniMata.tiles.PL",
 					"targetScreen5": "KarniMata.tiles.SC5"
 				}
 			]

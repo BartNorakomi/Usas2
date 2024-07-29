@@ -93,7 +93,8 @@ convert palette:
 .\convert-paltoasm.ps1 -path "C:\Users\bartf\Documents\GitHub\Usas2\grapx\tilesheets\Lemniscate.tiles.PL"
 
 convert gfx:
-npx convertgfx .\pegu.tiles.json
+npx convertgfx .\Lemniscate.tiles.json
+.\add-u2gfx.ps1 -ruinId 2 (Deze zet de Lemniscate bmp om naar SC5 en pleurt'm in de ROM)
 .\add-u2gfx.ps1 -ruinId 4 (Deze zet de Pegu bmp om naar SC5 en pleurt'm in de ROM)
 
 convert latest:
