@@ -9,7 +9,7 @@ param
 (	[Parameter(ParameterSetName='ruin')]$ruinId,
 	#[Parameter(ParameterSetName='room')]$roomname,
 	[Parameter(ParameterSetName='file')]$path, #="..\grapx\tilesheets\KarniMata.Tiles.sc5",
-	$dsmName="Usas2.Rom.dsm",
+	$dsmPath=".\Usas2.Rom.dsm",
 	$datalistName="BitMapGfx",
 	[switch]$convertGfx=$true,
 	[switch]$resetGlobals=$false,
@@ -38,9 +38,9 @@ function convert-BmpToSc5
 
 ##### MAIN #####
 $DataListProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistname}
-write-verbose "DSM: $dsmname, Datalist:$datalistname"
+write-verbose "DSM: $dsmPath, Datalist:$datalistname"
 
-if (-not ($dsm=load-dsm -path $dsmname))
+if (-not ($dsm=load-dsm -path $dsmPath))
 {	write-error "DSM $dmsname not found"
 }	else
 {	$null=$DSM|open-DSMFileSpace -path $romfile
@@ -96,8 +96,8 @@ EXIT
 <#
 #Create usas2.rom DSM
 . .\dsm.ps1
-$dsmName="Usas2.Rom"
-$DSM=new-DSM -name $dsmName -BlockSize 16KB -size 256 -SegmentSize 128 -firstblock 0xb7
+$dsmPath="Usas2.Rom"
+$DSM=new-DSM -name $dsmPath -BlockSize 16KB -size 256 -SegmentSize 128 -firstblock 0xb7
 $dsm|exclude-dsmblock -block 0 #exlcude first block for index
 $dsm|save-dsm
 $DSM|create-DSMFileSpace -verbose -force -path "$(resolve-path ".\")\usas2.rom"
