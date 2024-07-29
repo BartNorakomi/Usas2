@@ -90,7 +90,7 @@ losse room:
 .\add-u2maps.ps1 -roomname AY23 -convertTiledMap
 
 convert palette:
-.\convert-paltoasm.ps1 -path "C:\Users\bartf\Documents\GitHub\Usas2\grapx\tilesheets\Pegu.tile.PL"
+.\convert-paltoasm.ps1 -path "C:\Users\bartf\Documents\GitHub\Usas2\grapx\tilesheets\Lemniscate.tiles.PL"
 
 convert gfx:
 npx convertgfx .\pegu.tiles.json
