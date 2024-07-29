@@ -6,6 +6,20 @@ param
 (	[switch]$getglobals
 )
 
+#20240729
+# #Resolve/convert a path to a new file
+# function resolve-newPath
+# {	param ($path)
+# 	return join-path -path (convert-path (split-path -Path $path -Parent)) -ChildPath (split-path -path $path -leaf)
+# }
+#Resolve-path but without test-path (making non existing paths possible)
+#https://blog.danskingdom.com/Resolve-PowerShell-paths-that-do-not-exist/
+function resolve-NewPath
+{	param (	$path)
+	return $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)	
+}
+
+
 #20240106
 # Write verbose if global parameter $verboseMore=$true
 function write-verboseMore

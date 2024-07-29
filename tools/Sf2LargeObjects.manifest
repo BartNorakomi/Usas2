@@ -1,0 +1,192 @@
+BossRat=@{
+	runRight=`
+	@{	name="BossRatRunRight";
+		imagePath="..\grapx\BossRat\BossRattyRunRight.4bpp.bmp";
+		palettePath="..\grapx\tilesheets\lemniscate.tiles.PL";
+		destinationPath="..\grapx\BossRat";
+		pixelFile="BossRat.dat";
+		transparentColor=8;fillcolor=15;
+		canvasX=0;canvasY=0;canvasWidth=12*88;canvasHeight=(1*26);
+		frameWidth=88;frameHeight=26;
+		subjectX=0;subjectWidth=88;subjectY=-1;subjectHeight=-1;
+		slices=2;
+	};
+};
+
+BossDemon=@{
+	idle=`
+	@{	name="BossDemonIdle";
+		imagePath="..\grapx\BossDemon\BossDemonSlimeIdle.bmp";
+		palettePath="..\grapx\tilesheets\Konark.tiles.PL";
+		destinationPath="..\grapx\BossDemon";
+		pixelFile="BossDemonIddleWalk.dat";
+		transparentColor=0xff;
+		canvasX=0;canvasY=0;canvasWidth=6*256;canvasHeight=(1*136);
+		frameWidth=256;frameHeight=136;
+		subjectX=0;subjectWidth=256;subjectY=-1;subjectHeight=(136-44+1);
+		slices=7;
+	};
+	walk=`
+	@{	name="BossDemonWalk";
+		imagePath="..\grapx\BossDemon\BossDemonSlimeWalk.bmp";
+		palettePath="..\grapx\tilesheets\Konark.tiles.PL";
+		destinationPath="..\grapx\BossDemon";
+		pixelFile="BossDemonIddleWalk.dat";
+		transparentColor=0xff;fillcolor=0xff;
+		canvasX=0;canvasY=1*136;canvasWidth=10*256;canvasHeight=(1*136);
+		frameWidth=256;frameHeight=136;
+		subjectX=0;subjectWidth=256;subjectY=-1;subjectHeight=(136-48);
+		slices=7;
+	};
+	hit=`
+	@{	name="BossDemonHit";
+		imagePath="..\grapx\BossDemon\BossDemonSlimeHit.bmp";
+		palettePath="..\grapx\tilesheets\Konark.tiles.PL";
+		destinationPath="..\grapx\BossDemon";
+		pixelFile="BossDemonHitCleave.dat";
+		transparentColor=0xff;fillcolor=0xff;
+		canvasX=0;canvasY=2*136;canvasWidth=5*256;canvasHeight=(1*136);
+		frameWidth=256;frameHeight=136;
+		subjectX=0;subjectWidth=256;subjectY=-1;subjectHeight=(136-48);
+		slices=7;
+	};
+	cleave=`
+	@{	name="BossDemonCleave";
+		imagePath="..\grapx\BossDemon\BossDemonSlimeCleave.bmp";
+		palettePath="..\grapx\tilesheets\Konark.tiles.PL";
+		destinationPath="..\grapx\BossDemon";
+		pixelFile="BossDemonHitCleave.dat";
+		transparentColor=0xff;fillcolor=0x0f;
+		canvasX=0;canvasY=3*136;canvasWidth=13*256;canvasHeight=(1*136);
+		frameWidth=256;frameHeight=136;
+		subjectX=0;subjectWidth=256;subjectY=-1;subjectHeight=(136-43);
+		slices=7;
+	};
+	cast=`
+	@{	name="BossDemonCasting";
+		imagePath="..\grapx\BossDemon\BossDemonSlimeCasting.bmp";
+		palettePath="..\grapx\tilesheets\Konark.tiles.PL";
+		destinationPath="..\grapx\BossDemon";
+		pixelFile="BossDemonCastDeath.dat";
+		transparentColor=0xff;fillcolor=0x0f;
+		canvasX=0*256;canvasY=4*136;canvasWidth=6*256;canvasHeight=(1*136);
+		frameWidth=256;frameHeight=136;frameSelect=-1;
+		subjectX=0;subjectWidth=256;subjectY=-1;subjectHeight=(136-44);
+		slices=7;
+	};
+	death0=`
+	@{	name="BossDemonDeath0";
+		imagePath="..\grapx\BossDemon\BossDemonSlimeDeath.bmp";
+		palettePath="..\grapx\tilesheets\Konark.tiles.PL";
+		destinationPath="..\grapx\BossDemon";
+		pixelFile="BossDemonCastDeath.dat";
+		transparentColor=0xff;fillcolor=0x0f;
+		canvasX=1*256;canvasY=5*136;canvasWidth=12*256;canvasHeight=(1*136);
+		frameWidth=256;frameHeight=136;
+		subjectX=0;subjectWidth=256;subjectY=-1;subjectHeight=(136-30);
+		slices=7;
+	};
+	death1=`
+	@{	name="BossDemonDeath1";
+		imagePath="..\grapx\BossDemon\BossDemonSlimeDeath.bmp";
+		palettePath="..\grapx\tilesheets\Konark.tiles.PL";
+		destinationPath="..\grapx\BossDemon";
+		pixelFile="BossDemonCastDeath.dat";
+		transparentColor=0xff;fillcolor=0x0f;
+		canvasX=13*256;canvasY=5*136;canvasWidth=3*256;canvasHeight=(1*136);
+		frameWidth=256;frameHeight=136;
+		subjectX=0;subjectWidth=256;subjectY=-1;subjectHeight=(136-30);
+		slices=7;
+	};
+	death2=`
+	@{	name="BossDemonDeath2";
+		imagePath="..\grapx\BossDemon\BossDemonSlimeDeath.bmp";
+		palettePath="..\grapx\tilesheets\Konark.tiles.PL";
+		destinationPath="..\grapx\BossDemon";
+		pixelFile="BossDemonCastDeath.dat";
+		transparentColor=0xff;fillcolor=0x0f;
+		canvasX=16*256;canvasY=5*136;canvasWidth=3*256;canvasHeight=(1*136);
+		frameWidth=256;frameHeight=136;
+		subjectX=0;subjectWidth=256;subjectY=-1;subjectHeight=(136-30);
+		slices=1;
+	};
+};
+
+AreaSign=@{
+	karniMata=@{
+	name="AreaSignKarniMata";
+	imagePath="..\grapx\AreaSigns\06-KarniMata.4bpp.bmp";
+	palettePath="..\grapx\tilesheets\KarniMata.tiles.PL";
+	destinationPath="..\grapx\AreaSigns";
+	pixelFile="AreaSign.dat";
+	transparentColor=4;fillColor=15;
+	canvasX=0;canvasY=0;canvasWidth=200;canvasHeight=48;
+	frameWidth=200;frameHeight=48;
+	subjectX=0;subjectWidth=200;subjectY=0;subjectHeight=48;
+	slices=1;
+	};
+	hub=@{
+		name="AreaSignHub";
+		imagePath="..\grapx\AreaSigns\01-hub.4bpp.bmp";
+		palettePath="..\grapx\tilesheets\KarniMata.tiles.PL";
+		destinationPath="..\grapx\AreaSigns";
+		pixelFile="AreaSign.dat";
+		transparentColor=4;fillColor=15;
+		canvasX=0;canvasY=0;canvasWidth=200;canvasHeight=48;
+		frameWidth=200;frameHeight=48;
+		subjectX=0;subjectWidth=200;subjectY=0;subjectHeight=48;
+		slices=1;
+	}
+};
+
+Wasp=@{
+	idle=@{
+		name="WaspIdle";
+		imagePath="..\grapx\BossVoodooWasp\WaspTotal.4bpp.bmp";
+		palettePath="..\grapx\tilesheets\sBossAreaVoodooWaspPalette.PL";
+		transparentColor=1;fillcolor=15;
+		canvasX=0;canvasY=0*136;canvasWidth=6*128;canvasHeight=1*136;
+		frameWidth=128;frameHeight=136;
+		subjectX=22;subjectWidth=82;subjectY=44;subjectHeight=47;
+		slices=3;
+	};
+	hover=@{name="WaspHover";
+		imagePath="..\grapx\BossVoodooWasp\WaspTotal.4bpp.bmp";
+		palettePath="..\grapx\tilesheets\sBossAreaVoodooWaspPalette.PL";
+		transparentColor=0;fillcolor=15;
+		canvasX=0;canvasY=1*136;canvasWidth=4*128;canvasHeight=1*136;
+		frameWidth=128;frameHeight=136;
+		subjectX=0;subjectWidth=128;subjectY=0;subjectHeight=94;
+		slices=3;
+	};
+	attack=@{name="WaspAttack";
+		imagePath="..\grapx\BossVoodooWasp\WaspTotal.4bpp.bmp";
+		palettePath="..\grapx\tilesheets\sBossAreaVoodooWaspPalette.PL";
+		transparentColor=0;fillcolor=15;
+		canvasX=0;canvasY=2*136;canvasWidth=8*128;canvasHeight=1*136;
+		frameWidth=128;frameHeight=136;
+		subjectX=0;subjectWidth=128;subjectY=0;subjectHeight=99;
+		slices=3;
+	};
+	hit=@{	name="WaspHit";
+		imagePath="..\grapx\BossVoodooWasp\WaspTotal.4bpp.bmp";
+		palettePath="..\grapx\tilesheets\sBossAreaVoodooWaspPalette.PL";
+		transparentColor=0;fillcolor=15;
+		canvasX=0;canvasY=3*136;canvasWidth=5*128;canvasHeight=1*136;
+		frameWidth=128;frameHeight=136;
+		subjectX=0;subjectWidth=128;subjectY=0;subjectHeight=83;
+		slices=3;
+	};
+	death=@{name="WaspDeath";
+		imagePath="..\grapx\BossVoodooWasp\WaspTotal.4bpp.bmp";
+		palettePath="..\grapx\tilesheets\sBossAreaVoodooWaspPalette.PL";
+		transparentColor=0;fillcolor=15;
+		canvasX=0;canvasY=4*136;canvasWidth=4*128;canvasHeight=1*136;
+		frameWidth=128;frameHeight=136;
+		subjectX=0;subjectWidth=128;subjectY=0;subjectHeight=73;
+		slices=3;
+	};
+};
+
+
+
