@@ -3731,7 +3731,7 @@ WaterfallScene:
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
 
   ;animate
-  ld    b,BossRattyStartingFrameRunRight+1
+  ld    b,BossRattyStartingFrameRunRight
   ld    c,BossRattyStartingFrameRunRight+BossRattyTotalFramesRunRight
   call  BossDemonAnimate
   ret
@@ -3740,7 +3740,7 @@ BossRatty:
   ret
 
 BossRattyStartingFrameRunRight:   equ 00
-BossRattyTotalFramesRunRight:     equ (BossRatRunLeft_0-BossRattyRunRight_1)/4
+BossRattyTotalFramesRunRight:     equ (BossRatRunLeft_0-BossRattyRunRight_0)/4
 ;sprite 0-11 (2 slices)
 BossRattyRunRight_0:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_0_0
 BossRattyRunRight_1:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_1_0
@@ -3754,7 +3754,6 @@ BossRattyRunRight_8:  db    BossRattyframelistblock, BossRattyspritedatablock | 
 BossRattyRunRight_9:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_9_0
 BossRattyRunRight_10:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_10_0
 BossRattyRunRight_11:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_11_0
-BossRattyRunRight_12:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_12_0
 
 BossRatRunLeft_0:  ;db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_0_0
 

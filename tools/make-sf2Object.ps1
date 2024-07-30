@@ -282,7 +282,7 @@ function convert-sf2Slice
 
 	if ($flagLineSkip)	{write-verbose "$lineSkip lines skipped";}
 	if ($whiteSpaceCounter) {$sliceMeta.Index+=4}
-	$sf2SliceHeader=[pscustomobject]@{Width=[byte]($sliceMaxX-$sliceMinX+1)*2;Height=[byte]($sliceHeight-$lineskip);X=[byte]($sliceMinX*2);Y=([byte]$sliceY+$subjecty);offset=($offsetX)}
+	$sf2SliceHeader=[pscustomobject]@{Width=[byte]($sliceMaxX-$sliceMinX+1)*2;Height=[byte]($sliceHeight-$lineskip);X=[byte]($sliceMinX*2+$edge);Y=([byte]$sliceY+$subjecty);offset=($offsetX+$edge)}
 	write-structData -byteArray $sliceMeta.data -struct $sf2SliceHeaderStructure -offset 0 -data $sf2SliceHeader
 	write-verbose $sf2SliceHeader
 	Write-verbose "Current dat size: $($framePixels.Index) bytes"
