@@ -3705,7 +3705,7 @@ SetObjectXY:                                  ;non moving objects start at (0,0)
 
 
 WaterfallPalette:
-  incbin "..\grapx\tilesheets\Waterfall.tiles.PL"
+  incbin "..\grapx\tilesheets\WaterfallScene.tiles.PL"
   
 WaterfallScene:
   ld    hl,WaterfallPalette
@@ -3717,7 +3717,7 @@ WaterfallScene:
 
 ;  ld    (ix+enemies_and_objects.v7),11 ;       ;v7=sprite frame
 
-  ld    de,BossRattyRunRight_1
+  ld    de,BossRattyRunRight_0
   jp    PutSf2Object2FramesNew                   ;CHANGES IX - puts object in 7 frames
 
   .HandlePhase:
@@ -3725,13 +3725,13 @@ WaterfallScene:
   .RunRight:
 ;  ld    (ix+enemies_and_objects.x),200         ;x object
   ld    a,(ix+enemies_and_objects.x)          ;x object
-  add   a,4
+  add   a,6
   ld    (ix+enemies_and_objects.x),a          ;x object
   ld    (ix+enemies_and_objects.y),183-8	         ;y object
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
 
   ;animate
-  ld    b,BossRattyStartingFrameRunRight
+  ld    b,BossRattyStartingFrameRunRight+1
   ld    c,BossRattyStartingFrameRunRight+BossRattyTotalFramesRunRight
   call  BossDemonAnimate
   ret

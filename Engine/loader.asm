@@ -404,7 +404,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,0
   ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
   ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$0000 + (024*128) + (032/2) - 128  ;(y*128) + (x/2)
+  ld    de,$0000 + (008*128) + (032/2) - 128  ;(y*128) + (x/2)
   ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
   ld    a,WaterfallSceneBlock1              ;block to copy graphics from
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
@@ -412,7 +412,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,0
   ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
   ld    hl,$8000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$8000 + (024*128) + (032/2) - 128  ;(y*128) + (x/2)
+  ld    de,$8000 + (008*128) + (032/2) - 128  ;(y*128) + (x/2)
   ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
   ld    a,WaterfallSceneBlock1              ;block to copy graphics from
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
@@ -420,7 +420,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,1
   ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
   ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$0000 + (024*128) + (032/2) - 128  ;(y*128) + (x/2)
+  ld    de,$0000 + (008*128) + (032/2) - 128  ;(y*128) + (x/2)
   ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
   ld    a,WaterfallSceneBlock2              ;block to copy graphics from
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
@@ -428,7 +428,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,1
   ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
   ld    hl,$8000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$8000 + (024*128) + (032/2) - 128  ;(y*128) + (x/2)
+  ld    de,$8000 + (008*128) + (032/2) - 128  ;(y*128) + (x/2)
   ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
   ld    a,WaterfallSceneBlock2              ;block to copy graphics from
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
