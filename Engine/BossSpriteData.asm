@@ -219,6 +219,18 @@ BossDemonCastDeathDataBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSi
 								incbin "..\grapx\BossDemon\BossDemonCastDeath.dat"
 								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	
 
+;boss ratty
+BossRattyframelistblock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+									phase	$8000
+									include "..\grapx\BossRatty\BossRatRunRight.asm" 
+									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+									dephase
+BossRattyspritedatablock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+									incbin "..\grapx\BossRatty\BossRat.dat"
+									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+
+
+
 TotallyWhiteSpritedatablock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 									ds	$4000,9+9*16
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block								

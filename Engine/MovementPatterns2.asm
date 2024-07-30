@@ -94,7 +94,7 @@ RemoveScoreBoard:
   ld    hl,RemoveScoreBoard1Line
   jp    DoCopy
 
-PutSf2Object2Frames:
+PutSf2Object2Frames: ;there is a new version of this in movementpatternsfixed
   ld    a,(HugeObjectFrame)
   inc   a
   cp    2

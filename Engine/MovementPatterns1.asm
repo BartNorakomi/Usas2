@@ -69,6 +69,7 @@ phase MovementPatterns1Address
 ;WaterfallScene
 ;BossDemon
 ;BossDemonBullet
+;BossRatty
 
 ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer
@@ -3710,29 +3711,51 @@ WaterfallScene:
   ld    hl,WaterfallPalette
   call  SetPalette
 
-  ld    (ix+enemies_and_objects.x),70         ;x object
-  ld    (ix+enemies_and_objects.y),73         ;y object
+  ld    a,(HugeObjectFrame)
+  cp    2-1                                   ;only handle phase when all 2 slices have been put
+  call  z,.HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
 
+;  ld    (ix+enemies_and_objects.v7),11 ;       ;v7=sprite frame
+
+  ld    de,BossRatRunRight_0
+  jp    PutSf2Object2FramesNew                   ;CHANGES IX - puts object in 7 frames
+
+  .HandlePhase:
+
+  .RunRight:
+;  ld    (ix+enemies_and_objects.x),200         ;x object
+  ld    a,(ix+enemies_and_objects.x)          ;x object
+  add   a,4
+  ld    (ix+enemies_and_objects.x),a          ;x object
+  ld    (ix+enemies_and_objects.y),183         ;y object
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
-  call  RestoreBackgroundForObjectInCurrentFrame 
 
-;  ld    (ix+enemies_and_objects.v7),0 ;13*5       ;v7=sprite frame
+  ;animate
+  ld    b,BossRattyStartingFrameRunRight
+  ld    c,BossRattyStartingFrameRunRight+BossRattyTotalFramesRunRight
+  call  BossDemonAnimate
+  ret
 
-  ld    de,BossDemonIdle_0
-  jp    PutSf2Object7Frames                   ;CHANGES IX - puts object in 7 frames
+BossRatty:
+  ret
 
+BossRattyStartingFrameRunRight:   equ 00
+BossRattyTotalFramesRunRight:     equ (BossRatRunLeft_0-BossRatRunRight_0)/4
+;sprite 0-11 (2 slices)
+BossRatRunRight_0:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_0_0
+BossRatRunRight_1:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_1_0
+BossRatRunRight_2:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_2_0
+BossRatRunRight_3:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_3_0
+BossRatRunRight_4:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_4_0
+BossRatRunRight_5:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_5_0
+BossRatRunRight_6:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_6_0
+BossRatRunRight_7:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_7_0
+BossRatRunRight_8:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_8_0
+BossRatRunRight_9:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_9_0
+BossRatRunRight_10:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_10_0
+BossRatRunRight_11:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_11_0
 
-
-  ld    de,TeleportPart3AnimationFrames
-;  ld    de,.EmptyFrames
-  jp    PutSf2Object5Frames                 ;CHANGES IX - puts object in 3 frames, Top, MIdle and then Bottom
-
-;  .EmptyFrames:
-;  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
-;  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
-;  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
-;  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
-;  dw ryupage0frame012 | db ryuframelistblock, ryuspritedatablock
+BossRatRunLeft_0:  ;db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRatRunRight_0_0
 
 
 ;v1=repeating steps
