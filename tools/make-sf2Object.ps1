@@ -1,6 +1,6 @@
 #Create SF2 object files for Usas2
 #Shadow@Fuzzylogic
-#20240304-20240729
+#20240304-20240730
 
 
 [CmdletBinding()]
