@@ -268,6 +268,50 @@ PutSf2Object5Frames:
 
 
 
+PutSf2Object3FramesNew:
+	ld    a,(HugeObjectFrame)
+	inc   a
+	cp    3
+	jr    nz,.SetFrame
+	xor   a
+	.SetFrame:
+	ld    (HugeObjectFrame),a
+  or    a
+	jp    z,.Part1
+	dec   a
+	jp    z,.Part2
+	dec   a
+	jp    z,.Part3
+
+.Part3:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject3
+  call  MultV7Times4
+	call  PutSF2Object3                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+	jp    switchpageSF2Engine
+
+.Part2:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject2
+  call  MultV7Times4
+	jp    PutSF2Object2                       ;in: b=frame list block, c=sprite data block. CHANGES IX 
+  
+.Part1:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject1
+  call  MultV7Times4
+
+  inc   hl
+	ld    a,(hl)
+	ld    (Player1Frame),a                    ;only on slice 1 we need to set the address of this slice
+	inc   hl                                  ;all consecutive slices are set at the end of their previous slice in engine.asm (when exiting the blitloop at .exit:)
+	ld    a,(hl)
+	ld    (Player1Frame+1),a
+	jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
 
 PutSf2Object2FramesNew:
 	ld    a,(HugeObjectFrame)

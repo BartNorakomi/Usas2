@@ -3706,41 +3706,86 @@ SetObjectXY:                                  ;non moving objects start at (0,0)
 
 WaterfallPalette:
   incbin "..\grapx\tilesheets\WaterfallScene.tiles.PL"
-  
+
+
+;v1=
+;v2= table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=  
+;v7=sprite frame
+;v8=phase
+;v9=
+;v10
 WaterfallScene:
+;  call  BackdropRed
+;call go
+;  call  BackdropBlack
+;  ret
+
+;go:
+
+
   ld    hl,WaterfallPalette
   call  SetPalette
 
+
+
+
+
+
+
+;	ld    a,(HugeObjectFrame)
+;	inc   a
+;	ld    (HugeObjectFrame),a
+ ; cp    5
+ ; ret   nz
+ ; xor   a
+;	ld    (HugeObjectFrame),a
+;	jp    switchpageSF2Engine
+
+
+
+
+  ;this needs to be set per ratty in the loader
+  ld    (ix+enemies_and_objects.y),183-8	         ;y object
+
   ld    a,(HugeObjectFrame)
-  cp    2-1                                   ;only handle phase when all 2 slices have been put
+  cp    3-1                                   ;only handle phase when all 2 slices have been put
   call  z,.HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
 
-;  ld    (ix+enemies_and_objects.v7),11 ;       ;v7=sprite frame
+;  ld    (ix+enemies_and_objects.v7),0 ;       ;v7=sprite frame
 
   ld    de,BossRattyRunRight_0
-  jp    PutSf2Object2FramesNew                   ;CHANGES IX - puts object in 7 frames
+  jp    PutSf2Object3FramesNew                   ;CHANGES IX - puts object in 7 frames
 
   .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v8)         ;v8=Phase (0=idle, 1=running)
+  or    a
+  jp    z,BossRattyIdle
+  dec   a
+  jp    z,BossRattyRunning
 
-  .RunRight:
-;  ld    (ix+enemies_and_objects.x),200         ;x object
+  BossRattyRunning:
   ld    a,(ix+enemies_and_objects.x)          ;x object
-  add   a,6
+  add   a,4
   ld    (ix+enemies_and_objects.x),a          ;x object
-  ld    (ix+enemies_and_objects.y),183-8	         ;y object
   call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
 
   ;animate
   ld    b,BossRattyStartingFrameRunRight
   ld    c,BossRattyStartingFrameRunRight+BossRattyTotalFramesRunRight
-  call  BossDemonAnimate
+  jp    BossDemonAnimate
+
+  BossRattyIdle:
+  ld    (ix+enemies_and_objects.v7),0        ;v7=sprite frame
+  call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
   ret
 
-BossRatty:
-  ret
 
 BossRattyStartingFrameRunRight:   equ 00
-BossRattyTotalFramesRunRight:     equ (BossRatRunLeft_0-BossRattyRunRight_0)/4
+BossRattyTotalFramesRunRight:     equ (BossRattyRunLeft_0-BossRattyRunRight_0)/4
 ;sprite 0-11 (2 slices)
 BossRattyRunRight_0:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_0_0
 BossRattyRunRight_1:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_1_0
@@ -3755,7 +3800,22 @@ BossRattyRunRight_9:  db    BossRattyframelistblock, BossRattyspritedatablock | 
 BossRattyRunRight_10:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_10_0
 BossRattyRunRight_11:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_11_0
 
-BossRatRunLeft_0:  ;db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunRight_0_0
+BossRattyStartingFrameRunLeft:   equ BossRattyRunRight_0+BossRattyTotalFramesRunRight
+BossRattyTotalFramesRunLeft:     equ (BossRattyEnd-BossRattyRunLeft_0)/4
+BossRattyRunLeft_0:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_0_0
+BossRattyRunLeft_1:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_1_0
+BossRattyRunLeft_2:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_2_0
+BossRattyRunLeft_3:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_3_0
+BossRattyRunLeft_4:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_4_0
+BossRattyRunLeft_5:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_5_0
+BossRattyRunLeft_6:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_6_0
+BossRattyRunLeft_7:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_7_0
+BossRattyRunLeft_8:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_8_0
+BossRattyRunLeft_9:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_9_0
+BossRattyRunLeft_10:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_10_0
+BossRattyRunLeft_11:  db    BossRattyframelistblock, BossRattyspritedatablock | dw    BossRattyRunLeft_11_0
+
+BossRattyEnd:
 
 
 ;v1=repeating steps

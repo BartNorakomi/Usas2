@@ -32,7 +32,7 @@ WorldMapPositionY:  db  12 | WorldMapPositionX:  db  roomX
 
 
 ClesX:      dw 230 ;$19 ;230 ;250 ;210
-ClesY:      db 80 ;144-1
+ClesY:      db 150 ;144-1
 
 
 PlayLogo:
