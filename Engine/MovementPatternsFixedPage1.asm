@@ -265,6 +265,33 @@ PutSf2Object5Frames:
 
 
 
+PutSf2Object1FramesObjectNr1:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject1
+  call  MultV7Times4
+  inc   hl
+	ld    a,(hl)
+	ld    (Player1Frame),a                    ;only on slice 1 we need to set the address of this slice
+	inc   hl                                  ;all consecutive slices are set at the end of their previous slice in engine.asm (when exiting the blitloop at .exit:)
+	ld    a,(hl)
+	ld    (Player1Frame+1),a
+	jp    PutSF2Object                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+PutSf2Object1FramesObjectNr2:
+	ld    a,(RestoreBackgroundSF2Object?)
+	or    a  
+	call  nz,restoreBackgroundObject2
+  call  MultV7Times4
+  inc   hl
+	ld    a,(hl)
+	ld    (Player1Frame),a                    ;only on slice 1 we need to set the address of this slice
+	inc   hl                                  ;all consecutive slices are set at the end of their previous slice in engine.asm (when exiting the blitloop at .exit:)
+	ld    a,(hl)
+	ld    (Player1Frame+1),a
+	jp    PutSF2Object2                        ;in: b=frame list block, c=sprite data block. CHANGES IX 
+
+
 
 
 

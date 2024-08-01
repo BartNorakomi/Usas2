@@ -222,8 +222,7 @@ BossDemonCastDeathDataBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSi
 ;boss ratty
 BossRattyframelistblock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 									phase	$8000
-									include "..\grapx\BossRatty\BossRattyRunRight.asm" 
-									include "..\grapx\BossRatty\BossRattyRunLeft.asm" 
+									include "..\grapx\BossRatty\BossRattyAll.asm" 
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 									dephase
 BossRattyspritedatablock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize

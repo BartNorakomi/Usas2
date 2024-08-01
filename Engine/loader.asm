@@ -397,7 +397,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    hl,Object007Table
   push  iy
   pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1           ;1 object(s)
+  ld    bc,lenghtenemytable*4           ;1 object(s)
   ldir
 
   ;put waterfall backdrop in all 4 pages
@@ -2482,6 +2482,9 @@ Object006Table:               ;Teleport
 Object007Table:               ;Waterfall Scene
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
           db 2,        0|dw WaterfallScene      |db 8*02  |dw 8*17  |db 64,64|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+          db 0,        0|dw BossRatty         |db 8*21+7  |dw 8*10  |db 42,32|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+04,+00,+01,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+          db 2,        0|dw BossRatty         |db 8*21+7  |dw 8*20  |db 42,32|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,-04,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+          db 2,        0|dw BossRattyHandler    |db 8*02  |dw 8*17  |db 00,00|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2
