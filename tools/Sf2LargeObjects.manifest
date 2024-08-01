@@ -1,4 +1,16 @@
 BossRatty=@{
+		all=`
+	@{	name="BossRattyAll";
+		imagePath="..\grapx\BossRatty\BossRattyAllFrames.4bpp.bmp";
+		palettePath="..\grapx\tilesheets\lemniscate.tiles.PL";
+		destinationPath="..\grapx\BossRatty";
+		pixelFile="BossRatty.dat";
+		transparentColor=-1;fillcolor=15;
+		canvasX=0*88;canvasY=0;canvasWidth=26*88;canvasHeight=(1*34);
+		frameWidth=88;frameHeight=34;
+		subjectX=0;subjectWidth=88;subjectY=-1;subjectHeight=-1;
+		slices=1;
+	};
 	runRight=`
 	@{	name="BossRattyRunRight";
 		imagePath="..\grapx\BossRatty\BossRattyRunRight.4bpp.bmp";

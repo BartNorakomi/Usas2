@@ -223,6 +223,13 @@ function convert-sf2Slice
 	$whiteSpaceCounter=0;$pixelCounter=0;$edge=($MSXscreen5.width-$subjectWidth)*$MSXscreen5.numBitsPerPixel/8 #(256-$width)/2;
 	$flagPixel=$false;$flagSpace=$false;$flagLineSkip=$false;$flagNext=$false;$flagWritePixel=$false;$flagEod=$false;
 
+	function commit-sf2record
+	{	param ($distanceToNext)
+		if (($whiteSpaceCounter+$lastPixelCount) -gt 255) {write-error "Pixel distance to high (>255) at frame $frame, slice $slice, y $y";exit}
+		$sliceMeta.data[$sliceMeta.Index]=[byte]($distanceToNext); #NextPixelDistance
+		$sliceMeta.Index+=4
+	}
+
 	#Run through pixelArray
 	$y=0;$x=0
 	while (($y -lt $sliceHeight) -and ($x -lt $widthBytes))
@@ -237,13 +244,16 @@ function convert-sf2Slice
 			if ($x -gt $sliceMaxX) {$sliceMaxX=$x}
 			if ($offsetX -eq -1) {$offsetX=$whiteSpaceCounter*2;$whiteSpaceCounter=0} #first time pixel encounter
 			if ($whiteSpaceCounter)	{$flagNext=$true;}
-			if ($x -ge ($widthBytes-1)) {$flagWritePixel=$true;} #End Of Line, break this pixelrun
+			if ($x -ge ($widthBytes-1)) #End Of Line, break this pixelrun
+			{	$flagWritePixel=$true;
+				if ($flagNext) {commit-sf2record -distanceToNext ($whiteSpaceCounter+$lastPixelCount);$flagnext=$false;$whiteSpaceCounter=0;} #clean up open run
+			} 
 			$pixelCounter++
 			$flagPixel=$true
 		} else
 		{	$whiteSpaceCounter++
 			if ($pixelCounter) {$flagWritePixel=$true}
-			$flagSpace=$true
+			$flagSpace=$true #un-used atm
 		}
 		
 		$x++
@@ -271,10 +281,11 @@ function convert-sf2Slice
 		}
 
 		if ($flagNext) #write record
-		{	if (($whiteSpaceCounter+$lastPixelCount) -gt 255) {write-error "Pixel distance to high (>255) at frame $frame, slice $slice, y $y";exit}
+		{	#if (($whiteSpaceCounter+$lastPixelCount) -gt 255) {write-error "Pixel distance to high (>255) at frame $frame, slice $slice, y $y";exit}
 			if (-not $flagEod) {$n=$whiteSpaceCounter+$lastPixelCount} else {$n=0}
-			$sliceMeta.data[$sliceMeta.Index]=[byte]($n); #NextPixelDistance
-			$sliceMeta.Index+=4
+			#$sliceMeta.data[$sliceMeta.Index]=[byte]($n); #NextPixelDistance
+			#$sliceMeta.Index+=4
+			commit-sf2record -distanceToNext $n
 			$whiteSpaceCounter=0
 			$flagNext=$false
 		}
@@ -501,11 +512,11 @@ $global:sf2object=$sf2object=new-sf2object @manifest -imageObject $bmpfile
 # 	-transparentColor $manifest.transparentcolor -fillColor $manifest.fillColor
 # exit
 
-# $frame=0;convert-sf2FrameAllSlices -sf2object $sf2object -framepixels $framePixels -frame $frame
-# exit
+#  $frame=23;convert-sf2FrameAllSlices -sf2object $sf2object -framepixels $framePixels -frame $frame
+#  (get-sf2SliceMeta -sf2object $sf2object -frame 23).data
+#  exit
 convert-sf2AllFramesSlices -sf2object $sf2object -framepixels $framePixels #-frameSelect $manifest.frameselect
 # exit
-#(get-sf2SliceMeta -sf2object $sf2object).data
 
 export-Sf2MetaAsmText -sf2object $sf2object -path $asmfile
 
