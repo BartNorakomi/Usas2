@@ -223,7 +223,7 @@ function convert-sf2Slice
 	$whiteSpaceCounter=0;$pixelCounter=0;$edge=($MSXscreen5.width-$subjectWidth)*$MSXscreen5.numBitsPerPixel/8 #(256-$width)/2;
 	$flagPixel=$false;$flagSpace=$false;$flagLineSkip=$false;$flagNext=$false;$flagWritePixel=$false;$flagEod=$false;
 
-	function commit-sf2record
+	function commit-sf2record #yes, this is a sub function
 	{	param ($distanceToNext)
 		if (($whiteSpaceCounter+$lastPixelCount) -gt 255) {write-error "Pixel distance to high (>255) at frame $frame, slice $slice, y $y";exit}
 		$sliceMeta.data[$sliceMeta.Index]=[byte]($distanceToNext); #NextPixelDistance
