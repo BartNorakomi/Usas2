@@ -26,7 +26,7 @@ phase	enginepage3addr
 
 ;waterfall boss ratty
 roomX: equ ("B"-"A")*26 + "T"-"A"
-WorldMapPositionY:  db  12 | WorldMapPositionX:  db  roomX
+WorldMapPositionY:  db  12-1 | WorldMapPositionX:  db  roomX
 ; roomX: equ ("A"-"A")*26 + "W"-"A"
 ; WorldMapPositionY:  db  27 | WorldMapPositionX:  db  roomX
 

@@ -459,6 +459,7 @@ tempisr:
 
 ;  boot, enginepage3, enginepage0
 engineRomBlock: 			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+EnginePage3RomStartAddress:	equ $-RomStartAddress
 enginepage3:				include	"enginepage3.asm"
 enginepage3RomEndAddress:	EQU $-1-RomStartAddress
 EnginePage0RomStartAddress:	equ $-RomStartAddress

@@ -1,6 +1,6 @@
 #Data Space Manager
 #Shadow@FuzzyLogic
-#20231027-20231204
+#20231027-20240801
 
 ##### Globals #####
 $filemodes=@{Append=6;Create=2;CreateNew=1;Open=3;OpenOrCreate=4;Truncate=5}
@@ -24,8 +24,9 @@ function new-DSM
     if ($firstblock+$numblocks -gt $size) {write-error "Size is too small";break}
 
     [uint32]$numSegmentsPerBlock=$Blocksize/$SegmentSize
-        $SegmentAllocationTable=new-DSMSegmentAllocationTable -numBlocks $numBlocks #-numSegmentsPerBlock $numSegmentsPerBlock
-        return [psobject]@{name=$name;size=$size;blocksize=$blocksize;firstBlock=$firstBlock;numblocks=$numblocks;segmentSize=$segmentSize;numSegmentsPerBlock=$numSegmentsPerBlock;segmentAllocationTable=$SegmentAllocationTable;dataList=[System.Collections.ArrayList]::new();fileSpace=$null}
+	$SegmentAllocationTable=new-DSMSegmentAllocationTable -numBlocks $numBlocks #-numSegmentsPerBlock $numSegmentsPerBlock
+	$filespace=@{path=$Null;stream=$null}
+	return [psobject]@{name=$name;size=$size;blocksize=$blocksize;firstBlock=$firstBlock;numblocks=$numblocks;segmentSize=$segmentSize;numSegmentsPerBlock=$numSegmentsPerBlock;segmentAllocationTable=$SegmentAllocationTable;dataList=[System.Collections.ArrayList]::new();fileSpace=$filespace}
 }
 
 # DSM OBJECT
@@ -347,7 +348,7 @@ function add-DSMData
             $result=$DataList|add-DSMDataListAllocation -name $name -alloc $alloc -part $part
             write-verbose $result
         }   
-        if ($updateFileSpace -and $DSM.filespace)
+        if ($updateFileSpace -and $DSM.filespace.stream)
         {	write-verbose "[add-DSMData] updating file space / block:$($alloc.block) segment:$($alloc.segment) len:$($alloc.length)"
             $null=$DSM|write-DSMFileSpace -block $alloc.block -segment $alloc.segment -data $data
         }
@@ -567,6 +568,7 @@ function create-DSMFileSpace
             {	write-verbose "Writing Block $i, size $($DSM.blocksize)"
                 $fs.Write($RawData,0,$RawData.count)
             }
+			$dsm.filespace.path=$path
             $fs.close()
         }
     }
@@ -579,11 +581,12 @@ function open-DSMFileSpace
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,
         $path
     )
-	if (-not $DSM.filespace)
-	{	if (-not $path) {$path="$(resolve-path ".\")\$($DSM.name).$dsmSpaceFilenameExtention"}
+	if (-not $DSM.filespace.stream)
+	{	if (-not $path) {if (-not ($path=$dsm.filespace.path)) {$path=".\$($DSM.name).$dsmSpaceFilenameExtention"}}
+		$DSM.filespace=@{path=$path;stream=$Null} #old versions don't have this hashtab, so create it
 		write-verbose "Opening DSM file space $path"
-		if ($fs=[io.file]::open($path,$filemodes["open"]))
-		{	$DSM.filespace=$fs
+		if ($fs=[io.file]::open((resolve-path -path $path),$filemodes["open"]))
+		{	$DSM.filespace.stream=$fs
 			return $fs
 		} else
 		{	return $false
@@ -601,9 +604,10 @@ function close-DSMFileSpace
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM
     )
-	if ($DSM.filespace)
-	{	$DSM.filespace.close()
-		$DSM.filespace=$null		#no error checking!
+	write-verbose "Closing DSM file space $($dsm.filespace.path)"
+	if ($DSM.filespace.stream)
+	{	$DSM.filespace.stream.close()
+		$DSM.filespace.stream=$null		#no error checking!
 	}
 }
 
@@ -615,9 +619,9 @@ function seek-DSMFileSpace
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,
 		$block=0,$segment=0
     )
- 	if ($DSM.filespace)
+ 	if ($DSM.filespace.stream)
 	{	$seekPosition=(($dsm.firstblock+$block)*$DSM.blocksize)+($segment*$DSM.segmentsize)
-		return $DSM.filespace.seek($seekPosition,0)
+		return $DSM.filespace.stream.seek($seekPosition,0)
 	} else
 	{	return $false
 	}
@@ -633,7 +637,7 @@ function read-DSMFileSpace
 		$block=-1,$segment=0	#optional seek to block/segment
     )
 
-	if (-not $DSM.filespace)
+	if (-not $DSM.filespace.stream)
 	{	return 0
 	} else
 	{	if ($block -ne -1)
@@ -642,7 +646,7 @@ function read-DSMFileSpace
 			}
 		}
 		$Data=[byte[]]::new($length)
-		$null=$DSM.filespace.read($data,0,$data.length)
+		$null=$DSM.filespace.stream.read($data,0,$data.length)
 		return $data
 	}
 }
@@ -668,7 +672,7 @@ function write-DSMFileSpace
 		[Parameter(Mandatory)]$Data,
 		$block=-1,$segment=0	#optional seek to block/segment
     )
-	if (-not $DSM.filespace)
+	if (-not $DSM.filespace.stream)
 	{	return $false
 	} else
 	{	if ($block -ne -1)
@@ -676,7 +680,7 @@ function write-DSMFileSpace
 			{	return $false
 			}
 		}
-		return $DSM.filespace.write($Data,0,$Data.length)
+		return $DSM.filespace.stream.write($Data,0,$Data.length)
 	}
 }
 
