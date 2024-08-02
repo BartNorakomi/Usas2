@@ -102,7 +102,7 @@ function get-roomLocation
 {	param ($name)
 	write-verbose "get-roomlocation for $name"
 	$x=$WorldMapColumnNames.IndexOf($name.substring(0,2).toupper())
-	$y=[uint32]$name.substring(2,2)
+	$y=[uint32]$name.substring(2,2)-1
 	return [pscustomobject]@{x=$x;y=$y}
 }
 
