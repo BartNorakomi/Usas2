@@ -100,7 +100,7 @@ function get-roomName
 #out:	object (x,y)
 function get-roomLocation
 {	param ($name)
-	write-verbose "get-roomlocation for $name"
+	#write-verbose "get-roomlocation for $name"
 	$x=$WorldMapColumnNames.IndexOf($name.substring(0,2).toupper())
 	$y=[uint32]$name.substring(2,2)-1
 	return [pscustomobject]@{x=$x;y=$y}
@@ -170,27 +170,44 @@ function get-U2WorldMapRooms
 }
 
 
+function fill-array
+{	param ($array,$value)
+	for ($i=0;$i -lt $array.length;$i++){$array[$i]=$value}
+}
+
+
+
 # ROOM MAP FILE INDEX 20231201
 # return a WorldMap index of the files in a datalist as byte array of records (id(xxyy)[16],block[8],segment[8]) 
 function get-WorldMapRoomIndex
 {	param
 	(	[Parameter(Mandatory,ValueFromPipeline)]$DSM,$datalistName="WorldMap"
 	)
-	$IndexRecordLength=4
+
+	#ROM:roomindex
+	$roomIndex=$usas2.index|where{$_.identity -eq "rooms"}
+	$roomIndexNumRec=[uint32]$roomIndex.numrec;$roomIndexRecLen=[uint32]$roomIndex.reclen;$roomIndexSize=$roomIndexNumRec*$roomIndexRecLen;$roomIndexDefaultId=0xff
+	$roomIndexIdOffset=0;$roomIndexBlockOffset=2;$roomIndexSegmentOffset=3
+
 	$datalist=get-dsmdatalist -dsm $dsm -name $datalistName
 	if ($datalist.allocations)
-	{	$indexRecords=[System.Collections.Generic.List[byte]]::new() #[byte[]]::new(0) #::new($numIndexRecords*$IndexRecordLength)
+	{	$indexRecords=[byte[]]::new($roomIndexSize);fill-array -array $indexRecords -value $roomIndexDefaultId
+		$index=0
 		foreach ($this in $datalist.allocations)
-		{	write-verbose "index: $($this.name)"
+		{	#write-verbose "index: $($this.name)"
 			$location=get-roomLocation $this.name.substring(0,4)
-			[uint32]$id=$location.x*256+$location.y
-			[byte]$block=$this.block
-			[byte]$segment=$this.segment
-			write-verbose "ID:$id, block:$block, seg:$segment"
-			$indexRecords.addrange([byte[]]@([byte]$location.x,[byte]$location.y,$block,$segment))
+			# [byte]$block=$this.block
+			# [byte]$segment=$this.segment
+			#[uint32]$id=$location.x*256+$location.y
+			#write-verbose "ID:$id, block:$block, seg:$segment"
+			$indexRecords[$index+$roomIndexIdOffset+0]=[byte]$location.x
+			$indexRecords[$index+$roomIndexIdOffset+1]=[byte]$location.y
+			$indexRecords[$index+$roomIndexBlockOffset+0]=[byte]$this.block
+			$indexRecords[$index+$roomIndexSegmentOffset+0]=[byte]$this.segment
+			$index+=$roomIndexRecLen
 		}
 	}
-	return ,$indexRecords.toarray()
+	return ,$indexRecords #.toarray()
 }
 
 # BITMAP GFX INDEX 20231207
@@ -244,9 +261,9 @@ function get-U2ruinProperties
 	elseif ($ruinid) {$ruins=$usas2.ruin|where{$_.ruinid -like $ruinid}}
 	foreach ($ruin in $ruins)
 	{	#$ruin|select tileset,palette,music,name
-		if (-not ($tilesetUid=($usas2.tileset|where{$_.identity -eq $ruin.tileset}).id)) {$tilesetUid=0}
-		if (-not ($paletteUid=($usas2.palette|where{$_.identity -eq $ruin.palette}).id)) {$paletteUid=0}
-		if (-not ($musicUid=($usas2.music|where{$_.identity -eq $ruin.music}).id)) {$musicUid=0}
+		if (-not ($tilesetUid=($usas2.tileset|where{$_.identity -eq $ruin.tileset}).id)) {$tilesetUid=-1}
+		if (-not ($paletteUid=($usas2.palette|where{$_.identity -eq $ruin.palette}).id)) {$paletteUid=-1}
+		if (-not ($musicUid=($usas2.music|where{$_.identity -eq $ruin.music}).id)) {$musicUid=-1}
 		[pscustomobject]@{id=[byte]$ruin.ruinid;name=[string]$ruin.name;tileset=[byte]$tilesetUid;palette=[byte]$paletteUid;music=[byte]$musicUid}
 	}
 }

@@ -604,9 +604,10 @@ function close-DSMFileSpace
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM
     )
-	write-verbose "Closing DSM file space $($dsm.filespace.path)"
+	
 	if ($DSM.filespace.stream)
-	{	$DSM.filespace.stream.close()
+	{	write-verbose "Closing DSM file space $($dsm.filespace.path)"
+		$DSM.filespace.stream.close()
 		$DSM.filespace.stream=$null		#no error checking!
 	}
 }
