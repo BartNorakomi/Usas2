@@ -170,6 +170,13 @@ function get-U2WorldMapRooms
 }
 
 
+function fill-array
+{	param ($array,$value)
+	for ($i=0;$i -lt $array.length;$i++){$array[$i]=$value}
+}
+
+
+
 # ROOM MAP FILE INDEX 20231201
 # return a WorldMap index of the files in a datalist as byte array of records (id(xxyy)[16],block[8],segment[8]) 
 function get-WorldMapRoomIndex
@@ -179,26 +186,24 @@ function get-WorldMapRoomIndex
 
 	#ROM:roomindex
 	$roomIndex=$usas2.index|where{$_.identity -eq "rooms"}
-	$roomIndexNumRec=([int]$roomIndex.numrec);$roomIndexRecLen=([int]$roomIndex.reclen);$roomIndexSize=$roomIndexNumRec*$roomIndexRecLen;$roomIndexDefaultId=-1
+	$roomIndexNumRec=[uint32]$roomIndex.numrec;$roomIndexRecLen=[uint32]$roomIndex.reclen;$roomIndexSize=$roomIndexNumRec*$roomIndexRecLen;$roomIndexDefaultId=0xff
 	$roomIndexIdOffset=0;$roomIndexBlockOffset=2;$roomIndexSegmentOffset=3
 
 	$datalist=get-dsmdatalist -dsm $dsm -name $datalistName
 	if ($datalist.allocations)
-	{	#$indexRecords=[System.Collections.Generic.List[byte]]::new()
-		$indexRecords=[byte[]]::new($roomIndexSize)
+	{	$indexRecords=[byte[]]::new($roomIndexSize);fill-array -array $indexRecords -value $roomIndexDefaultId
 		$index=0
 		foreach ($this in $datalist.allocations)
 		{	#write-verbose "index: $($this.name)"
 			$location=get-roomLocation $this.name.substring(0,4)
+			# [byte]$block=$this.block
+			# [byte]$segment=$this.segment
 			#[uint32]$id=$location.x*256+$location.y
-			[byte]$block=$this.block
-			[byte]$segment=$this.segment
 			#write-verbose "ID:$id, block:$block, seg:$segment"
-			#$indexRecords.addrange([byte[]]@([byte]$location.x,[byte]$location.x,$block,$segment))
 			$indexRecords[$index+$roomIndexIdOffset+0]=[byte]$location.x
 			$indexRecords[$index+$roomIndexIdOffset+1]=[byte]$location.y
-			$indexRecords[$index+$roomIndexBlockOffset+0]=$block
-			$indexRecords[$index+$roomIndexSegmentOffset+0]=$segment
+			$indexRecords[$index+$roomIndexBlockOffset+0]=[byte]$this.block
+			$indexRecords[$index+$roomIndexSegmentOffset+0]=[byte]$this.segment
 			$index+=$roomIndexRecLen
 		}
 	}
