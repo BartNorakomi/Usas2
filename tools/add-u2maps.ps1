@@ -19,7 +19,7 @@ param
 )
 
 ##### Includes #####
-. .\Usas2-SharedFunctions.inc.ps1
+. .\Usas2-SharedFunctions.inc.ps1 
 . .\DSM.ps1
 
 
@@ -28,6 +28,7 @@ if ($resetGlobals) {$global:usas2=$null}
 $global:usas2=get-Usas2Globals
 $romfile="$(resolve-path "..\Engine\usas2.rom")" #\usas2.rom"
 
+
 ##### Functions #####
 
 #note that this functions uses script parameters as global
@@ -35,7 +36,7 @@ function add-roomToDsm
 {	param ($rooms)
 	foreach ($room in $rooms)
 	{	#convert .tmx to .map
-		if ($convertTiledMap)
+		if ($convertTiledMap) #global!
 		{	$tiledMapPath="$tiledmapsLocation\$($room.name).tmx"
 			.\convert-tmxtoraw16.ps1 -path $tiledMapPath -targetPath $mapsLocation -includeLayer ".*" -excludeLayer "(Objects|object|room numbers)" -pack
 		}
@@ -50,12 +51,32 @@ function add-roomToDsm
 ##### MAIN #####
 $DatalistProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistName}
 write-verbose "DSM: $dsmname, Datalist:$datalistname"
+$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
+$roomIndex=@{numrec=1024;reclen=4;size=4*1024;data=[byte[]]::new(4*1024)}
 
 if (-not ($dsm=load-dsm -path $dsmname))
 {	write-error "DSM $dmsname not found"
 }	else
 {	$null=$DSM|open-DSMFileSpace -path $romfile
 	$datalist=add-DSMDataList -dsm $dsm -name $datalistname
+
+#Read the current roomIndex from the ROM
+$roomIndex.data=read-DSMFileSpace -dsm $dsm -length ($roomindex.size) -block $indexBlock -segment $indexsegment
+$global:roomindex=$roomindex
+$roomindex.data=get-WorldMapRoomIndex -dsm $dsm -datalistname $dataListName
+
+#Find a room in the binairy RoomIndex, and return the record-index
+function get-roomIndexRoom
+{	param ($RoomIndex,$roomName)
+	if ($room=get-roomLocation -name $roomName.Substring(0,4))
+	{	while ($i -lt $roomindex.numrec)
+		{	if ($roomindex.data[$i*$roomindex.reclen+0] -eq $room.x -and $roomindex.data[$i*$roomindex.reclen+1] -eq $room.y) {return $i;break}
+			$i++;
+		}
+	}
+}
+
+get-roomIndexRoom -roomindex $roomindex -roomname "aw27"
 
 	#Add Ruin(s)
 	if ($ruinid)
