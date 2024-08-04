@@ -479,12 +479,17 @@ $global:manifest=$manifest
 if (-not $destinationPath){if ( -not ($destinationPath=($manifest.destinationPath))) {$destinationPath=".\"}}
 write-verbose "Destination Path: $destinationPath"
 #Dat file
-if ($pixelFilePath) {$datFile=$pixelFilePath}
-elseif ($manifest.pixelFilePath) {$datfile=$manifest.pixelFilePath}
-elseif ($manifest.pixelFile) {$datfile=join-path -path $destinationPath -ChildPath $manifest.pixelfile}
-else {$datFile=join-path -path $destinationPath -ChildPath "$($manifest.name).dat"}
+	if ($pixelFilePath) {$datFile=$pixelFilePath}
+	elseif ($manifest.pixelFilePath) {$datfile=$manifest.pixelFilePath}
+	else {$datFile="$($manifest.name).dat"}
+	if (-not (Split-Path $datFile -Parent)) {$datFile=join-path -path $destinationPath -ChildPath $datFile}
+#lst file
+	if ($listFilePath) {$lstFile=$listFilePath}
+	elseif ($manifest.listFilePath) {$lstfile=$manifest.listFilePath}
+	else {$lstFile="$($manifest.name).lst"}
+	if (-not (Split-Path $lstFile -Parent)) {$lstFile=join-path -path $destinationPath -ChildPath $lstFile}
+
 $AsmFile="$destinationPath\$($manifest.name).asm"
-$lstFile="$destinationPath\$($manifest.name).lst" 
 Write-verbose "Pixel file: $datfile"
 Write-verbose "List file: $lstfile"
 Write-verbose "Asm text file: $asmfile"

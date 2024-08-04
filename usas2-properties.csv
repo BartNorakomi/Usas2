@@ -126,8 +126,12 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	boringEyeGreen	objectClass	General					
 1	Usas2		RoomObject	boringEyeRed	uid	145					
 1	Usas2		RoomObject	boringEyeRed	objectClass	General					
-1	Usas2		RoomObject	BossTest	uid	8					
-1	Usas2		RoomObject	BossTest	objectClass	General					
+1	Usas2		RoomObject	BossFireDemon	uid	8					
+1	Usas2		RoomObject	BossFireDemon	objectClass	General					
+1	Usas2		RoomObject	BossRat	uid	9					
+1	Usas2		RoomObject	BossRat	objectClass	General					
+1	Usas2		RoomObject	BossPlant	uid	13					
+1	Usas2		RoomObject	BossPlant	objectClass	General					
 1	Usas2		RoomObject	demontje brown	uid	156					
 1	Usas2		RoomObject	demontje brown	objectClass	Enemy					
 1	Usas2		RoomObject	demontje green	uid	154					

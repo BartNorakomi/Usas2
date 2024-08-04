@@ -4,7 +4,6 @@ BossPlant=@{
 		imagePath="..\grapx\BossPlant\BossPlantIdleAndDeath16c.4bpp.bmp";
 		palettePath="..\grapx\tilesheets\BossPlant.PL";
 		destinationPath="..\grapx\BossPlant";
-		pixelFile="BossPlant.dat";
 		transparentColor=-1;fillcolor=15;
 		canvasX=0;canvasY=0;canvasWidth=4*256;canvasHeight=72;
 		frameWidth=256;frameHeight=72;
