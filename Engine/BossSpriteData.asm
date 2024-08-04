@@ -236,7 +236,7 @@ BossPlantframelistblock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 									dephase
 BossPlantspritedatablock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-									incbin "..\grapx\BossPlant\BossPlant.dat"
+									incbin "..\grapx\BossPlant\BossPlantALL.dat"
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 TotallyWhiteSpritedatablock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize

@@ -200,7 +200,7 @@ ObjectTestData:
 ;db 200,100,100,0    ;WaterfallBoss, x,y
 ;db 8,100,100,0    ;Boss Demon, x,y
 
-db 13,0   ;boss plant
+;db 13,0   ;boss plant
 
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
@@ -211,7 +211,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
 
-  ld    de,ObjectTestData
+;  ld    de,ObjectTestData
 
   push  de
 ;.CheckObjects: jp .CheckObjects

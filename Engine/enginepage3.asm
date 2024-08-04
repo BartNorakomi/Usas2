@@ -29,8 +29,8 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  12-1 | WorldMapPositionX:  db  roomX
 
 ;boss plant
-roomX: equ ("B"-"A")*26 + "E"-"A"
-WorldMapPositionY:  db  21-1 | WorldMapPositionX:  db  roomX
+roomX: equ ("B"-"A")*26 + "F"-"A"
+WorldMapPositionY:  db  20-1 | WorldMapPositionX:  db  roomX
 
 
 ClesX:      dw 200 ;$19 ;230 ;250 ;210
