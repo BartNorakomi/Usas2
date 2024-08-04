@@ -2159,7 +2159,7 @@ Object011Table:               ;platform
 
 Object013Table:               ;boss plant
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
-          db 2,        0|dw BossPlant           |db  083|dw  052|db 16,16|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
+          db 2,        0|dw BossPlant           |db  083|dw  052|db 16,16|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 021,movementpatterns1block| ds fill-1
 .ID: equ 0
 .lenghtobjectdata: equ 1
 

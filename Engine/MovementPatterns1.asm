@@ -3755,6 +3755,9 @@ BossPlant:
 ;  cp    (ix+enemies_and_objects.v6)	          ;v6=active on which frame ?
 ;  ret   z
 
+  call  CheckPlayerHitByPlant
+  call  BossPlantCheckIfHit                  ;Check if boss is hit, and if so set being hit phase
+
   ld    a,(HugeObjectFrame)
   cp    4-1                                   ;only handle phase when all 7 slices have been put
   call  z,.HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
@@ -3774,6 +3777,7 @@ BossPlant:
   jp    z,BossPlantIdle
   dec   a
   jp    z,BossPlantAttacking
+  ret
 
 BossPlantIdle:
   call  .animatePlant
@@ -3812,7 +3816,54 @@ BossPlantIdle:
   ld    (ix+enemies_and_objects.v7),a         ;v7=sprite frame
   ret  
 
+CheckPlayerHitByPlant:
+  ld    (ix+enemies_and_objects.nx),060      ;nx
+  ld    (ix+enemies_and_objects.ny),180     ;ny
+
+  ld    a,(CollisionEnemyPlayer.SelfModifyingCodeCollisionSY)
+  push  af
+
+  ld    a,60
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ld    bc,30                               ;reduction to hitbox sx (left side)
+  call  CollisionEnemyPlayer.ObjectEntry
+
+  pop   af
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ret
+
 BossPlantAttacking:
+  ret
+
+  BossPlantAmountFramesUnableToBeHitAfterBeingHit:  equ 14 ;09
+  BossPlantCheckIfHit:
+  ld    a,(ix+enemies_and_objects.hit?)
+  cp    BlinkDurationWhenHit                ;Check if Boss was hit previous frame
+  jr    z,.JustHit
+
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  sub   a,16
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  add   a,-60
+  ld    (ix+enemies_and_objects.y),a        ;y
+  call  CheckPlayerPunchesEnemy             ;Check if player hits enemy
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  sub   a,-60
+  ld    (ix+enemies_and_objects.y),a        ;y
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  add   a,16
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ret
+
+  .JustHit:
+  ld    a,(HugeObjectFrame)
+  cp    4-1                                 ;only handle phase when all 7 slices have been put
+  ret   nz                                  ;wait for all 7 parts of the boss to be build up
+
+  dec   (ix+enemies_and_objects.hit?)
+
+;  ld    (ix+enemies_and_objects.v8),1       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
   ret
 
 BossPlantAll_0:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_0_0

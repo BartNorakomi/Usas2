@@ -1874,11 +1874,19 @@ PutSF2Object7:	;section#5
 ;if we are in page 2 we prepare to restore page 3 in the next frame
 ;if we are in page 3 we prepare to restore page 0 in the next frame
 PutSF2ObjectSlice:
-  bit   0,(ix+enemies_and_objects.v1-1)     ;v1-1=boss was hit, blink during 1 frame
-  jr    z,.NotHit
+;  bit   0,(ix+enemies_and_objects.v1-1)     ;v1-1=boss was hit, blink during 1 frame
+;  jr    z,.NotHit
 ;  ld    c,TotallyWhiteSpritedatablock
 ;  ld    c,TotallyRedSpritedatablock
+;  .NotHit:
+
+  ld    a,(ix+enemies_and_objects.hit?)
+  cp    BlinkDurationWhenHit                ;Check if Boss was hit previous frame
+  jr    nz,.NotHit
+  ld    c,TotallyWhiteSpritedatablock
+;  ld    c,TotallyRedSpritedatablock
   .NotHit:
+
 
 	ld    a,(screenpage)
   add   a,a
