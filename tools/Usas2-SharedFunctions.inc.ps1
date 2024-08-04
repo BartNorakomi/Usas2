@@ -194,12 +194,7 @@ function get-WorldMapRoomIndex
 	{	$indexRecords=[byte[]]::new($roomIndexSize);fill-array -array $indexRecords -value $roomIndexDefaultId
 		$index=0
 		foreach ($this in $datalist.allocations)
-		{	#write-verbose "index: $($this.name)"
-			$location=get-roomLocation $this.name.substring(0,4)
-			# [byte]$block=$this.block
-			# [byte]$segment=$this.segment
-			#[uint32]$id=$location.x*256+$location.y
-			#write-verbose "ID:$id, block:$block, seg:$segment"
+		{	$location=get-roomLocation $this.name.substring(0,4)
 			$indexRecords[$index+$roomIndexIdOffset+0]=[byte]$location.x
 			$indexRecords[$index+$roomIndexIdOffset+1]=[byte]$location.y
 			$indexRecords[$index+$roomIndexBlockOffset+0]=[byte]$this.block
