@@ -100,12 +100,14 @@ function new-bmpFileObject
 		DibHeader=new-dibheader
 		colorTable=$null;
 		pixelArray=[byte[]]::new($imageSize);
-		numBitsPerpixel=[uint32]$numBitsPerPixel;
+		numBitsPerpixel=[uint16]$numBitsPerPixel;
 		width=[uint32]$width;
 		height=[uint32]$height;
-		rowsize=[math]::ceiling($numbitsperpixel*$width/32)*4;
+		rowsize=[uint32][math]::ceiling($numbitsperpixel*$width/32)*4;
 		pixelArraysize=[uint32]$imagesize;
-		colorTableOffset=[uint32]0;
+		colorTableOffset=[uint16]0;
+		NumColors=[uint16]0;
+		colorTableSize=[uint16]0;
 		rawData=$Null #[byte[]]::new($filesize);
 	}
 	if ($numBitsPerPixel -le 8)
@@ -178,7 +180,9 @@ function import-bmpFile
 	
 	#colorTable
 	if ($numBitsPerPixel -le 8)
-	{	$colorTableSize=4*$dibheader.NumColors
+	{	if (($bmpfile.numColors=$dibheader.NumColors) -eq 0) {$bmpfile.numColors=$numbitsperpixel*$numbitsperpixel}
+		$colorTableSize=4*$bmpfile.NumColors;
+		$bmpfile.colorTableSize=$colorTableSize
 		$colorTable=[byte[]]::new($colorTableSize)
 		$bmpfile.colorTableOffset=$BmpFileStructure.BitMapFileHeader.size+$bmpfile.DibHeader.headersize
 		for($i=0;$i -lt $colorTableSize;$i++){$colorTable[$i]=$rawdata[$DibHeader.headersize+$i]}

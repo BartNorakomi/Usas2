@@ -76,7 +76,7 @@ function get-colorConversionTable
 {	param ($bmpfile,$msxColTab)
 	$ColorConverstionTable=[byte[]]::new(16)
 	if ($bmpfile.numBitsPerPixel -le 8)
-	{	$numColors=$bmpfile.dibheader.NumColors
+	{	$numColors=$bmpfile.NumColors
 		for ($i=0;$i -lt $numcolors;$i++)
 		{	$b=$bmpfile.colortable[$i*4+0]
 			$g=[byte]($bmpfile.colortable[$i*4+1])
