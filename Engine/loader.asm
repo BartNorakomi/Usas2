@@ -200,6 +200,8 @@ ObjectTestData:
 ;db 200,100,100,0    ;WaterfallBoss, x,y
 ;db 8,100,100,0    ;Boss Demon, x,y
 
+db 13,0   ;boss plant
+
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
   ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
@@ -209,7 +211,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
   .ObjectAddressFound:
 
-;  ld    de,ObjectTestData
+  ld    de,ObjectTestData
 
   push  de
 ;.CheckObjects: jp .CheckObjects
@@ -273,6 +275,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object011                    ;small moving platform on (standard dark grey)
   cp    12
   jp    z,.Object012                    ;small moving platform (lighter version)
+  cp    13
+  jp    z,.Object013                    ;boss plant (BossPlant)
   cp    15
   jp    z,.Object015                    ;retracting platforms
   cp    16
@@ -1136,12 +1140,50 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
   ld    (iy+enemies_and_objects.v1),096 ;v1=sx software sprite in Vram on
   ret
 
+  .Object013:
+  ld    hl,Object013Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1           ;1 object(s)
+  ldir
 
+  ;put boss plant backdrop in all 4 pages
+  ld    a,0
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$0000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (212*256) + (256/2)        ;(ny*256) + (nx/2)
+  ld    a,BossPlantBackdropBlock              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
+  ld    hl,.CopyPage0ToPage1
+  call  DoCopy
 
+  ld    a,1
+  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    de,$0000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (212*256) + (256/2)        ;(ny*256) + (nx/2)
+  ld    a,BossPlantBackdropBlock              ;block to copy graphics from
+  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
+  ld    hl,.CopyPage0ToPage3
+  call  DoCopy
 
+  ld    de,Object013Table.lenghtobjectdata
+  ret  
 
+.CopyPage0ToPage1:
+		db    000,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,001   ;dx,--,dy,dpage
+		db    000,001,212,000   ;nx,--,ny,--
+		db    000,000,$d0       ;fast copy
+
+.CopyPage0ToPage3:
+		db    000,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,003   ;dx,--,dy,dpage
+		db    000,001,212,000   ;nx,--,ny,--
+		db    000,000,$d0       ;fast copy
 
   .Object010:                           ;huge block (HugeBlock)
 ;v1-2=box right (16 bit)
@@ -2114,6 +2156,15 @@ Object011Table:               ;platform
 .speed: equ 8
 .active: equ 9
 .lenghtobjectdata: equ 10
+
+Object013Table:               ;boss plant
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
+          db 2,        0|dw BossPlant           |db  083|dw  052|db 16,16|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
+.ID: equ 0
+.lenghtobjectdata: equ 1
+
+
+
 
 Object015Table:               ;retracting platform (handler)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   

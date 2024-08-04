@@ -70,6 +70,8 @@ phase MovementPatterns1Address
 ;BossDemon
 ;BossDemonBullet
 ;BossRatty
+;BossRattyHandler
+;BossPlant
 
 ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer
@@ -3730,6 +3732,93 @@ ret
   xor   a
  	ld    (HugeObjectFrame),a
 	jp    switchpageSF2Engine
+
+BossPlantPaletteAnimation1:
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation1.PL" ;file palette 
+BossPlantPaletteAnimation2:
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation2.PL" ;file palette 
+BossPlantPaletteAnimation3:
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation3.PL" ;file palette 
+
+;v1=
+;v2= table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?
+;v7=sprite frame
+;v8=phase
+;v9=vines animation step
+;v10
+BossPlant:
+;	ld    a,(HugeObjectFrame)
+;  cp    (ix+enemies_and_objects.v6)	          ;v6=active on which frame ?
+;  ret   z
+
+  ld    a,(HugeObjectFrame)
+  cp    4-1                                   ;only handle phase when all 7 slices have been put
+  call  z,.HandlePhase                        ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
+
+  call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
+  ld    de,BossPlantAll_0
+  jp    PutSf2Object4FramesNew                   ;CHANGES IX - puts object in 7 frames
+
+
+  .HandlePhase:
+  ld    a,(Bossframecounter)
+  inc   a
+  ld    (Bossframecounter),a
+
+  ld    a,(ix+enemies_and_objects.v8)         ;v8=Phase (0=idle, 1=running)
+  or    a
+  jp    z,BossPlantIdle
+  dec   a
+  jp    z,BossPlantAttacking
+
+BossPlantIdle:
+  call  .animatePlant
+  call  .animateVines
+  ret
+
+  .animateVines:
+  ld    a,(Bossframecounter)
+  and   7
+  ret   nz
+
+  ld    a,(ix+enemies_and_objects.v9)         ;v9=vines animation step
+  inc   a
+  and   3
+  ld    (ix+enemies_and_objects.v9),a         ;v9=vines animation step
+
+  ld    hl,BossPlantPaletteAnimation1
+  jp    z,SetPalette
+  dec   a
+  ld    hl,BossPlantPaletteAnimation2
+  jp    z,SetPalette
+  dec   a
+  ld    hl,BossPlantPaletteAnimation1
+  jp    z,SetPalette
+  ld    hl,BossPlantPaletteAnimation3
+  jp    SetPalette
+
+  .animatePlant:
+  ld    a,(Bossframecounter)
+  and   3
+  ret   nz
+
+  ld    a,(ix+enemies_and_objects.v7)         ;v7=sprite frame
+  inc   a
+  and   3
+  ld    (ix+enemies_and_objects.v7),a         ;v7=sprite frame
+  ret  
+
+BossPlantAttacking:
+  ret
+
+BossPlantAll_0:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_0_0
+BossPlantAll_1:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_1_0
+BossPlantAll_2:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_2_0
+BossPlantAll_3:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_1_0
 
 
 BossRattyHandler:

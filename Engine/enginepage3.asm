@@ -25,14 +25,16 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  12 | WorldMapPositionX:  db  roomX
 
 ;waterfall boss ratty
-roomX: equ ("B"-"A")*26 + "T"-"A"
-WorldMapPositionY:  db  12-1 | WorldMapPositionX:  db  roomX
-; roomX: equ ("A"-"A")*26 + "W"-"A"
-; WorldMapPositionY:  db  27 | WorldMapPositionX:  db  roomX
+;roomX: equ ("B"-"A")*26 + "T"-"A"
+;WorldMapPositionY:  db  12-1 | WorldMapPositionX:  db  roomX
+
+;boss plant
+roomX: equ ("B"-"A")*26 + "E"-"A"
+WorldMapPositionY:  db  21-1 | WorldMapPositionX:  db  roomX
 
 
-ClesX:      dw 230 ;$19 ;230 ;250 ;210
-ClesY:      db 150 ;144-1
+ClesX:      dw 200 ;$19 ;230 ;250 ;210
+ClesY:      db 100 ;144-1
 
 
 PlayLogo:

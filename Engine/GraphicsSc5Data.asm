@@ -132,6 +132,12 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
+BossPlantBackdropBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+phase	$4000
+  incbin "..\grapx\BossPlant\BossPlantBackdrop.SC5",7,212 * 128      ;212 lines
+	ds		$c000-$,$ff
+dephase
+
 AreaSignTestBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
 phase	$4000
 AreaSign01:   incbin "..\grapx\AreaSigns\01-hub.SC5.pck"      ;048 lines

@@ -229,7 +229,15 @@ BossRattyspritedatablock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSiz
 									incbin "..\grapx\BossRatty\BossRatty.dat"
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-
+;boss plant
+BossPlantframelistblock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+									phase	$8000
+									include "..\grapx\BossPlant\BossPlantAll.asm" 
+									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+									dephase
+BossPlantspritedatablock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+									incbin "..\grapx\BossPlant\BossPlant.dat"
+									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 TotallyWhiteSpritedatablock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 									ds	$4000,9+9*16
