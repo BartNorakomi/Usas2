@@ -9,7 +9,8 @@ param
 	$name="areaSign.Karnimata",
 	[switch]$append=$false,
 	$destinationPath,
-	$pixelFilePath
+	$pixelFilePath,
+	$frame
 )
 
 
@@ -102,7 +103,7 @@ function new-sf2object
 	(	$name="Default",
 		$imageObject,
 		$imageWidth=$imageObject.width,$imageHeight=$imageObject.height,
-		$canvasX,$canvasY,$canvasWidth=$imageWidht,$canvasHeight=$imageHeight,
+		$canvasX=0,$canvasY=0,$canvasWidth=$imageWidht,$canvasHeight=$imageHeight,
 		$frameWidth=256,$frameHeight=136,
 		$subjectX=0,$subjectY=0,$subjectWidth=$frameWidth,$subjectHeight=$frameHeight,
 		$slices=1,
@@ -312,12 +313,12 @@ function convert-sf2FrameAllSlices
 {	param ($sf2object,$framepixels,$frame)
 	$numSlices=$sf2object.subject.numSlices
 
-	if ($sf2object.subject.Y -eq -1) 
+	if ($sf2object.subject.Y -eq -1 -or $sf2Object.subject.y -eq $null) 
 	{	$subjectLocation=get-sf2FrameSubjectLocation -sf2object $sf2object -frame $frame
 		$subjectY=$subjectLocation.Top;$subjectHeight=$subjectLocation.height;
 		write-verbose "Retreived subject location: Y=$($subjectlocation.top) h=$($subjectLocation.height)"
 	} else
-	{	$subjectY=$null;$subjectHeight=$null
+	{	$subjectY=$sf2object.subject.Y;$subjectHeight=$sf2object.subject.height
 	}
 
 	for ($i=0;$i -lt $numSlices;$i++)
@@ -517,11 +518,8 @@ $global:sf2object=$sf2object=new-sf2object @manifest -imageObject $bmpfile
 # 	-transparentColor $manifest.transparentcolor -fillColor $manifest.fillColor
 # exit
 
-#  $frame=23;convert-sf2FrameAllSlices -sf2object $sf2object -framepixels $framePixels -frame $frame
-#  (get-sf2SliceMeta -sf2object $sf2object -frame 23).data
-#  exit
-convert-sf2AllFramesSlices -sf2object $sf2object -framepixels $framePixels #-frameSelect $manifest.frameselect
-# exit
+if ($frame -ne $Null) {convert-sf2FrameAllSlices -sf2object $sf2object -framepixels $framePixels -frame $frame}
+else {convert-sf2AllFramesSlices -sf2object $sf2object -framepixels $framePixels}
 
 export-Sf2MetaAsmText -sf2object $sf2object -path $asmfile
 
