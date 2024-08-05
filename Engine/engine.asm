@@ -1874,19 +1874,13 @@ PutSF2Object7:	;section#5
 ;if we are in page 2 we prepare to restore page 3 in the next frame
 ;if we are in page 3 we prepare to restore page 0 in the next frame
 PutSF2ObjectSlice:
-;  bit   0,(ix+enemies_and_objects.v1-1)     ;v1-1=boss was hit, blink during 1 frame
-;  jr    z,.NotHit
-;  ld    c,TotallyWhiteSpritedatablock
-;  ld    c,TotallyRedSpritedatablock
-;  .NotHit:
-
-  ld    a,(ix+enemies_and_objects.hit?)
-  cp    BlinkDurationWhenHit                ;Check if Boss was hit previous frame
-  jr    nz,.NotHit
+  bit   0,(ix+enemies_and_objects.v1-3)     ;v1-3=boss got hit this frame (1=hit normal/no damage, 3=hit with correct element)
+  jr    z,.EndChangeColorBoss               ;not hit = don't change colors
+  bit   1,(ix+enemies_and_objects.v1-3)     ;v1-3=boss got hit this frame (1=hit normal/no damage, 3=hit with correct element)
+  ld    c,TotallyRedSpritedatablock
+  jr    z,.EndChangeColorBoss
   ld    c,TotallyWhiteSpritedatablock
-;  ld    c,TotallyRedSpritedatablock
-  .NotHit:
-
+  .EndChangeColorBoss:
 
 	ld    a,(screenpage)
   add   a,a
@@ -4014,7 +4008,7 @@ MagicWeaponDurationValue:     equ 29
 MagicWeaponDuration:          db  MagicWeaponDurationValue
 DaggerRandomizer:             db  0
 CurrentMagicWeapon:           db  0 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
-CurrentPrimaryWeapon:         db  0 ;0=punch/kick, 1=sword, 2=dagger, 3=axe, 4=spear
+CurrentPrimaryWeapon:         db  0 ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
 
 ArrowSpeed:                   equ 6
 FireballSpeed:                equ 4
@@ -4101,7 +4095,7 @@ HandlePlayerWeapons:
   .CollisionCheck:
   ld    l,(ix+2)            ;FireballX
   ld    h,(ix+3)            ;FireballX
-  ld    de,20
+  ld    de,20 - 16
   add   hl,de  
   ld    a,(ix+1)            ;FireballY
   add   a,16 + 2
@@ -4615,6 +4609,7 @@ Lsitting:
 	bit		1,a           ;cursor down pressed ?
 	ld		hl,PlayerSpriteData_Char_LeftSitLookDown
 	jp		nz,Rsitting.CheckLadder
+
 ;	bit		0,a           ;cursor up pressed ?
 ;	jp		nz,Set_jump
 ;	bit		2,a           ;cursor left pressed ?
@@ -5980,7 +5975,11 @@ Set_R_sit:
 	ld		(PlayerSpriteStand),hl
 
 	ld		hl,PlayerSpriteData_Char_RightSitting
-	ld		(standchar),hl	
+	ld		(standchar),hl
+
+  xor   a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a
   ret
 
 PlayerTopYHitBoxSoftSpritesSitting:   equ 17+8
@@ -6017,14 +6016,16 @@ Set_L_sit:
 	ld		(PlayerSpriteStand),hl
 
 	ld		hl,PlayerSpriteData_Char_LeftSitting
-	ld		(standchar),hl		
+	ld		(standchar),hl
+
+  xor   a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a
   ret
 
 Set_L_stand:
   call  SetHitBoxPlayerStanding
 
-;  xor   a
-;  ld    (EnableHitbox?),a
   xor   a
   ld    (PlayerFacingRight?),a	
 

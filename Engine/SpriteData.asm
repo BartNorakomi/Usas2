@@ -470,6 +470,7 @@ SlimeSpriteblock:  equ   PlayerSprites2Block+2
 BeetleSpriteblock:  equ   PlayerSprites2Block+2
 GlassballPipeSpriteblock:  equ   PlayerSprites2Block+2
 DemonBossBulletblock:  equ   PlayerSprites2Block+2
+BossPlantBulletblock:  equ   PlayerSprites2Block+2
 phase	$8000
 LeftRetardZombieWalk1_Char:                 include "..\sprites\enemies\RetardZombie\LeftRetardZombieWalk1.tgs.gen"	 ;y offset, x offset   
 LeftRetardZombieWalk1_Col:                  include "..\sprites\enemies\RetardZombie\LeftRetardZombieWalk1.tcs.gen"  | db 00,00,00,00, 16,00,16,00
@@ -636,6 +637,13 @@ DemonBossBullet3_Char:                      include "..\sprites\enemies\DemonBos
 DemonBossBullet3_Col:                       include "..\sprites\enemies\DemonBossBullet\DemonBossBullet3.tcs.gen"  | db 00,00,00,00
 DemonBossBullet4_Char:                      include "..\sprites\enemies\DemonBossBullet\DemonBossBullet4.tgs.gen"	  
 DemonBossBullet4_Col:                       include "..\sprites\enemies\DemonBossBullet\DemonBossBullet4.tcs.gen"  | db 00,00,00,00
+
+BossPlantBullet1_Char:                      include "..\sprites\enemies\BossPlantBullet\BossPlantBullet1.tgs.gen"	  
+BossPlantBullet1_Col:                       include "..\sprites\enemies\BossPlantBullet\BossPlantBullet1.tcs.gen"  | db 00,00,00,00
+BossPlantBullet2_Char:                      include "..\sprites\enemies\BossPlantBullet\BossPlantBullet2.tgs.gen"	  
+BossPlantBullet2_Col:                       include "..\sprites\enemies\BossPlantBullet\BossPlantBullet2.tcs.gen"  | db 00,00,00,00
+BossPlantBullet3_Char:                      include "..\sprites\enemies\BossPlantBullet\BossPlantBullet3.tgs.gen"	  
+BossPlantBullet3_Col:                       include "..\sprites\enemies\BossPlantBullet\BossPlantBullet3.tcs.gen"  | db 00,00,00,00
 
 	ds		$c000-$,$ff
 dephase

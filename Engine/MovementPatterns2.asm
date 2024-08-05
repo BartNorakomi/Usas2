@@ -7,6 +7,557 @@ phase	movementpatterns2Address
 ;RemoveScoreBoard
 ;BackupScoreBoard
 ;RestoreScoreBoard
+;BossPlant
+
+
+
+BossPlantPaletteAnimation1:
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation1.PL" ;file palette 
+BossPlantPaletteAnimation2:
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation2.PL" ;file palette 
+BossPlantPaletteAnimation3:
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation3.PL" ;file palette 
+
+
+BossPlantCheckIfDead:
+  ld    a,(ix+enemies_and_objects.life)
+  dec   a
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
+  ld    bc,SFX_bossdemondead
+  jp    RePlayerSFX_PlayCh2
+
+
+;v1-3=boss got hit this frame
+;v1=Bullet Movement
+;v2=Bullet Movement Pattern
+;v3=
+;v4=
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+;v7=sprite frame
+;v8=phase
+;v9=vines animation step
+;v10=hit?
+BossPlant:
+  set   3,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+
+  ld    a,(ix+enemies_and_objects.v8)         ;v8=Phase (0=idle, 1=attacking, 2=dead)
+  cp    2
+  call  nz,CheckPlayerHitByPlant
+  ld    a,(ix+enemies_and_objects.v8)         ;v8=Phase (0=idle, 1=attacking, 2=dead)
+  cp    2
+  call  nz,BossPlantCheckIfHit                ;Check if boss is hit, and if so set being hit phase
+
+  ld    a,(HugeObjectFrame)
+  cp    4-1                                   ;only handle phase when all 7 slices have been put
+  call  z,.HandlePhase                        ;v8=Phase (0=idle, 1=attacking, 2=dead)
+
+  call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
+  ld    de,BossPlantAll_0
+  jp    PutSf2Object4FramesNew                ;CHANGES IX - puts object in 7 frames
+
+  .HandlePhase:
+  ld    a,(Bossframecounter)
+  inc   a
+  ld    (Bossframecounter),a
+
+  ld    a,(ix+enemies_and_objects.v8)         ;v8=Phase (0=idle, 1=attacking, 2=dead)
+  or    a
+  jp    z,BossPlantIdle
+  dec   a
+  jp    z,BossPlantAttacking
+;  dec   a
+;  jp    z,BossPlantDead
+
+  BossPlantDead:
+  ld    (ix+enemies_and_objects.v1-3),0     ;v1-3=boss got hit this frame (1=hit normal/no damage, 3=hit with correct element)
+  ld    (ix+enemies_and_objects.v7),4         ;v7=sprite frame
+  ret
+
+BossPlantIdle:
+  call  .animatePlant
+  call  .animateVines
+
+  ld    a,r
+  ld    (ix+enemies_and_objects.v2),a         ;v2=Bullet Movement Pattern
+  ret
+
+  .animateVines:
+  ld    a,(Bossframecounter)
+  and   7
+  ret   nz
+
+  ld    a,(ix+enemies_and_objects.v9)         ;v9=vines animation step
+  inc   a
+  and   3
+  ld    (ix+enemies_and_objects.v9),a         ;v9=vines animation step
+
+  ld    hl,BossPlantPaletteAnimation1
+  jp    z,SetPalette
+  dec   a
+  ld    hl,BossPlantPaletteAnimation2
+  jp    z,SetPalette
+  dec   a
+  ld    hl,BossPlantPaletteAnimation1
+  jp    z,SetPalette
+  ld    hl,BossPlantPaletteAnimation3
+  jp    SetPalette
+
+  .animatePlant:
+  ld    a,(Bossframecounter)
+  and   3
+  ret   nz
+
+  ld    a,(ix+enemies_and_objects.v7)         ;v7=sprite frame
+  inc   a
+  and   3
+  ld    (ix+enemies_and_objects.v7),a         ;v7=sprite frame
+  ret  
+
+CheckPlayerHitByPlant:
+  ld    a,(CollisionEnemyPlayer.SelfModifyingCodeCollisionSY)
+  push  af
+
+  ld    a,0
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ld    bc,30                               ;reduction to hitbox sx (left side)
+  call  CollisionEnemyPlayer.ObjectEntry
+
+  pop   af
+  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+  ret
+
+BossPlantAttacking:
+  call  BossPlantIdle.animatePlant
+  call  BossPlantIdle.animateVines
+  ld    a,(Bossframecounter)
+  and   7
+  ret   nz
+
+  push  ix
+  call  .HandleShoot
+  pop   ix
+
+  ld    a,(ix+enemies_and_objects.v1)         ;v1=Bullet Movement
+  cp    7
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),0         ;v8=Phase (0=idle, 1=attacking, 2=dead)
+  ret
+
+  .HandleShoot:
+  ld    a,(ix+enemies_and_objects.v1)         ;v1=Bullet Movement
+  inc   a
+  and   7
+  ld    (ix+enemies_and_objects.v1),a         ;v1=Bullet Movement
+  ld    b,(ix+enemies_and_objects.v2)         ;v2=Bullet Movement Pattern
+
+  ld    de,lenghtenemytable
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptyObjectFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  jr    z,.EmptyObjectFound
+  add   ix,de
+  bit   0,(ix+enemies_and_objects.Alive?)
+  ret   nz
+
+  .EmptyObjectFound:
+  ld    (ix+enemies_and_objects.v7),a       ;v7=Bullet Movement
+  ld    (ix+enemies_and_objects.v8),b       ;v8=Movement Pattern
+
+  ld    (ix+enemies_and_objects.Alive?),-1
+  ld    (ix+enemies_and_objects.x),065      ;boss x
+  ld    (ix+enemies_and_objects.x+1),0      ;boss x
+  ld    (ix+enemies_and_objects.y),106      ;boss y
+  ld    bc,SFX_bossdemonshoot
+  jp    RePlayerSFX_PlayCh2
+
+BossPlantAmountFramesUnableToBeHitAfterBeingHit:  equ 14 ;09
+BossPlantCheckIfHit:
+  ld    a,(ix+enemies_and_objects.hit?)
+  cp    BlinkDurationWhenHit                ;Check if Boss was hit previous frame
+  jr    z,.JustHit
+
+  .addToy:  equ -60 + 40 - 20 + 48
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  sub   a,16
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  add   a,.addToy
+  ld    (ix+enemies_and_objects.y),a        ;y
+  call  CheckPlayerPunchesEnemy             ;Check if player hits enemy
+  ld    a,(ix+enemies_and_objects.y)        ;y
+  sub   a,.addToy
+  ld    (ix+enemies_and_objects.y),a        ;y
+  ld    a,(ix+enemies_and_objects.x)        ;x
+  add   a,16
+  ld    (ix+enemies_and_objects.x),a        ;x
+  ret
+
+  .JustHit:
+  ld    a,(HugeObjectFrame)
+  cp    4-1                                 ;only handle phase when all 7 slices have been put
+  ret   nz                                  ;wait for all 7 parts of the boss to be build up
+
+  ;phase 2: if boss is already displayed white or red, display him normal again
+  bit   0,(ix+enemies_and_objects.v1-3)     ;v1-3=boss got hit this frame
+  jp    nz,JustHit2ndPhase
+
+  ;boss just got hit, but life is already reduced by 1. However if boss was hit without correct element, he SHOULDN'T lose hp
+  ;therefor first inc hp, then check if boss was hit by element
+  inc   (ix+enemies_and_objects.life)
+  call  .CheckBossHitByElement              ;reduces life by 1 again if boss was indeed hit by correct element
+  jp    BossPlantCheckIfDead                ;after being hit, check if boss died
+
+  .CheckBossHitByElement:
+  ;phase 1: set boss got hit (displays boss completely white or red)
+  ld    (ix+enemies_and_objects.v1-3),1     ;v1-3=boss got hit this frame (1=hit normal/no damage, 3=hit with correct element)
+
+  ld    a,(EnemyHitByPrimairyAttack?)
+  or    a
+  jr    nz,EnemyHitByPrimaryAttack
+
+  EnemyHitBySecundaryAttack:
+  bit   0,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+  jr    nz,.CheckFire
+  bit   1,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+  jr    nz,.CheckIce
+  bit   2,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+  jr    nz,.CheckEarth
+  bit   3,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+  jr    nz,.CheckWater
+  bit   4,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+  jr    nz,.Ether
+
+  .Ether:
+  ld    a,(CurrentMagicWeapon)                ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
+  cp    5
+  jr    z,BossHitByCorrectElement
+  ret
+
+  .CheckWater:
+  ld    a,(CurrentMagicWeapon)                ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
+  cp    9
+  jr    z,BossHitByCorrectElement
+  ret
+
+  .CheckEarth:
+  ld    a,(CurrentMagicWeapon)                ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
+  cp    8
+  jr    z,BossHitByCorrectElement
+  ret
+
+  .CheckIce:
+  ld    a,(CurrentMagicWeapon)                ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
+  cp    7
+  jr    z,BossHitByCorrectElement
+  ret
+
+  .CheckFire:
+  ld    a,(CurrentMagicWeapon)                ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
+  cp    5
+  jr    z,BossHitByCorrectElement
+  ret
+
+  BossHitByCorrectElement:
+  ld    (ix+enemies_and_objects.v1-3),3       ;v1-3=boss got hit this frame (1=hit normal/no damage, 3=hit with correct element)
+  dec   (ix+enemies_and_objects.life)
+  ret
+
+  EnemyHitByPrimaryAttack:
+  bit   0,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+  jr    nz,.CheckFire
+  bit   1,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+  jr    nz,.CheckIce
+  bit   2,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+  jr    nz,.CheckEarth
+  bit   3,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+  jr    nz,.CheckWater
+  bit   4,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
+  jr    nz,.Ether
+
+  .Ether:
+  call  SetPrimaryWeaponInHL                  ;out: nz=not found the 4 prim. weapons, z=found hl->infused prim. weapon
+  ret   nz
+  bit   4,(hl)                                ;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+  jr    nz,BossHitByCorrectElement
+  ret
+
+  .CheckWater:
+  call  SetPrimaryWeaponInHL                  ;out: nz=not found the 4 prim. weapons, z=found hl->infused prim. weapon
+  ret   nz
+  bit   3,(hl)                                ;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+  jr    nz,BossHitByCorrectElement
+  ret
+
+  .CheckEarth:
+  call  SetPrimaryWeaponInHL                  ;out: nz=not found the 4 prim. weapons, z=found hl->infused prim. weapon
+  ret   nz
+  bit   2,(hl)                                ;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+  jr    nz,BossHitByCorrectElement
+  ret
+
+  .CheckIce:
+  call  SetPrimaryWeaponInHL                  ;out: nz=not found the 4 prim. weapons, z=found hl->infused prim. weapon
+  ret   nz
+  bit   1,(hl)                                ;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+  jr    nz,BossHitByCorrectElement
+  ret
+
+  .CheckFire:
+  call  SetPrimaryWeaponInHL                  ;out: nz=not found the 4 prim. weapons, z=found hl->infused prim. weapon
+  ret   nz
+  bit   0,(hl)                                ;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+  jr    nz,BossHitByCorrectElement
+  ret
+
+  JustHit2ndPhase:
+  ld    (ix+enemies_and_objects.v1-3),0       ;v1-3=boss got hit this frame (1=hit normal/no damage, 2=hit with correct element)
+  dec   (ix+enemies_and_objects.hit?)
+  ld    (ix+enemies_and_objects.v8),1         ;v8=Phase (0=idle, 1=attacking, 2=dead)
+  ret
+
+  SetPrimaryWeaponInHL:
+  ld    a,(CurrentPrimaryWeapon)              ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+  or    a
+  ld    hl,SpearInfusedWithElement?           ;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+  ret   z
+  dec   a
+  ld    hl,SwordInfusedWithElement?           ;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+  ret   z
+  dec   a
+  ld    hl,DaggerInfusedWithElement?          ;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+  ret   z
+  dec   a
+  ld    hl,AxeInfusedWithElement?             ;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+  ret
+
+BossPlantAll_0:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_0_0
+BossPlantAll_1:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_1_0
+BossPlantAll_2:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_2_0
+BossPlantAll_3:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_1_0
+BossPlantAll_4:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_3_0
+
+
+
+
+
+
+
+
+
+BossPlantBullet:
+;v1=
+;v2=
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=repeating steps
+;v6=pointer to movement table
+;v7=Bullet Movement
+;v8=Movement Pattern
+  call  .HandlePhase                        ;(0=Hovering Towards player, 1=attacking) ;out hl -> sprite character data to out to Vram
+  exx                                       ;store hl. hl now points to color data
+;  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+	ld		a,BossPlantBulletblock              ;set block at $a000, page 2 - block containing sprite data
+  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+  ret
+  
+  .HandlePhase:
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=Bullet Movement
+  add   a,a                                 ;*2
+  add   a,a                                 ;*4
+  add   a,a                                 ;*8
+  ld    d,0
+  ld    e,a
+
+  ld    a,(ix+enemies_and_objects.v8)       ;v8=Movement Pattern
+  and   7
+  ld    hl,BossPlantBulletMovementTable1
+  jr    z,.movementPatternFound
+  dec   a
+  ld    hl,BossPlantBulletMovementTable2
+  jr    z,.movementPatternFound
+  dec   a
+  ld    hl,BossPlantBulletMovementTable3
+  jr    z,.movementPatternFound
+  dec   a
+  ld    hl,BossPlantBulletMovementTable4
+  jr    z,.movementPatternFound
+  dec   a
+  ld    hl,BossPlantBulletMovementTable5
+  jr    z,.movementPatternFound
+  dec   a
+  ld    hl,BossPlantBulletMovementTable6
+  jr    z,.movementPatternFound
+  dec   a
+  ld    hl,BossPlantBulletMovementTable7
+  jr    z,.movementPatternFound
+  ld    hl,BossPlantBulletMovementTable8
+  .movementPatternFound:
+  add   hl,de
+  ex    de,hl
+  call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+  call  CheckOutOfMapSf2Engine                       ;remove sprite from play when leaving the map
+
+  ;animate
+  ld    a,(framecounter)
+  and   15
+  cp    4
+  ld    hl,BossPlantBullet1_Char
+  ret   c
+  cp    8
+  ld    hl,BossPlantBullet2_Char
+  ret   c
+  cp    12
+  ld    hl,BossPlantBullet3_Char
+  ret   c
+  ld    hl,BossPlantBullet2_Char
+  ret
+
+BossPlantBulletMovementTable1:
+  db  2,-2,+2,  1,-2,+3
+  db  128,0
+
+  db  2,-2,+2,  1,-1,+3
+  db  128,0
+
+BossPlantBulletMovementTable2:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  2,-1,+2,  1,-1,+3
+  db  128,0
+
+  db  2,-1,+2,  1,-0,+3
+  db  128,0
+
+BossPlantBulletMovementTable3:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  2,-0,+2,  1,-1,+3
+  db  128,0
+
+  db  2,-0,+2,  1,-0,+3
+  db  128,0
+
+  db  2,-0,+2,  1,+1,+3
+  db  128,0
+
+  db  2,+1,+2,  1,+0,+3
+  db  128,0
+
+  db  2,+1,+2,  1,+1,+3
+  db  128,0
+
+  db  2,+1,+2,  1,+2,+3
+  db  128,0
+
+  db  2,+2,+2,  1,+2,+3
+  db  128,0
+
+  db  2,+2,+2,  1,+3,+3
+  db  128,0
+
+BossPlantBulletMovementTable4:
+  db  2,+2,+2,  1,+3,+3
+  db  128,0
+
+  db  2,+2,+2,  1,+2,+3
+  db  128,0
+
+BossPlantBulletMovementTable5:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  2,+1,+2,  1,+2,+3
+  db  128,0
+
+  db  2,+1,+2,  1,+1,+3
+  db  128,0
+
+BossPlantBulletMovementTable6:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  2,+1,+2,  1,+0,+3
+  db  128,0
+
+  db  2,-0,+2,  1,+1,+3
+  db  128,0
+
+  db  2,-0,+2,  1,-0,+3
+  db  128,0
+
+  db  2,-0,+2,  1,-1,+3
+  db  128,0
+
+  db  2,-1,+2,  1,-0,+3
+  db  128,0
+
+  db  2,-1,+2,  1,-1,+3
+  db  128,0
+
+  db  2,-2,+2,  1,-1,+3
+  db  128,0
+
+  db  2,-2,+2,  1,-2,+3
+  db  128,0
+
+BossPlantBulletMovementTable7:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  2,-0,+2,  1,-0,+3
+  db  128,0
+
+  db  2,-0,+2,  1,-1,+3
+  db  128,0
+
+  db  2,-0,+2,  1,+1,+3
+  db  128,0
+
+  db  2,-1,+2,  1,-0,+3
+  db  128,0
+
+  db  2,+1,+2,  1,+0,+3
+  db  128,0
+
+  db  2,-1,+2,  1,-1,+3
+  db  128,0
+
+  db  2,+1,+2,  1,+1,+3
+  db  128,0
+
+  db  2,-2,+2,  1,-1,+3
+  db  128,0
+
+BossPlantBulletMovementTable8:  ;repeating steps(128 = end table/repeat), move y, move x
+  db  2,-2,+2,  1,-1,+3
+  db  128,0
+
+  db  2,+1,+2,  1,+1,+3
+  db  128,0
+  
+  db  2,-1,+2,  1,-1,+3
+  db  128,0
+
+  db  2,+1,+2,  1,+0,+3
+  db  128,0
+
+  db  2,-1,+2,  1,-0,+3
+  db  128,0
+
+  db  2,-0,+2,  1,+1,+3
+  db  128,0
+
+  db  2,-0,+2,  1,-1,+3
+  db  128,0
+
+  db  2,-0,+2,  1,-0,+3
+  db  128,0
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

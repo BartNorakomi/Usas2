@@ -36,6 +36,71 @@
 ;NonMovingObjectMovementTable
 ;DamagePlayerIfNotJumping
 ;BossBlendingIntoBackgroundOnDeath
+;SetObjectXY
+;MoveObjectWithStepTableNew
+
+
+MoveObjectWithStepTableNew:                 ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+  dec   (ix+enemies_and_objects.v5)         ;repeating steps
+  jp    p,.moveObject
+  
+  .NextStep:
+  ld    a,(ix+enemies_and_objects.v6)         ;pointer to movement table
+  ld    h,0
+  ld    l,a
+  add   hl,de
+  add   a,3
+  ld    (ix+enemies_and_objects.v6),a         ;pointer to movement table
+  
+  ld    a,(hl)                                ;repeating steps(128 = end table/repeat)
+  cp    128
+  jr    nz,.EndCheckEndTable
+  ld    (ix+enemies_and_objects.v6),+3        ;pointer to movement table
+  ex    de,hl
+  ld    a,(hl)
+
+  .EndCheckEndTable:
+  ld    (ix+enemies_and_objects.v5),a         ;repeating steps
+  inc   hl
+  ld    a,(hl)                                ;y movement
+  ld    (ix+enemies_and_objects.v3),a         ;v3=y movement
+  inc   hl
+  ld    a,(hl)                                ;x movement
+  ld    (ix+enemies_and_objects.v4),a         ;v4=x movement
+
+  .moveObject:
+  ld    a,(ix+enemies_and_objects.y)          ;y object
+  add   a,(ix+enemies_and_objects.v3)         ;add y movement to y
+  ld    (ix+enemies_and_objects.y),a          ;y object
+
+  ;8 bit
+;  ld    a,(ix+enemies_and_objects.x)          ;x object
+;  add   a,(ix+enemies_and_objects.v4)         ;add x movement to x
+;  ld    (ix+enemies_and_objects.x),a          ;x object
+
+  ;16 bit
+  ld    a,(ix+enemies_and_objects.v4)         ;x movement
+  or    a
+  ld    d,0
+  jp    p,.positive
+  dec   d
+  .positive:
+  ld    e,a
+  ld    l,(ix+enemies_and_objects.x)          ;x object
+  ld    h,(ix+enemies_and_objects.x+1)        ;x object
+  add   hl,de
+  ld    (ix+enemies_and_objects.x),l          ;x object
+  ld    (ix+enemies_and_objects.x+1),h        ;x object
+  ret  
+
+SetObjectXY:                                  ;non moving objects start at (0,0). Use this routine to set your own coordinates
+; call  MoveObjectHorizontallyAndVertically
+;  call  ChangeDirectionWhenOutOfBox
+  ld    a,(ix+enemies_and_objects.y)          ;y object
+  ld    (Object1y),a
+  ld    a,(ix+enemies_and_objects.x)          ;x object
+  ld    (Object1x),a
+  ret
 
 BossBlendingIntoBackgroundOnDeath:          ;blending into background (MovementPatternsFixedPage1.asm) in: v9=008
   ;as soon as boss is dead, and no longer moving or changing frame, stop restoring background during 3 frames, so boss will be visible in all pages. After that put Boss ALSO (for 1 frame) in page 3
@@ -881,6 +946,8 @@ CheckPrimaryWeaponHitsEnemy:
   ret   nc
   
   .hit:  
+  ld    a,1
+  ld    (EnemyHitByPrimairyAttack?),a       ;0=hit by secundary attack, 1=hit by primary attack
   ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied
@@ -944,7 +1011,10 @@ CheckSecundaryWeaponHitsEnemy:
   ld    a,MagicWeaponDurationValue
   ld    (MagicWeaponDuration),a  
   
-  .hit:  
+  .hit:
+  ld    a,0
+  ld    (EnemyHitByPrimairyAttack?),a       ;0=hit by secundary attack, 1=hit by primary attack
+
   ld    (ix+enemies_and_objects.hit?),BlinkDurationWhenHit    
   dec   (ix+enemies_and_objects.life)
   jp    z,CheckPlayerPunchesEnemy.EnemyDied

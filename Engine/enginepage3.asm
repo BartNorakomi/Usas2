@@ -735,6 +735,12 @@ SetTile:
   db    008,000,008,000   ;nx,--,ny,--
   db    000,000,$D0       ;fast copy   
 
+TinyCopyWhichFunctionsAsWaitVDPReady:
+	db		0,0,0,0
+	db		0,0,0,0
+	db		1,0,1,0
+	db		0,%0000 0000,$98
+
 DoCopy:	push bc
 		ld    a,32
 		di
@@ -1216,9 +1222,19 @@ AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
 AmountOfAppearingBlocks:  ds  1
 OctoPussyBulletSlowDownHandler:   db 0
 
+EnemyHitByPrimairyAttack?:	db	0		;0=hit by secundary attack, 1=hit by primary attack
 
 SaveGameVariables:						;Here we store all variables that are required when saving game
-BossDead?:			db	%0000 0000		;bit 0=demon, bit 1=voodoo wasp, bit 2=zombie caterpillar, bit 3=ice goat
+BossDead?:					db	%0000 0000		;bit 0=demon, bit 1=voodoo wasp, bit 2=zombie caterpillar, bit 3=ice goat, bit 4=huge blob, bit 5=boss plant
+
+SecundaryWeaponOwned:		db	%0000 0000	;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+PrimaryWeaponOwned:			db	%0000 0000	;bit 0=sword, bit 1=dagger, bit 2=axe, bit 3=spear
+SwordInfusedWithElement?:	db	%0000 0001	;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+DaggerInfusedWithElement?:	db	%0000 0010	;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+AxeInfusedWithElement?:		db	%0000 1000	;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+SpearInfusedWithElement?:	db	%0000 0100	;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
+;CurrentPrimaryWeapon:         db  0 ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+;CurrentMagicWeapon:           db  0 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
 
 
 

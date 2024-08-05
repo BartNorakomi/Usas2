@@ -1,3 +1,6 @@
+collision detection tussen 2ndary wapens en muren in de sf2 engine moet 16 pixels naar rechts. Je schiet links door muren. (arrow getest in bossplant room)
+
+
 als je dood bent kun je alsnog geraakt worden door de bullets van fireeye, en zwaard lancelot
 
 helemaal boven in het scherm kun je geen spear meer gebruiken ??? alleen in AU21 ?????

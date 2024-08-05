@@ -245,4 +245,5 @@ TotallyWhiteSpritedatablock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockS
 
 TotallyRedSpritedatablock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 									ds	$4000,14+14*16
+;  									incbin "..\grapx\BossRedWriteGrid.SC5",7,128 * 128 ;skip header, 128 lines
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	

@@ -246,6 +246,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    a,(ix)
   or    a
   ret   z                               ;0=end room object list
+
   call  .SetObject
   add   ix,de                           ;add the lenght of current object data to ix, and set next object in ix
   ld    de,lenghtenemytable             ;lenght 1 object in object table
@@ -358,7 +359,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    hl,Object008Table
   push  iy
   pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*4           ;1 object(s)
+  ld    bc,lenghtenemytable*4           ;4 object(s)
   ldir
 
   ;put lava animation backdrop in all 4 pages
@@ -1140,11 +1141,11 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
   ld    (iy+enemies_and_objects.v1),096 ;v1=sx software sprite in Vram on
   ret
 
-  .Object013:
+  .Object013:                           ;boss plant
   ld    hl,Object013Table
   push  iy
   pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1           ;1 object(s)
+  ld    bc,lenghtenemytable*4           ;4 object(s)
   ldir
 
   ;put boss plant backdrop in all 4 pages
@@ -1168,6 +1169,9 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
   ld    hl,.CopyPage0ToPage3
+  call  DoCopy
+
+  ld    hl,TinyCopyWhichFunctionsAsWaitVDPReady
   call  DoCopy
 
   ld    de,Object013Table.lenghtobjectdata
@@ -2159,9 +2163,22 @@ Object011Table:               ;platform
 
 Object013Table:               ;boss plant
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
-          db 2,        0|dw BossPlant           |db  083|dw  052|db 16,16|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 021,movementpatterns1block| ds fill-1
+          db 2,        0|dw BossPlant           |db  083|dw  052|db 60,60|dw CleanOb1,0 db 0,0,0,                      -01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 011,movementpatterns2block| ds fill-1
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+         db -0,        1|dw BossPlantBullet     |db 8*00|dw 8*00|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns2block| ds fill-1
+         db -0,        1|dw BossPlantBullet     |db 8*00|dw 8*00|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns2block| ds fill-1
+         db -0,        1|dw BossPlantBullet     |db 8*00|dw 8*00|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns2block| ds fill-1
+;         db -0,        1|dw BossPlantBullet     |db 8*00|dw 8*00|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns2block| ds fill-1
+
+;         db -0,        1|dw BossPlantBullet     |db 8*10|dw 8*22|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns2block| ds fill-1
+;         db -0,        1|dw BossPlantBullet     |db 8*12|dw 8*22|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns2block| ds fill-1
+;         db -0,        1|dw BossPlantBullet     |db 8*14|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns2block| ds fill-1
+
+
 .ID: equ 0
-.lenghtobjectdata: equ 1
+.x: equ 1
+.y: equ 2
+.lenghtobjectdata: equ 3
 
 
 
