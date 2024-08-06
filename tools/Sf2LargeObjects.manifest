@@ -2,11 +2,25 @@ BossPlant=@{
 		all=`
 	@{	name="BossPlantAll";
 		imagePath="..\grapx\BossPlant\BossPlantIdleAndDeath16c.4bpp.bmp";
-		palettePath="..\grapx\tilesheets\BossPlant.PL";
+		palettePath="..\grapx\BossPlant\BossPlant.PL";
 		destinationPath="..\grapx\BossPlant";
-		transparentColor=-1;fillcolor=15;
+		pixelFilePath="BossPlantAll.dat";
+		transparentColor=0;fillcolor=15;
 		canvasX=0;canvasY=0;canvasWidth=4*256;canvasHeight=72;
 		frameWidth=256;frameHeight=72;
+		subjecty=-1;
+		slices=4;
+	};
+		death=`
+	@{	name="BossPlantDeath";
+		imagePath="..\grapx\BossPlant\BossPlantDeath.4bpp.bmp";
+		palettePath="..\grapx\BossPlant\BossPlant.PL";
+		destinationPath="..\grapx\BossPlant";
+		pixelFilePath="BossPlantAll.dat";
+		transparentColor=7;fillcolor=15;
+		canvasX=0;canvasY=0;canvasWidth=8*64;canvasHeight=64;
+		frameWidth=64;frameHeight=64;
+		subjecty=-1;
 		slices=4;
 	};
 };
