@@ -5,7 +5,9 @@
 [CmdletBinding()]
 param
 (	
-	[Parameter(ParameterSetName='file')]$path="..\grapx\tilesheets\sKarniMataPalette.PL"
+	[Parameter(ParameterSetName='file')]$path="..\grapx\tilesheets\sKarniMataPalette.PL",
+	[switch]$toAsm,
+	[switch]$to8bitRgb
 )
 
 ##### Includes #####
@@ -28,9 +30,30 @@ $text="DW ";$colors|%{$text+=",0x{0:X4}" -f (([math]::floor($_ -shr 8 -band 0x00
 
 
 ##### Main #####
+
 foreach ($file in gci $path)
 {	$pal=Get-Content $file -Encoding Byte
-	$text=";$($file.name)`n"
-	$text+="DB $(($pal|select -first 32|%{"`${0:x2}" -f $_}) -join (","))"
-	$text
+	write-host $file
+	if ($toasm)
+	{	$text=";$($file.name)`n"
+		$text+="DB $(($pal|select -first 32|%{"`${0:x2}" -f $_}) -join (","))"
+		$text
+	}
+
+	if ($to8bitRgb)
+	{	write-verbose "to8bitrgb"
+		$rgb=@(0..15)
+		for ($color=0;$color -lt 16;$color++)
+		{	$rgb[$color]=[pscustomobject]@{
+				number=$color;
+				msxRgb=[pscustomobject]@{g=$pal[$color*2+1] -band 7;r=$pal[$color*2+0] -shr 4 -band 7;b=$pal[$color*2+0] -band 7}
+				pcRgb=[pscustomobject]@{r=[math]::Round(($pal[$color*2+0] -shr 4 -band 7) /7*255);g=[math]::Round(($pal[$color*2+1] -band 7) /7*255);b=[math]::Round(($pal[$color*2+0] -band 7) /7*255);}
+			}
+		}
+		$rgb
+	}
 }
+
+
+
+

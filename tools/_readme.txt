@@ -89,10 +89,17 @@ b.v.: .\add-u2maps.ps1 -ruinid 4 -convertTiledMap -Verbose
 losse room:
 .\add-u2maps.ps1 -roomname AY23 -convertTiledMap
 
-convert palette:
-.\convert-paltoasm.ps1 -path "C:\Users\bartf\Documents\GitHub\Usas2\grapx\tilesheets\Lemniscate.tiles.PL"
+convert palette
+===============
+convert-pal.ps1 [-path <Object>] [-toAsm] [-to8bitRgb] [<CommonParameters>]
 
-convert gfx:
+.\convert-pal.ps1 -path "..\grapx\tilesheets\Lemniscate.tiles.PL" -toasm
+om de palette naar DB RB,0G formaat te tonen
+
+
+
+convert gfx
+===========
 npx convertgfx .\Lemniscate.tiles.json
 .\add-u2gfx.ps1 -ruinId 2 (Deze zet de Lemniscate bmp om naar SC5 en pleurt'm in de ROM)
 .\add-u2gfx.ps1 -ruinId 4 (Deze zet de Pegu bmp om naar SC5 en pleurt'm in de ROM)
