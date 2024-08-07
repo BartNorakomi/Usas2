@@ -17,7 +17,7 @@ BossPlant=@{
 		palettePath="..\grapx\BossPlant\BossPlant.PL";
 		destinationPath="..\grapx\BossPlant";
 		pixelFilePath="BossPlantAll.dat";
-		transparentColor=7;fillcolor=15;
+		transparentColor=0;fillcolor=15;
 		canvasX=0;canvasY=0;canvasWidth=8*64;canvasHeight=64;
 		frameWidth=64;frameHeight=64;
 		subjecty=-1;
