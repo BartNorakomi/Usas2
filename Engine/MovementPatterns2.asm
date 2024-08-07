@@ -76,37 +76,31 @@ BossPlant:
   ret
 
 BossPlantIdle:
-  call  .animatePlant
-  call  .animateVines
+  call  AnimatePlantIdle
+  call  AnimateVinesIdle
 
   ld    a,r
   ld    (ix+enemies_and_objects.v2),a         ;v2=Bullet Movement Pattern
   ret
 
-  .animateVines:
+AnimatePlantIdle:
   ld    a,(Bossframecounter)
-  and   7
-  ret   nz
+  and   63
+  ld    (ix+enemies_and_objects.v7),1         ;v7=sprite frame
+  cp    63-3
+  ret   nc
+  ld    (ix+enemies_and_objects.v7),0         ;v7=sprite frame
+  cp    63-6
+  ret   nc
+  ld    (ix+enemies_and_objects.v7),1         ;v7=sprite frame
+  cp    63-9
+  ret   nc
+  ld    (ix+enemies_and_objects.v7),2         ;v7=sprite frame
+  ret  
 
-  ld    a,(ix+enemies_and_objects.v9)         ;v9=vines animation step
-  inc   a
-  and   3
-  ld    (ix+enemies_and_objects.v9),a         ;v9=vines animation step
-
-  ld    hl,BossPlantPaletteAnimation1
-  jp    z,SetPalette
-  dec   a
-  ld    hl,BossPlantPaletteAnimation2
-  jp    z,SetPalette
-  dec   a
-  ld    hl,BossPlantPaletteAnimation1
-  jp    z,SetPalette
-  ld    hl,BossPlantPaletteAnimation3
-  jp    SetPalette
-
-  .animatePlant:
+AnimatePlantAttacking:
   ld    a,(Bossframecounter)
-  and   3
+  and   1
   ret   nz
 
   ld    a,(ix+enemies_and_objects.v7)         ;v7=sprite frame
@@ -114,6 +108,37 @@ BossPlantIdle:
   and   3
   ld    (ix+enemies_and_objects.v7),a         ;v7=sprite frame
   ret  
+
+AnimateVinesAttacking:
+  ld    a,(Bossframecounter)
+  add   a,-2
+  and   15
+  cp    4
+  ld    hl,BossPlantPaletteAnimation1
+  jp    c,SetPalette
+  cp    8
+  ld    hl,BossPlantPaletteAnimation2
+  jp    c,SetPalette
+  cp    12
+  ld    hl,BossPlantPaletteAnimation1
+  jp    c,SetPalette
+  ld    hl,BossPlantPaletteAnimation3
+  jp    SetPalette
+
+AnimateVinesIdle:
+  ld    a,(Bossframecounter)
+  and   31
+  cp    8
+  ld    hl,BossPlantPaletteAnimation1
+  jp    c,SetPalette
+  cp    14
+  ld    hl,BossPlantPaletteAnimation2
+  jp    c,SetPalette
+  cp    20
+  ld    hl,BossPlantPaletteAnimation1
+  jp    c,SetPalette
+  ld    hl,BossPlantPaletteAnimation3
+  jp    SetPalette
 
 CheckPlayerHitByPlant:
   ld    a,(CollisionEnemyPlayer.SelfModifyingCodeCollisionSY)
@@ -129,9 +154,10 @@ CheckPlayerHitByPlant:
   ret
 
 BossPlantAttacking:
-  call  BossPlantIdle.animatePlant
-  call  BossPlantIdle.animateVines
+  call  AnimatePlantAttacking
+  call  AnimateVinesAttacking
   ld    a,(Bossframecounter)
+  add   a,3
   and   7
   ret   nz
 
@@ -317,6 +343,10 @@ BossPlantCheckIfHit:
   ld    (ix+enemies_and_objects.v1-3),0       ;v1-3=boss got hit this frame (1=hit normal/no damage, 2=hit with correct element)
   dec   (ix+enemies_and_objects.hit?)
   ld    (ix+enemies_and_objects.v8),1         ;v8=Phase (0=idle, 1=attacking, 2=dead)
+
+  ld    (ix+enemies_and_objects.v7),2         ;v7=sprite frame
+  xor   a
+  ld    (Bossframecounter),a
   ret
 
   SetPrimaryWeaponInHL:

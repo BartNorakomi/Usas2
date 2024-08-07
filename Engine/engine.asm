@@ -3637,6 +3637,50 @@ setpage:              ;in a->x*32+31 (x=page)
   out   ($99),a
   ret
 
+
+;ASCII16-EX:
+;----------------------------------------
+;Bank #1 low: 6000h - 67FFh (6000h used)
+;Bank #1 high: 8000h - 87FFh (should recommend to use 6000h)
+;----------------------------------------
+;Bank #2 low: 7000h - 77FFh (7000h and 77FFh used)
+;Bank #2 high: 9000h - 97FFh (should recommend to use 9000h)
+
+;Feature set:
+
+;  * Flash ROM memory with commands for per-sector erasing and programming.
+;  * Extended addressable capacity up to 64 MB (design provided for 8 MB).
+;  * Two 16K mapper pages, mirrored to the full address range.
+;  * Two bank selection registers accessible in all pages.
+;  * Backwards compatible with ASCII16.
+
+;The two 16K pages are available at 4000H and 8000H, and mirrored to C000H and
+;0000H respectively. The two bank select registers exist at 6000H and 7000H just
+;like in ASCII16, but are also accessible at A000H, E000H and 2000H. The bank
+;number is passed as the data, and for ROM sizes > 4 MB the MSB of the bank
+;number is passed in address bits 8-11. Unused bits are ignored.
+
+;Initial banks after power on / reset are 0, however note that the BIOS selects
+;a different bank in the 2nd page during boot-up, due to slot expander detection
+;writing to mirrored bank select registers if the mapper is in a primary slot.
+;So it is recommended to boot from 4000H and manually initialise the banks.
+
+;Below is some example code, assuming the correct cartridge slot is already
+;selected at the addresses written to.
+
+;    ld a,47H
+;    ld (6000H),a  ; select bank 47H in 1st page (4000-7FFF, C000-FFFF)
+;    ld a,47H
+;    ld (7000H),a  ; select bank 47H in 2nd page (8000-BFFF, 0000-3FFF)
+;    ld a,47H
+;    ld (0E000H),a ; select bank 47H in 1st page (4000-7FFF, C000-FFFF)
+;    ld a,47H
+;    ld (3000H),a  ; select bank 47H in 2nd page (8000-BFFF, 0000-3FFF)
+;    ld a,47H
+;    ld (6100H),a  ; select bank 147H in 1st page (4000-7FFF, C000-FFFF)
+;    ld hl,6147H
+;    ld (hl),l     ; select bank 147H in 1st page (4000-7FFF, C000-FFFF)
+
 block12:	
   di
 	ld		(memblocks.1),a

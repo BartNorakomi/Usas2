@@ -3125,6 +3125,7 @@ ReSetVariables:
   ld    (ShakeScreen?),a
   ld    (PlayerDead?),a
   ld    (SecundaryWeaponActive?),a              ;remove arrow weapon  
+  ld    (Bossframecounter),a              ;boss frame counter
 
   ld    hl,lineint
   ld    (InterruptHandler.SelfmodyfyingLineIntRoutine),hl
