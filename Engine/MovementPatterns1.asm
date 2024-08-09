@@ -3711,7 +3711,7 @@ WaterfallPalette:
 WaterfallScene:
   ld    hl,WaterfallPalette
   call  SetPalette
-ret
+;ret
 	ld    a,(HugeObjectFrame)
 	inc   a
 	ld    (HugeObjectFrame),a

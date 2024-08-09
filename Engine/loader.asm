@@ -402,39 +402,39 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    hl,Object007Table
   push  iy
   pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*4           ;1 object(s)
+  ld    bc,lenghtenemytable*1           ;1 object(s)
   ldir
 
   ;put waterfall backdrop in all 4 pages
   ld    a,0
   ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
   ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$0000 + (000*128) + (024/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (128*256) + (184/2)        ;(ny*256) + (nx/2)
+  ld    de,$0000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
   ld    a,WaterfallSceneBlock1              ;block to copy graphics from
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
   ld    a,0
   ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
   ld    hl,$8000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$8000 + (000*128) + (024/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (128*256) + (184/2)        ;(ny*256) + (nx/2)
+  ld    de,$8000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
   ld    a,WaterfallSceneBlock1              ;block to copy graphics from
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
   ld    a,1
   ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
   ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$0000 + (000*128) + (024/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (128*256) + (184/2)        ;(ny*256) + (nx/2)
+  ld    de,$0000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
   ld    a,WaterfallSceneBlock2              ;block to copy graphics from
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
   ld    a,1
   ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
   ld    hl,$8000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$8000 + (000*128) + (024/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (128*256) + (184/2)        ;(ny*256) + (nx/2)
+  ld    de,$8000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
+  ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
   ld    a,WaterfallSceneBlock2              ;block to copy graphics from
   call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
@@ -2550,9 +2550,9 @@ Object006Table:               ;Teleport
 Object007Table:               ;Waterfall Scene
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
           db 2,        0|dw WaterfallScene      |db 8*02  |dw 8*17  |db 64,64|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
-          db 0,        0|dw BossRatty         |db 8*21+7  |dw 8*10  |db 42,32|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+04,+00,+01,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
-          db 2,        0|dw BossRatty         |db 8*21+7  |dw 8*20  |db 42,32|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,-04,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
-          db 2,        0|dw BossRattyHandler    |db 8*02  |dw 8*17  |db 00,00|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+;          db 0,        0|dw BossRatty         |db 8*21+7  |dw 8*10  |db 42,32|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+04,+00,+01,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+;          db 2,        0|dw BossRatty         |db 8*21+7  |dw 8*20  |db 42,32|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,-04,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+;          db 2,        0|dw BossRattyHandler    |db 8*02  |dw 8*17  |db 00,00|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2

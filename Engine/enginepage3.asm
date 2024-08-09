@@ -17,16 +17,16 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
 
 ;lemniscate
-roomX: equ ("A"-"A")*26 + "W"-"A"
-WorldMapPositionY:  db  27-1 | WorldMapPositionX:  db  roomX
+;roomX: equ ("A"-"A")*26 + "W"-"A"
+;WorldMapPositionY:  db  27-1 | WorldMapPositionX:  db  roomX
 
 ;boss demon
 ;roomX: equ ("B"-"A")*26 + "G"-"A"
 ;WorldMapPositionY:  db  12-1 | WorldMapPositionX:  db  roomX
 
 ;waterfall boss ratty
-;roomX: equ ("B"-"A")*26 + "T"-"A"
-;WorldMapPositionY:  db  12-1 | WorldMapPositionX:  db  roomX
+roomX: equ ("B"-"A")*26 + "T"-"A"
+WorldMapPositionY:  db  12-1 | WorldMapPositionX:  db  roomX
 
 ;boss plant
 ;roomX: equ ("B"-"A")*26 + "E"-"A"
