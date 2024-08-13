@@ -1,7 +1,7 @@
 BossPlant=@{
 		all=`
 	@{	name="BossPlantAll";
-		imagePath="..\grapx\BossPlant\BossPlantIdleAndDeath16c.4bpp.bmp";
+		imagePath="..\grapx\BossPlant\BossPlantIdleAndDeath16c.bmp";
 		palettePath="..\grapx\BossPlant\BossPlant.PL";
 		destinationPath="..\grapx\BossPlant";
 		pixelFilePath="BossPlantAll.dat";

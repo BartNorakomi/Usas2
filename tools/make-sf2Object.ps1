@@ -77,13 +77,14 @@ function get-colorConversionTable
 {	param ($bmpfile,$msxColTab)
 	$ColorConverstionTable=[byte[]]::new(16)
 	if ($bmpfile.numBitsPerPixel -le 8)
-	{	$numColors=$bmpfile.NumColors
+	{	if (($numColors=$bmpfile.NumColors) -gt 16) {$numColors=16} #force 16 colors
+		write-verbose "Converting $numColors colors"
 		for ($i=0;$i -lt $numcolors;$i++)
 		{	$b=$bmpfile.colortable[$i*4+0]
 			$g=[byte]($bmpfile.colortable[$i*4+1])
 			$r=[byte]($bmpfile.colortable[$i*4+2])
 			$msxRgb=[uint32]([math]::Round($g/255*7)-shl 8 -bor [math]::Round($r/255*7) -shl 4 -bor [math]::Round($b/255*7))
-			#$rgb=[System.BitConverter]::ToUInt32($bmpfile.colortable,0) #read 4bytes
+			#$rgb=[System.BitConverter]::ToUInt32($bmpfile.colortable,0) #(alternative)read 4bytes
 			if (($msxcolor=$($msxcoltab.IndexOf([uint32]$msxrgb))) -ne -1)
 			{	write-verbose "$i 0.$g.$r.$b -> $("{0:X4}" -f $msxrgb) -> $msxcolor)"
 				$ColorConverstionTable[$i]=$msxcolor
@@ -209,7 +210,8 @@ function convert-sf2Slice
 	
 	$subjectXBytes=($bmpfile.numBitsPerPixel/8*$sf2object.subject.x)
 	$subjectWidth=$sf2object.subject.width
-	$widthBytes=($bmpfile.numBitsPerPixel/8*$subjectWidth);write-verbose "WidthBytes: $widthbytes"
+	$widthBytes=($bmpfile.numBitsPerPixel/8*$subjectWidth);write-verbose "Row width in bytes: $widthbytes"
+	$incBytesX=$bmpfile.numBitsPerPixel/4; #write-verbose "IncBytesX: $incbytesX" #1=4bpp,2=8bpp
 	if (-not $subjectY) {$subjectY=$sf2object.subject.y} #if not specified, take the default subjectY and height
 	if (-not $subjectHeight) {$subjectHeight=$sf2object.subject.height}
 	
@@ -235,7 +237,9 @@ function convert-sf2Slice
 	$y=0;$x=0
 	while (($y -lt $sliceHeight) -and ($x -lt $widthBytes))
 	{	if ($x -eq 0) {$rowOffset=$pixelArrayOffset -($y*$bmpfile.rowsize)}
-		$pixelByte=get-msxpixel -pixelColor $bmpfile.pixelarray[$rowOffset+$subjectXBytes+$x] -transparentColor $transparentColor -fillColor $fillColor -ColorConversionTable $ColorConversionTable
+		if ($bmpfile.numBitsPerPixel -eq 4) {$bmpPixel=$bmpfile.pixelarray[$rowOffset+$subjectXBytes+$x]} #4bpp
+		elseif ($bmpfile.numBitsPerPixel -eq 8) {$bmpPixel=($bmpfile.pixelarray[$rowOffset+$subjectXBytes+$x] -shl 4 -band 0xf0) -bor ($bmpfile.pixelarray[$rowOffset+$subjectXBytes+$x+1] -band 15)} #8bpp
+		$pixelByte=get-msxpixel -pixelColor $bmpPixel -transparentColor $transparentColor -fillColor $fillColor -ColorConversionTable $ColorConversionTable
 
 		if ($pixelByte -ne $null)	
 		{	if ($pixelCounter -eq 0) {$pixelIndex=$framePixels.Index} #save the startIndex of this new string of pixels
@@ -257,7 +261,7 @@ function convert-sf2Slice
 			$flagSpace=$true #un-used atm
 		}
 		
-		$x++
+		$x+=$incBytesX
 		if ($x -ge $widthBytes)
 		{	$x=0;$y++
 			if (-not $flagPixel) {$sliceY++;$whiteSpaceCounter=0;$lineSkip++;$flagLineSkip=$true;} #if there are no pixels found yet, skip this row and increase startY
@@ -507,6 +511,7 @@ if ($append)
 }
 
 $bmpfile=import-bmpFile -path $manifest.imagePath
+$global:bmpfile=$bmpfile
 $msxcoltab=get-MsxPaletteFromFile -path $manifest.palettePath
 $global:ColorConversionTable=get-colorConversionTable -bmpfile $bmpfile -msxColTab $msxcoltab
 $global:sf2object=$sf2object=new-sf2object @manifest -imageObject $bmpfile

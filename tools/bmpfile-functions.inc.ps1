@@ -1,6 +1,6 @@
 #Some BMP file functions operating on byte level #hardcore
 #Shadow@Fuzzylogic
-#20240304-20240729
+#20240304-20240813
 
 <#
 BmpFile Object props
@@ -180,7 +180,7 @@ function import-bmpFile
 	
 	#colorTable
 	if ($numBitsPerPixel -le 8)
-	{	if (($bmpfile.numColors=$dibheader.NumColors) -eq 0) {$bmpfile.numColors=$numbitsperpixel*$numbitsperpixel}
+	{	if (($bmpfile.numColors=$dibheader.NumColors) -eq 0) {$bmpfile.numColors=[Math]::Pow(2,$numbitsperpixel)}
 		$colorTableSize=4*$bmpfile.NumColors;
 		$bmpfile.colorTableSize=$colorTableSize
 		$colorTable=[byte[]]::new($colorTableSize)
