@@ -24,6 +24,7 @@ BossPlantCheckIfDead:
   dec   a
   ret   nz
   ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
+  ld    (ix+enemies_and_objects.v7),4       ;v7=sprite frame
   ld    bc,SFX_bossdemondead
   jp    RePlayerSFX_PlayCh2
 
@@ -71,8 +72,13 @@ BossPlant:
 ;  jp    z,BossPlantDead
 
   BossPlantDead:
-  ld    (ix+enemies_and_objects.v1-3),0     ;v1-3=boss got hit this frame (1=hit normal/no damage, 3=hit with correct element)
-  ld    (ix+enemies_and_objects.v7),4         ;v7=sprite frame
+  ld    (ix+enemies_and_objects.v1-3),0       ;v1-3=boss got hit this frame (1=hit normal/no damage, 3=hit with correct element)
+
+  ld    a,(ix+enemies_and_objects.v7)         ;v7=sprite frame
+  inc   a
+  cp    13
+  ret   z
+  ld    (ix+enemies_and_objects.v7),a         ;v7=sprite frame
   ret
 
 BossPlantIdle:
@@ -368,7 +374,15 @@ BossPlantAll_0:  db    BossPlantframelistblock, BossPlantspritedatablock | dw   
 BossPlantAll_1:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_1_0
 BossPlantAll_2:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_2_0
 BossPlantAll_3:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_1_0
-BossPlantAll_4:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_3_0
+BossPlantAll_5:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantDeath_0_0
+BossPlantAll_6:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantDeath_1_0
+BossPlantAll_7:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantDeath_2_0
+BossPlantAll_8:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantDeath_3_0
+BossPlantAll_9:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantDeath_4_0
+BossPlantAll_10:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantDeath_5_0
+BossPlantAll_11:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantDeath_6_0
+BossPlantAll_12:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantDeath_7_0
+BossPlantAll_13:  db    BossPlantframelistblock, BossPlantspritedatablock | dw    BossPlantAll_3_0
 
 
 

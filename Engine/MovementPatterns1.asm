@@ -71,7 +71,6 @@ phase MovementPatterns1Address
 ;BossDemonBullet
 ;BossRatty
 ;BossRattyHandler
-;BossPlant
 
 ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer
