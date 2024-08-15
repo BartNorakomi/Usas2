@@ -1,5 +1,6 @@
 collision detection tussen 2ndary wapens en muren in de sf2 engine moet 16 pixels naar rechts. Je schiet links door muren. (arrow getest in bossplant room)
 
+bug als je rolt en dan f1 wapen primair veranderd
 
 als je dood bent kun je alsnog geraakt worden door de bullets van fireeye, en zwaard lancelot
 

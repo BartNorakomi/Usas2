@@ -1,7 +1,7 @@
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
 ;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing, LSwordAttack, RSwordAttack, LDaggerAttack, RDaggerAttack, LAxeAttack, RAxeAttack, LSpearAttack, RSpearAttack
-;EnterTeleport,ExitTeleport
+;EnterTeleport,ExitTeleport, Rwalljump
 
 ;SetPrimaryWeaponHitBoxLeftSitting,SetPrimaryWeaponHitBoxRightSitting,SetPrimaryWeaponHitBoxLeftStanding,SetPrimaryWeaponHitBoxRightStanding
 
@@ -1077,6 +1077,105 @@ RSilhouetteKick:
   ld    a,255
   ld    (PlayerAniCount+1),a        ;there is no wall at the end location, so allow player to move to a wall prior to the end location
   ret
+
+SlidePlayerDown:  
+  ;slide player down
+  ld    a,(PlayerAniCount)          ;after x frames, player starts sliding down
+  inc   a
+  cp    200
+  jr    nc,.SkipIncrease
+  ld    (PlayerAniCount),a          ;after x frames, player starts sliding down
+  .SkipIncrease:
+
+  cp    10
+  ret   c
+  ;move player y
+  ld    hl,Clesy
+  inc   (hl)
+  ret
+
+Lwalljump:
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
+
+  ld    hl,PlayerSpriteData_Char_RightRun2
+	ld		(standchar),hl
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		1,a                       ;down pressed ?
+	jp		nz,Set_Fall
+
+	bit		3,a                       ;right pressed ?
+	jr		z,.EndJumpOffWall
+
+  ld    a,(NewPrContr)	
+	bit		0,a                       ;up pressed ?
+	jr		nz,.UpPressed
+  .EndJumpOffWall:
+
+  call  SlidePlayerDown
+
+  call  CheckFloor                ;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    nc,Set_R_Stand
+
+  ;check at height of waiste if player runs into a wall on the left side
+  ld    b,YaddmiddlePLayer-1-2  ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer-4   ;add 0 to x to check left side of player for collision (player moved left)
+  call  checktile           ;out z=collision found with wall
+  ret   z
+	jp    Set_Fall
+
+  .UpPressed:
+  ld    a,RunningTablePointerRunRightEndValue
+  ld    (RunningTablePointer),a
+	jp    Set_jump
+
+;;;;;;;;;;;;;; STILL TO DO: DISABLE JUMPING WHEN AT THE TOP OF THE SCREEN (cuz you can jump to the screen above)
+Rwalljump:
+  ld    a,RunningTablePointerCenter
+  ld    (RunningTablePointer),a
+
+  ld    hl,PlayerSpriteData_Char_LeftRun2
+	ld		(standchar),hl
+
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+	ld		a,(Controls)
+	bit		1,a                       ;down pressed ?
+	jp		nz,Set_Fall
+
+	bit		2,a                       ;left pressed ?
+	jr		z,.EndJumpOffWall
+
+  ld    a,(NewPrContr)	
+	bit		0,a                       ;up pressed ?
+	jr		nz,.UpPressed
+  .EndJumpOffWall:
+
+  call  SlidePlayerDown
+
+  call  CheckFloor                ;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
+  jp    nc,Set_L_Stand
+
+  ;check at height of waiste if player runs into a wall on the right side
+  ld    b,YaddmiddlePLayer-1-2  ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer+4  ;add 15 to x to check right side of player for collision (player moved right)
+  call  checktile           ;out z=collision found with wall
+  ret   z
+	jp    Set_Fall
+
+  .UpPressed:
+  ld    a,RunningTablePointerRunLeftEndValue
+  ld    (RunningTablePointer),a
+	jp    Set_jump
 
 RMeditate:
   ld    hl,RightMeditateAnimation - 2
@@ -3449,9 +3548,17 @@ AnimateWhileJump:
   or    a
   jp    nz,.PrimaryAttackWhileJumpRight
 
-  ld    a,(DoubleJumpAvailable?)
+
+  ld    a,(FlyingObtained?)
   or    a
-  jp    z,.RollingJumpRight
+  ld    b,1
+  jr    z,.AmountOfDoubleJumpsFound
+  ld    b,2
+  .AmountOfDoubleJumpsFound:
+
+  ld    a,(DoubleJumpAvailable?)
+  cp    b
+  jp    nz,.RollingJumpRight
 
   ld    a,(JumpSpeed)
   add   a,2
@@ -3520,9 +3627,16 @@ AnimateWhileJump:
   or    a
   jp    nz,.PrimaryAttackWhileJumpLeft
 
-  ld    a,(DoubleJumpAvailable?)
+  ld    a,(FlyingObtained?)
   or    a
-  jp    z,.RollingJumpLeft
+  ld    b,1
+  jr    z,.AmountOfDoubleJumpsFoundLeft
+  ld    b,2
+  .AmountOfDoubleJumpsFoundLeft:
+
+  ld    a,(DoubleJumpAvailable?)
+  cp    b
+  jp    nz,.RollingJumpLeft
 
   ld    a,(JumpSpeed)
   add   a,2
@@ -3812,6 +3926,11 @@ CheckSnapToStairsWhileJump:
   ld    (ClesX),hl
   ret  
 
+  PlayerNotInWaterRunningTable:
+  dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2  
+
+  PlayerInWaterRunningTable:
+  dw    -1,-1,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+1,+1
 Jump:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -3962,39 +4081,58 @@ endif
   jp    m,.CheckPlatformAbove
   ret   z
 
-;XaddLeftPlayer:           equ 00 - 8
-;XaddRightPlayer:          equ 15 - 8
-
-;-6      5
-
-
   .CheckPlatformBelow:        ;check platform below
-
-
   ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
   ld    de,+3-8 ;XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
   call  checktile           ;out z=collision found with wall
-  jr    z,.SnapToPlatformBelow  
-
+  jp    z,.SnapToPlatformBelow  
   dec   a                   ;check for tilenr 2=ladder 
   jr    z,.LadderFoundUnderLeftFoot1
 
   inc   hl                  ;check next tile
   ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
   dec   a                   ;1 = wall
-  jr    z,.SnapToPlatformBelow  
-
-
-;  ld    b,YaddFeetPlayer-1    ;add y to check (y is expressed in pixels)
-;  ld    de,-5 ;XaddLeftPlayer+2   ;add x to check (x is expressed in pixels)
-;  call  checktile           ;out z=collision found with wall
-;  jr    z,.SnapToPlatformBelow
-
+  jp    z,.SnapToPlatformBelow  
   dec   a                   ;check for tilenr 2=ladder 
-  jr    z,.LadderFoundUnderRightFoot1
+  jp    z,.LadderFoundUnderRightFoot1
 
   sub   4                   ;check for tilenr 6=lava
-  ret   nz
+  jr    z,.LavaFound
+  dec   a
+  jr    z,.WaterFound
+
+  .PlayerNotInWater:
+  ld    a,(PlayerIsInWater?)
+  or    a
+  ret   z                             ;player is already NOT in water, no need to reset tables for movement
+  xor   a
+  ld    (PlayerIsInWater?),a
+
+  ld    a,StartingJumpSpeedEqu        ;reset Starting Jump Speed
+  ld    (StartingJumpSpeed),a
+  inc   a
+  ld    (StartingJumpSpeedWhenHit),a
+  
+  ld    hl,PlayerNotInWaterRunningTable
+  ld    de,RunningTable1
+  ld    bc,RunningTableLenght
+  ldir
+  ret
+
+  .WaterFound:
+  ld    a,1
+  ld    (PlayerIsInWater?),a
+
+  ld    a,-5
+  ld    (StartingJumpSpeed),a
+  inc   a
+  ld    (StartingJumpSpeedWhenHit),a
+  
+  ld    hl,PlayerInWaterRunningTable
+  ld    de,RunningTable1
+  ld    bc,RunningTableLenght
+  ldir
+  ret
 
   .LavaFound:
 ;  ld    a,(ClesY)           ;don't check lava in top of screen
@@ -4054,12 +4192,6 @@ endif
   jr    nz,.SnapToPlatformBelow
 ;  ret   z
   ret
-
-
-
-
-
-
 
 ;while falling a ladder tile is found at player's feet. 
 ;check 16 pixels left of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
@@ -4154,6 +4286,12 @@ endif
   or    a
   ret   z
 
+  ld    a,(DoubleJumpObtained?)
+  or    a
+  ret   z
+
+  .SkipDoubleJumpCheck:
+
   ld    a,(ShootArrowWhileJump?)
   or    a
   jr    nz,.DontAllowDoubleJump   ;don't allow double jump when already presenting bow  
@@ -4171,11 +4309,11 @@ endif
   res   0,a 
   ld    (Controls),a
   ret
-  .EndCheckShootMagicWhileJump:
-  
-  xor   a
+
+  .EndCheckShootMagicWhileJump:  
+  ld    a,(DoubleJumpAvailable?)
+  dec   a
   ld    (DoubleJumpAvailable?),a
-;  jp    Set_jump.SkipTurnOnDoubleJump
 
 ;this code is new, and decreases the 2nd jump height
   call  Set_jump.SkipTurnOnDoubleJump

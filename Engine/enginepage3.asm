@@ -17,8 +17,8 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
 
 ;lemniscate
-;roomX: equ ("A"-"A")*26 + "W"-"A"
-;WorldMapPositionY:  db  27-1 | WorldMapPositionX:  db  roomX
+roomX: equ ("A"-"A")*26 + "V"-"A"
+WorldMapPositionY:  db  24-1 | WorldMapPositionX:  db  roomX
 
 ;boss demon
 ;roomX: equ ("B"-"A")*26 + "G"-"A"
@@ -29,12 +29,12 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  12-1 | WorldMapPositionX:  db  roomX
 
 ;boss plant
-roomX: equ ("B"-"A")*26 + "E"-"A"
-WorldMapPositionY:  db  21-1 | WorldMapPositionX:  db  roomX
+;roomX: equ ("B"-"A")*26 + "E"-"A"
+;WorldMapPositionY:  db  21-1 | WorldMapPositionX:  db  roomX
 
 
-ClesX:      dw 200 ;$19 ;230 ;250 ;210
-ClesY:      db 100 ;144-1
+ClesX:      dw 254 ;$19 ;230 ;250 ;210
+ClesY:      db 045 ;144-1
 
 
 PlayLogo:
@@ -657,21 +657,26 @@ StairLeftTilesStart:	equ 48
 StairLeftTilesEnd:	equ 49	;tilenr: 48 t/m 49 = stairs left
 StairRightTilesStart:	equ 50
 StairRightTilesEnd:	equ 51	;tilenr: 50 t/m 51 = stairs right
-ForegroundTilesStart: equ 52
+
+WaterTilesStart:	equ	52
+WaterTilesEnd:		equ	57
+
+ForegroundTilesStart: equ 58
 ForegroundTilesEnd: equ 255	;tilenr: 52 t/m 255 = foreground
 BackgroundTilesStart:	equ 256
 BackgroundTilesEnd:	equ 1023;tilenr: 256 t/m 1023 = background
 ;convert into
-BackgroundID:	equ 0	;tile 0 = background
+BackgroundID:		equ 0	;tile 0 = background
 HardForeGroundID:	equ 1	;tile 1 = hardforeground
-LadderId:	equ 2	;tile 2 = LadderTilesEndAdrEnd
-SpikeId:		equ 3	;tile 3 = spikes/poison
-StairLeftId:	equ 4	;tile 4 = stairsleftup
-StairRightId:	equ 5	;tile 5 = stairsrightup
-LavaId:		equ 6	;tile 6 = lava
+LadderId:			equ 2	;tile 2 = LadderTilesEndAdrEnd
+SpikeId:			equ 3	;tile 3 = spikes/poison
+StairLeftId:		equ 4	;tile 4 = stairsleftup
+StairRightId:		equ 5	;tile 5 = stairsrightup
+LavaId:				equ 6	;tile 6 = lava
+WaterId:			equ 7	;tile 7 = water
 
 tileConversionTable: ;(id,tilenr) order desc
-  DB  HardForeGroundID,ForegroundTilesStart,StairRightId,StairRightTilesStart
+  DB  HardForeGroundID,ForegroundTilesStart,WaterID,WaterTilesStart,StairRightId,StairRightTilesStart
   DB  StairLeftId,StairLeftTilesStart,LavaId,LavaTilesStart
   DB  SpikeId,SpikeTilesStart,BackgroundID,FreeTilesStart
   DB  ladderID,LadderTilesEndAdrStart,BackgroundID,0
@@ -689,6 +694,28 @@ ConvertToMapinRam:
     push hl
     call .convertTile
     pop hl
+
+	;the following code changes lava and spike tiles, to speed this up, both their values in tileConversionTable can be adjusted instead. Ro ?
+	;Lava is turning to hard foreground when lavawalk is obtained
+	ld		a,c
+	cp		LavaId
+	jr		nz,.EndCheckLava
+	ld		a,(LavaWalkObtained?)
+	or		a
+	jr		z,.EndCheckLava
+	ld		c,HardForeGroundID
+	.EndCheckLava:
+
+	;spikes is turning to background when spikeswalk is obtained
+	ld		a,c
+	cp		SpikeId
+	jr		nz,.EndCheckSpikes
+	ld		a,(SpikesWalkObtained?)
+	or		a
+	jr		z,.EndCheckSpikes
+	ld		c,BackgroundID
+	.EndCheckSpikes:
+
     ld  (HL),c
     inc hl
     djnz .loop
@@ -1221,8 +1248,12 @@ AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
   ds    6 ;1 extra block buffer
 AmountOfAppearingBlocks:  ds  1
 OctoPussyBulletSlowDownHandler:   db 0
-
 EnemyHitByPrimairyAttack?:	db	0		;0=hit by secundary attack, 1=hit by primary attack
+
+PlayerIsInWater?:				db	1
+
+
+
 
 SaveGameVariables:						;Here we store all variables that are required when saving game
 BossDead?:					db	%0000 0000		;bit 0=demon, bit 1=voodoo wasp, bit 2=zombie caterpillar, bit 3=ice goat, bit 4=huge blob, bit 5=boss plant
@@ -1235,6 +1266,30 @@ AxeInfusedWithElement?:		db	%0000 1000	;bit 0=fire, bit 1=ice, bit 2=earth, bit 
 SpearInfusedWithElement?:	db	%0000 0100	;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
 ;CurrentPrimaryWeapon:         db  0 ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
 ;CurrentMagicWeapon:           db  0 ;0=nothing, 1=rolling, 2=charging, 3=meditate, 4=shoot arrow, 5=shoot fireball, 6=silhouette kick, 7=shoot ice, 8=shoot earth, 9=shoot water, 10=kinetic energy
+
+DoubleJumpObtained?:		db	1
+RollingObtained?:			db	1
+WallBashObtained?:			db	1
+WallWalkObtained?:			db	1
+WallJumpObtained?:			db	1
+LavaWalkObtained?:			db	1
+SpikesWalkObtained?:		db	1
+FlyingObtained?:			db	1
+SwimmingObtained?:			db	1
+MeditatingObtained?:		db	1
+
+SpearObtained?:				db	1
+SwordObtained?:				db	1
+DaggerObtained?:			db	1
+AxeObtained?:				db	1
+
+FireMagicObtained?:			db	1
+AirObtained?:				db	1
+EarthObtained?:				db	1
+WaterObtained?:				db	1
+BowAndArrowObtained?:		db	1
+
+
 
 
 
@@ -1313,6 +1368,8 @@ LogoAnimationTimer3:          rb    1
 LogoAnimationVar1:            rb    1
 LogoAnimationVar2:            rb    1
 LogoAnimationVar3:            rb    1
+
+;PlayerIsInWater?:				rb	1
 
 AmountOfPoisonDropsInCurrentRoom:   rb    1
 AmountOfWaterfallsInCurrentRoom:    rb    1

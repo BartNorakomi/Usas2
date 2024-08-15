@@ -3091,15 +3091,18 @@ ReSetVariables:
   ld    (PlayerLeftSideOfScreen.SelfmodyfyingSpataddressPlayer),hl          
   ld    (PlayerRightSideOfScreen.SelfmodyfyingSpataddressPlayer),hl          
   
+  ld    a,(PlayerIsInWater?)
+  or    a
+  jr    nz,.PlayerIsInWaterDontChangeRunningSpeed
   ld    a,StartingJumpSpeedEqu        ;reset Starting Jump Speed
   ld    (StartingJumpSpeed),a
   inc   a
   ld    (StartingJumpSpeedWhenHit),a
-  
   ld    hl,.NormalRunningTable        ;Reset Normal Running Table
   ld    de,RunningTable1
   ld    bc,RunningTableLenght
   ldir
+  .PlayerIsInWaterDontChangeRunningSpeed:
 
   ld    a,0*32+31
   ld    (PageOnNextVblank),a

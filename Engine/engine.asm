@@ -4030,7 +4030,7 @@ checktile:                  ;in b->add y to check, de->add x to check
 ;  djnz  .setmapwidthy
 ;.yset:
 
-  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=spikes, 4=stairs left up, 5=stairs right up, 6=lava, 7=water
   dec   a                   ;1 = wall
 	ret
 
@@ -4899,6 +4899,13 @@ DoMovePlayer:               ;carry: collision detected
 ;  call  checktile           ;out z=collision found with wall
 ;  jr    z,.SnapToWallRight
 
+  ;when player is rolling we don't have to check for collision on eye height
+	ld		hl,(PlayerSpriteStand)
+	ld		de,RRolling
+	xor   a
+	sbc   hl,de
+  jr    z,.RollingRight
+
   ;check at height of waiste if player runs into a wall on the right side
   ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
   ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
@@ -4911,14 +4918,15 @@ DoMovePlayer:               ;carry: collision detected
   dec   a                   ;1 = wall
   jr    z,.SnapToWallRight
 
-  ;when player is rolling we don't have to check for collision on eye height
-	ld		hl,(PlayerSpriteStand)
-	ld		de,RRolling
-	xor   a
-	sbc   hl,de
-	ret   z
-
   ld    b,YaddHeadPLayer+1  ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
+  call  checktile           ;out z=collision found with wall
+  jr    z,.SnapToWallRight
+  ret
+
+  .RollingRight:
+  ;check at height of waiste if player runs into a wall on the right side
+  ld    b,YaddmiddlePLayer-1+8  ;add y to check (y is expressed in pixels)
   ld    de,XaddRightPlayer  ;add 15 to x to check right side of player for collision (player moved right)
   call  checktile           ;out z=collision found with wall
   jr    z,.SnapToWallRight
@@ -4930,8 +4938,36 @@ DoMovePlayer:               ;carry: collision detected
   and   %1111 1000
   ld    l,a
   ld    (ClesX),hl
+
+  ld    a,(WallJumpObtained?)
+  or    a
+  jr    z,.end  
+
+	ld		hl,(PlayerSpriteStand)
+	ld		de,Jump
+	xor   a
+	sbc   hl,de
+  jr    nz,.end
+
+	ld		a,(Controls)
+	bit		1,a                       ;down pressed ?
+  jr    nz,.end
+
+  ;check at height of waiste if player runs into a wall on the right side
+  ld    b,YaddmiddlePLayer+5  ;add y to check (y is expressed in pixels)
+  ld    de,XaddRightPlayer+4  ;add 15 to x to check right side of player for collision (player moved right)
+  call  checktile           ;out z=collision found with wall
+  jr    nz,.end
+  
+  ld    hl,JumpSpeed
+  bit   7,(hl)
+  jp    z,Set_R_Walljump
+
+  .end:
   scf                       ;carry: collision detected
   ret
+
+
 
 .PlayerMovedLeft:
 ;  ld    b,YaddmiddlePLayer  ;add y to check (y is expressed in pixels)
@@ -4944,14 +4980,20 @@ DoMovePlayer:               ;carry: collision detected
 ;  call  checktile           ;out z=collision found with wall
 ;  jr    z,.SnapToWallLeft
 
-  ;check at height of waiste if player runs into a wall on the left side
-  ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
-  ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
-
   ld    a,(ClesX+1)
   bit   7,a
   ret   nz                  ;no need to perform tilecheck when player is out of screen on the left side
 
+  ;when player is rolling we don't have to check for collision on eye height
+	ld		hl,(PlayerSpriteStand)
+	ld		de,LRolling
+	xor   a
+	sbc   hl,de
+  jr    z,.RollingLeft
+
+  ;check at height of waiste if player runs into a wall on the left side
+  ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
   call  checktile           ;out z=collision found with wall
   jr    z,.SnapToWallLeft
   ;now do the same check, but 2 tiles lower
@@ -4961,14 +5003,15 @@ DoMovePlayer:               ;carry: collision detected
   dec   a                   ;1 = wall
   jr    z,.SnapToWallLeft
 
-  ;when player is rolling we don't have to check for collision on eye height
-	ld		hl,(PlayerSpriteStand)
-	ld		de,LRolling
-	xor   a
-	sbc   hl,de
-	ret   z
-
   ld    b,YaddHeadPLayer+1  ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
+  call  checktile           ;out z=collision found with wall
+  jr    z,.SnapToWallLeft
+  ret
+
+  .RollingLeft:
+  ;check at height of waiste if player runs into a wall on the right side
+  ld    b,YaddmiddlePLayer-1+8  ;add y to check (y is expressed in pixels)
   ld    de,XaddLeftPlayer   ;add 0 to x to check left side of player for collision (player moved left)
   call  checktile           ;out z=collision found with wall
   jr    z,.SnapToWallLeft
@@ -4981,10 +5024,42 @@ DoMovePlayer:               ;carry: collision detected
   ld    l,a
   ld    de,8
   add   hl,de
-  
   ld    (ClesX),hl
-  scf                       ;carry: collision detected
+
+  ld    a,(WallJumpObtained?)
+  or    a
+  jr    z,.end  
+
+	ld		hl,(PlayerSpriteStand)
+	ld		de,Jump
+	xor   a
+	sbc   hl,de
+  jr    nz,.end
+
+	ld		a,(Controls)
+	bit		1,a                       ;down pressed ?
+  jr    nz,.end
+
+  ;check at height of waiste if player runs into a wall on the left side
+  ld    b,YaddmiddlePLayer+5  ;add y to check (y is expressed in pixels)
+  ld    de,XaddLeftPlayer-4   ;add 0 to x to check left side of player for collision (player moved left)
+  call  checktile           ;out z=collision found with wall
+  jr    nz,.end
+
+;  call  CheckClimbLadderUp
+
+;	ld		hl,(PlayerSpriteStand)
+;	ld		de,Climb
+;	xor   a
+;	sbc   hl,de
+ ; jr    z,.end
+
+  ld    hl,JumpSpeed
+  bit   7,(hl)
+  jp    z,Set_L_Walljump
   ret
+
+
 
 ;XaddLeftPlayer:           equ 0
 ;XaddRightPlayer:          equ 15
@@ -5898,9 +5973,6 @@ Set_ClimbDown:
   ld    (PlayerAniCount),hl
   ret
 
-CollisionSYStanding:  equ 07 + 0
-CollisionSYSitting:   equ 07 + 6
-CollisionSYRolling:   equ 07 + 10
 Set_ClimbUp:
   call  SetHitBoxPlayerStanding
   
@@ -5956,7 +6028,12 @@ Set_jump:
 ;  xor   a
 ;  ld    (EnableHitbox?),a
   
+  ld    a,(FlyingObtained?)
+  or    a
   ld    a,1
+  jr    z,.SetAmountOfDoubleJumps
+  ld    a,2
+  .SetAmountOfDoubleJumps:
   ld    (DoubleJumpAvailable?),a
 
   .SkipTurnOnDoubleJump:  
@@ -5985,8 +6062,13 @@ Set_Fall:
   xor   a
 ;  ld    (EnableHitbox?),a
   ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before getting hit
-      
+
+  ld    a,(FlyingObtained?)
+  or    a
   ld    a,1
+  jr    z,.SetAmountOfDoubleJumps
+  ld    a,2
+  .SetAmountOfDoubleJumps:
   ld    (DoubleJumpAvailable?),a
 
 	ld		hl,Jump
@@ -5997,7 +6079,21 @@ Set_Fall:
 	ld    a,FallingJumpSpeed
 	ld		(JumpSpeed),a
   ret
-        
+
+Set_L_Walljump:
+	ld		hl,Lwalljump
+	ld		(PlayerSpriteStand),hl
+  xor   a
+	ld		(PlayerAniCount),a
+  ret
+
+Set_R_Walljump:
+	ld		hl,Rwalljump
+	ld		(PlayerSpriteStand),hl
+  xor   a
+	ld		(PlayerAniCount),a
+  ret
+
 Set_R_run:
 	ld		hl,Rrunning
 	ld		(PlayerSpriteStand),hl
@@ -6025,6 +6121,10 @@ Set_R_sit:
   ld    (PrimaryWeaponActivatedWhileJumping?),a
   ld    (PrimaryWeaponActive?),a
   ret
+
+CollisionSYStanding:  equ 07 + 0
+CollisionSYSitting:   equ 07 + 6
+CollisionSYRolling:   equ 07 + 10
 
 PlayerTopYHitBoxSoftSpritesSitting:   equ 17+8
 PlayerTopYHitBoxSoftSpritesStanding:  equ 17
