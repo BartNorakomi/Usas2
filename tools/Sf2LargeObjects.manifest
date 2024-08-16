@@ -23,6 +23,18 @@ BossPlant=@{
 		subjecty=-1;
 		slices=4;
 	};
+		steekvlam64=`
+	@{	name="BossPlantDeath";
+		imagePath="..\grapx\BossPlant\steekvlam64.index4.bmp";
+		palettePath="..\grapx\BossPlant\BossPlant.PL";
+		destinationPath="..\grapx\BossPlant";
+		pixelFilePath="BossPlantAll.dat";
+		transparentColor=9;fillcolor=15;
+		canvasX=0;canvasY=0;canvasWidth=8*64;canvasHeight=2*64;
+		frameWidth=64;frameHeight=64;
+		subjecty=-1;
+		slices=4;
+	};
 };
 
 BossRatty=@{
