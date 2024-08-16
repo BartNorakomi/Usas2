@@ -8,8 +8,118 @@ phase	movementpatterns2Address
 ;BackupScoreBoard
 ;RestoreScoreBoard
 ;BossPlant
+;BreakableWall
 
 
+;v1=sx repair gfx
+;v2=sy repair gfx
+;v3=
+;v4=
+;v5=
+;v6=
+;v7=wall remove step
+;v8=phase
+BreakableWall:
+;jr .WallBashed
+  bit   0,(ix+enemies_and_objects.v8)         ;v8=Phase (0=idle, 1=wall bashed)
+  jr    nz,.WallBashed
+  ld    (ix+enemies_and_objects.life),255     ;unable to kill
+  call  CheckPlayerPunchesEnemy               ;Check if player hit's enemy
+
+  .CheckIfHit:
+  bit   0,(ix+enemies_and_objects.hit?)     ;check if hit
+  ret   z
+
+	ld		hl,(PlayerSpriteStand)
+	ld		de,RBouncingBack
+  xor   a
+  sbc   hl,de
+  jr    z,.HitByWallBash
+
+	ld		hl,(PlayerSpriteStand)
+	ld		de,LBouncingBack
+  xor   a
+  sbc   hl,de
+  ret   nz
+  
+  .HitByWallBash:
+  set   0,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=wall bashed)
+  ret
+
+  .WallBashed:
+  ld    a,(ix+enemies_and_objects.v7)       ;unable to kill
+  inc   a
+  ld    (ix+enemies_and_objects.v7),a       ;unable to kill
+  dec   a
+  jr    z,.RemoveWallPage0                  ;page 0
+  dec   a
+  jr    z,.RemoveWallPageNextPage           ;page 1
+  dec   a
+  jr    z,.RemoveWallPageNextPage           ;page 2
+  dec   a
+  jr    z,.RemoveWallPageNextPage           ;page 3
+
+;UnpackedRoomFile:
+;.meta:		rb 8
+;.tiledata:  rb  38*27*2
+  .RemoveWallFromRoomTiles:
+  ;we perform checktile object, but only to set hl pointing to the left top tile where wall starts
+  ld    b,+16                               ;add y to check (y is expressed in pixels)
+  ld    de,-08                              ;add x to check (x is expressed in pixels)
+  call  checktileObject                     ;out z=collision found with wall
+
+  ld    de,40 - 1
+  ld    a,(ix+enemies_and_objects.ny)       ;ny
+  .loop:
+  ld    (hl),0                              ;background
+  inc   hl
+  ld    (hl),0                              ;background
+  add   hl,de
+
+  sub   a,8
+  jr    nz,.loop
+
+  inc   (ix+enemies_and_objects.x)          ;move explosion 2 pixels to the right to center it perfectly
+  inc   (ix+enemies_and_objects.x)
+  ld    (ix+enemies_and_objects.alive?),-1  ;turn this object into a hardware sprite
+  jp    CheckPlayerPunchesEnemy.EnemyDied
+
+  .RemoveWallPage0:
+  ld    a,(ix+enemies_and_objects.v1)       ;sx repair gfx
+  ld    (FreeToUseFastCopy+sx),a
+  ld    a,(ix+enemies_and_objects.v2)       ;sy repair gfx
+  ld    (FreeToUseFastCopy+sy),a
+
+  ld    a,(ix+enemies_and_objects.x)        ;dx
+  sub   a,12                                ;we added 12 pixels to x for proper collision detection with wallbash
+  ld    (FreeToUseFastCopy+dx),a
+  ld    a,(ix+enemies_and_objects.y)        ;dy
+  ld    (FreeToUseFastCopy+dy),a
+
+  xor   a
+  ld    (FreeToUseFastCopy+sPage),a
+  ld    (FreeToUseFastCopy+dPage),a
+
+  ld    a,(ix+enemies_and_objects.nx)       ;nx
+  sub   a,4                                 ;we added 4 pixels as a margin
+  ld    (FreeToUseFastCopy+nx),a
+  ld    a,(ix+enemies_and_objects.ny)       ;ny
+  ld    (FreeToUseFastCopy+ny),a
+
+  ld    hl,FreeToUseFastCopy
+  jp     DoCopy
+
+  .RemoveWallPageNextPage:
+  ld    a,(FreeToUseFastCopy+dx)
+  sub   a,16
+  ld    (FreeToUseFastCopy+dx),a
+
+  ld    a,(FreeToUseFastCopy+dPage)
+  inc   a
+  ld    (FreeToUseFastCopy+dPage),a
+
+  ld    hl,FreeToUseFastCopy
+  jp     DoCopy
 
 BossPlantPaletteAnimation1:
   incbin "..\grapx\BossPlant\BossPlantPaletteAnimation1.PL" ;file palette 

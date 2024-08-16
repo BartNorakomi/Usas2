@@ -17,7 +17,7 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
 
 ;lemniscate
-roomX: equ ("A"-"A")*26 + "V"-"A"
+roomX: equ ("A"-"A")*26 + "U"-"A"
 WorldMapPositionY:  db  24-1 | WorldMapPositionX:  db  roomX
 
 ;boss demon
@@ -33,8 +33,8 @@ WorldMapPositionY:  db  24-1 | WorldMapPositionX:  db  roomX
 ;WorldMapPositionY:  db  21-1 | WorldMapPositionX:  db  roomX
 
 
-ClesX:      dw 254 ;$19 ;230 ;250 ;210
-ClesY:      db 045 ;144-1
+ClesX:      dw 104 ;$19 ;230 ;250 ;210
+ClesY:      db 140 ;144-1
 
 
 PlayLogo:

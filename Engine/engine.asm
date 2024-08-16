@@ -237,6 +237,7 @@ ret
   out   ($99),a	
   ret
 
+;objects using this: area sign, npc interaction, BreakableWall
 FreeToUseFastCopy:                    ;freely usable anywhere
   db    000,000,000,000   ;sx,--,sy,spage
   db    000,000,074,000   ;dx,--,dy,dpage
@@ -6085,6 +6086,9 @@ Set_L_Walljump:
 	ld		(PlayerSpriteStand),hl
   xor   a
 	ld		(PlayerAniCount),a
+	xor   a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a  
   ret
 
 Set_R_Walljump:
@@ -6092,6 +6096,9 @@ Set_R_Walljump:
 	ld		(PlayerSpriteStand),hl
   xor   a
 	ld		(PlayerAniCount),a
+	xor   a
+  ld    (PrimaryWeaponActivatedWhileJumping?),a
+  ld    (PrimaryWeaponActive?),a  
   ret
 
 Set_R_run:

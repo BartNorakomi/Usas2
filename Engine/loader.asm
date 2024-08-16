@@ -201,6 +201,8 @@ ObjectTestData:
 ;db 8,100,100,0    ;Boss Demon, x,y
 
 ;db 13,0   ;boss plant
+;db 14,16*8/2,19*8,   2*8, 6*8,  20*8/2,19*8   ;breakable wall (sx,sy,nx,ny,sx repair, sy repair)
+;db    0
 
 SetObjects:                             ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 ;set test objects
@@ -278,6 +280,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object012                    ;small moving platform (lighter version)
   cp    13
   jp    z,.Object013                    ;boss plant (BossPlant)
+  cp    14
+  jp    z,.Object014                    ;breakable wall (BreakableWall)
   cp    15
   jp    z,.Object015                    ;retracting platforms
   cp    16
@@ -1188,6 +1192,56 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
 		db    000,000,000,003   ;dx,--,dy,dpage
 		db    000,001,212,000   ;nx,--,ny,--
 		db    000,000,$d0       ;fast copy
+
+
+
+
+  .Object014:                           ;boss plant
+  ld    hl,Object014Table
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*1           ;1 object(s)
+  ldir
+
+  ;set x
+  ld    a,(ix+Object014Table.x)
+  add   a,12/2                          ;12 pix to the right
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.x),l
+  ld    (iy+enemies_and_objects.x+1),h
+
+  ;set y
+  ld    a,(ix+Object014Table.y)
+  ld    (iy+enemies_and_objects.y),a
+
+  ;set nx
+  ld    a,(ix+Object014Table.nx)
+  add   a,4
+  ld    (iy+enemies_and_objects.nx),a
+
+  ;set ny
+  ld    a,(ix+Object014Table.ny)
+  ld    (iy+enemies_and_objects.ny),a
+
+  ;set x repair gfx
+  ld    a,(ix+Object014Table.repairx)
+  ld    l,a
+  ld    h,0
+  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+  ld    (iy+enemies_and_objects.v1),l
+;  ld    (iy+enemies_and_objects.x+1),h
+
+  ;set y repair gfx
+  ld    a,(ix+Object014Table.repairy)
+  ld    (iy+enemies_and_objects.v2),a
+
+  ld    de,Object014Table.lenghtobjectdata
+  ret  
+
+
+
 
   .Object010:                           ;huge block (HugeBlock)
 ;v1-2=box right (16 bit)
@@ -2179,6 +2233,21 @@ Object013Table:               ;boss plant
 .x: equ 1
 .y: equ 2
 .lenghtobjectdata: equ 3
+
+
+
+
+Object014Table:               ;breakable wall
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+          db 1,        0|dw BreakableWall       |db 0000|dw 000 |db 00,00|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 255,movementpatterns2block| ds fill-1
+.ID: equ 0
+.x: equ 1
+.y: equ 2
+.nx: equ 3
+.ny: equ 4
+.repairx: equ 5
+.repairy: equ 6
+.lenghtobjectdata: equ 7
 
 
 
