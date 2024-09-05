@@ -160,6 +160,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	knifeThrower	objectClass	Enemy					
 1	Usas2		RoomObject	lancelot	uid	130					
 1	Usas2		RoomObject	lancelot	objectClass	Enemy					
+1	Usas2		RoomObject	BreakableWall	uid	14					
+1	Usas2		RoomObject	BreakableWall	objectClass	BreakableWall					
 1	Usas2		RoomObject	landstrider	uid	148					
 1	Usas2		RoomObject	landstrider	objectClass	Enemy					
 1	Usas2		RoomObject	octopussy	objectClass	General					
