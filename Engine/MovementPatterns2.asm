@@ -82,6 +82,11 @@ BreakableWall:
   ld    de,000                              ;add x to check (x is expressed in pixels)
   call  checktileObject                     ;out z=collision found with wall
 
+  ld    a,(ix+enemies_and_objects.nx)       ;ny
+  cp    32
+  jr    z,.BreakableWall32  
+
+  .BreakableWall16:
   ld    de,40 - 1
   ld    a,(ix+enemies_and_objects.ny)       ;ny
   .loop:
@@ -89,9 +94,26 @@ BreakableWall:
   inc   hl
   ld    (hl),0                              ;background
   add   hl,de
-
   sub   a,8
   jr    nz,.loop
+  jr    .endRemoveWall
+
+  .BreakableWall32:
+  ld    de,40 - 3
+  ld    a,(ix+enemies_and_objects.ny)       ;ny
+  .loop2:
+  ld    (hl),0                              ;background
+  inc   hl
+  ld    (hl),0                              ;background
+  inc   hl
+  ld    (hl),0                              ;background
+  inc   hl
+  ld    (hl),0                              ;background
+  add   hl,de
+  sub   a,8
+  jr    nz,.loop2
+
+  .endRemoveWall:
 
   ld    a,(ix+enemies_and_objects.x)        ;dx
   add   a,16                                ;center explosion
