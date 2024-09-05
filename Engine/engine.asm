@@ -5329,9 +5329,21 @@ CheckWallSides:                     ;if we are snapped to a platform or object, 
   jp    DoMovePlayer.PlayerMovedLeft
   
 Lstanding:
+  ld    a,(framecounter)
+  and   127
+  cp    32
 	ld		hl,PlayerSpriteData_Char_LeftStand
-	ld		(standchar),hl
-	
+  jr    c,.SetStand
+  cp    64
+	ld		hl,PlayerSpriteData_Char_LeftIdle2
+  jr    c,.SetStand
+  cp    96
+	ld		hl,PlayerSpriteData_Char_LeftStand
+  jr    c,.SetStand
+	ld		hl,PlayerSpriteData_Char_LeftIdle3
+  .SetStand:
+	ld		(standchar),hl	
+
   ld    a,(ForceVerticalMovementCameraTimer)
   ld    (ForceVerticalMovementCameraTimerBackup),a
   xor   a
@@ -5382,7 +5394,7 @@ Lstanding:
 	jp		nz,Set_R_run
 	bit		0,a           ;cursor up pressed ?
 	ld		hl,PlayerSpriteData_Char_LeftStandLookUp
-	jr    nz,Rstanding.ForceCameraUp
+	jp    nz,Rstanding.ForceCameraUp
 	bit		1,a           ;cursor down pressed ?
   ret   z
 
@@ -5399,7 +5411,19 @@ Lstanding:
 ;  ret
 	
 Rstanding:
+  ld    a,(framecounter)
+  and   127
+  cp    32
 	ld		hl,PlayerSpriteData_Char_RightStand
+  jr    c,.SetStand
+  cp    64
+	ld		hl,PlayerSpriteData_Char_RightIdle2
+  jr    c,.SetStand
+  cp    96
+	ld		hl,PlayerSpriteData_Char_RightStand
+  jr    c,.SetStand
+	ld		hl,PlayerSpriteData_Char_RightIdle3
+  .SetStand:
 	ld		(standchar),hl
 
   ld    a,(ForceVerticalMovementCameraTimer)

@@ -1205,7 +1205,6 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
 
   ;set x
   ld    a,(ix+Object014Table.x)
-  add   a,12/2                          ;12 pix to the right
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
@@ -1218,7 +1217,7 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
 
   ;set nx
   ld    a,(ix+Object014Table.nx)
-  add   a,4
+  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
   ld    (iy+enemies_and_objects.nx),a
 
   ;set ny
@@ -1230,12 +1229,12 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
   ld    l,a
   ld    h,0
   add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.v1),l
+  ld    (iy+enemies_and_objects.v1),l   ;sx repair gfx
 ;  ld    (iy+enemies_and_objects.x+1),h
 
   ;set y repair gfx
   ld    a,(ix+Object014Table.repairy)
-  ld    (iy+enemies_and_objects.v2),a
+  ld    (iy+enemies_and_objects.v2),a   ;sy repair gfx
 
   ld    de,Object014Table.lenghtobjectdata
   ret  

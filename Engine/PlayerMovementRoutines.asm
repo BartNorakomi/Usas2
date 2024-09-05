@@ -1,7 +1,7 @@
 ;Rstanding,Lstanding,Rsitting,Lsitting,Rrunning,Lrunning,Jump,ClimbDown,ClimbUp,Climb,RAttack,LAttack,ClimbStairsLeftUp, ClimbStairsRightUp, RPushing, LPushing, RRolling, LRolling, RBeingHit, LBeingHit
 ;RSitPunch, LSitPunch, Dying, Charging, LBouncingBack, RBouncingBack, LMeditate, RMeditate, LShootArrow, RShootArrow, LSitShootArrow, RSitShootArrow, LShootFireball, RShootFireball, LSilhouetteKick, RSilhouetteKick
 ;LShootIce, RShootIce, LShootEarth, RShootEarth, LShootWater, RShootWater, DoNothing, LSwordAttack, RSwordAttack, LDaggerAttack, RDaggerAttack, LAxeAttack, RAxeAttack, LSpearAttack, RSpearAttack
-;EnterTeleport,ExitTeleport, Rwalljump
+;EnterTeleport,ExitTeleport, Rwalljump, LWalljump
 
 ;SetPrimaryWeaponHitBoxLeftSitting,SetPrimaryWeaponHitBoxRightSitting,SetPrimaryWeaponHitBoxLeftStanding,SetPrimaryWeaponHitBoxRightStanding
 
@@ -1098,7 +1098,7 @@ Lwalljump:
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a
 
-  ld    hl,PlayerSpriteData_Char_RightRun2
+  ld    hl,PlayerSpriteData_Char_WallJumpLeft
 	ld		(standchar),hl
 
 ;
@@ -1140,7 +1140,7 @@ Rwalljump:
   ld    a,RunningTablePointerCenter
   ld    (RunningTablePointer),a
 
-  ld    hl,PlayerSpriteData_Char_LeftRun2
+  ld    hl,PlayerSpriteData_Char_WallJumpRight
 	ld		(standchar),hl
 
 ;
