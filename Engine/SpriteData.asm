@@ -461,6 +461,22 @@ PlayerSpriteData_Colo_RightSpearAttack3:        include "..\sprites\secretsofgri
 PlayerSpriteData_Char_RightSpearAttack4:        include "..\sprites\secretsofgrindea\RightSpearAttack4.tgs.gen"	  
 PlayerSpriteData_Colo_RightSpearAttack4:        include "..\sprites\secretsofgrindea\RightSpearAttack4.tcs.gen"	  | db +4-8,-4
 
+PlayerSpriteData_Char_WallJumpRight:        include "..\sprites\secretsofgrindea\RightWallJump.tgs.gen"	  
+PlayerSpriteData_Colo_WallJumpRight:        include "..\sprites\secretsofgrindea\RightWallJump.tcs.gen"	  | db +1-8,+1
+PlayerSpriteData_Char_WallJumpLeft:        include "..\sprites\secretsofgrindea\LeftWallJump.tgs.gen"	  
+PlayerSpriteData_Colo_WallJumpLeft:        include "..\sprites\secretsofgrindea\LeftWallJump.tcs.gen"	  | db -1-8,-1
+
+PlayerSpriteData_Char_RightIdle2:        include "..\sprites\secretsofgrindea\RightIdle2.tgs.gen"	  
+PlayerSpriteData_Colo_RightIdle2:        include "..\sprites\secretsofgrindea\RightIdle2.tcs.gen"	  | db +0-8,-0
+PlayerSpriteData_Char_RightIdle3:        include "..\sprites\secretsofgrindea\RightIdle3.tgs.gen"	  
+PlayerSpriteData_Colo_RightIdle3:        include "..\sprites\secretsofgrindea\RightIdle3.tcs.gen"	  | db +0-8,-0
+
+PlayerSpriteData_Char_LeftIdle2:        include "..\sprites\secretsofgrindea\LeftIdle2.tgs.gen"	  
+PlayerSpriteData_Colo_LeftIdle2:        include "..\sprites\secretsofgrindea\LeftIdle2.tcs.gen"	  | db +0-8,-0
+PlayerSpriteData_Char_LeftIdle3:        include "..\sprites\secretsofgrindea\LeftIdle3.tgs.gen"	  
+PlayerSpriteData_Colo_LeftIdle3:        include "..\sprites\secretsofgrindea\LeftIdle3.tcs.gen"	  | db +0-8,-0
+
+
 EndPlayerSprites2: | ds $c000-$,$ff | dephase
 
 ;;;;;;;;;;;;;;################################################;;;;;;;;;;;;;;;;;;;;

@@ -24,7 +24,21 @@ BreakableWall:
   bit   0,(ix+enemies_and_objects.v8)         ;v8=Phase (0=idle, 1=wall bashed)
   jr    nz,.WallBashed
   ld    (ix+enemies_and_objects.life),255     ;unable to kill
+
+  ;we need to widen the hitbox of the wall for proper check with wallbash
+  ld    a,(ix+enemies_and_objects.x)        ;dx
+  add   a,12
+  ld    (ix+enemies_and_objects.x),a        ;dx
+  ld    a,(ix+enemies_and_objects.nx)        ;dx
+  add   a,4
+  ld    (ix+enemies_and_objects.nx),a        ;dx
   call  CheckPlayerPunchesEnemy               ;Check if player hit's enemy
+  ld    a,(ix+enemies_and_objects.x)        ;dx
+  sub   a,12
+  ld    (ix+enemies_and_objects.x),a        ;dx
+  ld    a,(ix+enemies_and_objects.nx)        ;dx
+  sub   a,4
+  ld    (ix+enemies_and_objects.nx),a        ;dx
 
   .CheckIfHit:
   bit   0,(ix+enemies_and_objects.hit?)     ;check if hit
@@ -47,9 +61,9 @@ BreakableWall:
   ret
 
   .WallBashed:
-  ld    a,(ix+enemies_and_objects.v7)       ;unable to kill
+  ld    a,(ix+enemies_and_objects.v7)       ;v7=wall remove step
   inc   a
-  ld    (ix+enemies_and_objects.v7),a       ;unable to kill
+  ld    (ix+enemies_and_objects.v7),a       ;v7=wall remove step
   dec   a
   jr    z,.RemoveWallPage0                  ;page 0
   dec   a
@@ -65,7 +79,7 @@ BreakableWall:
   .RemoveWallFromRoomTiles:
   ;we perform checktile object, but only to set hl pointing to the left top tile where wall starts
   ld    b,+16                               ;add y to check (y is expressed in pixels)
-  ld    de,-08                              ;add x to check (x is expressed in pixels)
+  ld    de,000                              ;add x to check (x is expressed in pixels)
   call  checktileObject                     ;out z=collision found with wall
 
   ld    de,40 - 1
@@ -79,8 +93,9 @@ BreakableWall:
   sub   a,8
   jr    nz,.loop
 
-  inc   (ix+enemies_and_objects.x)          ;move explosion 2 pixels to the right to center it perfectly
-  inc   (ix+enemies_and_objects.x)
+  ld    a,(ix+enemies_and_objects.x)        ;dx
+  add   a,16                                ;center explosion
+  ld    (ix+enemies_and_objects.x),a        ;dx
   ld    (ix+enemies_and_objects.alive?),-1  ;turn this object into a hardware sprite
   jp    CheckPlayerPunchesEnemy.EnemyDied
 
@@ -91,7 +106,6 @@ BreakableWall:
   ld    (FreeToUseFastCopy+sy),a
 
   ld    a,(ix+enemies_and_objects.x)        ;dx
-  sub   a,12                                ;we added 12 pixels to x for proper collision detection with wallbash
   ld    (FreeToUseFastCopy+dx),a
   ld    a,(ix+enemies_and_objects.y)        ;dy
   ld    (FreeToUseFastCopy+dy),a
@@ -101,7 +115,6 @@ BreakableWall:
   ld    (FreeToUseFastCopy+dPage),a
 
   ld    a,(ix+enemies_and_objects.nx)       ;nx
-  sub   a,4                                 ;we added 4 pixels as a margin
   ld    (FreeToUseFastCopy+nx),a
   ld    a,(ix+enemies_and_objects.ny)       ;ny
   ld    (FreeToUseFastCopy+ny),a
