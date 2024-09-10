@@ -1057,107 +1057,105 @@ CheckPlayerPunchesBossWithYOffset:                ;in b=Y offset
   
 BlinkDurationWhenHit: equ 31  
 CheckPlayerPunchesEnemy:  
-  ld    a,(ix+enemies_and_objects.hit?)     ;reduce enemy is hit counter
-  dec   a
-  jp    m,.EndReduceHitTimer
-  ld    (ix+enemies_and_objects.hit?),a
-  ret                                       ;if enemy is  already hit, don't check if it's hit again
-  .EndReduceHitTimer:
- 
-  ld    a,(SecundaryWeaponActive?)
-  or    a
-  call  nz,CheckSecundaryWeaponHitsEnemy
+	ld    a,(ix+enemies_and_objects.hit?)     ;reduce enemy is hit counter
+	dec   a
+	jp    m,.EndReduceHitTimer
+	ld    (ix+enemies_and_objects.hit?),a
+	ret                                       ;if enemy is  already hit, don't check if it's hit again
+.EndReduceHitTimer:
 
-  ld    a,(PrimaryWeaponActive?)
-  or    a
-  jp    nz,CheckPrimaryWeaponHitsEnemy
-  ret
+	ld    a,(SecundaryWeaponActive?)
+	or    a
+	call  nz,CheckSecundaryWeaponHitsEnemy
+	ld    a,(PrimaryWeaponActive?)
+	or    a
+	jp    nz,CheckPrimaryWeaponHitsEnemy
+	ret
   
-  .EnemyDied:
-  ld    (ix+enemies_and_objects.hit?),00    ;stop blinking white when dead
+;Enemy dies
+.EnemyDied:
+	ld    (ix+enemies_and_objects.hit?),00    ;stop blinking white when dead
+	ld    a,(ix+enemies_and_objects.nrspritesSimple)
+	cp    8
+	jr    c,.ExplosionSmall  
 
-  ;Enemy dies
-  ld    a,(ix+enemies_and_objects.nrspritesSimple)
-  cp    8
-  jr    c,.ExplosionSmall  
+.ExplosionBig:
+	ld    hl,ExplosionBig
+	ld    (ix+enemies_and_objects.movementpattern),l
+	ld    (ix+enemies_and_objects.movementpattern+1),h
 
-  .ExplosionBig:
-  ld    hl,ExplosionBig
-  ld    (ix+enemies_and_objects.movementpattern),l
-  ld    (ix+enemies_and_objects.movementpattern+1),h
-  
-  ;x position of explosion is x - 16 + (nx/2)
-  ld    a,(ix+enemies_and_objects.nx)
+	;x position of explosion is x - 16 + (nx/2)
+	ld    a,(ix+enemies_and_objects.nx)
 	srl		a                                   ;/2
-  ld    d,0
-  ld    e,a
-  ld    l,(ix+enemies_and_objects.x)  
-  ld    h,(ix+enemies_and_objects.x+1)      ;x
-  add   hl,de
-  ld    de,-16
-  add   hl,de
-  ld    (ix+enemies_and_objects.x),l  
-  ld    (ix+enemies_and_objects.x+1),h      ;x
-  
-  ;y position of explosion is y + ny - 16           
-  ld    a,(ix+enemies_and_objects.y)
-  add   a,(ix+enemies_and_objects.ny)
-  sub   a,32
-;  ld    (ix+enemies_and_objects.y),a
+	ld    d,0
+	ld    e,a
+	ld    l,(ix+enemies_and_objects.x)  
+	ld    h,(ix+enemies_and_objects.x+1)      ;x
+	add   hl,de
+	ld    de,-16
+	add   hl,de
+	ld    (ix+enemies_and_objects.x),l  
+	ld    (ix+enemies_and_objects.x+1),h      ;x
 
-  ;backup y and move sprite out of screen
-;  ld    a,(ix+enemies_and_objects.y)        ;y  
-  ld    (ix+enemies_and_objects.v2),a       ;y backup
-  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.y),217      ;y
+	;y position of explosion is y + ny - 16           
+	ld    a,(ix+enemies_and_objects.y)
+	add   a,(ix+enemies_and_objects.ny)
+	sub   a,32
+	;ld    (ix+enemies_and_objects.y),a
 
-  ;we remove all sprite y's from spat. This way any remaining sprites from the object before the explosion will get removed properly
-  ld    l,(ix+enemies_and_objects.spataddress)
-  ld    h,(ix+enemies_and_objects.spataddress+1)
-  ld    b,(ix+enemies_and_objects.nrspritesSimple)
-  .loop:
-  ld    (hl),217
-  inc   hl
-  inc   hl
-  djnz  .loop
+;backup y and move sprite out of screen
+	;ld    a,(ix+enemies_and_objects.y)        ;y  
+	ld    (ix+enemies_and_objects.v2),a       ;y backup
+	ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+	ld    (ix+enemies_and_objects.y),217      ;y
+
+;remove all sprite y's from spat. This way any remaining sprites from the object before the explosion will get removed properly
+	ld    l,(ix+enemies_and_objects.spataddress)
+	ld    h,(ix+enemies_and_objects.spataddress+1)
+	ld    b,(ix+enemies_and_objects.nrspritesSimple)
+.loop:
+	ld    (hl),217
+	inc   hl
+	inc   hl
+	djnz  .loop
   
-  ld    (ix+enemies_and_objects.nrsprites),72-(08*6)
-  ld    (ix+enemies_and_objects.nrspritesSimple),8
-  ld    (ix+enemies_and_objects.nrspritesTimes16),8*16  
-  ld    bc,SFX_enemyexplosionbig
-  jp    RePlayerSFX_PlayCh2
+	ld    (ix+enemies_and_objects.nrsprites),72-(08*6)
+	ld    (ix+enemies_and_objects.nrspritesSimple),8
+	ld    (ix+enemies_and_objects.nrspritesTimes16),8*16  
+	ld    bc,SFX_enemyexplosionbig
+	jp    RePlayerSFX_PlayCh2
   
-  .ExplosionSmall:
-  ld    hl,ExplosionSmall
-  ld    (ix+enemies_and_objects.movementpattern),l
-  ld    (ix+enemies_and_objects.movementpattern+1),h
-  
-  ;x position of explosion is x - 8 + (nx/2)
-  ld    a,(ix+enemies_and_objects.nx)
+.ExplosionSmall:
+	ld    hl,ExplosionSmall
+	ld    (ix+enemies_and_objects.movementpattern),l
+	ld    (ix+enemies_and_objects.movementpattern+1),h
+
+	;x position of explosion is x - 8 + (nx/2)
+	ld    a,(ix+enemies_and_objects.nx)
 	srl		a                                   ;/2
-  ld    d,0
-  ld    e,a
-  ld    l,(ix+enemies_and_objects.x)  
-  ld    h,(ix+enemies_and_objects.x+1)      ;x
-  add   hl,de
-  ld    de,-8
-  add   hl,de
-  ld    (ix+enemies_and_objects.x),l  
-  ld    (ix+enemies_and_objects.x+1),h      ;x
-  
-  ;y position of explosion is y + ny - 16
-  ld    a,(ix+enemies_and_objects.y)
-  add   a,(ix+enemies_and_objects.ny)
-  sub   a,16
-;  ld    (ix+enemies_and_objects.y),a
+	ld    d,0
+	ld    e,a
+	ld    l,(ix+enemies_and_objects.x)  
+	ld    h,(ix+enemies_and_objects.x+1)      ;x
+	add   hl,de
+	ld    de,-8
+	add   hl,de
+	ld    (ix+enemies_and_objects.x),l  
+	ld    (ix+enemies_and_objects.x+1),h      ;x
 
-  ;backup y and move sprite out of screen
-;  ld    a,(ix+enemies_and_objects.y)        ;y  
-  ld    (ix+enemies_and_objects.v2),a       ;y backup
-  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.y),218      ;y
-  ld    bc,SFX_enemyexplosionsmall
-  jp    RePlayerSFX_PlayCh2
+	;y position of explosion is y + ny - 16
+	ld    a,(ix+enemies_and_objects.y)
+	add   a,(ix+enemies_and_objects.ny)
+	sub   a,16
+	;  ld    (ix+enemies_and_objects.y),a
+
+	;backup y and move sprite out of screen
+	;  ld    a,(ix+enemies_and_objects.y)        ;y  
+	ld    (ix+enemies_and_objects.v2),a       ;y backup
+	ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+	ld    (ix+enemies_and_objects.y),218      ;y
+	ld    bc,SFX_enemyexplosionsmall
+	jp    RePlayerSFX_PlayCh2
 
   
 ;/Generic Enemy Routines ##############################################################################

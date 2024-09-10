@@ -17,8 +17,9 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
 
 ;lemniscate
-roomX: equ ("B"-"A")*26 + "U"-"A"
-WorldMapPositionY:  db  22-1 | WorldMapPositionX:  db  roomX
+roomX: equ ("B"-"A")*26 + "F"-"A"
+roomY: equ 21
+WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 
 ;boss demon
 ;roomX: equ ("B"-"A")*26 + "G"-"A"
@@ -941,11 +942,9 @@ SetVdp_Read:  rlc     h
               ret
               
 ;
-;Set VDP port #98 to start writing at address AHL (17-bit)
-;
+;Set VDP to start writing at address AHL (17-bit)
 SetVdp_Write: 
-;first set register 14 (actually this only needs to be done once
-	rlc     h
+	rlc     h	;first set register 14 (actually this only needs to be done once
 	rla
 	rlc     h
 	rla
@@ -955,16 +954,14 @@ SetVdp_Write:
 	out     ($99),a       ;set bits 15-17
 	ld      a,14+128
 	out     ($99),a
-;/first set register 14 (actually this only needs to be done once
 
 	ld      a,l           ;set bits 0-7
-;	nop
 	out     ($99),a
 	ld      a,h           ;set bits 8-14
 	or      64            ; + write access
 	ei
 	out     ($99),a       
-	ret
+ret
 
 SetVdp_WriteRemainDI: 
 ;first set register 14 (actually this only needs to be done once
@@ -1182,64 +1179,65 @@ AddressToWriteTo: ds  2
 NXAndNY: ds  2
 BigEnemyPresentInVramPage3:   db 0      ;1=big statue mouth, 2=huge blob, 3=huge spider
 ObjectPresentInVramPage1:     db 0      ;1=omni directional platform
-CopyRomToVram:                          ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-  ex    af,af'                          ;store rom block
 
-  in    a,($a8)                         ;store current rom/ram settings of page 1+2
-  push  af
-	ld		a,(memblocks.1)
-  push  af
-	ld		a,(memblocks.2)
-  push  af
+;Copy ROM to VRAM using Direct VDP Access
+;in:HL=SxSy, DE=DxDy, BC=NxNy, A=ROMblock
+CopyRomToVram:
+	ex    af,af'                          ;store rom block
 
-  ld    a,(slot.page12rom)              ;all RAM except page 1+2
-  out   ($a8),a      
-  ex    af,af'
-  call  block1234                       ;CARE!!! we can only switch block34 if page 1 is in rom  
+	in	 a,($a8)                         ;store current rom/ram settings of page 1+2
+	push af
+	ld	 a,(memblocks.1)
+	push af
+	ld	 a,(memblocks.2)
+	push af
 
-  call  .go                             ;go copy
+	ld    a,(slot.page12rom)              ;all RAM except page 1+2
+	out   ($a8),a      
+	ex    af,af'
+	call  block1234                       ;CARE!!! we can only switch block34 if page 1 is in rom  
+	call  .go                             ;go copy
 
-  pop   af
-  call  block34
-  pop   af
-  call  block12
-  pop   af
-  out   ($a8),a                         ;reset rom/ram settings of page 1+2
+	pop   af
+	call  block34
+	pop   af
+	call  block12
+	pop   af
+	out   ($a8),a                         ;reset rom/ram settings of page 1+2
   ret
 
-  .go:
-  ld    (AddressToWriteFrom),hl
-  ld    (AddressToWriteTo),de
-  ld    (NXAndNY),bc
+.go:
+	ld    (AddressToWriteFrom),hl	;ro: write from? don't you mean READ from?
+	ld    (AddressToWriteTo),de
+	ld    (NXAndNY),bc
 
-  ld    c,$98                           ;out port
-  ld    de,128                          ;increase 128 bytes to go to the next line
+	ld    c,$98                           ;out port
+	ld    de,128                          ;increase 128 bytes to go to the next line
 
-  .loop:
-  call  .WriteOneLine
-  ld    a,(NXAndNY+1)
-  dec   a
-  ld    (NXAndNY+1),a
-  jp    nz,.loop
-  ret
+.loop:
+	call  .WriteOneLine
+	ld    a,(NXAndNY+1)
+	dec   a
+	ld    (NXAndNY+1),a
+	jp    nz,.loop
+ret
 
-  .WriteOneLine:
-  ld    hl,(AddressToWriteTo)           ;set next line to start writing to
-  add   hl,de                           ;increase 128 bytes to go to the next line
-  ld    (AddressToWriteTo),hl
+.WriteOneLine:
+	ld    hl,(AddressToWriteTo)           ;set next line to start writing to
+	add   hl,de                           ;increase 128 bytes to go to the next line
+	ld    (AddressToWriteTo),hl
 
-	ld		a,(PageToWriteTo)               ;0=page 0 or 1, 1=page 2 or 3
+	ld		a,(PageToWriteTo)             ;0=page 0 or 1, 1=page 2 or 3
 	call	SetVdp_Write
 
-  ld    hl,(AddressToWriteFrom)         ;set next line to start writing from
-  add   hl,de                           ;increase 128 bytes to go to the next line
-  ld    (AddressToWriteFrom),hl
-  ld    a,(NXAndNY)
-;  cp    128
-;  jr    z,.outi128
-
-  ld    b,a
-  otir
+	ld    hl,(AddressToWriteFrom)         ;set next line to start writing from
+	add   hl,de                           ;increase 128 bytes to go to the next line
+	ld    (AddressToWriteFrom),hl
+	ld    a,(NXAndNY)
+	;  cp    128
+	;  jr    z,.outi128
+	ld    b,a
+	otir
   ret
 
 

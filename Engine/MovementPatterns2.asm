@@ -18,43 +18,46 @@ phase	movementpatterns2Address
 ;v5=
 ;v6=
 ;v7=wall remove step
-;v8=phase
+;v8=phase b0:0=wall enabled, 1=bashed
 BreakableWall:
-;jr .WallBashed
-  bit   0,(ix+enemies_and_objects.v8)         ;v8=Phase (0=idle, 1=wall bashed)
-  jr    nz,.WallBashed
-  ld    (ix+enemies_and_objects.life),255     ;unable to kill
+	bit   0,(ix+enemies_and_objects.v8)
+	jp    nz,.WallBashed
+	ld    (ix+enemies_and_objects.life),255     ;unable to kill
 
-  ;we need to widen the hitbox of the wall for proper check with wallbash
-  ld    a,(ix+enemies_and_objects.x)        ;dx
-  add   a,12
-  ld    (ix+enemies_and_objects.x),a        ;dx
-  ld    a,(ix+enemies_and_objects.nx)        ;dx
-  add   a,4
-  ld    (ix+enemies_and_objects.nx),a        ;dx
-  call  CheckPlayerPunchesEnemy               ;Check if player hit's enemy
-  ld    a,(ix+enemies_and_objects.x)        ;dx
-  sub   a,12
-  ld    (ix+enemies_and_objects.x),a        ;dx
-  ld    a,(ix+enemies_and_objects.nx)        ;dx
-  sub   a,4
-  ld    (ix+enemies_and_objects.nx),a        ;dx
+	;widen the hitbox of the wall for proper check with wallbash
+	ld    a,(ix+enemies_and_objects.x)        ;dx
+	push af
+	add   a,12
+	ld    (ix+enemies_and_objects.x),a        ;dx
+	ld    a,(ix+enemies_and_objects.nx)        ;dx
+	push af
+	add   a,4
+	ld    (ix+enemies_and_objects.nx),a        ;dx
+	call  CheckPlayerPunchesEnemy               ;Check if player hit's enemy
+	;ld    a,(ix+enemies_and_objects.nx)        ;dx
+	;sub   a,4
+	pop af
+	ld    (ix+enemies_and_objects.nx),a        ;dx
+	;ld    a,(ix+enemies_and_objects.x)        ;dx
+	;sub   a,12
+	pop af
+	ld    (ix+enemies_and_objects.x),a        ;dx
 
-  .CheckIfHit:
-  bit   0,(ix+enemies_and_objects.hit?)     ;check if hit
-  ret   z
+.CheckIfHit:
+	bit   0,(ix+enemies_and_objects.hit?)     ;check if hit
+	ret   z
 
 	ld		hl,(PlayerSpriteStand)
 	ld		de,RBouncingBack
-  xor   a
-  sbc   hl,de
-  jr    z,.HitByWallBash
+	xor   a
+	sbc   hl,de
+	jr    z,.HitByWallBash
 
 	ld		hl,(PlayerSpriteStand)
 	ld		de,LBouncingBack
-  xor   a
-  sbc   hl,de
-  ret   nz
+	xor   a
+	sbc   hl,de
+	ret   nz
   
   .HitByWallBash:
   set   0,(ix+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=wall bashed)

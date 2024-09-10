@@ -1135,109 +1135,102 @@ dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
   ld    (iy+enemies_and_objects.v2),000 ;v2=active?
   ret
 
-  .Object012:                           ;small moving platform (lighter version)
-  call  .Object011
-  ld    (iy+enemies_and_objects.v1),080 ;v1=sx software sprite in Vram off
-  ld    a,(ix+Object011Table.active)
-  ld    (iy+enemies_and_objects.v2),a   ;v2=active?
-  or    a
-  ret   z
-  ld    (iy+enemies_and_objects.v1),096 ;v1=sx software sprite in Vram on
-  ret
-
-  .Object013:                           ;boss plant
-  ld    hl,Object013Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*4           ;4 object(s)
-  ldir
-
-  ;put boss plant backdrop in all 4 pages
-  ld    a,0
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$0000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (212*256) + (256/2)        ;(ny*256) + (nx/2)
-  ld    a,BossPlantBackdropBlock              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-  ld    hl,.CopyPage0ToPage1
-  call  DoCopy
-
-  ld    a,1
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$0000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (212*256) + (256/2)        ;(ny*256) + (nx/2)
-  ld    a,BossPlantBackdropBlock              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-  ld    hl,.CopyPage0ToPage3
-  call  DoCopy
-
-  ld    hl,TinyCopyWhichFunctionsAsWaitVDPReady
-  call  DoCopy
-
-  ld    de,Object013Table.lenghtobjectdata
-  ret  
-
-.CopyPage0ToPage1:
-		db    000,000,000,000   ;sx,--,sy,spage
-		db    000,000,000,001   ;dx,--,dy,dpage
-		db    000,001,212,000   ;nx,--,ny,--
-		db    000,000,$d0       ;fast copy
-
-.CopyPage0ToPage3:
-		db    000,000,000,000   ;sx,--,sy,spage
-		db    000,000,000,003   ;dx,--,dy,dpage
-		db    000,001,212,000   ;nx,--,ny,--
-		db    000,000,$d0       ;fast copy
+;small moving platform (lighter version)
+.Object012:
+	call  .Object011
+	ld    (iy+enemies_and_objects.v1),080 ;v1=sx software sprite in Vram off
+	ld    a,(ix+Object011Table.active)
+	ld    (iy+enemies_and_objects.v2),a   ;v2=active?
+	or    a
+	ret   z
+	ld    (iy+enemies_and_objects.v1),096 ;v1=sx software sprite in Vram on
+ret
 
 
+;boss plant
+.Object013: 
+	ld    hl,Object013Table
+	push  iy
+	pop   de                              ;enemy object table
+	ld    bc,lenghtenemytable*4           ;4 object(s)
+	ldir
+
+;put boss plant backdrop in all 4 pages
+	ld    a,0
+	ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+	ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+	ld    de,$0000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+	ld    bc,$0000 + (212*256) + (256/2)        ;(ny*256) + (nx/2)
+	ld    a,BossPlantBackdropBlock              ;block to copy graphics from
+	call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+	ld    hl,.Page0ToPage1CopyTable
+	call  DoCopy
+
+	ld    a,1
+	ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+	ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+	ld    de,$0000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+	ld    bc,$0000 + (212*256) + (256/2)        ;(ny*256) + (nx/2)
+	ld    a,BossPlantBackdropBlock              ;block to copy graphics from
+	call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+	ld    hl,.Page0ToPage3CopyTable
+	call  DoCopy
+	ld    hl,TinyCopyWhichFunctionsAsWaitVDPReady
+	call  DoCopy
+
+	ld    de,Object013Table.lenghtobjectdata
+ret  
+
+.Page0ToPage1CopyTable:
+	db    000,000,000,000   ;sx,--,sy,spage
+	db    000,000,000,001   ;dx,--,dy,dpage
+	db    000,001,212,000   ;nx,--,ny,--
+	db    000,000,$E0       ;fast copy HMMM > ro: changed to YMMM, which is faster
+.Page0ToPage3CopyTable:
+	db    000,000,000,000   ;sx,--,sy,spage
+	db    000,000,000,003   ;dx,--,dy,dpage
+	db    000,001,212,000   ;nx,--,ny,--
+	db    000,000,$E0       ;fast copy YMMM
 
 
-  .Object014:                           ;boss plant
-  ld    hl,Object014Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1           ;1 object(s)
-  ldir
+;014-BreakableWall
+.Object014:
+	ld    hl,Object014Table	;ro: why clear the whole table and rewrite some attribs? why not just (re)set only needed ones?
+	push  iy
+	pop   de                              ;enemy object table
+	ld    bc,lenghtenemytable*1           ;1 object(s)
+	ldir
 
-  ;set x
-  ld    a,(ix+Object014Table.x)
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),l
-  ld    (iy+enemies_and_objects.x+1),h
+;set x
+	ld    l,(ix+Object014Table.x)
+	ld    h,c	;=0
+	add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+	ld    (iy+enemies_and_objects.x),l
+	ld    (iy+enemies_and_objects.x+1),h
+;set y
+	ld    a,(ix+Object014Table.y)
+	ld    (iy+enemies_and_objects.y),a
+;set nx
+	ld    a,(ix+Object014Table.nx)
+	add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+	ld    (iy+enemies_and_objects.nx),a
+;set ny
+	ld    a,(ix+Object014Table.ny)
+	ld    (iy+enemies_and_objects.ny),a
+;set x repair gfx
+	ld    l,(ix+Object014Table.repairx)
+	ld    h,c ;=0
+	add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+	ld    (iy+enemies_and_objects.v1),l   ;sx repair gfx
+	;  ld    (iy+enemies_and_objects.x+1),h
+;set y repair gfx
+	ld    a,(ix+Object014Table.repairy)
+	ld    (iy+enemies_and_objects.v2),a   ;sy repair gfx
 
-  ;set y
-  ld    a,(ix+Object014Table.y)
-  ld    (iy+enemies_and_objects.y),a
-
-  ;set nx
-  ld    a,(ix+Object014Table.nx)
-  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.nx),a
-
-  ;set ny
-  ld    a,(ix+Object014Table.ny)
-  ld    (iy+enemies_and_objects.ny),a
-
-  ;set x repair gfx
-  ld    a,(ix+Object014Table.repairx)
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.v1),l   ;sx repair gfx
-;  ld    (iy+enemies_and_objects.x+1),h
-
-  ;set y repair gfx
-  ld    a,(ix+Object014Table.repairy)
-  ld    (iy+enemies_and_objects.v2),a   ;sy repair gfx
-
-  ld    de,Object014Table.lenghtobjectdata
-  ret  
+	ld    de,Object014Table.lenghtobjectdata
+ret  
 
 
 
