@@ -17,8 +17,8 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
 
 ;lemniscate
-roomX: equ ("B"-"A")*26 + "F"-"A"
-roomY: equ 21
+roomX: equ ("B"-"A")*26 + "U"-"A"
+roomY: equ 22
 WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 
 ;boss demon
@@ -696,8 +696,8 @@ ConvertToMapinRam:
     call .convertTile
     pop hl
 
-	;the following code changes lava and spike tiles, to speed this up, both their values in tileConversionTable can be adjusted instead. Ro ?
-	;Lava is turning to hard foreground when lavawalk is obtained
+;the following code changes lava and spike tiles, to speed this up, both their values in tileConversionTable can be adjusted instead.
+;Lava is turning to hard foreground when lavawalk is obtained
 	ld		a,c
 	cp		LavaId
 	jr		nz,.EndCheckLava
@@ -706,8 +706,7 @@ ConvertToMapinRam:
 	jr		z,.EndCheckLava
 	ld		c,HardForeGroundID
 	.EndCheckLava:
-
-	;spikes is turning to background when spikeswalk is obtained
+;spikes is turning to background when spikeswalk is obtained
 	ld		a,c
 	cp		SpikeId
 	jr		nz,.EndCheckSpikes
@@ -721,15 +720,15 @@ ConvertToMapinRam:
     inc hl
     djnz .loop
 
-    ld  (hl),0
+    ld  (hl),0 ;2 empty tiles on the right side of the map
     inc hl
     ld  (hl),0
-    inc hl  ;2 empty tiles on the right side of the map
+    inc hl  
 
     pop AF
     dec a
     jp  nz,.SelfModifyingCodeMapLenght
-    ret
+ret
   
 ;Convert one MapTileNr to TileID using a lookupTable
 .convertTile:

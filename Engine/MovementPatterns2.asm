@@ -33,7 +33,7 @@ BreakableWall:
 	push af
 	add   a,4
 	ld    (ix+enemies_and_objects.nx),a        ;dx
-	call  CheckPlayerPunchesEnemy               ;Check if player hit's enemy
+	call  CheckPlayerPunchesEnemy               ;Check if player hits object
 	;ld    a,(ix+enemies_and_objects.nx)        ;dx
 	;sub   a,4
 	pop af
@@ -64,17 +64,20 @@ BreakableWall:
   ret
 
   .WallBashed:
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=wall remove step
-  inc   a
-  ld    (ix+enemies_and_objects.v7),a       ;v7=wall remove step
-  dec   a
-  jr    z,.RemoveWallPage0                  ;page 0
-  dec   a
-  jr    z,.RemoveWallPageNextPage           ;page 1
-  dec   a
-  jr    z,.RemoveWallPageNextPage           ;page 2
-  dec   a
-  jr    z,.RemoveWallPageNextPage           ;page 3
+	ld    a,(ix+enemies_and_objects.v7)       ;v7=wall remove step
+	inc   a
+	ld    (ix+enemies_and_objects.v7),a       ;v7=wall remove step
+	dec	a
+	jp	z,.RemoveWallFromRoomTiles
+	dec   a	;#0
+	jp    z,.RemoveWallPage0                  ;page 0
+	dec   a
+	jp    z,.RemoveWallPageNextPage           ;page 1
+	dec   a
+	jp    z,.RemoveWallPageNextPage           ;page 2
+	dec   a
+	jp    z,.RemoveWallPageNextPage           ;page 3
+	jp	.endRemoveWall
 
 ;UnpackedRoomFile:
 ;.meta:		rb 8
@@ -99,7 +102,7 @@ BreakableWall:
   add   hl,de
   sub   a,8
   jr    nz,.loop
-  jr    .endRemoveWall
+  ret ;jr    .endRemoveWall
 
   .BreakableWall32:
   ld    de,40 - 3
@@ -115,6 +118,13 @@ BreakableWall:
   add   hl,de
   sub   a,8
   jr    nz,.loop2
+ret
+
+;Fill a part of the current room tile matrix
+;in: HL=
+.FillUnpackedRoomFileBlock
+
+
 
   .endRemoveWall:
 
@@ -148,16 +158,28 @@ BreakableWall:
   jp     DoCopy
 
   .RemoveWallPageNextPage:
-  ld    a,(FreeToUseFastCopy+dx)
-  sub   a,16
-  ld    (FreeToUseFastCopy+dx),a
+	ld    hl,FreeToUseFastCopy
+	ld    a,(FreeToUseFastCopy+dPage)
+	inc   a
+	ld    (FreeToUseFastCopy+dPage),a
+;ro, added: here needs to be checked of DX <0 and and/or if there's still something to remove. Like 16pix on page 1 for when x=0
+	ld	a,(FreeToUseFastCopy+dx)
+	sub	a,16
+	ld	(FreeToUseFastCopy+dx),a
+	jp	z,docopy
+	jp  nc,docopy
+	xor	A
+	ld	(FreeToUseFastCopy+dx),a
+	ld	a,(FreeToUseFastCopy+nx)
+	sub	a,16
+	ld	(FreeToUseFastCopy+nx),a
+	ret	c
+	ret	z
+	ld	a,(FreeToUseFastCopy+sx)
+	add	a,16
+	ld	(FreeToUseFastCopy+sx),a
+	jp	DoCopy
 
-  ld    a,(FreeToUseFastCopy+dPage)
-  inc   a
-  ld    (FreeToUseFastCopy+dPage),a
-
-  ld    hl,FreeToUseFastCopy
-  jp     DoCopy
 
 BossPlantPaletteAnimation1:
   incbin "..\grapx\BossPlant\BossPlantPaletteAnimation1.PL" ;file palette 

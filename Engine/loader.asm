@@ -1230,6 +1230,16 @@ ret
 	ld    (iy+enemies_and_objects.v2),a   ;sy repair gfx
 
 	ld    de,Object014Table.lenghtobjectdata
+ld hl,(clesX)
+ld a,H
+and A
+ret nz
+ld a,L
+cp 32
+ret nc
+set    0,(iy+enemies_and_objects.v8)
+
+
 ret  
 
 
