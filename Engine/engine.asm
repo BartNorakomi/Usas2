@@ -3708,14 +3708,15 @@ block1234:
 
 SwapSpatColAndCharTable:
 	ld		a,(vdp_0+6)     ;check current sprite character table
-  cp    %0010 1111      ;spr chr table at $17800 now ?
-  ld    hl,$6c00        ;spr color table $16c00
-  ld    de,$7400        ;spr color table buffer $17400
+	cp    %0010 1111      ;spr chr table at $17800 now ?
+	ld    hl,$6c00        ;spr color table $16c00
+	ld    de,$7400        ;spr color table buffer $17400
 	ld		a,%1101 1111    ;spr att table to $16e00    
 	ld		b,%0010 1110    ;spr chr table to $17000
-  jp    z,.setspritetables
-  ld    hl,$7400        ;spr color table $17400
-  ld    de,$6c00        ;spr color table buffer $16c00
+	jp    z,.setspritetables
+;	ld    hl,$7400        ;spr color table $17400
+;	ld    de,$6c00        ;spr color table buffer $16c00
+	ex	 de,hl
 	ld		a,%1110 1111    ;spr att table to $17600
 	ld		b,%0010 1111    ;spr chr table to $17800
 
@@ -3932,51 +3933,37 @@ CheckTileEnemy:
 
   add   a,(ix+enemies_and_objects.y)  
   jp    checktile.XandYset
-  
-checktile:                  ;in b->add y to check, de->add x to check
-;get player X in tiles
-  ld    hl,(ClesX)
-  add   hl,de
 
-;  ld    a,h
-;  or    a
-;  jp    m,.CheckTileIsOutOfScreenLeft
-
-  bit   7,h
-  jr    nz,.CheckTileIsOutOfScreenLeft
-
-  .EntryOutOfScreenLeft:
-
-  ld    a,(Clesy)
-;get player Y in pixels and convert it to tiles
-  add   a,b
-  .XandYset:
-
-  srl   h
-  rr    l                   ;/2
-  srl   l                   ;/4
-  srl   l                   ;/8
-
-  and   %11111000           ;Clear bits 0-2 (equals 256 - 8)
-  rrca                      ;/2
-  rrca                      ;/4
-  rrca                      ;/8
-
+;in b->add y to check, de->add x to check
+checktile:                  
+	ld    hl,(ClesX)	;get player X in tiles
+	add   hl,de
+	bit   7,h
+	jp    z,.EntryOutOfScreenLeft
+	ld    hl,0
+.EntryOutOfScreenLeft:
+	ld    a,(Clesy) ;get player Y in pixels and convert it to tiles
+	add   a,b
+.XandYset:
+	srl   h		;/2
+	rr    l
+	srl   l		;/4
+	srl   l		;/8
+	and   %11111000
+	rrca		;/2
+	rrca		;/4
+	rrca		;/8
 .selfmodifyingcodeStartingPosMapForCheckTile:
 	ld		de,MapData- 000000  ;start 2 rows higher (MapData-80 for normal engine, MapData-68 for SF2 engine)
 	add   hl,de
-	
 .selfmodifyingcodeMapLenght:
 	ld		bc,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
-;  jr    z,.yset
+	ex    de,hl               ;de->x in tiles
 
-  ex    de,hl               ;de->x in tiles
-
-;
+;ro:why wouldn't you just mul 8bx8b here?
 ; Multiply 8-bit value with a 16-bit value (amount of Y tiles * map lenght)
 ; In: Multiply A with BC
 ; Out: HL = result
-;
 .Mult12:
   ld    hl,0
 .Mult12_Loop:
@@ -4021,19 +4008,10 @@ checktile:                  ;in b->add y to check, de->add x to check
   add   hl,bc
 .Mult12_NoAdd8:
 
-;  pop   bc                  ;x in tiles
   add   hl,de               ;(amount of Y tiles * map lenght ) + x in tiles
-;  jp    .yset
-  
-;  ld    b,a                 ;b * de
-;.setmapwidthy:
-;	add		hl,de
-;  djnz  .setmapwidthy
-;.yset:
-
   ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=spikes, 4=stairs left up, 5=stairs right up, 6=lava, 7=water
   dec   a                   ;1 = wall
-	ret
+ret
 
 ;BackgroundID:	equ 0	;tile 0 = background
 ;HardForeGroundID:	equ 1	;tile 1 = hardforeground
@@ -4043,10 +4021,6 @@ checktile:                  ;in b->add y to check, de->add x to check
 ;StairRightId:	equ 5	;tile 5 = stairsrightup
 ;LavaId:		equ 6	;tile 6 = lava
 
-
-.CheckTileIsOutOfScreenLeft:
-  ld    hl,0
-  jp    .EntryOutOfScreenLeft
 
 PrimaryWeaponActivatedWhileJumping?:  db  0
 MagicWeaponDurationValue:     equ 29

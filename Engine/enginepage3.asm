@@ -1,16 +1,6 @@
 phase	enginepage3addr
 
 
-;MapDataCopiedToRam:
-;.block:		equ 0	;		ld (ix),a ;block
-;.address:	equ 1	;		ld (ix+1),l ;adr
-;					;		ld (ix+2),h
-;.engine:	equ 3	;		ld (ix+3),1 ;engine
-;.tileset:	equ 4	;		ld (ix+4),0 ;tileSet
-;.palette:	equ 5	;		ld (ix+5),0 ;pal
-;.tableSize:	equ 6	;WorldMapDataMapLenght:  equ 6     ;amount of bytes data per map
-;.data:		ds .tablesize ;ds  WorldMapDataMapLenght
-
 ;bt21=21,43;bt28=28,45;bt16=16,45;br16=16,43
 ;WorldMapPositionY:  db  17 | WorldMapPositionX:  db  44 ;ballroom 1 (with pipe)
 ;WorldMapPositionY:  db  20 | WorldMapPositionX:  db  44 ;ballroom 2
@@ -29,11 +19,11 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  21-1 | WorldMapPositionX:  db  roomX
 
 
-roomX: equ ("B"-"A")*26 + "U"-"A"
-roomY: equ 22
+roomX: equ ("B"-"A")*26 + "V"-"A"
+roomY: equ 27
 WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 ClesX:      dw 54 ;$19 ;230 ;250 ;210
-ClesY:      db 150 ;144-1
+ClesY:      db 180 ;144-1
 
 
 PlayLogo:
@@ -59,7 +49,8 @@ loadGraphics:
 	call GetRoomPaletteId
 	call getPalette
 	call SetMapPalette
-	call SetEngineType
+	call getroomtypeId
+	call InitializeRoomType
 
 	call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
 	call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
@@ -366,6 +357,14 @@ GetRoomPaletteId:
 		and $1f
 ret
 
+;Return the current room type
+GetRoomTypeId:
+		ld    a,(UnpackedRoomFile+roomDataBlock.mapid)  ;tttrrrrr (t=type,r=ruin)
+		rlca
+		rlca
+		rlca
+		and   7
+ret
 
 BuildUpMap:
 		;Set ROM with tileset blocks to p1,p2

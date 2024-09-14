@@ -2987,85 +2987,22 @@ copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
 
 
 
-;SetTilesInVram:  
-;set tiles in Vram
-;  ld    a,(ix+4)                      ;tile data
-;  or    a
-;  ld    d,VoodooWaspTilesBlock        ;0
-;  jr    z,.settiles
-;  dec   a
-;  ld    d,GoddessTilesBlock           ;1
-;  jr    z,.settiles
-;  dec   a
-;  ld    d,KonarkTilesBlock            ;2
-;  jr    z,.settiles
-;  dec   a
-;  ld    d,KarniMataTilesBlock         ;3
-;  jr    z,.settiles
-;  dec   a
-;  ld    d,BlueTempleTilesBlock        ;4
-;  jr    z,.settiles
-;  dec   a
-;  ld    d,BurialTilesBlock            ;5
-;  jr    z,.settiles
-;  dec   a
-;  ld    d,BossAreaTilesBlock          ;6
-;  jr    z,.settiles
-;  dec   a
-;  ld    d,IceTempleTilesBlock         ;7
-;  jr    z,.settiles
-
-;  .settiles:
-;  ld    a,(slot.page12rom)            ;all RAM except page 12
-;  out   ($a8),a          
-
-;  ld    hl,$8000                      ;page 1 - screen 5
-;  ld    b,0
-;  call  copyGraphicsToScreen2
-;  ret
-
-;copyGraphicsToScreen2:
-;  ld    a,d                           ;Graphicsblock
-;  call  block34
-  
-;	ld		a,b
-;	call	SetVdp_Write	
-;	ld		hl,$8000
-;  ld    c,$98
-;  ld    a,64                          ;first 128 line, copy 64*256 = $4000 bytes to Vram
-      
-;  call  .loop1    
-
-;  ld    a,d                           ;Graphicsblock
-;  inc   a
-;  call  block34
-  
-;	ld		hl,$8000
-;  ld    c,$98
-;  ld    a,64 ; 42                     ;second 84 line, copy 64*256 = $4000 bytes to Vram
-      
-;  call  .loop1   
-;  ret
-
-;.loop1:
-;  call  outix256
-;  dec   a
-;  jp    nz,.loop1
-;  ret
-
 ;BorderMaskingSpritesCall:
 ;  call  SetBorderMaskingSprites       ;set border masking sprites position in Spat
 ;NoBorderMaskingSpritesCall:
 ;  nop | nop | nop                     ;skip border masking sprites
 
-;Set the engine type properties
+;Set the engine properties for type [A]
 ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
-SetEngineType:
-
-	call getroomtypeId
+;SetEngine:
+InitializeRoomType:
 	call getroomtype
-	inc	 hl		;skip width
-	inc	 hl		;skip heigth
+	ld	 a,(hl) ;width
+	ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
+	add a,2
+	ld    (checktile.selfmodifyingcodeMapLenght+1),a
+	inc	 hl		; height
+	inc	 hl		; engine
 	ld	 a,(hl)
 	ld	 (scrollEngine),a              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
 	dec	 a
@@ -3083,17 +3020,16 @@ SetEngineType:
 	xor   a                             ;sprite split inactive
 
 .SetSpriteSplit:
-	ld    (SpriteSplitFlag),a           
-
-	ld    de,CheckTile256x216MapLenght
-	ld    (checktile.selfmodifyingcodeMapLenght+1),de
-	ld    de,ExitRight256x216
+ 	ld    (SpriteSplitFlag),a   
+;	ld    de,CheckTile256x216MapLenght	;e3.asm > equ 32 + 2
+;	ld    (checktile.selfmodifyingcodeMapLenght+1),de
+;	ld    a,MapLenght256x216	;equ 32
+;	ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
+	ld    de,ExitRight256x216 ;equ 252 ; 29*8
 	ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-	ld    a,MapLenght256x216
-	ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
 	ld    de,MapData- 68
 	ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
- 
+	
 ;check if player enters on the left side of the screen or on the right side. On the left camerax = 0, on the right camerax=15
 	ld    hl,256/2
 	ld    de,(ClesX)
@@ -3114,19 +3050,20 @@ SetEngineType:
 	ld    (ClesX),hl
   ret
 
-.type1	;.Engine304x216:
+.type1:	;.Engine304x216:
 	ld    a,1                           ;sprite split active
-	ld    (SpriteSplitFlag),a           
-	ld    de,CheckTile304x216MapLenght ;e3.asm > equ 38+2
-	ld    (checktile.selfmodifyingcodeMapLenght+1),de
-	ld    de,ExitRight304x216
+	ld    (SpriteSplitFlag),a
+	; ld    a,MapLenght304x216 ;e3.asm > equ 38
+	; ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
+	; ld    de,CheckTile304x216MapLenght ;e3.asm > equ 38+2
+	; ld    (checktile.selfmodifyingcodeMapLenght+1),de
+	ld    de,ExitRight304x216 ;equ 38*8-3
 	ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-	ld    a,MapLenght304x216 ;e3.asm > equ 38
-	ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
 	ld    de,MapData- 80
 	ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
 ret
   
+
 ReSetVariables:
   ;set player sprites to spritenumber 28 for char and color address
   ld    a,$7b ;-2
