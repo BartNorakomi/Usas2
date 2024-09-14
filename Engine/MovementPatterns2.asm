@@ -120,9 +120,9 @@ BreakableWall:
   jr    nz,.loop2
 ret
 
-;Fill a part of the current room tile matrix
+;Fill a part of the current room tile matrix (20240912;ro)
 ;in: HL=
-.FillUnpackedRoomFileBlock
+; .FillUnpackedRoomFileBlock:
 
 
 

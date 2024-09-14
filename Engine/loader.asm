@@ -9,17 +9,7 @@ loader:
 	call PopulateControls			;this allows for a double jump as soon as you enter a new map
 	ld de,(WorldMapPositionY) 			;WorldMapPositionX/Y:  
 	call getRoom
-;	call SetEngineType
-	;call  SetTilesInVram				;copies all the tiles to Vram
-;	ld	a,RuinId.KarniMata		 		;ruinId (temp)
-;	ld a,Ruinid.Lemniscate
  ret
-	ld a,Ruinid.Pegu
-;	ld a,(UnpackedRoomFile+roomDataBlock.mapid)
-;	and #1f
-	call getPalette
-	call SetMapPalette
-  ret
 
 
 ObjectTestData: 
@@ -2637,11 +2627,11 @@ Object008Table:               ;Boss Demon
          db -0,        1|dw BossDemonBullet     |db 8*12|dw 8*22|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
          db -0,        1|dw BossDemonBullet     |db 8*14|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
 
-
 .ID: equ 0
 .x: equ 1
 .y: equ 2
 .lenghtobjectdata: equ 3
+
 
 ;Get room type [A] table record address [HL]
 getRoomType:
@@ -2654,6 +2644,7 @@ getRoomType:
 		add hl,bc
 		pop bc
 ret
+
 ;LookUpTable for Room Types (width,height,engine,free)
 roomTypes:
 .recLen:		equ 4		;[atrribute]record length
@@ -2676,17 +2667,10 @@ roomTypes:
 ;Get room [DE] ROM location, block[A] address[HL]
 getRoom:
 		call GetWorldMapRoomLocation
-		add a,Dsm.firstBlock ;+dsm.indexBlock	;offset (temp)
-;		ld bc,$8000							;destination
+		add a,Dsm.firstBlock	;+dsm.indexBlock	;offset (temp)
+;		ld bc,$8000				;destination
 ;		add hl,bc
 		set 7,h
-;		ld ix,MapDataCopiedToRam
-;		ld (ix+MapDataCopiedToRam.block),a
-;		ld (ix+MapDataCopiedToRam.address+0),l
-;		ld (ix+MapDataCopiedToRam.address+1),h
-;		ld (ix+MapDataCopiedToRam.engine),1	;unused, I hope
-;		ld (ix+MapDataCopiedToRam.tileset),0 ;unused
-;		ld (ix+MapDataCopiedToRam.palette),0 ;unused
 ret
 
 
@@ -2710,7 +2694,7 @@ GWMR.1: LD    A,D             ;x
         INC   HL
         LD    H,(HL)          ;seg
         LD    L,0
-        SRL   H     	    ;seglen=128, so shift 1 right
+        SRL   H     	    ;seglen=128. So, shift 1 right
         RR    L
         RET
 GWMR.0: ADD   HL,BC
@@ -2729,7 +2713,7 @@ ret
 
 ;Get palette location
 ;in:	A=palId
-;out:	HL=adr of 32byes palbuffer
+;out:	HL=adr of 32bytes palrecord
 getPalette:
 		push bc
 		LD	h,0
@@ -2744,6 +2728,7 @@ getPalette:
 		pop bc		
 ret
 
+;Palettes table
 palettes:
 .reclen:		equ 32
 .numrec:		equ 32
@@ -2757,35 +2742,37 @@ palettes:
 .5:				DS .reclen
 .6KarniMata:	DB 71,5,18,1,32,5,52,3,32,1,0,3,80,3,115,6,0,2,119,7,64,6,35,2,69,4,112,5,112,2,0,0
 .7Konark:		DB $77,$04,$12,$01,$42,$03,$34,$03,$20,$01,$31,$02,$61,$03,$73,$06,$41,$02,$77,$07,$53,$04,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
-.815:			DS .reclen*8
-.1623:			DS .reclen*8
-.2430:			DS .reclen*7
+.8_15:			DS .reclen*8
+.16_23:			DS .reclen*8
+.24_30:			DS .reclen*7
 .31Teleport:	DB $00,$00,$12,$01,$50,$02,$34,$03,$20,$00,$30,$01,$00,$00,$73,$06,$00,$00,$77,$07,$70,$04,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
-
-
 
 
 ;Get Ruin properties
 ;in:	A=ruinId
-;out:	HL=adr
+;out:	HL=RecAdr
 GetRuin:
-push bc
-		LD	h,0
-		ld	l,A
-		add	hl,hl	;x2
-		add	hl,hl	;4
-		add hl,hl	;8
-		add	hl,hl	;16
-		ld	bc,RuinPropertiesLUT.data
-		add	hl,bc
-		pop bc
+	push bc
+	LD	h,0
+	ld	l,A
+	add	hl,hl	;x2
+	add	hl,hl	;4
+	add hl,hl	;8
+	add	hl,hl	;16
+	ld	bc,RuinPropertiesLUT.data
+	add	hl,bc
+	pop bc
 ret
 
-;RuinPropertiesLUT
+;RuinPropertiesLookUpTable
 RuinPropertiesLUT:
-.reclen:		equ 16
-.numrec:		equ 32
-.data:
+.reclen:		equ 16		;[attribute]The length of one record
+.numrec:		equ 32		;[attribute]Number of records
+.tileset:		equ +0		;[property]Default Tileset ID
+.palette:		equ +1		;[property]Default palette ID
+.music:			equ +2		;[property]Default music ID
+.Name:			equ +3		;[property]Name of the ruin as string
+.data:						;RM:table generated externally
 	DB 0,0,0,"             "
 	DB 0,0,0,"Hub          "
 	DB 2,0,0,"Lemniscate   "
@@ -2818,6 +2805,8 @@ RuinPropertiesLUT:
 	DB 0,0,0,"             "
 	DB 0,0,0,"             "
 	DB 0,0,0,"             "
+
+
 
 ResetPushStones:
   ld    hl,PuzzleBlocks1Y+3             ;y stone 1
@@ -3068,83 +3057,75 @@ copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
 ;  call  SetBorderMaskingSprites       ;set border masking sprites position in Spat
 ;NoBorderMaskingSpritesCall:
 ;  nop | nop | nop                     ;skip border masking sprites
-SetEngineType:                        ;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
-;Set Engine type
-;  ld    hl,BorderMaskingSpritesCall
-;  ld    de,LevelEngine.SelfModifyingCallBMS
-;  ld    bc,3
-;  ldir
 
-  ld    a,1                           ;sprite split active
-  ld    (SpriteSplitFlag),a           
+;Set the engine type properties
+;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
+SetEngineType:
 
-  ld    a,(UnpackedRoomFile+roomDataBlock.mapid)  ;tttrrrrr (t=type,r=ruin)
-  rlca
-  rlca
-  rlca
-  and   7
-  call  getroomtype
-  inc   hl		;skip width
-  inc   hl		;skip heigth
-  ld    a,(hl)
-  ld    (scrollEngine),a              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
-  dec   a
-  jp    z,.Engine304x216
+	call getroomtypeId
+	call getroomtype
+	inc	 hl		;skip width
+	inc	 hl		;skip heigth
+	ld	 a,(hl)
+	ld	 (scrollEngine),a              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
+	dec	 a
+	jp	 z,.type1 ;.Engine304x216
+	dec	 a
+	jp	 z,.type2 ;256x216 SF2
+;	jp	 .type3	;256x216 SF2 engine sprite split ON 
 
-  .Engine256x216:                     ;SF2 engine
-;;;;;;;;;;;;;;;; ################ in the SF2 engine we can choose to have spritesplit active, which gives us 14 extra sprites  
-  dec   a                             ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
-  ld    a,1                           ;sprite split active
-  jr    nz,.SetSpriteSplit
-  xor   a                             ;sprite split inactive
-  .SetSpriteSplit:
-  ld    (SpriteSplitFlag),a           
+; in the SF2 engine we can choose to have spritesplit active, which gives us 14 extra sprites  
+.type3:	;.Engine256x216WithSpriteSplit:
+	ld    a,1                           ;sprite split active
+	jr .SetSpriteSplit
 
-;  ld    hl,NoBorderMaskingSpritesCall
-;  ld    de,LevelEngine.SelfModifyingCallBMS
-;  ld    bc,3
-;  ldir
+.type2:	;.Engine256x216:                     ;SF2 engine
+	xor   a                             ;sprite split inactive
 
-  .Engine256x216WithSpriteSplit:
-  ld    de,CheckTile256x216MapLenght
-  ld    (checktile.selfmodifyingcodeMapLenght+1),de
-  ld    de,ExitRight256x216
-  ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-  ld    a,MapLenght256x216
-  ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
-  ld    de,MapData- 68
-  ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
+.SetSpriteSplit:
+	ld    (SpriteSplitFlag),a           
+
+	ld    de,CheckTile256x216MapLenght
+	ld    (checktile.selfmodifyingcodeMapLenght+1),de
+	ld    de,ExitRight256x216
+	ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
+	ld    a,MapLenght256x216
+	ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
+	ld    de,MapData- 68
+	ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
  
 ;check if player enters on the left side of the screen or on the right side. On the left camerax = 0, on the right camerax=15
-  ld    hl,256/2
-  ld    de,(ClesX)
-  sbc   hl,de
-  ld    a,15
-  jr    c,.setCameraX
-  xor   a
-  .setCameraX:
-  ld    (CameraX),a
+	ld    hl,256/2
+	ld    de,(ClesX)
+	sbc   hl,de
+	ld    a,15
+	jr    c,.setCameraX
+	xor   a
+	.setCameraX:
+	ld    (CameraX),a
 
-  ;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
-  ld    hl,(ClesX)
-  ld    de,ExitRight304x216
-  xor   a
-  sbc   hl,de
-  ret   nz
-  ld    hl,252 ;28*8
-  ld    (ClesX),hl
+;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
+	ld    hl,(ClesX)
+	ld    de,ExitRight304x216
+	xor   a
+	sbc   hl,de
+	ret   nz
+	ld    hl,252 ;28*8
+	ld    (ClesX),hl
   ret
 
-  .Engine304x216:                        ;
-  ld    de,CheckTile304x216MapLenght
-  ld    (checktile.selfmodifyingcodeMapLenght+1),de
-  ld    de,ExitRight304x216
-  ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-  ld    a,MapLenght304x216
-  ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
-  ld    de,MapData- 80
-  ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
-  ret
+.type1	;.Engine304x216:
+	ld    a,1                           ;sprite split active
+	ld    (SpriteSplitFlag),a           
+	ld    de,CheckTile304x216MapLenght ;e3.asm > equ 38+2
+	ld    (checktile.selfmodifyingcodeMapLenght+1),de
+	ld    de,ExitRight304x216
+	ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
+	ld    a,MapLenght304x216 ;e3.asm > equ 38
+	ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
+	ld    de,MapData- 80
+	ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
+ret
   
 ReSetVariables:
   ;set player sprites to spritenumber 28 for char and color address
@@ -3221,45 +3202,6 @@ ReSetVariables:
 ;  dw    -1,-0,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+0,+1
 ;  dw    -1,-0,-0,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+0,+0,+1
   
-ruinProperties:
-.reclen:		equ 16		;[attribute]The length of one record
-.numrec:		equ 32		;[attribute]Number of records
-.tileset:		equ +0		;[property]Default Tileset ID
-.palette:		equ +1		;[property]Default palette ID
-.music:			equ +2		;[property]Default music ID
-.Name:			equ +3		;[property]Name of the ruin as string
-.data:						;RM:table generated externally
-	DB	0,0,0,"             "
-	DB	0,0,0,"Hub          "
-	DB	0,0,0,"Lemniscate   "
-	DB	0,0,0,"Bos Stenen Wa"
-	DB	0,0,0,"Pegu         "
-	DB	0,0,0,"Bio          "
-	DB	6,6,3,"Karni Mata   "
-	DB	0,0,0,"Konark       "
-	DB	0,0,0,"Verhakselaar "
-	DB	0,0,0,"Taxilla      "
-	DB	0,0,0,"Euderus Set  "
-	DB	0,0,0,"Akna         "
-	DB	0,0,0,"Fate         "
-	DB	0,0,0,"Sepa         "
-	DB	0,0,0,"undefined    "
-	DB	0,0,0,"Chi          "
-	DB	0,0,0,"Sui          "
-	DB	0,0,0,"Grot         "
-	DB	0,0,0,"Tiwanaku     "
-	DB	0,0,0,"Aggayu       "
-	DB	0,0,0,"Ka           "
-	DB	0,0,0,"Genbu        "
-	DB	0,0,0,"Fuu          "
-	DB	0,0,0,"Indra        "
-	DB	0,0,0,"Morana       "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
-	DB	0,0,0,"             "
+
 
 	dephase
