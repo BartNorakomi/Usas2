@@ -77,70 +77,87 @@ BreakableWall:
 	jp    z,.RemoveWallPageNextPage           ;page 2
 	dec   a
 	jp    z,.RemoveWallPageNextPage           ;page 3
-	jp	.endRemoveWall
-
-;UnpackedRoomFile:
-;.meta:		rb 8
-;.tiledata:  rb  38*27*2
-  .RemoveWallFromRoomTiles:
-  ;we perform checktile object, but only to set hl pointing to the left top tile where wall starts
-  ld    b,+16                               ;add y to check (y is expressed in pixels)
-  ld    de,000                              ;add x to check (x is expressed in pixels)
-  call  checktileObject                     ;out z=collision found with wall
-
-  ld    a,(ix+enemies_and_objects.nx)       ;ny
-  cp    32
-  jr    z,.BreakableWall32  
-
-  .BreakableWall16:
-  ld    de,40 - 1
-  ld    a,(ix+enemies_and_objects.ny)       ;ny
-  .loop:
-  ld    (hl),0                              ;background
-  inc   hl
-  ld    (hl),0                              ;background
-  add   hl,de
-  sub   a,8
-  jr    nz,.loop
-  ret ;jr    .endRemoveWall
-
-  .BreakableWall32:
-  ld    de,40 - 3
-  ld    a,(ix+enemies_and_objects.ny)       ;ny
-  .loop2:
-  ld    (hl),0                              ;background
-  inc   hl
-  ld    (hl),0                              ;background
-  inc   hl
-  ld    (hl),0                              ;background
-  inc   hl
-  ld    (hl),0                              ;background
-  add   hl,de
-  sub   a,8
-  jr    nz,.loop2
-ret
-
-;Fill a part of the current room tile matrix (20240912;ro)
-;in: HL=
-; .FillUnpackedRoomFileBlock:
-
-
-
-  .endRemoveWall:
-
+;	jp	.endRemoveWall
+.endRemoveWall:
   ld    a,(ix+enemies_and_objects.x)        ;dx
   add   a,16                                ;center explosion
   ld    (ix+enemies_and_objects.x),a        ;dx
   ld    (ix+enemies_and_objects.alive?),-1  ;turn this object into a hardware sprite
   jp    CheckPlayerPunchesEnemy.EnemyDied
 
-  .RemoveWallPage0:
-  ld    a,(ix+enemies_and_objects.v1)       ;sx repair gfx
+;UnpackedRoomFile:
+;.meta:		rb 8
+;.tiledata:  rb  38*27*2
+;clear wall mapdate tiles to background
+.RemoveWallFromRoomTiles:
+;   ld    b,+16                               ;add y to check (y is expressed in pixels)
+;   ld    de,000                              ;add x to check (x is expressed in pixels)
+;   call  checktileObject                     ;perform checktile object, but only to set hl pointing to the left top tile where wall starts
+											;ro: that should really be a general function, like "getRoomTileLocation"
+;ro: in the original "checkTileObject" function, X is loaded as 8-bit, while it is a 16-bit. So:
+  ld    l,(ix+enemies_and_objects.x)        ;x object
+  ld    h,(ix+enemies_and_objects.x+1)
+  ld    a,(ix+enemies_and_objects.y)        ;y object
+  add   a,16
+  call    CheckTile.XandYset				;<< yes, this should be generic as mentioned earlier.
+
+;Fill a part of the current room tile matrix (ro: this should be a general function)										
+; so, I changed it.
+  ld    a,(ix+enemies_and_objects.nx)
+  srl	a ;/2
+  srl	a ;/4
+  srl	a ;/8
+  and	0x1f
+  ld 	b,a
+  ld    a,(ix+enemies_and_objects.ny)
+  srl	a ;/2
+  srl	a ;/4
+  srl	a ;/8
+  and	0x1f
+  ld 	c,a
+  jp	fillMapData
+
+;   ld    a,(ix+enemies_and_objects.nx)
+;   cp    32
+;   jr    z,.BreakableWall32  
+
+; .BreakableWall16:
+;   ld    de,40 - 1		;< ro: is mapdata length always 38+2? This is exaclty where I got stuck in spaghetti..
+;   ld    a,(ix+enemies_and_objects.ny)       ;ny
+;   .loop:
+;   ld    (hl),0                              ;background
+;   inc   hl
+;   ld    (hl),0                              ;background
+;   add   hl,de
+;   sub   a,8
+;   jr    nz,.loop
+;   ret ;jr    .endRemoveWall
+
+;   .BreakableWall32:
+;   ld    de,40 - 3
+;   ld    a,(ix+enemies_and_objects.ny)       ;ny
+;   .loop2:
+;   ld    (hl),0                              ;background
+;   inc   hl
+;   ld    (hl),0                              ;background
+;   inc   hl
+;   ld    (hl),0                              ;background
+;   inc   hl
+;   ld    (hl),0                              ;background
+;   add   hl,de
+;   sub   a,8
+;   jr    nz,.loop2
+; ret
+
+;ro: when X>255, shit won't be erased...obvi.
+.RemoveWallPage0:
+  ld    a,(ix+enemies_and_objects.v1)       ;sx repair gfx >> ro:not correct as during setup, this is set as 16-bit adr. 
   ld    (FreeToUseFastCopy+sx),a
   ld    a,(ix+enemies_and_objects.v2)       ;sy repair gfx
   ld    (FreeToUseFastCopy+sy),a
 
-  ld    a,(ix+enemies_and_objects.x)        ;dx
+; ro:should be a check of the block postition/len is outside (right) screen
+  ld    a,(ix+enemies_and_objects.x)        ;dx	> ro: this is also a 16-bit adr!
   ld    (FreeToUseFastCopy+dx),a
   ld    a,(ix+enemies_and_objects.y)        ;dy
   ld    (FreeToUseFastCopy+dy),a
@@ -157,7 +174,7 @@ ret
   ld    hl,FreeToUseFastCopy
   jp     DoCopy
 
-  .RemoveWallPageNextPage:
+.RemoveWallPageNextPage:
 	ld    hl,FreeToUseFastCopy
 	ld    a,(FreeToUseFastCopy+dPage)
 	inc   a
@@ -181,24 +198,26 @@ ret
 	jp	DoCopy
 
 
-BossPlantPaletteAnimation1:
-  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation1.PL" ;file palette 
-BossPlantPaletteAnimation2:
-  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation2.PL" ;file palette 
-BossPlantPaletteAnimation3:
-  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation3.PL" ;file palette 
+;20240914;ro;a generic block fill for mapdata
+;in: HL=startAddress, B=lenX (tiles), C=lenY (tiles), A=value > atm =0
+fillMapData:
+		; ld	a,40	;line lenght    > this isn't correct and only working on 38 wide rooms. So:
+		ld	a,(checktile.selfmodifyingcodeMapLenght+1)		;see why selfmodcode is stupid? you might need the var on other parts too.
+		sub	b
+		ld	e,a
+		ld	d,0
+		ld	a,c
+		ld	c,b
+.fmp0:	ld	(hl),d
+		inc	hl
+		djnz .fmp0
+		add	hl,de
+		ld	b,c
+		dec	A
+		jp	nz,.fmp0
+ret
 
-
-BossPlantCheckIfDead:
-  ld    a,(ix+enemies_and_objects.life)
-  dec   a
-  ret   nz
-  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
-  ld    (ix+enemies_and_objects.v7),4       ;v7=sprite frame
-  ld    bc,SFX_bossdemondead
-  jp    RePlayerSFX_PlayCh2
-
-
+;##### Boss: plant #####
 ;v1-3=boss got hit this frame
 ;v1=Bullet Movement
 ;v2=Bullet Movement Pattern
@@ -210,6 +229,22 @@ BossPlantCheckIfDead:
 ;v8=phase
 ;v9=vines animation step
 ;v10=hit?
+BossPlantPaletteAnimation1:
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation1.PL" ;file palette 
+BossPlantPaletteAnimation2:
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation2.PL" ;file palette 
+BossPlantPaletteAnimation3:
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation3.PL" ;file palette 
+
+BossPlantCheckIfDead:
+  ld    a,(ix+enemies_and_objects.life)
+  dec   a
+  ret   nz
+  ld    (ix+enemies_and_objects.v8),2       ;v8=Phase (0=idle, 1=walking, 2=cleave attack, 3=hit, 4=dead, 5=shoot)
+  ld    (ix+enemies_and_objects.v7),4       ;v7=sprite frame
+  ld    bc,SFX_bossdemondead
+  jp    RePlayerSFX_PlayCh2
+
 BossPlant:
   set   3,(ix+enemies_and_objects.v6)         ;v6=weakness to element (bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water, bit 4=ether)
 
@@ -228,7 +263,7 @@ BossPlant:
   ld    de,BossPlantAll_0
   jp    PutSf2Object4FramesNew                ;CHANGES IX - puts object in 7 frames
 
-  .HandlePhase:
+.HandlePhase:
   ld    a,(Bossframecounter)
   inc   a
   ld    (Bossframecounter),a
@@ -241,7 +276,7 @@ BossPlant:
 ;  dec   a
 ;  jp    z,BossPlantDead
 
-  BossPlantDead:
+BossPlantDead:
   ld    (ix+enemies_and_objects.v1-3),0       ;v1-3=boss got hit this frame (1=hit normal/no damage, 3=hit with correct element)
 
   ld    a,(ix+enemies_and_objects.v7)         ;v7=sprite frame
