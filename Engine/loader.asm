@@ -1220,18 +1220,52 @@ ret
 	ld    (iy+enemies_and_objects.v2),a   ;sy repair gfx
 
 	ld    de,Object014Table.lenghtobjectdata
-ld hl,(clesX)
-ld a,H
-and A
-ret nz
-ld a,L
-cp 32
-ret nc
-set    0,(iy+enemies_and_objects.v8)
 
+  call  .CheckWallLeftEdge              ;check if wall is at left edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
+  call  .CheckWallRightEdge             ;check if wall is at right edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
 
-ret  
+	ld    de,Object014Table.lenghtobjectdata
+  ret  
 
+  .CheckWallLeftEdge:                   ;check if wall is at left edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
+	ld    a,(iy+enemies_and_objects.x)
+	or    (iy+enemies_and_objects.x+1)
+  ret   nz
+
+  ld    hl,(clesX)
+  ld    de,16
+  sbc   hl,de
+  ret   nc
+
+  push  ix
+  push  iy
+  pop   ix
+  call  RemoveWallFromRoomTiles
+  set   0,(iy+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=wall bashed)
+  set   0,(iy+enemies_and_objects.v3)       ;v3=entered room inside a wall ?
+  pop   ix
+  ret
+
+  .CheckWallRightEdge:                  ;check if wall is at right edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
+	ld    l,(iy+enemies_and_objects.x)
+	ld    h,(iy+enemies_and_objects.x+1)
+  ld    de,271                          ;lets say that if a wall's x>272 is on the right edge of the screen.
+  sbc   hl,de
+  ret   c
+
+  ld    hl,(clesX)
+  ld    de,272
+  sbc   hl,de
+  ret   c
+
+  push  ix
+  push  iy
+  pop   ix
+  call  RemoveWallFromRoomTiles
+  set   0,(iy+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=wall bashed)
+  set   0,(iy+enemies_and_objects.v3)       ;v3=entered room inside a wall ?
+  pop   ix
+  ret
 
 
 

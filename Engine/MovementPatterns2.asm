@@ -13,16 +13,16 @@ phase	movementpatterns2Address
 
 ;v1=sx repair gfx
 ;v2=sy repair gfx
-;v3=
+;v3=entered room inside a wall ?
 ;v4=
 ;v5=
 ;v6=
 ;v7=wall remove step
 ;v8=phase b0:0=wall enabled, 1=bashed
 BreakableWall:
-	bit   0,(ix+enemies_and_objects.v8)
+	bit   0,(ix+enemies_and_objects.v8)         ;v8=phase b0:0=wall enabled, 1=bashed
 	jp    nz,.WallBashed
-	ld    (ix+enemies_and_objects.life),255     ;unable to kill
+	ld    (ix+enemies_and_objects.life),255     ;unable to "kill"
 
 	;widen the hitbox of the wall for proper check with wallbash
 	ld    a,(ix+enemies_and_objects.x)        ;dx
@@ -34,12 +34,8 @@ BreakableWall:
 	add   a,4
 	ld    (ix+enemies_and_objects.nx),a        ;dx
 	call  CheckPlayerPunchesEnemy               ;Check if player hits object
-	;ld    a,(ix+enemies_and_objects.nx)        ;dx
-	;sub   a,4
 	pop af
 	ld    (ix+enemies_and_objects.nx),a        ;dx
-	;ld    a,(ix+enemies_and_objects.x)        ;dx
-	;sub   a,12
 	pop af
 	ld    (ix+enemies_and_objects.x),a        ;dx
 
@@ -67,8 +63,8 @@ BreakableWall:
 	ld    a,(ix+enemies_and_objects.v7)       ;v7=wall remove step
 	inc   a
 	ld    (ix+enemies_and_objects.v7),a       ;v7=wall remove step
-	dec	a
-	jp	z,.RemoveWallFromRoomTiles
+	dec	  a
+	jp	  z,RemoveWallFromRoomTiles
 	dec   a	;#0
 	jp    z,.RemoveWallPage0                  ;page 0
 	dec   a
@@ -79,75 +75,15 @@ BreakableWall:
 	jp    z,.RemoveWallPageNextPage           ;page 3
 ;	jp	.endRemoveWall
 .endRemoveWall:
+  ld    (ix+enemies_and_objects.alive?),0   ;turn this object off in case we entered room inside the wall
+  bit   0,(ix+enemies_and_objects.v3)       ;v3=entered room inside a wall ?
+  ret   nz
+
   ld    a,(ix+enemies_and_objects.x)        ;dx
   add   a,16                                ;center explosion
   ld    (ix+enemies_and_objects.x),a        ;dx
   ld    (ix+enemies_and_objects.alive?),-1  ;turn this object into a hardware sprite
   jp    CheckPlayerPunchesEnemy.EnemyDied
-
-;UnpackedRoomFile:
-;.meta:		rb 8
-;.tiledata:  rb  38*27*2
-;clear wall mapdate tiles to background
-.RemoveWallFromRoomTiles:
-;   ld    b,+16                               ;add y to check (y is expressed in pixels)
-;   ld    de,000                              ;add x to check (x is expressed in pixels)
-;   call  checktileObject                     ;perform checktile object, but only to set hl pointing to the left top tile where wall starts
-											;ro: that should really be a general function, like "getRoomTileLocation"
-;ro: in the original "checkTileObject" function, X is loaded as 8-bit, while it is a 16-bit. So:
-  ld    l,(ix+enemies_and_objects.x)        ;x object
-  ld    h,(ix+enemies_and_objects.x+1)
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  add   a,16
-  call    CheckTile.XandYset				;<< yes, this should be generic as mentioned earlier.
-
-;Fill a part of the current room tile matrix (ro: this should be a general function)										
-; so, I changed it.
-  ld    a,(ix+enemies_and_objects.nx)
-  srl	a ;/2
-  srl	a ;/4
-  srl	a ;/8
-  and	0x1f
-  ld 	b,a
-  ld    a,(ix+enemies_and_objects.ny)
-  srl	a ;/2
-  srl	a ;/4
-  srl	a ;/8
-  and	0x1f
-  ld 	c,a
-  jp	fillMapData
-
-;   ld    a,(ix+enemies_and_objects.nx)
-;   cp    32
-;   jr    z,.BreakableWall32  
-
-; .BreakableWall16:
-;   ld    de,40 - 1		;< ro: is mapdata length always 38+2? This is exaclty where I got stuck in spaghetti..
-;   ld    a,(ix+enemies_and_objects.ny)       ;ny
-;   .loop:
-;   ld    (hl),0                              ;background
-;   inc   hl
-;   ld    (hl),0                              ;background
-;   add   hl,de
-;   sub   a,8
-;   jr    nz,.loop
-;   ret ;jr    .endRemoveWall
-
-;   .BreakableWall32:
-;   ld    de,40 - 3
-;   ld    a,(ix+enemies_and_objects.ny)       ;ny
-;   .loop2:
-;   ld    (hl),0                              ;background
-;   inc   hl
-;   ld    (hl),0                              ;background
-;   inc   hl
-;   ld    (hl),0                              ;background
-;   inc   hl
-;   ld    (hl),0                              ;background
-;   add   hl,de
-;   sub   a,8
-;   jr    nz,.loop2
-; ret
 
 ;ro: when X>255, shit won't be erased...obvi.
 .RemoveWallPage0:
@@ -157,8 +93,9 @@ BreakableWall:
   ld    (FreeToUseFastCopy+sy),a
 
 ; ro:should be a check of the block postition/len is outside (right) screen
-  ld    a,(ix+enemies_and_objects.x)        ;dx	> ro: this is also a 16-bit adr!
-  ld    (FreeToUseFastCopy+dx),a
+  ld    l,(ix+enemies_and_objects.x)        ;dx	> ro: this is also a 16-bit adr!
+  ld    h,(ix+enemies_and_objects.x+1)        ;dx	> ro: this is also a 16-bit adr!
+  ld    (FreeToUseFastCopy+dx),hl
   ld    a,(ix+enemies_and_objects.y)        ;dy
   ld    (FreeToUseFastCopy+dy),a
 
@@ -171,51 +108,59 @@ BreakableWall:
   ld    a,(ix+enemies_and_objects.ny)       ;ny
   ld    (FreeToUseFastCopy+ny),a
 
+  bit   0,h
+  ret   nz
+
   ld    hl,FreeToUseFastCopy
   jp     DoCopy
 
 .RemoveWallPageNextPage:
-	ld    hl,FreeToUseFastCopy
 	ld    a,(FreeToUseFastCopy+dPage)
 	inc   a
 	ld    (FreeToUseFastCopy+dPage),a
 ;ro, added: here needs to be checked of DX <0 and and/or if there's still something to remove. Like 16pix on page 1 for when x=0
-	ld	a,(FreeToUseFastCopy+dx)
-	sub	a,16
-	ld	(FreeToUseFastCopy+dx),a
-	jp	z,docopy
-	jp  nc,docopy
-	xor	A
-	ld	(FreeToUseFastCopy+dx),a
-	ld	a,(FreeToUseFastCopy+nx)
-	sub	a,16
-	ld	(FreeToUseFastCopy+nx),a
-	ret	c
-	ret	z
-	ld	a,(FreeToUseFastCopy+sx)
-	add	a,16
-	ld	(FreeToUseFastCopy+sx),a
+	ld	  hl,(FreeToUseFastCopy+dx)
+  ld    de,-16
+  add   hl,de
+	ld	  (FreeToUseFastCopy+dx),hl
+  bit   0,h
+  jr    z,.goCopy
+
+	ld	  a,(FreeToUseFastCopy+nx)
+	sub	  a,16
+  ret   z
+	ld	  (FreeToUseFastCopy+nx),a
+
+	ld	  hl,(FreeToUseFastCopy+dx)
+  ld    de,16
+  add   hl,de
+	ld	  (FreeToUseFastCopy+dx),hl
+  bit   0,h
+  ret   nz
+
+  ld    a,(FreeToUseFastCopy+sx)
+  add   a,16
+  ld    (FreeToUseFastCopy+sx),a
+
+
+;	jp	z,docopy
+;	jp  nc,docopy
+;	xor	A
+;	ld	(FreeToUseFastCopy+dx),a
+;	ld	a,(FreeToUseFastCopy+nx)
+;	sub	a,16
+;	ld	(FreeToUseFastCopy+nx),a
+;	ret	c
+;	ret	z
+;	ld	a,(FreeToUseFastCopy+sx)
+;	add	a,16
+;	ld	(FreeToUseFastCopy+sx),a
+  .goCopy:
+	ld    hl,FreeToUseFastCopy
 	jp	DoCopy
 
 
-;20240914;ro;a generic block fill for mapdata
-;in: HL=startAddress, B=lenX (tiles), C=lenY (tiles), A=value > atm =0
-fillMapData:
-		; ld	a,40	;line lenght    > this isn't correct and only working on 38 wide rooms. So:
-		ld	a,(checktile.selfmodifyingcodeMapLenght+1)		;see why selfmodcode is stupid? you might need the var on other parts too.
-		sub	b
-		ld	e,a
-		ld	d,0
-		ld	a,c
-		ld	c,b
-.fmp0:	ld	(hl),d
-		inc	hl
-		djnz .fmp0
-		add	hl,de
-		ld	b,c
-		dec	A
-		jp	nz,.fmp0
-ret
+
 
 ;##### Boss: plant #####
 ;v1-3=boss got hit this frame

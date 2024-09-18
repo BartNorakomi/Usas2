@@ -18,13 +18,16 @@ phase	enginepage3addr
 ;roomX: equ ("B"-"A")*26 + "E"-"A"
 ;WorldMapPositionY:  db  21-1 | WorldMapPositionX:  db  roomX
 
+;lemniscate wall bash
+;roomX: equ ("A"-"A")*26 + "V"-"A"
+;roomY: equ 27
+;WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 
 roomX: equ ("B"-"A")*26 + "Q"-"A"
 roomY: equ 16
 WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 ClesX:      dw 256 ;$19 ;230 ;250 ;210
 ClesY:      db 152 ;144-1
-
 
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
@@ -116,6 +119,59 @@ loadGraphics:
   ld    (PreviousRuin),a
 
   jp    LevelEngine
+
+
+
+;UnpackedRoomFile:
+;.meta:		rb 8
+;.tiledata:  rb  38*27*2
+;clear wall mapdate tiles to background
+RemoveWallFromRoomTiles:
+;   ld    b,+16                               ;add y to check (y is expressed in pixels)
+;   ld    de,000                              ;add x to check (x is expressed in pixels)
+;   call  checktileObject                     ;perform checktile object, but only to set hl pointing to the left top tile where wall starts
+											;ro: that should really be a general function, like "getRoomTileLocation"
+;ro: in the original "checkTileObject" function, X is loaded as 8-bit, while it is a 16-bit. So:
+  ld    l,(ix+enemies_and_objects.x)        ;x object
+  ld    h,(ix+enemies_and_objects.x+1)
+  ld    a,(ix+enemies_and_objects.y)        ;y object
+  add   a,16
+  call    CheckTile.XandYset				;<< yes, this should be generic as mentioned earlier.
+
+;Fill a part of the current room tile matrix (ro: this should be a general function)										
+; so, I changed it.
+  ld    a,(ix+enemies_and_objects.nx)
+  srl	a ;/2
+  srl	a ;/4
+  srl	a ;/8
+  and	0x1f
+  ld 	b,a
+  ld    a,(ix+enemies_and_objects.ny)
+  srl	a ;/2
+  srl	a ;/4
+  srl	a ;/8
+  and	0x1f
+  ld 	c,a
+  jp	fillMapData
+
+;20240914;ro;a generic block fill for mapdata
+;in: HL=startAddress, B=lenX (tiles), C=lenY (tiles), A=value > atm =0
+fillMapData:
+		; ld	a,40	;line lenght    > this isn't correct and only working on 38 wide rooms. So:
+		ld	a,(checktile.selfmodifyingcodeMapLenght+1)		;see why selfmodcode is stupid? you might need the var on other parts too.
+		sub	b
+		ld	e,a
+		ld	d,0
+		ld	a,c
+		ld	c,b
+.fmp0:	ld	(hl),d
+		inc	hl
+		djnz .fmp0
+		add	hl,de
+		ld	b,c
+		dec	A
+		jp	nz,.fmp0
+ret
 
 AreaSignList:	dw	AreaSign01,AreaSign02,AreaSign03,AreaSign04,AreaSign05,AreaSign06,AreaSign07,AreaSign08,AreaSign09,AreaSign10,AreaSign11,AreaSign12,AreaSign13,AreaSign14,AreaSign15,AreaSign16,AreaSign17,AreaSign18,AreaSign19
 UnpackAreaSign:
