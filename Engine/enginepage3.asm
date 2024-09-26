@@ -23,10 +23,10 @@ phase	enginepage3addr
 ;roomY: equ 27
 ;WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 
-roomX: equ ("B"-"A")*26 + "Q"-"A"
+roomX: equ ("B"-"A")*26 + "R"-"A"
 roomY: equ 16
 WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
-ClesX:      dw 256 ;$19 ;230 ;250 ;210
+ClesX:      dw 64 ;$19 ;230 ;250 ;210
 ClesY:      db 152 ;144-1
 
 PlayLogo:

@@ -25,19 +25,19 @@ BreakableWall:
 	ld    (ix+enemies_and_objects.life),255     ;unable to "kill"
 
 	;widen the hitbox of the wall for proper check with wallbash
-	ld    a,(ix+enemies_and_objects.x)        ;dx
+	ld    a,(ix+enemies_and_objects.x)        ;ro: X should be 16 bit
 	push af
 	add   a,12
-	ld    (ix+enemies_and_objects.x),a        ;dx
-	ld    a,(ix+enemies_and_objects.nx)        ;dx
+	ld    (ix+enemies_and_objects.x),a
+	ld    a,(ix+enemies_and_objects.nx)
 	push af
 	add   a,4
-	ld    (ix+enemies_and_objects.nx),a        ;dx
+	ld    (ix+enemies_and_objects.nx),a
 	call  CheckPlayerPunchesEnemy               ;Check if player hits object
 	pop af
-	ld    (ix+enemies_and_objects.nx),a        ;dx
+	ld    (ix+enemies_and_objects.nx),a
 	pop af
-	ld    (ix+enemies_and_objects.x),a        ;dx
+	ld    (ix+enemies_and_objects.x),a
 
 .CheckIfHit:
 	bit   0,(ix+enemies_and_objects.hit?)     ;check if hit
