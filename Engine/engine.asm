@@ -3980,9 +3980,9 @@ getRoomMapTile:	;.XandYset:	;y/8, x/8
 
 ;.selfmodifyingcodeStartingPosMapForCheckTile:
 ;	ld		de,roomMap ;MapData- 000000  ;start 2 rows higher (MapData-80 for normal engine, MapData-68 for SF2 engine)
-	ld	 de,roomMap.data-(2*roomMap.numcol)
-	add   hl,de
-	ex    de,hl               ;de->roommapadr+x in tiles
+		ld	 de,roomMap.data-(2*roomMap.numcol)
+		add   hl,de
+		ex    de,hl               ;de->roommapadr+x in tiles
 ;.selfmodifyingcodeMapLenght:
 ;	ld		bc,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
 		ld	 bc,roomMap.numcol

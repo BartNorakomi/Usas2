@@ -156,7 +156,7 @@ RemoveWallFromRoomTiles:
 
 
 ;20240914;ro;a generic block fill for mapdata
-;in: HL=startAddress, B=lenX (tiles), C=lenY (tiles), A=value > atm =0
+;in: HL=startAddress, B=lenX (tiles), C=lenY (tiles), A=value
 fillRoomMapData:
 		ex  af,af'	;'
 ;		ld	a,(checktile.selfmodifyingcodeMapLenght+1)		;see why selfmodcode is stupid? you might need the var on other parts too.
@@ -1307,8 +1307,10 @@ ret
 
 
 AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
-  ds    7 * 6 ;7 blocks maximum, 6 bytes per block
-  ds    6 ;1 extra block buffer
+.numrec:	equ 7
+.reclen:	equ 6
+.data:		ds	.numrec*.reclen ; 7 * 6 ;7 blocks maximum, 6 bytes per block
+			ds  .reclen ;   6 ;1 extra block buffer
 AmountOfAppearingBlocks:  ds  1
 OctoPussyBulletSlowDownHandler:   db 0
 EnemyHitByPrimairyAttack?:	db	0		;0=hit by secundary attack, 1=hit by primary attack

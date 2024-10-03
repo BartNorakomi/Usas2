@@ -653,6 +653,7 @@ CheckOutOfMap:
   xor   a
   sbc   hl,de
   ret   c
+ 
   ;out of map
   RemoveSprite:
   ld    (ix+enemies_and_objects.alive?),0  

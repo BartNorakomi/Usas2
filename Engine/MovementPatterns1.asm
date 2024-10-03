@@ -1703,72 +1703,126 @@ AreaSign:                                 ;Displays the name of the world in scr
   ld    hl,FreeToUseFastCopy
   jp    DoCopy
 
-AppBlocksHandler:
+
+;Retracting and appearing platforms
 ;v1 = activate block timer
 ;v2 = activate block table step pointer
 ;v3 = skip first time closing block
-  ld    a,(AmountOfAppearingBlocks)
-  dec   a
-  ld    b,255
-  jr    z,.AmountOfBlocksFound
-  dec   a
-  ld    b,127
-  jr    z,.AmountOfBlocksFound
-  ld    b,63  
-  .AmountOfBlocksFound:
+AppBlocksHandler:
+		ld    a,(AmountOfAppearingBlocks)
+		dec   a
+		ld    b,255		;numFrames on/off
+		jr    z,.AmountOfBlocksFound
+		dec   a
+		ld    b,127
+		jr    z,.AmountOfBlocksFound
+		ld    b,63  
+.AmountOfBlocksFound:
+		ld    a,(ix+enemies_and_objects.v1)     ;v1 = activate block timer
+		inc   a
+		and   b
+		ld    (ix+enemies_and_objects.v1),a
+		ret   nz
   
-  ld    a,(ix+enemies_and_objects.v1)     ;v1 = activate block timer
-  inc   a
-  and   b
-  ld    (ix+enemies_and_objects.v1),a     ;v1 = activate block timer
-  ret   nz
+		ld    a,(ix+enemies_and_objects.v2)     ;v2 = activate block table step pointer
+		add   a,3
+		ld    (ix+enemies_and_objects.v2),a
   
-  ld    a,(ix+enemies_and_objects.v2)     ;v2 = activate block table step pointer
-  add   a,3
-  ld    (ix+enemies_and_objects.v2),a     ;v2 = activate block table step pointer
-  
-  ld    hl,AppearingBlocksTable-3
-  ld    d,0
-  ld    e,a
-  add   hl,de
+		ld    hl,AppearingBlocksTable-3
+		ld    d,0
+		ld    e,a
+		add   hl,de
 
-  ld    a,(AmountOfAppearingBlocks)
-  cp    3
-  jr    c,.EndSkipFirstTimeCloseBlock
-  ld    a,(ix+enemies_and_objects.v3)     ;v3 = skip first time closing block
-  inc   a
-  cp    3
-  jp    z,.EndSkipFirstTimeCloseBlock
-  ld    (ix+enemies_and_objects.v3),a     ;v3 = skip first time closing block
-  cp    2
-  ret   z
-  .EndSkipFirstTimeCloseBlock:
-  
-  ld    a,(hl)                            ;dy
-  cp    255
-  jr    nz,.NotEndTable
-  ld    (ix+enemies_and_objects.v2),3     ;v2 = activate block table step pointer
-  ld    hl,AppearingBlocksTable
-  ld    a,(hl)
-  .NotEndTable:
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v2),a
-  inc   hl
-  ld    a,(hl)                            ;dx
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v3),a
-  inc   hl
-  ld    a,(hl)
-  or    a
-  ld    hl,DisappearingBlocks
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v4),240-16  ;sx
-  jr    z,.activate
-  ld    hl,AppearingBlocks
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v4),128+16  ;sx
-  .activate:
-  ;activate (Dis)appearing Blocks
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.movementpattern),l
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.movementpattern+1),h
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),1
+		ld    a,(AmountOfAppearingBlocks)
+		cp    3
+		jr    c,.EndSkipFirstTimeCloseBlock
+		ld    a,(ix+enemies_and_objects.v3)     ;v3 = skip first time closing block
+		inc   a
+		cp    3
+		jp    z,.EndSkipFirstTimeCloseBlock
+		ld    (ix+enemies_and_objects.v3),a
+		cp    2
+		ret   z
+.EndSkipFirstTimeCloseBlock:
+		ld    a,(hl)                            ;dy
+		cp    255
+		jr    nz,.NotEndTable
+		ld    (ix+enemies_and_objects.v2),3     ;v2 = activate block table step pointer
+		ld    hl,AppearingBlocksTable
+		ld    a,(hl)
+.NotEndTable:
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v2),a
+		inc   hl
+		ld    a,(hl)                            ;dx
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v3),a
+		inc   hl
+		ld    a,(hl)
+		or    a
+		ld    hl,DisappearingBlocks
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v4),240-16  ;sx	ro:magic number!
+		jr    z,.activate
+		ld    hl,AppearingBlocks
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v4),128+16  ;sx	ro:magic number!
+.activate:  ;activate (Dis)appearing Blocks
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.movementpattern),l
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.movementpattern+1),h
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),1
   ret
+
+;initialize variables for block
+.init:
+		ld    a,216
+		ld    (CopyObject+sy),a  
+
+		ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
+		ld    (CopyObject+sx),a  
+
+		ld    a,(ix+enemies_and_objects.v2)     ;v2 = dy
+		sub   a,4
+		ld    (CopyObject+dy),a  
+		ld    a,16
+		ld    (CopyObject+nx),a
+		ld    a,24
+		ld    (CopyObject+ny),a 
+		ld    a,3
+		ld    (CopyObject+sPage),a 
+		xor   a
+		ld    (CopyObject+copydirection),a
+		ld    a,$d0
+		ld    (CopyObject+copytype),a
+ret
+
+.PutBlock:
+		ld    a,(ix+enemies_and_objects.v1)     ;v1 = dPage
+		inc   a
+		ld    (ix+enemies_and_objects.v1),a     ;v1 = dPage
+		and   3
+		ld    (CopyObject+dPage),a 
+		add   a,a                               ;*2
+		add   a,a                               ;*4
+		add   a,a                               ;*8
+		add   a,a                               ;*16
+		ld    b,a
+
+		ld    a,(ix+enemies_and_objects.v3)     ;v3 = dx
+		sub   a,b
+		ld    (CopyObject+dx),a  
+
+		ld    hl,CopyObject
+		jp    docopy
+
+;in  A=id
+.SetTilesInTileMap:	;20241003;ro;refactored
+		push af
+		ld	 l,(ix+enemies_and_objects.v3)     ;v3 = dx
+		ld	 h,0
+		ld	 a,(ix+enemies_and_objects.v2)     ;v2 = dy
+		add	 a,16 ;should loose this eventually, when the roommapdata startaddress is fixed to +0 (ro)
+		call getRoomMapTile			;in: HL=X, A=Y. out:HL=address, A=value
+		ld	 bc,0x0201
+		pop  af
+		jp fillRoomMapData		;in: HL=startAddress, B=lenX (tiles), C=lenY (tiles), A=value
+
 
 ;AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
 ;  db    15*8,18*8,1, 07*8,20*8,0, 15*8,12*8,1, 07*8,26*8,0, 15*8,06*8,1, 15*8,18*8,0, 10*8,09*8,1, 15*8,12*8,0, 10*8,15*8,1, 15*8,06*8,0, 07*8,20*8,1
@@ -1790,191 +1844,115 @@ AppBlocksHandler:
 ;  db    255
 
   
+;v1 = dPage
+;v2 = dy
+;v3 = dx
+;v4 = sx
 AppearingBlocks:
+		ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
+		cp    176
+		ld	  a,HardForeGroundID
+		call  z,AppBlocksHandler.SetTilesInTileMap
+		call  AppBlocksHandler.init                             ;initialize variables for block
+		call  AppBlocksHandler.PutBlock							;put block in vpage 0,1,2+3
+
+		ld    a,(ix+enemies_and_objects.v1)     ;v1 = dPage
+		and   7
+		ret   nz
+
+		ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
+		add   a,16
+		ld    (ix+enemies_and_objects.v4),a     ;v4 = sx  
+		ret   nz  
+		ld    (ix+enemies_and_objects.alive?),0 ;end   
+ret
+
+
 ;v1 = dPage
 ;v2 = dy
 ;v3 = dx
 ;v4 = sx
-  ld    c,1
-  ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
-  cp    176
-  call  z,SetTilesInTileMap
-
-  call  .init                             ;initialize variables for block
-
-  ;put block in page 0,1,2+3
-  call  .PutBlock
-  
-  ld    a,(ix+enemies_and_objects.v1)     ;v1 = dPage
-  and   7
-  ret   nz
-
-  ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
-  add   a,16
-  ld    (ix+enemies_and_objects.v4),a     ;v4 = sx  
-  ret   nz  
-  ld    (ix+enemies_and_objects.alive?),0 ;end   
-  ret
-  
-  .PutBlock:
-  ld    a,(ix+enemies_and_objects.v1)     ;v1 = dPage
-  inc   a
-  ld    (ix+enemies_and_objects.v1),a     ;v1 = dPage
-  and   3
-  ld    (CopyObject+dPage),a 
-  add   a,a                               ;*2
-  add   a,a                               ;*4
-  add   a,a                               ;*8
-  add   a,a                               ;*16
-  ld    b,a
-
-  ld    a,(ix+enemies_and_objects.v3)     ;v3 = dx
-  sub   a,b
-  ld    (CopyObject+dx),a  
-
-  ;put object
-  ld    hl,CopyObject
-  jp    docopy
-
-  .init:
-  ;initialize variables for block
-  ld    a,216
-  ld    (CopyObject+sy),a  
-  
-  ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
-  ld    (CopyObject+sx),a  
-
-  ld    a,(ix+enemies_and_objects.v2)     ;v2 = dy
-  sub   a,4
-  ld    (CopyObject+dy),a  
-  ld    a,16
-  ld    (CopyObject+nx),a
-  ld    a,24
-  ld    (CopyObject+ny),a 
-  ld    a,3
-  ld    (CopyObject+sPage),a 
-  xor   a
-  ld    (CopyObject+copydirection),a
-  ld    a,$d0
-  ld    (CopyObject+copytype),a
-  ret
-
 DisappearingBlocks:
-;v1 = dPage
-;v2 = dy
-;v3 = dx
-;v4 = sx
-  ld    c,0
-  ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
-  cp    160
-  call  z,SetTilesInTileMap
+		ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
+		cp    160
+		ld	 a,BackGroundID
+		call  z,AppBlocksHandler.SetTilesInTileMap
+		call  AppBlocksHandler.init
+		call  AppBlocksHandler.PutBlock			;put block in page 0,1,2+3
 
-  call  AppearingBlocks.init
+		ld    a,(ix+enemies_and_objects.v1)     ;v1 = dPage
+		and   7
+		ret   nz
 
-  ;put block in page 0,1,2+3
-  call  AppearingBlocks.PutBlock
-  
-  ld    a,(ix+enemies_and_objects.v1)     ;v1 = dPage
-  and   7
-  ret   nz
+		ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
+		sub   a,16
+		ld    (ix+enemies_and_objects.v4),a     ;v4 = sx  
+		cp    128 - 16
+		ret   nz  
+		ld    (ix+enemies_and_objects.alive?),0 ;end   
+ret
 
-  ld    a,(ix+enemies_and_objects.v4)     ;v4 = sx  
-  sub   a,16
-  ld    (ix+enemies_and_objects.v4),a     ;v4 = sx  
-  cp    128 - 16
-  ret   nz  
-  ld    (ix+enemies_and_objects.alive?),0 ;end   
-  ret
 
-  SetTilesInTileMap: ; ro > use fillRoomMapData: instead
-  ;v2 = dy
-  ;v3 = dx
-  ld    a,(ix+enemies_and_objects.v2)     ;v2 = dy
-	srl		a                                 ;/2
-	srl		a                                 ;/4
-	srl		a                                 ;/8
-  ld    b,a
-  
-  ld    de,40
-  ld    hl,0
-  
-  .loop:
-  add   hl,de
-  djnz  .loop
 
-  ld    a,(ix+enemies_and_objects.v3)     ;v3 = dx
-	srl		a                                 ;/2
-	srl		a                                 ;/4
-	srl		a                                 ;/8
-  ld    e,a
-  add   hl,de
-  
-  ld    de,roomMap.data ;MapData
-  add   hl,de
-  ld    (hl),c                            ;hardforeground / hardbackground
-  inc   hl
-  ld    (hl),c                            ;hardforeground / hardbackground
-  ret
-  
-PlayerReflection:
+ 
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
-  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
-  exx                                       ;store hl. hl now points to color data
-;  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
-;  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-	ld		a,PlayerReflectionSpriteblock        ;set block at $a000, page 2 - block containing sprite data
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-  ret
+PlayerReflection:
+		call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+		exx                                       ;store hl. hl now points to color data
+		;  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+		;  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+		ld		a,PlayerReflectionSpriteblock        ;set block at $a000, page 2 - block containing sprite data
+		ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+		ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+ret
     
-  .HandlePhase:
-  .SetX:
-  ld    hl,(ClesX)
-  ld    de,08
-  add   hl,de
-  ld    (ix+enemies_and_objects.x),l
-  ld    (ix+enemies_and_objects.x+1),h
+.HandlePhase:
+ .SetX:
+		ld    hl,(ClesX)
+		ld    de,08
+		add   hl,de
+		ld    (ix+enemies_and_objects.x),l
+		ld    (ix+enemies_and_objects.x+1),h
   
-  .SetY:
-  ;Player Y = $b7 when standing on the ground
-  ld    a,(ClesY)
-  cp    $b7 - 16
-  jr    nc,.go
-  ld    a,$b7 - 20
-  .go:
-  neg
-  add   $7f
-  ld    (ix+enemies_and_objects.y),a
+.SetY:
+		;Player Y = $b7 when standing on the ground
+		ld    a,(ClesY)
+		cp    $b7 - 16
+		jr    nc,.go
+		ld    a,$b7 - 20
+.go:
+		neg
+		add   $7f
+		ld    (ix+enemies_and_objects.y),a
   
-  .Animate:
-  ld    iy,ReflPlayerSpriteData_Char_RightStand
-  ld    bc,ReflPlayerSpriteData_Char_LeftStand - ReflPlayerSpriteData_Char_RightStand
+.Animate:
+		ld    iy,ReflPlayerSpriteData_Char_RightStand
+		ld    bc,ReflPlayerSpriteData_Char_LeftStand - ReflPlayerSpriteData_Char_RightStand
 
-  ld    hl,(standchar)
-  ld    de,PlayerSpriteData_Char_RightStand
-  xor   a
-  sbc   hl,de
-  jr    z,.SpriteFound
-  add   iy,bc
-  ld    de,PlayerSpriteData_Char_LeftStand - PlayerSpriteData_Char_RightStand
+		ld    hl,(standchar)
+		ld    de,PlayerSpriteData_Char_RightStand
+		xor   a
+		sbc   hl,de
+		jr    z,.SpriteFound
+		add   iy,bc
+		ld    de,PlayerSpriteData_Char_LeftStand - PlayerSpriteData_Char_RightStand
 
-  ld    a,25
-  .loop:
-  sbc   hl,de
-  jr    z,.SpriteFound
-  add   iy,bc
-  dec   a
-  jr    nz,.loop
+		ld    a,25
+.loop:  sbc   hl,de
+		jr    z,.SpriteFound
+		add   iy,bc
+		dec   a
+		jr    nz,.loop
 
-  .SpriteFound:
-  push  iy
-  pop   hl
-  ret
+.SpriteFound:
+		push  iy
+		pop   hl
+ret
 
-CuteMiniBat:
+
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
 ;v3=Vertical Movement
@@ -1983,66 +1961,69 @@ CuteMiniBat:
 ;v6=pointer to movement table
 ;v8=face left (0) or face right (1)  
 ;v9=Target Y
-  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
-  exx                                       ;store hl. hl now points to color data
-  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
-  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-	ld		a,CuteMiniBatSpriteblock            ;set block at $a000, page 2 - block containing sprite data
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-  ret
+CuteMiniBat:
+		call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+		exx                                       ;store hl. hl now points to color data
+		call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+		call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+		ld		a,CuteMiniBatSpriteblock            ;set block at $a000, page 2 - block containing sprite data
+		ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+		ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+ret
     
-  .HandlePhase:
-  call  .CheckTurnAround                    ;turn around at the left and right edge of screen
-  call  .MoveToTargetY                      ;Move Towards Target Y
-  call  .Move
-    
-  .Animate:
-  bit   7,(ix+enemies_and_objects.v8)       ;v8=face left (0) or face right (1)  
-  ld    hl,RightCuteMiniBat
-  jp    z,.GoAnimate
-  ld    hl,LeftCuteMiniBat
-  .GoAnimate:
-  ld    b,07                                ;animate every x frames (based on framecounter)
-  ld    c,2 * 03                            ;06 animation frame addresses
-  jp    AnimateSprite  
+.HandlePhase:
+		call  .CheckTurnAround                    ;turn around at the left and right edge of screen
+		call  .MoveToTargetY                      ;Move Towards Target Y
+		call  .Move
 
-  .CheckTurnAround:                         ;turn around at the left and right edge of screen
-  ld    a,(ix+enemies_and_objects.x)
-  cp    20
-  jr    c,.MoveRight
-  cp    40
-  ret   c
-  bit   0,(ix+enemies_and_objects.x+1)
-  ret   z
-  .MoveLeft:
-  ld    (ix+enemies_and_objects.v8),-1      ;v8=face left (0) or face right (1)  
-  ret  
-  .MoveRight:
-  bit   0,(ix+enemies_and_objects.x+1)
-  ret   nz
-  ld    (ix+enemies_and_objects.v8),1       ;v8=face left (0) or face right (1)  
-  ret
-  
-  .MoveToTargetY:
-  ld    a,r
-  and   15
-  ret   nz
-  
-  ld    a,(ix+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.v9)         ;v7=Target Y
-  jr    nc,.MoveUp
-  inc   (ix+enemies_and_objects.y)
-  ret
-  .MoveUp:
-  dec   (ix+enemies_and_objects.y)
-  ret
+.Animate:
+		bit   7,(ix+enemies_and_objects.v8)       ;v8=face left (0) or face right (1)  
+		ld    hl,RightCuteMiniBat
+		jp    z,.GoAnimate
+		ld    hl,LeftCuteMiniBat
+.GoAnimate:
+		ld    b,07                                ;animate every x frames (based on framecounter)
+		ld    c,2 * 03                            ;06 animation frame addresses
+		jp    AnimateSprite  
 
-  .Move:
-  ld    de,MiniBatMovementTableRight1
-  bit   7,(ix+enemies_and_objects.v8)       ;v8=face left (0) or face right (1)  
-  jp    z,MoveObjectWithStepTableNew        ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
-  jp    MoveObjectWithStepTableNewMirroredX ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+.CheckTurnAround:                         ;turn around at the left and right edge of screen
+		ld    a,(ix+enemies_and_objects.x)
+		cp    20
+		jr    c,.MoveRight
+		cp    40
+		ret   c
+		bit   0,(ix+enemies_and_objects.x+1)
+		ret   z
+
+.MoveLeft:
+		ld    (ix+enemies_and_objects.v8),-1      ;v8=face left (0) or face right (1)  
+		ret  
+
+.MoveRight:
+		bit   0,(ix+enemies_and_objects.x+1)
+		ret   nz
+		ld    (ix+enemies_and_objects.v8),1       ;v8=face left (0) or face right (1)  
+		ret
+
+.MoveToTargetY:
+		ld    a,r
+		and   15
+		ret   nz
+  
+		ld    a,(ix+enemies_and_objects.y)
+		cp    (ix+enemies_and_objects.v9)         ;v7=Target Y
+		jr    nc,.MoveUp
+		inc   (ix+enemies_and_objects.y)
+		ret
+.MoveUp:
+		dec   (ix+enemies_and_objects.y)
+		ret
+
+.Move:
+		ld    de,MiniBatMovementTableRight1
+		bit   7,(ix+enemies_and_objects.v8)       ;v8=face left (0) or face right (1)  
+		jp    z,MoveObjectWithStepTableNew        ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+		jp    MoveObjectWithStepTableNewMirroredX ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
 
 MiniBatMovementTableRight1:                 ;repeating steps(128 = end table/repeat), move y, move x
   db  03,+0,+1,  01,+0,+0,  01,+1,+1,  01,+0,+1,  01,+0,+0
@@ -2061,42 +2042,40 @@ RightCuteMiniBat:
   dw  RightCuteMiniBat2_Char
   dw  RightCuteMiniBat3_Char
 
-BigStatueMouthClosedSx: equ 00
-BigStatueMouthOpenSx:   equ 28
-BigStatueMouth:
+
 ;v1=sx software sprite in Vram
 ;v9=face (3=right, 7=left, 0=random)
 ;v10=max number
-  ld    a,216+000
-  ld    (CopyObject+sy),a  
-  ld    a,3
-  ld    (CopyObject+spage),a
-
-
+BigStatueMouthClosedSx: equ 00
+BigStatueMouthOpenSx:   equ 28
+BigStatueMouth:
+		ld    a,216+000
+		ld    (CopyObject+sy),a  
+		ld    a,3
+		ld    (CopyObject+spage),a
 ;  ld    (ix+enemies_and_objects.v1),BigStatueMouthOpenSx
 ;  ld    (ix+enemies_and_objects.v1),BigStatueMouthClosedSx
 
-
-  call  OnlyPutVramObjectDontEraseFastCopy
-  ld    a,1
-  ld    (CopyObject+spage),a
+	call  OnlyPutVramObjectDontEraseFastCopy
+	ld    a,1
+	ld    (CopyObject+spage),a
   
-  ;search for an open slot
-  push  ix
-  pop   iy
-  ld    de,lenghtenemytable
+;search for an open slot
+		push  ix
+		pop   iy
+		ld    de,lenghtenemytable
 
-  ld    a,(ix+enemies_and_objects.v10)  ;max number
-  dec   a
-  jr    z,.MaxNum1
-  dec   a
-  jr    z,.MaxNum2
-  dec   a
-  jr    z,.MaxNum3
-  dec   a
-  jr    z,.MaxNum4
-  dec   a
-  jr    z,.MaxNum5
+		ld    a,(ix+enemies_and_objects.v10)  ;max number
+		dec   a
+		jr    z,.MaxNum1
+		dec   a
+		jr    z,.MaxNum2
+		dec   a
+		jr    z,.MaxNum3
+		dec   a
+		jr    z,.MaxNum4
+		dec   a
+		jr    z,.MaxNum5
 
   .MaxNum6:
   add   ix,de
@@ -2127,74 +2106,71 @@ BigStatueMouth:
   call  z,.CloseMouth
   ret
   
-  .EmptySlotFound:
-  ld    a,(framecounter)
-  or    a
-  call  z,.OpenMouth
-  cp    60
-  call  z,.CloseMouth
-  cp    50
-  ret   nz  
-  ld    a,(iy+enemies_and_objects.v1)
-  cp    BigStatueMouthOpenSx
-  ret   nz
+.EmptySlotFound:
+		ld    a,(framecounter)
+		or    a
+		call  z,.OpenMouth
+		cp    60
+		call  z,.CloseMouth
+		cp    50
+		ret   nz  
+		ld    a,(iy+enemies_and_objects.v1)
+		cp    BigStatueMouthOpenSx
+		ret   nz
 
-  ld    (ix+enemies_and_objects.alive?),-1 
+		ld    (ix+enemies_and_objects.alive?),-1 
+		ld    a,(iy+enemies_and_objects.y)
+		add   a,15
+		ld    (ix+enemies_and_objects.y),a
+		ld    a,(iy+enemies_and_objects.x)
+		add   a,20
+		ld    (ix+enemies_and_objects.x),a
+		xor	 a
+		ld    (ix+enemies_and_objects.x+1),a
+		ld    (ix+enemies_and_objects.v1),a       ;v1=Animation Counter
+		ld    (ix+enemies_and_objects.v2),a       ;v2=Phase (0=walking slow, 1=attacking)
+		ld    (ix+enemies_and_objects.v3),a       ;v3=Vertical Movement
+		ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
+		ld    (ix+enemies_and_objects.v5),a       ;v5=repeating steps
+		ld    (ix+enemies_and_objects.v6),a       ;v6=pointer to movement table
 
-  ld    a,(iy+enemies_and_objects.y)
-  add   a,15
-  ld    (ix+enemies_and_objects.y),a
-
-  ld    a,(iy+enemies_and_objects.x)
-  add   a,20
-  ld    (ix+enemies_and_objects.x),a
-  
-  ld    (ix+enemies_and_objects.x+1),0
-  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking slow, 1=attacking)
-  ld    (ix+enemies_and_objects.v3),0       ;v3=Vertical Movement
-  ld    (ix+enemies_and_objects.v4),0       ;v4=Horizontal Movement
-  ld    (ix+enemies_and_objects.v5),0       ;v5=repeating steps
-  ld    (ix+enemies_and_objects.v6),0       ;v6=pointer to movement table
-
-  ld    a,(iy+enemies_and_objects.v9)       ;v9=face (3=right, 7=left, 0=random)
-  cp    3
-  ld    b,+1
-  jr    z,.FaceFound
-  cp    7
-  ld    b,-1
-  jr    z,.FaceFound
-  ld    a,r
-  and   1
-  jr    nz,.FaceFoundRandom
-  ld    a,-1
-  .FaceFoundRandom:
-  ld    b,a
-  .FaceFound:
-  ld    (ix+enemies_and_objects.v8),b       ;v8=face left (-1) or face right (1)  
-  ld    hl,CuteMiniBat
-  ld    (ix+enemies_and_objects.movementpattern),l
-  ld    (ix+enemies_and_objects.movementpattern+1),h
-  ld    (ix+enemies_and_objects.nrsprites),72-(02*6)
-  ld    (ix+enemies_and_objects.nrspritesSimple),2
-  ld    (ix+enemies_and_objects.nrspritesTimes16),2*16
-  ld    (ix+enemies_and_objects.life),1
-  ret  
+		ld    a,(iy+enemies_and_objects.v9)       ;v9=face (3=right, 7=left, 0=random)
+		cp    3
+		ld    b,+1
+		jr    z,.FaceFound
+		cp    7
+		ld    b,-1
+		jr    z,.FaceFound
+		ld    a,r
+		and   1
+		jr    nz,.FaceFoundRandom
+		ld    a,-1
+.FaceFoundRandom:
+		ld    b,a
+.FaceFound:
+		ld    (ix+enemies_and_objects.v8),b       ;v8=face left (-1) or face right (1)  
+		ld    hl,CuteMiniBat
+		ld    (ix+enemies_and_objects.movementpattern),l
+		ld    (ix+enemies_and_objects.movementpattern+1),h
+		ld    (ix+enemies_and_objects.nrsprites),72-(02*6)
+		ld    (ix+enemies_and_objects.nrspritesSimple),2
+		ld    (ix+enemies_and_objects.nrspritesTimes16),2*16
+		ld    (ix+enemies_and_objects.life),1
+		ret  
 
 .OpenMouth:
-  ld    (iy+enemies_and_objects.v1),BigStatueMouthOpenSx
-  ret
-
+		ld    (iy+enemies_and_objects.v1),BigStatueMouthOpenSx
+		ret
 .CloseMouth:
-  ld    (iy+enemies_and_objects.v1),BigStatueMouthClosedSx
-  ret
+		ld    (iy+enemies_and_objects.v1),BigStatueMouthClosedSx
+		ret
 
+
+;Driping Ooze
 SXDrippingOoze1:  equ 149
 SXDrippingOoze2:  equ 149+5
 SXDrippingOoze3:  equ 149+5+5
 SXDrippingOoze4:  equ 149+5+5+5
-
-DrippingOozeDrop:
 ;v1=sx
 ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
 ;v3=Vertical Movement
@@ -2202,76 +2178,76 @@ DrippingOozeDrop:
 ;v5=Wait FOr Respawn Counter
 ;v8=Y spawn
 ;v9=X spawn
+DrippingOozeDrop:
   call  CollisionObjectPlayer               ;Check if player is hit by Vram object
-
   ld    a,216+32 
   ld    (CopyObject+sy),a  
 
-  .HandlePhase:
+.HandlePhase:
   ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
   or    a
   jp    z,DrippingOozeGrowing
   dec   a
   jp    z,DrippingOozeFalling
   
-  DrippingOozeWaitingForRespawn:
-  ld    a,(ix+enemies_and_objects.v5)       ;v5=Wait FOr Respawn Counter
-  inc   a
-  ld    (ix+enemies_and_objects.v5),a       ;v5=Wait FOr Respawn Counter
-  cp    64
-  ret   nz
-  ld    (ix+enemies_and_objects.v5),0       ;v5=Wait FOr Respawn Counter
+DrippingOozeWaitingForRespawn:
+		ld    a,(ix+enemies_and_objects.v5)       ;v5=Wait FOr Respawn Counter
+		inc   a
+		ld    (ix+enemies_and_objects.v5),a       ;v5=Wait FOr Respawn Counter
+		cp    64
+		ret   nz
+		ld    (ix+enemies_and_objects.v5),0       ;v5=Wait FOr Respawn Counter
 
-  ld    (ix+enemies_and_objects.v1),SXDrippingOoze1  
-  ld    a,(ix+enemies_and_objects.v8)       ;v8=Y spawn  
-  ld    (ix+enemies_and_objects.y),a        ;y  
+		ld    (ix+enemies_and_objects.v1),SXDrippingOoze1  
+		ld    a,(ix+enemies_and_objects.v8)       ;v8=Y spawn  
+		ld    (ix+enemies_and_objects.y),a        ;y  
 
-  ld    a,r
-  rrca
-  ld    a,(ix+enemies_and_objects.v9)       ;v9=X spawn 
-  jr    c,.SetX
-  add   a,19
-  .SetX:
-  ld    (ix+enemies_and_objects.x),a        ;x  
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)  
-  ld    (ix+enemies_and_objects.v4),0       ;v4=Grow Duration
-  ret
+		ld    a,r
+		rrca
+		ld    a,(ix+enemies_and_objects.v9)       ;v9=X spawn 
+		jr    c,.SetX
+		add   a,19
+		.SetX:
+		ld    (ix+enemies_and_objects.x),a        ;x  
+		ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)  
+		ld    (ix+enemies_and_objects.v4),0       ;v4=Grow Duration
+		ret
   
-  DrippingOozeFalling:
-  ld    (ix+enemies_and_objects.v1),SXDrippingOoze4
-  call  MoveSpriteVertically                ;Add v3 to y
-  call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
-  jp    nz,VramObjectsTransparantCopies2
+DrippingOozeFalling:
+		ld    (ix+enemies_and_objects.v1),SXDrippingOoze4
+		call  MoveSpriteVertically                ;Add v3 to y
+		call  CheckFloorEnemyObject               ;checks for floor, out z=collision found with floor
+		jp    nz,VramObjectsTransparantCopies2
 
-  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
-  ;activate DrippingOoze in the pool
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),-1
-  ld    a,(ix+enemies_and_objects.x)        ;x
-  add   a,4
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.x),a      
-  ld    a,(ix+enemies_and_objects.y)        ;y
-  add   a,-25
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.y),a  
-;  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
-  ret
+		ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
+		;activate DrippingOoze in the pool
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),-1
+		ld    a,(ix+enemies_and_objects.x)        ;x
+		add   a,4
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.x),a      
+		ld    a,(ix+enemies_and_objects.y)        ;y
+		add   a,-25
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.y),a  
+		;  jp    VramObjectsTransparantCopiesRemove  ;Only remove, don't put object in Vram/screen  
+		ret
       
-  DrippingOozeGrowing:
-  call  VramObjectsTransparantCopies2
+DrippingOozeGrowing:
+		call  VramObjectsTransparantCopies2
 
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=Grow Duration
-  inc   a
-  ld    (ix+enemies_and_objects.v4),a       ;v4=Grow Duration
-  cp    50
-  ret   c
-  ld    (ix+enemies_and_objects.v1),SXDrippingOoze2
-  cp    100
-  ret   c
-  ld    (ix+enemies_and_objects.v1),SXDrippingOoze3
-  cp    150
-  ret   c
-  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
-  ret
-  
+		ld    a,(ix+enemies_and_objects.v4)       ;v4=Grow Duration
+		inc   a
+		ld    (ix+enemies_and_objects.v4),a       ;v4=Grow Duration
+		cp    50
+		ret   c
+		ld    (ix+enemies_and_objects.v1),SXDrippingOoze2
+		cp    100
+		ret   c
+		ld    (ix+enemies_and_objects.v1),SXDrippingOoze3
+		cp    150
+		ret   c
+		ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
+		ret
+
 DrippingOoze:
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=attacking)
@@ -2322,12 +2298,13 @@ DrippingOozeAnimation:
   dw  DrippingOoze17_Char
   dw  DrippingOoze18_Char
   dw  DrippingOoze18_Char
-  
-WaterfallMouth:
-  ld    a,216+32 
-  ld    (CopyObject+sy),a  
-  jp    VramObjectsTransparantCopies2
 
+
+;Waterfall from background face grey or golden statue
+;v1=sx
+;v2=Active?
+;v3=wait timer in case only 1 waterfall
+;v4=Waterfall nr
 WaterfallEyesYellowClosedSX: equ 67 
 WaterfallEyesYellowOpenSX: equ 53 
 WaterfallMouthYellowClosedSX: equ 119 
@@ -2338,173 +2315,164 @@ WaterfallEyesGreyOpenSX: equ 81
 WaterfallMouthGreyClosedSX: equ 139 
 WaterfallMouthGreyOpenSX: equ 129 
 
+WaterfallMouth:
+		ld    a,216+32 
+		ld    (CopyObject+sy),a  
+		jp    VramObjectsTransparantCopies2
+
 WaterfallEyesGrey:
-  ld    b,WaterfallMouthGreyOpenSX
-  ld    c,WaterfallMouthGreyClosedSX
-  ld    d,WaterfallEyesGreyClosedSX
-  ld    e,WaterfallEyesGreyOpenSX
-  jp    WaterfallEyesYellow.EntryPointForGreyEyes
+		ld    b,WaterfallMouthGreyOpenSX
+		ld    c,WaterfallMouthGreyClosedSX
+		ld    d,WaterfallEyesGreyClosedSX
+		ld    e,WaterfallEyesGreyOpenSX
+		jp    WaterfallEyesYellow.EntryPointForGreyEyes
   
 WaterfallEyesYellow:
-;v1=sx
-;v2=Active?
-;v3=wait timer in case only 1 waterfall
-;v4=Waterfall nr
+		ld    b,WaterfallMouthYellowOpenSX
+		ld    c,WaterfallMouthYellowClosedSX
+		ld    d,WaterfallEyesYellowClosedSX
+		ld    e,WaterfallEyesYellowOpenSX
+.EntryPointForGreyEyes:
+		call  .CheckOpenEyes
+		call  .CheckActivateWaterFall
+		ld    a,216+32 
+		ld    (CopyObject+sy),a  
+		jp    VramObjectsTransparantCopies2
 
-  ld    b,WaterfallMouthYellowOpenSX
-  ld    c,WaterfallMouthYellowClosedSX
-  ld    d,WaterfallEyesYellowClosedSX
-  ld    e,WaterfallEyesYellowOpenSX
-  .EntryPointForGreyEyes:
+.CheckActivateWaterFall:
+		ld    a,(ix+enemies_and_objects.v2)       ;v2=Active Timer
+		or    a
+		ret   z
+		inc   a
+		ld    (ix+enemies_and_objects.v2),a       ;v2=Active Timer
+		jr    z,.CloseEyes
+		cp    20
+		jr    z,.OpenMouth
+		cp    40
+		ret   nz
+.ActivateWaterFall:
+		ld    (ix+(2*lenghtenemytable)+enemies_and_objects.Alive?),-1
+		ld    a,(ix+enemies_and_objects.x)        ;x
+		add   a,19
+		ld    (ix+(2*lenghtenemytable)+enemies_and_objects.x),a      
+		ld    a,(ix+enemies_and_objects.y)        ;y
+		add   a,13
+		ld    (ix+(2*lenghtenemytable)+enemies_and_objects.y),a     
+		ret
 
-  call  .CheckOpenEyes
-  call  .CheckActivateWaterFall
-  
-  ld    a,216+32 
-  ld    (CopyObject+sy),a  
+.OpenMouth:
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),1
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v1),b
+		ld    a,(ix+enemies_and_objects.x)        ;x
+		add   a,21-19
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.x),a      
+		ld    a,(ix+enemies_and_objects.y)        ;y
+		add   a,20-8
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.y),a     
+		ret
 
-  jp    VramObjectsTransparantCopies2
+.CloseEyes:
+		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v1),c
+		ld    (ix+enemies_and_objects.v1),d
+		ld    (ix+enemies_and_objects.v2),0       ;v2=Active?
 
-  .CheckActivateWaterFall:
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Active Timer
-  or    a
-  ret   z
-  inc   a
-  ld    (ix+enemies_and_objects.v2),a       ;v2=Active Timer
-  jr    z,.CloseEyes
+		ld    a,(AmountOfWaterfallsInCurrentRoom)
+		inc   a
+		ld    b,a
+		ld    a,(CurrentActiveWaterfall)
+		inc   a
+		ld    (CurrentActiveWaterfall),a
+		cp    b
+		ret   nz
+		ld    a,1
+		ld    (CurrentActiveWaterfall),a
+		ret
 
-  cp    20
-  jr    z,.OpenMouth
+.CheckOpenEyes:
+		ld    a,(CurrentActiveWaterfall)
+		cp    (ix+enemies_and_objects.v4)       ;v4=Waterfalls nr
+		ret   nz
 
-  cp    40
-  ret   nz
-  .ActivateWaterFall:
-  ld    (ix+(2*lenghtenemytable)+enemies_and_objects.Alive?),-1
+		ld    a,(ix+enemies_and_objects.v2)       ;v2=Active?
+		or    a
+		ret   nz                                  ;return if already active. Eyes are open when active
 
-  ld    a,(ix+enemies_and_objects.x)        ;x
-  add   a,19
-  ld    (ix+(2*lenghtenemytable)+enemies_and_objects.x),a      
-  ld    a,(ix+enemies_and_objects.y)        ;y
-  add   a,13
-  ld    (ix+(2*lenghtenemytable)+enemies_and_objects.y),a     
-  ret
+		ld    a,(AmountOfWaterfallsInCurrentRoom)
+		dec   a
+		jr    nz,.EndCheckOnly1Waterfall
+		ld    a,(ix+enemies_and_objects.v3)       ;v3=wait timer in case only 1 waterfall
+		inc   a
+		and   63
+		ld    (ix+enemies_and_objects.v3),a       ;v3=wait timer in case only 1 waterfall
+		ret   nz
+		.EndCheckOnly1Waterfall:
 
-  .OpenMouth:
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.Alive?),1
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v1),b
-  
-  ld    a,(ix+enemies_and_objects.x)        ;x
-  add   a,21-19
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.x),a      
-  ld    a,(ix+enemies_and_objects.y)        ;y
-  add   a,20-8
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.y),a     
-  ret
+		ld    (ix+enemies_and_objects.v1),e
+		ld    (ix+enemies_and_objects.v2),1       ;v2=Active?
+		ret
 
-  .CloseEyes:
-  ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v1),c
 
-  ld    (ix+enemies_and_objects.v1),d
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Active?
-  
-  ld    a,(AmountOfWaterfallsInCurrentRoom)
-  inc   a
-  ld    b,a
-  ld    a,(CurrentActiveWaterfall)
-  inc   a
-  ld    (CurrentActiveWaterfall),a
-  cp    b
-  ret   nz
-  ld    a,1
-  ld    (CurrentActiveWaterfall),a
-  ret
-
-  .CheckOpenEyes:
-  ld    a,(CurrentActiveWaterfall)
-  cp    (ix+enemies_and_objects.v4)       ;v4=Waterfalls nr
-  ret   nz
-
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Active?
-  or    a
-  ret   nz                                  ;return if already active. Eyes are open when active
-
-  ld    a,(AmountOfWaterfallsInCurrentRoom)
-  dec   a
-  jr    nz,.EndCheckOnly1Waterfall
-  ld    a,(ix+enemies_and_objects.v3)       ;v3=wait timer in case only 1 waterfall
-  inc   a
-  and   63
-  ld    (ix+enemies_and_objects.v3),a       ;v3=wait timer in case only 1 waterfall
-  ret   nz
-  .EndCheckOnly1Waterfall:
-
-  ld    (ix+enemies_and_objects.v1),e
-  ld    (ix+enemies_and_objects.v2),1       ;v2=Active?
-  ret
-
-Waterfall:
 ;v1=Animation Counter
 ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End)
 ;v3=
 ;v4=
 ;v5=Animation Counter
-  call  .HandlePhase                        ;(0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) ;out hl -> sprite character data to out to Vram
-  exx                                       ;store hl. hl now points to color data
-  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-	ld		a,WaterfallSpriteblock              ;set block at $a000, page 2 - block containing sprite data
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-  ret
+Waterfall:
+		call  .HandlePhase                        ;(0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) ;out hl -> sprite character data to out to Vram
+		exx                                       ;store hl. hl now points to color data
+		call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+		ld		a,WaterfallSpriteblock              ;set block at $a000, page 2 - block containing sprite data
+		ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+		ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+		ret
     
-  .HandlePhase:
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End)
-  or    a
-  jp    z,WaterfallStart
-  dec   a
-  jp    z,Waterfalling
-  
-  WaterfallEnd:
-  ld    hl,WaterfallEndAnimation
-  ld    b,00                                ;animate every x frames (based on framecounter)
-  ld    c,2 * 10                            ;06 animation frame addresses
-  call  AnimateSprite  
-  
-  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
-  cp    2 * 09
-  ret   nz
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) 
-  ld    (ix+enemies_and_objects.v1),-2      ;v1=Animation Counter
-  jp    RemoveSprite
+.HandlePhase:
+		ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End)
+		or    a
+		jp    z,WaterfallStart
+		dec   a
+		jp    z,Waterfalling
+WaterfallEnd:
+		ld    hl,WaterfallEndAnimation
+		ld    b,00                                ;animate every x frames (based on framecounter)
+		ld    c,2 * 10                            ;06 animation frame addresses
+		call  AnimateSprite  
 
-  EndWaterFalling:  equ 170
-  Waterfalling:
-  ld    a,(ix+enemies_and_objects.v5)       ;v5=Animation Counter
-  inc   a
-  ld    (ix+enemies_and_objects.v5),a       ;v5=Animation Counter
-  cp    EndWaterFalling
-  jr    nz,.Animate
-  ld    (ix+enemies_and_objects.v1),-2      ;v1=Animation Counter
-  ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) 
-  ld    (ix+enemies_and_objects.v5),0       ;v5=Animation Counter
+		ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+		cp    2 * 09
+		ret   nz
+		ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) 
+		ld    (ix+enemies_and_objects.v1),-2      ;v1=Animation Counter
+		jp    RemoveSprite
 
-  .Animate:
-  ld    hl,WaterfallAnimation
-  ld    b,00                                ;animate every x frames (based on framecounter)
-  ld    c,2 * 08                            ;06 animation frame addresses
-  jp    AnimateSprite  
+EndWaterFalling:  equ 170
+Waterfalling:
+		ld    a,(ix+enemies_and_objects.v5)       ;v5=Animation Counter
+		inc   a
+		ld    (ix+enemies_and_objects.v5),a       ;v5=Animation Counter
+		cp    EndWaterFalling
+		jr    nz,.Animate
+		ld    (ix+enemies_and_objects.v1),-2      ;v1=Animation Counter
+		ld    (ix+enemies_and_objects.v2),2       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) 
+		ld    (ix+enemies_and_objects.v5),0       ;v5=Animation Counter
+.Animate:
+		ld    hl,WaterfallAnimation
+		ld    b,00                                ;animate every x frames (based on framecounter)
+		ld    c,2 * 08                            ;06 animation frame addresses
+		jp    AnimateSprite  
   
-  WaterfallStart:
-  ld    hl,WaterfallStartAnimation
-  ld    b,00                                ;animate every x frames (based on framecounter)
-  ld    c,2 * 08                            ;06 animation frame addresses
-  call  AnimateSprite  
-  
-  ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
-  cp    2 * 07
-  ret   nz  
-  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) 
-  ld    (ix+enemies_and_objects.v1),-2      ;v1=Animation Counter
-  ret
+WaterfallStart:
+		ld    hl,WaterfallStartAnimation
+		ld    b,00                                ;animate every x frames (based on framecounter)
+		ld    c,2 * 08                            ;06 animation frame addresses
+		call  AnimateSprite  
+
+		ld    a,(ix+enemies_and_objects.v1)       ;v1=Animation Counter
+		cp    2 * 07
+		ret   nz  
+		ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End) 
+		ld    (ix+enemies_and_objects.v1),-2      ;v1=Animation Counter
+		ret
   
 WaterfallEndAnimation:
   dw  WaterfallEnd1_Char
@@ -2537,123 +2505,131 @@ WaterfallAnimation:
   dw  Waterfall6_Char
   dw  Waterfall7_Char
   dw  Waterfall8_Char
-  
-BlackHoleBaby:
+
+
+;146-Black Hole Alien Baby
 ;v1=Animation Counter
-;v2=Phase (0=walking slow, 1=attacking)
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v6=Gravity timer
-  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
-  exx                                       ;store hl. hl now points to color data
-  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
-  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-	ld		a,BlackHoleBabySpriteblock          ;set block at $a000, page 2 - block containing sprite data
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-  ret
+BlackHoleBaby:
+.phase:	equ enemies_and_objects.v2	;0=walk,1=jump
+.hmove:	equ enemies_and_objects.v4	;b7=
+.vmove:	equ enemies_and_objects.v3	;b7=
+.gravityTimer:	equ	enemies_and_objects.v6
+.aniCount:	equ enemies_and_objects.v1
+
+		call .HandlePhase		;out hl -> sprite character data to out to Vram
+		exx						;store hl. hl now points to color data
+		call CheckPlayerPunchesEnemy
+		call CollisionEnemyPlayer
+		ld	 a,BlackHoleBabySpriteblock          ;set block at $a000, page 2 - block containing sprite data
+		ld	 e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+		ld	 d,(ix+enemies_and_objects.sprnrinspat+1)
+		ret
   
-  .HandlePhase:
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=TrampolineBlob Moving, 1=TrampolineBlob jumping) 
-  or    a
-  jp    z,BlackHoleBabyWalking
+.HandlePhase:
+		ld    a,(ix+.phase)
+		or    a
+		jp    z,.BlackHoleBabyWalking
   
-  BlackHoleBabyJumping:
-  call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
-  call  .Gravity
-  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction / out z=collision found with wall  
-  call  .CheckFloor                         ;checks for collision Floor and if found fall
-  
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  ld    de,RightBlackHoleBaby4_Char
-  ld    hl,RightBlackHoleBaby2_Char
-  jp    z,.DirectionFound
-  ld    de,LeftBlackHoleBaby4_Char
-  ld    hl,LeftBlackHoleBaby2_Char
-  .DirectionFound:
-  bit   7,(ix+enemies_and_objects.v3)       ;v3=Vertical movement
-  ret   z
-  ex    de,hl
-  ret
+.BlackHoleBabyJumping:
+		call  MoveSpriteHorizontallyAndVertically ;Add v3 to y. Add v4 to x (16 bit)
+		call  .Gravity
+		call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction / out z=collision found with wall  
+		call  .CheckFloor                         ;checks for collision Floor and if found fall
 
-  .Gravity:
-  ld    a,(ix+enemies_and_objects.v6)       ;v6=Gravity timer
-  inc   a
-  and   7
-  ld    (ix+enemies_and_objects.v6),a       ;v6=Gravity timer
-  ret   nz
-  
-  ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
-  inc   a
-  cp    5
-  ret   z
-  ld    (ix+enemies_and_objects.v3),a       ;v3=Vertical Movement
-  ret
+;20241003;ro;Added this check cuz it made the shizl CRASH. Still needs sprite clean-up (bart)
+		ld	 a,(ix+enemies_and_objects.y)	;jump out of screen (bottom)?
+		cp	 27*8
+		jp	 nc,removesprite
 
-  .CheckFloor:                              ;checks for floor. if not found invert direction
-  bit   7,(ix+enemies_and_objects.v3)       ;v3=Vertical movement
-  ret   nz
-  call  CheckFloorEnemy                     ;checks for floor, out z=collision found with floor
-  inc   a                                   ;check for background tile (0=background, 1=hard foreground, 2=ladder, 3=lava.)
-  ret   z                                   ;return if background tile is found
+		bit   7,(ix+.hmove)       ;v4=Horizontal Movement
+		ld    de,RightBlackHoleBaby4_Char
+		ld    hl,RightBlackHoleBaby2_Char
+		jp    z,.DirectionFound
+		ld    de,LeftBlackHoleBaby4_Char
+		ld    hl,LeftBlackHoleBaby2_Char
+.DirectionFound:
+		bit   7,(ix+.vmove)       ;v3=Vertical movement
+		ret   z
+		ex    de,hl
+		ret
 
-  ld    (ix+enemies_and_objects.v6),0       ;v6=Gravity timer / reset every time you snap to floor
+.Gravity:		;ro: is dit de toenemende valsnelheid?
+		ld    a,(ix+.gravityTimer) 
+		inc   a
+		and   7
+		ld    (ix+.gravityTimer),a 
+		ret   nz
 
-  ;snap to platform
-  ld    a,(ix+enemies_and_objects.y)        ;y
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y
+		ld    a,(ix+.vmove) 
+		inc   a
+		cp    5
+		ret   z
+		ld    (ix+.vmove),a 
+		ret
 
-  ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=TrampolineBlob Moving, 1=TrampolineBlob jumping) 
-  ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-  ret
+.CheckFloor:                              ;checks for floor. if not found invert direction
+		bit   7,(ix+.vmove) 
+		ret   nz
+		call  CheckFloorEnemy		;checks for floor, out z=collision found with floor
+		inc   a						;check for background tile (0=background, 1=hard foreground, 2=ladder, 3=lava.)
+		ret   z						;return if background tile is found
+
+		ld    a,(ix+enemies_and_objects.y)	;snap to platform
+		and   %1111 1000
+		ld    (ix+enemies_and_objects.y),a
+		ld    (ix+.phase),0					;walk
+		ld    (ix+.aniCount),0 
+		ld    (ix+.gravityTimer),0			;reset every time you snap to floor
+		ret
    
-  BlackHoleBabyWalking:  
-  ld    a,(ix+enemies_and_objects.hit?)     ;check if enemy is hit ? If so, out white sprite
-  or    a
-  jr    nz,.EndMove
-  ld    a,(framecounter)
-  rrca
-  call  c,MoveSpriteHorizontally
-  .EndMove:
-  call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
-  call  GreenSpiderWalkSlow.CheckFloor      ;checks for floor. if not found invert direction
-  ld    a,r
-  and   15
-  jr    nz,.Animate
-  ld    a,(ix+enemies_and_objects.x)
-  and   %0000 1111
-  jr    nz,.Animate
-  
-  ld    (ix+enemies_and_objects.v2),1       ;v2=Phase (0=BlackHoleBaby Walking, 1=BlackHoleBaby Jumping)  
-  ld    (ix+enemies_and_objects.v3),-2      ;v3=Vertical Movement
-  
-  .Animate:
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  ld    hl,RightBlackHoleBabyWalk
-  jp    z,.GoAnimate
-  ld    hl,LeftBlackHoleBabyWalk
-  .GoAnimate:
-  ld    b,07                                ;animate every x frames (based on framecounter)
-  ld    c,2 * 06                            ;06 animation frame addresses
-  jp    AnimateSprite  
+.BlackHoleBabyWalking:  
+		ld    a,(ix+enemies_and_objects.hit?)     ;check if enemy is hit ? If so, out white sprite
+		or    a
+		jr    nz,.EndMove
+		ld    a,(framecounter)
+		rrca
+		call  c,MoveSpriteHorizontally
+.EndMove:
+		call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction
+		call  GreenSpiderWalkSlow.CheckFloor      ;checks for floor. if not found invert direction
+		ld    a,r	;randomize jump moment
+		and   15
+		jr    nz,.Animate
+		ld    a,(ix+enemies_and_objects.x)
+		and   %0000 1111
+		jr    nz,.Animate
+		ld    (ix+.phase),1       ;v2=Phase (0=BlackHoleBaby Walking, 1=BlackHoleBaby Jumping)  
+		ld    (ix+.vmove),-2      ;v3=Vertical Movement
+.Animate:
+		bit   7,(ix+.hmove)       ;v4=Horizontal Movement
+		ld    hl,RightBlackHoleBabyWalk
+		jp    z,.GoAnimate
+		ld    hl,LeftBlackHoleBabyWalk
+.GoAnimate:
+		ld    b,07                                ;animate every x frames (based on framecounter)
+		ld    c,2 * 06                            ;06 animation frame addresses
+		jp    AnimateSprite  
 
 LeftBlackHoleBabyWalk:
-  dw  LeftBlackHoleBaby1_Char
-  dw  LeftBlackHoleBaby2_Char
-  dw  LeftBlackHoleBaby3_Char
-  dw  LeftBlackHoleBaby4_Char
-  dw  LeftBlackHoleBaby5_Char
-  dw  LeftBlackHoleBaby6_Char
-
+		dw  LeftBlackHoleBaby1_Char
+		dw  LeftBlackHoleBaby2_Char
+		dw  LeftBlackHoleBaby3_Char
+		dw  LeftBlackHoleBaby4_Char
+		dw  LeftBlackHoleBaby5_Char
+		dw  LeftBlackHoleBaby6_Char
 RightBlackHoleBabyWalk:
-  dw  RightBlackHoleBaby1_Char
-  dw  RightBlackHoleBaby2_Char
-  dw  RightBlackHoleBaby3_Char
-  dw  RightBlackHoleBaby4_Char
-  dw  RightBlackHoleBaby5_Char
-  dw  RightBlackHoleBaby6_Char
+		dw  RightBlackHoleBaby1_Char
+		dw  RightBlackHoleBaby2_Char
+		dw  RightBlackHoleBaby3_Char
+		dw  RightBlackHoleBaby4_Char
+		dw  RightBlackHoleBaby5_Char
+		dw  RightBlackHoleBaby6_Char
 
+
+;131-Black Hole Alien
 BlackHoleAlien:
 ;v1=Animation Counter
 ;v4=Horizontal Movement
