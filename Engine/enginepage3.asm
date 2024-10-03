@@ -1172,7 +1172,7 @@ PopulateControls:
 	out		($aa),a
 	in		a,($a9)
 	cpl
-	and		$20			; 'F1' key
+	and		%0110 0000	; 'F2' and 'F1' key
 	rlca				  ; 01000000
 	or		c
 	ld		c,a			; 01BARLDU
@@ -1339,7 +1339,7 @@ EarthObtained?:				db	1
 WaterObtained?:				db	1
 BowAndArrowObtained?:		db	1
 
-
+MapObtained?:				db	1
 
 
 
