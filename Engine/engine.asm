@@ -3919,108 +3919,125 @@ CheckTileEnemyInHL:
 
   add   a,(ix+enemies_and_objects.y)
 ;  add a,1
-  jp    checktile.XandYset
+  jp    getRoomMapTile ;checktile.XandYset
 
 CheckTileEnemy:  
 ;get enemy X in tiles
   ld    l,(ix+enemies_and_objects.x)  
   ld    h,(ix+enemies_and_objects.x+1)      ;x
   add   hl,de
-
 ;  ld    a,h
 ;  or    a
 ;  jp    m,checktile.CheckTileIsOutOfScreenLeft
-
   add   a,(ix+enemies_and_objects.y)  
-  jp    checktile.XandYset
+  jp    getRoomMapTile ;checktile.XandYset
 
+
+;Check tile PLAYER
 ;in b->add y to check, de->add x to check
 checktile:                  
-	ld    hl,(ClesX)	;get player X in tiles
-	add   hl,de
-	bit   7,h
-	jp    z,.EntryOutOfScreenLeft
-	ld    hl,0
-.EntryOutOfScreenLeft:
-	ld    a,(Clesy) ;get player Y in pixels and convert it to tiles
-	add   a,b
-.XandYset:
-	srl   h		;/2
-	rr    l
-	srl   l		;/4
-	srl   l		;/8
-	and   %11111000
-	rrca		;/2
-	rrca		;/4
-	rrca		;/8
-.selfmodifyingcodeStartingPosMapForCheckTile:
-	ld		de,MapData- 000000  ;start 2 rows higher (MapData-80 for normal engine, MapData-68 for SF2 engine)
-	add   hl,de
-.selfmodifyingcodeMapLenght:
-	ld		bc,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
-	ex    de,hl               ;de->x in tiles
+		ld    a,(Clesy)
+		add   a,b
+		ld    hl,(ClesX)
+		add   hl,de
+		bit   7,h
+		jp    z,getRoomMapTile	;.XandYset
+		ld    hl,0
 
-;ro:why wouldn't you just mul 8bx8b here?
-; Multiply 8-bit value with a 16-bit value (amount of Y tiles * map lenght)
-; In: Multiply A with BC
-; Out: HL = result
+;Get roomMap tileClass
+;in: HL=X, A=Y
+;out:HL=address, A=value
+getRoomMapTile:	;.XandYset:	;y/8, x/8
+		srl   h		;/2
+		rr    l
+		srl   l		;/4
+		srl   l		;/8
+		rrca		;/2
+		rrca		;/4
+		rrca		;/8
+		and 0x1f
+;at this point: HL=TileX, A=TileY
+
+; ;20241001;ro;dunno why this doesn't work...
+; 		ld	 h,a	;y
+; 		ld	 a,l	;x
+; 		ld	 e,roomMap.numcol
+; ;mul8: HL=H*E	> HL=Y*40
+; mul8:	ld	 d,0
+; 		ld	 l,d
+; 		ld	 b,8
+; Mul8.0:	add	 hl,hl
+; 		jr	 nc,mul8.1
+; 		add	 hl,de
+; mul8.1:	djnz mul8.0
+; 		ld	 e,A
+; 		add	 hl,de
+; 		ld	 de,roomMap.data-(2*roomMap.numcol)
+; 		add  hl,de
+; 		ld	 a,(hl)	;retrieve classID
+; 		dec	 A
+; ret
+
+;.selfmodifyingcodeStartingPosMapForCheckTile:
+;	ld		de,roomMap ;MapData- 000000  ;start 2 rows higher (MapData-80 for normal engine, MapData-68 for SF2 engine)
+	ld	 de,roomMap.data-(2*roomMap.numcol)
+	add   hl,de
+	ex    de,hl               ;de->roommapadr+x in tiles
+;.selfmodifyingcodeMapLenght:
+;	ld		bc,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
+		ld	 bc,roomMap.numcol
+		call mulAxBC
+		add	 hl,de               ;(amount of Y tiles * map lenght ) + x in tiles
+		ld	 a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=spikes, 4=stairs left up, 5=stairs right up, 6=lava, 7=water
+		dec	 a                   ;1 = wall
+ret
+
+;HL=AxBC
+mulAxBC:
 .Mult12:
   ld    hl,0
 .Mult12_Loop:
-;  add   hl,hl
   add   a,a
-  jr    nc,.Mult12_NoAdd
+  jp    nc,.Mult12_NoAdd
   add   hl,bc
 .Mult12_NoAdd:
   add   hl,hl
   add   a,a
-  jr    nc,.Mult12_NoAdd2
+  jp    nc,.Mult12_NoAdd2
   add   hl,bc
 .Mult12_NoAdd2:
   add   hl,hl
   add   a,a
-  jr    nc,.Mult12_NoAdd3
+  jp    nc,.Mult12_NoAdd3
   add   hl,bc
 .Mult12_NoAdd3:
   add   hl,hl
   add   a,a
-  jr    nc,.Mult12_NoAdd4
+  jp    nc,.Mult12_NoAdd4
   add   hl,bc
 .Mult12_NoAdd4:
   add   hl,hl
   add   a,a
-  jr    nc,.Mult12_NoAdd5
+  jp    nc,.Mult12_NoAdd5
   add   hl,bc
 .Mult12_NoAdd5:
   add   hl,hl
   add   a,a
-  jr    nc,.Mult12_NoAdd6
+  jp    nc,.Mult12_NoAdd6
   add   hl,bc
 .Mult12_NoAdd6:
   add   hl,hl
   add   a,a
-  jr    nc,.Mult12_NoAdd7
+  jp    nc,.Mult12_NoAdd7
   add   hl,bc
 .Mult12_NoAdd7:
   add   hl,hl
   add   a,a
-  jr    nc,.Mult12_NoAdd8
+;  jp    nc,.Mult12_NoAdd8
+	ret	 nc
   add   hl,bc
-.Mult12_NoAdd8:
-
-  add   hl,de               ;(amount of Y tiles * map lenght ) + x in tiles
-  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=spikes, 4=stairs left up, 5=stairs right up, 6=lava, 7=water
-  dec   a                   ;1 = wall
+;.Mult12_NoAdd8:
 ret
-
-;BackgroundID:	equ 0	;tile 0 = background
-;HardForeGroundID:	equ 1	;tile 1 = hardforeground
-;LadderId:	equ 2	;tile 2 = LadderTilesEndAdrEnd
-;SpikeId:		equ 3	;tile 3 = spikes/poison
-;StairLeftId:	equ 4	;tile 4 = stairsleftup
-;StairRightId:	equ 5	;tile 5 = stairsrightup
-;LavaId:		equ 6	;tile 6 = lava
-
 
 PrimaryWeaponActivatedWhileJumping?:  db  0
 MagicWeaponDurationValue:     equ 29
@@ -4092,7 +4109,7 @@ HandlePlayerWeapons:
 
   ld    a,(SecundaryWeaponNY)
   dec   a                   ;check if NY=1 (arrow)
-  jr    z,.CollisionCheck   ;skip elementary weapon animation and duration if we are using arrow
+  jp    z,.CollisionCheck   ;skip elementary weapon animation and duration if we are using arrow
 
   ld    a,(framecounter)
   and   7
@@ -4120,7 +4137,7 @@ HandlePlayerWeapons:
   add   a,16 + 2
 
   ;collision check
-  call  checktile.XandYset  ;out z=collision found with wall  
+  call  getRoomMapTile ;checktile.XandYset  ;out z=collision found with wall  
   jp    z,GoHandlePlayerWeapon.RemoveWeapon
   inc   hl                  ;also check next tile
   ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
@@ -4214,7 +4231,7 @@ HandlePlayerWeapons:
 
   ld    a,(PrimaryWeaponActive?)
   or    a
-  jr    nz,.GoPutWeaponRightSideScreen
+  jp    nz,.GoPutWeaponRightSideScreen
  
   ld    a,(ix+0)            ;SecundaryWeaponActive? / movement speed
   or    a
@@ -4225,7 +4242,7 @@ HandlePlayerWeapons:
   ld    a,(ix+2)            ;FireballX
   cp    16
   ret   c                   ;if arrow went through the edge of the map (on the right side) remove the arrow from play
-  jr    .GoPutWeaponRightSideScreen
+  jp    .GoPutWeaponRightSideScreen
   ;at this point in the right side of the screen, a secundary weapon is moving to the right
   .movingRight1:
   ld    a,(CopyPlayerProjectile+dx)  ;dont put arrow in screen (on the left side) if it went through the screen on the right side

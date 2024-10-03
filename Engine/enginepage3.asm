@@ -132,45 +132,50 @@ RemoveWallFromRoomTiles:
 ;   call  checktileObject                     ;perform checktile object, but only to set hl pointing to the left top tile where wall starts
 											;ro: that should really be a general function, like "getRoomTileLocation"
 ;ro: in the original "checkTileObject" function, X is loaded as 8-bit, while it is a 16-bit. So:
-  ld    l,(ix+enemies_and_objects.x)        ;x object
-  ld    h,(ix+enemies_and_objects.x+1)
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  add   a,16
-  call    CheckTile.XandYset				;<< yes, this should be generic as mentioned earlier.
+		ld    l,(ix+enemies_and_objects.x)        ;x object
+		ld    h,(ix+enemies_and_objects.x+1)
+		ld    a,(ix+enemies_and_objects.y)        ;y object
+		add   a,16
+		call    getRoomMapTile ;CheckTile.XandYset				;<< yes, this should be generic as mentioned earlier.
 
-;Fill a part of the current room tile matrix (ro: this should be a general function)										
-; so, I changed it.
-  ld    a,(ix+enemies_and_objects.nx)
-  srl	a ;/2
-  srl	a ;/4
-  srl	a ;/8
-  and	0x1f
-  ld 	b,a
-  ld    a,(ix+enemies_and_objects.ny)
-  srl	a ;/2
-  srl	a ;/4
-  srl	a ;/8
-  and	0x1f
-  ld 	c,a
-  jp	fillMapData
+;Fill a part of the current room tile matrix										
+		ld	a,(ix+enemies_and_objects.nx)
+		srl	a ;/2
+		srl	a ;/4
+		srl	a ;/8
+		and	0x1f
+		ld 	b,a
+		ld	a,(ix+enemies_and_objects.ny)
+		srl	a ;/2
+		srl	a ;/4
+		srl	a ;/8
+		and	0x1f
+		ld 	c,a
+		ld	a,BackgroundID
+		jp	fillRoomMapData
+
 
 ;20240914;ro;a generic block fill for mapdata
 ;in: HL=startAddress, B=lenX (tiles), C=lenY (tiles), A=value > atm =0
-fillMapData:
-		; ld	a,40	;line lenght    > this isn't correct and only working on 38 wide rooms. So:
-		ld	a,(checktile.selfmodifyingcodeMapLenght+1)		;see why selfmodcode is stupid? you might need the var on other parts too.
+fillRoomMapData:
+		ex  af,af'	;'
+;		ld	a,(checktile.selfmodifyingcodeMapLenght+1)		;see why selfmodcode is stupid? you might need the var on other parts too.
+		ld	a,roomMap.numcol
+;		add	a,2	;ro:should loose this eventually
 		sub	b
 		ld	e,a
 		ld	d,0
 		ld	a,c
 		ld	c,b
-.fmp0:	ld	(hl),d
+.fmp1:	ex	af,af'	;'
+.fmp0:	ld	(hl),a
 		inc	hl
 		djnz .fmp0
 		add	hl,de
 		ld	b,c
+		ex  af,af'	;'
 		dec	A
-		jp	nz,.fmp0
+		jp	nz,.fmp1
 ret
 
 AreaSignList:	dw	AreaSign01,AreaSign02,AreaSign03,AreaSign04,AreaSign05,AreaSign06,AreaSign07,AreaSign08,AreaSign09,AreaSign10,AreaSign11,AreaSign12,AreaSign13,AreaSign14,AreaSign15,AreaSign16,AreaSign17,AreaSign18,AreaSign19
@@ -387,12 +392,16 @@ UnpackMapdataAndObjectData:
 MapHeight:                  equ 27
 MapLenght256x216:           equ 32
 MapLenght304x216:           equ 38
-
 CheckTile256x216MapLenght:  equ 32 + 2
 CheckTile304x216MapLenght:  equ 38 + 2
 
-;Space for room tile IDs
-MapData:	ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
+;Space for room tile classes
+;MapData:
+RoomMap:
+.numcol:	equ 38+2
+.numrow:	equ 27+2
+.data:		ds    .numrow * .numcol ,0   
+.width:		db 0
 
 
 ;Return the correct tile ID for this room
@@ -738,49 +747,53 @@ tileConversionTable: ;(id,tilenr) order desc
 ;20231104
 ;Convert TileNumbers to TileIDs
 ConvertToMapinRam:
-	ld  de,UnpackedRoomFile.tiledata 
-	ld  hl,MapData
-	ld	a,MapHeight
-.SelfModifyingCodeMapLenght:
-    ld	b,000   ;maplenght: 32 or 38, depending on which engine is active
-    push af
-.loop:
-    push hl
-    call .convertTile
-    pop hl
+		ld	 de,UnpackedRoomFile.tiledata 
+		ld	 hl,roomMap.data	;MapData
+;		ld	 a,MapHeight
+;.SelfModifyingCodeMapLenght:
+;    ld	b,000   ;maplenght: 32 or 38, depending on which engine is active
+		ld	 b,MapHeight
+		ld	 a,(roommap.width)
+		ld	 c,a
+.L0:	push bc 
+		ld	 b,c
+		push hl
+.L1:	push hl
+		call .convertTile
+		pop	 hl
 
 ;the following code changes lava and spike tiles, to speed this up, both their values in tileConversionTable can be adjusted instead.
 ;Lava is turning to hard foreground when lavawalk is obtained
-	ld		a,c
-	cp		LavaId
-	jr		nz,.EndCheckLava
-	ld		a,(LavaWalkObtained?)
-	or		a
-	jr		z,.EndCheckLava
-	ld		c,HardForeGroundID
-	.EndCheckLava:
-;spikes is turning to background when spikeswalk is obtained
-	ld		a,c
-	cp		SpikeId
-	jr		nz,.EndCheckSpikes
-	ld		a,(SpikesWalkObtained?)
-	or		a
-	jr		z,.EndCheckSpikes
-	ld		c,BackgroundID
-	.EndCheckSpikes:
+		ld	a,c
+		cp	LavaId
+		jr	nz,.EndCheckLava
+		ld	a,(LavaWalkObtained?)
+		or	a
+		jr	z,.EndCheckLava
+		ld	c,HardForeGroundID
+		.EndCheckLava:
+		;spikes is turning to background when spikeswalk is obtained
+		ld	a,c
+		cp	SpikeId
+		jr	nz,.EndCheckSpikes
+		ld	a,(SpikesWalkObtained?)
+		or	a
+		jr	z,.EndCheckSpikes
+		ld	c,BackgroundID
+		.EndCheckSpikes:
 
-    ld  (HL),c
-    inc hl
-    djnz .loop
+		ld	 (HL),c	;store classID
+		inc	 hl
+		djnz .L1
 
-    ld  (hl),0 ;2 empty tiles on the right side of the map
-    inc hl
-    ld  (hl),0
-    inc hl  
-
-    pop AF
-    dec a
-    jp  nz,.SelfModifyingCodeMapLenght
+		ld  (hl),0 ;2 empty tiles on the right side of the map
+		inc hl
+		ld  (hl),0
+		pop	 hl
+		ld	 bc,roomMap.numcol
+		add	 hl,bc
+		pop	bc
+		djnz .l0
 ret
   
 ;Convert one MapTileNr to TileID using a lookupTable

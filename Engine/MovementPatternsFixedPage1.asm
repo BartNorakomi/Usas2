@@ -2163,6 +2163,6 @@ checktileObject:                            ;same as checktile for player, but n
   add   hl,de
   ld    a,(ix+enemies_and_objects.y)        ;y object
   add   a,b
-  jp    CheckTile.XandYset
+  jp    getRoomMapTile ;CheckTile.XandYset
 
   	dephase

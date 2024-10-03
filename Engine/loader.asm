@@ -1248,10 +1248,11 @@ ret
 
   .CheckWallRightEdge:                  ;check if wall is at right edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
 	;ro:this is gonna be shitty - but gets the job done
-	ld	a,(checktile.selfmodifyingcodeMapLenght+1)
-	sub 2
-	ld l,A
-	ld h,0
+;	ld	a,(checktile.selfmodifyingcodeMapLenght+1)
+;	sub 2
+	ld	 a,(roomMap.width)
+	ld	 l,A
+	ld	 h,0
 	add	 hl,hl	;x2
 	add	 hl,hl	;x4
 	add	 hl,hl	;x8
@@ -1284,8 +1285,7 @@ ret   c
   ret
 
 
-
-  .Object010:                           ;huge block (HugeBlock)
+;huge block (HugeBlock)
 ;v1-2=box right (16 bit)
 ;v1-1=box right (16 bit)
 ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
@@ -1297,114 +1297,109 @@ ret   c
 ;v7=box left (16 bit)
 ;v8=box top
 ;v9=box bottom
+.HeightHugeBlock:   equ 48
+.WidthHugeBlock:    equ 48
+.Object010:
+		call  .SetHugeBlock
+;if spritesplit enabled, we split our block in 2 and put top and bottom as separate objects
+		ld    a,(scrollEngine)              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
+		cp    2
+		ret   z
 
-  call  .SetHugeBlock
-
-  ;if we have spritesplit enabled, we split our block in 2 and put top and bottom as separate objects
-  ld    a,(scrollEngine)              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
-  cp    2
-  ret   z
-
-  ld    (iy+enemies_and_objects.v1),1   ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
-  ld    de,lenghtenemytable             ;lenght 1 object in object table
-  add   iy,de                           ;next object in object table
-  call  .SetHugeBlock
-  ld    (iy+enemies_and_objects.v1),2   ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
+		ld    (iy+enemies_and_objects.v1),1   ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
+		ld    de,lenghtenemytable             ;lenght 1 object in object table
+		add   iy,de                           ;next object in object table
+		call  .SetHugeBlock
+		ld    (iy+enemies_and_objects.v1),2   ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
   ret
 
-  .SetHugeBlock:
-  ld    hl,Object010Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1           ;1 objects
-  ldir
+.SetHugeBlock:
+		ld    hl,Object010Table
+		push  iy
+		pop   de                              ;enemy object table
+		ld    bc,lenghtenemytable*1           ;1 objects
+		ldir
 
-  ld    a,(AmountOfSF2ObjectsCurrentRoom)
-  ld    (iy+enemies_and_objects.v2),a   ;v2=framenumber to handle this object on
-  inc   a
-  ld    (AmountOfSF2ObjectsCurrentRoom),a
+		ld    a,(AmountOfSF2ObjectsCurrentRoom)
+		ld    (iy+enemies_and_objects.v2),a   ;v2=framenumber to handle this object on
+		inc   a
+		ld    (AmountOfSF2ObjectsCurrentRoom),a
 
-  ;set x (relative to box)
-  ld    a,(ix+Object010Table.xbox)
-  add   a,(ix+Object010Table.relativex)
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),l
-  ld    (iy+enemies_and_objects.x+1),h
+;set x (relative to box)
+		ld    a,(ix+Object010Table.xbox)
+		add   a,(ix+Object010Table.relativex)
+		ld    l,a
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (iy+enemies_and_objects.x),l
+		ld    (iy+enemies_and_objects.x+1),h
 
-  ;set y (relative to box)
-  ld    a,(ix+Object010Table.ybox)
-  add   a,(ix+Object010Table.relativey)
-;  sub   a,.HeightHugeBlock/2
-  ld    (iy+enemies_and_objects.y),a
+;set y (relative to box)
+		ld    a,(ix+Object010Table.ybox)
+		add   a,(ix+Object010Table.relativey)
+		;  sub   a,.HeightHugeBlock/2
+		ld    (iy+enemies_and_objects.y),a
 
-  ;set box x left
-  ld    l,(ix+Object010Table.xbox)
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.v6),l   ;v6 and v7=box left (16bit)
-  ld    (iy+enemies_and_objects.v7),h   ;v6 and v7=box left (16bit)
+;set box x left
+		ld    l,(ix+Object010Table.xbox)
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (iy+enemies_and_objects.v6),l   ;v6 and v7=box left (16bit)
+		ld    (iy+enemies_and_objects.v7),h   ;v6 and v7=box left (16bit)
 
-  ;set box x right
-  ld    a,(ix+Object010Table.xbox)
-  add   a,(ix+Object010Table.widthbox)
-  sub   a,.WidthHugeBlock/2
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  call  .CheckIfObjectMovementIsWithinAllowedRange
-  ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
-  ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
+;set box x right
+		ld    a,(ix+Object010Table.xbox)
+		add   a,(ix+Object010Table.widthbox)
+		sub   a,.WidthHugeBlock/2
+		ld    l,a
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		call  .CheckIfObjectMovementIsWithinAllowedRange
+		ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
+		ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
 
-  ;set box y top
-  ld    a,(ix+Object010Table.ybox)
-  ld    (iy+enemies_and_objects.v8),a   ;v8=box top
+;set box y top
+		ld    a,(ix+Object010Table.ybox)
+		ld    (iy+enemies_and_objects.v8),a   ;v8=box top
 
-  ;set box y bottom
-  add   a,(ix+Object010Table.heightbox)
-  sub   a,.HeightHugeBlock
-  ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
+;set box y bottom
+		add   a,(ix+Object010Table.heightbox)
+		sub   a,.HeightHugeBlock
+		ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
 
-  ;set facing direction
-  ld    a,(ix+Object010Table.face)
-  add   a,a
-  ld    d,0
-  ld    e,a
-  ld    hl,Movementtable-2
-  add   hl,de
-  ld    a,(hl)                          ;y
+;set facing direction
+		ld    a,(ix+Object010Table.face)
+		add   a,a
+		ld    d,0
+		ld    e,a
+		ld    hl,Movementtable-2
+		add   hl,de
+		ld    a,(hl)                          ;y
 
-  ;We multiplay the vertical movement with the object speed
-  ld    b,0
-  ld    c,(ix+Object010Table.speed)     ;object speed
-  push  hl
-  call  checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
-  or    a
-  sbc   hl,de                           ;AAAAAAAAAAAAAAAAAAAAAAH
-  ld    (iy+enemies_and_objects.v3),l   ;v3=y movement
-  pop   hl
+;mulu vertical movement with the object speed
+		ld    b,0
+		ld    c,(ix+Object010Table.speed)     ;object speed
+		push  hl
+		call  mulAxBC	;checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
+	;   or    a
+	;   sbc   hl,de                           ;AAAAAAAAAAAAAAAAAAAAAAH   > ro: duh! should've not called checktile but a generic mul16
+		ld    (iy+enemies_and_objects.v3),l   ;v3=y movement
+		pop   hl
+		inc   hl
+		ld    a,(hl)                          ;x
 
-  inc   hl
-  ld    a,(hl)                          ;x
-
-  ;We multiplay the horizontal movement with the object speed
-  ld    b,0
-  ld    c,(ix+Object010Table.speed)     ;object speed
-  call  checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
-  or    a
-  sbc   hl,de                           ;AAAAAAAAAAAAAAAAAAAAAAH
-  ld    (iy+enemies_and_objects.v4),l   ;v4=x movement
-
-  ld    de,Object010Table.lenghtobjectdata
-  ret   
-
-  .HeightHugeBlock:   equ 48
-  .WidthHugeBlock:    equ 48
+;We multiplay the horizontal movement with the object speed
+		ld    b,0
+		ld    c,(ix+Object010Table.speed)     ;object speed
+		call  mulAxBC	;checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
+	;   or    a
+	;   sbc   hl,de                           ;AAAAAAAAAAAAAAAAAAAAAAH
+		ld    (iy+enemies_and_objects.v4),l   ;v4=x movement
+		ld    de,Object010Table.lenghtobjectdata
+ret   
 
 
-
-  .Object011:                           ;small moving platform on (standard dark grey)
+;small moving platform on (standard dark grey)
 ;v1-2=box right (16 bit)
 ;v1-1=box right (16 bit)
 ;v1=sx software sprite in Vram
@@ -1417,128 +1412,123 @@ ret   c
 ;v8=box top
 ;v9=box bottom
 ;v10=speed
+.Object011:
+		ld    hl,Object011Table
+		push  iy
+		pop   de                              ;enemy object table
+		ld    bc,lenghtenemytable
+		ldir                                  ;copy enemy table
 
-  ld    hl,Object011Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable
-  ldir                                  ;copy enemy table
+		call  SetCleanObjectNumber            ;each object has a reference cleanup table
+;set x (relative to box)
+		ld    a,(ix+Object011Table.xbox)
+		add   a,(ix+Object011Table.relativex)
+		ld    l,a
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (iy+enemies_and_objects.x),l
+		ld    (iy+enemies_and_objects.x+1),h
+;set y (relative to box)
+		ld    a,(ix+Object011Table.ybox)
+		add   a,(ix+Object011Table.relativey)
+		ld    (iy+enemies_and_objects.y),a
+;set box x left
+		ld    l,(ix+Object011Table.xbox)
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (iy+enemies_and_objects.v6),l   ;v6 and v7=box left (16bit)
+		ld    (iy+enemies_and_objects.v7),h   ;v6 and v7=box left (16bit)
+;set box x right
+		ld    a,(ix+Object011Table.xbox)
+		add   a,(ix+Object011Table.widthbox)
+		sub   a,16/2                          ;subtract width platform
+		ld    l,a
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		call  .CheckIfObjectMovementIsWithinAllowedRange
+		ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
+		ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
+;set box y top
+		ld    a,(ix+Object011Table.ybox)
+		ld    (iy+enemies_and_objects.v8),a   ;v8=box top
+;set box y bottom
+		add   a,(ix+Object011Table.heightbox)
+		sub   a,16                            ;subtract height platform
+		ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
+;set facing direction
+		ld    a,(ix+Object011Table.face)
+		add   a,a
+		ld    d,0
+		ld    e,a
+		ld    hl,Movementtable-2
+		add   hl,de
+		ld    a,(hl)                          ;y
+		ld    (iy+enemies_and_objects.v3),a   ;v3=y movement
+		inc   hl
+		ld    a,(hl)                          ;x
+		ld    (iy+enemies_and_objects.v4),a   ;v4=x movement
+;set speed
+		ld    a,(ix+Object011Table.speed)
+		ld    (iy+enemies_and_objects.v10),a  ;v10=speed
+;set active
+		ld    (iy+enemies_and_objects.v2),1   ;v2=active?
 
-  call  SetCleanObjectNumber            ;each object has a reference cleanup table
+		ld    de,Object011Table.lenghtobjectdata
+ ret
 
-  ;set x (relative to box)
-  ld    a,(ix+Object011Table.xbox)
-  add   a,(ix+Object011Table.relativex)
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),l
-  ld    (iy+enemies_and_objects.x+1),h
+.CheckIfObjectMovementIsWithinAllowedRange:
+		ld    de,253                          ;box right edge
+		xor   a                               ;clear carry flag
+		sbc   hl,de
+		jr    c,.WithinRange
+		ld    hl,253                          ;16 pixels wide
+ret
+.WithinRange:
+		add   hl,de
+ret
 
-  ;set y (relative to box)
-  ld    a,(ix+Object011Table.ybox)
-  add   a,(ix+Object011Table.relativey)
-  ld    (iy+enemies_and_objects.y),a
+
+;omni directional platform
+.Object016:
+		ld    hl,Object016Table
+		push  iy
+		pop   de                              ;enemy object table
+		ld    bc,lenghtenemytable
+		ldir                                  ;copy enemy table
+
+		call  SetCleanObjectNumber            ;each object has a reference cleanup table
+
+;set  x
+		ld    a,(ix+Object016Table.x)
+		add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (iy+enemies_and_objects.x),a
+
+;set  y
+		ld    a,(ix+Object016Table.y)
+		ld    (iy+enemies_and_objects.y),a
+
+		ld    a,(ObjectPresentInVramPage1)    ;1=omni directional platform
+		cp    1
+		jr    z,.EndPutObject016
+		ld    a,1
+		ld    (ObjectPresentInVramPage1),a    ;1=omni directional platform
   
-  ;set box x left
-  ld    l,(ix+Object011Table.xbox)
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.v6),l   ;v6 and v7=box left (16bit)
-  ld    (iy+enemies_and_objects.v7),h   ;v6 and v7=box left (16bit)
+;write omni directional platforms to (216+16,0) page 1
+		xor   a
+		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    de,$8000 + ((216+016)*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    bc,$0000 + (016*256) + (128/2)        ;(ny*256) + (nx/2)
+		ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
+		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
-  ;set box x right
-  ld    a,(ix+Object011Table.xbox)
-  add   a,(ix+Object011Table.widthbox)
-  sub   a,16/2                          ;subtract width platform
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  call  .CheckIfObjectMovementIsWithinAllowedRange
-  ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
-  ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
+.EndPutObject016:
+		ld    de,Object016Table.lenghtobjectdata
+ret
 
-  ;set box y top
-  ld    a,(ix+Object011Table.ybox)
-  ld    (iy+enemies_and_objects.v8),a   ;v8=box top
 
-  ;set box y bottom
-  add   a,(ix+Object011Table.heightbox)
-  sub   a,16                            ;subtract height platform
-  ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
-
-  ;set facing direction
-  ld    a,(ix+Object011Table.face)
-  add   a,a
-  ld    d,0
-  ld    e,a
-  ld    hl,Movementtable-2
-  add   hl,de
-  ld    a,(hl)                          ;y
-  ld    (iy+enemies_and_objects.v3),a   ;v3=y movement
-  inc   hl
-  ld    a,(hl)                          ;x
-  ld    (iy+enemies_and_objects.v4),a   ;v4=x movement
-  
-  ;set speed
-  ld    a,(ix+Object011Table.speed)
-  ld    (iy+enemies_and_objects.v10),a  ;v10=speed
-
-  ;set active
-  ld    (iy+enemies_and_objects.v2),1   ;v2=active?
-
-  ld    de,Object011Table.lenghtobjectdata
-  ret
-
-  .CheckIfObjectMovementIsWithinAllowedRange:
-  ld    de,253                          ;box right edge
-  xor   a                               ;clear carry flag
-  sbc   hl,de
-  jr    c,.WithinRange
-  ld    hl,253                          ;16 pixels wide
-  ret
-  .WithinRange:
-  add   hl,de
-  ret
-
-  .Object016:                           ;omni directional platform
-  ld    hl,Object016Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable
-  ldir                                  ;copy enemy table
-
-  call  SetCleanObjectNumber            ;each object has a reference cleanup table
-
-  ;set  x
-  ld    a,(ix+Object016Table.x)
-  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),a
-
-  ;set  y
-  ld    a,(ix+Object016Table.y)
-  ld    (iy+enemies_and_objects.y),a
-
-  ld    a,(ObjectPresentInVramPage1)    ;1=omni directional platform
-  cp    1
-  jr    z,.EndPutObject016
-  ld    a,1
-  ld    (ObjectPresentInVramPage1),a    ;1=omni directional platform
-  
-  ;write omni directional platforms to (216+16,0) page 1
-  xor   a
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$8000 + ((216+016)*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (016*256) + (128/2)        ;(ny*256) + (nx/2)
-  ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-  .EndPutObject016:
-  ld    de,Object016Table.lenghtobjectdata
-  ret
-
-  .Object020:                           ;bat spawner (BigStatueMouth)
+;bat spawner (BigStatueMouth)
+.Object020:
   ld    hl,Object020Table
   push  iy
   pop   de                              ;enemy object table
@@ -1593,22 +1583,19 @@ ret   c
 ;	out   ($99),a
 ;	ld    a,2+128
 ;	out   ($99),a
-
-
 ;	ld    a,100 
 ;	out   ($99),a
 ;	ld    a,23+128
 ;	out   ($99),a
 ;ei
-
-
 ;.kut: jp .kut
 
-  .EndPutObject020:
-  ld    de,Object020Table.lenghtobjectdata
-  ret
+.EndPutObject020:
+		ld    de,Object020Table.lenghtobjectdata
+ret
 
-  .AddCuteMiniBat:                      ;add a cute mini bat to the room's object table 
+
+.AddCuteMiniBat:                      ;add a cute mini bat to the room's object table 
   ld    de,lenghtenemytable             ;lenght 1 object in object table
   add   iy,de                           ;next object in object table
 
@@ -3048,9 +3035,10 @@ copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
 InitializeRoomType:
 	call getroomtype
 	ld	 a,(hl) ;width
-	ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
-	add a,2
-	ld    (checktile.selfmodifyingcodeMapLenght+1),a
+	ld	(roomMap.width),a
+;	ld	 (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
+;	add	 a,2
+;	ld	 (checktile.selfmodifyingcodeMapLenght+1),a
 	inc	 hl		; height
 	inc	 hl		; engine
 	ld	 a,(hl)
@@ -3061,13 +3049,15 @@ InitializeRoomType:
 	jp	 z,.type2 ;256x216 SF2
 ;	jp	 .type3	;256x216 SF2 engine sprite split ON 
 
+;SF2 engine
 ; in the SF2 engine we can choose to have spritesplit active, which gives us 14 extra sprites  
 .type3:	;.Engine256x216WithSpriteSplit:
-	ld    a,1                           ;sprite split active
-	jr .SetSpriteSplit
+	ld    a,1	;Mark sprite split active
+	jr	 .SetSpriteSplit
 
-.type2:	;.Engine256x216:                     ;SF2 engine
-	xor   a                             ;sprite split inactive
+;SF2 engine
+.type2:	;.Engine256x216:
+	xor	 a	;Mark sprite split inactive
 
 .SetSpriteSplit:
  	ld    (SpriteSplitFlag),a   
@@ -3077,28 +3067,28 @@ InitializeRoomType:
 ;	ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
 	ld    de,ExitRight256x216 ;equ 252 ; 29*8
 	ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-	ld    de,MapData- 68
-	ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
+	; ld    de,roomMap-68 ;MapData- 68
+	; ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
 	
 ;check if player enters on the left side of the screen or on the right side. On the left camerax = 0, on the right camerax=15
-	ld    hl,256/2
-	ld    de,(ClesX)
-	sbc   hl,de
-	ld    a,15
-	jr    c,.setCameraX
-	xor   a
-	.setCameraX:
+	xor	 A
+	ld	 hl,256/2
+	ld	 de,(ClesX)
+	sbc	 hl,de
+	jr	 nc,.setCameraX
+	ld	 a,15
+.setCameraX:
 	ld    (CameraX),a
 
 ;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
-	ld    hl,(ClesX)
-	ld    de,ExitRight304x216
-	xor   a
-	sbc   hl,de
-	ret   nz
-	ld    hl,252 ;28*8
-	ld    (ClesX),hl
-  ret
+	ex	 de,hl	;	ld    hl,(ClesX)
+	ld	 de,ExitRight304x216
+	xor	 a
+	sbc	 hl,de
+	ret	 nz
+	ld	 hl,252 ;some magicnumber
+	ld	 (ClesX),hl
+ret
 
 .type1:	;.Engine304x216:
 	ld    a,1                           ;sprite split active
@@ -3109,8 +3099,8 @@ InitializeRoomType:
 	; ld    (checktile.selfmodifyingcodeMapLenght+1),de
 	ld    de,ExitRight304x216 ;equ 38*8-3
 	ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-	ld    de,MapData- 80
-	ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
+	; ld    de,roomMap-80 ;MapData- 80
+	; ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
 ret
   
 
@@ -3182,7 +3172,7 @@ ReSetVariables:
   ld    (PlayerAnicount),hl     
   ret
   
-.NormalRunningTable:
+.NormalRunningTable:	;ro, this is called "enertia"
   dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2
 ;  dw    -1,-2,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+2,+1
 ;  dw    -1,-1,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+1,+1

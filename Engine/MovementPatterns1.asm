@@ -841,15 +841,16 @@ Altar1:
   ret   nz
     
   ;SetTilesInTileMap:
-  ld    hl,MapData + (34 * 12)              ;door starts at (0,12)
-  ld    b,7                                 ;door height
-  ld    de,34-1                             ;next doortile on next row - screenwidth is 32, but mapwidth is 34
-  .loop:
-  ld    (hl),1                              ;hard foreground
-  inc   hl
-  ld    (hl),1                              ;hard foreground
-  add   hl,de
-  djnz  .loop  
+  ;20240930;ro;should use the fillRoomMapData: function - disabled this for mapdata changes
+;   ld    hl,MapData + (34 * 12)              ;door starts at (0,12)
+;   ld    b,7                                 ;door height
+;   ld    de,34-1                             ;next doortile on next row - screenwidth is 32, but mapwidth is 34
+;   .loop:
+;   ld    (hl),1                              ;hard foreground
+;   inc   hl
+;   ld    (hl),1                              ;hard foreground
+;   add   hl,de
+;   djnz  .loop  
   
   ld    a,(ix+enemies_and_objects.x)        ;slowly close door
   inc   a
@@ -1885,7 +1886,7 @@ DisappearingBlocks:
   ld    (ix+enemies_and_objects.alive?),0 ;end   
   ret
 
-  SetTilesInTileMap:
+  SetTilesInTileMap: ; ro > use fillRoomMapData: instead
   ;v2 = dy
   ;v3 = dx
   ld    a,(ix+enemies_and_objects.v2)     ;v2 = dy
@@ -1908,16 +1909,11 @@ DisappearingBlocks:
   ld    e,a
   add   hl,de
   
-  ld    de,MapData
+  ld    de,roomMap.data ;MapData
   add   hl,de
   ld    (hl),c                            ;hardforeground / hardbackground
   inc   hl
   ld    (hl),c                            ;hardforeground / hardbackground
-;  ld    de,39
-;  add   hl,de
-;  ld    (hl),c                            ;hardforeground / hardbackground
-;  inc   hl
-;  ld    (hl),c                            ;hardforeground  / hardbackground 
   ret
   
 PlayerReflection:
