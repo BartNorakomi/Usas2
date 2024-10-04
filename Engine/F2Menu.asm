@@ -30,11 +30,11 @@ F2MenuRoutine:
 ;print worldmap
   ld    de,0000                 ;startroom
   ld    bc,50+256*50            ;width, height, b=x, c=y
-  ld    hl,0                    ;vram coordinate (start printing map: x,y)
+  ld    hl,0                    ;Screen position (HL=xxyy)
   call  putwm
 
 ;print player in current room
-  ld    hl,0                    ;vram coordinate (start printing map: x,y)
+  ld    hl,0                    ;Screen position (HL=xxyy)
   ld    de,(WorldMapPositionY)
   call  putwmp                  ;print the player room [DE]
 
@@ -156,37 +156,29 @@ F2MenuRoutine:
 
 
 putF2MenuGraphicsInScreen:
-  ld    a,(slot.page12rom)            ;all RAM except page 1+2
-  out   ($a8),a
-  ld    a,F2MenuGraphicsBlock ;block to copy from
-  .go:
-  call  block34
-  
-  ld    hl,$0000                      ;page 0 - screen 5 
-	xor   a
-	call	SetVdp_Write	
-	ld		hl,$8000
-  ld    c,$98
-  ld    a,128/2                       ;copy 212 lines..
-  ld    b,0
-  call  copyGraphicsToScreen.loop1    
+		ld    a,(slot.page12rom)            ;all RAM except page 1+2
+		out   ($a8),a
+		ld    a,F2MenuGraphicsBlock ;block to copy from
+.go:
+		call  block34
 
-  ld    a,F2MenuGraphicsBlock+1 ;block to copy from
-  call  block34
+		ld    hl,$0000                      ;page 0 - screen 5 
+		xor   a
+		call	SetVdp_Write	
+		ld		hl,$8000
+		ld    c,$98
+		ld    a,128/2                       ;copy 212 lines..
+		ld    b,0
+		call  copyGraphicsToScreen.loop1    
 
-	ld		hl,$8000
-;  ld    c,$98
-  ld    a,084/2                       ;copy remaining 84 lines..
-  ld    b,0
-  jp    copyGraphicsToScreen.loop1   
+		ld    a,F2MenuGraphicsBlock+1 ;block to copy from
+		call  block34
 
-
-
-
-
-
-
-
+		ld		hl,$8000
+		;  ld    c,$98
+		ld    a,084/2                       ;copy remaining 84 lines..
+		ld    b,0
+		jp    copyGraphicsToScreen.loop1   
 
 
 
@@ -194,6 +186,7 @@ putF2MenuGraphicsInScreen:
 
 
 ;----- Worldmap functions -----
+;20241004;ro
 ;worldmap, ruin, room -> 4x4 block
 ;newwm : create an empty map in RAM at [HL]
 ;newwmr: create room [DE] with type [A] on the map
@@ -209,17 +202,34 @@ putF2MenuGraphicsInScreen:
 ;putwmr: print one worldmap room [HL][DE][C]
 ;putwmp: print the player room [DE]
 
+;WorldMap attributes
+_WMROW: EQU   50              ;number of rows
+_WMCOL: EQU   50              ;number of collumns
+_WMRC0: EQU   12              ;normal room
+_WMRC1: EQU   13              ;teleport room
+_WMRC2: EQU   0
+_WMRC3: EQU   14              ;boss room
+_WMRC4: EQU   3               ;gate room
+_WMRC5: EQU   0
+_WMRC6: EQU   0
+_WMRC7: EQU   0
+_WMPC:  EQU   9               ;player room
+_WMRBC: EQU   15              ;background color (stroke)
 
+
+
+
+;TEXT > in ROM
 ; VDP command register offsets
-_CMDSX: EQU   0
-_CMDSY: EQU   2
-_CMDDX: EQU   4
-_CMDDY: EQU   6
-_CMDNX: EQU   8
-_CMDNY: EQU   10
-_CMDCL: EQU   12
-_CMDAR: EQU   13
-_CMDCM: EQU   14
+VCMDSX: EQU   0
+VCMDSY: EQU   2
+VCMDDX: EQU   4
+VCMDDY: EQU   6
+VCMDNX: EQU   8
+VCMDNY: EQU   10
+VCMDCL: EQU   12
+VCMDAR: EQU   13
+VCMDCM: EQU   14
 
 ;Create new world map
 ;in: HL=adr
@@ -235,14 +245,14 @@ NEWWM:  LD    (WMADR),HL
 
 ;Initialize a room
 ;in: DE=roomXXYY, A=roomtype
-NEWWMR: EX    AF,AF'
+NEWWMR: EX    AF,af' ;'
         CALL  GETWMR
         RET   C
         BIT   7,A
         RET   NZ              ;already active
-        EX    AF,AF'
+        EX    AF,af' ;'
         CALL  GETRC
-        OR    $80             ;enable
+        OR    0x80             ;enable
         LD    (HL),A
         RET
 
@@ -252,11 +262,11 @@ NEWWMR: EX    AF,AF'
 ;out:HL=roomAdr,A=value
 ;    Cy=error
 GETWMR: ;LD    A,E             ;check boundaries, skip for speed
-;       CP    _WMROW
+;       CP    |WMROW
 ;       CCF
 ;       RET   C
 ;       LD    A,D
-;       CP    _WMCOL
+;       CP    |WMCOL
 ;       CCF
 ;       RET   C
 
@@ -272,15 +282,14 @@ GETWMR: ;LD    A,E             ;check boundaries, skip for speed
         LD    A,(HL)
         POP   DE
         POP   BC
-
         RET
 
 ;set room properties
 ;in: DE=XXYY room, A=roomValue
-SETWMR: EX    AF,AF'
+SETWMR: EX    AF,af' ;'
         CALL  GETWMR
         RET   C
-        EX    AF,AF'
+        EX    AF,af' ;'
         LD    (HL),A
         AND   A
         RET
@@ -302,13 +311,13 @@ DISWMR: CALL  GETWMR
         RET
 
 ;Set roomtype [DE]=[A]
-TYPWMR: EX    AF,AF'
+TYPWMR: EX    AF,af' ;'
         CALL  GETWMR
         RET   C
         PUSH  BC
-        AND   $F0
+        AND   0xF0
         LD    C,A
-        EX    AF,AF'
+        EX    AF,af' ;'
         CALL  GETRC
         OR    C
         LD    (HL),A
@@ -329,12 +338,12 @@ GETRC:  PUSH  HL
 
 ;add room [DE] connector on the right-side
 RWMR:   CALL  GETWMR
-        RET   C
+RWMRHL: RET   C               ;(shortcut if you already have HL)
         SET   4,(HL)
         RET
 ;add room [DE] connector on the bottom
 BWMR:   CALL  GETWMR
-        RET   C
+BWMRHL: RET   C
         SET   5,(HL)
         RET
 
@@ -342,7 +351,7 @@ BWMR:   CALL  GETWMR
 ;in: DE=roomXXYY, HL=XXYY dest offset
 PUTWMP: CALL  PWMINI
         RET   C
-        LD    C,_PCOL         ;white
+        LD    C,_WMPC         ;PlayerColor
         JP    PUTWMR
 
 ;Put (part of) the worldmap on screen
@@ -382,20 +391,23 @@ PWM.2:  INC   HL
         RET
 
 ;init PrintWorldMap
-;in:  DE=roomXXYY
+;in:  DE=roomXXYY, HL=screenpos
 ;out: HL=roomAdr, DE=screenPos
-PWMINI: LD    A,D             ;room X start position
+PWMINI: PUSH  BC
+        LD    B,H
+        LD    C,L
+        CALL  GETWMR
+        LD    A,D             ;room X start position
         ADD   A,A             ;x2
         ADD   A,A             ;x4
+        ADD   A,B             ;add scrpos
         LD    D,A
         LD    A,E             ;room Y start position
         ADD   A,A             ;x2
         ADD   A,A             ;x4
+        ADD   A,C             ;add scrpos
         LD    E,A
-        ADD   HL,DE           ;add offset
-        PUSH  HL
-        CALL  GETWMR          ;HL=adr
-        POP   DE
+        POP   BC
         RET
 
 
@@ -405,15 +417,15 @@ PWMINI: LD    A,D             ;room X start position
 ;1111
 ;1110
 ;0100
-PUTWMR: LD    A,$F0           ;HMMC
-        LD    (_HMMC+_CMDCM),A
+PUTWMR: LD    A,0xF0           ;HMMC
+        LD    (WMHMMC+VCMDCM),A
 ;       XOR   A
-;       LD    (_HMMC+_CMDDX+1),A
-;       LD    (_HMMC+_CMDDY+1),A
+;       LD    (.HMMC+|CMDDX+1),A
+;       LD    (.HMMC+|CMDDY+1),A
         LD    A,D             ;x
-        LD    (_HMMC+_CMDDX),A
+        LD    (WMHMMC+VCMDDX),A
         LD    A,E             ;y
-        LD    (_HMMC+_CMDDY),A
+        LD    (WMHMMC+VCMDDY),A
 
         LD    A,C             ;colors
         RLCA
@@ -422,59 +434,64 @@ PUTWMR: LD    A,$F0           ;HMMC
         RLCA
         LD    B,A
 
-;first 3 bytes always on
+;first 3 bytes static
         OR    C
-        CALL  HMMC            ;row 0
+        CALL  HMMC            ;0,0 11--
         LD    A,B
-        OUT   ($9B),A
+        OR    _WMRBC
+        OUT   (0x9B),A         ;1,0 --10
+        LD    A,B
         OR    C
-        OUT   ($9B),A         ;row 1
+        OUT   (0x9B),A         ;0,1 11--
 ;right exit
-        LD    A,B
+        LD    A,_WMRBC
         BIT   4,(HL)
         JR    Z,PWMR.0
-        OR    _WMRC0          ;exit is always def room color
-PWMR.0: OUT   ($9B),A
+        LD    A,_WMRC0        ;exit is always def room color
+PWMR.0: OR    B
+        OUT   (0x9B),A         ;1,1 --1x
         LD    A,B
         OR    C
-        OUT   ($9B),A         ;row 2
-;bottom exit
+        OUT   (0x9B),A         ;0,2 11--
         LD    A,B
-        OUT   ($9B),A
+        OR    _WMRBC
+        OUT   (0x9B),A         ;1,2 --10
+;bottom exit
+        LD    A,_WMRBC
         BIT   5,(HL)
-        LD    A,0
         JR    Z,PWMR.1
-        OR    _WMRC0          ;exit is always def room color
-PWMR.1: OUT   ($9B),A
-        XOR   A               ;empty pixels
-        OUT   ($9B),A
+        LD    A,_WMRC0        ;exit is always def room color
+PWMR.1: OR    _WMRBC*16
+        OUT   (0x9B),A
+        LD    A,_WMRBC*16+_WMRBC
+        OUT   (0x9B),A
         RET
 
 ;High speed move CPU to VRAM
-HMMC:   EX    AF,AF'
-        LD    A,(_HMMC+_CMDCM) ;cmd activated yet?
+HMMC:   EX    AF,af' ;'
+        LD    A,(WMHMMC+VCMDCM) ;cmd activated yet?
         AND   A
         JP    NZ,HMMC.0
-        EX    AF,AF'
+        EX    AF,af' ;'
         RET
-HMMC.0: EX    AF,AF'           ;first time, activate the cmd
-        LD    (_HMMC+_CMDCL),A
+HMMC.0: EX    AF,af' ;'           ;first time, activate the cmd
+        LD    (WMHMMC+VCMDCL),A
         PUSH  BC
         PUSH  HL
-        LD    HL,_HMMC+_CMDDX
+        LD    HL,WMHMMC+VCMDDX
         LD    A,36
         LD    B,11
         CALL  CMDVDP
         POP   HL
         POP   BC
         DI
-        LD    A,44 OR $80
-        OUT   ($99),A
-        LD    A,17 OR $80
+        LD    A,44 OR 0x80
+        OUT   (0x99),A
+        LD    A,17 OR 0x80
         EI
-        OUT   ($99),A
+        OUT   (0x99),A
         XOR   A               ;signal activation for next time
-        LD    (_HMMC+_CMDCM),A
+        LD    (WMHMMC+VCMDCM),A
         RET
 
 ;Multiply 8-bit values
@@ -498,18 +515,18 @@ QCES:   LD    A,2
 
 ;read VDP status register
 RDSTAT: DI
-        OUT   ($99),A
+        OUT   (0x99),A
         LD    A,128+15
-        OUT   ($99),A
+        OUT   (0x99),A
         LD    A,0
-        IN    A,($99)
-        EX    AF,AF'
+        IN    A,(0x99)
+        EX    AF,af' ;'
         LD    A,0
-        OUT   ($99),A
-        LD    A,15 OR $80
+        OUT   (0x99),A
+        LD    A,15 OR 0x80
         EI
-        OUT   ($99),A
-        EX    AF,AF'
+        OUT   (0x99),A
+        EX    AF,af' ;'
         RET
 
 ;Command VDP
@@ -517,16 +534,27 @@ RDSTAT: DI
 ;     B , Number of registers to write
 ;     HL, Register value table
 CMDVDP: ;PUSH  AF
-        ;CALL  QCES
-        ;POP   AF
+;       CALL  QCES
+;       POP   AF
         DI
-        OUT   ($99),A
-        LD    A,17 OR $80
+        OUT   (0x99),A
+        LD    A,17 OR 0x80
         EI
-        OUT   ($99),A
-        LD    C,$9B
+        OUT   (0x99),A
+        LD    C,0x9B
         OTIR
         RET
+
+
+
+
+
+
+
+
+
+
+
 
 
 
