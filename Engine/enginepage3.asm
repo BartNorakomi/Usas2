@@ -29,6 +29,26 @@ WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 ClesX:      dw 256 ;$19 ;230 ;250 ;210
 ClesY:      db 152 ;144-1
 
+
+;WorldMap attributes
+_WMROW: EQU   50              ;number of rows
+_WMCOL: EQU   50              ;number of collumns
+_WMRC0: EQU   12              ;normal room
+_WMRC1: EQU   13              ;teleport room
+_WMRC2: EQU   0
+_WMRC3: EQU   14              ;boss room
+_WMRC4: EQU   3               ;gate room
+_WMRC5: EQU   0
+_WMRC6: EQU   0
+_WMRC7: EQU   0
+_PCOL:  EQU   9               ;player room
+ffvoordetesteenmalig:	db 0
+WMADR:  DW    $B000           ;RAM location
+;WMMAP:  DB    1               ;MemoryMap
+WMRCOL: DB    _WMRC0,_WMRC1,_WMRC2,_WMRC3,_WMRC4,_WMRC5,_WMRC6,_WMRC7
+_HMMC:  DW    0,0,0,0,4,4,0,$F0 ;(sx,sy,)dx,dy,nx,ny,col/arg,cmd=hmmc
+
+
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
 
@@ -36,6 +56,81 @@ loadGraphics:
 ;	ld    a,(RePlayer_playing)
 ;	and   a
 ;  call  z,VGMRePlay
+
+
+
+
+
+
+
+
+
+
+	ld		a,(ffvoordetesteenmalig)
+	or		a
+	jr		nz,.skip
+   ld    a,(slot.page1rom)            ;all RAM except page 1
+   out   ($a8),a
+  ld    a,F2Menublock                 ;F1 Menu routine at $4000
+  call  block12
+
+  ld		a,2
+  out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
+
+  	ld    	hl,$B000
+   	call  	newwm
+
+
+;bank 1 at $8000
+;  ld		a,1
+;  out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) | $fe = page 1 ($8000-$bfff) | $fd = page 2 ($4000-$7fff) | $fc = page 3 ($0000-$3fff) 
+
+
+
+
+
+   ld    a,(slot.page12rom)            ;all RAM except page 1
+   out   ($a8),a
+ 	.skip:
+ 	ld 		a,1
+ 	ld		(ffvoordetesteenmalig),a
+
+
+
+
+
+
+
+
+
+   ld    a,(slot.page1rom)            ;all RAM except page 1
+   out   ($a8),a
+  ld    a,F2Menublock                 ;F1 Menu routine at $4000
+  call  block12
+
+;print current room
+  ld    a,0                     ;room type (decides which color it will be)
+  ld    de,(WorldMapPositionY)
+  call  newwmr                  ;create room [DE] with type [A] on the map
+
+;	call	rwmr				;add right-connection at room [DE]
+;	call	bwmr				;add bottom-connection at room [DE]
+
+
+
+
+	ld		a,(slot.page12rom)            ;all RAM except page 1
+   	out		($a8),a
+
+
+
+
+
+
+
+
+
+
 
 	ld    a,(slot.page12rom)            ;RAMROMROMRAM
 	out   ($a8),a
@@ -1442,6 +1537,7 @@ UnpackedRoomFile:
 .meta:		rb 8
 .tiledata:  rb  38*27*2
 .object:	rb 256
+
 
 
 fill: equ 2
