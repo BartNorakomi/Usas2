@@ -792,42 +792,42 @@ CheckCollisionWallEnemyV8:                  ;checks for collision wall and if fo
   ret
 
 CheckFloorUnderBothFeetEnemy:               ;Used for Zombie, to check if he is completely without floor under him
-  ld    hl,-16
-  ld    a,(ix+enemies_and_objects.ny)       
-  add   a,16
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  jr    z,.MovingRight
-  .MovingLeft:
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  add   hl,de
-  add   hl,hl                               ;0 if nx=16, 32 if nx=32, 64 if nx=48 formula=(nx-16) *2
-  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
-  .MovingRight:
-  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+		ld    hl,-16
+		ld    a,(ix+enemies_and_objects.ny)       
+		add   a,16
+		bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+		jr    z,.MovingRight
+.MovingLeft:
+		ld    d,0
+		ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
+		add   hl,de
+		add   hl,hl                               ;0 if nx=16, 32 if nx=32, 64 if nx=48 formula=(nx-16) *2
+		jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+.MovingRight:
+		jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
   
 CheckFloorEnemyObjectLeftSide:
-  ld    hl,0
-  ld    a,(ix+enemies_and_objects.ny)       
-  add   a,16
-  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+		ld    hl,0
+		ld    a,(ix+enemies_and_objects.ny)       
+		add   a,16
+		jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
 CheckFloorEnemyObject:
-  ld    hl,0
-  jp    CheckFloorEnemy.ObjectEntry
-CheckFloorEnemy:  
-  ld    hl,-16  
-  .ObjectEntry:
-  ld    a,(ix+enemies_and_objects.ny)       
-  add   a,16
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  jr    z,.MovingRight
-  .MovingLeft:
-  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
-  .MovingRight:
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  add   hl,de
-  jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+		ld    hl,0
+		jp    CheckFloorEnemy.ObjectEntry
+CheckFloorEnemy:
+		ld    hl,-16
+.ObjectEntry:
+		ld    a,(ix+enemies_and_objects.ny)       
+		add   a,16
+		bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+		jr    z,.MovingRight
+.MovingLeft:
+		jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+.MovingRight:
+		ld    d,0
+		ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
+		add   hl,de
+		jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
 
 distancecheck46wide:                        ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ld    hl,(Clesx)                          ;hl = x player

@@ -135,7 +135,7 @@ RemoveWallFromRoomTiles:
 		ld    l,(ix+enemies_and_objects.x)        ;x object
 		ld    h,(ix+enemies_and_objects.x+1)
 		ld    a,(ix+enemies_and_objects.y)        ;y object
-		add   a,16
+		add   a,16	;this needs to go (ro)
 		call    getRoomMapTile ;CheckTile.XandYset				;<< yes, this should be generic as mentioned earlier.
 
 ;Fill a part of the current room tile matrix										

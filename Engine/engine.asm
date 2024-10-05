@@ -3904,33 +3904,25 @@ ld a,e
   jp    z,Set_L_BeingHit
   jp    Set_R_BeingHit
 
-;MapData:
-;  ds    38 * 27           ;a map is 38 * 27 tiles big  
 
+;get enemy X in tiles
+;in: IX=object, HL=.X offset, A=.Y offset
 CheckTileEnemyInHL:  
-;get enemy X in tiles
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;x
-  add   hl,de
+		ld    e,(ix+enemies_and_objects.x)  
+		ld    d,(ix+enemies_and_objects.x+1)
+		add   hl,de
+		add   a,(ix+enemies_and_objects.y)
+		jp    getRoomMapTile ;checktile.XandYset
 
-;  ld    a,h
-;  or    a
-;  jp    m,checktile.CheckTileIsOutOfScreenLeft
-
-  add   a,(ix+enemies_and_objects.y)
-;  add a,1
-  jp    getRoomMapTile ;checktile.XandYset
-
-CheckTileEnemy:  
-;get enemy X in tiles
-  ld    l,(ix+enemies_and_objects.x)  
-  ld    h,(ix+enemies_and_objects.x+1)      ;x
-  add   hl,de
-;  ld    a,h
-;  or    a
-;  jp    m,checktile.CheckTileIsOutOfScreenLeft
-  add   a,(ix+enemies_and_objects.y)  
-  jp    getRoomMapTile ;checktile.XandYset
+;UNUSED
+; ;get enemy X in tiles
+; ;in: IX=object, DE=.x offset, A=.Y offset
+; CheckTileEnemy:  
+; 		ld    l,(ix+enemies_and_objects.x)  
+; 		ld    h,(ix+enemies_and_objects.x+1)      ;x
+; 		add   hl,de
+; 		add   a,(ix+enemies_and_objects.y)  
+; 		jp    getRoomMapTile ;checktile.XandYset
 
 
 ;Check tile PLAYER
