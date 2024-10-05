@@ -29,6 +29,16 @@ WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 ClesX:      dw 64 ;$19 ;230 ;250 ;210
 ClesY:      db 152 ;144-1
 
+
+
+ffvoordetesteenmalig:	db 0
+;WM DATA > in RAM
+WMADR:  DW    0x8000           ;RAM location
+WMMAP:  DB    1               ;MemoryMap
+WMRCOL: DB    _WMRC0,_WMRC1,_WMRC2,_WMRC3,_WMRC4,_WMRC4,_WMRC6,_WMRC7
+WMHMMC: DW    0,0,0,0,4,4,0,0xF0 ;(sx,sy,)dx,dy,nx,ny,col/arg,cmd=hmmc
+
+
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
 
@@ -36,6 +46,29 @@ loadGraphics:
 ;	ld    a,(RePlayer_playing)
 ;	and   a
 ;  call  z,VGMRePlay
+
+
+
+
+;initialize the worldmap one time (this should be move to the usas2 game one-time-initialization)
+		ld		a,(ffvoordetesteenmalig)
+		or		a
+		jr		nz,.skip
+		ld    a,(slot.page1rom)            ;all RAM except page 1
+		out   ($a8),a
+		ld    a,F2Menublock                 ;F1 Menu routine at $4000
+		call  block12
+		ld		a,2
+		out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
+		ld    	hl,$B000
+		call  	newwm
+;		ld    a,(slot.page12rom)            ;all RAM except page 1
+;		out   ($a8),a
+.skip:
+		ld 		a,1
+		ld		(ffvoordetesteenmalig),a
+;ro: I moved the test code to a lower part where the room is actually loaded, to retrieve the roomtype
+;
 
 	ld    a,(slot.page12rom)            ;RAMROMROMRAM
 	out   ($a8),a
@@ -117,6 +150,24 @@ loadGraphics:
 	ld    a,(UnpackedRoomFile+roomDataBlock.mapid)
 	and   $1f
   ld    (PreviousRuin),a
+
+
+;------------------------------------------------
+;TEST code to add current room to the worldmap
+		ld    a,(slot.page1rom)            ;all RAM except page 1
+		out   ($a8),a
+		ld    a,F2Menublock                 ;F1 Menu routine at $4000
+		call  block12
+		;ld    a,0                     ;room type (decides which color it will be)
+		call getroomtypeId
+		ld	 de,(WorldMapPositionY)
+		call newwmr                  ;create room [DE] with type [A] on the map
+		;call nc,rwmrhl
+;------------------------------------------------
+;	ld		a,(slot.page12rom)            ;all RAM except page 1
+;   	out		($a8),a
+
+
 
   jp    LevelEngine
 
@@ -1185,7 +1236,7 @@ PopulateControls:
 	out		($aa),a
 	in		a,($a9)
 	cpl
-	and		$20			; 'F1' key
+	and		%0110 0000	; 'F2' and 'F1' key
 	rlca				  ; 01000000
 	or		c
 	ld		c,a			; 01BARLDU
@@ -1354,7 +1405,7 @@ EarthObtained?:				db	1
 WaterObtained?:				db	1
 BowAndArrowObtained?:		db	1
 
-
+MapObtained?:				db	1
 
 
 
@@ -1457,6 +1508,7 @@ UnpackedRoomFile:
 .meta:		rb 8
 .tiledata:  rb  38*27*2
 .object:	rb 256
+
 
 
 fill: equ 2

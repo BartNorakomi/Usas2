@@ -24,6 +24,7 @@ LevelEngine:
 ;  call  BackdropBlack
   call  CheckMapExit              ;check if you exit the map (top, bottom, left or right)
   call  CheckF1Menu               ;check if F1 is pressed and the menu can be entered
+  call  CheckF2Menu               ;check if F2 is pressed and the map can be entered
 ;  call  BackdropBlue
   call  RePlayer_Tick             ;music routine
 ;  call  BackdropBlack
@@ -93,7 +94,7 @@ FadeOutScreenEdges:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
   ld    a,(Controls)
   and   %1111 0111                ;right unpressed
@@ -105,7 +106,7 @@ FadeOutScreenEdges:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
   ld    a,(Controls)
   and   %1111 1011                ;left unpressed
@@ -262,11 +263,28 @@ FreeToUseFastCopyF1Menu:               ;freely usable in F1 menu
   db    004,000,004,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
 
+CheckF2Menu:                        ;check if F2 is pressed and the map can be entered
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)	
+	bit		7,a           ;F2 pressed ?
+  ret   z
+
+  ld    a,(slot.page1rom)            ;all RAM except page 1
+  out   ($a8),a
+
+  ld    a,F2Menublock                 ;F1 Menu routine at $4000
+  call  block12
+  jp    F2MenuRoutine
+
 CheckF1Menu:                        ;check if F1 is pressed and the menu can be entered
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
   ld    a,(NewPrContr)	
 	bit		6,a           ;F1 pressed ?
@@ -2914,7 +2932,7 @@ InterruptHandlerLoader:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
   ld    a,(Controls)
   bit   0,a               ;check  if up is pressed
@@ -4581,7 +4599,110 @@ KickWhileJump?:           db  1
 ShootMagicWhileJump?:     db  0
 ShootArrowWhileJump?:     db  0
 
-   
+HowManyFramesAgoWasLeftPressed?:    db  0
+HowManyFramesAgoWasRightPressed?:   db  0
+
+CheckWallbashRight:         ;check if right+right are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)
+  bit   3,a                 ;is right pressed ?
+  jr    z,.RightIsNotPressed
+
+  ld    a,(HowManyFramesAgoWasRightPressed?)
+  cp    10
+  ld    a,0
+  ld    (HowManyFramesAgoWasRightPressed?),a
+  ret   nc
+  pop   af                          ;don't return to the current pose
+  ld    a,1
+  ld    (PlayerFacingRight?),a
+  jp    set_charging
+
+  .RightIsNotPressed:
+  ld    a,(HowManyFramesAgoWasRightPressed?)
+  inc   a
+  ret   z
+  ld    (HowManyFramesAgoWasRightPressed?),a
+  ret
+
+CheckWallbashLeft:         ;check if left+left are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(NewPrContr)
+  bit   2,a                 ;is left pressed ?
+  jr    z,.LeftIsNotPressed
+
+  ld    a,(HowManyFramesAgoWasLeftPressed?)
+  cp    10
+  ld    a,0
+  ld    (HowManyFramesAgoWasLeftPressed?),a
+  ret   nc
+  pop   af                          ;don't return to the current pose
+  xor   a
+  ld    (PlayerFacingRight?),a
+  jp    set_charging
+
+  .LeftIsNotPressed:
+  ld    a,(HowManyFramesAgoWasLeftPressed?)
+  inc   a
+  ret   z
+  ld    (HowManyFramesAgoWasLeftPressed?),a
+  ret
+
+CheckWallwalk:              ;check if triga + trigb are pressed while standing. if so, setwallwalk pose and DON'T return to this routine
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(Controls)
+  and   %0011 0010                  ;check if triga+trigb are pressed
+  cp    %0011 0000
+  ret   nz
+
+  pop   af                          ;don't return to the current pose
+;  xor   a
+;  ld    (PrimaryWeaponActive?),a    ;this interrupts any weapon animation (punch, draw bow etc)
+;  ld    (SecundaryWeaponActive?),a    ;this interrupts any weapon animation (punch, draw bow etc)
+
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jp    z,Set_L_SilhouetteKick
+  jp    Set_R_SilhouetteKick
+
+CheckMeditateAndRolling:
+;
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;
+  ld    a,(Controls)
+  and   %0011 0010                  ;check if down+triga+trigb are pressed
+  cp    %0011 0010
+  ret   nz
+
+  pop   af                          ;don't return to the current pose
+  xor   a
+  ld    (PrimaryWeaponActive?),a    ;this interrupts any weapon animation (punch, draw bow etc)
+
+  ld    a,(Controls)
+  bit   3,a                         ;check if right is pressed. if so, roll right
+  jp    nz,Set_R_Rolling
+  bit   2,a                         ;check if left is pressed. if so, roll left
+  jp    nz,Set_L_Rolling
+
+  ld    a,(PlayerFacingRight?)
+  or    a
+  jp    z,Set_L_Meditate
+  jp    Set_R_Meditate
+
 Lsitting:
   ld    a,(ForceVerticalMovementCameraTimer)
   ld    (ForceVerticalMovementCameraTimerBackup),a
@@ -4590,6 +4711,8 @@ Lsitting:
 
   xor   a
   ld    (PlayerFacingRight?),a		
+
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine
 
 	ld		hl,PlayerSpriteData_Char_LeftSitting
 	ld		(standchar),hl
@@ -4613,7 +4736,7 @@ Lsitting:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
@@ -4661,6 +4784,8 @@ Rsitting:
   ld    a,1
   ld    (PlayerFacingRight?),a		
 
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine
+
 	ld		hl,PlayerSpriteData_Char_RightSitting
 	ld		(standchar),hl
 
@@ -4683,7 +4808,7 @@ Rsitting:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
@@ -5178,12 +5303,15 @@ CheckLavaPoisonSpikes:      ;out z-> lava poison or spikes found
 ;  ret
 
 Lrunning:
+  call  CheckWallbashLeft           ;check if left+left  are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
+  call  CheckWallbashRight          ;check if right+right are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
+  call  CheckWallwalk               ;check if triga + trigb are pressed while standing. if so, setwallwalk pose and DON'T return to this routine
 ;  call  checkfloor
 ;	jp		nc,Set_R_fall   ;not carry means foreground tile NOT found
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
 ;	bit		1,a           ;cursor down pressed ?
 ;	jp		nz,.Maybe_Set_R_sit
@@ -5243,10 +5371,13 @@ Lrunning:
   ret
 
 Rrunning:
+  call  CheckWallbashLeft           ;check if left+left  are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
+  call  CheckWallbashRight          ;check if right+right are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
+  call  CheckWallwalk               ;check if triga + trigb are pressed while standing. if so, setwallwalk pose and DON'T return to this routine
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
 ;	bit		1,a           ;cursor down pressed ?
 ;	jp		nz,.Maybe_Set_R_sit
@@ -5312,6 +5443,10 @@ CheckWallSides:                     ;if we are snapped to a platform or object, 
   jp    DoMovePlayer.PlayerMovedLeft
   
 Lstanding:
+  call  CheckWallbashLeft           ;check if left+left  are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
+  call  CheckWallbashRight          ;check if right+right are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
+  call  CheckWallwalk               ;check if triga + trigb are pressed while standing. if so, setwallwalk pose and DON'T return to this routine
+
   ld    a,(framecounter)
   and   127
   cp    32
@@ -5354,7 +5489,7 @@ Lstanding:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
@@ -5394,6 +5529,10 @@ Lstanding:
 ;  ret
 	
 Rstanding:
+  call  CheckWallbashLeft           ;check if left+left  are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
+  call  CheckWallbashRight          ;check if right+right are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
+  call  CheckWallwalk               ;check if triga + trigb are pressed while standing. if so, setwallwalk pose and DON'T return to this routine
+
   ld    a,(framecounter)
   and   127
   cp    32
@@ -5436,7 +5575,7 @@ Rstanding:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
   ld    a,(NewPrContr)
 	bit		4,a           ;space pressed ?
@@ -5500,6 +5639,9 @@ Set_R_ShootKineticEnergy:
 Set_L_SilhouetteKick:
   call  PlayShootSfx
 
+  ld    a,6
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+
 	ld		hl,LSilhouetteKick
 	ld		(PlayerSpriteStand),hl
 
@@ -5509,6 +5651,9 @@ Set_L_SilhouetteKick:
   
 Set_R_SilhouetteKick:
   call  PlayShootSfx
+
+  ld    a,6
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
 
 	ld		hl,RSilhouetteKick
 	ld		(PlayerSpriteStand),hl
@@ -5710,8 +5855,15 @@ Set_R_BouncingBack:
   jp    RePlayerSFX_PlayCh1
 
 Set_Charging:
+  xor   a
+  ld    (HowManyFramesAgoWasLeftPressed?),a
+  ld    (HowManyFramesAgoWasRightPressed?),a
+
   ld    bc,SFX_dash
   call  RePlayerSFX_PlayCh1
+
+  ld    a,5
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
 
   ld    a,(PlayerFacingRight?)
   or    a
@@ -5759,6 +5911,9 @@ Set_R_attack:
   ld    bc,SFX_punch
   call  RePlayerSFX_PlayCh1
 
+  ld    a,4
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+
   ld    a,(AttackRotator)
   inc   a
   cp    5
@@ -5781,6 +5936,9 @@ Set_L_Sword_attack:
 	ld		hl,LSwordAttack
 	ld		(PlayerSpriteStand),hl
 
+  ld    a,1
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+
   xor   a
   ld    (PlayerFacingRight?),a
 
@@ -5794,6 +5952,9 @@ Set_R_Sword_attack:
 	ld		(PlayerSpriteStand),hl
 
   ld    a,1
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+
+  ld    a,1
   ld    (PlayerFacingRight?),a
 
   ld    hl,0 
@@ -5805,6 +5966,9 @@ Set_R_Sword_attack:
 Set_L_Dagger_attack:
   ld    a,r
   ld    (DaggerRandomizer),a
+
+  ld    a,2
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
 
 	ld		hl,LDaggerAttack
 	ld		(PlayerSpriteStand),hl
@@ -5821,6 +5985,9 @@ Set_R_Dagger_attack:
   ld    a,r
   ld    (DaggerRandomizer),a
 
+  ld    a,2
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+
 	ld		hl,RDaggerAttack
 	ld		(PlayerSpriteStand),hl
 
@@ -5836,6 +6003,9 @@ Set_L_Axe_attack:
 	ld		hl,LAxeAttack
 	ld		(PlayerSpriteStand),hl
 
+  ld    a,3
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+
   xor   a
   ld    (PlayerFacingRight?),a
 
@@ -5847,6 +6017,9 @@ Set_L_Axe_attack:
 Set_R_Axe_attack:
 	ld		hl,RAxeAttack
 	ld		(PlayerSpriteStand),hl
+
+  ld    a,3
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
 
   ld    a,1
   ld    (PlayerFacingRight?),a
@@ -5860,6 +6033,9 @@ Set_L_Spear_attack:
 	ld		hl,LSpearAttack
 	ld		(PlayerSpriteStand),hl
 
+  ld    a,0
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+
   xor   a
   ld    (PlayerFacingRight?),a
 
@@ -5871,6 +6047,9 @@ Set_L_Spear_attack:
 Set_R_Spear_attack:
 	ld		hl,RSpearAttack
 	ld		(PlayerSpriteStand),hl
+
+  ld    a,0
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
 
   ld    a,1
   ld    (PlayerFacingRight?),a
@@ -5889,6 +6068,9 @@ Set_L_Attack:
   .SetAttackRotator:
   ld    (AttackRotator),a
 
+  ld    a,4
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+
 	ld		hl,LAttack
 	ld		(PlayerSpriteStand),hl
 
@@ -5904,6 +6086,9 @@ Set_R_Rolling:
 ;  ld    bc,SFX_roll
 ;  call  RePlayerSFX_PlayCh1
   call  SetHitBoxPlayerRolling
+
+  ld    a,7
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
 
   ld    hl,0 
   ld    (PlayerAniCount),hl
@@ -5923,6 +6108,9 @@ Set_L_Rolling:
 ;  ld    bc,SFX_roll
 ;  call  RePlayerSFX_PlayCh1
   call  SetHitBoxPlayerRolling
+
+  ld    a,7
+  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
 
   ld    hl,0 
   ld    (PlayerAniCount),hl

@@ -89,6 +89,12 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
+F2MenuGraphicsBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;BossAreaTilesBlock+2
+phase	$4000
+  incbin "..\grapx\F2Menu\F2Menu.SC5",7,212 * 128      ;212 lines
+	ds		$c000-$,$ff
+dephase
+
 ;IceTempleTilesBlock:  equ   PrimaryWeaponSelectGraphicsBlock+2	;ruin Morana (24)
 ;phase	$4000
 ;  incbin "..\grapx\tilesheets\sIceTemple.SC5",7,208 * 128      ;208 lines

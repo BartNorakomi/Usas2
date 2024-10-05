@@ -424,6 +424,9 @@ RShootFireball:
   jp    RShootElementalWeapon
     
 LShootElementalWeapon:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine  
+
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,-38
   add   hl,de
@@ -461,6 +464,9 @@ LShootElementalWeapon:
   ret  
   
 RShootElementalWeapon:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine  
+
   ld    hl,(clesx)            ;check if player is standing on the left edge of the screen, if so, dont shoot
   ld    de,11
   xor   a
@@ -649,6 +655,8 @@ LeftSittingPresentBowAnimation:                   ;  addy,subx, ny ,nx ,sy   ,sx
 LSitShootArrow:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine
+
   ld    de,30                 ;left edge
   ld    bc,284                ;right edge
   call  CheckPrimaryWeaponEdgesFacingLeftWhenSitting
@@ -664,8 +672,6 @@ LSitShootArrow:
   ld    a,128
   ld    (PrimaryWeaponActive?),a    ;check if bow animation ended, if so, shoot arrow
   jp    SWspriteSetNYNXSYSX
-
-
 
 SetLSitShootArrow:
   ;put weapon
@@ -709,6 +715,8 @@ RightSittingPresentBowAnimation:                   ;  addy,subx, ny ,nx ,sy   ,s
 
 RSitShootArrow:
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
+
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine
 
   ld    de,11                 ;left edge
   ld    bc,264                ;right edge
@@ -768,6 +776,8 @@ LeftPresentBowAnimation:                       ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_LeftShootArrow4 | db -04,014+63,013,003,SYBow,SXBowLeft
 
 LShootArrow:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
 
   ld    de,30                 ;left edge
@@ -835,6 +845,8 @@ RightPresentBowAnimation:                       ;  addy,subx, ny ,nx ,sy   ,sx
   dw  PlayerSpriteData_Char_RightShootArrow4 | db -04,008+50,013,003,SYBow,SXBowRight
 
 RShootArrow:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
  
   ld    de,11                 ;left edge
@@ -892,7 +904,7 @@ LSilhouetteKick:
   call  .CheckPassThroughWall       ;if there is a wall in front of player and player would be able to end up at the other side, then set PlayerAniCount+1 to 255
   call  SetPrimaryWeaponHitBoxLeftStanding
   call  .Animate
-  
+
   ;horizontal movement    
   ld    de,-2                       ;horizontal movement speed
   ld    a,(PlayerAniCount+1)        ;255 = unobstructed movement is allowed
@@ -1424,7 +1436,9 @@ LSitPunch:
   call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall
   ..EndCheckSnapToPlatform:
-    
+
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine
+
   call  SetPrimaryWeaponHitBoxLeftSitting
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -1497,7 +1511,9 @@ RSitPunch:
   call  CheckFloorInclLadder;ladder is considered floor when running. out: c-> no floor. check if there is floor under the player
   jp    c,Set_Fall
   ..EndCheckSnapToPlatform:
-  
+
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine
+
   call  SetPrimaryWeaponHitBoxRightSitting
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -1557,6 +1573,8 @@ RSitPunch:
 	jp		Set_R_Attack
 
 LAttack:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
   jp    z,Set_L_BeingHit
@@ -2294,6 +2312,9 @@ CheckPrimaryWeaponEdgesFacingRightWhenSitting:
 
 
 LDaggerAttack:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine  
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   .skipEndMovePlayer:
 
@@ -2311,6 +2332,9 @@ LDaggerAttack:
   jp    SWspriteSetNYNXSYSX
   
 RDaggerAttack:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine  
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   .skipEndMovePlayer:
 
@@ -2328,6 +2352,9 @@ RDaggerAttack:
   jp    SWspriteSetNYNXSYSX
 
 LSwordAttack:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine  
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   .skipEndMovePlayer:
 
@@ -2340,6 +2367,9 @@ LSwordAttack:
   jp    SWspriteSetNYNXSYSX
   
 RSwordAttack:  
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine  
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   .skipEndMovePlayer:
 
@@ -2352,6 +2382,9 @@ RSwordAttack:
   jp    SWspriteSetNYNXSYSX
 
 LAxeAttack:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine  
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   .skipEndMovePlayer:
 
@@ -2364,6 +2397,9 @@ LAxeAttack:
   jp    SWspriteSetNYNXSYSX
   
 RAxeAttack:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine  
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   .skipEndMovePlayer:
 
@@ -2376,6 +2412,9 @@ RAxeAttack:
   jp    SWspriteSetNYNXSYSX
   
 LSpearAttack:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine  
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   .skipEndMovePlayer:
 
@@ -2388,6 +2427,9 @@ LSpearAttack:
   jp    SWspriteSetNYNXSYSX
   
 RSpearAttack:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+  call  CheckMeditateAndRolling               ;check if triga + trigb are pressed while sitting. if so, set meditate pose and DON'T return to this routine  
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   .skipEndMovePlayer:
 
@@ -2400,6 +2442,8 @@ RSpearAttack:
   jp    SWspriteSetNYNXSYSX
 
 RAttack:
+  call  CheckWallwalk               ;check if triga + trigb are pressed while stadning. if so, setwallwalk pose and DON'T return to this routine
+
   call  EndMovePlayerHorizontally   ;slowly come to a full stop after running
   call  CheckLavaPoisonSpikes       ;out: z-> lava poison or spikes found
   jp    z,Set_R_BeingHit

@@ -475,6 +475,13 @@ f1MenuRomAddress:			equ $-RomStartAddress
 f1MenuRomEndAddress:		equ $-1-RomStartAddress ;08572
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
+;  f2menu
+F2Menublock:				equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$02
+f2MenuRomAddress:			equ $-RomStartAddress
+							include	"F2Menu.asm"	
+f2MenuRomEndAddress:		equ $-1-RomStartAddress ;08572
+							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+
 ;  loader
 Loaderblock:  				equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$03
 loaderRomStartAddress:		equ $-RomStartAddress
