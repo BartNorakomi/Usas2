@@ -42,13 +42,11 @@ WMHMMC: DW    0,0,0,0,4,4,0,0xF0 ;(sx,sy,)dx,dy,nx,ny,col/arg,cmd=hmmc
 PlayLogo:
   call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
 
+;Also the start of the game
 loadGraphics:
 ;	ld    a,(RePlayer_playing)
 ;	and   a
 ;  call  z,VGMRePlay
-
-
-
 
 ;initialize the worldmap one time (this should be move to the usas2 game one-time-initialization)
 		ld		a,(ffvoordetesteenmalig)
@@ -173,22 +171,14 @@ loadGraphics:
 
 
 
-;UnpackedRoomFile:
-;.meta:		rb 8
-;.tiledata:  rb  38*27*2
 ;clear wall mapdate tiles to background
-RemoveWallFromRoomTiles:
-;   ld    b,+16                               ;add y to check (y is expressed in pixels)
-;   ld    de,000                              ;add x to check (x is expressed in pixels)
-;   call  checktileObject                     ;perform checktile object, but only to set hl pointing to the left top tile where wall starts
-											;ro: that should really be a general function, like "getRoomTileLocation"
-;ro: in the original "checkTileObject" function, X is loaded as 8-bit, while it is a 16-bit. So:
+removeObjectFromRoomMapData: ; RemoveWallFromRoomTiles:
 		ld    l,(ix+enemies_and_objects.x)        ;x object
 		ld    h,(ix+enemies_and_objects.x+1)
 		ld    a,(ix+enemies_and_objects.y)        ;y object
-		add   a,16	;this needs to go (ro)
-		call    getRoomMapTile ;CheckTile.XandYset				;<< yes, this should be generic as mentioned earlier.
-
+		;add   a,16	;this needs to go (ro)
+		;call    getRoomMapTile ;CheckTile.XandYset				;<< yes, this should be generic as mentioned earlier.
+		call getRoomMapData
 ;Fill a part of the current room tile matrix										
 		ld	a,(ix+enemies_and_objects.nx)
 		srl	a ;/2
@@ -210,9 +200,7 @@ RemoveWallFromRoomTiles:
 ;in: HL=startAddress, B=lenX (tiles), C=lenY (tiles), A=value
 fillRoomMapData:
 		ex  af,af'	;'
-;		ld	a,(checktile.selfmodifyingcodeMapLenght+1)		;see why selfmodcode is stupid? you might need the var on other parts too.
 		ld	a,roomMap.numcol
-;		add	a,2	;ro:should loose this eventually
 		sub	b
 		ld	e,a
 		ld	d,0
@@ -227,7 +215,7 @@ fillRoomMapData:
 		ex  af,af'	;'
 		dec	A
 		jp	nz,.fmp1
-ret
+		ret
 
 AreaSignList:	dw	AreaSign01,AreaSign02,AreaSign03,AreaSign04,AreaSign05,AreaSign06,AreaSign07,AreaSign08,AreaSign09,AreaSign10,AreaSign11,AreaSign12,AreaSign13,AreaSign14,AreaSign15,AreaSign16,AreaSign17,AreaSign18,AreaSign19
 UnpackAreaSign:
@@ -416,24 +404,22 @@ clearEnemyTable:
 .Loop:	ld    (hl),a
 		add   hl,de
 		djnz  .Loop
-ret
+		ret
 
 
 ;unpacks packed map to ram. ends with: all RAM except page 2
 ;in:	IX
 UnpackMapdataAndObjectData:             
-		;unpack map data
+;unpack map data
 ;		ld    a,(slot.page12rom)            ;all RAM except page 2
 ;		out   ($a8),a      
 ;		ld    a,(ix+0)		;ROM block 
 		call  block34		;we can only switch block34 if page 1 is in rom
 ;		ld    l,(ix+1)		;ROM adr
 ;		ld    h,(ix+2)
-
-		;unpack map data
+;unpack map data
 ;		ld    a,(slot.page2rom)             ;all RAM except page 2
 ;		out   ($a8),a      
-			
 		ld    de,UnpackedRoomFile	;Unpack RoomLayout to page3 buffer
 		jp    Depack 				;In: HL: source, DE: destination
 
@@ -441,10 +427,10 @@ UnpackMapdataAndObjectData:
 ;Engine304x216: a map is 38x27. We add 2 empty tiles on the right per row, and we have two extra rows with background tiles. Total mapsize will be 40x27 + empty rows
 
 MapHeight:                  equ 27
-MapLenght256x216:           equ 32
-MapLenght304x216:           equ 38
-CheckTile256x216MapLenght:  equ 32 + 2
-CheckTile304x216MapLenght:  equ 38 + 2
+;MapLenght256x216:           equ 32
+;MapLenght304x216:           equ 38
+;CheckTile256x216MapLenght:  equ 32 + 2
+;CheckTile304x216MapLenght:  equ 38 + 2
 
 ;Space for room tile classes
 ;MapData:
@@ -462,7 +448,7 @@ GetRoomTilesetId:
 		ret nz
 		ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
 		and $1f
-ret
+		ret
 
 ;Return the correct palette ID for this room
 GetRoomPaletteId:
@@ -471,7 +457,7 @@ GetRoomPaletteId:
 		ret nz
 		ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
 		and $1f
-ret
+		ret
 
 ;Return the current room type
 GetRoomTypeId:
@@ -779,7 +765,7 @@ ForegroundTilesStart: equ 58
 ForegroundTilesEnd: equ 255	;tilenr: 52 t/m 255 = foreground
 BackgroundTilesStart:	equ 256
 BackgroundTilesEnd:	equ 1023;tilenr: 256 t/m 1023 = background
-;convert into
+;tileClassIds
 BackgroundID:		equ 0	;tile 0 = background
 HardForeGroundID:	equ 1	;tile 1 = hardforeground
 LadderId:			equ 2	;tile 2 = LadderTilesEndAdrEnd
@@ -789,14 +775,14 @@ StairRightId:		equ 5	;tile 5 = stairsrightup
 LavaId:				equ 6	;tile 6 = lava
 WaterId:			equ 7	;tile 7 = water
 
-tileConversionTable: ;(id,tilenr) order desc
+tileConversionTable: ;(classid,tilenr) order desc
   DB  HardForeGroundID,ForegroundTilesStart,WaterID,WaterTilesStart,StairRightId,StairRightTilesStart
   DB  StairLeftId,StairLeftTilesStart,LavaId,LavaTilesStart
   DB  SpikeId,SpikeTilesStart,BackgroundID,FreeTilesStart
   DB  ladderID,LadderTilesEndAdrStart,BackgroundID,0
 
 ;20231104
-;Convert TileNumbers to TileIDs
+;Convert TileNumbers to TileClassIDs
 ConvertToMapinRam:
 		ld	 de,UnpackedRoomFile.tiledata 
 		ld	 hl,roomMap.data	;MapData
@@ -845,7 +831,7 @@ ConvertToMapinRam:
 		add	 hl,bc
 		pop	bc
 		djnz .l0
-ret
+		ret
   
 ;Convert one MapTileNr to TileID using a lookupTable
 .convertTile:
@@ -873,11 +859,11 @@ ret
         inc hl
         jp .loop0
   
-SetTile:
-  db    000,000,000,001   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    008,000,008,000   ;nx,--,ny,--
-  db    000,000,$D0       ;fast copy   
+; SetTile:
+;   db    000,000,000,001   ;sx,--,sy,spage
+;   db    000,000,000,000   ;dx,--,dy,dpage
+;   db    008,000,008,000   ;nx,--,ny,--
+;   db    000,000,$D0       ;fast copy   
 
 TinyCopyWhichFunctionsAsWaitVDPReady:
 	db		0,0,0,0
@@ -893,7 +879,7 @@ DoCopy:	push bc
 		ei
 		out   ($99),a
 		ld    c,$9b
-.vdpready:
+.vdpready:					;check the VDP CommandExecutionStatus to see if the VDP is ready for a new cmd
 		ld    a,2
 		di
 		out   ($99),a
@@ -914,7 +900,7 @@ DoCopy:	push bc
 		dw	$a3ed,$a3ed,$a3ed,$a3ed
 		dw	$a3ed,$a3ed,$a3ed
 		pop bc
-  ret
+		ret
 
 
 lineintheight: equ 212-43

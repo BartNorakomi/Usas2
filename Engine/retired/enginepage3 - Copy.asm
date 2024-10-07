@@ -821,28 +821,13 @@ MapDataLenght:  Equ $-MapData
 
 
 MapHeight:                  equ 27
-MapLenght256x216:           equ 32
-MapLenght304x216:           equ 38
-
-CheckTile256x216MapLenght:  equ 32 + 2
-CheckTile304x216MapLenght:  equ 38 + 2
-
+;MapLenght256x216:           equ 32
+;MapLenght304x216:           equ 38
+;CheckTile256x216MapLenght:  equ 32 + 2
+;CheckTile304x216MapLenght:  equ 38 + 2
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-; Tiles numbering
+;Tiles numbering
 LadderTilesStart:	equ 1
 LadderTilesEnd:	equ 8 	;tilenr: 1 t/m 8 = ladder
 FreeTilesStart:	equ 9
@@ -859,7 +844,7 @@ ForegroundTilesStart: equ 52
 ForegroundTilesEnd: equ 255	;tilenr: 52 t/m 255 = foreground
 BackgroundTilesStart:	equ 256
 BackgroundTilesEnd:	equ 1023;tilenr: 256 t/m 1023 = background
-;convert into
+;TileClassIds
 BackgroundID:	equ 0	;tile 0 = background
 HardForeGroundID:	equ 1	;tile 1 = hardforeground
 LadderId:	equ 2	;tile 2 = laddertilesEnd
@@ -868,11 +853,11 @@ StairLeftId:	equ 4	;tile 4 = stairsleftup
 StairRightId:	equ 5	;tile 5 = stairsrightup
 LavaId:		equ 6	;tile 6 = lava
 
-tileConversionTable: ;(id,tilenr) order desc
-  DB  HardForeGroundID,ForegroundTilesStart,StairRightId,StairRightTilesStart
-  DB  StairLeftId,StairLeftTilesStart,LavaId,LavaTilesStart
-  DB  SpikeId,SpikeTilesStart,BackgroundID,FreeTilesStart
-  DB  ladderID,LadderTilesStart,BackgroundID,0
+tileConversionTable: ;(classId,tilenr) order desc
+		DB  HardForeGroundID,ForegroundTilesStart,StairRightId,StairRightTilesStart
+		DB  StairLeftId,StairLeftTilesStart,LavaId,LavaTilesStart
+		DB  SpikeId,SpikeTilesStart,BackgroundID,FreeTilesStart
+		DB  ladderID,LadderTilesStart,BackgroundID,0
 
 ConvertToMapinRam2:
   ld  de,UnpackedMapAddress 

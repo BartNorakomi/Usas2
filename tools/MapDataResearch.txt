@@ -84,6 +84,39 @@ XaddRightPlayer:          equ 15 - 8
 
 # a quick scan revealed many calls to CHECKTILE (root and sub)... this is not gonna be easy, especially seeing all those selfmodcode stuff - it's bad.
 
+20241005
+- mapData renamed to roomMap and using proper labels
+- changed initializeRoomType and remove selfmodcode
+- checktile split to seperate functions, one being getRoomMapTile
+- getRoomMapTile is a rewritten version of checktile.XandYset which gets the roomMap address and value of HL,A without selfmodcode. Also seperated the 16bit mulu function mulAxBc:. This mulu function was called from other places as well.
+- removed redundant code to get the roomMap value, and replaced it with the generic function getRoomMapData, which is a new function that uses the roomMap pointer correctly. I have to look through all instances that use getRoomMapTile and replace it with getRoomMapData.
+- consolidated checktileObject/Enemy/InHL functions
+- pushstone functions, changed code to check stone and not the player
+- added function checkTilePlayer:, which will replace checkTile: and uses the new getRoomMapData function
+- changed the following code to use checkTileObject instead of checkTileEnemyInHl
+	PlatformOmniDirectionally
+	CheckCollisionWallEnemy (also refactored redundant code)
+	CheckCollisionWallEnemyV8 (disabled; this is unused code)
+	CheckFloorEnemy, CheckFloorEnemyObject (what's with the "enemy" and "object" code? shouldn't those be the same?)
+	CheckFloorUnderBothFeetEnemy
+	CheckFloorEnemyObjectLeftSide
+- disable CheckTileEnemyInHL:
+#clean up when all's done
+- added checkTilePlayer to replaye checkTile and changed the following code that calls that function
+	Rsitting:
+	.PlayerMovedRight:
+	.PlayerMovedLeft:
+	CheckFloor:
+	CheckFloorInclLadder:
+	CheckFloorInclLadderWhileRolling:
+	CheckLavaPoisonSpikes:
+and all player moves
+
+
+
+
+
+
 
 
 

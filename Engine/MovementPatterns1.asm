@@ -1817,8 +1817,9 @@ ret
 		ld	 l,(ix+enemies_and_objects.v3)     ;v3 = dx
 		ld	 h,0
 		ld	 a,(ix+enemies_and_objects.v2)     ;v2 = dy
-		add	 a,16 ;should loose this eventually, when the roommapdata startaddress is fixed to +0 (ro)
-		call getRoomMapTile			;in: HL=X, A=Y. out:HL=address, A=value
+		;add	 a,16 ;should loose this eventually, when the roommapdata startaddress is fixed to +0 (ro)
+		;call getRoomMapTile			;in: HL=X, A=Y. out:HL=address, A=value
+		call getRoomMapData
 		ld	 bc,0x0201
 		pop  af
 		jp fillRoomMapData		;in: HL=startAddress, B=lenX (tiles), C=lenY (tiles), A=value
@@ -2539,6 +2540,7 @@ BlackHoleBaby:
 		call  .CheckFloor                         ;checks for collision Floor and if found fall
 
 ;20241003;ro;Added this check cuz it made the shizl CRASH. Still needs sprite clean-up (bart)
+; might use RemoveSoftwareSpriteWhenOutOfScreen (out NC=outofscreen)
 		ld	 a,(ix+enemies_and_objects.y)	;jump out of screen (bottom)?
 		cp	 27*8
 		jp	 nc,removesprite
@@ -4725,6 +4727,7 @@ HugeBlob:
   
   .CheckFloor:                              ;checks for floor. if not found invert direction
   call  CheckFloorEnemyObjectLeftSide       ;checks for floor, out z=collision found with floor
+  dec A
   jr    z,.ForegroundFound
   inc   hl
   inc   hl
@@ -8304,44 +8307,40 @@ PlayerOrStoneOnSwitch:
   ld    (ShowOverView?),a
   ret
 
-PlatformOmniDirectionally:
+;016 PlatformMovingSmallOmnidirectional
 ;v1 = sx
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=snap player?
-;v6=copy x (16bit)
-;v7=copy x (16bit)
+;v6/v7=copy x (16bit) > ro:doesn't make sence since this object only uses 8bit X values
 ;v8=copy y
-  ld    a,216 + 16
-  ld    (CopyObject+sy),a  
+PlatformOmniDirectionally:
+		ld    a,216 + 16	;location of gfx
+		ld    (CopyObject+sy),a  
 
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+		call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+		call  .animate                            ;rotate arrow (movement direction) when inactive, and set v3+v4 accordingly
+		call  VramObjectsTransparantCopies2       ;put object in Vram/screen
+		bit   0,(ix+enemies_and_objects.SnapPlayer?)
+		ret   z
+		ld    a,(framecounter)
+		and   1
+		ret   z
 
-  call  .animate                            ;rotate arrow (movement direction) when inactive, and set v3+v4 accordingly
-  call  VramObjectsTransparantCopies2       ;put object in Vram/screen
-  bit   0,(ix+enemies_and_objects.SnapPlayer?)
-  ret   z
-  ld    a,(framecounter)
-  and   1
-  ret   z
-
-  call  .StoreCoordinates
-  call  MoveObjectHorizontallyAndVertically
-
-  ld    a,(ix+enemies_and_objects.x)
-  cp    18
-  jr    c,.RecallOldCoordinates
-  cp    253
-  jr    nc,.RecallOldCoordinates
-  ld    a,(ix+enemies_and_objects.y)
-  cp    32
-  jr    c,.RecallOldCoordinates
-  cp    200
-  jr    nc,.RecallOldCoordinates
-
-
-  call  .CheckCollisionObject               ;checks for collision wall and if found sets v7 (collided with wall?)
-  jp    nz,MovePlayerAlongWithObject
+		call  .StoreCoordinates
+		call  MoveObjectHorizontallyAndVertically
+		ld    a,(ix+enemies_and_objects.x)
+		cp    18
+		jr    c,.RecallOldCoordinates
+		cp    253
+		jr    nc,.RecallOldCoordinates
+		ld    a,(ix+enemies_and_objects.y)
+		cp    32
+		jr    c,.RecallOldCoordinates
+		cp    200
+		jr    nc,.RecallOldCoordinates
+		call  .CheckCollisionObject               ;checks for collision wall and if found sets v7 (collided with wall?)
+		jp    nz,MovePlayerAlongWithObject
 
   .RecallOldCoordinates:
   ld    a,(ix+enemies_and_objects.v6)       ;x
@@ -8362,62 +8361,68 @@ PlatformOmniDirectionally:
   ret
 
   .animate:                                 ;rotate arrow (movement direction) when inactive
-  bit   0,(ix+enemies_and_objects.SnapPlayer?)       ;become active?
-  ret   nz
+	bit   0,(ix+enemies_and_objects.SnapPlayer?)       ;become active?
+	ret   nz
 
-  ld    a,(framecounter)
-  and   15
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v1)       ;sx
-  add   a,16
-  and   127
-  ld    (ix+enemies_and_objects.v1),a       ;sx
-  ;set v3+v4 (Vertical+Horizontal Movement) based on direction of arrow
+	ld    a,(framecounter)
+	and   15
+	ret   nz
+	ld    a,(ix+enemies_and_objects.v1)       ;sx
+	add   a,16
+	and   127
+	ld    (ix+enemies_and_objects.v1),a       ;sx
+	;set v3+v4 (Vertical+Horizontal Movement) based on direction of arrow
 	srl		a                                   ;/2
 	srl		a                                   ;/4
 	srl		a                                   ;/8 (a=0,2,4,6,8,10,12,14)
-  ld    d,0
-  ld    e,a
-  ld    hl,v3v4Table 
-  add   hl,de
-  ld    a,(hl)                              ;v3
-  ld    (ix+enemies_and_objects.v3),a       ;Vertical Movement
-  inc   hl
-  ld    a,(hl)                              ;v4
-  ld    (ix+enemies_and_objects.v4),a       ;Horizontal Movement    
-  ret
+	ld    d,0
+	ld    e,a
+	ld    hl,v3v4Table 
+	add   hl,de
+	ld    a,(hl)                              ;v3
+	ld    (ix+enemies_and_objects.v3),a       ;Vertical Movement
+	inc   hl
+	ld    a,(hl)                              ;v4
+	ld    (ix+enemies_and_objects.v4),a       ;Horizontal Movement    
+	ret
 
-  .CheckCollisionObject:                    ;checks for collision wall. out: z=collision found
-  ;check if tip of head player touches a ceiling
-  ld    a,-16                               ;add to y (y is expressed in pixels)
-  ld    hl,+00                              ;add to x to check right side of sprite for collision
-  call  .Docheck
+.CheckCollisionObject:                    ;checks for collision wall. out: z=collision found
+		;check if tip of head player touches a ceiling
+		; ld    a,-16                               ;add to y (y is expressed in pixels)
+		;ld    hl,+00                              ;add to x to check right side of sprite for collision
+		ld	 b,-32
+		ld	 de,0
+		call  .Docheck
 
-  ;check if tip of platform touches a wall
-  ld    a,+16                               ;add to y (y is expressed in pixels)
-  ld    hl,+00                              ;add to x to check right side of sprite for collision
-  call  .Docheck
+		;check if tip of platform touches a wall
+		; ld    a,+16                               ;add to y (y is expressed in pixels)
+		; ld    hl,+00                              ;add to x to check right side of sprite for collision
+		ld	 b,0
+		ld	 de,0
+		call  .Docheck
 
-  ;check if bottom of platform touches a wall
-  ld    a,+32                               ;add to y (y is expressed in pixels)
-  ld    hl,+00                              ;add to x to check right side of sprite for collision
-  call  .Docheck
-  ret
+		;check if bottom of platform touches a wall
+		; ld    a,+32                               ;add to y (y is expressed in pixels)
+		; ld    hl,+00                              ;add to x to check right side of sprite for collision
+		ld	 b,16
+		ld	 de,0
+		call  .Docheck
+		ret
 
   .Docheck:
-  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
-  jr    z,.ForegroundFound
+		call checktileObject ;CheckTileEnemyInHL	;left
+		dec	 a
+		jr	 z,.ForegroundFound
+		inc   hl
+		inc   hl
+		ld    a,(hl)	;right
+		dec   a			;1 = wall
+		jr    z,.ForegroundFound
+		ret
 
-  inc   hl
-  inc   hl
-  ld    a,(hl)                              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
-  dec   a                                   ;1 = wall
-  jr    z,.ForegroundFound
-  ret
-
-  .ForegroundFound:
-  pop   bc                                  ;no need to do the other checks
-  ret
+.ForegroundFound:
+		pop	 bc	;change return adr. no need to do the other checks
+		ret
 
 
 v3v4Table:  db +00,-01, -01,-01, -01,+00, -01,+01, +00,+01, +01,+01, +01,+00, +01,-01

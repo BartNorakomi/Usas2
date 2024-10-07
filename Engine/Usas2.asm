@@ -312,61 +312,73 @@ initMem.length:	equ	$-initMem
 ;
 
 ; Initialize USAS2
-init:		
-  ld    a,15        ;is zwart in onze huidige pallet
-	ld		($f3e9),a	  ;foreground color 
-	ld		($f3ea),a	  ;background color 
-	ld		($f3eb),a	  ;border color
+init:
+;init video
+		ld    a,15        	;black
+		ld		($f3e9),A	;foreground color 
+		ld		($f3ea),a	;background color 
+		ld		($f3eb),a	;border color
 
-  ld    a,15        ;start write to this palette color (15)
-  di
-	out		($99),a
-	ld		a,16+128
-	out		($99),a
-	xor		a
-	out		($9a),a
-  ei
-	out		($9a),a
+		; ld    a,15        ;start write to this palette color (15)
+		; di
+		; out		($99),a
+		; ld		a,16+128
+		; out		($99),a
+		; xor		a
+		; out		($9a),a
+		; ei
+		; out		($9a),a
 
-	ld 		a,5			    ;switch to screen 5
-	call 	$5f
+		ld 		a,5			    ;switch to screen 5
+		call 	$5f
 
-	ld		a,(VDP_8+1)	
-	and		%1111 1101	;set 60 hertz
-	or		%1000 0000	;screen height 212
-	ld		(VDP_8+1),a
-	di
-	out		($99),a
-	ld		a,9+128
-	ei
-	out		($99),a
+		ld		a,(VDP_8+1)	
+		and		%1111 1101	;set 60 hertz
+		or		%1000 0000	;screen height 212
+		ld		(VDP_8+1),a
+		di
+		out		($99),a
+		ld		a,9+128
+		ei
+		out		($99),a
 
 ;screenmode transparancy (i think this is about usage of color 0 in sprites)
-	ld		a,(vdp_8)
-	or		32				  ;transparant mode off
-;	and		223				  ;tranparant mode on
-	ld		(vdp_8),a
-	di
-	out		($99),a
-	ld		a,8+128
-	ei
-	out		($99),a
+		ld		a,(vdp_8)
+		or		32				  ;transparant mode off
+		;	and		223				  ;tranparant mode on
+		ld		(vdp_8),a
+		di
+		out		($99),a
+		ld		a,8+128
+		ei
+		out		($99),a
 
-  xor   a
-	ld		(vdp_8+15),a
-	di
-	out		($99),a
-	ld		a,23+128
-	ei
-	out		($99),a
+		xor   a
+		ld		(vdp_8+15),a
+		di
+		out		($99),a
+		ld		a,23+128
+		ei
+		out		($99),a
 
-	di
-	im		1
-	ld		bc,initMem.length
-	ld		de,initMem
-	ld		hl,memInit
-	ldir
-	call	initMem
+;SpriteInitialize:
+		ld		a,(vdp_0+1)
+		or		2			;sprites 16*16
+		ld		(vdp_0+1),a
+		di
+		out		($99),a
+		ld		a,1+128
+		ei
+		out		($99),a
+
+;init memory
+		di
+		im		1
+		ld		bc,initMem.length
+		ld		de,initMem
+		ld		hl,memInit
+		ldir
+		call	initMem
 
 ;	xor		a			;init blocks
 ;	ld		(memblocks.1),a
@@ -380,48 +392,33 @@ init:
 ;	inc		a
 ;	ld		(memblocks.4),a
 ;	ld		($b000),a
-
-  xor   a     ;init blocks ascii16
+	xor   a     ;init blocks ascii16
 	ld		(memblocks.1),a
 	ld		($6000),a
 	inc		a
 	ld		(memblocks.2),a
 	ld		($7000),a
 
-
 ; load BIOS / engine , load startup
-	ld		hl,tempisr
+	ld		hl,tempisr		;set LNI
 	ld		de,$38
 	ld		bc,6
 	ldir
 
-;SpriteInitialize:
-	ld		a,(vdp_0+1)
-	or		2			;sprites 16*16
-	ld		(vdp_0+1),a
-	di
-	out		($99),a
-	ld		a,1+128
-	ei
-	out		($99),a
-;/SpriteInitialize:
-
-	ld		hl,engine
+	ld		hl,engine	;move code to page 0
 	ld		de,engaddr
-	ld		bc,enlength	        ;load engine
+	ld		bc,enlength
 	ldir
 
-	ld		hl,enginepage3
+	ld		hl,enginepage3	;move code to page 3
 	ld		de,enginepage3addr
-	ld		bc,enginepage3length	    ;load enginepage3
+	ld		bc,enginepage3length
 	ldir
 
 ;  call  enablesupermarioworldinterrupt
-
 ;	ld		a,loaderblock
 ;	call	block34			        ;at address $8000 / page 2
 ;  jp    $8000 ;loader.address      ;set loader in page 2 and jp to it
-
 
 if MusicOn?
 	call  VGMRePlay
@@ -431,7 +428,8 @@ if LogoOn?
 endif
   jp    loadGraphics
 
-		; set temp ISR
+
+; temp ISR
 tempisr:	
 	push	af
 	in		a,($99)             ;check and acknowledge vblank int (ei0 is set)

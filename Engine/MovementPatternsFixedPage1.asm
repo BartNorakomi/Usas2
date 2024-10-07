@@ -737,97 +737,130 @@ TurnAroundAtScreenEdges:
   ret
 
 RemoveSoftwareSpriteWhenOutOfScreen:        ;for now only handles out of screen at the bottom (so we dont overwrite scoreboard)
-  ld    a,(ix+enemies_and_objects.y)        ;y
-  add   a,(ix+enemies_and_objects.ny)       ;ny
-  cp    216 ;218
-  ret   c
-  ld    (ix+enemies_and_objects.alive?),0
-  ret
+		ld    a,(ix+enemies_and_objects.y)        ;y
+		add   a,(ix+enemies_and_objects.ny)       ;ny
+		cp    216 ;218
+		ret   c
+		ld    (ix+enemies_and_objects.alive?),0
+		ret
 
-CheckCollisionWallEnemy:                    ;checks for collision wall and if found invert horizontal movement
-  ld    a,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
-  add   a,8                                 ;this checks exactly at the feet of the enemy
-  ld    hl,-16                              ;add to x to check right side of sprite for collision
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  jr    z,.MovingRight
-  .MovingLeft:
-  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  neg
-  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
-  ret
-  .MovingRight:
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  add   hl,de
-  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  neg
-  ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
-  ret
 
-CheckCollisionWallEnemyV8:                  ;checks for collision wall and if found invert horizontal movement
-  ld    a,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
-  ld    hl,-16                              ;add to x to check right side of sprite for collision
-  bit   7,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
-  jr    z,.MovingRight
-  .MovingLeft:
-  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
-  neg
-  ld    (ix+enemies_and_objects.v8),a       ;v4=Horizontal Movement
-  ret
-  .MovingRight:
-  ld    d,0
-  ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-  add   hl,de
-  call  CheckTileEnemyInHL                  ;out z=collision found with wall  
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
-  neg
-  ld    (ix+enemies_and_objects.v8),a       ;v4=Horizontal Movement
-  ret
-
-CheckFloorUnderBothFeetEnemy:               ;Used for Zombie, to check if he is completely without floor under him
-		ld    hl,-16
-		ld    a,(ix+enemies_and_objects.ny)       
-		add   a,16
+;checks for collision wall and if found invert horizontal movement
+;ro: so it does two(2) things
+;in:	IX
+CheckCollisionWallEnemy:
+		ld    a,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
+		; add   a,8                                 ;this checks exactly at the feet of the enemy
+		sub 	8		
+		ld	 b,A
+		; ld    hl,-16                              ;add to x to check right side of sprite for collision
+		ld	 de,-16
 		bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-		jr    z,.MovingRight
+		; jr    z,.MovingRight
+		jr    nz,.movingLeft
+		ld	 h,0
+		ld	 l,(ix+enemies_and_objects.nx)
+		add	 hl,de
+		ex	 de,hl
 .MovingLeft:
-		ld    d,0
-		ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-		add   hl,de
-		add   hl,hl                               ;0 if nx=16, 32 if nx=32, 64 if nx=48 formula=(nx-16) *2
-		jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+		; call  CheckTileEnemyInHL                  ;out z=collision found with wall  
+		call  checkTileObject  
+		dec	 A
+		ret   nz
+		ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+		neg
+		ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
+		ret
+; .MovingRight:
+; 		; ld    d,0
+; 		; ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
+; 		; add   hl,de
+; 		; call CheckTileEnemyInHL                  ;out z=collision found with wall  
+; 		ld	 h,0
+; 		ld	 l,(ix+enemies_and_objects.nx)
+; 		add	 hl,de
+; 		ex	 de,hl
+; 		call  checkTileObject  
+; 		dec	 a
+; 		ret   nz
+; 		ld    a,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+; 		neg
+; 		ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
+; 		ret
+
+; ;same as CheckCollisionWallEnemy but using v8 as x-move face  >> NOT USED
+; CheckCollisionWallEnemyV8x:                  ;checks for collision wall and if found invert horizontal movement
+;   ld    a,(ix+enemies_and_objects.ny)       ;add to y (y is expressed in pixels)
+;   ld    hl,-16                              ;add to x to check right side of sprite for collision
+;   bit   7,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
+;   jr    z,.MovingRight
+;   .MovingLeft:
+;   call  CheckTileEnemyInHL                  ;out z=collision found with wall  
+;   ret   nz
+;   ld    a,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
+;   neg
+;   ld    (ix+enemies_and_objects.v8),a       ;v4=Horizontal Movement
+;   ret
+;   .MovingRight:
+;   ld    d,0
+;   ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
+;   add   hl,de
+;   call  CheckTileEnemyInHL                  ;out z=collision found with wall  
+;   ret   nz
+;   ld    a,(ix+enemies_and_objects.v8)       ;v4=Horizontal Movement
+;   neg
+;   ld    (ix+enemies_and_objects.v8),a       ;v4=Horizontal Movement
+;   ret
+
+
+;Used for Zombie, to check if he is completely without floor under him
+;ro: no just for the zombie, eh (also coin and all other object that can fall)
+;20241007;ro;refactored
+CheckFloorUnderBothFeetEnemy:               
+		ld	 de,-16 ;x-offset
+		ld	 b,(ix+enemies_and_objects.ny)  ;y-offset
+		bit	 7,(ix+enemies_and_objects.v4)	;v4=Horizontal Movement
+		jr	 z,.MovingRight	;right
+		ld	 h,0			;left
+		ld	 l,(ix+enemies_and_objects.nx)	;add to x to check right side of sprite for collision
+		add	 hl,de
+		add	 hl,hl	;0 if nx=16, 32 if nx=32, 64 if nx=48 formula=(nx-16) *2
+		ex 	de,hl
 .MovingRight:
-		jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
-  
+		call checkTileObject
+		dec	 A
+		ret
+
+; only for   HugeBlobJumping:
 CheckFloorEnemyObjectLeftSide:
-		ld    hl,0
-		ld    a,(ix+enemies_and_objects.ny)       
-		add   a,16
-		jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+		ld	 de,0	;x-offset
+		ld	 b,(ix+enemies_and_objects.ny)  ;y-offset
+		jp	 checkTileObject
+		; ld    hl,0
+		; ld    a,(ix+enemies_and_objects.ny)       
+		; add   a,16
+		; jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+
+
 CheckFloorEnemyObject:
-		ld    hl,0
+		;ld    hl,0
+		ld 	de,0
 		jp    CheckFloorEnemy.ObjectEntry
+
+;20241007;ro;refactored
 CheckFloorEnemy:
-		ld    hl,-16
+		ld	 de,-16 ;x-offset
 .ObjectEntry:
-		ld    a,(ix+enemies_and_objects.ny)       
-		add   a,16
+		ld    b,(ix+enemies_and_objects.ny)       
 		bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-		jr    z,.MovingRight
-.MovingLeft:
-		jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
-.MovingRight:
-		ld    d,0
-		ld    e,(ix+enemies_and_objects.nx)       ;add to x to check right side of sprite for collision
-		add   hl,de
-		jp    CheckTileEnemyInHL                  ;out z=collision found with wall  
+		jp	 nz,.l0	;=left
+		ld	 h,0	;=right
+		ld	 l,(ix+enemies_and_objects.nx)
+		add	 hl,de
+		ex	 de,hl
+.l0:	call checkTileObject
+		dec	 A
+		ret
 
 distancecheck46wide:                        ;in: b,c->x,y distance between player and object,  out: carry->object within distance
   ld    hl,(Clesx)                          ;hl = x player
@@ -1366,7 +1399,6 @@ Coin:
   call  .CheckFloor                         ;checks for collision Floor and if found fall
   call  CheckPickUpCoin                     ;check for collision between player and coin and removes coin from play when picked up
 
-
   ld    a,(ix+enemies_and_objects.y)        ;y
   cp    210
   jr    c,.SkipSetTopInScreen
@@ -1693,10 +1725,12 @@ CheckCollisionStone3:
   ret
 
 CheckFloorFallingStone:                     ;if a floor is found, snap to tile, and change back to pushing stone
-  ld    b,+32                               ;add y to check (y is expressed in pixels)
-  ld    de,+08                              ;add x to check (x is expressed in pixels)
-  call  checktileObject                     ;out z=collision found with wall
-  ret   nz
+		;ld    b,+32                               ;add y to check (y is expressed in pixels)
+		ld b,16	;;20241005;ro;refactored
+		ld    de,+08                              ;add x to check (x is expressed in pixels)
+		call  checktileObject                     ;out z=collision found with wall
+		dec A
+		ret   nz
   
   ;floor found, snap to floor
   ld    a,(ix+enemies_and_objects.y)        ;y object
@@ -1743,7 +1777,8 @@ SetCoordinatesPuzzlePushingStones:          ;if v7=0 then set coordinates
   ld    a,(hl)
   ld    (ix+enemies_and_objects.x),a        ;x object
   ret
-  
+
+;Push Stone
 PushingStone:
   ld    a,1
   ld    (CopyObject+sPage),a 
@@ -1866,48 +1901,54 @@ SetOddX:
   ret
 
 MoveStoneWhenPushed:
-  ld    a,(framecounter)
-  and   1
-  ret   nz
+		ld    a,(framecounter)
+		and   1
+		ret   nz
 
-  ld    a,(ix+enemies_and_objects.v4)       ;v4=horizontal movement. Return if 0
-  or    a
-  ret   z
-  
-	ld		hl,Rpushing                         ;check if we are pushing Right
-	ld		de,(PlayerSpriteStand)
-  xor   a
-  sbc   hl,de
-  jp    z,.MovingRight
+		ld    a,(ix+enemies_and_objects.v4)       ;v4=horizontal movement. Return if 0
+		or    a
+		ret   z
 
-	ld		hl,Lpushing                         ;check if we are pushing Left
-  xor   a
-  sbc   hl,de
-  ret   nz
-  
-  .MovingLeft:
-  call  CheckCollisionOtherStonesLeft       ;out: z= collision found
-  ret   z
-  
-  ;if Pushing Stone moves left, check if it hits wall on the left side
-  ld    b,YaddFeetPlayer-1                  ;add y to check (y is expressed in pixels)
-  ld    de,XaddRightPlayer-31               ;add to x to check right side of player for collision (player moved right)
-  call  checktile                           ;out z=collision found with wall
-  ret   z
-  dec   (ix+enemies_and_objects.x)          ;move pushing stone left
-  ret
+		ld		hl,Rpushing                         ;check if we are pushing Right
+		ld		de,(PlayerSpriteStand)
+		xor   a
+		sbc   hl,de
+		jp    z,.MovingRight
 
-  .MovingRight:
-  call  CheckCollisionOtherStonesRight      ;out: z= collision found
-  ret   z
-    
-  ;if Pushing Stone moves right, check if it hits wall on the right side
-  ld    b,YaddFeetPlayer-1                  ;add y to check (y is expressed in pixels)
-  ld    de,XaddRightPlayer+16               ;add to x to check left side of player for collision (player moved left)
-  call  checktile                           ;out z=collision found with wall
-  ret   z
-  inc   (ix+enemies_and_objects.x)          ;move pushing stone right
-  ret
+		ld		hl,Lpushing                         ;check if we are pushing Left
+		xor   a
+		sbc   hl,de
+		ret   nz
+.MovingLeft:
+		call  CheckCollisionOtherStonesLeft       ;out: z= collision found
+		ret   z
+
+		;if Pushing Stone moves left, check if it hits wall on the left side
+		;ld    b,YaddFeetPlayer-1                  ;add y to check (y is expressed in pixels)
+		;ld    de,XaddRightPlayer-31               ;add to x to check right side of player for collision (player moved right)
+		;call  checktile                           ;out z=collision found with wall
+		ld	 de,0	;20241005;ro;check stone and not the player
+		ld	 a,8
+		call checktileObject
+		dec a		
+		ret   z
+		dec   (ix+enemies_and_objects.x)          ;move pushing stone left
+		ret
+.MovingRight:
+		call  CheckCollisionOtherStonesRight      ;out: z= collision found
+		ret   z
+
+		;if Pushing Stone moves right, check if it hits wall on the right side
+		; ld    b,YaddFeetPlayer-1                  ;add y to check (y is expressed in pixels)
+		; ld    de,XaddRightPlayer+16               ;add to x to check left side of player for collision (player moved left)
+		; call  checktile                           ;out z=collision found with wall
+		ld	 de,17	;20241005;ro;check stone and not the player
+		ld	 a,8
+		call checktileObject
+		dec A
+		ret   z
+		inc   (ix+enemies_and_objects.x)          ;move pushing stone right
+		ret
 
 CheckCollisionOtherStonesLeft:              ;out: z= collision found
   ld    a,(AmountOfPushingStonesInCurrentRoom)
@@ -2055,115 +2096,110 @@ InitiatlizeSwitch:
   ret      
 
 CheckFloorOrStonePushingStone:
-  ;check left side
-  ld    b,+32                               ;add y to check (y is expressed in pixels)
-;  ld    de,+17                              ;add x to check (x is expressed in pixels)
-  ld    de,+16                              ;add x to check (x is expressed in pixels)
-  call  checktileObject                     ;out z=collision found with wall
-  ret   z
-  ;check right side
-  ld    b,+32                               ;add y to check (y is expressed in pixels)
-;  ld    de,+00                              ;add x to check (x is expressed in pixels)
-  ld    de,+01                              ;add x to check (x is expressed in pixels)
-  call  checktileObject                     ;out z=collision found with wall
-  ret   z
+;check left side
+		;  ld    de,+17                              ;add x to check (x is expressed in pixels)
+		;ld    b,+32                               ;add y to check (y is expressed in pixels)
+		ld	 b,16 ;20241005;ro;refactored
+		ld	 de,+16                              ;add x to check (x is expressed in pixels)
+		call checktileObject                     ;out z=collision found with wall
+		dec	 A
+		ret	 z
+;check right side
+		;ld    b,+32                               ;add y to check (y is expressed in pixels)
+		ld	 b,16 ;20241005;ro;refactored
+		;  ld    de,+00                              ;add x to check (x is expressed in pixels)
+		ld	 de,+01                              ;add x to check (x is expressed in pixels)
+		call checktileObject                     ;out z=collision found with wall
+		dec	 a
+		ret   z
 
-  ;check y collision with object 1 (stone 1) top
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jp    z,.NoCollision1
-  sub   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    nc,.NoCollision1
+;check y collision with object 1 (stone 1) top
+		ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		cp    (ix+enemies_and_objects.y)
+		jp    z,.NoCollision1
+		sub   a,17
+		cp    (ix+enemies_and_objects.y)
+		jp    nc,.NoCollision1
 
-  ;check y collision with object 1 (stone 1) bottom
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    c,.NoCollision1
+;check y collision with object 1 (stone 1) bottom
+		ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		add   a,17
+		cp    (ix+enemies_and_objects.y)
+		jp    c,.NoCollision1
 
-  ;check x collision with object 1 (stone 1) check on the left side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.NoCollision1
+;check x collision with object 1 (stone 1) check on the left side of this stone
+		ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,17
+		cp    (ix+enemies_and_objects.x)
+		jp    c,.NoCollision1
 
-  ;check x collision with object 1 (stone 1) check on the right side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   c
+;check x collision with object 1 (stone 1) check on the right side of this stone
+		ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,15 -33
+		cp    (ix+enemies_and_objects.x)
+		ret   c
 
-  .NoCollision1:
-   
-  ;check y collision with object 2 (stone 2) top
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jp    z,.NoCollision2
-  sub   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    nc,.NoCollision2
+.NoCollision1:
+;check y collision with object 2 (stone 2) top
+		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		cp    (ix+enemies_and_objects.y)
+		jp    z,.NoCollision2
+		sub   a,17
+		cp    (ix+enemies_and_objects.y)
+		jp    nc,.NoCollision2
 
-  ;check y collision with object 2 (stone 2) bottom
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    c,.NoCollision2
+;check y collision with object 2 (stone 2) bottom
+		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		add   a,17
+		cp    (ix+enemies_and_objects.y)
+		jp    c,.NoCollision2
 
-  ;check x collision with object 2 (stone 2) check on the left side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.NoCollision2
+;check x collision with object 2 (stone 2) check on the left side of this stone
+		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,17
+		cp    (ix+enemies_and_objects.x)
+		jp    c,.NoCollision2
 
-  ;check x collision with object 2 (stone 2) check on the right side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   c
+;check x collision with object 2 (stone 2) check on the right side of this stone
+		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,15 -33
+		cp    (ix+enemies_and_objects.x)
+		ret   c
 
-  .NoCollision2:
-  
-  ;check y collision with object 3 (stone 3) top
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jp    z,.NoCollision3
-  sub   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    nc,.NoCollision3
+.NoCollision2:
+;check y collision with object 3 (stone 3) top
+		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		cp    (ix+enemies_and_objects.y)
+		jp    z,.NoCollision3
+		sub   a,17
+		cp    (ix+enemies_and_objects.y)
+		jp    nc,.NoCollision3
 
-  ;check y collision with object 3 (stone 3) bottom
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  jp    c,.NoCollision3
+;check y collision with object 3 (stone 3) bottom
+		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		add   a,17
+		cp    (ix+enemies_and_objects.y)
+		jp    c,.NoCollision3
 
-  ;check x collision with object 3 (stone 3) check on the left side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  jp    c,.NoCollision3
+;check x collision with object 3 (stone 3) check on the left side of this stone
+		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,17
+		cp    (ix+enemies_and_objects.x)
+		jp    c,.NoCollision3
 
-  ;check x collision with object 3 (stone 3) check on the right side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   c
+;check x collision with object 3 (stone 3) check on the right side of this stone
+		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,15 -33
+		cp    (ix+enemies_and_objects.x)
+		ret   c
 
-  .NoCollision3:
-  ld    (ix+enemies_and_objects.v2),1       ;falling stone
-  ld    a,(PlayerFacingRight?)              ;is player facing right ?
-  or    a
-  jp    z,Set_L_stand
-  jp    Set_R_stand
-  
-checktileObject:                            ;same as checktile for player, but now for object
-;get object X in tiles
-  ld    l,(ix+enemies_and_objects.x)        ;x object
-  ld    h,0
-  add   hl,de
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  add   a,b
-  jp    getRoomMapTile ;CheckTile.XandYset
+.NoCollision3:
+		ld    (ix+enemies_and_objects.v2),1       ;falling stone
+		ld    a,(PlayerFacingRight?)              ;is player facing right ?
+		or    a
+		jp    z,Set_L_stand
+		jp    Set_R_stand
 
-  	dephase
+
+
+dephase

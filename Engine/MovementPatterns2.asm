@@ -64,7 +64,7 @@ BreakableWall:
 	inc   a
 	ld    (ix+enemies_and_objects.v7),a       ;v7=wall remove step
 	dec	  a
-	jp	  z,RemoveWallFromRoomTiles
+	jp	  z,removeObjectFromRoomMapData ;RemoveWallFromRoomTiles
 	dec   a	;#0
 	jp    z,.RemoveWallPage0                  ;page 0
 	dec   a
