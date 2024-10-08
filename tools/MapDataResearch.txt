@@ -110,7 +110,8 @@ XaddRightPlayer:          equ 15 - 8
 	CheckFloorInclLadder:
 	CheckFloorInclLadderWhileRolling:
 	CheckLavaPoisonSpikes:
-and all player moves
+and all other player moves (a lot)
+
 
 
 
