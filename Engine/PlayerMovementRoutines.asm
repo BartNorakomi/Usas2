@@ -3318,7 +3318,7 @@ ClimbStairsLeftUp:
 
 
 ;jump of the top of the ladder onto the platform above/ end climb
-ClimbUp:
+ClimbLadderUp:
 		; ld    a,(PlayerAniCount+1)
 		; ld    e,a
 		ld    de,(PlayerAniCount+1)
@@ -3381,7 +3381,7 @@ FloorFoundWhileClimbing:    ;floor below player is found, go to R_stand or L_sta
 
 
 ;20241008;ro
-Climb:
+ClimbLadder:
 		call  CheckFloor          ;out: z-> floor, c-> no floor. check if there is floor under the player
 		jr    z,FloorFoundWhileClimbing
 
@@ -3394,7 +3394,8 @@ Climb:
 		bit		3,a           ;cursor right pressed ?
 		jp		nz,.RightPressed
 
- ;check for a ladder when climbing up. If no ladder is found, jump off the top of the ladder
+ ;check for a ladder when climbing up.
+ ;If no ladder is found, jump off the top of the ladder
 		; ld    b,YaddFeetPlayer-20 ;add y to check (y is expressed in pixels)
 		; ld    de,XaddLeftPlayer+2 ;delta X
 		; call  checktile           ;out z=collision found with wall
@@ -3408,8 +3409,13 @@ Climb:
 		ld		a,(Controls)
 		bit		0,a           ;cursor up pressed ?
 		jp		z,.EndCheckUpPressed
-		dec   b
+ 		ld	 b,playerStanding.head+4	;ceiling while going up?
+		ld	 de,playerStanding.leftSide+2
+		call checkTilePlayer
+		ret z
+		ld b,-1 ;dec   b
 .EndCheckUpPressed:
+		ld		a,(Controls)
 		bit		1,a           ;cursor down pressed ?
 		jp		z,.EndCheckDownPressed
 		inc   b
@@ -3718,12 +3724,7 @@ SetLShootArrowWhenJumping:
   
   
   
-  
-  
-  
-  
-  
-  
+
   
   
   
@@ -4217,7 +4218,7 @@ endif
 		call  CheckClimbLadderUp  ;out: PlayerSpriteStand->Climb if ladder found
 
 		ld		hl,(PlayerSpriteStand)
-		ld		de,Climb
+		ld		de,ClimbLadder
 		xor   a
 		sbc   hl,de
 		jr    nz,.CheckDoubleJump
@@ -4381,7 +4382,6 @@ CheckClimbStairsDown:
 		call checkTilePlayer
 		sub   4                   ;check for tilenr 5=stairsrightup
 		jp    z,.stairsfound1
-
 		; ld    b,YaddFeetPlayer+09;delta Y
 		; ld    de,XaddLeftPlayer+02   ;delta X
 		; call  checktile           ;out z=collision found with wall
@@ -4394,10 +4394,10 @@ CheckClimbStairsDown:
 		sub   4                   ;check for tilenr 5=stairsrightup
 		ret   nz
 
-		ld    hl,(ClesX)          ;2nd check checks 6 pixels further to the left. If stairs found, then move player 6 pixels to the right, so we have the same x value for check 1 and 2
-		ld    de,6
-		add   hl,de
-		ld    (ClesX),hl
+		; ld    hl,(ClesX)          ;2nd check checks 6 pixels further to the left. If stairs found, then move player 6 pixels to the right, so we have the same x value for check 1 and 2
+		; ld    de,6
+		; add   hl,de
+		; ld    (ClesX),hl
 
 .stairsfound1:      
 		call  Set_Stairs_Climb_RightUp
@@ -4408,9 +4408,6 @@ CheckClimbStairsDown:
 		ld    a,l
 		and   %1111 1000
 		ld    l,a
-;		ld    (ClesX),hl
-
-;		ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
 		ld    de,-16 + 18
 		add   hl,de
 		ld    (ClesX),hl
@@ -4433,7 +4430,7 @@ CheckClimbStairsDown:
 ;20241008;ro
 .StairsGoingLeftUp:
 ;check if there are stairs when pressing down, if so climb the stairs. Check if there is a tile below left foot AND right foot
-;[Check stairs going LEFT UP]
+;[Check stairs going LEFT UP] \
 		; ld    b,YaddFeetPlayer+09;delta Y
 		; ld    de,XaddLeftPlayer+8   ;delta X
 		; call  checktile           ;out z=collision found with wall
@@ -4451,24 +4448,19 @@ CheckClimbStairsDown:
 		sub   3                   ;check for tilenr 4=stairsleftup
 		ret   nz
 
-		ld    hl,(ClesX)          ;2nd check checks 6 pixels further to the left. If stairs found, then move player 6 pixels to the right, so we have the same x value for check 1 and 2
-		ld    de,6
-		add   hl,de
-		ld    (ClesX),hl
+		; ld    hl,(ClesX)          ;2nd check checks 6 pixels further to the left. If stairs found, then move player 6 pixels to the right, so we have the same x value for check 1 and 2
+		; ld    de,6
+		; add   hl,de
+		; ld    (ClesX),hl
 
 .stairsfound:      
 		call  Set_Stairs_Climb_LeftUp
-
 		ld    a,1
 		ld    (PlayerFacingRight?),a          ;is player facing right ?
-
 		ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
 		ld    a,l
 		and   %1111 1000
 		ld    l,a
-;		ld    (ClesX),hl
-
-;		ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
 		ld    de,6
 		add   hl,de
 		ld    (ClesX),hl
@@ -4488,155 +4480,180 @@ CheckClimbStairsDown:
 		ld    (ClesX),hl
 		ret
 
+
+;20241008;ro
+;check if there are stairs when pressing up, if so climb the stairs. Check if there is a tile above left foot AND right foot
 CheckClimbStairsUp:
 		call  .StairsGoingLeftUp
 
 .StairsGoingRightUp:
-;check if there are stairs when pressing up, if so climb the stairs. Check if there is a tile above left foot AND right foot
-;[Check ladder going Right UP]
-  ld    b,YaddFeetPlayer-01;delta Y
-  ld    de,XaddLeftPlayer+04   ;delta X
-  call  checktile           ;out z=collision found with wall
-  sub   4                   ;check for tilenr 5=stairssrightup
-  jp    z,.stairsfound1
+;[Check ladder going Right UP] /
+		; ld    b,YaddFeetPlayer-01;delta Y
+		; ld    de,XaddLeftPlayer+04   ;delta X
+		; call  checktile           ;out z=collision found with wall
+		ld	 b,playerStanding.feet
+		ld	 de,playerStanding.leftSide+4
+		call checkTilePlayer
+		sub   4                   ;check for tilenr 5=stairssrightup
+		ld	 de,0	;shift x if tile found
+		jp    z,.stairsfound1
+		; ld    b,YaddFeetPlayer-01;delta Y
+		; ld    de,XaddLeftPlayer+12   ;delta X
+		; call  checktile           ;out z=collision found with wall
+		; ld	 b,playerStanding.feet
+		; ld	 de,playerStanding.RightSide-3
+		; call checktilePlayer
+		inc	 hl
+		ld	 a,(hl)
+		dec a	
+		sub   4                   ;check for tilenr 5=stairssrightup
+		ret   nz
 
-  ld    b,YaddFeetPlayer-01;delta Y
-  ld    de,XaddLeftPlayer+12   ;delta X
-  call  checktile           ;out z=collision found with wall
-  sub   4                   ;check for tilenr 5=stairssrightup
-  ret   nz
-
-  ld    hl,(ClesX)          ;2nd check checks 8 pixels further than the 1st check. If stairs is found, move player 8 pixels to the right.
-  ld    de,8
-  add   hl,de
-  ld    (ClesX),hl
-
-  .stairsfound1:  
-  
-	call  Set_Stairs_Climb_RightUp
-
-  ld    a,1
-  ld    (PlayerFacingRight?),a          ;is player facing right ?
-
-  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
-  ld    a,l
-  and   %1111 1000
-  ld    l,a
-  ld    (ClesX),hl
+;		ld    hl,(ClesX)          ;2nd check checks 8 pixels further than the 1st check. If stairs is found, move player 8 pixels to the right.
+		ld    de,8
+;		add   hl,de
+;		ld    (ClesX),hl
+.stairsfound1:  
+		call  Set_Stairs_Climb_RightUp
+		ld    a,1
+		ld    (PlayerFacingRight?),a          ;is player facing right ?
+		ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+		add	 hl,de
+		ld    a,l
+		and   %1111 1000
+		ld    l,a
+		ld    (ClesX),hl
 
 ;after snapping to an x position, player is either 8 pixels left of stairs, ON the stairs, or 8 pixels right of stairs
-  ld    b,YaddFeetPlayer-01;delta Y
-  ld    de,XaddLeftPlayer+8   ;delta X
-  call  checktile           ;out z=collision found with wall
-  sub   4                   ;check for tilenr 5=stairssrightup
-  ret   z
-;  jr    z,.snaptostairs
-  
-  ld    hl,(ClesX)          ;add 8 pixels to player in case we snapped too much to the left
-  ld    de,-8
-  add   hl,de
-  ld    (ClesX),hl
+		; ld    b,YaddFeetPlayer-01;delta Y
+		; ld    de,XaddLeftPlayer+8   ;delta X
+		; call  checktile           ;out z=collision found with wall
+ 		ld	 b,playerStanding.feet
+		ld	 de,playerStanding.leftSide+8 ;=center
+		call checkTilePlayer
+		sub   4                   ;check for tilenr 5=stairssrightup
+		ret   z
 
-;.snaptostairs:
-;  ld    hl,(ClesX)
-;  ld    de,6
-;  add   hl,de
-;  ld    (ClesX),hl
-  ret
+		ld    hl,(ClesX)          ;add 8 pixels to player in case we snapped too much to the left
+		ld    de,-8
+		add   hl,de
+		ld    (ClesX),hl
+		ret
 
 .StairsGoingLeftUp:
-;check if there are stairs when pressing up, if so climb the stairs. Check if there is a tile above left foot AND right foot
-;[Check ladder going LEFT UP]
-  ld    b,YaddFeetPlayer-01;delta Y
-  ld    de,XaddLeftPlayer+8   ;delta X
-  call  checktile           ;out z=collision found with wall
-  sub   3                   ;check for tilenr 4=stairsleftup
-  jp    z,.stairsfound
+;[Check ladder going LEFT UP] \
+		; ld    b,YaddFeetPlayer-01;delta Y
+		; ld    de,XaddLeftPlayer+8   ;delta X
+		; call  checktile           ;out z=collision found with wall
+ 		ld	 b,playerStanding.feet
+		ld	 de,playerStanding.leftSide+4
+		call checkTilePlayer		
+		sub   3                   ;check for tilenr 4=stairsleftup
+		ld	 de,0	;shift x if tile found
+		jp    z,.stairsfound
+		; ld    b,YaddFeetPlayer-01;delta Y
+		; ld    de,XaddLeftPlayer+2   ;delta X
+		; call  checktile           ;out z=collision found with wall
+		inc	 hl
+		ld	 a,(hl)
+		dec a	
+		sub   3                   ;check for tilenr 4=stairsleftup
+		ret   nz
+		ld	 de,6	;shift x if tile found
+.stairsfound:
+		call  Set_Stairs_Climb_LeftUp
+		xor   a
+		ld    (PlayerFacingRight?),a          ;is player facing right ?
 
-  ld    b,YaddFeetPlayer-01;delta Y
-  ld    de,XaddLeftPlayer+2   ;delta X
-  call  checktile           ;out z=collision found with wall
-  sub   3                   ;check for tilenr 4=stairsleftup
-  ret   nz
+		ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
+		add	 hl,de
+		ld    a,l
+		and   %1111 1000
+		ld    l,a
+		ld    (ClesX),hl
 
-  .stairsfound:  
-	call  Set_Stairs_Climb_LeftUp
+		; ld    b,YaddFeetPlayer-01;delta Y
+		; ld    de,XaddLeftPlayer+8   ;delta X
+		; call  checktile           ;out z=collision found with wall
+ 		ld	 b,playerStanding.feet
+		ld	 de,playerStanding.leftSide+8
+		call checkTilePlayer				
+		sub   3                   ;check for tilenr 4=stairsleftup
+		ret   nz
 
-  xor   a
-  ld    (PlayerFacingRight?),a          ;is player facing right ?
+		ld    hl,(ClesX)          ;add 8 pixels to player in case we snapped too much to the left
+		ld    de,8
+		add   hl,de
+		ld    (ClesX),hl
+		ret
 
-  ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
-  ld    a,l
-  and   %1111 1000
-  ld    l,a
-  ld    (ClesX),hl
-
-  ld    b,YaddFeetPlayer-01;delta Y
-  ld    de,XaddLeftPlayer+8   ;delta X
-  call  checktile           ;out z=collision found with wall
-  sub   3                   ;check for tilenr 4=stairsleftup
-  ret   nz
-  
-  ld    hl,(ClesX)          ;add 8 pixels to player in case we snapped too much to the left
-  ld    de,8
-  add   hl,de
-  ld    (ClesX),hl
-  ret
-
-CheckClimbLadderUp:;
+;20240809;ro
 ;check if there is a ladder when pressing up, if so climb the ladder. Check if there is a tile above left foot AND right foot
-  ld    b,YaddFeetPlayer-20;delta Y
-  ld    de,XaddLeftPlayer+6   ;delta X
-  call  checktile           ;out z=collision found with wall
-  dec   a                   ;check for tilenr 2=ladder 
-  jp    z,.ladderfound
+CheckClimbLadderUp:;
+		; ld    b,YaddFeetPlayer-20;delta Y
+		; ld    de,XaddLeftPlayer+6   ;delta X
+		; call  checktile           ;out z=collision found with wall
+ 		ld	 b,playerStanding.torso
+		ld	 de,playerStanding.leftSide+6
+		call checkTilePlayer
+		dec   a                   ;check for tilenr 2=ladder 
+		jp    z,.ladderfound
+		; ld    b,YaddFeetPlayer-20;delta Y
+		; ld    de,XaddRightPlayer-7  ;delta X
+		; call  checktile           ;out z=collision found with wall
+		ld	 b,playerStanding.torso
+		ld	 de,playerStanding.rightSide-7
+		call checkTilePlayer
+		; inc	 hl
+		; ld	 a,(hl)
+		; dec a
+		dec   a                   ;check for tilenr 2=ladder 
+		ret   nz
 
-  ld    b,YaddFeetPlayer-20;delta Y
-  ld    de,XaddRightPlayer-7  ;delta X
-  call  checktile           ;out z=collision found with wall
-  dec   a                   ;check for tilenr 2=ladder 
-  ret   nz
+.ladderfound:
+		call  Set_Climb
+		ld    a,(ClesY)
+		dec   a
+		ld    (ClesY),a
+;		ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+;		ld    a,l
+		ld	 a,(clesX)
+		and   %1111 1000
+		ld	 (clesX),a
+;		ld    l,a
+;		ld    (ClesX),hl
 
-  .ladderfound:
-	call  Set_Climb
+	;after snapping player could be 1 tile too much to theright. Check again for ladder under right foot. If not, then move 1 tile to the left
+		; ld    b,YaddFeetPlayer-20;delta Y
+		; ld    de,XaddRightPlayer-2  ;delta X
+		; call  checktile           ;out z=collision found with wall
+		ld	 b,playerStanding.torso
+		ld	 de,playerStanding.rightSide-2
+		call checkTilePlayer		
+		dec   a                   ;check for tilenr 2=ladder 
+		jr    z,.NowCheckLeft
 
-  ld    a,(ClesY)
-  dec   a
-  ld    (ClesY),a
+		ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+		ld    de,-8
+		add   hl,de
+		ld    (ClesX),hl
+		ret
+.NowCheckLeft:
+;after snapping player could be 1 tile too much to the left. Check again for ladder under left foot. If not, then move 1 tile to the right
+		; ld    b,YaddFeetPlayer-20   ;add y to check (y is expressed in pixels)
+		; ld    de,XaddLeftPlayer+2   ;delta X
+		; call  checktile           ;out z=collision found with wall
+		ld	 b,playerStanding.torso
+		ld	 de,playerStanding.leftSide+2
+		call checkTilePlayer			
+		dec   a                   ;check for tilenr 2=ladder 
+		ret   z
 
-  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
-  ld    a,l
-  and   %1111 1000
-  ld    l,a
-  ld    (ClesX),hl
-
-  ;after snapping player could be 1 tile too much to theright. Check again for ladder under right foot. If not, then move 1 tile to the left
-  ld    b,YaddFeetPlayer-20;delta Y
-  ld    de,XaddRightPlayer-2  ;delta X
-  call  checktile           ;out z=collision found with wall
-  dec   a                   ;check for tilenr 2=ladder 
-  jr    z,.NowCheckLeft
-
-  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
-  ld    de,8
-  sbc   hl,de
-  ld    (ClesX),hl
-  ret
-
-  .NowCheckLeft:
-  ;after snapping player could be 1 tile too much to the left. Check again for ladder under left foot. If not, then move 1 tile to the right
-  ld    b,YaddFeetPlayer-20   ;add y to check (y is expressed in pixels)
-  ld    de,XaddLeftPlayer+2   ;delta X
-  call  checktile           ;out z=collision found with wall
-  dec   a                   ;check for tilenr 2=ladder 
-  ret   z
-
-  ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
-  ld    de,8
-  add   hl,de
-  ld    (ClesX),hl
-  ret
-
+		ld    hl,(ClesX)          ;in case ladder is detected, snap to the x position of the ladder
+		ld    de,8
+		add   hl,de
+		ld    (ClesX),hl
+		ret
 
 
 

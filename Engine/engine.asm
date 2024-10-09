@@ -1027,7 +1027,7 @@ SelfModifyingCodeHitBoxPlayerTopY:  equ $+1
 
 		ld    (ClesX),hl	;ro: what happens here?
 		ld    hl,(PlayerSpriteStand)
-		ld    de,Climb
+		ld    de,ClimbLadder
 		sbc   hl,de
 		jp    z,CollisionEnemyPlayer.PlayerIsHit
 
@@ -3943,64 +3943,65 @@ checkTilePlayer:
 		dec	 A
 		ret
 
-;Check tile (PLAYER)
-;in b->add y to check, de->add x to check
-checktile:                  
-		ld    a,(Clesy)
-		add   a,b
-		ld    hl,(ClesX)
-		add   hl,de
-		bit   7,h
-		jp    z,getRoomMapTile	;.XandYset
-		ld    hl,0
+;20241009;ro;disabled, use checkTilePlayer instead
+; ;Check tile (PLAYER)
+; ;in b->add y to check, de->add x to check
+; checktile:                  
+; 		ld    a,(Clesy)
+; 		add   a,b
+; 		ld    hl,(ClesX)
+; 		add   hl,de
+; 		bit   7,h
+; 		jp    z,getRoomMapTile	;.XandYset
+; 		ld    hl,0
 
-;Get roomMap tileClass
-;in: HL=X, A=Y
-;out:HL=address, A=value, Z=wall
-getRoomMapTile:	;.XandYset:	;y/8, x/8
-		srl   h		;/2
-		rr    l
-		srl   l		;/4
-		srl   l		;/8
-		rrca		;/2
-		rrca		;/4
-		rrca		;/8
-		and 0x1f
-;at this point: HL=TileX, A=TileY
+; ;Get roomMap tileClass
+; ;in: HL=X, A=Y
+; ;out:HL=address, A=value, Z=wall
+; getRoomMapTile:	;.XandYset:	;y/8, x/8
+; 		srl   h		;/2
+; 		rr    l
+; 		srl   l		;/4
+; 		srl   l		;/8
+; 		rrca		;/2
+; 		rrca		;/4
+; 		rrca		;/8
+; 		and 0x1f
+; ;at this point: HL=TileX, A=TileY
 
-; ;20241001;ro;dunno why this doesn't work...
-; 		ld	 h,a	;y
-; 		ld	 a,l	;x
-; 		ld	 e,roomMap.numcol
-; ;mul8: HL=H*E	> HL=Y*40
-; mul8:	ld	 d,0
-; 		ld	 l,d
-; 		ld	 b,8
-; Mul8.0:	add	 hl,hl
-; 		jr	 nc,mul8.1
-; 		add	 hl,de
-; mul8.1:	djnz mul8.0
-; 		ld	 e,A
-; 		add	 hl,de
+; ; ;20241001;ro;dunno why this doesn't work...
+; ; 		ld	 h,a	;y
+; ; 		ld	 a,l	;x
+; ; 		ld	 e,roomMap.numcol
+; ; ;mul8: HL=H*E	> HL=Y*40
+; ; mul8:	ld	 d,0
+; ; 		ld	 l,d
+; ; 		ld	 b,8
+; ; Mul8.0:	add	 hl,hl
+; ; 		jr	 nc,mul8.1
+; ; 		add	 hl,de
+; ; mul8.1:	djnz mul8.0
+; ; 		ld	 e,A
+; ; 		add	 hl,de
+; ; 		ld	 de,roomMap.data-(2*roomMap.numcol)
+; ; 		add  hl,de
+; ; 		ld	 a,(hl)	;retrieve classID
+; ; 		dec	 A
+; ; ret
+
+; ;.selfmodifyingcodeStartingPosMapForCheckTile:
+; ;	ld		de,roomMap ;MapData- 000000  ;start 2 rows higher (MapData-80 for normal engine, MapData-68 for SF2 engine)
 ; 		ld	 de,roomMap.data-(2*roomMap.numcol)
-; 		add  hl,de
-; 		ld	 a,(hl)	;retrieve classID
-; 		dec	 A
+; 		add   hl,de
+; 		ex    de,hl               ;de->roommapadr+x in tiles
+; ;.selfmodifyingcodeMapLenght:
+; ;	ld		bc,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
+; 		ld	 bc,roomMap.numcol
+; 		call mulAxBC
+; 		add	 hl,de               ;(amount of Y tiles * map lenght ) + x in tiles
+; 		ld	 a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=spikes, 4=stairs left up, 5=stairs right up, 6=lava, 7=water
+; 		dec	 a                   ;1 = wall
 ; ret
-
-;.selfmodifyingcodeStartingPosMapForCheckTile:
-;	ld		de,roomMap ;MapData- 000000  ;start 2 rows higher (MapData-80 for normal engine, MapData-68 for SF2 engine)
-		ld	 de,roomMap.data-(2*roomMap.numcol)
-		add   hl,de
-		ex    de,hl               ;de->roommapadr+x in tiles
-;.selfmodifyingcodeMapLenght:
-;	ld		bc,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
-		ld	 bc,roomMap.numcol
-		call mulAxBC
-		add	 hl,de               ;(amount of Y tiles * map lenght ) + x in tiles
-		ld	 a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=spikes, 4=stairs left up, 5=stairs right up, 6=lava, 7=water
-		dec	 a                   ;1 = wall
-ret
 
 
 ;Get room map data (tile) class (replaced getRoomMapTile)
@@ -4024,8 +4025,7 @@ getRoomMapData:	;.XandYset:	;y/8, x/8
 		add	 hl,de               ;(amount of Y tiles * map lenght ) + x in tiles
 		ld	 a,(hl)
 		;dec	 a
-ret
-
+		ret
 
 
 ;HL=AxBC
@@ -5867,58 +5867,66 @@ Set_R_BouncingBack:
   ld    bc,SFX_bouncingback
   jp    RePlayerSFX_PlayCh1
 
+
 Set_Charging:
-  xor   a
-  ld    (HowManyFramesAgoWasLeftPressed?),a
-  ld    (HowManyFramesAgoWasRightPressed?),a
+		xor   a
+		ld    (HowManyFramesAgoWasLeftPressed?),a
+		ld    (HowManyFramesAgoWasRightPressed?),a
 
-  ld    bc,SFX_dash
-  call  RePlayerSFX_PlayCh1
+		ld    bc,SFX_dash
+		call  RePlayerSFX_PlayCh1
 
-  ld    a,5
-  ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
+		ld    a,5
+		ld    (CurrentPrimaryWeapon),a    ;0=spear, 1=sword, 2=dagger, 3=axe, 4=punch/kick, 5=charge, 6=silhouette kick, 7=rolling
 
-  ld    a,(PlayerFacingRight?)
-  or    a
-  jr    nz,.FacingRight
-
-  .FacingLeft:
-  ;check at height of waiste if player is near on the right side
-  ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
-  ld    de,XaddLeftPlayer-16  ;add 0 to x to check left side of player for collision (player moved left)
-
-;  ld    a,(ClesX+1)
-;  bit   7,a
-;  ret   nz                  ;no need to perform tilecheck when player is out of screen on the left side
-  .PerformCheckTile:
-  call  checktile           ;out z=collision found with wall
-  ret   z
+		ld    a,(PlayerFacingRight?)
+		or    a
+		jr    z,.FacingLeft
+.FacingRight:
+;check at height of waiste if player is near on the right side
+		; ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
+		; ld    de,XaddRightPlayer+16 ;add 15 to x to check right side of player for collision (player moved right)
+		ld	 de,playerStanding.rightside+16
+		jr    .PerformCheckTile
+.FacingLeft:
+;check at height of waiste if player is near on the right side
+		; ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
+		; ld    de,XaddLeftPlayer-16  ;add 0 to x to check left side of player for collision (player moved left)
+		ld	 de,playerStanding.leftSide-16
+		;  ld    a,(ClesX+1)
+		;  bit   7,a
+		;  ret   nz                  ;no need to perform tilecheck when player is out of screen on the left side
+.PerformCheckTile:
+		; call  checktile           ;out z=collision found with wall
+		ld	 b,playerStanding.torso
+		call checkTilePlayer
+		ret   z
   ;now do the same check, but 2 tiles lower
-	add		hl,bc               ;1 tile lower
-	add		hl,bc               ;1 tile lower
-  ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
-  dec   a                   ;1 = wall
-  ret   z
-	ld		hl,Charging
-	ld		(PlayerSpriteStand),hl
+		ld	 bc,roomMap.numcol
+		add		hl,bc               ;1 tile lower=legs
+		ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+		dec   a                   ;1 = wall
+		ret   z
+        inc	 hl     ;1 tile lower=feet
+		ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+		dec   a                   ;1 = wall
+		ret   z		
+		ld		hl,Charging
+		ld		(PlayerSpriteStand),hl
 
-  ld    hl,0 
-  ld    (PlayerAniCount),hl  
-  jp    SetHitBoxPlayerStanding
+		ld    hl,0 
+		ld    (PlayerAniCount),hl  
+		jp    SetHitBoxPlayerStanding
 
-  .FacingRight:
-  ;check at height of waiste if player is near on the right side
-  ld    b,YaddmiddlePLayer-1  ;add y to check (y is expressed in pixels)
-  ld    de,XaddRightPlayer+16 ;add 15 to x to check right side of player for collision (player moved right)
-  jr    .PerformCheckTile
-  
+
+
 Set_Dying:
-	ld		hl,Dying
-	ld		(PlayerSpriteStand),hl
-	xor   a
-  ld    (PrimaryWeaponActivatedWhileJumping?),a
-  ld    (PrimaryWeaponActive?),a  
-  ret
+		ld		hl,Dying
+		ld		(PlayerSpriteStand),hl
+		xor   a
+		ld    (PrimaryWeaponActivatedWhileJumping?),a
+		ld    (PrimaryWeaponActive?),a  
+		ret
 
 Set_R_attack:
   ld    bc,SFX_punch
@@ -6149,20 +6157,17 @@ Set_Stairs_Climb_RightUp:
   ret
 
 Set_Stairs_Climb_LeftUp:
-  call  SetHitBoxPlayerStanding
-
-	ld		hl,ClimbStairsLeftUp
-	ld		(PlayerSpriteStand),hl
-
-  xor   a
-	ld		(PlayerAniCount),a
-  ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
-;  ld    (EnableHitbox?),a
-  ld    (ShootArrowWhileJump?),a
-  ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
-  ld    (PrimaryWeaponActivatedWhileJumping?),a
-  ld    (PrimaryWeaponActive?),a  
-  ret
+		call  SetHitBoxPlayerStanding
+		ld		hl,ClimbStairsLeftUp
+		ld		(PlayerSpriteStand),hl
+		xor   a
+		ld		(PlayerAniCount),a
+		ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
+		ld    (ShootArrowWhileJump?),a
+		ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
+		ld    (PrimaryWeaponActivatedWhileJumping?),a
+		ld    (PrimaryWeaponActive?),a  
+		ret
 
 Set_ClimbDown:
   call  SetHitBoxPlayerStanding
@@ -6183,46 +6188,45 @@ Set_ClimbDown:
   ret
 
 Set_ClimbUp:
-  call  SetHitBoxPlayerStanding
-  
-	ld		hl,ClimbUp
-	ld		(PlayerSpriteStand),hl
+		call  SetHitBoxPlayerStanding
 
-  xor   a
-  ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
-;  ld    (EnableHitbox?),a
-  ld    (ShootArrowWhileJump?),a
-  ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
-  ld    (PrimaryWeaponActivatedWhileJumping?),a
-  ld    (PrimaryWeaponActive?),a  
-      
-  ld    hl,0 
-  ld    (PlayerAniCount),hl
-  ret
+		ld		hl,ClimbLadderUp
+		ld		(PlayerSpriteStand),hl
+
+		xor   a
+		ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
+		ld    (ShootArrowWhileJump?),a
+		ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
+		ld    (PrimaryWeaponActivatedWhileJumping?),a
+		ld    (PrimaryWeaponActive?),a  
+			
+		ld    hl,0 
+		ld    (PlayerAniCount),hl
+		ret
 
 Set_Climb_AndResetAniCount:
-  ld    hl,0 
-  ld    (PlayerAniCount),hl
-  Set_Climb:
-  call  SetHitBoxPlayerStanding
-  
-	ld		hl,Climb
-	ld		(PlayerSpriteStand),hl
+		ld    hl,0 
+		ld    (PlayerAniCount),hl
+Set_Climb:
+		call  SetHitBoxPlayerStanding
 
-  xor   a
-  ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
-;  ld    (EnableHitbox?),a
-  ld    (ShootArrowWhileJump?),a
-  ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
-  ld    (PrimaryWeaponActivatedWhileJumping?),a
-  ld    (PrimaryWeaponActive?),a  
+		ld		hl,ClimbLadder
+		ld		(PlayerSpriteStand),hl
 
-	ld		hl,PlayerSpriteData_Char_Climbing1
-	ld		(standchar),hl	
+		xor   a
+		ld    (JumpSpeed),a                 ;this is reset so that CheckCollisionObjectPlayer works for the Pushing Block Switches
+		;  ld    (EnableHitbox?),a
+		ld    (ShootArrowWhileJump?),a
+		ld    (ShootMagicWhileJump?),a                                ;check if player was shooting magic weapon right before climbing
+		ld    (PrimaryWeaponActivatedWhileJumping?),a
+		ld    (PrimaryWeaponActive?),a  
 
-  ld    a,RunningTablePointerCenter
-  ld    (RunningTablePointer),a
-  ret
+		ld		hl,PlayerSpriteData_Char_Climbing1
+		ld		(standchar),hl	
+
+		ld    a,RunningTablePointerCenter
+		ld    (RunningTablePointer),a
+		ret
 
 Set_jump:
   ld    bc,SFX_jump
@@ -6351,12 +6355,12 @@ SetHitBoxPlayerSitting:
   ret
 
 SetHitBoxPlayerStanding:
-  ld    a,CollisionSYStanding                   ;1st one is for hardware sprites (collision player-enemy)
-  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
+		ld    a,CollisionSYStanding                   ;1st one is for hardware sprites (collision player-enemy)
+		ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
 
-  ld    a,PlayerTopYHitBoxSoftSpritesStanding   ;2nd one is for software sprites (collision player-platforms)
-  ld    (SelfModifyingCodeHitBoxPlayerTopY),a
-  ret
+		ld    a,PlayerTopYHitBoxSoftSpritesStanding   ;2nd one is for software sprites (collision player-platforms)
+		ld    (SelfModifyingCodeHitBoxPlayerTopY),a
+		ret
 
 SetHitBoxPlayerRolling:
   ld    a,CollisionSYRolling                    ;1st one is for hardware sprites (collision player-enemy)
