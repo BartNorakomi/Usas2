@@ -3791,7 +3791,7 @@ SetRShootArrowWhenJumping:
 ;check if there are stairs when pressing up, if so climb the stairs.
 ;[Check stairs going Right UP] /
 CheckSnapToStairsWhileJump:
-ret		;20241008;ro;disabled this cuz I hate it  - mohaaaahahahahahaa
+;ret		;20241008;ro;disabled this cuz I hate it  - mohaaaahahahahahaa
 		; ld    b,YaddFeetPlayer-00	;delta Y
 		; ld    de,XaddLeftPlayer+08-08   ;delta X
 		; call  checktile           ;out z=collision found with wall
@@ -3902,11 +3902,11 @@ Jump:
 ;  call  .HandlePrimaryAttackHitboxWhileJump        ;if player kicks in the air, enable hitbox and set hixbox coordinates
 		call AnimateWhileJump
 		call MoveHorizontallyWhileJump
-		ld	 a,(Controls)
+		ld	 a,(NewPrContr)
 		bit	 0,a           ;cursor up pressed ?
 		call nz,CheckSnapToStairsWhileJump
 		call .VerticalMovement
-		ld	 a,(Controls)
+		ld	 a,(NewPrContr)
 		bit	 0,a           ;cursor up pressed ?
 		call nz,CheckSnapToStairsWhileJump
 
@@ -4045,7 +4045,7 @@ endif
 		dec   a                   		;ladder 
 		jr    z,.checkLadder ;.LadderFoundUnderLeftFoot1
 		sub   4                   		;6=lava
-		jr    z,.LavaFound
+		jp    z,.LavaFound
 		dec   a
 		jr    z,.WaterFound
 
