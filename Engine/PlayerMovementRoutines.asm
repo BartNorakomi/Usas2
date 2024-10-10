@@ -3893,13 +3893,15 @@ PlayerInWaterRunningTable:
 		dw    -1,-1,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+1,+1
 
 
+;regular Jump
+;20241010;ro;refactored and small changes
 Jump:
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;  call  .HandlePrimaryAttackHitboxWhileJump        ;if player kicks in the air, enable hitbox and set hixbox coordinates
-		call  AnimateWhileJump
-		call  MoveHorizontallyWhileJump
+		call AnimateWhileJump
+		call MoveHorizontallyWhileJump
 		ld	 a,(Controls)
 		bit	 0,a           ;cursor up pressed ?
 		call nz,CheckSnapToStairsWhileJump
@@ -3984,42 +3986,41 @@ Jump:
 		ld    bc,SFX_arrow
 		jp    RePlayerSFX_PlayCh1
 
-;as soon as up is released, player stops jumping up. This way the jump height can be controlled
 .VerticalMovement:
-		ld    hl,JumpSpeed	;check if jump speed is positive (up)
-		bit   7,(hl)
-		jr    z,.EndCheckUpPressed  
-		ld		a,(Controls)		;cursor up still pressed ?
-		rrca                        
-		jr    c,.EndCheckUpPressed	;no
-		ld    a,(framecounter)
+		ld	 hl,JumpSpeed			;check up key during ascend
+		bit	 7,(hl)
+		jr	 z,.EndCheckUpPressed  
+		ld	 a,(Controls)			;UP still used?
+		rrca                       
+		jr	 c,.EndCheckUpPressed	;no
+		ld	 a,(framecounter)
 		rrca
-		jr    c,.EndCheckUpPressed
-		inc   (hl)                  ;increase JumpSpeed 
+		jr	 c,.EndCheckUpPressed
+		inc	 (hl)                  ;increase JumpSpeed 
 .EndCheckUpPressed:
-		ld		a,(PlayerAniCount+1)
-		inc   a
-		cp    GravityTimer
-		jr    nz,.set
-		ld    a,(hl)
-		inc   a
-		cp    MaxDownwardFallSpeed+1
-		jr    z,.maxfound
-		ld    (hl),a
+		ld	 a,(PlayerAniCount+1)
+		inc	 a
+		cp	 GravityTimer
+		jr	 nz,.set
+		ld	 a,(hl)
+		inc	 a
+		cp	 MaxDownwardFallSpeed+1
+		jr	 z,.maxfound
+		ld	 (hl),a
 .maxfound:
 		xor   a
 .set:	ld		(PlayerAniCount+1),a
 
 if PlayerCanJumpThroughTopOfScreen?
 else
-  ;unable to jump through the top of the screen
-  ld    a,(Clesy)
-  cp    9
-  jp    nc,.EndCheckTopOfScreen
-  ld    a,(hl)              ;if vertical JumpSpeed is negative then and y<9 then skip vertical movement
-  or    a
-  jp    m,.SkipverticalMovement
-  .EndCheckTopOfScreen:
+;unable to jump through the top of the screen
+		ld    a,(Clesy)
+		cp    9
+		jp    nc,.EndCheckTopOfScreen
+		ld    a,(hl)              ;if vertical JumpSpeed is negative then and y<9 then skip vertical movement
+		or    a
+		jp    m,.SkipverticalMovement
+.EndCheckTopOfScreen:
   ;/unable to jump through the top of the screen
 endif
   
@@ -4037,10 +4038,10 @@ endif
 		; ld    b,YaddFeetPlayer-1;delta Y
 		; ld    de,+3-8 ;XaddRightPlayer-2  ;delta X
 		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.feet+8	;LEFT side
+		ld	 b,playerStanding.feet+4	;LEFT side
 		ld	 de,playerStanding.LeftSide+3
 		call checkTilePlayer
-		jp    z,.SnapToPlatformBelow	;foreground  
+		jp    z,.SnapToFloor	;foreground  
 		dec   a                   		;ladder 
 		jr    z,.checkLadder ;.LadderFoundUnderLeftFoot1
 		sub   4                   		;6=lava
@@ -4051,22 +4052,43 @@ endif
 		inc   hl                  		;next tile=RIGHT side
 		ld    a,(hl)
 		dec   a                   		;foreground
-		jp    z,.SnapToPlatformBelow  
+		jp    z,.SnapToFloor  
 		dec   a                   		;ladder 
 		jr    z,.checkLadder ;jp    z,.LadderFoundUnderRightFoot1
 		sub   4
 		jr    z,.LavaFound
 		dec   a
 		jr    z,.WaterFound
+
+		ld	 a,(PlayerIsInWater?)		;player is already NOT in water, no need to reset tables for movement
+		or	 a
+		call nz,.PlayerNotInWater
 ret
 
+;only stop descend when ladder as floor is found
 .CheckLadder:
 		ld	 bc,-roomMap.numcol ;check one tile up
 		add	 hl,bc
 		ld	 a,(hl)
 		and  A	;bg
-		jp   z,.SnapToPlatformBelow
+		jp   z,.SnapToFloor
 ret
+
+.SnapToFloor:
+		ld    a,(Clesy)           ;on collision snap y player to platform below and switch standing
+		and   %1111 1000
+		dec   a
+		ld    (Clesy),a
+
+		pop   af                  ;pop the call to .VerticalMovement, this way no further checks are done
+
+		ld    bc,SFX_land
+		call  RePlayerSFX_PlayCh1
+
+		ld    a,(PlayerFacingRight?)
+		or    a
+		jp    z,Set_L_stand       ;on collision change to L_Stand  
+		jp    Set_R_stand         ;on collision change to R_Stand    
 
 .CheckCeiling:
 		; ld    b,YaddHeadPLayer;delta Y
@@ -4088,9 +4110,6 @@ ret
 		ret
 
 .PlayerNotInWater:
-		ld    a,(PlayerIsInWater?)
-		or    a
-		ret   z                             ;player is already NOT in water, no need to reset tables for movement
 		xor   a
 		ld    (PlayerIsInWater?),a
 
@@ -4131,96 +4150,81 @@ ret
 
 
 
-;while falling a ladder tile is found at player's feet. 
-.LadderFoundUnderRightFoot1:               
-;check 16 pixels left of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
-		; ld    b,YaddFeetPlayer-1;delta Y
-		; ld    de,+3-0-16   ;delta X
-		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.feet+8
-		ld	 de,playerStanding.leftside-8+3
-		call checkTilePlayer
-		jr    nz,.LadderFoundUnderRightFoot2
+; ;while falling a ladder tile is found at player's feet. 
+; .LadderFoundUnderRightFoot1:               
+; ;check 16 pixels left of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
+; 		; ld    b,YaddFeetPlayer-1;delta Y
+; 		; ld    de,+3-0-16   ;delta X
+; 		; call  checktile           ;out z=collision found with wall
+; 		ld	 b,playerStanding.feet+8
+; 		ld	 de,playerStanding.leftside-8+3
+; 		call checkTilePlayer
+; 		jr    nz,.LadderFoundUnderRightFoot2
 
-		; ld    b,YaddFeetPlayer-9  ;add y to check (y is expressed in pixels)
-		; ld    de,+3-0-16   ;delta X
-		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.feet
-		ld	 de,playerStanding.leftside-8+3
-		call checkTilePlayer
-		jr    nz,.SnapToPlatformBelow
+; 		; ld    b,YaddFeetPlayer-9  ;add y to check (y is expressed in pixels)
+; 		; ld    de,+3-0-16   ;delta X
+; 		; call  checktile           ;out z=collision found with wall
+; 		ld	 b,playerStanding.feet
+; 		ld	 de,playerStanding.leftside-8+3
+; 		call checkTilePlayer
+; 		jr    nz,.SnapToPlatformBelow
 
-;check 16 pixels right of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
-.LadderFoundUnderRightFoot2:
-		; ld    b,YaddFeetPlayer-1;delta Y
-		; ld    de,+3-0+16  ;delta X
-		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.feet+8
-		ld	 de,playerStanding.rightSide+8-3
-		call checkTilePlayer
-		ret   nz
+; ;check 16 pixels right of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
+; .LadderFoundUnderRightFoot2:
+; 		; ld    b,YaddFeetPlayer-1;delta Y
+; 		; ld    de,+3-0+16  ;delta X
+; 		; call  checktile           ;out z=collision found with wall
+; 		ld	 b,playerStanding.feet+8
+; 		ld	 de,playerStanding.rightSide+8-3
+; 		call checkTilePlayer
+; 		ret   nz
 
-		; ld    b,YaddFeetPlayer-9;delta Y
-		; ld    de,+3-0+16  ;delta X
-		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.feet
-		ld	 de,playerStanding.rightSide+8-3
-		call checkTilePlayer
-		jr    nz,.SnapToPlatformBelow
-		ret
+; 		; ld    b,YaddFeetPlayer-9;delta Y
+; 		; ld    de,+3-0+16  ;delta X
+; 		; call  checktile           ;out z=collision found with wall
+; 		ld	 b,playerStanding.feet
+; 		ld	 de,playerStanding.rightSide+8-3
+; 		call checkTilePlayer
+; 		jr    nz,.SnapToPlatformBelow
+; 		ret
 
-;While descending from jump, a ladder was found. If this is the floor, than snap to it, else just keep on falling.
-.LadderFoundUnderLeftFoot1:               
-;check 16 pixels left of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
-		; ld    b,YaddFeetPlayer-1;delta Y
-		; ld    de,+3-8-16   ;delta X
-		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.feet+8
-		ld	 de,playerStanding.leftside-8+3
-		call checkTilePlayer
-		jr    nz,.LadderFoundUnderLeftFoot2
+; ;While descending from jump, a ladder was found. If this is the floor, than snap to it, else just keep on falling.
+; .LadderFoundUnderLeftFoot1:               
+; ;check 16 pixels left of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
+; 		; ld    b,YaddFeetPlayer-1;delta Y
+; 		; ld    de,+3-8-16   ;delta X
+; 		; call  checktile           ;out z=collision found with wall
+; 		ld	 b,playerStanding.feet+8
+; 		ld	 de,playerStanding.leftside-8+3
+; 		call checkTilePlayer
+; 		jr    nz,.LadderFoundUnderLeftFoot2
 
-		; ld    b,YaddFeetPlayer-9  ;add y to check (y is expressed in pixels)
-		; ld    de,+3-8-16   ;delta X
-		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.feet
-		ld	 de,playerStanding.leftside-8+3
-		call checkTilePlayer
-		jr    nz,.SnapToPlatformBelow
+; 		; ld    b,YaddFeetPlayer-9  ;add y to check (y is expressed in pixels)
+; 		; ld    de,+3-8-16   ;delta X
+; 		; call  checktile           ;out z=collision found with wall
+; 		ld	 b,playerStanding.feet
+; 		ld	 de,playerStanding.leftside-8+3
+; 		call checkTilePlayer
+; 		jr    nz,.SnapToPlatformBelow
 
-;check 16 pixels right of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
-.LadderFoundUnderLeftFoot2:
-		; ld    b,YaddFeetPlayer-1;delta Y
-		; ld    de,+3-8+16  ;delta X
-		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.feet
-		ld	 de,playerStanding.rightside+3
-		call checkTilePlayer		
-		ret   nz
+; ;check 16 pixels right of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
+; .LadderFoundUnderLeftFoot2:
+; 		; ld    b,YaddFeetPlayer-1;delta Y
+; 		; ld    de,+3-8+16  ;delta X
+; 		; call  checktile           ;out z=collision found with wall
+; 		ld	 b,playerStanding.feet
+; 		ld	 de,playerStanding.rightside+3
+; 		call checkTilePlayer		
+; 		ret   nz
 
-		; ld    b,YaddFeetPlayer-9;delta Y
-		; ld    de,+3-8+16  ;delta X
-		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.feet-8
-		ld	 de,playerStanding.rightside+3
-		call checkTilePlayer		
-		ret   z
-
-.SnapToPlatformBelow:
-		ld    a,(Clesy)           ;on collision snap y player to platform below and switch standing
-		and   %1111 1000
-		dec   a
-		ld    (Clesy),a
-
-		pop   af                  ;pop the call to .VerticalMovement, this way no further checks are done
-
-		ld    bc,SFX_land
-		call  RePlayerSFX_PlayCh1
-
-		ld    a,(PlayerFacingRight?)
-		or    a
-		jp    z,Set_L_stand       ;on collision change to L_Stand  
-		jp    Set_R_stand         ;on collision change to R_Stand    
+; 		; ld    b,YaddFeetPlayer-9;delta Y
+; 		; ld    de,+3-8+16  ;delta X
+; 		; call  checktile           ;out z=collision found with wall
+; 		ld	 b,playerStanding.feet-8
+; 		ld	 de,playerStanding.rightside+3
+; 		call checkTilePlayer		
+; 		ret   z
+;		jp	.SnapToFloor
 
 .CheckJumpOrClimbLadder: 
 		call  CheckClimbLadderUp  ;out: PlayerSpriteStand->Climb if ladder found
