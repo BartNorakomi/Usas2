@@ -4038,7 +4038,7 @@ endif
 		; ld    b,YaddFeetPlayer-1;delta Y
 		; ld    de,+3-8 ;XaddRightPlayer-2  ;delta X
 		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.feet+4	;LEFT side
+		ld	 b,playerStanding.feet+7	;LEFT side
 		ld	 de,playerStanding.LeftSide+3
 		call checkTilePlayer
 		jp    z,.SnapToFloor	;foreground  
