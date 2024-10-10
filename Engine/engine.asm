@@ -4611,9 +4611,9 @@ FallingJumpSpeed:         equ 1
 JumpSpeed:                db  0
 MaxDownwardFallSpeed:     equ 6
 GravityTimer:             equ 4     ;every x frames gravity changes jump speed
-YaddHeadPLayer:           equ 2 + 6 ;(changed) player can now jump further into ceilings above
-YaddmiddlePLayer:         equ 17
-YaddFeetPlayer:           equ 33
+; YaddHeadPLayer:           equ 2 + 6 ;(changed) player can now jump further into ceilings above
+; YaddmiddlePLayer:         equ 17
+; YaddFeetPlayer:           equ 33
 
 ;-- 20241007;ro;new
 playerSpriteOffsetY:	equ -16
@@ -4627,10 +4627,28 @@ playerStanding:
 .feet:	equ 24-.centerY	;24-31
 .leftSide: equ 0-.centerX
 .rightSide: equ 15-.centerX
+playerKneeling:
+.centerY:	equ 15
+.centerX:	equ 8 ;?
+.head:	equ	8-.centerY	;0-7
+.torso:	equ	16-.centery	;8-15
+.legs:	equ	24-.centerY	;16-23
+.feet:	equ 24-.centerY	;24-31
+.leftSide: equ 0-.centerX
+.rightSide: equ 15-.centerX
+playerRolling:
+.centerY:	equ 15
+.centerX:	equ 8 ;?
+.head:	equ	16-.centerY	;0-7
+.torso:	equ	16-.centery	;8-15
+.legs:	equ	24-.centerY	;16-23
+.feet:	equ 24-.centerY	;24-31
+.leftSide: equ 0-.centerX
+.rightSide: equ 15-.centerX
 ;--
 
-XaddLeftPlayer:           equ 00 - 8
-XaddRightPlayer:          equ 15 - 8
+; XaddLeftPlayer:           equ 00 - 8
+; XaddRightPlayer:          equ 15 - 8
 KickWhileJumpDuration:    equ 10
 
 ;PrimaryAttackWhileJump?:  db  1
@@ -4995,7 +5013,7 @@ MovePlayerLeft:
 .SetRunningTablePointer:
 		jp    DoMovePlayer
 
-
+;in:  A, runningTablePointer value (it's not really a pointer, tho)
 DoMovePlayer:               ;carry: collision detected
 		ld    (RunningTablePointer),a
 		ld    d,0
@@ -5218,7 +5236,7 @@ DoMovePlayer:               ;carry: collision detected
 		; ld    b,YaddmiddlePLayer+5  ;add y to check (y is expressed in pixels)
 		; ld    de,XaddLeftPlayer-4   ;add 0 to x to check left side of player for collision (player moved left)
 		; call  checktile           ;out z=collision found with wall
-		ld	 de,playerStanding.LeftSide-1
+		ld	 de,playerStanding.LeftSide-4
 		ld	 b,playerStanding.legs
 		call checkTilePlayer           ;out z=collision found with wall
 		jr    nz,.end
@@ -5236,7 +5254,7 @@ CheckFloor:
 		; ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
 		; ld    de,+3 ;XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
 		; call  checktile           ;out z=collision found with wall
-		ld	 de,playerStanding.LeftSide
+		ld	 de,playerStanding.LeftSide+3
 		ld	 b,playerStanding.feet+8
 		call checkTilePlayer           ;out z=collision found with wall
 		ret   z
@@ -5255,7 +5273,7 @@ CheckFloorInclLadder:
 ;   ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
 ;   ld    de,+3 ;XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
 ;   call  checktile           ;out z=collision found with wall
-		ld	 de,playerStanding.LeftSide
+		ld	 de,playerStanding.LeftSide+3
 		ld	 b,playerStanding.feet+8
 		call checkTilePlayer           ;out z=collision found with wall
 		ret   z

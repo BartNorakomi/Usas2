@@ -3910,13 +3910,13 @@ Jump:
 		bit	 0,a           ;cursor up pressed ?
 		call nz,CheckSnapToStairsWhileJump
 
-		ld    a,(NewPrContr)
-		bit		4,a           ;trig a pressed ?
-		jp    nz,.SetPrimaryAttackWhileJump
-		bit		5,a           ;trig b pressed ?
-		jp    nz,.SetShootMagicWhileJump
-		bit		0,a           ;cursor up pressed ?
-		jp    nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
+		ld	 a,(NewPrContr)
+		bit	 4,a           ;trig a pressed ?
+		jp	 nz,.SetPrimaryAttackWhileJump
+		bit	 5,a           ;trig b pressed ?
+		jp	 nz,.SetShootMagicWhileJump
+		bit	 0,a           ;cursor up pressed ?
+		jp	 nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
 		ret
 
 .SetPrimaryAttackWhileJump:             ;trigger a pressed
@@ -4015,11 +4015,11 @@ if PlayerCanJumpThroughTopOfScreen?
 else
 ;unable to jump through the top of the screen
 		ld    a,(Clesy)
-		cp    9
+		cp    9+2
 		jp    nc,.EndCheckTopOfScreen
 		ld    a,(hl)              ;if vertical JumpSpeed is negative then and y<9 then skip vertical movement
 		or    a
-		jp    m,.SkipverticalMovement
+		ret m ;jp    m,.SkipverticalMovement
 .EndCheckTopOfScreen:
   ;/unable to jump through the top of the screen
 endif
@@ -4095,7 +4095,7 @@ ret
 		; ld    de,XaddRightPlayer-3  ;delta X
 		; call  checktile           ;out z=collision found with wall
 		ld	 b,playerStanding.head
-		ld	 de,playerStanding.Leftside
+		ld	 de,playerStanding.Leftside+3
 		call checkTilePlayer
 		jr    z,.SnapToCeilingAbove
 		inc   hl                  ;check next tile

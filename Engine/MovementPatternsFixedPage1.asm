@@ -1731,15 +1731,14 @@ CheckFloorFallingStone:                     ;if a floor is found, snap to tile, 
 		call  checktileObject                     ;out z=collision found with wall
 		dec A
 		ret   nz
-  
-  ;floor found, snap to floor
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;pushing stone
-  ld    (ix+enemies_and_objects.v3),1       ;vertical movement
-  ld    (ix+enemies_and_objects.v6),0       ;v6 acceleration timer
+;floor found, snap to floor
+		ld    a,(ix+enemies_and_objects.y)        ;y object
+		and   %1111 1000
+		ld    (ix+enemies_and_objects.y),a        ;y object
+
+		ld    (ix+enemies_and_objects.v2),0       ;pushing stone
+		ld    (ix+enemies_and_objects.v3),1       ;vertical movement
+		ld    (ix+enemies_and_objects.v6),0       ;v6 acceleration timer
   ret
 
 AccelerateFall:
