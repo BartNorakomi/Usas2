@@ -3789,7 +3789,7 @@ SetRShootArrowWhenJumping:
   ret
   
 ;check if there are stairs when pressing up, if so climb the stairs.
-;[Check ladder going Right UP]
+;[Check stairs going Right UP] /
 CheckSnapToStairsWhileJump:
 ret		;20241008;ro;disabled this cuz I hate it  - mohaaaahahahahahaa
 		; ld    b,YaddFeetPlayer-00	;delta Y
@@ -3900,13 +3900,13 @@ Jump:
 ;  call  .HandlePrimaryAttackHitboxWhileJump        ;if player kicks in the air, enable hitbox and set hixbox coordinates
 		call  AnimateWhileJump
 		call  MoveHorizontallyWhileJump
-		ld		a,(Controls)
-		bit		0,a           ;cursor up pressed ?
-		call  nz,CheckSnapToStairsWhileJump
-		call  .VerticalMovement
-		ld		a,(Controls)
-		bit		0,a           ;cursor up pressed ?
-		call  nz,CheckSnapToStairsWhileJump
+		ld	 a,(Controls)
+		bit	 0,a           ;cursor up pressed ?
+		call nz,CheckSnapToStairsWhileJump
+		call .VerticalMovement
+		ld	 a,(Controls)
+		bit	 0,a           ;cursor up pressed ?
+		call nz,CheckSnapToStairsWhileJump
 
 		ld    a,(NewPrContr)
 		bit		4,a           ;trig a pressed ?
@@ -3984,18 +3984,18 @@ Jump:
 		ld    bc,SFX_arrow
 		jp    RePlayerSFX_PlayCh1
 
+;as soon as up is released, player stops jumping up. This way the jump height can be controlled
 .VerticalMovement:
-		;as soon as up is released, player stops jumping up. This way the jump height can be controlled
-		ld    hl,JumpSpeed
+		ld    hl,JumpSpeed	;check if jump speed is positive (up)
 		bit   7,(hl)
-		jr    z,.EndCheckUpPressed  ;check if jump speed is positive
-		ld		a,(Controls)
-		rrca                        ;cursor up pressed ?
-		jr    c,.EndCheckUpPressed
+		jr    z,.EndCheckUpPressed  
+		ld		a,(Controls)		;cursor up still pressed ?
+		rrca                        
+		jr    c,.EndCheckUpPressed	;no
 		ld    a,(framecounter)
 		rrca
 		jr    c,.EndCheckUpPressed
-		inc   (hl)                  ;increase JumpSpeed if we don't press up, if JumpSpeed is negative and we don't press up 
+		inc   (hl)                  ;increase JumpSpeed 
 .EndCheckUpPressed:
 		ld		a,(PlayerAniCount+1)
 		inc   a
@@ -4028,32 +4028,64 @@ endif
 		add   a,(hl)
 		ld    (Clesy),a
 .SkipverticalMovement:
-		ld    a,(hl)              ;if vertical JumpSpeed is negative then CheckPlatformAbove. If it's positive then CheckPlatformBelow
+		ld    a,(hl)              ;if UP then check ceiling, else check floor
 		or    a
-		jp    m,.CheckPlatformAbove
+		jp    m,.CheckCeiling
 		ret   z
 
-.CheckPlatformBelow:        ;check platform below
+.Checkfloor:        ;check platform below
 		; ld    b,YaddFeetPlayer-1;delta Y
 		; ld    de,+3-8 ;XaddRightPlayer-2  ;delta X
 		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.feet+8-1
+		ld	 b,playerStanding.feet+8	;LEFT side
 		ld	 de,playerStanding.LeftSide+3
 		call checkTilePlayer
-		jp    z,.SnapToPlatformBelow  
-		dec   a                   ;check for tilenr 2=ladder 
-		jr    z,.LadderFoundUnderLeftFoot1
-		inc   hl                  ;check next tile
-		ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
-		dec   a                   ;1 = wall
-		jp    z,.SnapToPlatformBelow  
-		dec   a                   ;check for tilenr 2=ladder 
-		jp    z,.LadderFoundUnderRightFoot1
-
-		sub   4                   ;check for tilenr 6=lava	ro: shouldn't this be at previous tile too?
+		jp    z,.SnapToPlatformBelow	;foreground  
+		dec   a                   		;ladder 
+		jr    z,.checkLadder ;.LadderFoundUnderLeftFoot1
+		sub   4                   		;6=lava
 		jr    z,.LavaFound
 		dec   a
 		jr    z,.WaterFound
+
+		inc   hl                  		;next tile=RIGHT side
+		ld    a,(hl)
+		dec   a                   		;foreground
+		jp    z,.SnapToPlatformBelow  
+		dec   a                   		;ladder 
+		jr    z,.checkLadder ;jp    z,.LadderFoundUnderRightFoot1
+		sub   4
+		jr    z,.LavaFound
+		dec   a
+		jr    z,.WaterFound
+ret
+
+.CheckLadder:
+		ld	 bc,-roomMap.numcol ;check one tile up
+		add	 hl,bc
+		ld	 a,(hl)
+		and  A	;bg
+		jp   z,.SnapToPlatformBelow
+ret
+
+.CheckCeiling:
+		; ld    b,YaddHeadPLayer;delta Y
+		; ld    de,XaddRightPlayer-3  ;delta X
+		; call  checktile           ;out z=collision found with wall
+		ld	 b,playerStanding.head
+		ld	 de,playerStanding.Leftside
+		call checkTilePlayer
+		jr    z,.SnapToCeilingAbove
+		inc   hl                  ;check next tile
+		ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
+		dec   a                   ;1 = wall
+		ret   nz
+.SnapToCeilingAbove:
+		ld    a,(Clesy)           ;on collision snap y player to ceiling above
+		and   %1111 1000
+		add   a,6 + 2             ;(changed) player can now jump further into ceilings above
+		ld    (Clesy),a
+		ret
 
 .PlayerNotInWater:
 		ld    a,(PlayerIsInWater?)
@@ -4137,6 +4169,7 @@ endif
 		jr    nz,.SnapToPlatformBelow
 		ret
 
+;While descending from jump, a ladder was found. If this is the floor, than snap to it, else just keep on falling.
 .LadderFoundUnderLeftFoot1:               
 ;check 16 pixels left of this ladder tile for a foreground tile. If yes then check the tile above that for a background tile. If yes SnapToPlatformBelow  
 		; ld    b,YaddFeetPlayer-1;delta Y
@@ -4179,11 +4212,6 @@ endif
 		dec   a
 		ld    (Clesy),a
 
-		;  ld    a,1                 ;reset kicking while jumping
-		;  ld    (KickWhileJump?),a  
-		;  xor   a
-		;  ld    (EnableHitbox?),a 
-
 		pop   af                  ;pop the call to .VerticalMovement, this way no further checks are done
 
 		ld    bc,SFX_land
@@ -4193,26 +4221,6 @@ endif
 		or    a
 		jp    z,Set_L_stand       ;on collision change to L_Stand  
 		jp    Set_R_stand         ;on collision change to R_Stand    
-
-.CheckPlatformAbove:
-;check platform above
-		; ld    b,YaddHeadPLayer;delta Y
-		; ld    de,XaddRightPlayer-3  ;delta X
-		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.head
-		ld	 de,playerStanding.Leftside
-		call checkTilePlayer
-		jr    z,.SnapToCeilingAbove
-		inc   hl                  ;check next tile
-		ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
-		dec   a                   ;1 = wall
-		ret   nz
- .SnapToCeilingAbove:
-		ld    a,(Clesy)           ;on collision snap y player to ceiling above
-		and   %1111 1000
-		add   a,6 + 2             ;(changed) player can now jump further into ceilings above
-		ld    (Clesy),a
-		ret
 
 .CheckJumpOrClimbLadder: 
 		call  CheckClimbLadderUp  ;out: PlayerSpriteStand->Climb if ladder found
