@@ -11,6 +11,9 @@ F2MenuRoutine:
 
 ;  call  CameraEngine304x216.setR18R19R23andPage  
   call  putF2MenuGraphicsInScreen
+;   ld a,32       ;Worlmap palette ID
+;   call getPalette       ;get palette address in HL
+;   call setPalette       ;write to VDP
   ld    a,0*32 + 31                   ;a->x*32+31 (x=page)
   call  setpage
   call  .SpritesOff
@@ -205,16 +208,16 @@ putF2MenuGraphicsInScreen:
 ;WorldMap attributes
 _WMROW: EQU   50              ;number of rows
 _WMCOL: EQU   50              ;number of collumns
-_WMRC0: EQU   12              ;normal room
-_WMRC1: EQU   13              ;teleport room
+_WMRC0: EQU   11              ;normal room (blue)
+_WMRC1: EQU   6              ;teleport room (yellow)
 _WMRC2: EQU   0
-_WMRC3: EQU   14              ;boss room
-_WMRC4: EQU   3               ;gate room
+_WMRC3: EQU   3              ;boss room (red)
+_WMRC4: EQU   4               ;gate room (darker blue/grey)
 _WMRC5: EQU   0
 _WMRC6: EQU   0
 _WMRC7: EQU   0
-_WMPC:  EQU   9               ;player room
-_WMRBC: EQU   15              ;background color (stroke)
+_WMPC:  EQU   10               ;player room (white)
+_WMRBC: EQU   0              ;background color (stroke)
 
 
 

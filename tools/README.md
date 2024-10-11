@@ -32,5 +32,5 @@ npx convertgfx --path "..\grapx\AreaSigns" --source ".\01-Hub.bmp" --targetScree
 
 gci "..\grapx\AreaSigns\*-*.bmp"|%{npx convertgfx --path "..\grapx\AreaSigns" --source ".\$($_.basename).bmp" --targetScreen5 ".\$($_.basename).sc5" --fixedPalette "C:\Users\rvand\GIT\Usas2\grapx\tilesheets\Karnimata.tiles.PL"}
 
-npx convertgfx --path "..\grapx\F2Menu" --source ".\WORLDMAP.bmp" --targetScreen5 ".\Worldmap.sc5" --fixedPalette "..\..\grapx\tilesheets\Karnimata.tiles.PL"
+npx convertgfx --path "..\grapx\F2Menu" --source ".\WORLDMAP.bmp" --targetScreen5 ".\Worldmap.sc5" --targetPalette ".\Worldmap.pl"
 
