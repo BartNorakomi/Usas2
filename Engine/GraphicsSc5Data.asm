@@ -89,9 +89,9 @@ phase	$4000
 	ds		$c000-$,$ff
 dephase
 
-F2MenuGraphicsBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;BossAreaTilesBlock+2
+F2MenuGraphicsBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;Worldmap
 phase	$4000
-  incbin "..\grapx\F2Menu\F2Menu.SC5",7,212 * 128      ;212 lines
+  incbin "..\grapx\F2Menu\worldmap.SC5",0,212 * 128      ;212 lines
 	ds		$c000-$,$ff
 dephase
 
