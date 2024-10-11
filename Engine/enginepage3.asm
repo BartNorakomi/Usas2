@@ -24,7 +24,7 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 
 roomX: equ ("B"-"A")*26 + "R"-"A"
-roomY: equ 16
+roomY: equ 21
 WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 ClesX:      dw 64 ;$19 ;230 ;250 ;210
 ClesY:      db 152 ;144-1

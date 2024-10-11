@@ -261,8 +261,8 @@ GTD.0:	INC HL	;ADD   HL,BC
 TeleportRingTable:
 .reclen:	Equ	2
 ;				BH12			BK22			BX14			BU20
-.data:		DB	26+"H"-"A",12,	26+"K"-"A",22,	26+"X"-"A",14,	26+"U"-"A",20
-			DB	26+"H"-"A",12	;end with first room to make the ring complete
+.data:		DB	26+"H"-"A",12-1,	26+"K"-"A",22-1,	26+"X"-"A",14-1,	26+"U"-"A",20-1
+			DB	26+"H"-"A",12-1	;end with first room to make the ring complete
 
 
 SetPrimaryWeaponHitBoxLeftSitting:
