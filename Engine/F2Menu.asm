@@ -237,27 +237,27 @@ VCMDCM: EQU   14
 ;Create new world map
 ;in: HL=adr
 NEWWM:  LD    (WMADR),HL
-        LD    BC,_WMROW*_WMCOL
-        PUSH  HL
-        POP   DE
-        INC   DE
-        LD    (HL),0
-        LDIR
-        AND   A               ;signal no error
-        RET
+	LD    BC,_WMROW*_WMCOL
+	PUSH  HL
+	POP   DE
+	INC   DE
+	LD    (HL),0
+	LDIR
+	AND   A               ;signal no error
+	RET
 
 ;Initialize a room
 ;in: DE=roomXXYY, A=roomtype
 NEWWMR: EX    AF,af' ;'
-        CALL  GETWMR
-        RET   C
-        BIT   7,A
-        RET   NZ              ;already active
-        EX    AF,af' ;'
-        CALL  GETRC
-        OR    0x80             ;enable
-        LD    (HL),A
-        RET
+	CALL  GETWMR
+	RET   C
+	BIT   7,A
+	RET   NZ              ;already active
+	EX    AF,af' ;'
+	CALL  GETRC
+	OR    0x80             ;enable
+	LD    (HL),A
+	RET
 
 
 ;Get worldmap room
@@ -273,145 +273,145 @@ GETWMR: ;LD    A,E             ;check boundaries, skip for speed
 ;       CCF
 ;       RET   C
 
-        PUSH  BC
-        PUSH  DE
-        LD    A,D
-        LD    H,_WMCOL        ;y*ncol
-        CALL  MUL8
-        LD    E,A             ;add X
-        ADD   HL,DE
-        LD    DE,(WMADR)
-        ADD   HL,DE           ;cy=0
-        LD    A,(HL)
-        POP   DE
-        POP   BC
-        RET
+	PUSH  BC
+	PUSH  DE
+	LD    A,D
+	LD    H,_WMCOL        ;y*ncol
+	CALL  MUL8
+	LD    E,A             ;add X
+	ADD   HL,DE
+	LD    DE,(WMADR)
+	ADD   HL,DE           ;cy=0
+	LD    A,(HL)
+	POP   DE
+	POP   BC
+	RET
 
 ;set room properties
 ;in: DE=XXYY room, A=roomValue
 SETWMR: EX    AF,af' ;'
-        CALL  GETWMR
-        RET   C
-        EX    AF,af' ;'
-        LD    (HL),A
-        AND   A
-        RET
+	CALL  GETWMR
+	RET   C
+	EX    AF,af' ;'
+	LD    (HL),A
+	AND   A
+	RET
 
 ;Remove (reset) room [DE] from the world map
 DELWMR: XOR   A               ;default roomtype
-        CALL  GETRC
-        JP    SETWMR
+	CALL  GETRC
+	JP    SETWMR
 
 ;Enable room [DE]
 ENAWMR: CALL  GETWMR
-        RET   C
-        SET   7,(HL)
-        RET
+	RET   C
+	SET   7,(HL)
+	RET
 ;Disable room [DE]
 DISWMR: CALL  GETWMR
-        RET   C
-        RES   7,(HL)
-        RET
+	RET   C
+	RES   7,(HL)
+	RET
 
 ;Set roomtype [DE]=[A]
 TYPWMR: EX    AF,af' ;'
-        CALL  GETWMR
-        RET   C
-        PUSH  BC
-        AND   0xF0
-        LD    C,A
-        EX    AF,af' ;'
-        CALL  GETRC
-        OR    C
-        LD    (HL),A
-        POP   BC
-        RET
+	CALL  GETWMR
+	RET   C
+	PUSH  BC
+	AND   0xF0
+	LD    C,A
+	EX    AF,af' ;'
+	CALL  GETRC
+	OR    C
+	LD    (HL),A
+	POP   BC
+	RET
 
 ;get room color [A]
 GETRC:  PUSH  HL
-        LD    HL,WMRCOL
-        ADD   A,L
-        LD    L,A
-        LD    A,0
-        ADC   A,H
-        LD    H,A
-        LD    A,(HL)
-        POP   HL
-        RET
+	LD    HL,WMRCOL
+	ADD   A,L
+	LD    L,A
+	LD    A,0
+	ADC   A,H
+	LD    H,A
+	LD    A,(HL)
+	POP   HL
+	RET
 
 ;add room [DE] connector on the right-side
 RWMR:   CALL  GETWMR
 RWMRHL: RET   C               ;(shortcut if you already have HL)
-        SET   4,(HL)
-        RET
+	SET   4,(HL)
+	RET
 ;add room [DE] connector on the bottom
 BWMR:   CALL  GETWMR
 BWMRHL: RET   C
-        SET   5,(HL)
-        RET
+	SET   5,(HL)
+	RET
 
 ;put player room on the map
 ;in: DE=roomXXYY, HL=XXYY dest offset
 PUTWMP: CALL  PWMINI
-        RET   C
-        LD    C,_WMPC         ;PlayerColor
-        JP    PUTWMR
+	RET   C
+	LD    C,_WMPC         ;PlayerColor
+	JP    PUTWMR
 
 ;Put (part of) the worldmap on screen
 ;in: DE=roomXXYY, HL=XXYY dest offset, BC=WWHH
 PUTWM:  CALL  PWMINI
-        RET   C
+	RET   C
 
-        LD    A,B             ;swap BC
-        LD    B,C             ;b=num rows
-        LD    C,B             ;c=num cols
+	LD    A,B             ;swap BC
+	LD    B,C             ;b=num rows
+	LD    C,B             ;c=num cols
 PWM.1:  PUSH  BC
-        LD    B,C
-        PUSH  HL
-        PUSH  DE
+	LD    B,C
+	PUSH  HL
+	PUSH  DE
 PWM.0:  PUSH  BC
-        LD    A,(HL)          ;roomData
-        BIT   7,A
-        JP    Z,PWM.2
-        AND   15
-        LD    C,A
-        CALL  PUTWMR
+	LD    A,(HL)          ;roomData
+	BIT   7,A
+	JP    Z,PWM.2
+	AND   15
+	LD    C,A
+	CALL  PUTWMR
 PWM.2:  INC   HL
-        LD    A,D
-        ADD   A,4
-        LD    D,A
-        POP   BC
-        DJNZ  PWM.0
-        POP   DE
-        LD    A,E
-        ADD   A,4
-        LD    E,A
-        POP   HL
-        LD    BC,_WMCOL
-        ADD   HL,BC
-        POP   BC
-        DJNZ  PWM.1
-        RET
+	LD    A,D
+	ADD   A,4
+	LD    D,A
+	POP   BC
+	DJNZ  PWM.0
+	POP   DE
+	LD    A,E
+	ADD   A,4
+	LD    E,A
+	POP   HL
+	LD    BC,_WMCOL
+	ADD   HL,BC
+	POP   BC
+	DJNZ  PWM.1
+	RET
 
 ;init PrintWorldMap
 ;in:  DE=roomXXYY, HL=screenpos
 ;out: HL=roomAdr, DE=screenPos
 PWMINI: PUSH  BC
-        LD    B,H
-        LD    C,L
-        CALL  GETWMR
-        LD    A,D             ;room X start position
-        ADD   A,A             ;x2
-        ADD   A,A             ;x4
-        ADD   A,B             ;add scrpos
-        LD    D,A
-        LD    A,E             ;room Y start position
-        ADD   A,A             ;x2
-        ADD   A,A             ;x4
-        ADD   A,C             ;add scrpos
-        LD    E,A
-        POP   BC
-        RET
+	LD    B,H
+	LD    C,L
+	CALL  GETWMR
+	LD    A,D             ;room X start position
+	ADD   A,A             ;x2
+	ADD   A,A             ;x4
+	ADD   A,B             ;add scrpos
+	LD    D,A
+	LD    A,E             ;room Y start position
+	ADD   A,A             ;x2
+	ADD   A,A             ;x4
+	ADD   A,C             ;add scrpos
+	LD    E,A
+	POP   BC
+	RET
 
 
 ;Print one room blk of 4x4
@@ -421,116 +421,116 @@ PWMINI: PUSH  BC
 ;1110
 ;0100
 PUTWMR: LD    A,0xF0           ;HMMC
-        LD    (WMHMMC+VCMDCM),A
+	LD    (WMHMMC+VCMDCM),A
 ;       XOR   A
 ;       LD    (.HMMC+|CMDDX+1),A
 ;       LD    (.HMMC+|CMDDY+1),A
-        LD    A,D             ;x
-        LD    (WMHMMC+VCMDDX),A
-        LD    A,E             ;y
-        LD    (WMHMMC+VCMDDY),A
+	LD    A,D             ;x
+	LD    (WMHMMC+VCMDDX),A
+	LD    A,E             ;y
+	LD    (WMHMMC+VCMDDY),A
 
-        LD    A,C             ;colors
-        RLCA
-        RLCA
-        RLCA
-        RLCA
-        LD    B,A
+	LD    A,C             ;colors
+	RLCA
+	RLCA
+	RLCA
+	RLCA
+	LD    B,A
 
 ;first 3 bytes static
-        OR    C
-        CALL  HMMC            ;0,0 11--
-        LD    A,B
-        OR    _WMRBC
-        OUT   (0x9B),A         ;1,0 --10
-        LD    A,B
-        OR    C
-        OUT   (0x9B),A         ;0,1 11--
+	OR    C
+	CALL  HMMC            ;0,0 11--
+	LD    A,B
+	OR    _WMRBC
+	OUT   (0x9B),A         ;1,0 --10
+	LD    A,B
+	OR    C
+	OUT   (0x9B),A         ;0,1 11--
 ;right exit
-        LD    A,_WMRBC
-        BIT   4,(HL)
-        JR    Z,PWMR.0
-        LD    A,_WMRC0        ;exit is always def room color
+	LD    A,_WMRBC
+	BIT   4,(HL)
+	JR    Z,PWMR.0
+	LD    A,_WMRC0        ;exit is always def room color
 PWMR.0: OR    B
-        OUT   (0x9B),A         ;1,1 --1x
-        LD    A,B
-        OR    C
-        OUT   (0x9B),A         ;0,2 11--
-        LD    A,B
-        OR    _WMRBC
-        OUT   (0x9B),A         ;1,2 --10
+	OUT   (0x9B),A         ;1,1 --1x
+	LD    A,B
+	OR    C
+	OUT   (0x9B),A         ;0,2 11--
+	LD    A,B
+	OR    _WMRBC
+	OUT   (0x9B),A         ;1,2 --10
 ;bottom exit
-        LD    A,_WMRBC
-        BIT   5,(HL)
-        JR    Z,PWMR.1
-        LD    A,_WMRC0        ;exit is always def room color
+	LD    A,_WMRBC
+	BIT   5,(HL)
+	JR    Z,PWMR.1
+	LD    A,_WMRC0        ;exit is always def room color
 PWMR.1: OR    _WMRBC*16
-        OUT   (0x9B),A
-        LD    A,_WMRBC*16+_WMRBC
-        OUT   (0x9B),A
-        RET
+	OUT   (0x9B),A
+	LD    A,_WMRBC*16+_WMRBC
+	OUT   (0x9B),A
+	RET
 
 ;High speed move CPU to VRAM
 HMMC:   EX    AF,af' ;'
-        LD    A,(WMHMMC+VCMDCM) ;cmd activated yet?
-        AND   A
-        JP    NZ,HMMC.0
-        EX    AF,af' ;'
-        RET
+	LD    A,(WMHMMC+VCMDCM) ;cmd activated yet?
+	AND   A
+	JP    NZ,HMMC.0
+	EX    AF,af' ;'
+	RET
 HMMC.0: EX    AF,af' ;'           ;first time, activate the cmd
-        LD    (WMHMMC+VCMDCL),A
-        PUSH  BC
-        PUSH  HL
-        LD    HL,WMHMMC+VCMDDX
-        LD    A,36
-        LD    B,11
-        CALL  CMDVDP
-        POP   HL
-        POP   BC
-        DI
-        LD    A,44 OR 0x80
-        OUT   (0x99),A
-        LD    A,17 OR 0x80
-        EI
-        OUT   (0x99),A
-        XOR   A               ;signal activation for next time
-        LD    (WMHMMC+VCMDCM),A
-        RET
+	LD    (WMHMMC+VCMDCL),A
+	PUSH  BC
+	PUSH  HL
+	LD    HL,WMHMMC+VCMDDX
+	LD    A,36
+	LD    B,11
+	CALL  CMDVDP
+	POP   HL
+	POP   BC
+	DI
+	LD    A,44 OR 0x80
+	OUT   (0x99),A
+	LD    A,17 OR 0x80
+	EI
+	OUT   (0x99),A
+	XOR   A               ;signal activation for next time
+	LD    (WMHMMC+VCMDCM),A
+	RET
 
 ;Multiply 8-bit values
 ;In:  Multiply H with E
 ;Out: HL = result
 MUL8:   LD    D,0
-        LD    L,D
-        LD    B,8
+	LD    L,D
+	LD    B,8
 MUL8.0: ADD   HL,HL
-        JP    NC,MUL8.1
-        ADD   HL,DE
+	JP    NC,MUL8.1
+	ADD   HL,DE
 MUL8.1: DJNZ  MUL8.0
-        RET
+	RET
 
 ;Wait for VDP command is ready
 QCES:   LD    A,2
-        CALL  RDSTAT
-        RRCA
-        JP    C,QCES
-        RET
+	CALL  RDSTAT
+	RRCA
+	JP    C,QCES
+	RET
 
 ;read VDP status register
 RDSTAT: DI
-        OUT   (0x99),A
-        LD    A,128+15
-        OUT   (0x99),A
-        LD    A,0
-        IN    A,(0x99)
-        EX    AF,af' ;'
-        LD    A,0
-        OUT   (0x99),A
-        LD    A,15 OR 0x80
-        EI
-        OUT   (0x99),A
-        EX    AF,af' ;'
-        RET
+	OUT   (0x99),A
+	LD    A,128+15
+	OUT   (0x99),A
+	LD    A,0
+	IN    A,(0x99)
+	EX    AF,af' ;'
+	LD    A,0
+	OUT   (0x99),A
+	LD    A,15 OR 0x80
+	EI
+	OUT   (0x99),A
+	EX    AF,af' ;'
+	RET
 
 ;Command VDP
 ;In : A , First VDP register (b5-b0) + AII (b7)
@@ -539,14 +539,14 @@ RDSTAT: DI
 CMDVDP: ;PUSH  AF
 ;       CALL  QCES
 ;       POP   AF
-        DI
-        OUT   (0x99),A
-        LD    A,17 OR 0x80
-        EI
-        OUT   (0x99),A
-        LD    C,0x9B
-        OTIR
-        RET
+	DI
+	OUT   (0x99),A
+	LD    A,17 OR 0x80
+	EI
+	OUT   (0x99),A
+	LD    C,0x9B
+	OTIR
+	RET
 
 
 
