@@ -2730,54 +2730,6 @@ GWMR.0: ADD   HL,BC
         JP    GWMR.1
 
 
-;store and set palette as current pal
-SetMapPalette:
-		push  hl
-		ld    de,CurrentPalette
-		ld    bc,32
-		ldir
-		pop   hl
-		call setpalette
-ret
-
-;Get palette location
-;in:	A=palId
-;out:	HL=adr of 32bytes palrecord
-getPalette:
-		push bc
-		LD	h,0
-		ld	l,A
-		add	hl,hl	;x2
-		add	hl,hl	;4
-		add hl,hl	;8
-		add	hl,hl	;16
-		add hl,hl	;32
-		ld	bc,palettes.data
-		add	hl,bc
-		pop bc		
-ret
-
-;Palettes table
-palettes:
-.reclen:		equ 32
-.numrec:		equ 32
-.data:
-.0:				DS .reclen		;incBin filename,0,.reclen
-.1Hub:			DB $06,$05,$12,$01,$32,$03,$34,$03,$20,$01,$21,$02,$07,$05,$73,$06,$05,$03,$77,$07,$53,$05,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
-.2Lemniscate:	DB $06,$05,$12,$01,$32,$03,$34,$03,$20,$01,$21,$02,$07,$05,$73,$06,$05,$03,$77,$07,$53,$05,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
-.3:				DS .reclen
-.4Pegu:		    DB $60,$05,$12,$01,$20,$05,$34,$03,$20,$01,$00,$03,$50,$03,$73,$06,$40,$02,$77,$07,$40,$06,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
-.5:				DS .reclen
-.6KarniMata:	DB 71,5,18,1,32,5,52,3,32,1,0,3,80,3,115,6,0,2,119,7,64,6,35,2,69,4,112,5,112,2,0,0
-.7Konark:		DB $77,$04,$12,$01,$42,$03,$34,$03,$20,$01,$31,$02,$61,$03,$73,$06,$41,$02,$77,$07,$53,$04,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
-.8_15:			DS .reclen*8
-.16_23:			DS .reclen*8
-.24_30:			DS .reclen*7
-.31Teleport:	DB $00,$00,$12,$01,$50,$02,$34,$03,$20,$00,$30,$01,$00,$00,$73,$06,$00,$00,$77,$07,$70,$04,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
-.32Worldmap:		DB $00,$00,$12,$01,$30,$00,$50,$00,$23,$02,$70,$02,$73,$06,$70,$05,$34,$03,$40,$00,$77,$07,$45,$04,$00,$00,$00,$00,$00,$00,$00,$00
-.33_39:			DS .reclen*7
-
-
 ;Get Ruin properties
 ;in:	A=ruinId
 ;out:	HL=RecAdr

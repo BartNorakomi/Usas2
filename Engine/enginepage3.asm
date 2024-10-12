@@ -35,7 +35,7 @@ ffvoordetesteenmalig:	db 0
 ;WM DATA > in RAM
 WMADR:  DW    0x8000           ;RAM location
 WMMAP:  DB    1               ;MemoryMap
-WMRCOL: DB    _WMRC0,_WMRC1,_WMRC2,_WMRC3,_WMRC4,_WMRC4,_WMRC6,_WMRC7
+WMRCOL: DB    _WMRC0,_WMRC1,_WMRC2,_WMRC3,_WMRC4,_WMRC5,_WMRC6,_WMRC7
 WMHMMC: DW    0,0,0,0,4,4,0,0xF0 ;(sx,sy,)dx,dy,nx,ny,col/arg,cmd=hmmc
 
 
@@ -1010,82 +1010,6 @@ invisspratttableaddress:    ds  2
 invissprchatableaddress:    ds  2
 
 
-;Write pal data [HL] to VDP
-SetPalette:
-	xor		a
-	di
-	out		($99),a
-	ld		a,16+128
-	out		($99),a
-	ld		bc,$209A
-	otir
-	ei
-	ret
-
-;
-;Set VDP port #98 to start reading at address AHL (17-bit)
-;
-SetVdp_Read:  rlc     h
-              rla
-              rlc     h
-              rla
-              srl     h
-              srl     h
-              di
-              out     ($99),a         ;set bits 15-17
-              ld      a,14+128
-              out     ($99),a
-              ld      a,l             ;set bits 0-7
-;              nop
-              out     ($99),a
-              ld      a,h             ;set bits 8-14
-              ei                      ; + read access
-              out     ($99),a
-              ret
-              
-;
-;Set VDP to start writing at address AHL (17-bit)
-SetVdp_Write: 
-	rlc     h	;first set register 14 (actually this only needs to be done once
-	rla
-	rlc     h
-	rla
-	srl     h
-	srl     h
-	di
-	out     ($99),a       ;set bits 15-17
-	ld      a,14+128
-	out     ($99),a
-
-	ld      a,l           ;set bits 0-7
-	out     ($99),a
-	ld      a,h           ;set bits 8-14
-	or      64            ; + write access
-	ei
-	out     ($99),a       
-ret
-
-SetVdp_WriteRemainDI: 
-;first set register 14 (actually this only needs to be done once
-	rlc     h
-	rla
-	rlc     h
-	rla
-	srl     h
-	srl     h
-	di
-	out     ($99),a       ;set bits 15-17
-	ld      a,14+128
-	out     ($99),a
-;/first set register 14 (actually this only needs to be done once
-
-	ld      a,l           ;set bits 0-7
-;	nop
-	out     ($99),a
-	ld      a,h           ;set bits 8-14
-	or      64            ; + write access
-	out     ($99),a       
-	ret
 
 Depack:     ;In: HL: source, DE: destination
 	inc	hl		;skip original file length

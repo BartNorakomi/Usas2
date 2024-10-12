@@ -10,16 +10,14 @@ F2MenuRoutine:
   call  .BackupPage0InRam              ;store Vram data of page 0 in ram
 
 ;  call  CameraEngine304x216.setR18R19R23andPage  
-  call  putF2MenuGraphicsInScreen
-;   ld a,32       ;Worlmap palette ID
-;   call getPalette       ;get palette address in HL
-;   call setPalette       ;write to VDP
-  ld    a,0*32 + 31                   ;a->x*32+31 (x=page)
-  call  setpage
-  call  .SpritesOff
-  call  ScreenOn
-
-
+		call  putF2MenuGraphicsInScreen
+		ld	 a,32       ;Worlmap palette ID
+		call getPalette       ;get palette address in HL
+		call setPalette       ;write to VDP
+		ld	 a,0*32 + 31                   ;a->x*32+31 (x=page)
+		call  setpage
+		call  .SpritesOff
+		call  ScreenOn
 
   ld    a,(slot.page1rom)            ;all RAM except page 1
   out   ($a8),a
@@ -51,17 +49,22 @@ F2MenuRoutine:
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
-  ld    a,(NewPrContr)	
-	bit		7,a           ;F2 pressed ?
-  jr    z,.F2MenuLoop
+		ld    a,(NewPrContr)	
+		bit		7,a           ;F2 pressed ?
+		jr    z,.F2MenuLoop
 
-  call  ScreenOff
-  call  .SpritesOn
-  call  .RestorePage0InVram            ;restore the vram data the was stored in ram earlier
-  call  .SetR14ValueTo5                ;register 14 sets VRAM address to read/write to/from. This value is only set once per frame ingame, we assume it's set to $05 at all times, so set it back when going back to the game
-  call  SetInterruptHandler           ;set Lineint and Vblank  
-  call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank _ if normal engine: wait for lineint
-  call  ScreenOn
+		call  ScreenOff
+		call  .SpritesOn
+		call  .RestorePage0InVram            ;restore the vram data the was stored in ram earlier
+
+		call GetRoomPaletteId
+		call getPalette
+		call SetMapPalette
+
+		call  .SetR14ValueTo5                ;register 14 sets VRAM address to read/write to/from. This value is only set once per frame ingame, we assume it's set to $05 at all times, so set it back when going back to the game
+		call  SetInterruptHandler           ;set Lineint and Vblank  
+		call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank _ if normal engine: wait for lineint
+		call  ScreenOn
   ret
 
 
@@ -213,13 +216,11 @@ _WMRC1: EQU   6              ;teleport room (yellow)
 _WMRC2: EQU   0
 _WMRC3: EQU   3              ;boss room (red)
 _WMRC4: EQU   4               ;gate room (darker blue/grey)
-_WMRC5: EQU   0
+_WMRC5: EQU   11			;regular room small
 _WMRC6: EQU   0
 _WMRC7: EQU   0
 _WMPC:  EQU   10               ;player room (white)
 _WMRBC: EQU   0              ;background color (stroke)
-
-
 
 
 ;TEXT > in ROM

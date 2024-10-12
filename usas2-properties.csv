@@ -49,12 +49,20 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		file	ruin3.tiles.pl	fileTypeId	2					
 1	Usas2		file	ruin3.tiles.sc5	path	..\grapx\tilesheets\ruin3.tiles.sc5					
 1	Usas2		file	ruin3.tiles.sc5	fileTypeId	1					
+1	Usas2		file	Worldmap.bmp	fileTypeId	9					
+1	Usas2		file	Worldmap.bmp	path	..\grapx\f2menu\worldmap.bmp					
+1	Usas2		file	Worldmap.sc5	fileTypeId	8					
+1	Usas2		file	Worldmap.sc5	path	..\grapx\f2menu\worldmap.sc5					
+1	Usas2		file	Worldmap.pl	fileTypeId	2					
+1	Usas2		file	Worldmap.pl	path	..\grapx\f2menu\worldmap.pl					
 1	Usas2		file	Teleport.tiles.bmp	fileTypeId	7					
 1	Usas2		file	Teleport.tiles.bmp	path	..\grapx\tilesheets\Teleport.tiles.bmp					
 1	Usas2		file	Teleport.tiles.pl	fileTypeId	2					
 1	Usas2		file	Teleport.tiles.pl	path	..\grapx\tilesheets\Teleport.tiles.pl					
 1	Usas2		file	Teleport.tiles.sc5	fileTypeId	1					
 1	Usas2		file	Teleport.tiles.sc5	path	..\grapx\tilesheets\Teleport.tiles.sc5					
+1	Usas2		FileType	ImageSc5	id	8					
+1	Usas2		FileType	ImageBmp	id	9					
 1	Usas2		FileType	default	id	0					
 1	Usas2		FileType	Palette	id	2					
 1	Usas2		FileType	Room	id	4					
@@ -82,6 +90,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Palette	KarniMata.tiles	file	Karnimata.tiles.pl					
 1	Usas2		Palette	KarniMata.tiles	id	6					
 1	Usas2		Palette	ruin3.tiles	file	ruin3.tiles.pl					
+1	Usas2		Palette	worldmap	id	32					
+1	Usas2		Palette	worldmap	file	worldmap.pl					
 1	Usas2		Room	boss	engine	2					
 1	Usas2		Room	boss	height	27					
 1	Usas2		Room	boss	name	Boss Room					
@@ -340,6 +350,38 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Fate	music						
 1	Usas2		Ruin	Fuu	music						
 1	Usas2		Ruin	Genbu	music						
+1	Usas2		Ruin	Hub	music						
+1	Usas2		Ruin	Indra	music						
+1	Usas2		Ruin	Ka	music						
+1	Usas2		Ruin	Lemniscate	music						
+1	Usas2		Ruin	Morana	music						
+1	Usas2		Ruin	Pegu	music			Default music (ID) for this ruin			
+1	Usas2		Ruin	Sepa	music						
+1	Usas2		Ruin	Shalabha	music						
+1	Usas2		Ruin	Sui	music						
+1	Usas2		Ruin	Taxilla	music						
+1	Usas2		Ruin	Tiwanaku	music						
+1	Usas2		Ruin	Vala	music						
+1	Usas2		Ruin	WorldForest	music						
+1	Usas2		Ruin	Aggayu	Palette						
+1	Usas2		Ruin	Akna	Palette						
+1	Usas2		Ruin	AshokasHell	Palette						
+1	Usas2		Ruin	Chi	Palette						
+1	Usas2		Ruin	EuderusSet	Palette						
+1	Usas2		Ruin	Fate	Palette						
+1	Usas2		Ruin	Fuu	Palette						
+1	Usas2		Ruin	Genbu	Palette						
+1	Usas2		Ruin	Indra	Palette						
+1	Usas2		Ruin	Ka	Palette						
+1	Usas2		Ruin	Lemniscate	Palette						
+1	Usas2		Ruin	Morana	Palette						
+1	Usas2		Ruin	Pegu	Palette			Default Palette			
+1	Usas2		Ruin	Sepa	Palette						
+1	Usas2		Ruin	Shalabha	Palette						
+1	Usas2		Ruin	Sui	Palette						
+1	Usas2		Ruin	Taxilla	Palette						
+1	Usas2		Ruin	Tiwanaku	Palette						
+1	Usas2		Ruin	Vala	Palette						
 1	Usas2		Tile	Background	first	256		First number			
 1	Usas2		Tile	Background	groupId	0		Background			
 1	Usas2		Tile	Background	last	1023		Last number			
@@ -426,9 +468,9 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Tileset	Lemniscate	file	Lemniscate.tiles.sc5					
 1	Usas2		Tileset	Lemniscate	id	2					
 1	Usas2		Tileset	Lemniscate	type	0					
-1	Usas2		Tileset	Pegu	imageSourceFile	Pegu.Tiles.bmp		Source files			
-1	Usas2		Tileset	Pegu	paletteSourceFile	Pegu.Tiles.pl		Source palette			
-1	Usas2		Tileset	Pegu	file	Pegu.Tiles.sc5		Destination file for ROM			
+1	Usas2		Tileset	Pegu	imageSourceFile	Pegu.Tiles.bmp		bitmap source file			
+1	Usas2		Tileset	Pegu	paletteSourceFile	Pegu.Tiles.pl		palette source file			
+1	Usas2		Tileset	Pegu	file	Pegu.Tiles.sc5		MSX destination file			
 1	Usas2		Tileset	Pegu	id	4		RuinID			
 1	Usas2		Tileset	Pegu	type	0		FileType=Tileset			
 1	Usas2		Tileset	ruin3	file	ruin3.Tiles.sc5					
@@ -441,35 +483,3 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Tileset	Teleport	imageSourceFile	Teleport.tiles.bmp					
 1	Usas2		Tileset	Teleport	paletteSourceFile	Teleport.tiles.pl					
 1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv					
-1	Usas2		Ruin	Hub	music						
-1	Usas2		Ruin	Indra	music						
-1	Usas2		Ruin	Ka	music						
-1	Usas2		Ruin	Lemniscate	music						
-1	Usas2		Ruin	Morana	music						
-1	Usas2		Ruin	Pegu	music			Default music (ID) for this ruin			
-1	Usas2		Ruin	Sepa	music						
-1	Usas2		Ruin	Shalabha	music						
-1	Usas2		Ruin	Sui	music						
-1	Usas2		Ruin	Taxilla	music						
-1	Usas2		Ruin	Tiwanaku	music						
-1	Usas2		Ruin	Vala	music						
-1	Usas2		Ruin	WorldForest	music						
-1	Usas2		Ruin	Aggayu	Palette						
-1	Usas2		Ruin	Akna	Palette						
-1	Usas2		Ruin	AshokasHell	Palette						
-1	Usas2		Ruin	Chi	Palette						
-1	Usas2		Ruin	EuderusSet	Palette						
-1	Usas2		Ruin	Fate	Palette						
-1	Usas2		Ruin	Fuu	Palette						
-1	Usas2		Ruin	Genbu	Palette						
-1	Usas2		Ruin	Indra	Palette						
-1	Usas2		Ruin	Ka	Palette						
-1	Usas2		Ruin	Lemniscate	Palette						
-1	Usas2		Ruin	Morana	Palette						
-1	Usas2		Ruin	Pegu	Palette			Default Palette			
-1	Usas2		Ruin	Sepa	Palette						
-1	Usas2		Ruin	Shalabha	Palette						
-1	Usas2		Ruin	Sui	Palette						
-1	Usas2		Ruin	Taxilla	Palette						
-1	Usas2		Ruin	Tiwanaku	Palette						
-1	Usas2		Ruin	Vala	Palette						
