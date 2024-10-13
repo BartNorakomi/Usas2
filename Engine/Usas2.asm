@@ -42,7 +42,7 @@ RoomIndex:				equ	0		;Room index record structure
 .data:					equ dsm.worldMapIndexAdr
 
 ruinId:					equ 0
-.Hub: EQU 1
+.Polux: EQU 1
 .Lemniscate: EQU 2
 .BosStenenWater: EQU 3
 .Pegu: EQU 4
@@ -66,7 +66,6 @@ ruinId:					equ 0
 .Fuu: EQU 22
 .Indra: EQU 23
 .Morana: EQU 24
-
 
 
 

@@ -23,8 +23,9 @@ phase	enginepage3addr
 ;roomY: equ 27
 ;WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 
-roomX: equ ("B"-"A")*26 + "R"-"A"
-roomY: equ 21
+;current locatione=lemniscate
+roomX: equ ("A"-"A")*26 + "W"-"A"
+roomY: equ 27
 WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 ClesX:      dw 64 ;$19 ;230 ;250 ;210
 ClesY:      db 152 ;144-1
@@ -59,9 +60,7 @@ loadGraphics:
 		ld		a,2
 		out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
 		ld    	hl,$B000
-		call  	newwm
-;		ld    a,(slot.page12rom)            ;all RAM except page 1
-;		out   ($a8),a
+		call  	newwm		;create new worldmap (empty)
 .skip:
 		ld 		a,1
 		ld		(ffvoordetesteenmalig),a
@@ -160,14 +159,17 @@ loadGraphics:
 		call getroomtypeId
 		ld	 de,(WorldMapPositionY)
 		call newwmr                  ;create room [DE] with type [A] on the map
-		;call nc,rwmrhl
+		call GetRoomRuinId	;is this Polux (hub)
+		cp	 ruinid.Polux
+		jr	 nz,.thisIsNotPolux
+		ld	 a,(hl)			;then make the room green (color 12)
+		and	 0xF0
+		or	 12				;green
+		ld	 (hl),a
+.thisIsNotPolux:
 ;------------------------------------------------
-;	ld		a,(slot.page12rom)            ;all RAM except page 1
-;   	out		($a8),a
 
-
-
-  jp    LevelEngine
+		jp    LevelEngine
 
 
 
@@ -466,7 +468,14 @@ GetRoomTypeId:
 		rlca
 		rlca
 		and   7
-ret
+		ret
+
+;Return the current ruinID
+GetRoomRuinId:
+		ld    a,(UnpackedRoomFile+roomDataBlock.mapid)  ;tttrrrrr (t=type,r=ruin)
+		and   0x1f
+		ret
+
 
 BuildUpMap:
 		;Set ROM with tileset blocks to p1,p2
