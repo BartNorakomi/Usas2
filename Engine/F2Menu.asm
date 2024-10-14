@@ -36,7 +36,7 @@ F2MenuRoutine:
 
 ;print player in current room
   ld    hl,0                    ;Screen position (HL=xxyy)
-  ld    de,(WorldMapPositionY)
+  ld    de,(WorldMapPosition)
   call  putwmp                  ;print the player room [DE]
 
 
@@ -211,16 +211,18 @@ putF2MenuGraphicsInScreen:
 ;WorldMap attributes
 _WMROW: EQU   50              ;number of rows
 _WMCOL: EQU   50              ;number of collumns
+;room colors
 _WMRC0: EQU   11              ;normal room (blue)
 _WMRC1: EQU   6              ;teleport room (yellow)
-_WMRC2: EQU   0
+_WMRC2: EQU   _WMRC0			;secret room (blue)
 _WMRC3: EQU   3              ;boss room (red)
 _WMRC4: EQU   4               ;gate room (darker blue/grey)
-_WMRC5: EQU   11			;regular room small
-_WMRC6: EQU   0
-_WMRC7: EQU   0
+_WMRC5: EQU   _WMRC0			;regular room small
+_WMRC6: EQU   _WMRC0
+_WMRC7: EQU   _WMRC0
 _WMPC:  EQU   10               ;player room (white)
 _WMRBC: EQU   0              ;background color (stroke)
+_WMHC:	EQU	  12		;HUB (Polux) color
 
 
 ;TEXT > in ROM

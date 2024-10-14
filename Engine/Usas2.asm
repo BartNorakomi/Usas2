@@ -425,6 +425,7 @@ endif
 if LogoOn?
   jp    PlayLogo
 endif
+	jp startThegame
   jp    loadGraphics
 
 

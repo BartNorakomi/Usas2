@@ -7,8 +7,6 @@ loader:
 	call SwapSpatColAndCharTable
 	call SwapSpatColAndCharTable2
 	call PopulateControls			;this allows for a double jump as soon as you enter a new map
-	ld de,(WorldMapPositionY) 			;WorldMapPositionX/Y:  
-	call getRoom
  ret
 
 
@@ -489,14 +487,14 @@ SetObjects:                             ;after unpacking the map to ram, all the
   or    a
   jr    z,.NotYetPresent
   ld    b,a
-  ld    a,(WorldMapPositionY)
+  ld    a,(WorldMapPosition.y)
   cp    b
   jr    nz,.ThisBlockBelongsInADifferentRoom
   dec   hl
   ld    a,(hl)                          ;room x
   ld    b,a
   inc   hl
-  ld    a,(WorldMapPositionX)
+  ld    a,(WorldMapPosition.X)
   cp    b
   jr    nz,.ThisBlockBelongsInADifferentRoom
   dec   hl
@@ -549,12 +547,12 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   .SetRoomYXStoneXYAndTableAddress:
   ;set room y
-  ld    a,(WorldMapPositionY)
+  ld    a,(WorldMapPosition.Y)
   ld    (hl),a
 
   ;set room x
   dec   hl
-  ld    a,(WorldMapPositionX)
+  ld    a,(WorldMapPosition.X)
   ld    (hl),a
 
   ;set stone x
@@ -2981,9 +2979,14 @@ InitializeRoomType:
 	call getroomtype
 	ld	 a,(hl) ;width
 	ld	(roomMap.width),a
-;	ld	 (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
-;	add	 a,2
-;	ld	 (checktile.selfmodifyingcodeMapLenght+1),a
+  push hl
+  ld   l,A
+  ld   h,0
+  add  hl,hl ;x2
+  add  hl,hl ;x4
+  add  hl,hl ;x8
+  ld   (roomMap.widthPix),HL
+  pop hl
 	inc	 hl		; height
 	inc	 hl		; engine
 	ld	 a,(hl)

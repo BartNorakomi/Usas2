@@ -1,13 +1,14 @@
 # convert .pl file to az80 assembly tekst
 # Shadow@FuzzyLogic
-# 20231208-20231208
+# 20231208-20241014
 
 [CmdletBinding()]
 param
 (	
-	[Parameter(ParameterSetName='file')]$path="..\grapx\tilesheets\sKarniMataPalette.PL",
+	[Parameter(ParameterSetName='file')]$path="..\grapx\tilesheets\KarniMata.tiles.PL",
 	[switch]$toAsm,
-	[switch]$to8bitRgb
+	[switch]$to8bitRgb,
+	$inputFileType="msx" #unused atm
 )
 
 ##### Includes #####
@@ -30,6 +31,7 @@ $text="DW ";$colors|%{$text+=",0x{0:X4}" -f (([math]::floor($_ -shr 8 -band 0x00
 
 
 ##### Main #####
+$escape = [Char]0x1B
 
 foreach ($file in gci $path)
 {	$pal=Get-Content $file -Encoding Byte
@@ -42,12 +44,18 @@ foreach ($file in gci $path)
 
 	if ($to8bitRgb)
 	{	write-verbose "to8bitrgb"
+		#write-host "Palette file: $($file.name)"
 		$rgb=@(0..15)
 		for ($color=0;$color -lt 16;$color++)
-		{	$rgb[$color]=[pscustomobject]@{
-				number=$color;
-				msxRgb=[pscustomobject]@{g=$pal[$color*2+1] -band 7;r=$pal[$color*2+0] -shr 4 -band 7;b=$pal[$color*2+0] -band 7}
-				pcRgb=[pscustomobject]@{r=[math]::Round(($pal[$color*2+0] -shr 4 -band 7) /7*255);g=[math]::Round(($pal[$color*2+1] -band 7) /7*255);b=[math]::Round(($pal[$color*2+0] -band 7) /7*255);}
+		{	$g=$pal[$color*2+1] -band 7;$r=$pal[$color*2+0] -shr 4 -band 7;$b=$pal[$color*2+0] -band 7
+			$msxRgb=[pscustomobject]@{r=$r;g=$g;b=$b}
+			$pcRgb=[pscustomobject]@{r=[math]::Round($r /7*255);g=[math]::Round($g /7 *255);b=[math]::Round($b /7 *255);}
+			$rgb[$color]=[pscustomobject]@{
+			num=$color;
+			msxRgb9bit=$msxRgb;
+			pcRgb24bit=$pcRgb;
+			pcHex="{0:x2}" -f [byte]$pcrgb.r + "{0:x2}" -f [byte]$pcrgb.g  + "{0:x2}" -f [byte]$pcrgb.b;
+			output="$escape[48;2;$($pcrgb.r);$($pcrgb.g);$($pcrgb.b)m      $escape[0m"
 			}
 		}
 		$rgb

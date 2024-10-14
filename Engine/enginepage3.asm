@@ -23,16 +23,17 @@ phase	enginepage3addr
 ;roomY: equ 27
 ;WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 
-;current locatione=lemniscate
-roomX: equ ("A"-"A")*26 + "W"-"A"
-roomY: equ 27
-WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
+;current locatione=karnimata
+roomX: equ ("B"-"A")*26 + "R"-"A"
+roomY: equ 16
+WorldMapPosition:
+.Y:  db  roomY-1
+.X:	 db  roomX
 ClesX:      dw 64 ;$19 ;230 ;250 ;210
 ClesY:      db 152 ;144-1
 
 
 
-ffvoordetesteenmalig:	db 0
 ;WM DATA > in RAM
 WMADR:  DW    0x8000           ;RAM location
 WMMAP:  DB    1               ;MemoryMap
@@ -41,44 +42,32 @@ WMHMMC: DW    0,0,0,0,4,4,0,0xF0 ;(sx,sy,)dx,dy,nx,ny,col/arg,cmd=hmmc
 
 
 PlayLogo:
-  call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
+		call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
+startTheGame:
+;initialize the worldmap one time
+		call enableWorldmap
+		ld	 hl,$B000
+		call newwm
+;Load the current room
+		call loadGraphics
+;and lezgooo
+		jp    LevelEngine
 
-;Also the start of the game
+
 loadGraphics:
 ;	ld    a,(RePlayer_playing)
 ;	and   a
 ;  call  z,VGMRePlay
 
-;initialize the worldmap one time (this should be move to the usas2 game one-time-initialization)
-		ld		a,(ffvoordetesteenmalig)
-		or		a
-		jr		nz,.skip
-		ld    a,(slot.page1rom)            ;all RAM except page 1
-		out   ($a8),a
-		ld    a,F2Menublock                 ;F1 Menu routine at $4000
-		call  block12
-		ld		a,2
-		out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
-		ld    	hl,$B000
-		call  	newwm		;create new worldmap (empty)
-.skip:
-		ld 		a,1
-		ld		(ffvoordetesteenmalig),a
-;ro: I moved the test code to a lower part where the room is actually loaded, to retrieve the roomtype
-;
-
 	ld    a,(slot.page12rom)            ;RAMROMROMRAM
 	out   ($a8),a
 	ld    a,Loaderblock                 ;loader routine at $4000
 	call  block12
-	call  loader                        ;loader routines > 20240405;updated, now returns A=block, HL=adr || old:returns with IX=roomdatastuff, used by next call
-	call  UnpackMapdataAndObjectData    ;unpacks packed map to ram. sets objectdata at the end of mapdata ends with: all RAM except page 2
 
-;	ld a,(slot.page12rom)            ;RAMROMROMRAM
-;	out ($a8),a
-;	ld a,Loaderblock                 ;loader routine at $4000
-;	call block12
-;	ld a,Ruinid.Pegu
+	call  loader
+
+	call unpackCurrentRoom    ;unpacks packed map to ram. sets objectdata at the end of mapdata ends with: all RAM except page 2
+
 	call GetRoomPaletteId
 	call getPalette
 	call SetMapPalette
@@ -91,17 +80,7 @@ loadGraphics:
 	call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
 	call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
 
-
 	call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
-
-;	ld    a,(slot.page12rom)            ;all RAM except page 12
-;	out   ($a8),a       
-
-;	ld    a,(slot.page12rom)            ;all RAM except page 12
-;	out   ($a8),a
-;	ld    a,Loaderblock                 ;loader routine at $4000
-;	call  block12
-;	call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 
 	call  RemoveSpritesFromScreen       ;|loader|
 	call  SwapSpatColAndCharTable
@@ -117,36 +96,35 @@ loadGraphics:
 ;  ei
 ;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
 
-  ld    a,1
-  ld    (CopyObject+spage),a
-  ld    a,216
-  ld    (CopyObject+sy),a  
+		ld    a,1
+		ld    (CopyObject+spage),a
+		ld    a,216
+		ld    (CopyObject+sy),a  
   
-  call  SetInterruptHandler           ;set Lineint and Vblank  
-  call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank | if normal engine: wait for lineint
+		call  SetInterruptHandler           ;set Lineint and Vblank  
+		call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank | if normal engine: wait for lineint
 
-  call  SetElementalWeaponInVramJumper
+		call  SetElementalWeaponInVramJumper
 
-;  xor   a
-;  ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
-;  ld    (NewPrContr),a                  ;this allows for a double jump as soon as you enter a new map
+		;  xor   a
+		;  ld    (Controls),a                  ;this allows for a double jump as soon as you enter a new map
+		;  ld    (NewPrContr),a                  ;this allows for a double jump as soon as you enter a new map
 
-  ld    a,(CheckNewPressedControlUpForDoubleJump)
-  cp    2
-  jr    nz,.EndCheckDoubleJump        ;check if we need to double jump when entering a new room
-	ld		a,(NewPrContr)
-	set   0,a
-	ld		(NewPrContr),a
+		ld    a,(CheckNewPressedControlUpForDoubleJump)
+		cp    2
+		jr    nz,.EndCheckDoubleJump        ;check if we need to double jump when entering a new room
+		ld		a,(NewPrContr)
+		set   0,a
+		ld		(NewPrContr),a
   .EndCheckDoubleJump:
 
-  call  LoadSamplesAndPlaySong0
+		call  LoadSamplesAndPlaySong0
 
-  ld    a,1
-  ld    (AmountOfFramesUntilScreenTurnsOn?),a
+		ld    a,1
+		ld    (AmountOfFramesUntilScreenTurnsOn?),a
 
-	ld    a,(UnpackedRoomFile+roomDataBlock.mapid)
-	and   $1f
-  ld    (PreviousRuin),a
+		call GetRoomRuinId
+		ld    (PreviousRuin),a
 
 
 ;------------------------------------------------
@@ -157,7 +135,7 @@ loadGraphics:
 		call  block12
 		;ld    a,0                     ;room type (decides which color it will be)
 		call getroomtypeId
-		ld	 de,(WorldMapPositionY)
+		ld	 de,(WorldMapPosition)
 		call newwmr                  ;create room [DE] with type [A] on the map
 		call GetRoomRuinId	;is this Polux (hub)
 		cp	 ruinid.Polux
@@ -168,9 +146,7 @@ loadGraphics:
 		ld	 (hl),a
 .thisIsNotPolux:
 ;------------------------------------------------
-
-		jp    LevelEngine
-
+		ret
 
 
 ;clear wall mapdate tiles to background
@@ -178,8 +154,6 @@ removeObjectFromRoomMapData: ; RemoveWallFromRoomTiles:
 		ld    l,(ix+enemies_and_objects.x)        ;x object
 		ld    h,(ix+enemies_and_objects.x+1)
 		ld    a,(ix+enemies_and_objects.y)        ;y object
-		;add   a,16	;this needs to go (ro)
-		;call    getRoomMapTile ;CheckTile.XandYset				;<< yes, this should be generic as mentioned earlier.
 		call getRoomMapData
 ;Fill a part of the current room tile matrix										
 		ld	a,(ix+enemies_and_objects.nx)
@@ -223,7 +197,6 @@ AreaSignList:	dw	AreaSign01,AreaSign02,AreaSign03,AreaSign04,AreaSign05,AreaSign
 UnpackAreaSign:
 	ld    a,(slot.page1rom)            ;RAMROMROMRAM
 	out   ($a8),a	
-
 	ld    a,AreaSignTestBlock			;packed area signs at $4000
 	call  block12
 
@@ -231,8 +204,7 @@ UnpackAreaSign:
 	push	bc
 	push	hl
 
-	ld    a,(UnpackedRoomFile+roomDataBlock.mapid)
-	and   $1f
+	call GetRoomRuinId
 	add		a,a
 	ld		hl,AreaSignList
 	ld		d,0
@@ -242,8 +214,6 @@ UnpackAreaSign:
 	inc		hl
 	ld		h,(hl)
 	ld		l,a
-
-;	ld		hl,AreaSign02
 	ld		de,$8000
 	call	Depack						;In: HL: source, DE: destination
 
@@ -271,14 +241,14 @@ CheckSwitchNextSong:
 	bit		6,a           ;F1 pressed ?
   ret   z
 
-	.GoSwitchNextSong:
+.GoSwitchNextSong:
   call  RePlayer_Stop
   ld    a,(CurrentSongBeingPlayed)
   inc   a
   cp    7
   jr    nz,.EndCheckLastSong
   ld    a,1
-  .EndCheckLastSong:
+.EndCheckLastSong:
   ld    (CurrentSongBeingPlayed),a
   ld    c,a
   ld    b,0
@@ -316,16 +286,15 @@ SetElementalWeaponInVramJumper:       ;check if F1 is pressed and the menu can b
 
   jp    SetElementalWeaponInVram
   
-;  ret
   
 
 StartTeamNXTLogo:
-  ld    a,(slot.page12rom)            ;all RAM except page 1+2
-  out   ($a8),a
+		ld    a,(slot.page12rom)            ;all RAM except page 1+2
+		out   ($a8),a
 
-  ld    a,teamNXTlogoblock            ;teamNXT logo routine at $4000
-  call  block34
-  jp    TeamNXTLogoRoutine
+		ld    a,teamNXTlogoblock            ;teamNXT logo routine at $4000
+		call  block34
+		jp    TeamNXTLogoRoutine
 
 CopyLogoPart:                                       ;this is used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)
   db    000,000,000,000   ;sx,--,sy,spage
@@ -335,67 +304,67 @@ CopyLogoPart:                                       ;this is used in the normal 
 
 SoundData: equ $8000
 VGMRePlay:
-  ld    a,(slot.page12rom)            ;all RAM except page 1+2
-  out   ($a8),a
-  ei
-  
-  ld    a,FormatOPL4_ID
-  call  RePlayer_Detect               ;detect moonsound
-  call  RePlayerSFX_Initialize
-  ld a,LoadSamples?	;debug function to skip sample load
-  and A
-  ret z
-  ld    bc,0                          ;track nr 0 will alos initialize samples
-  ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
-  ld    hl,$8000+1
-  call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
-  call	RePlayer_Tick
-  call	RePlayer_Stop
-  ret
+		ld    a,(slot.page12rom)            ;all RAM except page 1+2
+		out   ($a8),a
+		ei
 
-Main_Loop:
-  halt
-  call  RePlayer_Tick
-  jp    Main_Loop  
+		ld    a,FormatOPL4_ID
+		call  RePlayer_Detect               ;detect moonsound
+		call  RePlayerSFX_Initialize
+		ld a,LoadSamples?	;debug function to skip sample load
+		and A
+		ret z
+		ld    bc,0                          ;track nr 0 will alos initialize samples
+		ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
+		ld    hl,$8000+1
+		call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
+		call	RePlayer_Tick
+		call	RePlayer_Stop
+		ret
+
+; Main_Loop:
+; 		halt
+; 		call  RePlayer_Tick
+; 		jp    Main_Loop  
 
 INCLUDE "RePlayer.asm"
 
 WaitForInterrupt:
-  ld    a,(CameraY)
-  xor   a
-  ld    (R23onVblank),a
-  add   a,lineintheight
-  ld    (R19onVblank),a
+		ld    a,(CameraY)
+		xor   a
+		ld    (R23onVblank),a
+		add   a,lineintheight
+		ld    (R19onVblank),a
 
-  ld    a,(scrollEngine)          ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a                         
-  ld    hl,lineintflag  
-;  jr    z,.EngineFound
-  ld    hl,vblankintflag    
-  .EngineFound:  
-  xor   a
-  ld    (hl),a  
-  .checkflag:
-  cp    (hl)
-  jr    z,.checkflag
+		ld    a,(scrollEngine)          ;1= 304x216 engine  2=256x216 SF2 engine
+		dec   a                         
+		ld    hl,lineintflag  
+		;  jr    z,.EngineFound
+		ld    hl,vblankintflag    
+.EngineFound:  
+		xor   a
+		ld    (hl),a  
+.checkflag:
+		cp    (hl)
+		jr    z,.checkflag
 
-  xor   a
-  ld    (vblankintflag),a
-  ld    (lineintflag),a
-  ld    (SpriteSplitAtY100?),a
-  ret
+		xor   a
+		ld    (vblankintflag),a
+		ld    (lineintflag),a
+		ld    (SpriteSplitAtY100?),a
+		ret
 SpriteSplitFlag:      db  1
 SpriteSplitAtY100?:   db  0
 
 WaitVblank:
-  xor   a
-  ld    hl,vblankintflag
+		xor   a
+		ld    hl,vblankintflag
 .checkflag:
-  cp    (hl)
-  jr    z,.checkflag
-  ld    (hl),a  
-  ld    (lineintflag),a
-  ret
+		cp    (hl)
+		jr    z,.checkflag
+		ld    (hl),a  
+		ld    (lineintflag),a
+		ret
 
 
 clearEnemyTable:
@@ -410,23 +379,13 @@ clearEnemyTable:
 
 
 ;unpacks packed map to ram. ends with: all RAM except page 2
-;in:	IX
-UnpackMapdataAndObjectData:             
-;unpack map data
-;		ld    a,(slot.page12rom)            ;all RAM except page 2
-;		out   ($a8),a      
-;		ld    a,(ix+0)		;ROM block 
+unpackCurrentRoom: 
+		ld de,(WorldMapPosition) 			;WorldMapPositionX/Y:  
+		call getRoom	;out: A=block,DE=RomAdr            
 		call  block34		;we can only switch block34 if page 1 is in rom
-;		ld    l,(ix+1)		;ROM adr
-;		ld    h,(ix+2)
-;unpack map data
-;		ld    a,(slot.page2rom)             ;all RAM except page 2
-;		out   ($a8),a      
 		ld    de,UnpackedRoomFile	;Unpack RoomLayout to page3 buffer
 		jp    Depack 				;In: HL: source, DE: destination
 
-;Engine256x216: a map is 32x27. We add 2 empty tiles on the right per row, and the remainder is filled with background tiles. Total mapsize will be 34x27 + empty fill
-;Engine304x216: a map is 38x27. We add 2 empty tiles on the right per row, and we have two extra rows with background tiles. Total mapsize will be 40x27 + empty rows
 
 MapHeight:                  equ 27
 ;MapLenght256x216:           equ 32
@@ -437,10 +396,11 @@ MapHeight:                  equ 27
 ;Space for room tile classes
 ;MapData:
 RoomMap:
-.numcol:	equ 38+2
+.numcol:	equ 38+2	;ro; i'm not really sure why we store 2 extra empty bytes on each row...
 .numrow:	equ 27+2
+.width:		db 0 		;width of the current room in tiles
+.widthPix:	dw 0 	;idem but in pixels
 .data:		ds    .numrow * .numcol ,0   
-.width:		db 0
 
 
 ;Return the correct tile ID for this room
@@ -496,8 +456,8 @@ BuildUpMap:
 		jp    z,.buildupMap38x27
 		;  jp    .buildupMap32x27
 .buildupMap32x27:
-		ld    a,32*2
-		ld    (.SelfModifyingCodeMapLenght),a
+		; ld    a,32*2
+		; ld    (.SelfModifyingCodeMapLenght),a
 
 		;rom->vram copy 14 rows to page 0
 		ld    b,14                          ;14 rows
@@ -568,8 +528,8 @@ ret
 
 
 .buildupMap38x27:
-		ld    a,38*2
-		ld    (.SelfModifyingCodeMapLenght),a
+		; ld    a,38*2
+		; ld    (.SelfModifyingCodeMapLenght),a
 
 		;rom->vram copy 14 rows to page 0
 		ld    b,14                          ;14 rows
@@ -695,8 +655,11 @@ ret
 		ei
 		ld    sp,(spatpointer)              ;recall stack pointer
 
-.SelfModifyingCodeMapLenght: equ $+1  
-		ld    de,000
+;.SelfModifyingCodeMapLenght: equ $+1  
+;		ld    de,000
+		ld	 de,(roomMap.width)
+		ld	 d,0
+		add   ix,de                         ;go to next row of tiles
 		add   ix,de                         ;go to next row of tiles
 		pop   bc
 		djnz .put8blines
@@ -706,7 +669,6 @@ ret
 
 ;Get GFX location, and set blocks at page 1,2
 GetTilesetBitmap: 
-;		LD    BC,TileSetIndex
 		LD	BC,dsm.bitmapGfxindexAdr	; $9000 		;start of the gfx index (temp)
         LD	L,A
         LD	H,0
@@ -720,7 +682,7 @@ GetTilesetBitmap:
         LD	L,A
 		ld	bc,dsm.bitmapGfxindexAdr+dsm.bitmapGfxRecords ;$9000+64
 		add	hl,bc
-;rm: voorlopig zo, met raw sc5 uitgaande van volledige 32K
+;rm: voorlopig zo, met raw sc5 uitgaande van volledige 32K (als we niet gaan packen laten we dit zo)
 		LD    A,(HL)          ;pal
 		INC   HL
 ;		LD    B,(HL)          ;parts
@@ -796,8 +758,6 @@ ConvertToMapinRam:
 		ld	 de,UnpackedRoomFile.tiledata 
 		ld	 hl,roomMap.data	;MapData
 ;		ld	 a,MapHeight
-;.SelfModifyingCodeMapLenght:
-;    ld	b,000   ;maplenght: 32 or 38, depending on which engine is active
 		ld	 b,MapHeight
 		ld	 a,(roommap.width)
 		ld	 c,a

@@ -87,72 +87,38 @@ ExitTeleport:
   
 
 EnterTeleport:
-  ld    a,(PlayerFacingRight?)
-  or    a
-  ld    hl,RightMeditateAnimation ;- 2
-  jr    nz,.DirectionFound
-  ld    hl,LeftMeditateAnimation ;- 2
-  .DirectionFound:
-  call  AnimateEnterTeleport        ;animate
-  call  LMeditate.VerticalMovement
-  call  .MoveToCenter               ;slowly move to the center of the portal
-  call  .FlickerSprite
+    ld    a,(PlayerFacingRight?)
+    or    a
+    ld    hl,RightMeditateAnimation ;- 2
+    jr    nz,.DirectionFound
+    ld    hl,LeftMeditateAnimation ;- 2
+    .DirectionFound:
+    call  AnimateEnterTeleport        ;animate
+    call  LMeditate.VerticalMovement
+    call  .MoveToCenter               ;slowly move to the center of the portal
+    call  .FlickerSprite
 
-  ld    a,(PlayerAniCount+1)
-  cp    121-1
-  ret   nz                          ;at end of meditate change room
+    ld    a,(PlayerAniCount+1)
+    cp    121-1
+    ret   nz                          ;at end of meditate change room
 
-  xor   a
-  ld    (PlayerAniCount),a
-  ld    a,10                          ;we don't need the first 10 frames in which player floats up only
-  ld    (PlayerAniCount+1),a
-	ld		hl,ExitTeleport
-	ld		(PlayerSpriteStand),hl
+    xor   a
+    ld    (PlayerAniCount),a
+    ld    a,10                          ;we don't need the first 10 frames in which player floats up only
+    ld    (PlayerAniCount+1),a
+    ld		hl,ExitTeleport
+    ld		(PlayerSpriteStand),hl
 
-  call  .SetNewMapPosition
-  jp    CheckMapExit.LoadnextMap
+    call  .SetNewMapPosition
+    jp    CheckMapExit.LoadnextMap
 
 .SetNewMapPosition:
-  		ld de,(WorldMapPositionY)
-		call	GetTeleportDestination
-		ld (WorldMapPositionY),DE
-		ret
+    ld de,(WorldMapPosition)
+    call	GetTeleportDestination
+    ld (WorldMapPosition),DE
+    ret
 
-  ld    a,(WorldMapPositionY)
-  cp    22
-  jr    z,.GoToBX14
-  cp    14
-  jr    z,.GoToBU20
-  cp    20
-  jr    z,.GoToBH12
-
-  .GoToBK22:
-  ld    a,26*("B"-"A") + "K"-"A"
-  ld    (WorldMapPositionX),a
-  ld    a,22
-  ld    (WorldMapPositionY),a
-  ret
-
-  .GoToBX14:
-  ld    a,26*("B"-"A") + "X"-"A"
-  ld    (WorldMapPositionX),a
-  ld    a,14
-  ld    (WorldMapPositionY),a
-  ret
-
-  .GoToBU20:
-  ld    a,26*("B"-"A") + "U"-"A"
-  ld    (WorldMapPositionX),a
-  ld    a,20
-  ld    (WorldMapPositionY),a
-  ret
-
-  .GoToBH12:
-  ld    a,26*("B"-"A") + "H"-"A"
-  ld    (WorldMapPositionX),a
-  ld    a,12
-  ld    (WorldMapPositionY),a
-  ret
+  
 
   .FlickerSprite:
   ld    a,(PlayerAniCount+1)

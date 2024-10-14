@@ -264,21 +264,23 @@ FreeToUseFastCopyF1Menu:               ;freely usable in F1 menu
   db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
 
 CheckF2Menu:                        ;check if F2 is pressed and the map can be entered
-;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-  ld    a,(NewPrContr)	
-	bit		7,a           ;F2 pressed ?
-  ret   z
+		ld    a,(NewPrContr)	
+		bit		7,a           ;F2 pressed ?
+		ret   z
+		call enableWorldMap
+		jp    F2MenuRoutine
 
-  ld    a,(slot.page1rom)            ;all RAM except page 1
-  out   ($a8),a
+enableWorldMap:
+		ld	 a,(slot.page1rom)            ;all RAM except page 1
+		out	 ($a8),a
+		ld		a,2
+		out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
+		ld	 a,F2Menublock                 ;F1 Menu routine at $4000
+		jp	 block12
 
-  ld    a,F2Menublock                 ;F1 Menu routine at $4000
-  call  block12
-  jp    F2MenuRoutine
 
 CheckF1Menu:                        ;check if F1 is pressed and the menu can be entered
 ;
@@ -2657,110 +2659,109 @@ base:                         equ   $4000         ;address of heroframes
 ;  or    (ix+2)
 ;  ret
 
-ExitRight256x216: equ 252 ; 29*8
+ExitRight256x216: equ 32*8-4
 ExitRight304x216: equ 38*8-3
 CheckMapExit:
-  ld    a,(ClesY)
-  cp    180+8 + 24
-  jr    nc,.ExitBottomFound
+		ld    a,(ClesY)		;Bottom?
+		cp    MapHeight*8-4 ;180+8 + 24
+		jr    nc,.ExitBottomFound
+		cp    5				;top?
+		jr    c,.ExitTopFound
 
-;  ld    a,(ClesY)
-  cp    5
-  jr    c,.ExitTopFound
+		ld    a,(ClesX)		;left?
+		or    a
+		jp    z,.PossibleExitLeftFound
+.selfmodifyingcodeMapexitRight:	;right?
+		ld	 hl,ExitRight304x216
+		ld	 hl,(roomMap.widthPix)
+		ld	 de,(ClesX)
+		sbc	 hl,de
+		ret	 nc
 
-  ld    a,(ClesX)
-  or    a
-;  jr    z,.PossibleExitLeftFound
-  jp    z,.PossibleExitLeftFound
-
-.selfmodifyingcodeMapexitRight:
-  ld    hl,ExitRight304x216
-  ld    de,(ClesX)
-  sbc   hl,de
-  ret   nc
-
-  ld    hl,(ClesX)
-  ld    de,50*8
-  sbc   hl,de
-;  jr    c,.ExitRightFound
-  jp    c,.ExitRightFound
-  jp    .ExitLeftFound  
+		ld    hl,(ClesX)
+		ld    de,50*8
+		sbc   hl,de
+		;  jr    c,.ExitRightFound
+		jp    c,.ExitRightFound
+		jp    .ExitLeftFound  
 
 .ExitBottomFound:
 ;check if player was climbing stairs left up/ right down
-  ld    de,ClimbStairsLeftUp
-  ld    hl,(PlayerSpriteStand)
-  xor   a
-  sbc   hl,de
-  jr    nz,.EndCheckClimbStairsLeftUp1
-  ld    hl,(ClesX)
-  ld    de,18 - 8
-  add   hl,de
-  ld    (ClesX),hl
-  .EndCheckClimbStairsLeftUp1:
-
+		ld    de,ClimbStairsLeftUp
+		ld    hl,(PlayerSpriteStand)
+		xor   a
+		sbc   hl,de
+		jr    nz,.EndCheckClimbStairsLeftUp1
+		ld    hl,(ClesX)	;adjust X position on new schreen
+		ld    de,18 - 8
+		add   hl,de
+		ld    (ClesX),hl
+.EndCheckClimbStairsLeftUp1:
 ;check if player was climbing stairs right up/left down
-  ld    de,ClimbStairsRightUp
-  ld    hl,(PlayerSpriteStand)
-  xor   a
-  sbc   hl,de
-  jr    nz,.EndCheckClimbStairsRightUp1
-  ld    hl,(ClesX)
-  ld    de,-18+ 8
-  add   hl,de
-  ld    (ClesX),hl
-  .EndCheckClimbStairsRightUp1:
-  
+		ld    de,ClimbStairsRightUp
+		ld    hl,(PlayerSpriteStand)
+		xor   a
+		sbc   hl,de
+		jr    nz,.EndCheckClimbStairsRightUp1
+		ld    hl,(ClesX)
+		ld    de,-18+ 8
+		add   hl,de
+		ld    (ClesX),hl
+.EndCheckClimbStairsRightUp1:
 ;  ld    de,WorldMapDataMapLenght*WorldMapDataWidth
-  ld    a,6
-  ld    (ClesY),a
-  ld    a,0
-  ld    (CameraY),a
-  
-  ld    a,(WorldMapPositionY)
-  inc   a
-  ld    (WorldMapPositionY),a
+		ld    a,6
+		ld    (ClesY),a
+		ld    a,0
+		ld    (CameraY),a
 
-;  .kut: jp .kut
+		call enableWorldMap	;add bottom connector to next worldmap room
+		ld	 de,(WorldMapPosition)
+		call bwmr
 
-
-  jp    .LoadnextMap
+		ld	 a,(WorldMapPosition.Y)
+		inc	 a
+		ld	 (WorldMapPosition.Y),a
+		call .LoadnextMap
+		ret
   
 .ExitTopFound:  
 ;check if player was climbing stairs left up
-  ld    de,ClimbStairsLeftUp
-  ld    hl,(PlayerSpriteStand)
-  xor   a
-  sbc   hl,de
-  jr    nz,.EndCheckClimbStairs2
-  ld    hl,(ClesX)
-  ld    de,-19 + 8 - 1
-  add   hl,de
-  ld    (ClesX),hl
-  .EndCheckClimbStairs2:
-
+		ld    de,ClimbStairsLeftUp
+		ld    hl,(PlayerSpriteStand)
+		xor   a
+		sbc   hl,de
+		jr    nz,.EndCheckClimbStairs2
+		ld    hl,(ClesX)
+		ld    de,-19 + 8 - 1
+		add   hl,de
+		ld    (ClesX),hl
+		jp	 .EndCheckClimbStairsRightUp2
+.EndCheckClimbStairs2:
 ;check if player was climbing stairs right up
-  ld    de,ClimbStairsRightUp
-  ld    hl,(PlayerSpriteStand)
-  xor   a
-  sbc   hl,de
-  jr    nz,.EndCheckClimbStairsRightUp2
-  ld    hl,(ClesX)
-  ld    de,12 ;19
-  add   hl,de
-  ld    (ClesX),hl
-  .EndCheckClimbStairsRightUp2:
+		ld    de,ClimbStairsRightUp
+		ld    hl,(PlayerSpriteStand)
+		xor   a
+		sbc   hl,de
+		jr    nz,.EndCheckClimbStairsRightUp2
+		ld    hl,(ClesX)
+		ld    de,12 ;19
+		add   hl,de
+		ld    (ClesX),hl
+.EndCheckClimbStairsRightUp2:
+		ld    a,208
+		ld    (ClesY),a
+		ld    a,44
+		ld    (CameraY),a
 
-;  ld    de,-WorldMapDataMapLenght*WorldMapDataWidth
-  ld    a,208
-  ld    (ClesY),a
-  ld    a,44
-  ld    (CameraY),a
+		ld    a,(WorldMapPosition.Y)
+		dec   a
+		ld    (WorldMapPosition.Y),a
+		call    .LoadnextMap
 
-  ld    a,(WorldMapPositionY)
-  dec   a
-  ld    (WorldMapPositionY),a
-  jp    .LoadnextMap
+		call enableWorldMap	;add bottom connector to next worldmap room
+		ld	 de,(WorldMapPosition)
+		call bwmr
+		ret
   
 .ExitRightFound:
 ;check if player was climbing stairs
@@ -2775,51 +2776,53 @@ CheckMapExit:
   .EndCheckClimbStairs3:
   
 ;  ld    de,WorldMapDataMapLenght
-  ld    hl,1
-  ld    (ClesX),hl
-  xor   a
-  ld    (CameraX),a
+		ld    hl,1
+		ld    (ClesX),hl
+		xor   a
+		ld    (CameraX),a
 
-  ld    a,(WorldMapPositionx)
-  inc   a
-  ld    (WorldMapPositionx),a
+		call enableWorldMap	;add right exit connector to current worldmap room
+		ld	 de,(WorldMapPosition)
+		call rwmr
 
+		ld    a,(WorldMapPosition.x)
+		inc   a
+		ld    (WorldMapPosition.x),a
   jp    .LoadnextMap
 
 .PossibleExitLeftFound:  
   ld    a,(ClesX+1)
   or    a
   ret   nz
-  .ExitLeftFound:  
+.ExitLeftFound:  
 ;check if player was climbing stairs
-  ld    de,ClimbStairsLeftUp
-  ld    hl,(PlayerSpriteStand)
-  xor   a
-  sbc   hl,de
-  jr    nz,.EndCheckClimbStairs4
-  ld    a,(Clesy)
-  sub   a,11
-  ld    (Clesy),a
-  .EndCheckClimbStairs4:
-    
-;  ld    de,-WorldMapDataMapLenght
-  ld    hl,ExitRight304x216
-  ld    (ClesX),hl
-  ld    a,63
-  ld    (CameraX),a
+		ld    de,ClimbStairsLeftUp
+		ld    hl,(PlayerSpriteStand)
+		xor   a
+		sbc   hl,de
+		jr    nz,.EndCheckClimbStairs4
+		ld    a,(Clesy)
+		sub   a,11
+		ld    (Clesy),a
+.EndCheckClimbStairs4:
+		ld    hl,ExitRight304x216
+		ld    (ClesX),hl
+		ld    a,63
+		ld    (CameraX),a
 
-  ld    a,(WorldMapPositionx)
-  dec   a
-  ld    (WorldMapPositionx),a
+		ld	 a,(WorldMapPosition.x)
+		dec	 a
+		ld	 (WorldMapPosition.x),a
+		call .LoadnextMap
 
-  jp    .LoadnextMap
+		call enableWorldMap
+		ld	 de,(WorldMapPosition)
+		call rwmr
+		ret
+
 
 .LoadnextMap:
-;  ld    hl,(WorldMapPointer)
-;  add   hl,de
-;  ld    (WorldMapPointer),hl
-
-  pop   hl                  ;pop the call to this routine
+;  pop   hl                  ;pop the call to this routine
   call  CameraEngine304x216.setR18R19R23andPage  
 
   xor   a
@@ -6785,7 +6788,7 @@ palettes:
 .16_23:			DS .reclen*8
 .24_30:			DS .reclen*7
 .31Teleport:	DB $00,$00,$12,$01,$50,$02,$34,$03,$20,$00,$30,$01,$00,$00,$73,$06,$00,$00,$77,$07,$70,$04,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
-.32Worldmap:	DB $00,$00,$12,$01,$30,$00,$50,$00,$23,$02,$70,$02,$73,$06,$70,$05,$34,$03,$40,$00,$77,$07,$45,$04,$00,$04,$00,$00,$00,$00,$00,$00
+.32Worldmap:	DB $00,$00,$12,$01,$30,$00,$50,$00,$23,$02,$70,$02,$73,$06,$70,$05,$34,$03,$40,$00,$77,$07,$45,$04,$00,$04,$45,$05,$00,$00,$00,$00
 .33_39:			DS .reclen*7
 
 ;Write pal data [HL] to VDP
