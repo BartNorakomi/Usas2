@@ -259,28 +259,7 @@ SetWeaponBoxPrimary:
   call  docopy
   ret
 
-SpritesOn:
-  ld    a,(VDP_8)             ;sprites on
-  and   %11111101
-  ld    (VDP_8),a
-  di
-  out   ($99),a
-  ld    a,8+128
-  ei
-  out   ($99),a
-  ret
 
-SpritesOff:
-  ld    a,(VDP_8)         ;sprites off
-  or    %00000010
-  ld    (VDP_8),a
-  di
-  out   ($99),a
-  ld    a,8+128
-  ei
-  out   ($99),a
-  ret
-  
 BackupPage0InRam:                     ;store Vram data of page 0 in ram:
 ;bank 1 at $8000
   ld		a,1

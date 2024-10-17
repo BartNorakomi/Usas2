@@ -1,60 +1,58 @@
+;Usas2 F2 menu
 phase	f1MenuAddress ;at $4000 page 1
 
-F2MenuRoutine:
-  ld    a,(MapObtained?)
-  or    a
-  ret   z
-  
-  call  ScreenOff
-  call  DisableLineint	
-  call  .BackupPage0InRam              ;store Vram data of page 0 in ram
+worldMapScreenPosition: equ 0
+.x: equ 28
+.y:	equ 7
 
-;  call  CameraEngine304x216.setR18R19R23andPage  
+;Show the worldmap
+F2MenuRoutine:
+		ld    a,(MapObtained?)
+		or    a
+		ret   z
+
+		call  ScreenOff
+		call  DisableLineint	
+		call  .BackupPage0InRam		;backup current vram page 0
+
 		call  putF2MenuGraphicsInScreen
-		ld	 a,32       ;Worlmap palette ID
-		call getPalette       ;get palette address in HL
-		call setPalette       ;write to VDP
-		ld	 a,0*32 + 31                   ;a->x*32+31 (x=page)
+		ld	 a,32       	;Worlmap palette ID
+		call getPalette		;get palette address in HL
+		call setPalette		;write to VDP
+		ld	 a,0*32 + 31	;a->x*32+31 (x=page)
 		call  setpage
-		call  .SpritesOff
+		call  SpritesOff
+
+		ld    a,(slot.page1rom)            ;all RAM except page 1
+		out   ($a8),a
+;bank 2 at $8000
+		; ld		a,2
+		; out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
+;print worldmap
+		ld    de,0000                 ;startroom
+		ld    bc,50+256*50            ;width, height, b=x, c=y
+		ld    hl,worldMapScreenPosition.x*256+worldMapScreenPosition.y	;Screen position (HL=xxyy)
+		call  putwm
+;print player in current room
+		ld    hl,worldMapScreenPosition.x*256+worldMapScreenPosition.y	;Screen position (HL=xxyy)
+		ld    de,(WorldMapPosition)
+		call  putwmp                  ;print the player room [DE]
+
 		call  ScreenOn
 
-  ld    a,(slot.page1rom)            ;all RAM except page 1
-  out   ($a8),a
-
-;bank 2 at $8000
-  ld		a,2
-  out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
-
-;.stop: jp .stop
-
-;print worldmap
-  ld    de,0000                 ;startroom
-  ld    bc,50+256*50            ;width, height, b=x, c=y
-  ld    hl,0                    ;Screen position (HL=xxyy)
-  call  putwm
-
-;print player in current room
-  ld    hl,0                    ;Screen position (HL=xxyy)
-  ld    de,(WorldMapPosition)
-  call  putwmp                  ;print the player room [DE]
-
-
-  .F2MenuLoop:
-  halt
-  call  PopulateControls
+.F2MenuLoop:
+		halt
+		call  PopulateControls
   
-;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
 		ld    a,(NewPrContr)	
 		bit		7,a           ;F2 pressed ?
 		jr    z,.F2MenuLoop
 
 		call  ScreenOff
-		call  .SpritesOn
+		call  SpritesOn
 		call  .RestorePage0InVram            ;restore the vram data the was stored in ram earlier
 
 		call GetRoomPaletteId
@@ -65,115 +63,87 @@ F2MenuRoutine:
 		call  SetInterruptHandler           ;set Lineint and Vblank  
 		call  WaitForInterrupt              ;if SF2 engine: Wait for Vblank _ if normal engine: wait for lineint
 		call  ScreenOn
-  ret
+		ret
 
 
+ ;register 14 sets VRAM address to read/write to/from. This value is only set once per frame ingame, we assume it's set to $05 at all times, so set it back when going back to the game
 .SetR14ValueTo5:
-  di                                  ;register 14 sets VRAM address to read/write to/from. This value is only set once per frame ingame, we assume it's set to $05 at all times, so set it back when going back to the game
-  ld    a,$05
-	out   ($99),a       ;set bits 15-17
-	ld    a,14+128
-  ei
-	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
-  ret
+		di
+		ld    a,$05
+		out   ($99),a       ;set bits 15-17
+		ld    a,14+128
+		ei
+		out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
+		ret
 
 
-.SpritesOn:
-  ld    a,(VDP_8)             ;sprites on
-  and   %11111101
-  ld    (VDP_8),a
-  di
-  out   ($99),a
-  ld    a,8+128
-  ei
-  out   ($99),a
-  ret
-
-.SpritesOff:
-  ld    a,(VDP_8)         ;sprites off
-  or    %00000010
-  ld    (VDP_8),a
-  di
-  out   ($99),a
-  ld    a,8+128
-  ei
-  out   ($99),a
-  ret
-  
-.BackupPage0InRam:                     ;store Vram data of page 0 in ram:
+ ;store Vram data of page 0 in ram:
+.BackupPage0InRam:
 ;bank 1 at $8000
-  ld		a,1
-  out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
-
-  ld    hl,$0000                      ;page 0 - screen 5 
-	xor   a
-	call	SetVdp_Read	
-  ld    hl,$8000
-  ld    c,$98
-  ld    a,128/2                       ;backup 128 lines..
-  ld    b,0
-.loop:
-  inir
-  dec   a
-  jp    nz,.loop
-
-;bank 2 at $8000
-  ld		a,2
-  out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
-
-  ld    hl,$8000
-;  ld    c,$98
-  ld    a,084/2                       ;backup remaining 84 lines..
-  ld    b,0
-.loop2:
-  inir
-  dec   a
-  jp    nz,.loop2
-  ret
-
-
-
-.RestorePage0InVram:                   ;restore the vram data the was stored in ram earlier
-  ld    a,(slot.page1rom)             ;all RAM except page 1
-  out   ($a8),a
-
-;bank 1 at $8000
-  ld		a,1
-  out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
-
-  ld    hl,$0000                      ;page 0 - screen 5 
-	xor   a
-	call	SetVdp_Write	
-	ld		hl,$8000
-  ld    c,$98
-  ld    a,128/2                       ;copy 212 lines..
-  ld    b,0
-  call  copyGraphicsToScreen.loop1    
-
-;bank 2 at $8000
-  ld		a,2
-  out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
-	ld		hl,$8000
-;  ld    c,$98
-  ld    a,084/2                       ;copy remaining 84 lines..
-  ld    b,0
-  jp    copyGraphicsToScreen.loop1    
-
-
-
-putF2MenuGraphicsInScreen:
-		ld    a,(slot.page12rom)            ;all RAM except page 1+2
-		out   ($a8),a
-		ld    a,F2MenuGraphicsBlock ;block to copy from
-.go:
-		call  block34
+		ld		a,1
+		out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
 
 		ld    hl,$0000                      ;page 0 - screen 5 
 		xor   a
-		call	SetVdp_Write	
-		ld		hl,$8000
+		call	SetVdp_Read	
+		ld    hl,$8000
 		ld    c,$98
-		ld    a,128/2                       ;copy 212 lines..
+		ld    a,128/2                       ;backup 128 lines..
+		ld    b,0
+.loop:	inir
+		dec   a
+		jp    nz,.loop
+
+;bank 2 at $8000
+		ld		a,2
+		out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
+
+		ld    hl,$8000
+		;  ld    c,$98
+		ld    a,084/2                       ;backup remaining 84 lines..
+		ld    b,0
+.loop2:	inir
+		dec   a
+		jp    nz,.loop2
+		ret
+
+;restore the vram data the was stored in ram earlier
+.RestorePage0InVram:                   
+		ld    a,(slot.page1rom)             ;RAM ROM RAM RAM
+		out   ($a8),a
+		ld		a,1
+		out   ($fe),a
+
+		ld    hl,$0000		;vram dest 
+		xor   a
+		call	SetVdp_Write	
+		ld		hl,$8000	;ram source
+		ld    c,$98
+		ld    a,128/2		;ax256 bytes (64x256=16K)
+		;ld    b,0
+		call  copyGraphicsToScreen.loop1    ;copy a*256 bytes
+
+		ld		a,2
+		out   ($fe),a
+		ld		hl,$8000
+		;  ld    c,$98
+		ld    a,084/2                       ;copy remaining 84 lines..
+		;ld    b,0
+		jp    copyGraphicsToScreen.loop1
+
+
+putF2MenuGraphicsInScreen:
+		ld    a,(slot.page12rom)	;RAMROMROMRAM
+		out   ($a8),a
+		ld    a,F2MenuGraphicsBlock	;Bitmap source data
+		call  block34
+
+		ld    hl,$0000		;Dest vram 
+		xor   a				;Dest vpage
+		call	SetVdp_Write	
+		ld		hl,$8000	;source RAM
+		ld    c,$98
+		ld    a,128/2		;copy 212 lines..
 		ld    b,0
 		call  copyGraphicsToScreen.loop1    
 
@@ -185,8 +155,6 @@ putF2MenuGraphicsInScreen:
 		ld    a,084/2                       ;copy remaining 84 lines..
 		ld    b,0
 		jp    copyGraphicsToScreen.loop1   
-
-
 
 
 
@@ -224,8 +192,6 @@ _WMPC:  EQU   10               ;player room (white)
 _WMRBC: EQU   0              ;background color (stroke)
 _WMHC:	EQU	  12		;HUB (Polux) color
 
-
-;TEXT > in ROM
 ; VDP command register offsets
 VCMDSX: EQU   0
 VCMDSY: EQU   2
@@ -550,23 +516,6 @@ CMDVDP: ;PUSH  AF
 	LD    C,0x9B
 	OTIR
 	RET
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -48,6 +48,20 @@ startTheGame:
 		call enableWorldmap
 		ld	 hl,$B000
 		call newwm
+;put a few test rooms in
+		; ld	 de,0x0000
+		; ld	 a,0
+		; call newwmr
+		; ld	 de,49*256
+		; ld	 a,0
+		; call newwmr
+		; ld	 de,49
+		; ld	 a,0
+		; call newwmr
+		; ld	 de,49*256+49
+		; ld	 a,0
+		; call newwmr
+
 ;Load the current room
 		call loadGraphics
 ;and lezgooo
@@ -129,10 +143,11 @@ loadGraphics:
 
 ;------------------------------------------------
 ;TEST code to add current room to the worldmap
-		ld    a,(slot.page1rom)            ;all RAM except page 1
-		out   ($a8),a
-		ld    a,F2Menublock                 ;F1 Menu routine at $4000
-		call  block12
+		; ld    a,(slot.page1rom)            ;all RAM except page 1
+		; out   ($a8),a
+		; ld    a,F2Menublock                 ;F1 Menu routine at $4000
+		; call  block12
+		call	enableWorldMap
 		;ld    a,0                     ;room type (decides which color it will be)
 		call getroomtypeId
 		ld	 de,(WorldMapPosition)
@@ -895,46 +910,33 @@ SetInterruptHandler:
   ret
 
 
-
+;in: D=ROMblock (+0 and +1), b=vpage, hl=vramAdr
 copyGraphicsToScreen:
-  ld    a,d                 ;Graphicsblock
-  call  block12
+		ld    a,d                 ;Graphicsblock
+		call  block12
   
-	ld		a,b
-	call	SetVdp_Write	
-	ld		hl,$4000
-  ld    c,$98
-  ld    a,64                ;first 128 line, copy 64*256 = $4000 bytes to Vram
- ; ld    b,0
-      
-  call  .loop1    
+		ld		a,b
+		call	SetVdp_Write	
+		ld		hl,$4000	;source adr
+		ld    c,$98
+		ld    a,64                ;first 128 line, copy 64*256 = $4000 bytes to Vram
+		call  .loop1    
 
-  ld    a,d                 ;Graphicsblock
-;  add   a,2
-  inc   a
-  call  block12
+		ld    a,d                 ;Graphicsblock+1
+		inc   a
+		call  block12
   
-	ld		hl,$4000
-  ld    c,$98
-  ld    a,64 ; 42                ;second 84 line, copy 64*256 = $4000 bytes to Vram
-;  ld    b,0
-      
-  call  .loop1   
-
-  ;this last part is to fill the screen with a repetition
-;	ld		hl,$4000
-;  ld    c,$98
-;  ld    a,22                ;second 84 line, copy 64*256 = $4000 bytes to Vram
-;  ld    b,0
-      
-;  call  .loop1   
-  ret
+		ld		hl,$4000
+		ld    c,$98
+		ld    a,64 ; 42                ;second 84 line, copy 64*256 = $4000 bytes to Vram
+		call  .loop1   
+		ret
 
 .loop1:
-  call  outix256
-  dec   a
-  jp    nz,.loop1
-  ret
+		call  outix256
+		dec   a
+		jp    nz,.loop1
+		ret
 
 RestoreBackgroundScoreboard1Line:                    ;this is used to clean up the scoreboard which is backed up to (0,0) page 1
   db    000,000,000,003   ;sx,--,sy,spage

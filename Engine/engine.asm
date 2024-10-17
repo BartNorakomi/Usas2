@@ -6752,7 +6752,7 @@ SetMapPalette:
 		ldir
 		pop   hl
 		call setpalette
-ret
+		ret
 
 ;Get palette location
 ;in:	A=palId
@@ -6769,7 +6769,7 @@ getPalette:
 		ld	bc,palettes.data
 		add	hl,bc
 		pop bc		
-ret
+		ret
 
 ;Palettes table
 palettes:
@@ -6805,88 +6805,83 @@ SetPalette:
 
 
 ;Set VDP port #98 to start reading at address AHL (17-bit)
-SetVdp_Read:  rlc     h
-              rla
-              rlc     h
-              rla
-              srl     h
-              srl     h
-              di
-              out     ($99),a         ;set bits 15-17
-              ld      a,14+128
-              out     ($99),a
-              ld      a,l             ;set bits 0-7
-;              nop
-              out     ($99),a
-              ld      a,h             ;set bits 8-14
-              ei                      ; + read access
-              out     ($99),a
-              ret
+SetVdp_Read:  
+		rlc     h
+		rla
+		rlc     h
+		rla
+		srl     h
+		srl     h
+		di
+		out     ($99),a         ;set A16-A14
+		ld      a,14+128
+		out     ($99),a
+		ld      a,l             ;set A7-A0
+		out     ($99),a
+		ld      a,h             ;set A8-A13 (bit 6=0, read mode)
+		and		0x3F		;read mode
+		ei
+		out     ($99),a
+		ret
               
 ;
 ;Set VDP to start writing at address AHL (17-bit)
 SetVdp_Write: 
-	rlc     h	;first set register 14 (actually this only needs to be done once
-	rla
-	rlc     h
-	rla
-	srl     h
-	srl     h
-	di
-	out     ($99),a       ;set bits 15-17
-	ld      a,14+128
-	out     ($99),a
-
-	ld      a,l           ;set bits 0-7
-	out     ($99),a
-	ld      a,h           ;set bits 8-14
-	or      64            ; + write access
-	ei
-	out     ($99),a       
-ret
+		rlc     h
+		rla
+		rlc     h
+		rla
+		srl     h
+		srl     h
+		di
+		out     ($99),a         ;set A16-A14
+		ld      a,14+128
+		out     ($99),a
+		ld      a,l             ;set A7-A0
+		out     ($99),a
+		ld      a,h             ;set A8-A13 (bit 6=1, write mode)
+		or      64				;mode=write
+		ei
+		out     ($99),a       
+		ret
 
 SetVdp_WriteRemainDI: 
-;first set register 14 (actually this only needs to be done once
-	rlc     h
-	rla
-	rlc     h
-	rla
-	srl     h
-	srl     h
-	di
-	out     ($99),a       ;set bits 15-17
-	ld      a,14+128
-	out     ($99),a
-;/first set register 14 (actually this only needs to be done once
-
-	ld      a,l           ;set bits 0-7
-;	nop
-	out     ($99),a
-	ld      a,h           ;set bits 8-14
-	or      64            ; + write access
-	out     ($99),a       
-	ret
+		rlc     h
+		rla
+		rlc     h
+		rla
+		srl     h
+		srl     h
+		di
+		out     ($99),a         ;set A16-A14
+		ld      a,14+128
+		out     ($99),a
+		ld      a,l             ;set A7-A0
+		out     ($99),a
+		ld      a,h             ;set A8-A13 (bit 6=1, write mode)
+		or      64				;mode=write
+		out     ($99),a
+		ret
 
 
 ;set vPage
 setpage:              ;in a->x*32+31 (x=page)
-  di
-  out   ($99),a
-  ld    a,2+128
-  ei
-  out   ($99),a
-  ret
-
+		di
+		out   ($99),a
+		ld    a,2+128
+		ei
+		out   ($99),a
+		ret
 
 ScreenOff:
-  ld    a,(VDP_0+1)       ;screen off
-  and   %1011 1111
-  di
-  out   ($99),a
-  ld    a,1+128
-  ei
-  out   ($99),a
-  ret
+		ld    a,(VDP_0+1)       ;screen off
+		and   %1011 1111
+		di
+		out   ($99),a
+		ld    a,1+128
+		ei
+		out   ($99),a
+		ret
 
 ScreenOn:
   ld    a,(VDP_0+1)       ;screen on
@@ -6897,6 +6892,33 @@ ScreenOn:
   ei
   out   ($99),a
   ret
+
+
+SpritesOn:
+  ld    a,(VDP_8)             ;sprites on
+  and   %11111101
+  ld    (VDP_8),a
+  di
+  out   ($99),a
+  ld    a,8+128
+  ei
+  out   ($99),a
+  ret
+
+SpritesOff:
+  ld    a,(VDP_8)         ;sprites off
+  or    %00000010
+  ld    (VDP_8),a
+  di
+  out   ($99),a
+  ld    a,8+128
+  ei
+  out   ($99),a
+  ret
+  
+
+
+
 
 spat:						;sprite attribute table (y,x 32 sprites)
 	ds    32*2,0
@@ -6981,9 +7003,7 @@ outix16:
 outix8:	
 	outi	outi	outi	outi	outi	outi	outi	outi	
 	ret	
-endengine:
-;dephase
-;enlength:					Equ	$-engine
-enLength: equ $-engaddr
 
-  dephase
+endengine:
+enLength: equ $-engaddr
+dephase

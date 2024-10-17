@@ -1,2 +1,3 @@
+param ($m="update")
 git add -A
-git commit -m "x"
+git commit -m $m
