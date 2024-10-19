@@ -24,13 +24,14 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 
 ;current locatione=karnimata
-roomX: equ ("B"-"A")*26 + "R"-"A"
-roomY: equ 16
+roomX: equ ("B"-"A")*26 + "Q"-"A"
+roomY: equ 18
+
 WorldMapPosition:
 .Y:  db  roomY-1
 .X:	 db  roomX
 ClesX:      dw 64 ;$19 ;230 ;250 ;210
-ClesY:      db 152 ;144-1
+ClesY:      db 112 ;144-1
 
 
 
@@ -44,44 +45,48 @@ WMHMMC: DW    0,0,0,0,4,4,0,0xF0 ;(sx,sy,)dx,dy,nx,ny,col/arg,cmd=hmmc
 PlayLogo:
 		call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
 startTheGame:
-;initialize the worldmap one time
-		call enableWorldmap
-		ld	 hl,$B000
-		call newwm
-;put a few test rooms in
-		; ld	 de,0x0000
-		; ld	 a,0
-		; call newwmr
-		; ld	 de,49*256
-		; ld	 a,0
-		; call newwmr
-		; ld	 de,49
-		; ld	 a,0
-		; call newwmr
-		; ld	 de,49*256+49
-		; ld	 a,0
-		; call newwmr
+		call	Replayer_Stop
+
+		call	enableWorldmap
+		ld		hl,$B000
+		call	newwm
+
+		ld		a,-1
+		ld		(PreviousRuin),a
+		call	loadRoom
+		jp		LevelEngine
+
 
 ;Load the current room
-		call loadGraphics
-;and lezgooo
-		jp    LevelEngine
+loadRoom:
+		call	ResetPushStones
+		call	loadGraphics
+		call	addThisRoomToWorldmap
+
+		ld		a,(PreviousRuin)		;Only apply if this is another ruin
+		ld		b,a
+		call	GetRoomRuinId
+		ld		(PreviousRuin),a
+		cp		b
+		ret		Z
+		call	GetRoomMusicId
+		call	setMusic
+		ret
+
 
 
 loadGraphics:
-;	ld    a,(RePlayer_playing)
-;	and   a
-;  call  z,VGMRePlay
-
 	ld    a,(slot.page12rom)            ;RAMROMROMRAM
 	out   ($a8),a
 	ld    a,Loaderblock                 ;loader routine at $4000
 	call  block12
 
-	call  loader
+	call  loader		;ro: not sure why this is here, as a few lines below something simular happens...
+
+	call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
+	call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
 
 	call unpackCurrentRoom    ;unpacks packed map to ram. sets objectdata at the end of mapdata ends with: all RAM except page 2
-
 	call GetRoomPaletteId
 	call getPalette
 	call SetMapPalette
@@ -90,10 +95,6 @@ loadGraphics:
 
 	call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
 	call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
-
-	call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
-	call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
-
 	call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 
 	call  RemoveSpritesFromScreen       ;|loader|
@@ -130,37 +131,30 @@ loadGraphics:
 		ld		a,(NewPrContr)
 		set   0,a
 		ld		(NewPrContr),a
-  .EndCheckDoubleJump:
+.EndCheckDoubleJump:
 
-		call  LoadSamplesAndPlaySong0
+		; call  LoadSamplesAndPlaySong0
 
 		ld    a,1
 		ld    (AmountOfFramesUntilScreenTurnsOn?),a
 
-		call GetRoomRuinId
-		ld    (PreviousRuin),a
+
+		ret
 
 
-;------------------------------------------------
-;TEST code to add current room to the worldmap
-		; ld    a,(slot.page1rom)            ;all RAM except page 1
-		; out   ($a8),a
-		; ld    a,F2Menublock                 ;F1 Menu routine at $4000
-		; call  block12
+;enable *this* room in the worldmap (still POC)
+addThisRoomToWorldMap:
 		call	enableWorldMap
-		;ld    a,0                     ;room type (decides which color it will be)
-		call getroomtypeId
-		ld	 de,(WorldMapPosition)
-		call newwmr                  ;create room [DE] with type [A] on the map
-		call GetRoomRuinId	;is this Polux (hub)
-		cp	 ruinid.Polux
-		jr	 nz,.thisIsNotPolux
-		ld	 a,(hl)			;then make the room green (color 12)
-		and	 0xF0
-		or	 12				;green
-		ld	 (hl),a
-.thisIsNotPolux:
-;------------------------------------------------
+		call	getroomtypeId
+		ld		de,(WorldMapPosition)
+		call	newwmr                  ;create room [DE] with type [A] on the map
+		call	GetRoomRuinId	;is this Polux (hub)
+		cp		ruinid.Polux
+		ret		nz
+		ld		a,(hl)			;then make the room green (color 12)
+		and		0xF0
+		or		12				;green
+		ld		(hl),a
 		ret
 
 
@@ -208,37 +202,39 @@ fillRoomMapData:
 		jp	nz,.fmp1
 		ret
 
+;currently this is in POC phase
+;area files are spread out over multiple blocks, these are not:
 AreaSignList:	dw	AreaSign01,AreaSign02,AreaSign03,AreaSign04,AreaSign05,AreaSign06,AreaSign07,AreaSign08,AreaSign09,AreaSign10,AreaSign11,AreaSign12,AreaSign13,AreaSign14,AreaSign15,AreaSign16,AreaSign17,AreaSign18,AreaSign19
 UnpackAreaSign:
-	ld    a,(slot.page1rom)            ;RAMROMROMRAM
-	out   ($a8),a	
-	ld    a,AreaSignTestBlock			;packed area signs at $4000
-	call  block12
+		ld    a,(slot.page1rom)		;RAMROMROMRAM
+		out   ($a8),a	
+		ld    a,AreaSignTestBlock	;packed area signs at $4000
+		call  block12
 
-	exx
-	push	bc
-	push	hl
+		exx
+		push	bc
+		push	hl
 
-	call GetRoomRuinId
-	add		a,a
-	ld		hl,AreaSignList
-	ld		d,0
-	ld		e,a
-	add		hl,de
-	ld		a,(hl)
-	inc		hl
-	ld		h,(hl)
-	ld		l,a
-	ld		de,$8000
-	call	Depack						;In: HL: source, DE: destination
+		call	GetRoomRuinId
+		add		a,a
+		ld		hl,AreaSignList
+		ld		d,0
+		ld		e,a
+		add		hl,de
+		ld		a,(hl)
+		inc		hl
+		ld		h,(hl)
+		ld		l,a
+		ld		de,$8000
+		call	Depack						;In: HL: source, DE: destination
 
-	pop		hl
-	pop		bc
-	exx
+		pop		hl
+		pop		bc
+		exx
 
-	ld    a,Loaderblock                 ;loader routine at $4000
-	call  block12
-	ret
+		ld    a,Loaderblock                 ;loader routine at $4000
+		call  block12
+		ret
 
 
 VramGraphicsPage1And3AlreadyInScreen?: db  0
@@ -247,49 +243,72 @@ AmountOfFramesUntilScreenTurnsOn?:  ds  1
 CurrentSongBeingPlayed: db  0
 
 CheckSwitchNextSong:
-;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-  ld    a,(NewPrContr)	
-	bit		6,a           ;F1 pressed ?
-  ret   z
-
-.GoSwitchNextSong:
-  call  RePlayer_Stop
-  ld    a,(CurrentSongBeingPlayed)
-  inc   a
-  cp    7
-  jr    nz,.EndCheckLastSong
-  ld    a,1
+		ld		a,(NewPrContr)	
+		bit		6,a           ;M pressed ?
+		ret		z
+		ld		a,(CurrentSongBeingPlayed)
+		inc		a
+		cp		7
+		jr		nz,.EndCheckLastSong
+		ld		a,1
 .EndCheckLastSong:
-  ld    (CurrentSongBeingPlayed),a
-  ld    c,a
-  ld    b,0
-;  ld    bc,3                          ;track nr
-  ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
-  ld    hl,$8000+1
-  call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
-  call  RePlayer_Tick                 ;initialise, load samples
-  ret
+		jp		setMusic
+
+;Initialize music
+;in:	A=musicId
+setMusic:
+		push	af
+		ld		a,(RePlayer_playing)
+		and		a
+		call	nz,Replayer_Stop
+		pop		af
+		ld		(CurrentSongBeingPlayed),a
+		ld		c,a
+		ld		b,0
+		ld		a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
+		ld		hl,$8000+1
+		call	RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
+		call	RePlayer_Tick                 ;initialise, load samples
+		ret
   
-LoadSamplesAndPlaySong0:
-	ld    a,(RePlayer_playing)
-	and   a
-	ret   nz
+; LoadSamplesAndPlaySong0:
+; 		ld    a,(RePlayer_playing)
+; 		and   a
+; 		ret   nz
 
-  ld		a,2
-  ld    (CurrentSongBeingPlayed),a
-  call  RePlayer_Stop
-  ld    bc,2                          ;track nr
-  ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
-  ld    hl,$8000+1
-  call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
-  call  RePlayer_Tick                 ;initialise, load samples
+; 		ld		a,2
+; 		ld    (CurrentSongBeingPlayed),a
+; 		call  RePlayer_Stop
+; 		ld    bc,2                          ;track nr
+; 		ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
+; 		ld    hl,$8000+1
+; 		call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
+; 		call  RePlayer_Tick                 ;initialise, load samples
+; ret
 
-;	call	CheckSwitchNextSong.GoSwitchNextSong
-  ret
+
+SoundData: equ $8000
+initializeVGMRePlay:
+		ld    a,(slot.page12rom)            ;all RAM except page 1+2
+		out   ($a8),a
+		ei		;ro:why is this here?
+
+		ld    a,FormatOPL4_ID
+		call  RePlayer_Detect               ;detect moonsound
+		call  RePlayerSFX_Initialize
+		ld a,LoadSamples?					;debug function to skip sample load
+		and A
+		ret z
+		ld    bc,0                          ;track nr 0 will alos initialize samples
+		ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
+		ld    hl,$8000+1
+		call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
+		call	RePlayer_Tick
+		call	RePlayer_Stop
+		ret
 
 
 SetElementalWeaponInVramJumper:       ;check if F1 is pressed and the menu can be entered
@@ -317,25 +336,7 @@ CopyLogoPart:                                       ;this is used in the normal 
   db    000,000,000,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy -> Copy from left to right
 
-SoundData: equ $8000
-VGMRePlay:
-		ld    a,(slot.page12rom)            ;all RAM except page 1+2
-		out   ($a8),a
-		ei
 
-		ld    a,FormatOPL4_ID
-		call  RePlayer_Detect               ;detect moonsound
-		call  RePlayerSFX_Initialize
-		ld a,LoadSamples?	;debug function to skip sample load
-		and A
-		ret z
-		ld    bc,0                          ;track nr 0 will alos initialize samples
-		ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
-		ld    hl,$8000+1
-		call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
-		call	RePlayer_Tick
-		call	RePlayer_Stop
-		ret
 
 ; Main_Loop:
 ; 		halt
@@ -417,23 +418,115 @@ RoomMap:
 .widthPix:	dw 0 	;idem but in pixels
 .data:		ds    .numrow * .numcol ,0   
 
+;Get Ruin properties
+;in:	A=ruinId
+;out:	HL=RecAdr
+GetRuin:
+	push bc
+	LD	h,0
+	ld	l,A
+	add	hl,hl	;x2
+	add	hl,hl	;4
+	add hl,hl	;8
+	add	hl,hl	;16
+	ld	bc,RuinPropertiesLUT.data
+	add	hl,bc
+	pop bc
+ret
+
+;RuinPropertiesLookUpTable
+RuinPropertiesLUT:
+.reclen:		equ 16		;[attribute]The length of one record
+.numrec:		equ 32		;[attribute]Number of records
+.tileset:		equ +0		;[property]Default Tileset ID
+.palette:		equ +1		;[property]Default palette ID
+.music:			equ +2		;[property]Default music ID
+.Name:			equ +3		;[property]Name of the ruin as string
+.data:						;RM:table generated externally
+	DB 0,0,0,"             "
+	DB 1,1,0,"Polux        "
+	DB 2,2,0,"Lemniscate   "
+	DB 0,0,0,"Bos Stenen Wa"
+	DB 4,0,0,"Pegu         "
+	DB 0,0,0,"Bio          "
+	DB 6,6,3,"Karni Mata   "
+	DB 7,7,6,"Konark       "
+	DB 0,0,0,"Ashoka   hell"
+	DB 0,0,0,"Taxilla      "
+	DB 0,0,0,"Euderus Set  "
+	DB 0,0,0,"Akna         "
+	DB 0,0,0,"Fate         "
+	DB 0,0,0,"Sepa         "
+	DB 0,0,0,"undefined    "
+	DB 0,0,0,"Chi          "
+	DB 0,0,0,"Sui          "
+	DB 0,0,0,"Grot         "
+	DB 0,0,0,"Tiwanaku     "
+	DB 0,0,0,"Aggayu       "
+	DB 0,0,0,"Ka           "
+	DB 0,0,0,"Genbu        "
+	DB 0,0,0,"Fuu          "
+	DB 0,0,0,"Indra        "
+	DB 0,0,0,"Morana       "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
+	DB 0,0,0,"             "
+
+
 
 ;Return the correct tile ID for this room
 GetRoomTilesetId:
-		ld a,(UnpackedRoomFile+roomdatablock.tileset)	;tileset overwrite?
+		ld a,(UnpackedRoomFile+roomdatablock.tileset)	; overwrite?
 		and $1f
 		ret nz
-		ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
-		and $1f
+		; ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
+		; and $1f
+		ld		a,RuinPropertiesLUT.tileset
+		call	getRoomRuinProperty
 		ret
 
 ;Return the correct palette ID for this room
 GetRoomPaletteId:
-		ld a,(UnpackedRoomFile+roomdatablock.palette)	;tileset overwrite?
-		and $1f
-		ret nz
-		ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
-		and $1f
+		ld		a,(UnpackedRoomFile+roomdatablock.palette)	; overwrite?
+		and 	A	;$1f ;and max palettes, which is  not set atm
+		ret		nz
+;		ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
+;		and $1f
+		ld		a,RuinPropertiesLUT.palette
+		call	getRoomRuinProperty
+		ret
+
+;Return the correct music ID for this room
+GetRoomMusicId:
+		ld		a,(UnpackedRoomFile+roomdatablock.music)	; overwrite?
+		and		a
+		ret		nz
+;		ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
+;		and $1f
+		ld		a,RuinPropertiesLUT.music
+		call	getRoomRuinProperty
+		ret
+
+
+;return a property from the current room ruin
+;in:	A=property
+getRoomRuinProperty:
+		push	hl
+		push	af
+		call	GetRoomRuinId
+		call	GetRuin
+		pop		af
+		add 	a,L
+		ld		l,A
+		ld		a,0
+		adc		a,H
+		ld		h,A
+		ld		a,(hl)
+		pop		hl
 		ret
 
 ;Return the current room type
@@ -1308,7 +1401,7 @@ memblocks:
 VDP_0:				equ   $F3DF
 VDP_8:				equ   $FFE7
 
-
+;VDP command regs
 sx:                         equ   0
 sy:                         equ   2
 spage:                      equ   3
@@ -1319,6 +1412,7 @@ nx:                         equ   8
 ny:                         equ   10
 copydirection:              equ   13
 copytype:                   equ   14
+
 restorebackground?:         equ   -1
 framecounter:               rb    1
 Bossframecounter:           rb    1
@@ -1387,13 +1481,29 @@ roomDataBlock:	equ 0
 ;Space for room tiles data 
 UnpackedRoomFile:
 .meta:		rb 8
-.tiledata:  rb  38*27*2
+.tiledata:  rb  38*27*2	;no really, but it'll do for now (this is the MAX storage needed)
 .object:	rb 256
+
+
+;roomObjects
+roomObject.PushStone: EQU 1
+
+
+
+;roomobject class byte offsets
+roomObjectClass.Enemy.X: EQU 0
+roomObjectClass.Enemy.Y: EQU 1
+roomObjectClass.Enemy.Face: EQU 2
+roomObjectClass.Enemy.Speed: EQU 3
+roomObjectClass.Enemy.numBytes: EQU 4
+
+roomObjectClass.General.X: EQU 0
+roomObjectClass.General.Y: EQU 1
+roomObjectClass.General.numBytes: EQU 2
 
 
 
 fill: equ 2
-
 amountofenemies:        equ 22
 lenghtenemytable:       equ 27 + fill
 enemies_and_objects:    rb  lenghtenemytable * amountofenemies
@@ -1409,7 +1519,9 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .ObjectNumber:          equ 9
 .spataddress:           equ 11
 .nrsprites:             equ 13
-.nrspritesSimple:       equ 14 | .coordinates:           equ 14
+.nrspritesSimple:       equ 14
+.coordinates:           equ 14
+.tableRecordPointer:	equ 14
 .nrspritesTimes16:      equ 15
 .v1:                    equ 16
 .v2:                    equ 17

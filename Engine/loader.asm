@@ -199,11 +199,11 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,UnpackedRoomFile.tiledata+38*27*2  ;room object data list
   jr    z,.ObjectAddressFound
   ld    de,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
-  .ObjectAddressFound:
+.ObjectAddressFound:
 
 ;  ld    de,ObjectTestData
-
   push  de
+
 ;.CheckObjects: jp .CheckObjects
 ;halt
 
@@ -225,26 +225,24 @@ SetObjects:                             ;after unpacking the map to ram, all the
   .EngineTypeFound:
   exx                                   ;keep CleanOb1 address untouched
 
-  pop   ix
+  pop   ix		;<DE
 ;  ld    ix,UnpackedRoomFile.tiledata+38*27*2  ;room object data list
 ;  ld    ix,UnpackedRoomFile.tiledata+32*27*2  ;room object data list
-
   ld    iy,enemies_and_objects          ;start object table in iy
 
+.loop:
+		ld    a,(ix)			;UID
+		or    a
+		ret   z					;0=end room object list
 
-  .loop:
-  ld    a,(ix)
-  or    a
-  ret   z                               ;0=end room object list
-
-  call  .SetObject
-  add   ix,de                           ;add the lenght of current object data to ix, and set next object in ix
-  ld    de,lenghtenemytable             ;lenght 1 object in object table
-  add   iy,de                           ;next object in object table
-  jp    .loop                           ;go handle next object
+		call  .SetObject
+		add   ix,de                           ;add the lenght of current object data to ix, and set next object in ix
+		ld    de,lenghtenemytable             ;lenght 1 object in object table
+		add   iy,de                           ;next object in object table
+		jp    .loop                           ;go handle next object
   
-  .SetObject:
-  cp    1
+.SetObject:
+  cp    roomObject.PushStone
   jp    z,.Object001                    ;pushing stone
   cp    2
   jp    z,.Object002                    ;waterfall yellow statue
@@ -346,6 +344,371 @@ SetObjects:                             ;after unpacking the map to ram, all the
   cp    159
   jp    z,.Object159                    ;glassball pipe (GlassballPipe)
   ret
+
+
+;ro: here's an example how to generically apply a class
+;using IX as source, but I'd recommend using HL or DE
+.applyClassEnemy:
+		inc	 IX ;skip ID (should've happened earlier on)
+		ld    l,(ix+roomObjectClass.Enemy.X)
+		ld    h,0
+		add   hl,hl
+		ld    (iy+enemies_and_objects.x),l
+		ld    (iy+enemies_and_objects.x+1),h
+
+		ld    a,(ix+roomObjectClass.Enemy.Y)
+		ld    (iy+enemies_and_objects.y),a
+
+		ld    a,(ix+roomObjectClass.Enemy.Face)
+		ld    (iy+enemies_and_objects.v4),a
+
+		ld    a,(ix+Object062Table.speed)
+		ld    (iy+roomObjectClass.Enemy.Speed),a
+		dec	 IX
+		ret
+.applyClassGeneral:
+		;inc	 IX ;skip ID (should've happened earlier on)
+		ld    l,(ix+roomObjectClass.General.X)
+		ld    h,0
+		add   hl,hl
+		ld    (iy+enemies_and_objects.x),l
+		ld    (iy+enemies_and_objects.x+1),h
+
+		ld    a,(ix+roomObjectClass.General.Y)
+		ld    (iy+enemies_and_objects.y),a
+		; dec	 IX
+		ld	 de,roomObjectClass.General.numBytes
+		ret
+
+
+
+;001-PushStone
+;v1=sx
+;v2=falling stone?
+;v3=y movement
+;v4=x movement
+;v7=set/store coord
+;v9=special width for Pushing Stone Puzzle Switch
+;v1-2= coordinates in pushing stone table (PuzzleBlocks1Y, PuzzleBlocks2Y etc)
+.Object001:
+		inc		IX	;skip ID, goto Class properties
+		call	.SetPushingStoneInEnemyTable
+		ld		hl,pushStonetable.data+pushStoneTable.roomY	;table record #0
+		Call	.CheckBlock
+		ld		de,roomObjectClass.General.numBytes
+		ret
+
+;check if this block is already present in the pushing block table
+;find the first record with the correct roomNumber and store all blocks from this room in sequencial order
+.CheckBlock:
+		ld    a,(hl)	;.roomY
+		cp	 -1  		;free or oed
+		jr    z,.NotYetPresent
+		ld    a,(WorldMapPosition.y)
+		cp	 (hl)
+		jr    nz,.ThisBlockBelongsInADifferentRoom
+		dec   hl
+		ld	  b,(hl)
+		inc   hl
+		ld    a,(WorldMapPosition.X)
+		cp    b
+		jr    nz,.ThisBlockBelongsInADifferentRoom
+		dec   hl
+		dec   hl
+		dec   hl
+
+;when a block is already in the table, set table coordinates in v1-2 and take x,y from table and feed it into the object
+.AlreadyPresent:                   
+		ld		(iy+enemies_and_objects.tableRecordPointer),l ;store pointer to tableRecord
+		ld		(iy+enemies_and_objects.tableRecordPointer+1),h
+
+		ld		a,(ix+roomObjectClass.General.numBytes)	;check if next object is another pushing stone
+		cp		roomObject.PushStone
+		ret		nz
+
+		ld		de,roomObjectClass.General.numBytes+1	;goto next roomObject and skip ID
+		add		ix,de
+		ld		de,lenghtenemytable					;goto next objectRecord
+		add		iy,de
+		call	.SetPushingStoneInEnemyTable
+    
+		ld		de,PushStoneTable.reclen				;next tableRecord +4
+		add		hl,de
+		jr		.AlreadyPresent						;look for more pushing stones in this room
+
+.ThisBlockBelongsInADifferentRoom:
+		ld		de,PushStoneTable.reclen			;4
+		add		hl,de								;next block in pushing block table
+		jr		.CheckBlock
+
+.NotYetPresent:
+		call	.SetRoomYXStoneXYAndTableAddress 
+
+		ld		a,(ix+roomObjectClass.General.numBytes)	;check if next object is another pushing stone
+		cp		roomObject.PushStone
+		ret		nz
+
+		ld		de,roomObjectClass.General.numBytes+1	;goto next roomObject and skip ID
+		add		ix,de
+		ld		de,lenghtenemytable					;goto next objectRecord
+		add		iy,de
+		call	.SetPushingStoneInEnemyTable
+
+		ld		de,pushStoneTable.reclen+pushStoneTable.roomy   ;7	;next record, and move to .roomY
+		add		hl,de                           ;room y for next block in pushing block table
+		jr		.NotYetPresent                  ;now loop this routine and look for more pushing stones in this room
+
+.SetRoomYXStoneXYAndTableAddress:
+		push	hl
+		call	.applyClassGeneral
+		pop		hl
+		ld		a,(WorldMapPosition.Y)	;.roomY
+		ld		(hl),a
+		dec		hl
+		ld		a,(WorldMapPosition.X)	;.roomX
+		ld		(hl),a
+		dec		hl
+		ld		a,(iy+enemies_and_objects.x)	;transfer stone coordinates to current tableRecord
+		ld		(hl),A
+		dec		hl
+		ld		a,(iy+enemies_and_objects.y)
+		ld		(hl),A
+
+		ld		(iy+enemies_and_objects.tableRecordPointer),l ;store pointer to tableRecord
+		ld		(iy+enemies_and_objects.tableRecordPointer+1),h
+		ret
+
+.SetPushingStoneInEnemyTable:
+		push	hl
+		ld		hl,Object001Table
+		push	iy
+		pop		de                              ;=enemy object table
+		ld		bc,lenghtenemytable
+		ldir
+		call	SetCleanObjectNumber            ;each object has a reference cleanup table
+
+		ld		hl,AmountOfPushingStonesInCurrentRoom
+		inc		(hl)
+		pop		hl
+		ret
+
+
+;waterfall grey statue (WaterfallEyesGrey)
+.Object003:                           
+		ld    hl,Object003Table.eyes
+		jr    .EntryForObject003
+
+;waterfall yellow statue (WaterfallEyesYellow)
+;v1=sx
+;v2=Active Timer
+;v3=wait timer in case only 1 waterfall
+;v4=Waterfall nr
+.Object002:                           
+		ld    hl,Object002Table.eyes
+.EntryForObject003:
+		inc		ix	;goto class
+		call	.object002AddEyes
+		push	de
+		call	.object002AddMouth
+		call	.object002AddWaterfall
+		pop		de
+		ret
+	
+.object002AddEyes:
+		push	iy		;copy object template to objectRecord
+		pop		de   
+		ld		bc,lenghtenemytable
+		ldir
+		call	SetCleanObjectNumber            ;each object has a reference cleanup table
+
+		call	.applyClassGeneral			;transfer class properties, return DE=numBytes
+		ld		a,(iy+enemies_and_objects.y)
+		add		a,3
+		ld		(iy+enemies_and_objects.y),a
+
+		ld		a,(AmountOfWaterfallsInCurrentRoom)
+		inc		a
+		ld		(AmountOfWaterfallsInCurrentRoom),a
+		ld		(iy+enemies_and_objects.v4),a   ;v4=Waterfall nr
+		dec		a
+		ret		z
+		exx     ;a 2nd or 3d waterfall uses the same sprite position as the 1st, sprite size=8, so decrease b with 8
+		ld		a,b
+		sub		a,8
+		ld		b,a
+		exx
+		ret  
+
+.object002AddMouth:
+		ld		bc,lenghtenemytable             ;next objecgt record
+		add		iy,bc
+		ld		hl,Object002Table.mouth
+		push	iy
+		pop		de 
+		ldir
+
+		call  SetCleanObjectNumber            ;each object has a reference cleanup table
+		call  .object002AddWaterfall                ;we also need to set a waterfall hardware sprite
+		ret
+
+.object002AddWaterfall:                     ;we also need to set a waterfall hardware sprite
+		ld		bc,lenghtenemytable             ;next objecgt record
+		add		iy,bc                          ;next object in object table
+		ld		hl,Object002Table.water         ;we also need to set a waterfall hardware sprite
+		push	iy
+		pop		de
+		ldir
+		call	SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+		ret
+
+
+;004-PoisonDrop
+;v1=sx
+;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
+;v3=Vertical Movement
+;v4=Grow Duration
+;v5=Wait FOr Respawn Counter
+;v8=Y spawn
+;v9=X spawn
+.Object004:
+		inc		ix
+;initialize object
+		ld		hl,Object004Table				;copy template
+		push	iy
+		pop		de
+		ld		bc,lenghtenemytable*1
+		ldir
+		call	SetCleanObjectNumber
+;copy class properties
+		ld		a,(ix+roomObjectClass.General.X)	;should be a 16b adr
+		add		a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+		add		a,3
+		ld		(iy+enemies_and_objects.v9),a   ;v9=X spawn
+		ld		a,(ix+roomObjectClass.General.Y)
+		add		a,03                            ;32 pix down
+		ld		(iy+enemies_and_objects.v8),a   ;v8=Y spawn
+
+;if there is a second Poison Drop object, then the activation timer should increase, so the poison drops don't spawn at the same time
+		ld    a,(AmountOfPoisonDropsInCurrentRoom)
+		inc   a
+		ld    (AmountOfPoisonDropsInCurrentRoom),a
+		dec   a
+		jr    z,.EndCheckMultiPoisonDrops
+		ld    (iy+enemies_and_objects.v5),180 ;v5=Wait FOr Respawn Counter 
+		exx                                   ;a 2nd poison drop uses the same sprite position as the 1st, sprite size=4, so decrease b with 4
+		ld    a,b
+		sub   a,4
+		ld    b,a
+		exx
+.EndCheckMultiPoisonDrops:
+;Also set a splashing hardware sprite, when drop hits the ooze pool
+		ld		de,lenghtenemytable             ;next object
+		add		iy,de
+		ld		hl,Object004Table.Splash		;copy template
+		push	iy
+		pop		de
+		ld		bc,lenghtenemytable
+		ldir
+		call	SetSPATPositionForThisSprite    ;define the position this sprite takes in the SPAT
+
+		ld		de,roomObjectClass.general.numBytes
+		ret
+
+
+;005-AreaSign
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=put line in all 3 pages
+;v7=sprite frame
+;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
+;v9=wait timer / bottom of area sign
+.Object005:
+		inc		IX
+		call	.initAreaSignObject
+		ld		de,roomObjectClass.general.numBytes
+		ret
+
+.initAreaSignObject:
+		ld		a,(PreviousRuin)		;Only apply if this is another ruin
+		ld		b,a
+		call	GetRoomRuinId
+		cp		b
+		ret		Z	;jr    z,.DontSetAreaSign
+
+;set music for this ruin (ro: should not be here)
+; 		push  ix
+; 		push  iy
+; 		dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
+; ;		call  CheckSwitchNextSong.EndCheckLastSong
+; 		; ;call	GetRoomRuinId
+; 		; call	GetRuin
+; 		; ld		bc,RuinPropertiesLUT.music
+; 		; add		hl,bc
+; 		pop   iy
+; 		pop   ix
+
+		call  ResetPushStones
+		call  UnpackAreaSign
+
+;Initialize object
+		ld    hl,Object005Table
+		push  iy
+		pop   de
+		ld    bc,lenghtenemytable
+		ldir
+		call	.applyClassGeneral
+
+;start writing at (0,0) page 1 
+		xor   a
+		ld    hl,$8000
+		call	SetVdp_Write	
+
+		ld    hl,$8000
+		ld    c,$98                           ;out port
+		ld    d,24
+.Outiloop:
+		call  outix256
+		dec   d
+		jp    nz,.Outiloop
+
+		ld    a,(slot.page12rom)            ;RAMROMROMRAM
+		out   ($a8),a
+
+;now copy (transparant) area sign from page 1 to page 3 at it's coordinates
+		ld    a,$98
+		ld    (FreeToUseFastCopy+copytype),a
+		xor   a
+		ld    (FreeToUseFastCopy+sx),a
+		ld    (FreeToUseFastCopy+sy),a
+		ld    a,1
+		ld    (FreeToUseFastCopy+sPage),a
+		ld    a,3
+		ld    (FreeToUseFastCopy+dPage),a  
+		ld    a,(iy+enemies_and_objects.x)
+		ld    (FreeToUseFastCopy+dx),a
+		ld    a,(iy+enemies_and_objects.y)
+		ld    (FreeToUseFastCopy+dy),a
+		ld    a,200
+		ld    (FreeToUseFastCopy+nx),a
+		ld    a,48
+		ld    (FreeToUseFastCopy+ny),a
+		ld    hl,FreeToUseFastCopy
+		call  DoCopy
+		ld    a,$d0
+		ld    (FreeToUseFastCopy+copytype),a
+
+		ld    de,Object005Table.lenghtobjectdata
+		ret   
+  
+; .DontSetAreaSign:
+; 		ld    (iy+enemies_and_objects.Alive?),0
+; 		ld    de,Object005Table.lenghtobjectdata
+; 		ret   
+
+
 
   .Object008:                           ;boss demon (BossDemon)
   ld    hl,Object008Table
@@ -470,515 +833,145 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
 
 
-  .Object001:                           ;pushing stone (PushingStone)
-;v1=sx
-;v2=falling stone?
-;v3=y movement
-;v4=x movement
-;v7=set/store coord
-;v9=special width for Pushing Stone Puzzle Switch
-;v1-2= coordinates in pushing stone table (PuzzleBlocks1Y, PuzzleBlocks2Y etc)
-  call  .SetPushingStoneInEnemyTable
-  
-  ;now we have to check if this block is already present in the pushing block table
-  ld    hl,PuzzleBlocks1Y+3
-  .CheckBlock:
-  ld    a,(hl)                          ;room y
-  or    a
-  jr    z,.NotYetPresent
-  ld    b,a
-  ld    a,(WorldMapPosition.y)
-  cp    b
-  jr    nz,.ThisBlockBelongsInADifferentRoom
-  dec   hl
-  ld    a,(hl)                          ;room x
-  ld    b,a
-  inc   hl
-  ld    a,(WorldMapPosition.X)
-  cp    b
-  jr    nz,.ThisBlockBelongsInADifferentRoom
-  dec   hl
-  dec   hl
-  dec   hl
-
-  .AlreadyPresent:                      ;when a block is already in the table, set table coordinates in v1-2 and take x,y from table and feed it into the object
-  ld    (iy+enemies_and_objects.v1-2),l ;set coordinates in pushing stone table (PuzzleBlocks1Y, PuzzleBlocks2Y etc)
-  ld    (iy+enemies_and_objects.v1-1),h
-
-  ld    a,(ix+Object001Table.lenghtobjectdata)
-  cp    1                               ;check if next object is another pushing stone
-  ld    de,Object001Table.lenghtobjectdata
-  ret   nz
-
-  ld    de,Object001Table.lenghtobjectdata
-  add   ix,de                           ;add the lenght of current object data to ix, and set next object in ix
-  ld    de,lenghtenemytable             ;lenght 1 object in object table
-  add   iy,de                           ;next object in object table
-
-  call  .SetPushingStoneInEnemyTable
-    
-  ld    de,4
-  add   hl,de                           ;next block in pushing block table
-  jr    .AlreadyPresent                 ;now loop this routine and look for more pushing stones in this room
-
-  .ThisBlockBelongsInADifferentRoom:
-  ld    de,4
-  add   hl,de                           ;next block in pushing block table
-  jr    .CheckBlock
-    
-  .NotYetPresent:
-  call  .SetRoomYXStoneXYAndTableAddress 
-
-  ld    a,(ix+Object001Table.lenghtobjectdata)
-  cp    1                               ;check if next object is another pushing stone
-  ld    de,Object001Table.lenghtobjectdata
-  ret   nz
-
-  ld    de,Object001Table.lenghtobjectdata
-  add   ix,de                           ;add the lenght of current object data to ix, and set next object in ix
-  ld    de,lenghtenemytable             ;lenght 1 object in object table
-  add   iy,de                           ;next object in object table
-
-  call  .SetPushingStoneInEnemyTable
-    
-  ld    de,7
-  add   hl,de                           ;room y for next block in pushing block table
-  jr    .NotYetPresent                  ;now loop this routine and look for more pushing stones in this room
-
-  .SetRoomYXStoneXYAndTableAddress:
-  ;set room y
-  ld    a,(WorldMapPosition.Y)
-  ld    (hl),a
-
-  ;set room x
-  dec   hl
-  ld    a,(WorldMapPosition.X)
-  ld    (hl),a
-
-  ;set stone x
-  dec   hl
-  ld    a,(ix+Object150Table.x)
-  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-  set   0,a                             ;pushing stones need to have an odd x value
-  ld    (hl),a
-
-  ;set stone y
-  dec   hl
-  ld    a,(ix+Object150Table.y)
-  ld    (hl),a
-
-  ld    (iy+enemies_and_objects.v1-2),l ;set coordinates in pushing stone table (PuzzleBlocks1Y, PuzzleBlocks2Y etc)
-  ld    (iy+enemies_and_objects.v1-1),h
-  ret
-
-  .SetPushingStoneInEnemyTable:
-  push  hl
-  ld    hl,Object001Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1
-  ldir                                  ;copy enemy table
-  call  SetCleanObjectNumber            ;each object has a reference cleanup table
-
-  ld    a,(AmountOfPushingStonesInCurrentRoom)
-  inc   a
-  ld    (AmountOfPushingStonesInCurrentRoom),a
-
-  pop   hl
-  ret
-
-  .SetAlive?BasedOnEngineType:
-  ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ret   z
-  ld    (iy+enemies_and_objects.Alive?),2
-  ret
-
-  .Object061:                           ;glass ball (GlassBallActivator)
-  ld    a,(ix+Object061Table.ballnr)
-  cp    4
-  jr    nc,.SetGlassBall4
-
-  .SetGlassBall1:
-  ld    hl,GlassBall1Data
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*3           ;3 objects (2 balls and 1 ball activator)
-  ldir
-
-  ld    de,lenghtenemytable*2           ;lenght 2 objects in object table
-  add   iy,de                           ;next object in object table
-
-  ld    de,Object061Table.lenghtobjectdata*2
-  ret    
-  
-  .SetGlassBall4:
-  ld    hl,GlassBall5Data
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*3           ;3 objects (2 balls and 1 ball activator)
-  ldir
-
-  ld    de,lenghtenemytable*2           ;lenght 2 objects in object table
-  add   iy,de                           ;next object in object table
-
-  ld    de,Object061Table.lenghtobjectdata*2
-  ret    
 
 
-  .Object003:                           ;waterfall grey statue (WaterfallEyesGrey)
-  ld    hl,Object003Table.eyes
-  jr    .EntryForObject003
-
-  .Object002:                           ;waterfall yellow statue (WaterfallEyesYellow)
-;v1=sx
-;v2=Active Timer
-;v3=wait timer in case only 1 waterfall
-;v4=Waterfall nr
-  ld    hl,Object002Table.eyes
-  .EntryForObject003:
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1
-  ldir                                  ;copy enemy table
-
-  call  SetCleanObjectNumber            ;each object has a reference cleanup table
-
-  ;set x
-  ld    a,(ix+Object002Table.x)
-  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-  add   a,8
-  ld    (iy+enemies_and_objects.x),a    ;x waterfall
-
-  ;set y
-  ld    a,(ix+Object002Table.y)
-  add   a,3
-  ld    (iy+enemies_and_objects.y),a    ;Y waterfall
-
-  ld    a,(AmountOfWaterfallsInCurrentRoom)
-  inc   a
-  ld    (AmountOfWaterfallsInCurrentRoom),a
-  ld    (iy+enemies_and_objects.v4),a   ;v4=Waterfall nr
-  dec   a
-  jr    z,.EndCheckActivationMomentWaterfall
-  exx                                   ;a 2nd or 3d waterfall uses the same sprite position as the 1st, sprite size=8, so decrease b with 8
-  ld    a,b
-  sub   a,8
-  ld    b,a
-  exx  
-  .EndCheckActivationMomentWaterfall:
-
-  ;next object (mouth)
-  ld    de,lenghtenemytable             ;lenght 1 object in object table
-  add   iy,de                           ;next object in object table
-
-  ld    hl,Object002Table.mouth
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1
-  ldir                                  ;copy enemy table
-
-  call  SetCleanObjectNumber            ;each object has a reference cleanup table
-
-  call  .WaterfallSprite                ;we also need to set a waterfall hardware sprite
-  
-  ld    de,Object002Table.lenghtobjectdata
-  ret
-
-  .WaterfallSprite:                     ;we also need to set a waterfall hardware sprite
-  ld    hl,Object002Table.water         ;we also need to set a waterfall hardware sprite
-  ld    de,lenghtenemytable             ;lenght 1 object in object table
-  add   iy,de                           ;next object in object table
-
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable
-  ldir                                  ;copy enemy table
-
-  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
-  ret
-
-
-  .Object004:                           ;poison drops (DrippingOozeDrop)
-;v1=sx
-;v2=Phase (0=growing, 1=falling, 2=waiting for respawn)
-;v3=Vertical Movement
-;v4=Grow Duration
-;v5=Wait FOr Respawn Counter
-;v8=Y spawn
-;v9=X spawn
-  ld    hl,Object004Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1
-  ldir                                  ;copy enemy table
-
-  call  SetCleanObjectNumber            ;each object has a reference cleanup table
-
-  ;set x
-  ld    a,(ix+Object004Table.x)
-  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-  add   a,3
-  ld    (iy+enemies_and_objects.v9),a   ;v9=X spawn
-
-  ;set y
-  ld    a,(ix+Object004Table.y)
-  add   a,03                            ;32 pix down
-  ld    (iy+enemies_and_objects.v8),a   ;v8=Y spawn
-
-  ;if there is a second Poison Drop object, then the activation timer should increase, so the poison drops don't spawn at the same time
-  ld    a,(AmountOfPoisonDropsInCurrentRoom)
-  inc   a
-  ld    (AmountOfPoisonDropsInCurrentRoom),a
-  dec   a
-  jr    z,.EndCheckMultiPoisonDrops
-  ld    (iy+enemies_and_objects.v5),180 ;v5=Wait FOr Respawn Counter 
-  exx                                   ;a 2nd poison drop uses the same sprite position as the 1st, sprite size=4, so decrease b with 4
-  ld    a,b
-  sub   a,4
-  ld    b,a
-  exx
-  .EndCheckMultiPoisonDrops:
-  
-  call  .AddSplashSprite                ;we also need to set a splashing hardware sprite, when drop hits the ooze pool
-  
-  ld    de,Object004Table.lenghtobjectdata
-  ret
-
-  .AddSplashSprite:                     ;we also need to set a splashing hardware sprite, when drop hits the ooze pool
-  ld    hl,Object004Table.Splash        ;we also need to set a splashing hardware sprite, when drop hits the ooze pool
-  ld    de,lenghtenemytable             ;lenght 1 object in object table
-  add   iy,de                           ;next object in object table
-
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable
-  ldir                                  ;copy enemy table
-
-  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
-  ret
-
-  .Object005:                           ;area sign (AreaSign)
-;v1=repeating steps
-;v2=pointer to movement table
-;v3=Vertical Movement
-;v4=Horizontal Movement
-;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
-;v6=put line in all 3 pages
-;v7=sprite frame
-;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
-;v9=wait timer / bottom of area sign
-  ld    hl,Object005Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1           ;1 objects
-  ldir
-
-  ;set x
-  ld    a,(ix+Object062Table.x)
-  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),a
-
-  ;set y
-  ld    a,(ix+Object062Table.y)
-  ld    (iy+enemies_and_objects.y),a
-
-  ld    a,(PreviousRuin)
-  ld    b,a                             ;current ruin ID
-	ld    a,(UnpackedRoomFile+roomDataBlock.mapid)
-	and   $1f
-  cp    b
-  jr    z,.DontSetAreaSign              ;if current ruin ID is the same as previous ruin ID, then don't set area sign in play
-
-  ;music changes when area sign is being displayed
-  push  ix
-  push  iy
-dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
-  call  CheckSwitchNextSong.EndCheckLastSong
-  pop   iy
-  pop   ix
-
-  call  ResetPushStones
-
-  call  UnpackAreaSign
-
-  ;start writing at (0,0) page 1 
-  xor   a
-  ld    hl,$8000
-  call	SetVdp_Write	
-
-  ld    hl,$8000
-  ld    c,$98                           ;out port
-  ld    d,24
-  .Outiloop:
-  call  outix256
-  dec   d
-  jp    nz,.Outiloop
-
-	ld    a,(slot.page12rom)            ;RAMROMROMRAM
-	out   ($a8),a
-
-  ;now copy (transparant) area sign from page 1 to page 3 at it's coordinates
-  ld    a,$98
-  ld    (FreeToUseFastCopy+copytype),a
-  xor   a
-  ld    (FreeToUseFastCopy+sx),a
-  ld    (FreeToUseFastCopy+sy),a
-  ld    a,1
-  ld    (FreeToUseFastCopy+sPage),a
-  ld    a,3
-  ld    (FreeToUseFastCopy+dPage),a  
-  ld    a,(iy+enemies_and_objects.x)
-  ld    (FreeToUseFastCopy+dx),a
-  ld    a,(iy+enemies_and_objects.y)
-  ld    (FreeToUseFastCopy+dy),a
-  ld    a,200
-  ld    (FreeToUseFastCopy+nx),a
-  ld    a,48
-  ld    (FreeToUseFastCopy+ny),a
-  ld    hl,FreeToUseFastCopy
-  call  DoCopy
-  ld    a,$d0
-  ld    (FreeToUseFastCopy+copytype),a
-
-  ld    de,Object005Table.lenghtobjectdata
-  ret   
-  
-  .DontSetAreaSign:
-  ld    (iy+enemies_and_objects.Alive?),0
-  ld    de,Object005Table.lenghtobjectdata
-  ret   
-
-  .Object062:                           ;zombie spawn point (ZombieSpawnPoint)
+;zombie spawn point (ZombieSpawnPoint)
 ;v1=Zombie Spawn Timer
 ;v2=Max Number Of Zombies
 ;v3=Spawn Speed
 ;v4=Face direction
-  ld    hl,Object062Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1
-  ldir
+;class=EnemySpawn
+.Object062:                           
+		ld    hl,Object062Table
+		push  iy
+		pop   de                              ;enemy object table
+		ld    bc,lenghtenemytable*1
+		ldir
 
-  call  .SetAlive?BasedOnEngineType
+		call  .SetAlive?BasedOnEngineType
 
-  ;set x
-  ld    a,(ix+Object062Table.x)
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),l
-  ld    (iy+enemies_and_objects.x+1),h
+		;set x
+		ld    a,(ix+Object062Table.x)
+		ld    l,a
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (iy+enemies_and_objects.x),l
+		ld    (iy+enemies_and_objects.x+1),h
 
-  ;set y
-  ld    a,(ix+Object062Table.y)
-  ld    (iy+enemies_and_objects.y),a
+		;set y
+		ld    a,(ix+Object062Table.y)
+		ld    (iy+enemies_and_objects.y),a
 
-  ;set Max Number Of Zombies
-  ld    a,(ix+Object062Table.MaxNum)
-  ld    (iy+enemies_and_objects.v2),a
+		;set Max Number Of Zombies
+		ld    a,(ix+Object062Table.MaxNum)
+		ld    (iy+enemies_and_objects.v2),a
 
-  ;set Zombies spawn speed
-  ld    a,(ix+Object062Table.speed)
-  ld    (iy+enemies_and_objects.v3),a
+		;set Zombies spawn speed
+		ld    a,(ix+Object062Table.speed)
+		ld    (iy+enemies_and_objects.v3),a
 
-  ;set Zombies face direction
-  ld    a,(ix+Object062Table.face)
-  ld    (iy+enemies_and_objects.v4),a
+		;set Zombies face direction
+		ld    a,(ix+Object062Table.face)
+		ld    (iy+enemies_and_objects.v4),a
 
-  call  .SetGfxZombieSpawnPoint
+		call  .SetGfxZombieSpawnPoint
 
-  ld    b,(ix+Object062Table.MaxNum)
+		ld    b,(ix+Object062Table.MaxNum)
   .addZombieLoop:
-  push  bc
-  call  .AddZombie                      ;adds a zombie to the room's object table
-  pop   bc
-  djnz  .addZombieLoop
+		push  bc
+		call  .AddZombie
+		pop   bc
+		djnz  .addZombieLoop
 
-  ld    de,Object062Table.lenghtobjectdata
-  ret  
-  
-  .AddZombie:                           ;add a zombie to the room's object table 
-  ld    de,lenghtenemytable             ;lenght 1 object in object table
-  add   iy,de                           ;next object in object table
-
-  ld    hl,Object143Table               ;zombie
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable
-  ldir                                  ;copy enemy table
-
-  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
-  ret
-
-  .SetGfxZombieSpawnPoint:
-  ld    a,-1
-  ld    (FreeToUseFastCopy+dpage),a
-  ld    de,00                           ;x offset for spawnpoint in page 0
-  call  .SetZombieSpawnPointInThisPage
-  ld    de,16                           ;x offset for spawnpoint in page 1
-  call  .SetZombieSpawnPointInThisPage
-  ld    de,32                           ;x offset for spawnpoint in page 2
-  call  .SetZombieSpawnPointInThisPage
-  ld    de,48                           ;x offset for spawnpoint in page 3
-;  call  .SetZombieSpawnPointInThisPage
-;  ret
-    
-  .SetZombieSpawnPointInThisPage:
+		ld    de,Object062Table.lenghtobjectdata
+		ret  
+.SetAlive?BasedOnEngineType:
   ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
   dec   a
-  jr    z,.SetZombieSpawnPointNormalEngine
-  ld    de,00
-  .SetZombieSpawnPointNormalEngine:
-  
-  ld    a,(FreeToUseFastCopy+dpage)
-  inc   a
-  ld    (FreeToUseFastCopy+dpage),a
+  ret   z
+  ld    (iy+enemies_and_objects.Alive?),2
+  ret  
+.AddZombie:                           ;add a zombie to the room's object table 
+		ld    de,lenghtenemytable             ;lenght 1 object in object table
+		add   iy,de                           ;next object in object table
 
-  ld    l,(iy+enemies_and_objects.x)
-  ld    h,(iy+enemies_and_objects.x+1)
-  or    a
-  sbc   hl,de
-  ld    a,h
-  or    a
-  ret   nz
-  ld    a,l
-  ld    (FreeToUseFastCopy+dx),a
+		ld    hl,Object143Table               ;zombie
+		push  iy
+		pop   de                              ;enemy object table
+		ld    bc,lenghtenemytable
+		ldir                                  ;copy enemy table
 
-  ld    a,0
-  ld    (FreeToUseFastCopy+sx),a
-  ld    a,216+32
-  ld    (FreeToUseFastCopy+sy),a
+		call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+		ret
 
-  ld    a,(iy+enemies_and_objects.y)
-  ld    (FreeToUseFastCopy+dy),a
-  ld    a,3
-  ld    (FreeToUseFastCopy+spage),a
-  ld    a,16
-  ld    (FreeToUseFastCopy+nx),a
-  ld    a,08
-  ld    (FreeToUseFastCopy+ny),a
-  ld    a,$98
-  ld    (FreeToUseFastCopy+copytype),a
-  call  .CopyRowOf8PixelsHigh
-  call  .CopyRowOf8PixelsHigh
-  call  .CopyRowOf8PixelsHigh
-  call  .CopyRowOf8PixelsHigh
-  ld    a,$d0
-  ld    (FreeToUseFastCopy+copytype),a
-  ret
-  .CopyRowOf8PixelsHigh:
-  ld    hl,FreeToUseFastCopy
-  call  DoCopy
-  ld    a,(FreeToUseFastCopy+sx)
-  add   a,16
-  ld    (FreeToUseFastCopy+sx),a
-  ld    a,(FreeToUseFastCopy+dy)
-  add   a,8
-  ld    (FreeToUseFastCopy+dy),a
-  ret
-   
-  .Object015:                           ;retracting platform  
+.SetGfxZombieSpawnPoint:
+		ld    a,-1
+		ld    (FreeToUseFastCopy+dpage),a
+		ld    de,00                           ;x offset for spawnpoint in page 0
+		call  .SetZombieSpawnPointInThisPage
+		ld    de,16                           ;x offset for spawnpoint in page 1
+		call  .SetZombieSpawnPointInThisPage
+		ld    de,32                           ;x offset for spawnpoint in page 2
+		call  .SetZombieSpawnPointInThisPage
+		ld    de,48                           ;x offset for spawnpoint in page 3
+		;  call  .SetZombieSpawnPointInThisPage
+		;  ret
+
+.SetZombieSpawnPointInThisPage:
+		ld    a,(scrollEngine)              ;1= 304x216 engine  2=256x216 SF2 engine
+		dec   a
+		jr    z,.l0
+		ld    de,00
+.l0:	ld    a,(FreeToUseFastCopy+dpage)
+		inc   a
+		ld    (FreeToUseFastCopy+dpage),a
+
+		ld    l,(iy+enemies_and_objects.x)
+		ld    h,(iy+enemies_and_objects.x+1)
+		or    a
+		sbc   hl,de
+		ld    a,h
+		or    a
+		ret   nz
+		ld    a,l
+		ld    (FreeToUseFastCopy+dx),a
+
+		ld    a,0
+		ld    (FreeToUseFastCopy+sx),a
+		ld    a,216+32						;source is 248 (magic number)
+		ld    (FreeToUseFastCopy+sy),a
+
+		ld    a,(iy+enemies_and_objects.y)
+		ld    (FreeToUseFastCopy+dy),a
+		ld    a,3
+		ld    (FreeToUseFastCopy+spage),a
+		ld    a,16
+		ld    (FreeToUseFastCopy+nx),a
+		ld    a,08
+		ld    (FreeToUseFastCopy+ny),a
+		ld    a,$98
+		ld    (FreeToUseFastCopy+copytype),a
+		call  .CopyRowOf8PixelsHigh
+		call  .CopyRowOf8PixelsHigh
+		call  .CopyRowOf8PixelsHigh
+		call  .CopyRowOf8PixelsHigh
+		ld    a,$d0
+		ld    (FreeToUseFastCopy+copytype),a
+		ret
+
+.CopyRowOf8PixelsHigh:
+		ld    hl,FreeToUseFastCopy
+		call  DoCopy
+		ld    a,(FreeToUseFastCopy+sx)
+		add   a,16
+		ld    (FreeToUseFastCopy+sx),a
+		ld    a,(FreeToUseFastCopy+dy)
+		add   a,8
+		ld    (FreeToUseFastCopy+dy),a
+		ret
+
+;retracting platform 
+.Object015:
   ld    hl,Object015Table
   push  iy
   pop   de                              ;enemy object table
@@ -1516,8 +1509,7 @@ ret
 		ld    de,Object016Table.lenghtobjectdata
 ret
 
-
-;bat spawner (BigStatueMouth)
+;020-ratFaceBatSpawner
 .Object020:
   ld    hl,Object020Table
   push  iy
@@ -1597,7 +1589,41 @@ ret
   call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
   ret
 
-  .Object128:                           ;huge blob (HugeBlob)
+;061 - glass ball (GlassBallActivator)
+  .Object061:                           
+  ld    a,(ix+Object061Table.ballnr)
+  cp    4
+  jr    nc,.SetGlassBall4
+
+  .SetGlassBall1:
+  ld    hl,GlassBall1Data
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*3           ;3 objects (2 balls and 1 ball activator)
+  ldir
+
+  ld    de,lenghtenemytable*2           ;lenght 2 objects in object table
+  add   iy,de                           ;next object in object table
+
+  ld    de,Object061Table.lenghtobjectdata*2
+  ret    
+  
+  .SetGlassBall4:
+  ld    hl,GlassBall5Data
+  push  iy
+  pop   de                              ;enemy object table
+  ld    bc,lenghtenemytable*3           ;3 objects (2 balls and 1 ball activator)
+  ldir
+
+  ld    de,lenghtenemytable*2           ;lenght 2 objects in object table
+  add   iy,de                           ;next object in object table
+
+  ld    de,Object061Table.lenghtobjectdata*2
+  ret    
+
+
+
+;128-hugeBlob
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=jumping)
 ;v3=Vertical Movement
@@ -1605,6 +1631,7 @@ ret
 ;v5=Jump to Which platform ? (1,2 or 3)
 ;v6=Gravity timer
 ;v7=Dont Check Land Platform First x Frames
+.Object128:
   exx
   ld    b,16                            ;huge blob starts at sprite nr 16 and places player at sprite 12-15, to make sure player is always in the front
   exx   
@@ -1965,46 +1992,43 @@ ret
 ;v6=pointer to movement table
 ;v7=attack duration
 ;v8=face left (0) or face right (1) 
-  ld    hl,Object153Table
-  jp    .SetGeneralHardwareSpriteNotMovingObject
+		ld    hl,Object153Table
+		jp    .SetGeneralHardwareSpriteNotMovingObject
 
-  .SetGeneralHardwareSpriteNotMovingObject:
-  call  .SetGeneralHardwareSprite
-  ld    de,3                            ;id, x, y, face, speed (lenght object data)
-  ret
+.SetGeneralHardwareSpriteNotMovingObject:
+		call  .SetGeneralHardwareSprite
+		ld    de,3                            ;id, x, y
+		ret
   
-  .SetGeneralHardwareSprite:
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable
-  ldir                                  ;copy enemy table
+.SetGeneralHardwareSprite:
+		push  iy
+		pop   de                              ;enemy object table
+		ld    bc,lenghtenemytable
+		ldir                                  ;copy enemy table
 
-  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+		call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
 
-  ;set x
-  ld    a,(ix+Object150Table.x)
-  add   a,8                             ;all hardware sprites need to be put 16 pixel to the right
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),l
-  ld    (iy+enemies_and_objects.x+1),h
-
-  ;set y
-  ld    a,(ix+Object150Table.y)
-  ld    (iy+enemies_and_objects.y),a
-
-  ;set facing direction
-  ld    a,(ix+Object150Table.face)
-  cp    3
-  jr    z,.EndCheckMovingRight          ;the standard movement direction of any object is right, if this is the facing direction, then we don't need to change movement direction
-  ld    a,(iy+enemies_and_objects.v4)   ;v4=Horizontal Movement
-  neg
-  ld    (iy+enemies_and_objects.v4),a   ;v4=Horizontal Movement
-  .EndCheckMovingRight:
-
-  ld    de,5                            ;id, x, y, face, speed (lenght object data)
-  ret
+;set x
+		ld    a,(ix+Object150Table.x)	;ro: if A>256-8 then adding 8 will fail.. use 16 bit
+		add   a,8                             ;all hardware sprites need to be put 16 pixel to the right
+		ld    l,a
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (iy+enemies_and_objects.x),l
+		ld    (iy+enemies_and_objects.x+1),h
+;set y
+		ld    a,(ix+Object150Table.y)
+		ld    (iy+enemies_and_objects.y),a
+;set facing direction. Ro: when calling this using class=general, shit is broken cuz it has no FACE prop
+		ld    a,(ix+Object150Table.face)
+		cp    3
+		jr    z,.EndCheckMovingRight          ;the standard movement direction of any object is right, if this is the facing direction, then we don't need to change movement direction
+		ld    a,(iy+enemies_and_objects.v4)   ;v4=Horizontal Movement
+		neg
+		ld    (iy+enemies_and_objects.v4),a   ;v4=Horizontal Movement
+.EndCheckMovingRight:
+		ld    de,5                            ;id, x, y, face, speed (lenght object data)
+		ret
 
   .Object154:                           ;green demontje (Demontje)
 ;v1=Animation Counter
@@ -2080,6 +2104,11 @@ ret
   dec   (iy+enemies_and_objects.x)      ;should be 1 pixel to the left
   ret
 
+
+
+
+
+
 ;  .Object143:                           ;retarded zombie
 ;v1=Animation Counter
 ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
@@ -2127,40 +2156,84 @@ SetCleanObjectNumber:                   ;each object has a reference cleanup tab
   ret
 
 SetSPATPositionForThisSprite:           ;we need to define the position this sprite takes in the SPAT
-  exx
-  push  hl
-  ld    l,b                             ;hardware object sprite nr (sprite 0-11 are border masking sprites, after this start the hardware sprite objects)
-  ld    h,0
-  add   hl,hl                           ;*2
-  push  hl
-  ld    de,spat
-  add   hl,de
-  ld    (iy+enemies_and_objects.spataddress),l
-  ld    (iy+enemies_and_objects.spataddress+1),h
-  pop   hl
-  add   hl,hl                           ;*4
-  add   hl,hl                           ;*8
-  add   hl,hl                           ;*16  
-  ld    (iy+enemies_and_objects.SprNrTimes16),l
-  ld    (iy+enemies_and_objects.SprNrTimes16+1),h
-  pop   hl
-  ld    a,(iy+enemies_and_objects.nrspritesSimple)
-  add   a,b
-  ld    b,a                             ;set next sprite position in b by adding the amount of sprites current object uses
-  exx
-  ret
+		exx
+		push  hl
+		ld    l,b                             ;hardware object sprite nr (sprite 0-11 are border masking sprites, after this start the hardware sprite objects)
+		ld    h,0
+		add   hl,hl                           ;*2
+		push  hl
+		ld    de,spat
+		add   hl,de
+		ld    (iy+enemies_and_objects.spataddress),l
+		ld    (iy+enemies_and_objects.spataddress+1),h
+		pop   hl
+		add   hl,hl                           ;*4
+		add   hl,hl                           ;*8
+		add   hl,hl                           ;*16  
+		ld    (iy+enemies_and_objects.SprNrTimes16),l
+		ld    (iy+enemies_and_objects.SprNrTimes16+1),h
+		pop   hl
+		ld    a,(iy+enemies_and_objects.nrspritesSimple)
+		add   a,b
+		ld    b,a                             ;set next sprite position in b by adding the amount of sprites current object uses
+		exx
+		ret
 
                 ;y,x  1=up,   2=upright,  3=right,  4=rightdown,  5=down, 6=downleft, 7=left, 8=leftup)
 Movementtable:    db  -1,+0,  -1,+1,      +0,+1,    +1,+1,        +1,+0,  +1,-1,      +0,-1,  -1,-1  
 
-Object001Table:               ;pushing stone (PushingStone)
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.lenghtobjectdata: equ 3
+isSprite:		equ 1
+isNotSprite:	equ 0
+isAlive:		equ 1
+isNotAlive:		equ 0
+
+;001-pushStone
+Object001Table:
+; .ID: equ 0
+; .x: equ 1
+; .y: equ 2
+; .lenghtobjectdata: equ 3
+.sx:	equ 112	;graphics location
+.hit:	equ 0
+.life:	equ 0
 ;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
-          db 1,        0|dw PushingStone        |db 8*00|dw 8*00|db 16,16|dw CleanOb1,0 db 0 | dw PuzzleBlocks4Y | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movementpatterns1block| ds fill-1
+;		alive?,Sprite?,Movement Pattern,   y,x,    ny,nx,   Objectnr, spatAdr, numspr,     ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,movepatbloc
+		db	isalive,isNotSprite
+		dw	PushingStone
+		db	0,0,0,16,16	;y,xx,ny,nx
+		dw	cleanOb1,0 ;objnr,spatadr
+		db	0	;numsprites
+		dw	-1 ;pushStoneTable+pushStoneTable.roomY	;tableRec
+		db	.sx,0,0,0,0,0,0,14,14,.hit,.life,movementpatterns1block
+		ds	fill-1
+
+; db 1,0 dw PushingStone db 8*00 dw 8*00 db 16,16|dw CleanOb1,0 db 0 | dw pushStoneTable+pushStoneTable.roomY | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movementpatterns1block| ds fill-1
+
+;002-Waterfall yellow
+;v1=sx
+;v2=Active Timer
+;v3=wait timer in case only 1 waterfall
+;v4=Waterfall nr
+Object002Table:
+; .ID: equ 0
+; .x: equ 1
+; .y: equ 2
+;.lenghtobjectdata: equ 3
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                ,v1, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
+.eyes:    db isAlive,isNotSprite|dw WaterfallEyesYellow|db 0|dw 0|db 06,14|dw CleanOb1,0 db 0,0,0, WaterfallEyesYellowClosedSX,+00,+01,+01,+00,0,0,8*00+3,8*00,8*00+3,8*00,movementpatterns1block| ds fill-1
+;Waterfall mouth
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.mouth:   db isNotAlive,isNotSprite|dw WaterfallMouth|db 0|dw 0|db 06,10|dw CleanOb2,0 db 0,0,0, WaterfallMouthYellowClosedSX,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+;Water
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.water:   db isNotAlive,isSprite|dw Waterfall |db 0|dw 0|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
+
+Object003Table:               ;waterfall grey statue (WaterfallEyesYellow)
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#             ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
+.eyes:    db isAlive,isNotSprite|dw WaterfallEyesGrey|db 0|dw 0|db 06,14|dw CleanOb3,0 db 0,0,0,+095,+00,200,+02,+01,8*15+3,8*06,8*15+3,8*28,8*00+3,8*00,movementpatterns1block| ds fill-1
+
+
+
 
 Object005Table:               ;Area sign
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
@@ -2596,23 +2669,6 @@ GlassBallPipeObject:
 .y: equ 2
 .lenghtobjectdata: equ 3
 
-Object002Table:               ;waterfall yellow statue (WaterfallEyesYellow)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
-.eyes:    db 1,        0|dw WaterfallEyesYellow |db 8*15+3|dw 8*17|db 06,14|dw CleanOb1,0 db 0,0,0,                   +067,+00,+01,+01,+00,8*15+3,8*17,8*00+3,8*00,8*00+3,8*00,movementpatterns1block| ds fill-1
-;Waterfall mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.mouth:   db 0,        0|dw WaterfallMouth      |db 8*16+7|dw 8*17+2|db 06,10|dw CleanOb2,0 db 0,0,0,                 +119,+00,+00,+02,+00,+00,+02,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-;Waterfall
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.water:   db -0,       1|dw Waterfall           |db 8*00|dw 8*00|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.lenghtobjectdata: equ 3
-
-Object003Table:               ;waterfall grey statue (WaterfallEyesYellow)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
-.eyes:    db 1,        0|dw WaterfallEyesGrey   |db 8*15+3|dw 8*28|db 06,14|dw CleanOb3,0 db 0,0,0,                   +095,+00,200,+02,+01,8*15+3,8*06,8*15+3,8*28,8*00+3,8*00,movementpatterns1block| ds fill-1
 
 
 
@@ -2728,76 +2784,8 @@ GWMR.0: ADD   HL,BC
         JP    GWMR.1
 
 
-;Get Ruin properties
-;in:	A=ruinId
-;out:	HL=RecAdr
-GetRuin:
-	push bc
-	LD	h,0
-	ld	l,A
-	add	hl,hl	;x2
-	add	hl,hl	;4
-	add hl,hl	;8
-	add	hl,hl	;16
-	ld	bc,RuinPropertiesLUT.data
-	add	hl,bc
-	pop bc
-ret
-
-;RuinPropertiesLookUpTable
-RuinPropertiesLUT:
-.reclen:		equ 16		;[attribute]The length of one record
-.numrec:		equ 32		;[attribute]Number of records
-.tileset:		equ +0		;[property]Default Tileset ID
-.palette:		equ +1		;[property]Default palette ID
-.music:			equ +2		;[property]Default music ID
-.Name:			equ +3		;[property]Name of the ruin as string
-.data:						;RM:table generated externally
-	DB 0,0,0,"             "
-	DB 0,0,0,"Hub          "
-	DB 2,0,0,"Lemniscate   "
-	DB 0,0,0,"Bos Stenen Wa"
-	DB 4,0,0,"Pegu         "
-	DB 0,0,0,"Bio          "
-	DB 6,6,3,"Karni Mata   "
-	DB 0,0,0,"Konark       "
-	DB 0,0,0,"Ashoka   hell"
-	DB 0,0,0,"Taxilla      "
-	DB 0,0,0,"Euderus Set  "
-	DB 0,0,0,"Akna         "
-	DB 0,0,0,"Fate         "
-	DB 0,0,0,"Sepa         "
-	DB 0,0,0,"undefined    "
-	DB 0,0,0,"Chi          "
-	DB 0,0,0,"Sui          "
-	DB 0,0,0,"Grot         "
-	DB 0,0,0,"Tiwanaku     "
-	DB 0,0,0,"Aggayu       "
-	DB 0,0,0,"Ka           "
-	DB 0,0,0,"Genbu        "
-	DB 0,0,0,"Fuu          "
-	DB 0,0,0,"Indra        "
-	DB 0,0,0,"Morana       "
-	DB 0,0,0,"             "
-	DB 0,0,0,"             "
-	DB 0,0,0,"             "
-	DB 0,0,0,"             "
-	DB 0,0,0,"             "
-	DB 0,0,0,"             "
-	DB 0,0,0,"             "
 
 
-
-ResetPushStones:
-  ld    hl,PuzzleBlocks1Y+3             ;y stone 1
-  ld    de,4
-  ld    b,31
-  xor   a
-  .loop:
-  ld    (hl),a
-  add   hl,de
-  djnz  .loop
-  ret
 
 PutSpatToVramSlow:
 	ld		hl,(invisspratttableaddress)		;sprite attribute table in VRAM ($17600)

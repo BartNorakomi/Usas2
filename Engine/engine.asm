@@ -764,90 +764,47 @@ CopySwitch2:
   db    016,000,016,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy
 
+;Fill RAM
+;in: HL=start, BC=length, A=value
+fillRam:
+		push de
+		push hl
+		pop	 de
+		inc	 de
+		ld 	 (hl),A
+		dec bc
+		ldir
+		pop	de
+		ret
+
+
+;Clear the stones table
+ResetPushStones:
+		ld	 hl,pushStoneTable.data
+		ld	 bc,pushStoneTable.numrec*pushStoneTable.reclen
+		ld	 a,-1
+		jp	 fillRam
+
+; 		ld    hl,PuzzleBlocks1Y+3             ;y stone 1
+; 		ld    de,pushStoneTable.reclen
+; 		ld    b,pushStoneTable.numrec
+; 		xor   a
+; .loop:
+; 		ld    (hl),a
+; 		add   hl,de
+; 		djnz  .loop
+; 		ret
+
 AmountOfPushingStonesInCurrentRoom: ds  1
-                    ;y                        x     room (x,y)
-PuzzleBlocks1Y: db  000 | PuzzleBlocks1X: db  000 | dw 0
-PuzzleBlocks2Y: db  000 | PuzzleBlocks2X: db  000 | dw 0
-PuzzleBlocks3Y: db  000 | PuzzleBlocks3X: db  000 | dw 0
-PuzzleBlocks4Y: db  000 | PuzzleBlocks4X: db  000 | dw 0
-PuzzleBlocks5Y: db  000 | PuzzleBlocks5X: db  000 | dw 0
-PuzzleBlocks6Y: db  000 | PuzzleBlocks6X: db  000 | dw 0
-PuzzleBlocks7Y: db  000 | PuzzleBlocks7X: db  000 | dw 0
-PuzzleBlocks8Y: db  000 | PuzzleBlocks8X: db  000 | dw 0
-PuzzleBlocks9Y: db  000 | PuzzleBlocks9X: db  000 | dw 0
-PuzzleBlocks10Y:db  000 | PuzzleBlocks10X:db  000 | dw 0
-PuzzleBlocks11Y:db  000 | PuzzleBlocks11X:db  000 | dw 0
-PuzzleBlocks12Y:db  000 | PuzzleBlocks12X:db  000 | dw 0
+PushStoneTable:
+.numRec:	equ 31
+.recLen:	equ 4
+.stoneY:	equ +0
+.stoneX:	equ +1
+.roomX:		equ +2
+.roomY:		equ +3
+.data:		ds pushStoneTable.numrec*pushStoneTable.reclen
 
-PuzzleBlocks13Y:db  000 | PuzzleBlocks13X:db  000 | dw 0
-PuzzleBlocks14Y:db  000 | PuzzleBlocks14X:db  000 | dw 0
-PuzzleBlocks15Y:db  000 | PuzzleBlocks15X:db  000 | dw 0
-
-PuzzleBlocks16Y:db  000 | PuzzleBlocks16X:db  000 | dw 0
-PuzzleBlocks17Y:db  000 | PuzzleBlocks17X:db  000 | dw 0
-PuzzleBlocks18Y:db  000 | PuzzleBlocks18X:db  000 | dw 0
-
-PuzzleBlocks19Y:db  000 | PuzzleBlocks19X:db  000 | dw 0
-PuzzleBlocks20Y:db  000 | PuzzleBlocks20X:db  000 | dw 0
-PuzzleBlocks21Y:db  000 | PuzzleBlocks21X:db  000 | dw 0
-PuzzleBlocks22Y:db  000 | PuzzleBlocks22X:db  000 | dw 0
-
-PuzzleBlocks23Y:db  000 | PuzzleBlocks23X:db  000 | dw 0
-
-PuzzleBlocks24Y:db  000 | PuzzleBlocks24X:db  000 | dw 0
-PuzzleBlocks25Y:db  000 | PuzzleBlocks25X:db  000 | dw 0
-
-PuzzleBlocks26Y:db  000 | PuzzleBlocks26X:db  000 | dw 0
-
-PuzzleBlocks27Y:db  000 | PuzzleBlocks27X:db  000 | dw 0
-PuzzleBlocks28Y:db  000 | PuzzleBlocks28X:db  000 | dw 0
-PuzzleBlocks29Y:db  000 | PuzzleBlocks29X:db  000 | dw 0
-
-PuzzleBlocks30Y:db  000 | PuzzleBlocks30X:db  000 | dw 0
-
-PuzzleBlocksEmpty:db 000 | PuzzleBlocksEmptyX:db 000 | dw 0
-
-
-;PuzzleBlocks1Y: db  032 | PuzzleBlocks1X: db  111
-;PuzzleBlocks2Y: db  032 | PuzzleBlocks2X: db  161
-;PuzzleBlocks3Y: db  120 | PuzzleBlocks3X: db  171
-;PuzzleBlocks4Y: db  024 | PuzzleBlocks4X: db  063
-;PuzzleBlocks5Y: db  024 | PuzzleBlocks5X: db  199
-;PuzzleBlocks6: db  096 | PuzzleBlocks6X: db  157
-;PuzzleBlocks7Y: db  026 | PuzzleBlocks7X: db  127
-;PuzzleBlocks8Y: db  026 | PuzzleBlocks8X: db  175
-;PuzzleBlocks9Y: db  074 | PuzzleBlocks9X: db  103
-;PuzzleBlocks10Y:db  032 | PuzzleBlocks10X:db  039
-;PuzzleBlocks11Y:db  032 | PuzzleBlocks11X:db  081
-;PuzzleBlocks12Y:db  032 | PuzzleBlocks12X:db  161
-
-;PuzzleBlocks13Y:db  11*8 | PuzzleBlocks13X:db  18*8+1
-;PuzzleBlocks14Y:db  17*8 | PuzzleBlocks14X:db  18*8+1
-;PuzzleBlocks15Y:db  23*8 | PuzzleBlocks15X:db  18*8+1
-
-;PuzzleBlocks16Y:db  09*8 | PuzzleBlocks16X:db  18*8+1
-;PuzzleBlocks17Y:db  15*8 | PuzzleBlocks17X:db  12*8+1
-;PuzzleBlocks18Y:db  15*8 | PuzzleBlocks18X:db  24*8+1
-
-;PuzzleBlocks19Y:db  04*8 | PuzzleBlocks19X:db  09*8-1
-;PuzzleBlocks20Y:db  04*8 | PuzzleBlocks20X:db  13*8+1
-;PuzzleBlocks21Y:db  04*8 | PuzzleBlocks21X:db  18*8+1
-;PuzzleBlocks22Y:db  10*8 | PuzzleBlocks22X:db  10*8+1
-
-;PuzzleBlocks23Y:db  15*8 | PuzzleBlocks23X:db  25*8+1
-
-;PuzzleBlocks24Y:db  04*8 | PuzzleBlocks24X:db  10*8+1
-;PuzzleBlocks25Y:db  04*8 | PuzzleBlocks25X:db  26*8+1
-
-;PuzzleBlocks26Y:db  04*8 | PuzzleBlocks26X:db  22*8+1
-
-;PuzzleBlocks27Y:db  04*8 | PuzzleBlocks27X:db  23*8+1
-;PuzzleBlocks28Y:db  11*8 | PuzzleBlocks28X:db  13*8+1
-;PuzzleBlocks29Y:db  15*8 | PuzzleBlocks29X:db  27*8+3
-
-;PuzzleBlocks30Y:db  04*8 | PuzzleBlocks30X:db  11*8+1
-
-;PuzzleBlocksEmpty:db  00*8 | PuzzleBlocksEmptyX:db  00*8+1
 
 
 
@@ -2828,7 +2785,7 @@ CheckMapExit:
   xor   a
   ld    (CheckNewPressedControlUpForDoubleJump),a
   call  DisableLineint	
-  jp    loadGraphics
+  jp    loadRoom
   
 DisableLineint:
   di

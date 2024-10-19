@@ -150,7 +150,7 @@ function convert-TmxObjects
 	write-verbose "Converting Objects"
 	[byte[]]$dataBlock=[byte]0
 	$objects=get-RoomObjects -tiledmap $tiledmap|sort Uid -Descending #sort so software sprite objects come first
-	$global:objects=$objects
+	$global:objects=$objects	#ro: is this for debugging? if so, disable it
 	foreach ($object in $objects)
 	{	$uid=$object.uid #get UID from map
 		if ($roomobject=$usas2.roomobject|where{$_.uid -eq $uid}) #get object info from globalVars
