@@ -366,18 +366,16 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    (iy+roomObjectClass.Enemy.Speed),a
 		dec	 IX
 		ret
+;out: DE=numbBytes, HL=objectX, A=objectY
 .applyClassGeneral:
-		;inc	 IX ;skip ID (should've happened earlier on)
-		ld    l,(ix+roomObjectClass.General.X)
-		ld    h,0
-		add   hl,hl
-		ld    (iy+enemies_and_objects.x),l
-		ld    (iy+enemies_and_objects.x+1),h
-
-		ld    a,(ix+roomObjectClass.General.Y)
-		ld    (iy+enemies_and_objects.y),a
-		; dec	 IX
-		ld	 de,roomObjectClass.General.numBytes
+		ld		l,(ix+roomObjectClass.General.X)
+		ld		h,0
+		add		hl,hl
+		ld		(iy+enemies_and_objects.x),l
+		ld		(iy+enemies_and_objects.x+1),h
+		ld		a,(ix+roomObjectClass.General.Y)
+		ld		(iy+enemies_and_objects.y),a
+		ld		de,roomObjectClass.General.numBytes
 		ret
 
 
@@ -391,7 +389,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v9=special width for Pushing Stone Puzzle Switch
 ;v1-2= coordinates in pushing stone table (PuzzleBlocks1Y, PuzzleBlocks2Y etc)
 .Object001:
-		inc		IX	;skip ID, goto Class properties
 		call	.SetPushingStoneInEnemyTable
 		ld		hl,pushStonetable.data+pushStoneTable.roomY	;table record #0
 		Call	.CheckBlock
@@ -426,7 +423,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		cp		roomObject.PushStone
 		ret		nz
 
-		ld		de,roomObjectClass.General.numBytes+1	;goto next roomObject and skip ID
+		ld		de,roomObjectClass.General.numBytes	;goto next roomObject and skip ID
 		add		ix,de
 		ld		de,lenghtenemytable					;goto next objectRecord
 		add		iy,de
@@ -448,7 +445,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		cp		roomObject.PushStone
 		ret		nz
 
-		ld		de,roomObjectClass.General.numBytes+1	;goto next roomObject and skip ID
+		ld		de,roomObjectClass.General.numBytes	;goto next roomObject and skip ID
 		add		ix,de
 		ld		de,lenghtenemytable					;goto next objectRecord
 		add		iy,de
@@ -506,7 +503,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 .Object002:                           
 		ld    hl,Object002Table.eyes
 .EntryForObject003:
-		inc		ix	;goto class
 		call	.object002AddEyes
 		push	de
 		call	.object002AddMouth
@@ -521,8 +517,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ldir
 		call	SetCleanObjectNumber            ;each object has a reference cleanup table
 
-		call	.applyClassGeneral			;transfer class properties, return DE=numBytes
-		ld		a,(iy+enemies_and_objects.y)
+		call	.applyClassGeneral			;transfer class properties, ;out: DE=numbBytes, HL=objectX, A=objectY
+		;ld		a,(iy+enemies_and_objects.y)
 		add		a,3
 		ld		(iy+enemies_and_objects.y),a
 
@@ -571,12 +567,11 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v8=Y spawn
 ;v9=X spawn
 .Object004:
-		inc		ix
 ;initialize object
 		ld		hl,Object004Table				;copy template
 		push	iy
 		pop		de
-		ld		bc,lenghtenemytable*1
+		ld		bc,lenghtenemytable
 		ldir
 		call	SetCleanObjectNumber
 ;copy class properties
@@ -626,7 +621,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
 ;v9=wait timer / bottom of area sign
 .Object005:
-		inc		IX
 		call	.initAreaSignObject
 		ld		de,roomObjectClass.general.numBytes
 		ret
@@ -708,116 +702,101 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		pop   de
 		ld    bc,lenghtenemytable
 		ldir
-
-		;set x
-		ld    a,(ix+Object020Table.x)
-;		add   a,16                           ;n pix to the right
-		ld    l,a
-		ld    h,0
-		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		ld    (iy+enemies_and_objects.x),l
-		ld    (iy+enemies_and_objects.x+1),h
-
-		;set y
-		ld    a,(ix+Object020Table.y)
-		;sub   72
-		ld    (iy+enemies_and_objects.y),a
-
-		ld    de,Object006Table.lenghtobjectdata
+		call	.applyClassGeneral
 		ret    
 
 
+;waterfall scene (WaterfallScene) @karnimata
+.Object007:                           
+		ld    hl,Object007Table
+		push  iy
+		pop   de
+		ld    bc,lenghtenemytable
+		ldir
 
+;put waterfall backdrop in all 4 pages
+		ld    a,0
+		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    de,$0000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
+		ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
+		ld    a,WaterfallSceneBlock1              ;block to copy graphics from
+		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
-;008-FireDemonBoss
-.Object008:                           ;boss demon (BossDemon)
-  ld    hl,Object008Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*4           ;4 object(s)
-  ldir
+		ld    a,0
+		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld    hl,$8000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    de,$8000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
+		ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
+		ld    a,WaterfallSceneBlock1              ;block to copy graphics from
+		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
-  ;put lava animation backdrop in all 4 pages
-  ld    a,0
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$0000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
-  ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+		ld    a,1
+		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    de,$0000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
+		ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
+		ld    a,WaterfallSceneBlock2              ;block to copy graphics from
+		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
-  ld    a,0
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (040*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$8000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
-  ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+		ld    a,1
+		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld    hl,$8000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    de,$8000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
+		ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
+		ld    a,WaterfallSceneBlock2              ;block to copy graphics from
+		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 
-  ld    a,1
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (080*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$0000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
-  ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-  ld    a,1
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (120*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$8000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
-  ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-  ld    de,Object008Table.lenghtobjectdata
-  ret   
-
-  .Object007:                           ;waterfall scene (WaterfallScene)
-  ld    hl,Object007Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1           ;1 object(s)
-  ldir
-
-  ;put waterfall backdrop in all 4 pages
-  ld    a,0
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$0000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
-  ld    a,WaterfallSceneBlock1              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-  ld    a,0
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$8000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$8000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
-  ld    a,WaterfallSceneBlock1              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-  ld    a,1
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$0000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
-  ld    a,WaterfallSceneBlock2              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-  ld    a,1
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$8000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$8000 + (040*128) + (032/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (128*256) + (192/2)        ;(ny*256) + (nx/2)
-  ld    a,WaterfallSceneBlock2              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-  ld    de,Object007Table.lenghtobjectdata
-  ret   
+		ld    de,roomObjectclass.General.numBytes
+		ret   
 
  
 
+;008-FireDemonBoss
+.Object008:                           ;boss demon (BossDemon)
+		ld    hl,Object008Table
+		push  iy
+		pop   de                              ;enemy object table
+		ld    bc,lenghtenemytable*4           ;4 object(s)
+		ldir
+
+;put lava animation backdrop in all 4 pages
+		ld    a,0
+		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    de,$0000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
+		ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
+		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+		ld    a,0
+		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld    hl,$4000 + (040*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    de,$8000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
+		ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
+		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+		ld    a,1
+		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld    hl,$4000 + (080*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    de,$0000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
+		ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
+		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+		ld    a,1
+		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld    hl,$4000 + (120*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    de,$8000 + (168*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    bc,$0000 + (040*256) + (240/2)        ;(ny*256) + (nx/2)
+		ld    a,KonarkLavaSceneBlock              ;block to copy graphics from
+		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+		ld    de,roomObjectclass.General.numBytes
+		ret   
+
+  
 
 
 ;zombie spawn point (ZombieSpawnPoint)
@@ -2218,15 +2197,58 @@ Object003Table:               ;waterfall grey statue (WaterfallEyesYellow)
 .eyes:    db isAlive,isNotSprite|dw WaterfallEyesGrey|db 0|dw 0|db 06,14|dw CleanOb3,0 db 0,0,0,+095,+00,200,+02,+01,8*15+3,8*06,8*15+3,8*28,8*00+3,8*00,movementpatterns1block| ds fill-1
 
 
+Object004Table:               ;Dripping Ooze Drop
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   ,Hit?,life 
+          db 1,        0|dw DrippingOozeDrop    |db 8*09-5|dw 8*10+3|db 08,05|dw CleanOb1,0 db 0,0,0,                 +149,+02,+03,+00,+63,+00,+00,8*09-5,8*10+3, 0|db 000,movementpatterns1block| ds fill-1
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.Splash: db -0,        1|dw DrippingOoze        |db 8*22|dw 8*24|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+; .ID: equ 0
+; .x: equ 1
+; .y: equ 2
+; .lenghtobjectdata: equ 3
 
-
-Object005Table:               ;Area sign
+;005-AreaSign
+Object005Table:               
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
           db 2,        0|dw AreaSign             |db 8*05|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+00,+00,190, 0|db 016,movementpatterns1block| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2
 .lenghtobjectdata: equ 3
+
+;006-TeleportVortex
+Object006Table:
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+          db 2,isNotSprite|dw Teleport|db 0|dw 0|db 64,64|dw CleanOb1,0 db 0,0,0,+149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+; .ID: equ 0
+; .x: equ 1
+; .y: equ 2
+; .lenghtobjectdata: equ 3
+
+Object007Table:               ;Waterfall Scene
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+          db 2,        0|dw WaterfallScene      |db 8*02  |dw 8*17  |db 64,64|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+;          db 0,        0|dw BossRatty         |db 8*21+7  |dw 8*10  |db 42,32|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+04,+00,+01,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+;          db 2,        0|dw BossRatty         |db 8*21+7  |dw 8*20  |db 42,32|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,-04,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+;          db 2,        0|dw BossRattyHandler    |db 8*02  |dw 8*17  |db 00,00|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+; .ID: equ 0
+; .x: equ 1
+; .y: equ 2
+; .lenghtobjectdata: equ 3
+
+Object008Table:               ;Boss Demon
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+          db 2,        0|dw BossDemon           |db 8*02+1|dw 8*06|db 00,00|dw 00000000,0 db 0,0,0,                    +00,+00,+00,+00,+00,+00,+00,+00,+20, 0|db 2,movementpatterns1block| ds fill-1
+       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+         db -0,        1|dw BossDemonBullet     |db 8*10|dw 8*22|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
+         db -0,        1|dw BossDemonBullet     |db 8*12|dw 8*22|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
+         db -0,        1|dw BossDemonBullet     |db 8*14|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
+; .ID: equ 0
+; .x: equ 1
+; .y: equ 2
+; .lenghtobjectdata: equ 3
+
+
 
 Object010Table:               ;platform
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
@@ -2655,51 +2677,6 @@ GlassBallPipeObject:
 .lenghtobjectdata: equ 3
 
 
-
-
-
-Object004Table:               ;Dripping Ooze Drop
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   ,Hit?,life 
-          db 1,        0|dw DrippingOozeDrop    |db 8*09-5|dw 8*10+3|db 08,05|dw CleanOb1,0 db 0,0,0,                 +149,+02,+03,+00,+63,+00,+00,8*09-5,8*10+3, 0|db 000,movementpatterns1block| ds fill-1
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.Splash: db -0,        1|dw DrippingOoze        |db 8*22|dw 8*24|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.lenghtobjectdata: equ 3
-
-;006-TeleportVortex
-Object006Table:
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 2,isNotSprite|dw Teleport|db 0|dw 0|db 64,64|dw CleanOb1,0 db 0,0,0,+149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.lenghtobjectdata: equ 3
-
-Object007Table:               ;Waterfall Scene
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 2,        0|dw WaterfallScene      |db 8*02  |dw 8*17  |db 64,64|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
-;          db 0,        0|dw BossRatty         |db 8*21+7  |dw 8*10  |db 42,32|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+04,+00,+01,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
-;          db 2,        0|dw BossRatty         |db 8*21+7  |dw 8*20  |db 42,32|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,-04,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
-;          db 2,        0|dw BossRattyHandler    |db 8*02  |dw 8*17  |db 00,00|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.lenghtobjectdata: equ 3
-
-Object008Table:               ;Boss Demon
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 2,        0|dw BossDemon           |db 8*02+1|dw 8*06|db 00,00|dw 00000000,0 db 0,0,0,                    +00,+00,+00,+00,+00,+00,+00,+00,+20, 0|db 2,movementpatterns1block| ds fill-1
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-         db -0,        1|dw BossDemonBullet     |db 8*10|dw 8*22|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
-         db -0,        1|dw BossDemonBullet     |db 8*12|dw 8*22|db 16,16|dw 24*16,spat+(24*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
-         db -0,        1|dw BossDemonBullet     |db 8*14|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
-
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.lenghtobjectdata: equ 3
 
 
 ;Get room type [A] table record address [HL]

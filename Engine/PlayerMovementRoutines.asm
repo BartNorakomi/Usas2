@@ -14,14 +14,17 @@ ExitTeleport:
 		jr    nz,.DirectionFound
 		ld    hl,LeftMeditateAnimation ;- 2
 .DirectionFound:
-		call  AnimateEnterTeleport        ;animate
-		call  LMeditate.VerticalMovement	;bouncing
-		call  .FlickerSprite
-		call  .SetPlayerToCentreTeleportOnExit
+		call	AnimateEnterTeleport        ;animate
+		call	LMeditate.VerticalMovement	;bouncing
+		call	.FlickerSprite
 
-		ld    a,(PlayerAniCount+1)
-		cp    121-1
-		ret   nz                          ;at end of meditate go to stand
+		ld 		a,(PlayerAniCount+1)
+		cp		11
+		call	z,.SetPlayerToCentreTeleportOnExit
+
+		ld		a,(PlayerAniCount+1)
+		cp		121-1
+		ret		nz                          ;at end of meditate go to stand
 
 		ld    a,(PlayerFacingRight?)
 		or    a
@@ -33,54 +36,31 @@ ExitTeleport:
 		cp    20
 		jp    c,EnterTeleport.PutEmptySprite
 		cp    40
-		jr    c,.Phase4
+		jp    c,EnterTeleport.Phase4
 		cp    60
-		jr    c,.Phase3
+		jp    c,EnterTeleport.Phase3
 		cp    80
-		jr    c,.Phase2
+		jp   c,EnterTeleport.Phase2
 		cp    100
-		jr    c,.Phase1
+		jp    c,EnterTeleport.Phase1
 		ret
-  .Phase4:
-		ld    a,(framecounter)
-		and   7
-		jp    nz,EnterTeleport.PutEmptySprite
-		ret
-  .Phase3:
-		ld    a,(framecounter)
-		and   3
-		jp    nz,EnterTeleport.PutEmptySprite
-		ret
-  .Phase2:
-		ld    a,(framecounter)
-		and   1
-		jp    z,EnterTeleport.PutEmptySprite
-		ret
-  .Phase1:
-		ld    a,(framecounter)
-		and   3
-		jp    z,EnterTeleport.PutEmptySprite
-		ret
+  
 
 .SetPlayerToCentreTeleportOnExit:
-		ld    a,(PlayerAniCount+1)
-		cp    10
-		ret   c
-
-		; ld		a,(enemies_and_objects+enemies_and_objects.ny)		;ro: ASSUMING index=teleportRecord
-		; ld a,64
-		; srl		a		;/2
-		; ld		a,32
-		; add		a,(enemies_and_objects+enemies_and_objects.y)
+		ld		a,(enemies_and_objects+enemies_and_objects.ny)		;ro: ASSUMING index=teleportRecord
+		srl		a		;/2
+		ld b,a
 		ld		a,(enemies_and_objects+enemies_and_objects.y)
-		add		a,32
+		add a,b
 		ld    (ClesY),a
 
-		ld    a,(enemies_and_objects+enemies_and_objects.x)
-		add a,32
-		ld    h,0
-		ld    l,a
-		ld    (ClesX),hl
+		ld		a,(enemies_and_objects+enemies_and_objects.nx)		;ro: ASSUMING index=teleportRecord
+		srl		a		;/2
+		ld		c,a
+		ld		b,0
+		ld    	hl,(enemies_and_objects+enemies_and_objects.x)
+		add		hl,bc
+		ld		(ClesX),hl
 		ret
 
 
@@ -131,25 +111,21 @@ EnterTeleport:
 		cp    20
 		jr    nc,.Phase1
 		ret
-
 .Phase4:
 		ld    a,(framecounter)
 		and   7
 		jr    nz,.PutEmptySprite
 		ret
-
 .Phase3:
 		ld    a,(framecounter)
 		and   3
 		jr    nz,.PutEmptySprite
 		ret
-
 .Phase2:
 		ld    a,(framecounter)
 		and   1
 		jr    z,.PutEmptySprite
 		ret
-
 .Phase1:
 		ld    a,(framecounter)
 		and   3
@@ -166,13 +142,15 @@ EnterTeleport:
 		ld		hl,ClesY
 		; ld		a,(enemies_and_objects+enemies_and_objects.ny)		;ro: ASSUMING index=teleportRecord
 		; srl		a		;/2
-		; add		a,(enemies_and_objects+enemies_and_objects.y)
-		; sub		10			;counter meditation bounce
+		; ld		b,a
+		; ld		a,(enemies_and_objects+enemies_and_objects.y)
+		; add		a,b
+		; ;sub		5			;counter meditation bounce
 		; cp		(hl)
-		; jr 		c,.moveDown
-		; add		10+10			;counter meditation bounce
+		; jr 		c,.moveup
+		; add		5+5			;counter meditation bounce
 		; cp		(hl)
-		; jr		nc,.moveUp
+		; jr		nc,.movedown
 		; ret
 
 		ld    a,(enemies_and_objects+enemies_and_objects.y)		;ro: ASSUMING index=teleportRecord
@@ -182,32 +160,25 @@ EnterTeleport:
 		jr    nc,.MoveUp
 		cp    22
 		ret   nc
-.moveDown:	inc   (hl)
+.moveDown:
+		inc   (hl)
 		ret
 .MoveUp:
 		dec   (hl)
 		ret
   
 .MoveHorizontally:
-		ld    hl,ClesX
-		ld    a,(enemies_and_objects+enemies_and_objects.x)
+		ld		hl,ClesX
+		ld		a,(enemies_and_objects+enemies_and_objects.x)
 		add		A,32 ;Half the vortex
-		sub   (hl)
-		jr    nc,.MoveRight
-		ld    a,(enemies_and_objects+enemies_and_objects.x)
-		add   a,2
-		sub   (hl)
-		ret   nc
+		cp		(hl)
+		ret		z
+		jr		nc,.MoveRight
 .MoveLeft:
 		dec   (hl)
-		; xor   a
-		; ld    (PlayerFacingRight?),a
 		ret
-
 .MoveRight:
 		inc   (hl)
-		; ld    a,1
-		; ld    (PlayerFacingRight?),a
 		ret
 
 

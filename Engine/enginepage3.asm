@@ -24,8 +24,8 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 
 ;current locatione=karnimata
-roomX: equ ("B"-"A")*26 + "X"-"A"
-roomY: equ 14
+roomX: equ ("B"-"A")*26 + "T"-"A"
+roomY: equ 12
 
 WorldMapPosition:
 .Y:  db  roomY-1
@@ -46,11 +46,9 @@ PlayLogo:
 		call  StartTeamNXTLogo              ;sets logo routine in rom at $4000 page 1 and run it
 startTheGame:
 		call	Replayer_Stop
-
 		call	enableWorldmap
 		ld		hl,$B000
 		call	newwm
-
 		ld		a,-1
 		ld		(PreviousRuin),a
 		call	loadRoom
@@ -59,17 +57,18 @@ startTheGame:
 
 ;Load the current room
 loadRoom:
-		call	ResetPushStones
-		call	loadGraphics
-		call	addThisRoomToWorldmap
-
-		ld		a,(PreviousRuin)		;Only apply if this is another ruin
+		ld		a,(PreviousRuin)
 		ld		b,a
 		call	GetRoomRuinId
 		ld		(PreviousRuin),a
 		cp		b
-		ret		Z
+		call	nz,initRuin
+		call	loadGraphics
+		call	addThisRoomToWorldmap
+		ret
+
 ;this room is in a differt Ruin than the previous
+initRuin:
 		call	ResetPushStones
 		call	GetRoomMusicId
 		call	setMusic
@@ -1487,15 +1486,16 @@ roomObject.PushStone: EQU 1
 
 
 ;roomobject class byte offsets
-roomObjectClass.Enemy.X: EQU 0
-roomObjectClass.Enemy.Y: EQU 1
-roomObjectClass.Enemy.Face: EQU 2
-roomObjectClass.Enemy.Speed: EQU 3
-roomObjectClass.Enemy.numBytes: EQU 4
+roomObjectClassIdOffset: EQU 1 ;tho ID isn't a part of the class, for now we act like it is
+roomObjectClass.Enemy.X: EQU 0+roomObjectClassIdOffset
+roomObjectClass.Enemy.Y: EQU 1+roomObjectClassIdOffset
+roomObjectClass.Enemy.Face: EQU 2+roomObjectClassIdOffset
+roomObjectClass.Enemy.Speed: EQU 3+roomObjectClassIdOffset
+roomObjectClass.Enemy.numBytes: EQU 4+roomObjectClassIdOffset
 
-roomObjectClass.General.X: EQU 0
-roomObjectClass.General.Y: EQU 1
-roomObjectClass.General.numBytes: EQU 2
+roomObjectClass.General.X: EQU 0+roomObjectClassIdOffset
+roomObjectClass.General.Y: EQU 1+roomObjectClassIdOffset
+roomObjectClass.General.numBytes: EQU 2+roomObjectClassIdOffset
 
 
 
