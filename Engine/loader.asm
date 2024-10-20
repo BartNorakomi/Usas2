@@ -638,20 +638,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		cp		b
 		ret		Z	;jr    z,.DontSetAreaSign
 
-;set music for this ruin (ro: should not be here)
-; 		push  ix
-; 		push  iy
-; 		dec a ;REMOVE LATER, song#7 for konark doesnt exist yet
-; ;		call  CheckSwitchNextSong.EndCheckLastSong
-; 		; ;call	GetRoomRuinId
-; 		; call	GetRuin
-; 		; ld		bc,RuinPropertiesLUT.music
-; 		; add		hl,bc
-; 		pop   iy
-; 		pop   ix
-
-		call  ResetPushStones
-		call  UnpackAreaSign
+		call	UnpackAreaSign
 
 ;Initialize object
 		ld    hl,Object005Table
@@ -703,14 +690,47 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    de,Object005Table.lenghtobjectdata
 		ret   
   
-; .DontSetAreaSign:
-; 		ld    (iy+enemies_and_objects.Alive?),0
-; 		ld    de,Object005Table.lenghtobjectdata
-; 		ret   
+
+;006-TeleportVortex
+;v1=repeating steps
+;v2=pointer to movement table
+;v3=Vertical Movement
+;v4=Horizontal Movement
+;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;v6=active on which frame ?  
+;v7=sprite frame
+;v8=phase
+;v9=already entered?(bit0)/activate ring(bit1)
+;v10=activate ring flicker
+.Object006:
+		ld    hl,Object006Table
+		push  iy
+		pop   de
+		ld    bc,lenghtenemytable
+		ldir
+
+		;set x
+		ld    a,(ix+Object020Table.x)
+;		add   a,16                           ;n pix to the right
+		ld    l,a
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (iy+enemies_and_objects.x),l
+		ld    (iy+enemies_and_objects.x+1),h
+
+		;set y
+		ld    a,(ix+Object020Table.y)
+		;sub   72
+		ld    (iy+enemies_and_objects.y),a
+
+		ld    de,Object006Table.lenghtobjectdata
+		ret    
 
 
 
-  .Object008:                           ;boss demon (BossDemon)
+
+;008-FireDemonBoss
+.Object008:                           ;boss demon (BossDemon)
   ld    hl,Object008Table
   push  iy
   pop   de                              ;enemy object table
@@ -796,42 +816,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ld    de,Object007Table.lenghtobjectdata
   ret   
 
-  .Object006:                           ;teleport room (Teleport)
-;v1=repeating steps
-;v2=pointer to movement table
-;v3=Vertical Movement
-;v4=Horizontal Movement
-;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
-;v6=active on which frame ?  
-;v7=sprite frame
-;v8=phase
-;v9=already entered?(bit0)/activate ring(bit1)
-;v10=activate ring flicker
-  ld    hl,Object006Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1           ;1 object(s)
-  ldir
-
-  ;set x
-  ld    a,(ix+Object020Table.x)
-  add   a,16                             ;10 pix to the right
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),l
-  ld    (iy+enemies_and_objects.x+1),h
-
-  ;set y
-  ld    a,(ix+Object020Table.y)
-  sub   72
-  ld    (iy+enemies_and_objects.y),a
-
-  ld    de,Object006Table.lenghtobjectdata
-  ret    
-
-
-
+ 
 
 
 
@@ -2683,9 +2668,10 @@ Object004Table:               ;Dripping Ooze Drop
 .y: equ 2
 .lenghtobjectdata: equ 3
 
-Object006Table:               ;Teleport
+;006-TeleportVortex
+Object006Table:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 2,        0|dw Teleport            |db 8*02  |dw 8*17  |db 64,64|dw CleanOb1,0 db 0,0,0,                 +149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
+          db 2,isNotSprite|dw Teleport|db 0|dw 0|db 64,64|dw CleanOb1,0 db 0,0,0,+149,+00,+00,+00,+00,+00,+00,+00,+00, 1|db 000,movementpatterns1block| ds fill-1
 .ID: equ 0
 .x: equ 1
 .y: equ 2

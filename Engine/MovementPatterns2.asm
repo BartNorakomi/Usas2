@@ -203,9 +203,9 @@ BossPlant:
   ld    a,(HugeObjectFrame)
   cp    4-1                                   ;only handle phase when all 7 slices have been put
   call  z,.HandlePhase                        ;v8=Phase (0=idle, 1=attacking, 2=dead)
-
-  call  SetObjectXY                           ;non moving objects start at (0,0). Use this routine to set your own coordinates
-  ld    de,BossPlantAll_0
+		ld		de,0
+		call	SetSf2ObjectXY                          
+		  ld    de,BossPlantAll_0
   jp    PutSf2Object4FramesNew                ;CHANGES IX - puts object in 7 frames
 
 .HandlePhase:
@@ -3450,10 +3450,12 @@ BossVoodooWasp:
 	ld		hl,PlayerSpriteData_Char_RightStandLookUp
 	ld		(standchar),hl
 
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  ld    (Object1y),a
-  ld    a,(ix+enemies_and_objects.x)        ;x object
-  ld    (Object1x),a	
+  ; ld    a,(ix+enemies_and_objects.y)        ;y object
+  ; ld    (Object1y),a
+  ; ld    a,(ix+enemies_and_objects.x)        ;x object
+  ; ld    (Object1x),a
+		ld		de,0
+		call	SetSf2ObjectXY
 
   ld    hl,BossAreaVoodooWaspPalette
   call  Setpalette	

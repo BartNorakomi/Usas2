@@ -1145,38 +1145,9 @@ PutPlayerSpriteMeditateSplit:
 PutPlayersprite:
 	ld		a,(slot.page12rom)	;all RAM except page 1+2
 	out		($a8),a	
-  
-;put hero sprite character
-;  ld    hl,herospritenrTimes32
-;	ld		de,(invissprchatableaddress)		;sprite character table in VRAM ($17800)
-      ;  ld    a,(herospritenr)
-      ;  ld    h,0
-      ;  ld    l,a
-      ;  add   hl,hl       ;*2
-      ;  add   hl,hl       ;*4
-      ;  add   hl,hl       ;*8
-      ;  add   hl,hl       ;*16
-      ;  add   hl,hl       ;*32
-;  add   hl,de
-;	ld		a,1
-;	call	SetVdp_Write
 
-;  ld    a,(framecounter)
-;  and   7                                     ;0
-;  jr    z,PutPlayerSpriteMeditateSplit
-;;  dec   a                                     ;1
- ; jr    z,PutPlayerSpriteMeditateSplit
- ; dec   a                                     ;2
- ; dec   a                                     ;3
- ; dec   a                                     ;4
- ; jr    z,PutPlayerSpriteMeditateSplit
- ; dec   a                                     ;5
- ; dec   a                                     ;6
- ; jr    z,PutPlayerSpriteMeditateSplit
-
-
-standchar:	equ	$+1
-		ld	 hl,PlayerSpriteData_Char_RightStand  ;sprite character in ROM
+;standchar:	equ	$+1
+		ld	 hl,(standchar) ;PlayerSpriteData_Char_RightStand  ;sprite character in ROM
 ContinueAfterMeditateSplit:
 		ld	 a,PlayerSpritesBlock 
 		bit	 0,l                                   ;if bit 0 of address of character is set, then add 4 blocks to starting blocks
@@ -3786,70 +3757,89 @@ CollisionObjectPlayerDemon:
 ;  ld    (CollisionEnemyPlayer.SelfModifyingCodeCollisionSY),a
   ret
 
+;Check if player hits object with X=8bit
+;in:	IX=objectrec, DE=hitboxObjectPaddingXXYY
+;out:	C=true (hit)
+checkPlayerObjectHitboxCollision8:
+		ld		a,(ClesY)						
+		sub		a,e
+		sub		(ix+enemies_and_objects.y) 
+		ccf
+		ret		nC
+		add		a,e
+		add		a,e
+		sub		(ix+enemies_and_objects.ny)
+		ret		nc
+
+		ld		a,(clesX)
+		sub		a,d
+		sub		(ix+enemies_and_objects.x) 
+		ccf
+		ret		nc
+		add		a,d
+		add		a,d
+		sub		(ix+enemies_and_objects.nx)
+		ret		nc
+		ret
+
+
 CollisionObjectPlayer:  
 ;  ld    hl,(Clesx)                          ;hl = x player
   ld    bc,20-2-16                          ;reduction to hitbox sx (left side)
   jp    CollisionEnemyPlayer.ObjectEntry
+
+
+;Check if Player collides with object
+;in:	IX=objectrecord, BC=hitboxOffsetXXYY
+CollisionEnemyPlayer:
+		ld    bc,20-2	;reduction to hitbox sx (left side). Ro: why 18?
+.ObjectEntry:
+;left
+		ld    hl,(Clesx)                          ;hl = x player
+		add   hl,bc	;Cy=0
+		ld    e,(ix+enemies_and_objects.x)  
+		ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+		; or    a                                   ;reset flag
+		sbc   hl,de
+		ret   c
+;right
+		ld    c,(ix+enemies_and_objects.nx)       ;width object
+		ld a,09-4 ;nx + 10                          ;reduce this value to reduce the hitbox size (on the right side)
+		add a,c
+		ld c,a
+		sbc   hl,bc  
+		ret   nc
+;top
+		ld    a,(Clesy)
+.SelfModifyingCodeCollisionSY:  equ $+1		;ro: we've gotta loose this shit
+		add   a,07; + 8                            ;increase this value to reduce the hitbox size (on the yop side)
+		sub   (ix+enemies_and_objects.y)
+		ret   c
+;bottom
+		ld    c,(ix+enemies_and_objects.ny)       ;width object
+		ld e,a ;store a
+.SelfModifyingCodeCollisionSYBottom:  equ $+1 ;WE STILL NEED TO ADD THIS!!> ro: no, we don't. Loose this shit
+		ld a,20-4 ;ny + 20   ;if this is 20-8 it would be same reduction top as bottom, but at the bottom its better if there is less reduction                         ;reduce this value to reduce the hitbox size (on the bottom side)
+		add a,c
+		ld c,a
+		ld a,e
+		sub   a,c
+		ret   nc
   
-  CollisionEnemyPlayer:
-;check if player collides with left side of enemy/object
-  ld    bc,20-2                             ;reduction to hitbox sx (left side)
+.PlayerIsHit:		;ro: the CheckCollision should not adjust anything, this should be a seperate function.
+		ld    a,(PlayerInvulnerable?)
+		or    a
+		ret   nz
 
-  .ObjectEntry:
-  ld    hl,(Clesx)                          ;hl = x player
-  add   hl,bc
+		ld    a,(PlayerDead?)
+		or    a
+		ret   nz
 
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+		ld    a,(PlayerFacingRight?)
+		or    a
+		jp    z,Set_L_BeingHit
+		jp    Set_R_BeingHit
 
-  or    a                                   ;reset flag
-  sbc   hl,de
-  ret   c
-
-;check if player collides with right side of enemy/object
-  ld    c,(ix+enemies_and_objects.nx)       ;width object
-
-ld a,09-4 ;nx + 10                          ;reduce this value to reduce the hitbox size (on the right side)
-add a,c
-ld c,a
-
-  sbc   hl,bc  
-  ret   nc
-
-;check if player collides with top side of enemy/object
-  ld    a,(Clesy)                           ;a = y player
-
-.SelfModifyingCodeCollisionSY:  equ $+1
-  add   a,07; + 8                            ;increase this value to reduce the hitbox size (on the yop side)
-  sub   (ix+enemies_and_objects.y)
-  ret   c
-
-;check if player collides with bottom side of enemy/object
-  ld    c,(ix+enemies_and_objects.ny)       ;width object
-
-ld e,a ;store a
-.SelfModifyingCodeCollisionSYBottom:  equ $+1 ;WE STILL NEED TO ADD THIS!!!!!!!!!!!!!!!!!!!!!!!!!
-ld a,20-4 ;ny + 20   ;if this is 20-8 it would be same reduction top as bottom, but at the bottom its better if there is less reduction                         ;reduce this value to reduce the hitbox size (on the bottom side)
-add a,c
-ld c,a
-ld a,e
-
-  sub   a,c
-  ret   nc
-  
-  .PlayerIsHit:
-  ld    a,(PlayerInvulnerable?)
-  or    a
-  ret   nz
-
-  ld    a,(PlayerDead?)
-  or    a
-  ret   nz
-
-  ld    a,(PlayerFacingRight?)
-  or    a
-  jp    z,Set_L_BeingHit
-  jp    Set_R_BeingHit
 
 
 ;get enemy X in tiles

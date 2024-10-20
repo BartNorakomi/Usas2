@@ -24,15 +24,15 @@ phase	enginepage3addr
 ;WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
 
 ;current locatione=karnimata
-roomX: equ ("B"-"A")*26 + "Q"-"A"
-roomY: equ 18
+roomX: equ ("B"-"A")*26 + "X"-"A"
+roomY: equ 14
 
 WorldMapPosition:
 .Y:  db  roomY-1
 .X:	 db  roomX
 ClesX:      dw 64 ;$19 ;230 ;250 ;210
 ClesY:      db 112 ;144-1
-
+standchar:	dw 0	;20241020;ro;moved this from selfmodcode@engine to this var in p3
 
 
 ;WM DATA > in RAM
@@ -69,12 +69,14 @@ loadRoom:
 		ld		(PreviousRuin),a
 		cp		b
 		ret		Z
+;this room is in a differt Ruin than the previous
+		call	ResetPushStones
 		call	GetRoomMusicId
 		call	setMusic
 		ret
 
 
-
+;ro: this does a bit more than that, it also enabled interrupt
 loadGraphics:
 	ld    a,(slot.page12rom)            ;RAMROMROMRAM
 	out   ($a8),a
@@ -450,7 +452,7 @@ RuinPropertiesLUT:
 	DB 4,0,0,"Pegu         "
 	DB 0,0,0,"Bio          "
 	DB 6,6,3,"Karni Mata   "
-	DB 7,7,6,"Konark       "
+	DB 7,7,2,"Konark       "
 	DB 0,0,0,"Ashoka   hell"
 	DB 0,0,0,"Taxilla      "
 	DB 0,0,0,"Euderus Set  "
@@ -483,8 +485,6 @@ GetRoomTilesetId:
 		ld a,(UnpackedRoomFile+roomdatablock.tileset)	; overwrite?
 		and $1f
 		ret nz
-		; ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
-		; and $1f
 		ld		a,RuinPropertiesLUT.tileset
 		call	getRoomRuinProperty
 		ret
@@ -494,8 +494,6 @@ GetRoomPaletteId:
 		ld		a,(UnpackedRoomFile+roomdatablock.palette)	; overwrite?
 		and 	A	;$1f ;and max palettes, which is  not set atm
 		ret		nz
-;		ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
-;		and $1f
 		ld		a,RuinPropertiesLUT.palette
 		call	getRoomRuinProperty
 		ret
@@ -505,8 +503,6 @@ GetRoomMusicId:
 		ld		a,(UnpackedRoomFile+roomdatablock.music)	; overwrite?
 		and		a
 		ret		nz
-;		ld a,(UnpackedRoomFile+roomdatablock.mapid)		;default tileset
-;		and $1f
 		ld		a,RuinPropertiesLUT.music
 		call	getRoomRuinProperty
 		ret

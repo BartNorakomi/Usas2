@@ -8,200 +8,208 @@
 Phase PlayerMovementRoutinesAddress
 
 ExitTeleport:
-  ld    a,(PlayerFacingRight?)
-  or    a
-  ld    hl,RightMeditateAnimation ;- 2
-  jr    nz,.DirectionFound
-  ld    hl,LeftMeditateAnimation ;- 2
-  .DirectionFound:
-  call  AnimateEnterTeleport        ;animate
-  call  LMeditate.VerticalMovement
-  call  .FlickerSprite
-  call  .SetPlayerToCentreTeleportOnExit
+		ld    a,(PlayerFacingRight?)
+		or    a
+		ld    hl,RightMeditateAnimation ;- 2
+		jr    nz,.DirectionFound
+		ld    hl,LeftMeditateAnimation ;- 2
+.DirectionFound:
+		call  AnimateEnterTeleport        ;animate
+		call  LMeditate.VerticalMovement	;bouncing
+		call  .FlickerSprite
+		call  .SetPlayerToCentreTeleportOnExit
 
-  ld    a,(PlayerAniCount+1)
-  cp    121-1
-  ret   nz                          ;at end of meditate go to stand
+		ld    a,(PlayerAniCount+1)
+		cp    121-1
+		ret   nz                          ;at end of meditate go to stand
 
-  ld    a,(PlayerFacingRight?)
-  or    a
-  jp    nz,Set_R_stand               ;at end of meditate change to L_Stand
-  jp    Set_L_stand               ;at end of meditate change to L_Stand
+		ld    a,(PlayerFacingRight?)
+		or    a
+		jp    nz,Set_R_stand               ;at end of meditate change to L_Stand
+		jp    Set_L_stand               ;at end of meditate change to L_Stand
 
-  .FlickerSprite:
-  ld    a,(PlayerAniCount+1)
-  cp    20
-  jp    c,EnterTeleport.PutEmptySprite
-  cp    40
-  jr    c,.Phase4
-  cp    60
-  jr    c,.Phase3
-  cp    80
-  jr    c,.Phase2
-  cp    100
-  jr    c,.Phase1
-  ret
-
+.FlickerSprite:
+		ld    a,(PlayerAniCount+1)
+		cp    20
+		jp    c,EnterTeleport.PutEmptySprite
+		cp    40
+		jr    c,.Phase4
+		cp    60
+		jr    c,.Phase3
+		cp    80
+		jr    c,.Phase2
+		cp    100
+		jr    c,.Phase1
+		ret
   .Phase4:
-  ld    a,(framecounter)
-  and   7
-  jp    nz,EnterTeleport.PutEmptySprite
-  ret
-
+		ld    a,(framecounter)
+		and   7
+		jp    nz,EnterTeleport.PutEmptySprite
+		ret
   .Phase3:
-  ld    a,(framecounter)
-  and   3
-  jp    nz,EnterTeleport.PutEmptySprite
-  ret
-
+		ld    a,(framecounter)
+		and   3
+		jp    nz,EnterTeleport.PutEmptySprite
+		ret
   .Phase2:
-  ld    a,(framecounter)
-  and   1
-  jp    z,EnterTeleport.PutEmptySprite
-  ret
-
+		ld    a,(framecounter)
+		and   1
+		jp    z,EnterTeleport.PutEmptySprite
+		ret
   .Phase1:
-  ld    a,(framecounter)
-  and   3
-  jp    z,EnterTeleport.PutEmptySprite
-  ret
+		ld    a,(framecounter)
+		and   3
+		jp    z,EnterTeleport.PutEmptySprite
+		ret
 
 .SetPlayerToCentreTeleportOnExit:
-  ld    a,(PlayerAniCount+1)
-  cp    10
-  ret   c
+		ld    a,(PlayerAniCount+1)
+		cp    10
+		ret   c
 
-  ld    a,(enemies_and_objects+enemies_and_objects.y)
-  add   a,100
-  ld    (ClesY),a
+		; ld		a,(enemies_and_objects+enemies_and_objects.ny)		;ro: ASSUMING index=teleportRecord
+		; ld a,64
+		; srl		a		;/2
+		; ld		a,32
+		; add		a,(enemies_and_objects+enemies_and_objects.y)
+		ld		a,(enemies_and_objects+enemies_and_objects.y)
+		add		a,32
+		ld    (ClesY),a
 
-  ld    a,(enemies_and_objects+enemies_and_objects.x)
-  ld    h,0
-  ld    l,a
-  ld    (ClesX),hl
-  ret
-
-
+		ld    a,(enemies_and_objects+enemies_and_objects.x)
+		add a,32
+		ld    h,0
+		ld    l,a
+		ld    (ClesX),hl
+		ret
 
 
   
-
+;Enterering the vortex with the medidation animation
 EnterTeleport:
-    ld    a,(PlayerFacingRight?)
-    or    a
-    ld    hl,RightMeditateAnimation ;- 2
-    jr    nz,.DirectionFound
-    ld    hl,LeftMeditateAnimation ;- 2
-    .DirectionFound:
-    call  AnimateEnterTeleport        ;animate
-    call  LMeditate.VerticalMovement
-    call  .MoveToCenter               ;slowly move to the center of the portal
-    call  .FlickerSprite
+		ld    a,(PlayerFacingRight?)
+		or    a
+		ld    hl,RightMeditateAnimation ;- 2
+		jr    nz,.DirectionFound
+		ld    hl,LeftMeditateAnimation ;- 2
+.DirectionFound:
+		call  AnimateEnterTeleport			;animate
+		call  LMeditate.VerticalMovement	;bounce sprite
+		call  .MoveToCenter					;slowly move to the center of the portal
+		call  .FlickerSprite
 
-    ld    a,(PlayerAniCount+1)
-    cp    121-1
-    ret   nz                          ;at end of meditate change room
+		ld    a,(PlayerAniCount+1)		;it takes 120 frames max 
+		cp    121-1
+		ret   nz                          
 
-    xor   a
-    ld    (PlayerAniCount),a
-    ld    a,10                          ;we don't need the first 10 frames in which player floats up only
-    ld    (PlayerAniCount+1),a
-    ld		hl,ExitTeleport
-    ld		(PlayerSpriteStand),hl
+		xor   a
+		ld    (PlayerAniCount),a
+		ld    a,10                          ;we don't need the first 10 frames in which player floats up only
+		ld    (PlayerAniCount+1),a
+		ld		hl,ExitTeleport
+		ld		(PlayerSpriteStand),hl
 
-    call  .SetNewMapPosition
-    jp    CheckMapExit.LoadnextMap
+		call  .SetNewMapPosition
+		jp    CheckMapExit.LoadnextMap
 
 .SetNewMapPosition:
-    ld de,(WorldMapPosition)
-    call	GetTeleportDestination
-    ld (WorldMapPosition),DE
-    ret
+		ld		de,(WorldMapPosition)
+		call	GetTeleportDestination
+		ld		(WorldMapPosition),DE
+		ret
 
+.FlickerSprite:
+		ld    a,(PlayerAniCount+1)
+		cp    100
+		jr    nc,.PutEmptySprite
+		cp    80
+		jr    nc,.Phase4
+		cp    60
+		jr    nc,.Phase3
+		cp    40
+		jr    nc,.Phase2
+		cp    20
+		jr    nc,.Phase1
+		ret
+
+.Phase4:
+		ld    a,(framecounter)
+		and   7
+		jr    nz,.PutEmptySprite
+		ret
+
+.Phase3:
+		ld    a,(framecounter)
+		and   3
+		jr    nz,.PutEmptySprite
+		ret
+
+.Phase2:
+		ld    a,(framecounter)
+		and   1
+		jr    z,.PutEmptySprite
+		ret
+
+.Phase1:
+		ld    a,(framecounter)
+		and   3
+		jr    z,.PutEmptySprite
+		ret
+
+.PutEmptySprite:
+		ld    hl,PlayerSpriteData_Char_Empty
+		ld		(standchar),hl
+		ret
+
+.MoveToCenter:
+		call	.MoveHorizontally
+		ld		hl,ClesY
+		; ld		a,(enemies_and_objects+enemies_and_objects.ny)		;ro: ASSUMING index=teleportRecord
+		; srl		a		;/2
+		; add		a,(enemies_and_objects+enemies_and_objects.y)
+		; sub		10			;counter meditation bounce
+		; cp		(hl)
+		; jr 		c,.moveDown
+		; add		10+10			;counter meditation bounce
+		; cp		(hl)
+		; jr		nc,.moveUp
+		; ret
+
+		ld    a,(enemies_and_objects+enemies_and_objects.y)		;ro: ASSUMING index=teleportRecord
+		neg
+		add   a,(hl)  
+		cp    32
+		jr    nc,.MoveUp
+		cp    22
+		ret   nc
+.moveDown:	inc   (hl)
+		ret
+.MoveUp:
+		dec   (hl)
+		ret
   
+.MoveHorizontally:
+		ld    hl,ClesX
+		ld    a,(enemies_and_objects+enemies_and_objects.x)
+		add		A,32 ;Half the vortex
+		sub   (hl)
+		jr    nc,.MoveRight
+		ld    a,(enemies_and_objects+enemies_and_objects.x)
+		add   a,2
+		sub   (hl)
+		ret   nc
+.MoveLeft:
+		dec   (hl)
+		; xor   a
+		; ld    (PlayerFacingRight?),a
+		ret
 
-  .FlickerSprite:
-  ld    a,(PlayerAniCount+1)
-  cp    100
-  jr    nc,.PutEmptySprite
-  cp    80
-  jr    nc,.Phase4
-  cp    60
-  jr    nc,.Phase3
-  cp    40
-  jr    nc,.Phase2
-  cp    20
-  jr    nc,.Phase1
-  ret
+.MoveRight:
+		inc   (hl)
+		; ld    a,1
+		; ld    (PlayerFacingRight?),a
+		ret
 
-  .Phase4:
-  ld    a,(framecounter)
-  and   7
-  jr    nz,.PutEmptySprite
-  ret
-
-  .Phase3:
-  ld    a,(framecounter)
-  and   3
-  jr    nz,.PutEmptySprite
-  ret
-
-  .Phase2:
-  ld    a,(framecounter)
-  and   1
-  jr    z,.PutEmptySprite
-  ret
-
-  .Phase1:
-  ld    a,(framecounter)
-  and   3
-  jr    z,.PutEmptySprite
-  ret
-
-  .PutEmptySprite:
-  ld    hl,PlayerSpriteData_Char_Empty
-	ld		(standchar),hl
-  ret
-
-  .MoveToCenter:
-  call  .MoveHorizontally
-  ld    hl,ClesY
-  ld    a,(enemies_and_objects+enemies_and_objects.y)
-  neg
-  add   a,(hl)  
-  cp    120-16
-  jr    nc,.MoveUp
-  cp    110-16
-  ret   nc
-  inc   (hl)
-  ret
-  .MoveUp:
-  dec   (hl)
-  ret
-  
-  .MoveHorizontally:
-  ld    hl,ClesX
-
-  ld    a,(enemies_and_objects+enemies_and_objects.x)
-  sub   (hl)
-  jr    nc,.MoveRight
-
-  ld    a,(enemies_and_objects+enemies_and_objects.x)
-  add   a,2
-  sub   (hl)
-  ret   nc
-
-  .MoveLeft:
-  dec   (hl)
-  xor   a
-  ld    (PlayerFacingRight?),a
-  ret
-
-  .MoveRight:
-  inc   (hl)
-  ld    a,1
-  ld    (PlayerFacingRight?),a
-  ret
 
 ;Get TeleportDestinationMapRoom
 ;In:	DE=IndexID (D=X,E=Y) of current room
@@ -535,7 +543,7 @@ AnimateShootFireball:
   
   ld    a,(PlayerAniCount)
   add   a,2                       ;2 bytes used for pointer to sprite frame address
-  jp    AnimateRun.SetPlayerAniCount
+  jp    SetPlayerAniCount
 
 LeftShootFireballAnimation:
   dw  PlayerSpriteData_Char_LeftPunch1a 
@@ -1148,52 +1156,52 @@ Rwalljump:
 		jp    Set_jump
 
 RMeditate:
-  ld    hl,RightMeditateAnimation - 2
-  call  AnimateMeditating           ;animate
+		ld    hl,RightMeditateAnimation - 2
+		call  AnimateMeditating           ;animate
 
-  ld    a,(PlayerAniCount+1)
-  cp    121-1
-  call  z,Set_R_stand               ;at end of meditate change to L_Stand
-  jr    LMeditate.VerticalMovement
+		ld    a,(PlayerAniCount+1)
+		cp    121-1
+		call  z,Set_R_stand               ;at end of meditate change to L_Stand
+		jr    LMeditate.VerticalMovement
 
 LMeditate:
-  ld    hl,LeftMeditateAnimation - 2
-  call  AnimateMeditating           ;animate
+		ld    hl,LeftMeditateAnimation - 2
+		call  AnimateMeditating           ;animate
 
-  ld    a,(PlayerAniCount+1)
-  cp    121-1
-  call  z,Set_L_stand               ;at end of meditate change to L_Stand
+		ld    a,(PlayerAniCount+1)	;120 frames
+		cp    121-1
+		call  z,Set_L_stand               ;at end of meditate change to L_Stand
 
-  .VerticalMovement:
-  ld    a,(PlayerAniCount+1)
-  inc   a
-  ld    (PlayerAniCount+1),a
-  and   31
-  ld    e,a
-  ld    d,0
-  ld    hl,VerticalMovementWhileMeditateTable
-  add   hl,de
-  ld    a,(clesY)
-  add   a,(hl)
-  ld    (clesY),a
+.VerticalMovement:
+		ld    a,(PlayerAniCount+1)
+		inc   a
+		ld    (PlayerAniCount+1),a
+		and   31
+		ld    e,a
+		ld    d,0
+		ld    hl,VerticalMovementWhileMeditateTable
+		add   hl,de
+		ld    a,(clesY)
+;		add   a,(hl)	;ro: moved down a bit (no need to set clesY twice)
+;		ld    (clesY),a
 
-  ld    b,0
-  ld    a,(PlayerAniCount+1)
-  cp    10
-  jr    nc,.EndCheckSmallerThan6
-  ld    b,-1
-  .EndCheckSmallerThan6:
-  cp    110
-  jr    c,.EndCheckBiggerThan26
-  ld    b,1
-  .EndCheckBiggerThan26:
-  ld    a,(clesY)
-  add   a,b
-  ld    (clesY),a
+		ld    b,0			;ascending 10 pix
+		ld    a,(PlayerAniCount+1)
+		cp    10
+		jr    nc,.EndCheckSmallerThan6
+		ld    b,-1
+.EndCheckSmallerThan6:
+		cp    110
+		jr    c,.EndCheckBiggerThan26
+		ld    b,1			;descending
+.EndCheckBiggerThan26:
+		ld    a,(clesY)
+		add		a,(hl)
+		add   a,b
+		ld    (clesY),a
+		jp    EndMovePlayerHorizontally   ;slowly come to a full stop after running (ro:is that active during meditation?)
   
-  jp    EndMovePlayerHorizontally   ;slowly come to a full stop after running
-  
-VerticalMovementWhileMeditateTable:
+VerticalMovementWhileMeditateTable:	;size=32
   db    -0,-1,-0,-1,-1,-0,-1,-0
   db    -0,-1,-0,-0,-0,-1,-0,-0
   db    +0,+0,+1,+0,+0,+0,+1,+0
@@ -4245,81 +4253,73 @@ ret
 ;/this code is new, and decreases the 2nd jump height
 
 AnimateEnterTeleport:
-  ld    a,(framecounter)          ;animate every 8 frames
-  and   07
-  ld    a,(PlayerAniCount)
-  jr    nz,AnimateRun.SetPlayerAniCount
-  
-  add   a,2                       ;2 bytes used for pointer to sprite frame address
-  jr    AnimateRun.SetPlayerAniCount
+		ld    a,(framecounter)          ;animate every 8 frames
+		and   07
+		ld    a,(PlayerAniCount)
+		jr    nz,SetPlayerAniCount
+		add   a,2                       ;2 bytes used for pointer to sprite frame address
+		jp    SetPlayerAniCount
 
 AnimateMeditating:
-  ld    a,(framecounter)          ;animate every 8 frames
-  and   07
-  ret   nz
-  
-  ld    a,(PlayerAniCount)
-  add   a,2                       ;2 bytes used for pointer to sprite frame address
-  jr    AnimateRun.SetPlayerAniCount
+		ld    a,(framecounter)          ;animate every 8 frames
+		and   07
+		ret   nz
+		ld    a,(PlayerAniCount)
+		add   a,2                       ;2 bytes used for pointer to sprite frame address
+		jr    SetPlayerAniCount
 
 AnimateCharging:
-  ld    a,(framecounter)          ;animate every 2 frames
-  and   1
-  ret   nz
-  
-  ld    a,(PlayerAniCount)
-  add   a,2                       ;2 bytes used for pointer to sprite frame address
-  jr    AnimateRun.SetPlayerAniCount
+		ld    a,(framecounter)          ;animate every 2 frames
+		and   1
+		ret   nz
+		ld    a,(PlayerAniCount)
+		add   a,2                       ;2 bytes used for pointer to sprite frame address
+		jr    SetPlayerAniCount
   
 AnimateRolling:
-;  ld    a,(framecounter)          ;animate every 4 frames
-;  and   3
-;  ret   z
-  
-  ld    a,(PlayerAniCount)
-  add   a,2                       ;2 bytes used for pointer to sprite frame address
-  cp    2 * 12                    ;12 frame addresses
-  jr    nz,AnimateRun.SetPlayerAniCount
-  jr    AnimateRun.reset
+		;  ld    a,(framecounter)          ;animate every 4 frames
+		;  and   3
+		;  ret   z
+		ld    a,(PlayerAniCount)
+		add   a,2                       ;2 bytes used for pointer to sprite frame address
+		cp    2 * 12                    ;12 frame addresses
+		jr    nz,SetPlayerAniCount
+		jr    resetPlayerAniCount
   
 AnimatePushing:
-  ld    a,(framecounter)          ;animate every 8 frames
-  and   7
-  ret   nz
-  
-  ld    a,(PlayerAniCount)
-  add   a,2                       ;2 bytes used for pointer to sprite frame address
-  cp    2 * 09                    ;09 frame addresses
-  jr    nz,AnimateRun.SetPlayerAniCount
-  jr    AnimateRun.reset
+		ld    a,(framecounter)          ;animate every 8 frames
+		and   7
+		ret   nz
+		ld    a,(PlayerAniCount)
+		add   a,2                       ;2 bytes used for pointer to sprite frame address
+		cp    2 * 09                    ;09 frame addresses
+		jr    nz,SetPlayerAniCount
+		jr    resetPlayerAniCount
 
 AnimateRun:
-  ld    a,(framecounter)          ;animate every 4 frames
-  and   3
-  ret   nz
-  
-  ld    a,(PlayerAniCount)
-  add   a,2                       ;2 bytes used for pointer to sprite frame address
-  cp    2 * 10                    ;10 frame addresses
-  jr    nz,.SetPlayerAniCount
-  .reset:
-  xor   a
-  .SetPlayerAniCount:
-  ld    (PlayerAniCount),a
-  
-  ld    d,0
-  ld    e,a
-  add   hl,de
-    
-  ld    e,(hl)
-  inc   hl
-  ld    d,(hl)
-    
-	ld		(standchar),de
-;	ld    hl,PlayerSpriteData_Colo_LeftRun1-PlayerSpriteData_Char_LeftRun1
-;	add   hl,de
-;	ld		(standcol),hl
-  ret	
+		ld    a,(framecounter)          ;animate every 4 frames
+		and   3
+		ret   nz
+		ld    a,(PlayerAniCount)
+		add   a,2                       ;2 bytes used for pointer to sprite frame address
+		cp    2 * 10                    ;10 frame addresses
+		jr    nz,SetPlayerAniCount
+		jp		resetPlayerAniCount
+
+
+resetPlayerAniCount:
+		xor   a
+;in:	A=PlayerAniCount, HL=pointer_to_SpriteAnimationTable
+SetPlayerAniCount:
+		ld    (PlayerAniCount),a
+		ld    d,0
+		ld    e,a
+		add   hl,de
+		ld    e,(hl)
+		inc   hl
+		ld    d,(hl)
+		ld		(standchar),de		;ro: "standchar" is now var@engp3 instead of selfmodcode
+		ret	
    
 LeftRunAnimation:          ;xoffset sprite top, xoffset sprite bottom
   dw  PlayerSpriteData_Char_LeftRun2 

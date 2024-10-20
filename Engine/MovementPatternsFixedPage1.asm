@@ -93,14 +93,20 @@ MoveObjectWithStepTableNew:                 ;v3=y movement, v4=x movement, v5=re
   ld    (ix+enemies_and_objects.x+1),h        ;x object
   ret  
 
-SetObjectXY:                                  ;non moving objects start at (0,0). Use this routine to set your own coordinates
+
+;Set SF2 frame position
+;in:	IX=objectRecord
+;		DE=XXYY offset
+SetSf2ObjectXY:  ;non moving objects start at (0,0). Use this routine to set your own coordinates
 ; call  MoveObjectHorizontallyAndVertically
 ;  call  ChangeDirectionWhenOutOfBox
-  ld    a,(ix+enemies_and_objects.y)          ;y object
-  ld    (Object1y),a
-  ld    a,(ix+enemies_and_objects.x)          ;x object
-  ld    (Object1x),a
-  ret
+		ld		a,(ix+enemies_and_objects.y)          ;y object
+		add		a,e
+		ld		(Object1y),a
+		ld		a,(ix+enemies_and_objects.x)          ;x object
+		add		a,d
+		ld		(Object1x),a
+		ret
 
 BossBlendingIntoBackgroundOnDeath:          ;blending into background (MovementPatternsFixedPage1.asm) in: v9=008
   ;as soon as boss is dead, and no longer moving or changing frame, stop restoring background during 3 frames, so boss will be visible in all pages. After that put Boss ALSO (for 1 frame) in page 3
