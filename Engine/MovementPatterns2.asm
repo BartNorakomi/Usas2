@@ -175,11 +175,11 @@ BreakableWall:
 ;v9=vines animation step
 ;v10=hit?
 BossPlantPaletteAnimation1:
-  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation1.PL" ;file palette 
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation1.PL",32 ;file palette 
 BossPlantPaletteAnimation2:
-  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation2.PL" ;file palette 
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation2.PL",32 ;file palette 
 BossPlantPaletteAnimation3:
-  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation3.PL" ;file palette 
+  incbin "..\grapx\BossPlant\BossPlantPaletteAnimation3.PL",32 ;file palette 
 
 BossPlantCheckIfDead:
   ld    a,(ix+enemies_and_objects.life)
@@ -201,7 +201,7 @@ BossPlant:
   call  nz,BossPlantCheckIfHit                ;Check if boss is hit, and if so set being hit phase
 
   ld    a,(HugeObjectFrame)
-  cp    4-1                                   ;only handle phase when all 7 slices have been put
+  cp    4-1                                   ;only handle phase when all slices have been put
   call  z,.HandlePhase                        ;v8=Phase (0=idle, 1=attacking, 2=dead)
 		ld		de,0
 		call	SetSf2ObjectXY                          

@@ -3285,7 +3285,6 @@ RightSnowbalThrowerWalk:
 
 
 
-YellowWasp:
 ;v1=Animation Counter
 ;v2=Phase (0=Hovering Towards player, 1=attacking)
 ;v3=Vertical Movement
@@ -3294,143 +3293,141 @@ YellowWasp:
 ;v6=pointer to movement table
 ;v7=attack duration
 ;v8=face left (0) or face right (1) 
-  call  .HandlePhase                        ;(0=Hovering Towards player, 1=attacking) ;out hl -> sprite character data to out to Vram
-  exx                                       ;store hl. hl now points to color data
-  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
-  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-	ld		a,YellowWaspSpriteblock             ;set block at $a000, page 2 - block containing sprite data
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-  ret
+YellowWasp:
+		call	.HandlePhase                        ;(0=Hovering Towards player, 1=attacking) ;out hl -> sprite character data to out to Vram
+		exx                                       ;store hl. hl now points to color data
+		call	CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+		call	CollisionEnemyPlayer                ;Check if player is hit by enemy
+		ld		a,YellowWaspSpriteblock             ;set block at $a000, page 2 - block containing sprite data
+		ld		e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+		ld		d,(ix+enemies_and_objects.sprnrinspat+1)
+		ret
   
-  .HandlePhase:
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=Hanging, 1=Attacking)  
-  or    a
-  jp    z,YellowWaspHoveringTowardsPlayer
+.HandlePhase:
+		ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=Hanging, 1=Attacking)  
+		or    a
+		jp    z,YellowWaspHoveringTowardsPlayer
 
-  YellowWaspAttacking:
-  call  WaspFlyingInPlace.faceplayerSkipRandomness ;v8=face left (0) or face right (1)  
-  ld    de,WaspMovementTable
-  call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
-  call  .Animate
+YellowWaspAttacking:
+		call  WaspFlyingInPlace.faceplayerSkipRandomness ;v8=face left (0) or face right (1)  
+		ld    de,WaspMovementTable
+		call  MoveObjectWithStepTableNew          ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+		call  .Animate
 
-  ld    a,(ix+enemies_and_objects.v7)       ;v7=attack duration
-  inc   a
-  and   63
-  ld    (ix+enemies_and_objects.v7),a       ;v7=attack duration
-  ret   nz
-  ld    (ix+enemies_and_objects.v2),+0      ;v2=Phase (0=Hovering Towards player, 1=attacking)
-  ret
+		ld    a,(ix+enemies_and_objects.v7)       ;v7=attack duration
+		inc   a
+		and   63
+		ld    (ix+enemies_and_objects.v7),a       ;v7=attack duration
+		ret   nz
+		ld    (ix+enemies_and_objects.v2),+0      ;v2=Phase (0=Hovering Towards player, 1=attacking)
+		ret
 
-  .Animate:
-  bit   0,(ix+enemies_and_objects.v8)       ;v8=face left (0) or face right (1)  
-  ld    hl,RightYellowWasp
-  jp    z,.GoAnimate
-  ld    hl,LeftYellowWasp
-  .GoAnimate:
-  ld    b,0                                 ;animate every x frames (based on framecounter)
-  ld    c,2 * 04                            ;06 animation frame addresses
-  jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
+.Animate:
+		bit   0,(ix+enemies_and_objects.v8)       ;v8=face left (0) or face right (1)  
+		ld    hl,RightYellowWasp
+		jp    z,.GoAnimate
+		ld    hl,LeftYellowWasp
+.GoAnimate:
+		ld    b,0                                 ;animate every x frames (based on framecounter)
+		ld    c,2 * 04                            ;06 animation frame addresses
+		jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
   
-  YellowWaspHoveringTowardsPlayer:
-  call  .HoverTowardsPlayer
-  call  WaspFlyingInPlace.faceplayerSkipRandomness ;v8=face left (0) or face right (1)  
-  call  .CheckAttack
-  jp    YellowWaspAttacking.Animate         ;out hl -> sprite character data to out to Vram
+YellowWaspHoveringTowardsPlayer:
+		call  .HoverTowardsPlayer
+		call  WaspFlyingInPlace.faceplayerSkipRandomness ;v8=face left (0) or face right (1)  
+		call  .CheckAttack
+		jp    YellowWaspAttacking.Animate         ;out hl -> sprite character data to out to Vram
 
-  .CheckAttack:
-  ld    a,r
-;  or    a
-  and   31
-  ret   nz
-  ld    (ix+enemies_and_objects.v2),+1      ;v2=Phase (0=Hovering Towards player, 1=attacking)
-  ret
+.CheckAttack:
+		ld    a,r
+		;  or    a
+		and   31
+		ret   nz
+		ld    (ix+enemies_and_objects.v2),+1      ;v2=Phase (0=Hovering Towards player, 1=attacking)
+		ret
 
-  .HoverTowardsPlayer:
-  ld    a,(framecounter)
-  rrca
-  jr    c,.HoverHorizontallyTowardsPlayer
-
-  .HoverVerticallyTowardsPlayer:
-  ;Protect Wasp from flying out of screen top
-  ld    a,(ix+enemies_and_objects.y)  
-  cp    18
-  jr    nc,.EndCheckLowerThan18
-  ld    (ix+enemies_and_objects.y),18  
-  .EndCheckLowerThan18:
-  ;/Protect Wasp from flying out of screen top
-
-  ld    a,r
-  and   3
-  ld    (ix+enemies_and_objects.v3),+1      ;v3=Vertical Movement
-  jp    z,MoveSpriteVertically
-  dec   a
-  ld    (ix+enemies_and_objects.v3),-1      ;v3=Vertical Movement
-  jp    z,MoveSpriteVertically
+.HoverTowardsPlayer:
+		ld    a,(framecounter)
+		rrca
+		jr    c,.HoverHorizontallyTowardsPlayer
+.HoverVerticallyTowardsPlayer:
+;Protect Wasp from flying out of screen top
+		ld    a,(ix+enemies_and_objects.y)  
+		cp    18
+		jr    nc,.EndCheckLowerThan18
+		ld    (ix+enemies_and_objects.y),18  
+.EndCheckLowerThan18:
+;/Protect Wasp from flying out of screen top
+		ld    a,r
+		and   3
+		ld    (ix+enemies_and_objects.v3),+1      ;v3=Vertical Movement
+		jp    z,MoveSpriteVertically
+		dec   a
+		ld    (ix+enemies_and_objects.v3),-1      ;v3=Vertical Movement
+		jp    z,MoveSpriteVertically
     
-  ld    a,(ClesY)
-  sub   a,60
-  ld    (ix+enemies_and_objects.v3),-1      ;v3=Vertical Movement
-  jp    c,MoveSpriteVertically
-  sub   a,(ix+enemies_and_objects.y)  
-  jp    c,MoveSpriteVertically
-  ld    (ix+enemies_and_objects.v3),+1      ;v3=Vertical Movement
-  jp    MoveSpriteVertically
+		ld    a,(ClesY)
+		sub   a,60
+		ld    (ix+enemies_and_objects.v3),-1      ;v3=Vertical Movement
+		jp    c,MoveSpriteVertically
+		sub   a,(ix+enemies_and_objects.y)  
+		jp    c,MoveSpriteVertically
+		ld    (ix+enemies_and_objects.v3),+1      ;v3=Vertical Movement
+		jp    MoveSpriteVertically
   
-  .HoverHorizontallyTowardsPlayer:
-  bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
-  ld    de,40 + 6
-  jr    nz,.Go
-  ld    de,-30
-  .Go:
+.HoverHorizontallyTowardsPlayer:
+		bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
+		ld    de,40 + 6
+		jr    nz,.Go
+		ld    de,-30
+.Go:
+		ld    a,r
+		and   3
+		ld    (ix+enemies_and_objects.v4),+1      ;v3=Vertical Movement
+		jp    z,MoveSpriteHorizontally
+		dec   a
+		ld    (ix+enemies_and_objects.v4),-1      ;v3=Vertical Movement
+		jp    z,MoveSpriteHorizontally
 
-  ld    a,r
-  and   3
-  ld    (ix+enemies_and_objects.v4),+1      ;v3=Vertical Movement
-  jp    z,MoveSpriteHorizontally
-  dec   a
-  ld    (ix+enemies_and_objects.v4),-1      ;v3=Vertical Movement
-  jp    z,MoveSpriteHorizontally
+		ld    hl,(Clesx)                          ;hl = x player  
+		add   hl,de
+		ld    e,(ix+enemies_and_objects.x)  
+		ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+		sbc   hl,de                              
+		ld    (ix+enemies_and_objects.v4),+1      ;v4=Horizontal Movement
+		jp    nc,MoveSpriteHorizontally
+		ld    (ix+enemies_and_objects.v4),-1      ;v4=Horizontal Movement
+		jp    MoveSpriteHorizontally
 
-  ld    hl,(Clesx)                          ;hl = x player  
-  add   hl,de
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de                              
-  ld    (ix+enemies_and_objects.v4),+1      ;v4=Horizontal Movement
-  jp    nc,MoveSpriteHorizontally
-  ld    (ix+enemies_and_objects.v4),-1      ;v4=Horizontal Movement
-  jp    MoveSpriteHorizontally
-
-  .Faceplayer:
-  ld    hl,(Clesx)                          ;hl = x player  
-  ld    e,(ix+enemies_and_objects.x)  
-  ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
-  sbc   hl,de                               ;make sure wasp always faces player
-  ld    (ix+enemies_and_objects.v4),+1      ;v4=Horizontal Movement
-  ret   nc
-  ld    (ix+enemies_and_objects.v4),-1      ;v4=Horizontal Movement
-  ret
+.Faceplayer:
+		ld    hl,(Clesx)                          ;hl = x player  
+		ld    e,(ix+enemies_and_objects.x)  
+		ld    d,(ix+enemies_and_objects.x+1)      ;de = x enemy/object
+		sbc   hl,de                               ;make sure wasp always faces player
+		ld    (ix+enemies_and_objects.v4),+1      ;v4=Horizontal Movement
+		ret   nc
+		ld    (ix+enemies_and_objects.v4),-1      ;v4=Horizontal Movement
+		ret
 
 LeftYellowWasp:
-  dw  LeftYellowWasp1_Char
-  dw  LeftYellowWasp2_Char
-  dw  LeftYellowWasp3_Char
-  dw  LeftYellowWasp4_Char
-;  dw  LeftYellowWasp5_Char
-;  dw  LeftYellowWasp6_Char
-;  dw  LeftYellowWasp7_Char
-;  dw  LeftYellowWasp8_Char
+		dw  LeftYellowWasp1_Char
+		dw  LeftYellowWasp2_Char
+		dw  LeftYellowWasp3_Char
+		dw  LeftYellowWasp4_Char
+		;  dw  LeftYellowWasp5_Char
+		;  dw  LeftYellowWasp6_Char
+		;  dw  LeftYellowWasp7_Char
+		;  dw  LeftYellowWasp8_Char
 
 RightYellowWasp:
-  dw  RightYellowWasp1_Char
-  dw  RightYellowWasp2_Char
-  dw  RightYellowWasp3_Char
-  dw  RightYellowWasp4_Char
-;  dw  RightYellowWasp5_Char
-;  dw  RightYellowWasp6_Char
-;  dw  RightYellowWasp7_Char
-;  dw  RightYellowWasp8_Char
+		dw  RightYellowWasp1_Char
+		dw  RightYellowWasp2_Char
+		dw  RightYellowWasp3_Char
+		dw  RightYellowWasp4_Char
+		;  dw  RightYellowWasp5_Char
+		;  dw  RightYellowWasp6_Char
+		;  dw  RightYellowWasp7_Char
+		;  dw  RightYellowWasp8_Char
   
   
 SensorTentacles:

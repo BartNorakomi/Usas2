@@ -10,7 +10,7 @@ param
 )
 
 #GLOBALS
-$EnginePage3RomStartAddress=0x0210
+$EnginePage3RomStartAddress=0x0201
 $WorldMapPositionY_offset=0
 $WorldMapPositionX_offset=1
 $ClesX_offset=2 #      dw 230 ;$19 ;230 ;250 ;210

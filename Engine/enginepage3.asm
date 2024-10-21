@@ -1,31 +1,9 @@
 phase	enginepage3addr
 
 
-;bt21=21,43;bt28=28,45;bt16=16,45;br16=16,43
-;WorldMapPositionY:  db  17 | WorldMapPositionX:  db  44 ;ballroom 1 (with pipe)
-;WorldMapPositionY:  db  20 | WorldMapPositionX:  db  44 ;ballroom 2
-;WorldMapPositionY:  db  19 | WorldMapPositionX:  db  43 ;huge blob room
-
-;boss demon
-;roomX: equ ("B"-"A")*26 + "G"-"A"
-;WorldMapPositionY:  db  12-1 | WorldMapPositionX:  db  roomX
-
-;waterfall scene
-;roomX: equ ("B"-"A")*26 + "T"-"A"
-;WorldMapPositionY:  db  12-1 | WorldMapPositionX:  db  roomX
-
-;boss plant
-;roomX: equ ("B"-"A")*26 + "E"-"A"
-;WorldMapPositionY:  db  21-1 | WorldMapPositionX:  db  roomX
-
-;lemniscate wall bash
-;roomX: equ ("A"-"A")*26 + "V"-"A"
-;roomY: equ 27
-;WorldMapPositionY:  db  roomY-1 | WorldMapPositionX:  db  roomX
-
-;current locatione=karnimata
-roomX: equ ("B"-"A")*26 + "T"-"A"
-roomY: equ 12
+;current location=karnimata
+roomX: equ ("B"-"A")*26 + "R"-"A"
+roomY: equ 27
 
 WorldMapPosition:
 .Y:  db  roomY-1
@@ -49,22 +27,26 @@ startTheGame:
 		call	enableWorldmap
 		ld		hl,$B000
 		call	newwm
+		call	ResetPushStones
+
 		ld		a,-1
 		ld		(PreviousRuin),a
 		call	loadRoom
+		; di
+		; halt
 		jp		LevelEngine
 
 
 ;Load the current room
 loadRoom:
+		call	loadGraphics
+		call	addThisRoomToWorldmap
 		ld		a,(PreviousRuin)
 		ld		b,a
 		call	GetRoomRuinId
 		ld		(PreviousRuin),a
 		cp		b
 		call	nz,initRuin
-		call	loadGraphics
-		call	addThisRoomToWorldmap
 		ret
 
 ;this room is in a differt Ruin than the previous
@@ -77,40 +59,33 @@ initRuin:
 
 ;ro: this does a bit more than that, it also enabled interrupt
 loadGraphics:
-	ld    a,(slot.page12rom)            ;RAMROMROMRAM
-	out   ($a8),a
-	ld    a,Loaderblock                 ;loader routine at $4000
-	call  block12
+		ld    a,(slot.page12rom)            ;RAMROMROMRAM
+		out   ($a8),a
+		ld    a,Loaderblock                 ;loader routine at $4000
+		call  block12
 
-	call  loader		;ro: not sure why this is here, as a few lines below something simular happens...
+		call  loader		;ro: not sure why this is here, as a few lines below something simular happens...
 
-	call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
-	call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
+		call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
+		call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
 
-	call unpackCurrentRoom    ;unpacks packed map to ram. sets objectdata at the end of mapdata ends with: all RAM except page 2
-	call GetRoomPaletteId
-	call getPalette
-	call SetMapPalette
-	call getroomtypeId
-	call InitializeRoomType
+		call unpackCurrentRoom    ;unpacks packed map to ram. sets objectdata at the end of mapdata ends with: all RAM except page 2
+		call GetRoomPaletteId
+		call getPalette
+		call SetMapPalette
+		call getroomtypeId
+		call InitializeRoomType
 
-	call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
-	call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
-	call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
+		call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
+		call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
+		call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 
-	call  RemoveSpritesFromScreen       ;|loader|
-	call  SwapSpatColAndCharTable
-	call  PutSpatToVramSlow
-	call  SwapSpatColAndCharTable
-	call  PutSpatToVramSlow
-	call  initiatebordermaskingsprites  ;|loader|
-
-;  di                                  ;register 14 sets VRAM address to read/write to/from. This value is only set once per frame ingame, we assume it's set to $05 at all times, so set it back when going back to the game
-;  ld    a,$05
-;	out   ($99),a       ;set bits 15-17
-;	ld    a,14+128
-;  ei
-;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
+		call  RemoveSpritesFromScreen       ;|loader|
+		call  SwapSpatColAndCharTable
+		call  PutSpatToVramSlow
+		call  SwapSpatColAndCharTable
+		call  PutSpatToVramSlow
+		call  initiatebordermaskingsprites  ;|loader|
 
 		ld    a,1
 		ld    (CopyObject+spage),a
@@ -133,13 +108,8 @@ loadGraphics:
 		set   0,a
 		ld		(NewPrContr),a
 .EndCheckDoubleJump:
-
-		; call  LoadSamplesAndPlaySong0
-
 		ld    a,1
 		ld    (AmountOfFramesUntilScreenTurnsOn?),a
-
-
 		ret
 
 
@@ -447,12 +417,12 @@ RuinPropertiesLUT:
 	DB 0,0,0,"             "
 	DB 1,1,0,"Polux        "
 	DB 2,2,0,"Lemniscate   "
-	DB 0,0,0,"Bos Stenen Wa"
+	DB 6,6,3,"World Forrest"
 	DB 4,0,0,"Pegu         "
 	DB 0,0,0,"Bio          "
 	DB 6,6,3,"Karni Mata   "
 	DB 7,7,2,"Konark       "
-	DB 0,0,0,"Ashoka   hell"
+	DB 0,0,0,"Ashoka's hell"
 	DB 0,0,0,"Taxilla      "
 	DB 0,0,0,"Euderus Set  "
 	DB 0,0,0,"Akna         "
@@ -505,7 +475,6 @@ GetRoomMusicId:
 		ld		a,RuinPropertiesLUT.music
 		call	getRoomRuinProperty
 		ret
-
 
 ;return a property from the current room ruin
 ;in:	A=property

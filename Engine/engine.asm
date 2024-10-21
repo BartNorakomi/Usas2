@@ -357,258 +357,266 @@ SetSF2DisplayPage:
 	ld    (PageOnNextVblank),a
 ret
 
-Handle_HardWareSprite_Enemies_And_objects:  ;handle movement, out character, color and spat data
+;handle movement
+;out: character, color and spat data  > ro: which regs, and why?
+Handle_HardWareSprite_Enemies_And_objects:
 ;several optimizations are possible here:
 ;1. selfmodifying ld hl,(invissprchatableaddress) into ld hl,nn
 ;2. several calls can be written out, like call SetVdp_Write
 ;3. the call outix32 can be changed into their respective numbers with a jp endOutChar at the end
 ;4. ld a,(CameraX) and %1111 0000 neg can be hardcoded
-	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
-	out		($a8),a	
+		ld		a,(slot.page12rom)	;RAM ROM ROM RAM
+		out		($a8),a	
 
-  ;set the general movement pattern block at address $4000 in page 1
-  di
-  ld    a,MovementPatternsFixedPage1block
-	ld		(memblocks.1),a
-	ld		($6000),a
-  ei
+;set the general movement pattern block at address $4000 in page 1
+		; di
+		ld		a,MovementPatternsFixedPage1block
+		; ld		(memblocks.1),a
+		; ld		($6000),a
+		; ei
+		call	block12
 
-  ld    de,enemies_and_objects+(0*lenghtenemytable)                           
-  ld    a,(de) | inc a | call z,.docheck            
-  ld    de,enemies_and_objects+(1*lenghtenemytable)                        
-  ld    a,(de) | inc a | call z,.docheck             
-  ld    de,enemies_and_objects+(2*lenghtenemytable)                                 
-  ld    a,(de) | inc a | call z,.docheck            
-  ld    de,enemies_and_objects+(3*lenghtenemytable)                               
-  ld    a,(de) | inc a | call z,.docheck            
-  ld    de,enemies_and_objects+(4*lenghtenemytable)                                     
-  ld    a,(de) | inc a | call z,.docheck             
-  ld    de,enemies_and_objects+(5*lenghtenemytable)                                     
-  ld    a,(de) | inc a | call z,.docheck             
-  ld    de,enemies_and_objects+(6*lenghtenemytable)
-  ld    a,(de) | inc a | call z,.docheck             
-  ld    de,enemies_and_objects+(7*lenghtenemytable)                                     
-  ld    a,(de) | inc a | call z,.docheck             
-  ld    de,enemies_and_objects+(8*lenghtenemytable)
-  ld    a,(de) | inc a | call z,.docheck             
-  ld    de,enemies_and_objects+(9*lenghtenemytable)                                     
-  ld    a,(de) | inc a | call z,.docheck             
+		ld    de,enemies_and_objects+(0*lenghtenemytable)                           
+		ld    a,(de) | inc a | call z,.docheck            
+		ld    de,enemies_and_objects+(1*lenghtenemytable)                        
+		ld    a,(de) | inc a | call z,.docheck             
+		ld    de,enemies_and_objects+(2*lenghtenemytable)                                 
+		ld    a,(de) | inc a | call z,.docheck            
+		ld    de,enemies_and_objects+(3*lenghtenemytable)                               
+		ld    a,(de) | inc a | call z,.docheck            
+		ld    de,enemies_and_objects+(4*lenghtenemytable)                                     
+		ld    a,(de) | inc a | call z,.docheck             
+		ld    de,enemies_and_objects+(5*lenghtenemytable)                                     
+		ld    a,(de) | inc a | call z,.docheck             
+		ld    de,enemies_and_objects+(6*lenghtenemytable)
+		ld    a,(de) | inc a | call z,.docheck             
+		ld    de,enemies_and_objects+(7*lenghtenemytable)                                     
+		ld    a,(de) | inc a | call z,.docheck             
+		ld    de,enemies_and_objects+(8*lenghtenemytable)
+		ld    a,(de) | inc a | call z,.docheck             
+		ld    de,enemies_and_objects+(9*lenghtenemytable)                                     
+		ld    a,(de) | inc a | call z,.docheck             
 
-	ld		a,(slot.ram)	      ;back to full RAM
-	out		($a8),a	
-  ret
+		ld		a,(slot.ram)	      ;back to full RAM
+		out		($a8),a	
+		ret
 
-  .docheck:    
-  ld    ixl,e
-  ld    ixh,d
+.docheck:    
+		ld    ixl,e
+		ld    ixh,d
 
-  ;set the movement pattern block of this enemy/object at address $8000 in page 2 
-  ld    a,(ix+enemies_and_objects.movementpatternsblock)
-  di
-	ld		(memblocks.2),a
-	ld		($7000),a
-	ei
- 
-  call  movement_enemies_and_objects            ;handle sprite movement and animation
+		;set the movement pattern block of this enemy/object at address $8000 in page 2 
+		ld    a,(ix+enemies_and_objects.movementpatternsblock)
+		; di
+		; ld		(memblocks.2),a
+		; ld		($7000),a
+		; ei
+		call	block34
+		call	invokeObjectMovementPattern ;movement_enemies_and_objects            ;handle sprite movement and animation
 ;out hl -> address of sprite character data to out to Vram
 ;out a -> EnemySpritesblock
 ;out exx
 ;out de -> spritenumber*26 (used for character and color data addreess)
 
-  ;set block containing sprite data of this enemy/object at address $8000 in page 2 
-  di
-	ld		(memblocks.2),a                         ;set to block 2 at $8000- $c000
-	ld		($7000),a
-	ei
+;set block containing sprite data of this enemy/object at address $8000 in page 2 
+		; di
+		; ld		(memblocks.2),a                         ;set to block 2 at $8000- $c000
+		; ld		($7000),a
+		; ei
+		call	block34
 
-  ;set address to write sprite character data to
-	ld		hl,(invissprchatableaddress)		        ;sprite character table in VRAM ($17800)   
-  add   hl,de
-  add   hl,de
-  
-  call  Backdropred
-    
-	ld		a,1
-	call	SetVdp_WriteRemainDI
+;set address to write sprite character data to
+		ld		hl,(invissprchatableaddress)		        ;sprite character table in VRAM ($17800)   
+		add		hl,de
+		add		hl,de
 
-  ;out character data
-  exx                                           ;recall hl. hl now points to character data
-  ld    a,(ix+enemies_and_objects.nrsprites)    ;amount of sprites (1 spr=64, 2 spr=60, 3 spr=54, 4 spr=48, 5 spr=42, 6 spr=36, 7 spr=30, 8 spr=24, 9 spr=18, 10 spr=12, 11 spr=6, 12 spr=0   (72 - (amount of sprites*6)))  
-  ld    (RightSideOfMap.SelfModifyinJRColorData),a  
-  ld    (.SelfModifyinJRCharacterData),a
-	ld		c,$98
-		
-  .SelfModifyinJRCharacterData:  equ $+1
-  jr    .Charloop
-  call  outix384 | jp .endOutChar |call  outix352 | jp .endOutChar |call  outix320 | jp .endOutChar |call  outix288 | jp .endOutChar |call  outix256 | jp .endOutChar | call  outix224 | jp .endOutChar | call  outix192 | jp .endOutChar | call  outix160 | jp .endOutChar | call  outix128 | jp .endOutChar | call  outix96 | jp .endOutChar | call  outix64 | jp .endOutChar
-  .CharLoop:  
-  call  outix32 ; | jp .endOutChar
-  .endOutChar:
-  ei
-  exx                                           ;store hl. hl now points to color data
+		call	Backdropred	;[debug]
 
-  ;set address to write sprite color data to
-	ld		hl,(invissprcoltableaddress)		        ;sprite color table in VRAM ($17400)
-  add   hl,de
-	ld		a,1
-	call	SetVdp_WriteRemainDI
+		ld		a,1
+		call	SetVdp_WriteRemainDI
 
-  ;check if sprite is left or right part of map
-  ld    l,(ix+enemies_and_objects.x)  
-  ld    h,(ix+enemies_and_objects.x+1)      ;x
-  ld    de,304/2                            ;half of the map width
-  sbc   hl,de
-  jp    c,LeftSideOfMap
+;!! ro: the next portion of code is dangerous, as is depends on data in objects..
+;out character data
+		exx                                           ;recall hl. hl now points to character data
+		ld    a,(ix+enemies_and_objects.nrsprites)    ;amount of sprites (1 spr=64, 2 spr=60, 3 spr=54, 4 spr=48, 5 spr=42, 6 spr=36, 7 spr=30, 8 spr=24, 9 spr=18, 10 spr=12, 11 spr=6, 12 spr=0   (72 - (amount of sprites*6)))  
+		ld    (RightSideOfMap.SelfModifyinJRColorData),a	;!!
+		ld    (.SelfModifyinJRCharacterData),a				;!!
+		ld		c,$98
+			
+.SelfModifyinJRCharacterData:  equ $+1
+		jr    .Charloop
+		call  outix384 | jp .endOutChar |call  outix352 | jp .endOutChar |call  outix320 | jp .endOutChar |call  outix288 | jp .endOutChar |call  outix256 | jp .endOutChar | call  outix224 | jp .endOutChar | call  outix192 | jp .endOutChar | call  outix160 | jp .endOutChar | call  outix128 | jp .endOutChar | call  outix96 | jp .endOutChar | call  outix64 | jp .endOutChar
+.CharLoop:  
+		call  outix32 ; | jp .endOutChar
+.endOutChar:
+;!! -- end dangerouse code
+		ei
+
+		exx											;store hl. hl now points to color data
+;set address to write sprite color data to
+		ld		hl,(invissprcoltableaddress)		;sprite color table in VRAM ($17400)
+		add		hl,de
+		ld		a,1
+		call	SetVdp_WriteRemainDI
+
+;check if sprite is left or right part of map
+		ld    l,(ix+enemies_and_objects.x)  
+		ld    h,(ix+enemies_and_objects.x+1)      ;x
+		ld    de,304/2                            ;half of the map width > !! ro: hardcoded engine.roomlength
+		sbc   hl,de
+		jp    c,LeftSideOfMap
 
 RightSideOfMap:
-  ;out color data
-  exx                                           ;recall hl. hl now points to color data 
-  bit   1,(ix+enemies_and_objects.hit?)         ;check if enemy is hit ? If so, out white sprite
-  jr    nz,.OutWhiteSprite
+;out color data
+		exx                                           ;recall hl. hl now points to color data 
+		bit   1,(ix+enemies_and_objects.hit?)         ;check if enemy is hit ? If so, out white sprite
+		jr    nz,.OutWhiteSprite
 
-  .SelfModifyinJRColorData:  equ $+1
-  jr    .ColLoop
-  call  outix192 | jp .EndOutColor |call  outix176 | jp .EndOutColor |call  outix160 | jp .EndOutColor |call  outix144 | jp .EndOutColor |call  outix128 | jp .EndOutColor | call  outix112 | jp .EndOutColor | call  outix96 | jp .EndOutColor | call  outix80 | jp .EndOutColor | call  outix64 | jp .EndOutColor | call  outix48 | jp .EndOutColor | call  outix32 | jp .EndOutColor
-  .ColLoop:  
-  call  outix16 ; | jp .EndOutColor
-  .EndOutColor:
-  ei
+;!! ro: another piece of dangerous code depending on object data
+.SelfModifyinJRColorData:  equ $+1
+		jr    .ColLoop
+		call  outix192 | jp .EndOutColor |call  outix176 | jp .EndOutColor |call  outix160 | jp .EndOutColor |call  outix144 | jp .EndOutColor |call  outix128 | jp .EndOutColor | call  outix112 | jp .EndOutColor | call  outix96 | jp .EndOutColor | call  outix80 | jp .EndOutColor | call  outix64 | jp .EndOutColor | call  outix48 | jp .EndOutColor | call  outix32 | jp .EndOutColor
+.ColLoop:  
+		call  outix16 ; | jp .EndOutColor
+.EndOutColor:
+		ei
 
-  ;write sprite coordinates to spat (take in account offset values per sprite and camera position)
-  ld    e,(ix+enemies_and_objects.spataddress)  
-  ld    d,(ix+enemies_and_objects.spataddress+1);de points to spat  
+;write sprite coordinates to spat (take in account offset values per sprite and camera position)
+		ld    e,(ix+enemies_and_objects.spataddress)  
+		ld    d,(ix+enemies_and_objects.spataddress+1);de points to spat  
+
+		ld    a,(CameraX)                             ;camera jumps 16 pixels every page, subtract this value from x
+		and   %1111 0000
+		neg
+		add   a,(ix+enemies_and_objects.x)
+		add   -16                                     ;move all sprite 16 pixels left so they can walk out of screen left completely  
+		ld    c,a                                     ;x coordinate in c
+		ld    b,(ix+enemies_and_objects.y)            ;y coordinate in b
+
+		exx
+		ld    b,(ix+enemies_and_objects.nrspritesSimple)
+.Loop:
+		exx
+
+		ld    a,(hl)                                  ;offset y (sprite offsets are in hl and are stored in rom right after the color data)
+		add   a,b
+		ld    (de),a                                  ;y sprite
+		inc   de                  
+		inc   hl               
+		ld    a,(hl)                                  ;offset x
+		add   a,c  
+		cp    65                                      ;check if x<65. If so sprite is out of camera range
+		jr    nc,.RightSideChecked
+		ld    a,255
+.RightSideChecked:
+		ld    (de),a                                  ;x sprite
+		;  inc   de
+		;  inc   de
+		inc   de                                      ;y next sprite
+		inc   hl
   
-  ld    a,(CameraX)                             ;camera jumps 16 pixels every page, subtract this value from x Cles
-  and   %1111 0000
-  neg
-  add   a,(ix+enemies_and_objects.x)
-  add   -16                                     ;move all sprite 16 pixels left so they can walk out of screen left completely  
-  ld    c,a                                     ;x coordinate in c
-  ld    b,(ix+enemies_and_objects.y)            ;y coordinate in b
+		exx
+		djnz  .Loop
 
-  exx
-  ld    b,(ix+enemies_and_objects.nrspritesSimple)
-  .Loop:
-  exx
-  
-  ld    a,(hl)                                  ;offset y (sprite offsets are in hl and are stored in rom right after the color data)
-  add   a,b
-  ld    (de),a                                  ;y sprite
-  inc   de                  
-  inc   hl               
-  ld    a,(hl)                                  ;offset x
-  add   a,c  
-  cp    65                                      ;check if x<65. If so sprite is out of camera range
-  jr    nc,.RightSideChecked
-  ld    a,255
-  .RightSideChecked:
-  ld    (de),a                                  ;x sprite
-;  inc   de
-;  inc   de
-  inc   de                                      ;y next sprite
-  inc   hl
-  
-  exx
-  djnz  .Loop
+		call  BackdropBlack	;[debug]
+		ret
 
-  call  BackdropBlack
-  ret
+.OutWhiteSprite:                              ;when enemy is hit, it's spritecolor will be white
+		ld    b,(ix+enemies_and_objects.nrspritesTimes16)
+		ld    e,b
+		ld    d,0
+		add   hl,de
+		ld    a,09                                    ;white
+.loopWhite:
+		out   ($98),a
+		djnz  .loopWhite
+		jp    .EndOutColor
 
-  .OutWhiteSprite:                              ;when enemy is hit, it's spritecolor will be white
-  ld    b,(ix+enemies_and_objects.nrspritesTimes16)
-  ld    e,b
-  ld    d,0
-  add   hl,de
-  ld    a,09                                    ;white
-  .loopWhite:
-  out   ($98),a
-  djnz  .loopWhite
-  jp    .EndOutColor
-  
 LeftSideOfMap:
-  ;out color data
-  exx                                           ;recall hl. hl now points to color data
-  bit   1,(ix+enemies_and_objects.hit?)         ;check if enemy is hit ? If so, out white sprite
-  jr    nz,.OutWhiteSprite
-  
-  ld    b,(ix+enemies_and_objects.nrspritesTimes16)
-  ld    c,128
-  .CEbitloop:                                   ;out spritecolor with CE bit set (all values get +128)
-  ld    a,(hl)
-  add   a,c  
-  out   ($98),a
-  inc   hl
-  djnz  .CEbitloop
-  .EndOutColor:
-  ei
-  
-  ;write sprite coordinates to spat (take in account offset values per sprite and camera position)
-  ld    e,(ix+enemies_and_objects.spataddress)  
-  ld    d,(ix+enemies_and_objects.spataddress+1);de points to spat  
-  
-  ld    a,(CameraX)                             ;camera jumps 16 pixels every page, subtract this value from x Cles
-  and   %1111 0000
-  neg
-  add   a,(ix+enemies_and_objects.x)
-  add   32-16                                   ;CE bit correction and move all sprite 16 pixels left so they can walk out of screen left completely
-  ld    c,a                                     ;x coordinate in c
-  ld    b,(ix+enemies_and_objects.y)            ;y coordinate in b
+;out color data
+		exx                                           ;recall hl. hl now points to color data
+		bit   1,(ix+enemies_and_objects.hit?)         ;check if enemy is hit ? If so, out white sprite
+		jr    nz,.OutWhiteSprite
 
-  exx
-  ld    b,(ix+enemies_and_objects.nrspritesSimple)
-  .Loop:
-  exx
+		ld    b,(ix+enemies_and_objects.nrspritesTimes16)
+		ld    c,128
+.CEbitloop:                                   ;out spritecolor with CE bit set (all values get +128)
+		ld    a,(hl)
+		add   a,c  
+		out   ($98),a
+		inc   hl
+		djnz  .CEbitloop
+.EndOutColor:
+		ei
   
-  ld    a,(hl)                                  ;offset y (sprite offsets are in hl and are stored in rom right after the color data)
-  add   a,b
-  ld    (de),a                                  ;y sprite
-  inc   de                  
-  inc   hl               
-  ld    a,(hl)                                  ;offset x
-  add   a,c
-  cp    200                                     ;check if x>200. If so sprite is out of camera range
-  jr    c,.LeftSideChecked
-  xor   a
-  .LeftSideChecked:
-  ld    (de),a                                  ;x sprite
-;  inc   de
-;  inc   de
-  inc   de                                      ;y next sprite
-  inc   hl
-  
-  exx
-  djnz  .Loop
+;write sprite coordinates to spat (take in account offset values per sprite and camera position)
+		ld    e,(ix+enemies_and_objects.spataddress)  
+		ld    d,(ix+enemies_and_objects.spataddress+1);de points to spat  
 
-  call  BackdropBlack
-  ret
+		ld    a,(CameraX)                             ;camera jumps 16 pixels every page, subtract this value from x Cles
+		and   %1111 0000
+		neg
+		add   a,(ix+enemies_and_objects.x)
+		add   32-16                                   ;CE bit correction and move all sprite 16 pixels left so they can walk out of screen left completely
+		ld    c,a                                     ;x coordinate in c
+		ld    b,(ix+enemies_and_objects.y)            ;y coordinate in b
 
-  .OutWhiteSprite:                              ;when enemy is hit, it's spritecolor will be white
-  ld    b,(ix+enemies_and_objects.nrspritesTimes16)
-  ld    e,b
-  ld    d,0
-  add   hl,de
-  ld    a,09+128                                ;white + CE bit
-  .CEbitloopWhite:
-  out   ($98),a
-;  inc   hl
-  djnz  .CEbitloopWhite
-  jp    .EndOutColor
+		exx
+		ld    b,(ix+enemies_and_objects.nrspritesSimple)
+.Loop:
+		exx
+		ld    a,(hl)                                  ;offset y (sprite offsets are in hl and are stored in rom right after the color data)
+		add   a,b
+		ld    (de),a                                  ;y sprite
+		inc   de                  
+		inc   hl               
+		ld    a,(hl)                                  ;offset x
+		add   a,c
+		cp    200                                     ;check if x>200. If so sprite is out of camera range
+		jr    c,.LeftSideChecked
+		xor   a
+.LeftSideChecked:
+		ld    (de),a                                  ;x sprite
+		;  inc   de
+		;  inc   de
+		inc   de                                      ;y next sprite
+		inc   hl
+		exx
+		djnz  .Loop
 
-handle_enemies_and_objects:                           ;handle software sprites
-  ld    a,(scrollEngine)                              ;1= 304x216 engine  2=256x216 SF2 engine
-  dec   a
-  ret   nz
-  
-	ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
-	out		($a8),a	
+		call  BackdropBlack	;[debug]
+		ret
 
-  ;set the general movement pattern block at address $4000 in page 1
-  di
-  ld    a,MovementPatternsFixedPage1block
-	ld		(memblocks.1),a
-	ld		($6000),a
-  ei
+.OutWhiteSprite:                              ;when enemy is hit, it's spritecolor will be white
+		ld    b,(ix+enemies_and_objects.nrspritesTimes16)
+		ld    e,b
+		ld    d,0
+		add   hl,de
+		ld    a,09+128                                ;white + CE bit
+.CEbitloopWhite:
+		out   ($98),a
+		;  inc   hl
+		djnz  .CEbitloopWhite
+		jp    .EndOutColor
 
+
+;handle software sprites
+handle_enemies_and_objects:
+		ld    a,(scrollEngine)                              ;1= 304x216 engine  2=256x216 SF2 engine
+		dec   a
+		ret   nz
+
+		ld		a,(slot.page12rom)	                          ; all RAM except page 1+2
+		out		($a8),a	
+
+;set the general movement pattern block at address $4000 in page 1
+		; di
+		ld    a,MovementPatternsFixedPage1block
+		; ld		(memblocks.1),a
+		; ld		($6000),a
+		; ei
+		call	block12
+		
   ld    de,enemies_and_objects+(0*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
   ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
   ld    de,enemies_and_objects+(1*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
@@ -658,30 +666,31 @@ handle_enemies_and_objects:                           ;handle software sprites
 	out		($a8),a	
   ret
 
-  .docheck:
-;  call  BackdropRed  
-  ld    ixl,e
-  ld    ixh,d
+.docheck:
+		ld    ixl,e
+		ld    ixh,d
 
-  ;set the movement pattern block of this enemy/object at address $8000 in page 2 
-  ld    a,(ix+enemies_and_objects.movementpatternsblock)
-  di
-	ld		(memblocks.2),a
-	ld		($7000),a
-	ei
-  
-  call  movement_enemies_and_objects                  ;sprite is in movement area, so let it move !! ^__^
-;  call  BackdropBlack
-  ret
+;set the movement pattern block of this enemy/object at address $8000 in page 2 
+		ld    a,(ix+enemies_and_objects.movementpatternsblock)
+		; di
+		; ld		(memblocks.2),a
+		; ld		($7000),a
+		; ei
+		call	block34
+		call	invokeObjectMovementPattern ;movement_enemies_and_objects                  ;sprite is in movement area, so let it move !! ^__^
+		ret
   
 movementpatternsblock:  db  movementpatterns1block
-movement_enemies_and_objects:
-  ld    l,(ix+enemies_and_objects.movementpattern)    ;movementpattern
-  ld    h,(ix+enemies_and_objects.movementpattern+1)  ;movementpattern
-  jp    (hl)
+; movement_enemies_and_objects:
+invokeObjectMovementPattern:
+		ld    l,(ix+enemies_and_objects.movementpattern)    ;movementpattern
+		ld    h,(ix+enemies_and_objects.movementpattern+1)  ;movementpattern
+		jp    (hl)
 
-VramObjectX:  db  000
-VramObjectY:  db  000
+
+
+; VramObjectX:  db  000
+; VramObjectY:  db  000
 
 CopyObject:                                           ;copy any object into screen in the normal engine
   db    000,000,216,001   ;sx,--,sy,spage
@@ -6724,9 +6733,9 @@ palettes:
 .numrec:		equ 32
 .data:
 .0:				DS .reclen		;incBin filename,0,.reclen
-.1Hub:			DB $06,$05,$12,$01,$32,$03,$34,$03,$20,$01,$21,$02,$07,$05,$73,$06,$05,$03,$77,$07,$53,$05,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
+.1Pollux:			DB $06,$05,$12,$01,$32,$03,$34,$03,$20,$01,$21,$02,$07,$05,$73,$06,$05,$03,$77,$07,$53,$05,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
 .2Lemniscate:	DB $06,$05,$12,$01,$32,$03,$34,$03,$20,$01,$21,$02,$07,$05,$73,$06,$05,$03,$77,$07,$53,$05,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
-.3:				DS .reclen
+.3WorldForrest:	DS .reclen
 .4Pegu:		    DB $60,$05,$12,$01,$20,$05,$34,$03,$20,$01,$00,$03,$50,$03,$73,$06,$40,$02,$77,$07,$40,$06,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
 .5:				DS .reclen
 .6KarniMata:	DB 71,5,18,1,32,5,52,3,32,1,0,3,80,3,115,6,0,2,119,7,64,6,35,2,69,4,112,5,112,2,0,0
