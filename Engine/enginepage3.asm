@@ -1466,6 +1466,13 @@ roomObjectClass.General.X: EQU 0+roomObjectClassIdOffset
 roomObjectClass.General.Y: EQU 1+roomObjectClassIdOffset
 roomObjectClass.General.numBytes: EQU 2+roomObjectClassIdOffset
 
+roomObjectClass.EnemySpawn.X: EQU 0+roomObjectClassIdOffset
+roomObjectClass.EnemySpawn.Y: EQU 1+roomObjectClassIdOffset
+roomObjectClass.EnemySpawn.Face: EQU 2+roomObjectClassIdOffset
+roomObjectClass.EnemySpawn.Speed: EQU 3+roomObjectClassIdOffset
+roomObjectClass.EnemySpawn.maxNum: EQU 4+roomObjectClassIdOffset
+roomObjectClass.EnemySpawn.numBytes: EQU 5+roomObjectClassIdOffset
+
 
 
 fill: equ 2
