@@ -500,7 +500,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v9=special width for Pushing Stone Puzzle Switch
 ;v1-2= coordinates in pushing stone table (PuzzleBlocks1Y, PuzzleBlocks2Y etc)
 .Object001:
-		call	.SetPushingStoneInEnemyTable
+		call	.newObjectRecord
 		ld		hl,pushStonetable.data+pushStoneTable.roomY	;table record #0
 		Call	.CheckBlock
 		ld		de,roomObjectClass.General.numBytes
@@ -509,24 +509,30 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;check if this block is already present in the pushing block table
 ;find the first record with the correct roomNumber and store all blocks from this room in sequencial order
 .CheckBlock:
-		ld    a,(hl)	;.roomY
-		cp	 -1  		;free or oed
-		jr    z,.NotYetPresent
-		ld    a,(WorldMapPosition.y)
-		cp	 (hl)
-		jr    nz,.ThisBlockBelongsInADifferentRoom
-		dec   hl
-		ld	  b,(hl)
-		inc   hl
-		ld    a,(WorldMapPosition.X)
-		cp    b
-		jr    nz,.ThisBlockBelongsInADifferentRoom
-		dec   hl
-		dec   hl
-		dec   hl
+		ld		de,PushStoneTable.reclen			;4
+.checkblockL0:
+		ld		a,(hl)	;.roomY
+		cp		-1  		;free or oed
+		jr		z,.NotYetPresent
+		ld		a,(WorldMapPosition.y)
+		cp		(hl)
+		jr		nz,.ThisBlockBelongsInADifferentRoom
+		dec		hl
+		ld		b,(hl)
+		inc		hl
+		ld		a,(WorldMapPosition.X)
+		cp		b
+		jp		z,.isPresent
+.ThisBlockBelongsInADifferentRoom:
+		add		hl,de								;next block in pushing block table
+		jp		.CheckBlockL0
 
 ;when a block is already in the table, set table coordinates in v1-2 and take x,y from table and feed it into the object
-.AlreadyPresent:                   
+;!! ro: coordinates are NOT set in v1/v2 atm.
+.isPresent:                   
+		dec		hl
+		dec		hl
+		dec		hl
 		ld		(iy+enemies_and_objects.tableRecordPointer),l ;store pointer to tableRecord
 		ld		(iy+enemies_and_objects.tableRecordPointer+1),h
 
@@ -538,19 +544,17 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		add		ix,de
 		ld		de,lenghtenemytable					;goto next objectRecord
 		add		iy,de
-		call	.SetPushingStoneInEnemyTable
+		call	.newObjectRecord
     
 		ld		de,PushStoneTable.reclen				;next tableRecord +4
 		add		hl,de
-		jr		.AlreadyPresent						;look for more pushing stones in this room
-
-.ThisBlockBelongsInADifferentRoom:
-		ld		de,PushStoneTable.reclen			;4
-		add		hl,de								;next block in pushing block table
-		jr		.CheckBlock
+		jr		.isPresent						;look for more pushing stones in this room
 
 .NotYetPresent:
-		call	.SetRoomYXStoneXYAndTableAddress 
+		push	hl
+		call	.applyObjectClassGeneral
+		pop		hl
+		call	.newPushStoneRecord 
 
 		ld		a,(ix+roomObjectClass.General.numBytes)	;check if next object is another pushing stone
 		cp		roomObject.PushStone
@@ -560,23 +564,20 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		add		ix,de
 		ld		de,lenghtenemytable					;goto next objectRecord
 		add		iy,de
-		call	.SetPushingStoneInEnemyTable
+		call	.newObjectRecord
 
 		ld		de,pushStoneTable.reclen+pushStoneTable.roomy   ;7	;next record, and move to .roomY
 		add		hl,de                           ;room y for next block in pushing block table
 		jr		.NotYetPresent                  ;now loop this routine and look for more pushing stones in this room
 
-.SetRoomYXStoneXYAndTableAddress:
-		push	hl
-		call	.applyObjectClassGeneral
-		pop		hl
+.newPushStoneRecord:
 		ld		a,(WorldMapPosition.Y)	;.roomY
 		ld		(hl),a
 		dec		hl
 		ld		a,(WorldMapPosition.X)	;.roomX
 		ld		(hl),a
 		dec		hl
-		ld		a,(iy+enemies_and_objects.x)	;transfer stone coordinates to current tableRecord
+		ld		a,(iy+enemies_and_objects.x)	;transfer stone coordinates to current tableRecord *8bit
 		ld		(hl),A
 		dec		hl
 		ld		a,(iy+enemies_and_objects.y)
@@ -586,15 +587,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		(iy+enemies_and_objects.tableRecordPointer+1),h
 		ret
 
-.SetPushingStoneInEnemyTable:
+.newObjectRecord:
 		push	hl
 		ld		hl,Object001Table
-		push	iy
-		pop		de                              ;=enemy object table
-		ld		bc,lenghtenemytable
-		ldir
+		; push	iy
+		; pop		de                              ;=enemy object table
+		; ld		bc,lenghtenemytable
+		; ldir
+		call	.copyObjectTemplate
 		call	SetCleanObjectNumber            ;each object has a reference cleanup table
-
 		ld		hl,AmountOfPushingStonesInCurrentRoom
 		inc		(hl)
 		pop		hl
@@ -1589,7 +1590,7 @@ ret
 		; ld    a,(ix+Object062Table.face)
 		; ld    (iy+enemies_and_objects.v4),a
 		call	.applyObjectClassEnemySpawn
-		
+
 		call	.SetGfxZombieSpawnPoint
 		ld		a,(ix+Object062Table.MaxNum)
 		dec		a
@@ -2267,7 +2268,7 @@ Object001Table:
 		dw	cleanOb1,0 ;objnr,spatadr
 		db	0	;numsprites
 		dw	-1 ;pushStoneTable+pushStoneTable.roomY	;tableRec
-		db	.sx,0,0,0,0,0,0,14,14,.hit,.life,movementpatterns1block
+		db	.sx,0,0,0,0,0,0,14,14,.hit,.life,MovementPatternsFixedPage1block ;movementpatterns1block
 		ds	fill-1
 
 ; db 1,0 dw PushingStone db 8*00 dw 8*00 db 16,16|dw CleanOb1,0 db 0 | dw pushStoneTable+pushStoneTable.roomY | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movementpatterns1block| ds fill-1

@@ -76,7 +76,7 @@ ZombieSpawnPoint:
 ;v1=Zombie Spawn Timer
 ;v2=Max Number Of Zombies
 ;v3=Spawn Speed
-;v4=Face direction
+;v4=Face direction and speed
 		ld		a,(framecounter)
 		rrca
 		ret		c

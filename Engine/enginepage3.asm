@@ -27,7 +27,7 @@ startTheGame:
 		call	enableWorldmap
 		ld		hl,$B000
 		call	newwm
-		call	ResetPushStones
+		call	ResetPushStones	;[engine.asm]
 
 		ld		a,-1
 		ld		(PreviousRuin),a
@@ -39,14 +39,14 @@ startTheGame:
 
 ;Load the current room
 loadRoom:
-		call	loadGraphics
-		call	addThisRoomToWorldmap
 		ld		a,(PreviousRuin)
 		ld		b,a
 		call	GetRoomRuinId
 		ld		(PreviousRuin),a
 		cp		b
 		call	nz,initRuin
+		call	loadGraphics
+		call	addThisRoomToWorldmap
 		ret
 
 ;this room is in a differt Ruin than the previous
