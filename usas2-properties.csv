@@ -13,12 +13,12 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		DsmDatalist	Worldmap	IndexBlock	0					
 1	Usas2		DsmDatalist	Worldmap	IndexSegment	0					
 1	Usas2		DsmDatalist	Worldmap	name	Worldmap					
-1	Usas2		file	Hub.tiles.bmp	fileTypeId	7					
-1	Usas2		file	Hub.tiles.bmp	path	..\grapx\tilesheets\Hub.tiles.bmp					
-1	Usas2		file	Hub.tiles.pl	fileTypeId	2					
-1	Usas2		file	Hub.tiles.pl	path	..\grapx\tilesheets\Hub.tiles.pl					
-1	Usas2		file	Hub.tiles.sc5	fileTypeId	1					
-1	Usas2		file	Hub.tiles.sc5	path	..\grapx\tilesheets\Hub.tiles.sc5					
+1	Usas2		file	pollux.tiles.bmp	fileTypeId	7					
+1	Usas2		file	pollux.tiles.bmp	path	..\grapx\tilesheets\pollux.tiles.bmp					
+1	Usas2		file	pollux.tiles.pl	fileTypeId	2					
+1	Usas2		file	pollux.tiles.pl	path	..\grapx\tilesheets\pollux.tiles.pl					
+1	Usas2		file	pollux.tiles.sc5	fileTypeId	1					
+1	Usas2		file	pollux.tiles.sc5	path	..\grapx\tilesheets\pollux.tiles.sc5					
 1	Usas2		file	KarniMata.tiles.bmp	fileTypeId	7					
 1	Usas2		file	KarniMata.tiles.bmp	path	..\grapx\tilesheets\KarniMata.tiles.bmp					
 1	Usas2		file	KarniMata.tiles.pl	fileTypeId	2					
@@ -85,8 +85,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		music	KarniMata	id	3					
 1	Usas2		music	Konark	id	7					
 1	Usas2		music	Konark	file	Konark.vgm					
-1	Usas2		Palette	Hub.tiles	file	Hub.tiles.pl					
-1	Usas2		Palette	Hub.tiles	id	1					
+1	Usas2		Palette	pollux.tiles	file	pollux.tiles.pl					
+1	Usas2		Palette	pollux.tiles	id	1					
 1	Usas2		Palette	KarniMata.tiles	file	Karnimata.tiles.pl					
 1	Usas2		Palette	KarniMata.tiles	id	6					
 1	Usas2		Palette	ruin3.tiles	file	ruin3.tiles.pl					
@@ -228,8 +228,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	ZombieSpawnPoint	objectClass	enemySpawn					
 1	Usas2		Ruin	undefined00	description	0		Description of this ruin			
 1	Usas2		Ruin	undefined00	ruinId	0		Identifier for this Ruin			
-1	Usas2		Ruin	Hub	description	Heart of Ro		Description of this ruin			
-1	Usas2		Ruin	Hub	ruinId	1		Identifier for this Ruin			
+1	Usas2		Ruin	pollux	description	Heart of Ro		Description of this ruin			
+1	Usas2		Ruin	pollux	ruinId	1		Identifier for this Ruin			
 1	Usas2		Ruin	Lemniscate	description	Lemniscate		Description of this ruin			
 1	Usas2		Ruin	Lemniscate	ruinId	2		Identifier for this Ruin			
 1	Usas2		Ruin	WorldForest	description	The World Forest		Description of this ruin			
@@ -300,11 +300,11 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Genbu	name	Genbu					
 1	Usas2		Ruin	Vala	name	Grot					
 1	Usas2		Ruin	AshokasHell	name	Hell of Ashoka			aka verhakselaar		
-1	Usas2		Ruin	Hub	name	Hub					
-1	Usas2		Ruin	Hub	TiledTileSet	Hub		TiledTileset identity			
-1	Usas2		Ruin	Hub	TiledWorldMap	Hub		TiledWorldmap Identity			
-1	Usas2		Ruin	Hub	tileset	Hub		Tileset identity			
-1	Usas2		Ruin	Hub	palette	hub.tiles		Palette Identity			
+1	Usas2		Ruin	pollux	name	Pollux					
+1	Usas2		Ruin	pollux	TiledTileSet	pollux		TiledTileset identity			
+1	Usas2		Ruin	pollux	TiledWorldMap	pollux		TiledWorldmap Identity			
+1	Usas2		Ruin	pollux	tileset	pollux		Tileset identity			
+1	Usas2		Ruin	pollux	palette	pollux.tiles		Palette Identity			
 1	Usas2		Ruin	Indra	name	Indra					
 1	Usas2		Ruin	Ka	name	Ka					
 1	Usas2		Ruin	KarniMata	name	Karni Mata		The display name			
@@ -350,7 +350,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	Fate	music						
 1	Usas2		Ruin	Fuu	music						
 1	Usas2		Ruin	Genbu	music						
-1	Usas2		Ruin	Hub	music						
+1	Usas2		Ruin	pollux	music						
 1	Usas2		Ruin	Indra	music						
 1	Usas2		Ruin	Ka	music						
 1	Usas2		Ruin	Lemniscate	music						
@@ -422,8 +422,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		TiledtileSet	.*	tileWidth	8					
 1	Usas2		TiledtileSet	Akna	imageSourceFile	./tilesheets/images/Akna.tiles.bmp					
 1	Usas2		TiledtileSet	Akna	path	tilesheets/Akna.tsx					
-1	Usas2		TiledtileSet	Hub	imageSourceFile	./tilesheets/images/hub.tiles.bmp		Direct path to file			
-1	Usas2		TiledtileSet	Hub	path	tilesheets/hub.tsx		Direct path to file			
+1	Usas2		TiledtileSet	pollux	imageSourceFile	./tilesheets/images/pollux.tiles.bmp		Direct path to file			
+1	Usas2		TiledtileSet	pollux	path	tilesheets/pollux.tsx		Direct path to file			
 1	Usas2		TiledtileSet	KarniMata	id	6					
 1	Usas2		TiledtileSet	KarniMata	imageSourceFile	./tilesheets/images/Karnimata.tiles.bmp		Direct path to file			
 1	Usas2		TiledtileSet	KarniMata	path	tilesheets/tsKarniMata.tsx		Direct path to file			
@@ -439,8 +439,8 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		TiledtileSet	teleport	imageSourceFile	./tilesheets/images/Teleport.tiles.bmp					
 1	Usas2		TiledtileSet	teleport	path	tilesheets/tsTeleport.tsx					
 1	Usas2		TiledWorldMap	.*	defaultLocation	C:\Users\$($env:username)\OneDrive\Usas2\maps					
-1	Usas2		TiledWorldMap	Hub	Name	Hub					
-1	Usas2		TiledWorldMap	Hub	path	Hub.world					
+1	Usas2		TiledWorldMap	pollux	Name	pollux					
+1	Usas2		TiledWorldMap	pollux	path	pollux.world					
 1	Usas2		TiledWorldMap	KarniMata	Name	Karni Mata					
 1	Usas2		TiledWorldMap	KarniMata	path	KarniMata.world					
 1	Usas2		TiledWorldMap	Konark	Name	Konark					
@@ -449,10 +449,10 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		TiledWorldMap	Pegu	path	Pegu.world					
 1	Usas2		TiledWorldMap	ruin3	Name	ruin3					
 1	Usas2		TiledWorldMap	ruin3	path	ruin3.world					
-1	Usas2		Tileset	Hub	id	1					
-1	Usas2		Tileset	Hub	imageSourceFile	Hub.Tiles.bmp					
-1	Usas2		Tileset	Hub	paletteSourceFile	Hub.Tiles.pl					
-1	Usas2		Tileset	Hub	file	Hub.Tiles.sc5					
+1	Usas2		Tileset	pollux	id	1					
+1	Usas2		Tileset	pollux	imageSourceFile	pollux.Tiles.bmp					
+1	Usas2		Tileset	pollux	paletteSourceFile	pollux.Tiles.pl					
+1	Usas2		Tileset	pollux	file	pollux.Tiles.sc5					
 1	Usas2		Tileset	KarniMata	file	KarniMata.Tiles.sc5					
 1	Usas2		Tileset	KarniMata	id	6					
 1	Usas2		Tileset	KarniMata	imageSourceFile	KarniMata.Tiles.bmp					

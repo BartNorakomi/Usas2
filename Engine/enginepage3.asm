@@ -27,7 +27,7 @@ startTheGame:
 		call	enableWorldmap
 		ld		hl,$B000
 		call	newwm
-		call	ResetPushStones	;[engine.asm]
+		; call	ResetPushStones	;[engine.asm]
 
 		ld		a,-1
 		ld		(PreviousRuin),a
@@ -39,12 +39,7 @@ startTheGame:
 
 ;Load the current room
 loadRoom:
-		ld		a,(PreviousRuin)
-		ld		b,a
-		call	GetRoomRuinId
-		ld		(PreviousRuin),a
-		cp		b
-		call	nz,initRuin
+
 		call	loadGraphics
 		call	addThisRoomToWorldmap
 		ret
@@ -59,26 +54,39 @@ initRuin:
 
 ;ro: this does a bit more than that, it also enabled interrupt
 loadGraphics:
-		ld    a,(slot.page12rom)            ;RAMROMROMRAM
-		out   ($a8),a
-		ld    a,Loaderblock                 ;loader routine at $4000
-		call  block12
+		call	screenoff					;[engine.asm]
+		ld		a,(slot.page12rom)            ;RAMROMROMRAM
+		out		($a8),a
+		ld		a,Loaderblock                 ;loader routine at $4000
+		call	block12
+;the next calls should be moved to "loadroom"
+		call	ReSetVariables 				;[loader.asm]
+		call	PopulateControls			;[enginepage3.asm] this allows for a double jump as soon as you enter a new map
+		call	unpackCurrentRoom    ;unpacks packed map to ram. sets objectdata at the end of mapdata ends with: all RAM except page 2
+		call	getroomtypeId
+		call	InitializeRoomType
+		call	ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
+		ld		a,(PreviousRuin)
+		ld		b,a
+		call	GetRoomRuinId
+		ld		(PreviousRuin),a
+		cp		b
+		call	nz,initRuin
 
-		call  loader		;ro: not sure why this is here, as a few lines below something simular happens...
 
-		call  CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
-		call  CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
+		call	SwapSpatColAndCharTable2	;[engine.asm]
+		call	SwapSpatColAndCharTable		;[engine.asm]
+		call	SwapSpatColAndCharTable2	;[engine.asm]
+		
+		call	CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
+		call	CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
 
-		call unpackCurrentRoom    ;unpacks packed map to ram. sets objectdata at the end of mapdata ends with: all RAM except page 2
-		call GetRoomPaletteId
-		call getPalette
-		call SetMapPalette
-		call getroomtypeId
-		call InitializeRoomType
+		call	GetRoomPaletteId
+		call	getPalette
+		call	SetMapPalette
 
-		call  ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
-		call  BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
-		call  SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
+		call	BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
+		call	SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
 
 		call  RemoveSpritesFromScreen       ;|loader|
 		call  SwapSpatColAndCharTable
@@ -87,7 +95,7 @@ loadGraphics:
 		call  PutSpatToVramSlow
 		call  initiatebordermaskingsprites  ;|loader|
 
-		ld    a,1
+		ld    a,1				;!! RO:whaztizfor?
 		ld    (CopyObject+spage),a
 		ld    a,216
 		ld    (CopyObject+sy),a  
@@ -128,6 +136,73 @@ addThisRoomToWorldMap:
 		ld		(hl),a
 		ret
 
+;Set the engine properties for type [A]
+;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
+;SetEngine:
+InitializeRoomType:
+		call getroomtype
+		ld	 a,(hl) ;width
+		ld	(roomMap.width),a
+		push hl
+		ld   l,A
+		ld   h,0
+		add  hl,hl ;x2
+		add  hl,hl ;x4
+		add  hl,hl ;x8
+		ld   (roomMap.widthPix),HL
+		pop hl
+		inc	 hl		; height
+		inc	 hl		; engine
+		ld	 a,(hl)
+		ld	 (scrollEngine),a              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
+		dec	 a
+		jp	 z,.type1 ;.Engine304x216
+		dec	 a
+		jp	 z,.type2 ;256x216 SF2
+;	jp	 .type3	;256x216 SF2 engine sprite split ON 
+
+;SF2 engine
+; in the SF2 engine we can choose to have spritesplit active, which gives us 14 extra sprites  
+.type3:	;.Engine256x216WithSpriteSplit:
+		ld    a,1	;Mark sprite split active
+		jr	 .SetSpriteSplit
+
+;SF2 engine
+.type2:	;.Engine256x216:
+		xor	 a	;Mark sprite split inactive
+
+.SetSpriteSplit:
+		ld    (SpriteSplitFlag),a   
+		ld    de,ExitRight256x216 ;equ 252 ; 29*8
+		ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
+	
+;check if player enters on the left side of the screen or on the right side. On the left camerax = 0, on the right camerax=15
+		xor	 A
+		ld	 hl,256/2
+		ld	 de,(ClesX)
+		sbc	 hl,de
+		jr	 nc,.setCameraX
+		ld	 a,15
+.setCameraX:
+		ld    (CameraX),a
+
+;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
+		ex	 de,hl	;	ld    hl,(ClesX)
+		ld	 de,ExitRight304x216
+		xor	 a
+		sbc	 hl,de
+		ret	 nz
+		ld	 hl,252 	;!! some magicnumber
+		ld	 (ClesX),hl
+		ret
+
+.type1:	;.Engine304x216:
+		ld    a,1                           ;sprite split active
+		ld    (SpriteSplitFlag),a
+		ld    de,ExitRight304x216 ;equ 38*8-3
+		ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
+		ret
+  
 
 ;clear wall mapdate tiles to background
 removeObjectFromRoomMapData: ; RemoveWallFromRoomTiles:
@@ -1301,6 +1376,7 @@ AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
 .data:		ds	.numrec*.reclen ; 7 * 6 ;7 blocks maximum, 6 bytes per block
 			ds  .reclen ;   6 ;1 extra block buffer
 AmountOfAppearingBlocks:  ds  1
+
 OctoPussyBulletSlowDownHandler:   db 0
 EnemyHitByPrimairyAttack?:	db	0		;0=hit by secundary attack, 1=hit by primary attack
 
@@ -1473,11 +1549,29 @@ roomObjectClass.EnemySpawn.Speed: EQU 3+roomObjectClassIdOffset
 roomObjectClass.EnemySpawn.maxNum: EQU 4+roomObjectClassIdOffset
 roomObjectClass.EnemySpawn.numBytes: EQU 5+roomObjectClassIdOffset
 
+roomObjectClass.BreakableWall.X: EQU 0+roomObjectClassIdOffset
+roomObjectClass.BreakableWall.Y: EQU 1+roomObjectClassIdOffset
+roomObjectClass.BreakableWall.Width: EQU 2+roomObjectClassIdOffset
+roomObjectClass.BreakableWall.Height: EQU 3+roomObjectClassIdOffset
+roomObjectClass.BreakableWall.Xrestore: EQU 4+roomObjectClassIdOffset
+roomObjectClass.BreakableWall.Yrestore: EQU 5+roomObjectClassIdOffset
+roomObjectClass.BreakableWall.numBytes:	EQU	6+roomObjectClassIdOffset
+
+roomObjectClass.MovingPlatform.Xstart: EQU 0+roomObjectClassIdOffset
+roomObjectClass.MovingPlatform.Ystart: EQU 1+roomObjectClassIdOffset
+roomObjectClass.MovingPlatform.X: EQU 2+roomObjectClassIdOffset
+roomObjectClass.MovingPlatform.Y: EQU 3+roomObjectClassIdOffset
+roomObjectClass.MovingPlatform.Width: EQU 4+roomObjectClassIdOffset
+roomObjectClass.MovingPlatform.Height: EQU 5+roomObjectClassIdOffset
+roomObjectClass.MovingPlatform.Face: EQU 6+roomObjectClassIdOffset
+roomObjectClass.MovingPlatform.Speed: EQU 7+roomObjectClassIdOffset
+roomObjectClass.MovingPlatform.Active: EQU 8+roomObjectClassIdOffset
+roomObjectClass.MovingPlatform.numBytes: EQU 9+roomObjectClassIdOffset
 
 
 fill: equ 2
 amountofenemies:        equ 22
-lenghtenemytable:       equ 27 + fill
+lenghtenemytable:       equ 27 + fill ;ro:technically, it is not the table, but the tableRecord length. The table itself is numberOfRecords*RecordLength.
 enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .alive?:                equ 0
 .Sprite?:               equ 1

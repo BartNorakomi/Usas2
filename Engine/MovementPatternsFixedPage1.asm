@@ -1607,303 +1607,301 @@ CoinAfterglowAnimation:
 
 
 
-
+;PushStone falling
 FallingStone:
-  ld    (ix+enemies_and_objects.v4),+0      ;horizontal movement
-  call  VramObjectsPushingStone             ;put object in Vram/screen
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object. Uses v5/snapplayer?
-  call  AccelerateFall
-  call  MoveObject                          ;adds v3 to y, adds v4 to x. x+y are 8 bit
-  call  CheckFloorFallingStone              ;check collision with floor
-  call  CheckCollisionStone1                ;check collision with other stones while falling
-  call  CheckCollisionStone2                ;check collision with other stones while falling
-  call  CheckCollisionStone3                ;check collision with other stones while falling
-  ret
+		ld		(ix+enemies_and_objects.v4),+0      ;horizontal movement
+		call	VramObjectsPushingStone             ;put object in Vram/screen
+		call	CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object. Uses v5/snapplayer?
+		call	.AccelerateFall
+		call	MoveObject                          ;adds v3 to y, adds v4 to x. x+y are 8 bit
+		call	.CheckFloorFallingStone              ;check collision with floor
+		call	.checkCollisionWithOtherStones
+		ret
 
-CheckCollisionStone1:
-  ;check y collision with object 1 (stone 1) top
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  sub   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   nc
-  ;check y collision with object 1 (stone 1) bottom
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  ret   c
+.checkCollisionWithOtherStones:
+		ld		a,(AmountOfPushingStonesInCurrentRoom)
+		and		a
+		ret		z
+		ld		c,(ix+enemies_and_objects.y)
+		ld		b,(ix+enemies_and_objects.x)
+		ld		hl,0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y
+		call	.CheckCollisionStone1                ;check collision with other stones while falling
+		ret		c
+		ld		a,(AmountOfPushingStonesInCurrentRoom)
+		cp		1
+		ret		z
+		ld		hl,1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y
+		call	.CheckCollisionStone1                ;check collision with other stones while falling
+		ret		c
+		ld		a,(AmountOfPushingStonesInCurrentRoom)
+		cp		2
+		ret		z
+		ld		hl,2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y
+		call	.CheckCollisionStone1                ;check collision with other stones while falling
+		; ld		hl,2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y
+		; call  CheckCollisionStone1                ;check collision with other stones while falling
+		; call  CheckCollisionStone2                ;check collision with other stones while falling
+		; call  CheckCollisionStone3                ;check collision with other stones while falling
+		ret
 
-  ;check x collision with object 1 (stone 1) check on the left side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  ret   c
+;out: C=true
+.CheckCollisionStone1:
+;check y collision with object 1 (stone 1) top
+		ld		a,(hl)	;ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		cp		C	;(ix+enemies_and_objects.y)
+		ret		z
+		sub		a,16
+		cp		C	;(ix+enemies_and_objects.y)
+		ret		nc
+;check y collision with object 1 (stone 1) bottom
+		ld		a,(hl)	;ld		a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		add		a,17
+		cp		C	;(ix+enemies_and_objects.y)
+		ccf
+		ret		nc
+;check x collision with object 1 (stone 1) check on the left side of this stone
+		inc		hl
+		ld		a,(hl)	;ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add		a,17
+		cp		B	;(ix+enemies_and_objects.x)
+		ccf
+		ret		nc
+;check x collision with object 1 (stone 1) check on the right side of this stone
+		ld		a,(hl)	;ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add		a,15 -33
+		cp		B	;(ix+enemies_and_objects.x)
+		ret		nc
+ ;other stone found, snap to stone
+.collissionWithOtherStone:
+		ld    a,(ix+enemies_and_objects.y)        ;y object
+		and   %1111 1000
+		ld    (ix+enemies_and_objects.y),a        ;y object
+		ld    (ix+enemies_and_objects.v2),0       ;phase=idle
+		scf
+		ret
 
-  ;check x collision with object 1 (stone 1) check on the right side of this stone
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   nc
-
-  ;other stone found, snap to stone
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;0=pushing stone, 1=falling stone
-  ret
-  
-CheckCollisionStone2:
-  ld    a,(AmountOfPushingStonesInCurrentRoom)
-  cp    1
-  ret   z
-
-  ;check y collision with object 2 (stone 2) top
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  sub   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   nc
-  ;check y collision with object 2 (stone 2) bottom
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  ret   c
-  
-  ;check x collision with object 2 (stone 2) check on the left side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  ;check x collision with object 2 (stone 2) check on the right side of this stone
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   nc
-
-  ;other stone found, snap to stone
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;0=pushing stone, 1=falling stone
-  ret
+; CheckCollisionStone2:
+; 		ld    a,(AmountOfPushingStonesInCurrentRoom)
+; 		cp    1
+; 		ret   z
+; ;check y collision with object 2 (stone 2) top
+; 		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+; 		cp    (ix+enemies_and_objects.y)
+; 		ret   z
+; 		sub   a,16
+; 		cp    (ix+enemies_and_objects.y)
+; 		ret   nc
+; ;check y collision with object 2 (stone 2) bottom
+; 		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+; 		add   a,17
+; 		cp    (ix+enemies_and_objects.y)
+; 		ret   c
+; ;check x collision with object 2 (stone 2) check on the left side of this stone
+; 		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+; 		add   a,17
+; 		cp    (ix+enemies_and_objects.x)
+; 		ret   c
+; ;check x collision with object 2 (stone 2) check on the right side of this stone
+; 		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+; 		add   a,15 -33
+; 		cp    (ix+enemies_and_objects.x)
+; 		ret   nc
+; 		jp		fallingstone.collissionWithOtherStone
     
-CheckCollisionStone3:
-  ld    a,(AmountOfPushingStonesInCurrentRoom)
-  cp    3
-  ret   nz
+; CheckCollisionStone3:
+; 		ld    a,(AmountOfPushingStonesInCurrentRoom)
+; 		cp    3
+; 		ret   nz
+; ;check y collision with object 3 (stone 3) top
+; 		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+; 		cp    (ix+enemies_and_objects.y)
+; 		ret   z
+; 		sub   a,16
+; 		cp    (ix+enemies_and_objects.y)
+; 		ret   nc
+; ;check y collision with object 3 (stone 3) bottom
+; 		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+; 		add   a,17
+; 		cp    (ix+enemies_and_objects.y)
+; 		ret   c
+; ;check x collision with object 3 (stone 3) check on the left side of this stone
+; 		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+; 		add   a,17
+; 		cp    (ix+enemies_and_objects.x)
+; 		ret   c
+; ;check x collision with object 3 (stone 3) check on the right side of this stone
+; 		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+; 		add   a,15 -33
+; 		cp    (ix+enemies_and_objects.x)
+; 		ret   nc
+; 		jp		fallingstone.collissionWithOtherStone
 
-  ;check y collision with object 3 (stone 3) top
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  sub   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   nc
-  ;check y collision with object 3 (stone 3) bottom
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,17
-  cp    (ix+enemies_and_objects.y)
-  ret   c
-
-  ;check x collision with object 3 (stone 3) check on the left side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,17
-  cp    (ix+enemies_and_objects.x)
-  ret   c
-
-  ;check x collision with object 3 (stone 3) check on the right side of this stone
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,15 -33
-  cp    (ix+enemies_and_objects.x)
-  ret   nc
-
-  ;other stone found, snap to stone
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  and   %1111 1000
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  
-  ld    (ix+enemies_and_objects.v2),0       ;0=pushing stone, 1=falling stone
-  ret
-
-CheckFloorFallingStone:                     ;if a floor is found, snap to tile, and change back to pushing stone
-		;ld    b,+32                               ;add y to check (y is expressed in pixels)
-		ld b,16	;;20241005;ro;refactored
-		ld    de,+08                              ;add x to check (x is expressed in pixels)
-		call  checktileObject                     ;out z=collision found with wall
-		dec A
-		ret   nz
+;if a floor is found, snap to tile, and change back to pushing stone
+.CheckFloorFallingStone:
+		ld		b,16			;deltaY
+		ld		de,+08			;deltaX
+		call	checktileObject	;out: z=collision found with wall, A=tileClass-1
+		dec		A	;
+		ret		nz
 ;floor found, snap to floor
 		ld    a,(ix+enemies_and_objects.y)        ;y object
 		and   %1111 1000
 		ld    (ix+enemies_and_objects.y),a        ;y object
-
-		ld    (ix+enemies_and_objects.v2),0       ;pushing stone
+		ld    (ix+enemies_and_objects.v2),0       ;state=idle
 		ld    (ix+enemies_and_objects.v3),1       ;vertical movement
 		ld    (ix+enemies_and_objects.v6),0       ;v6 acceleration timer
-  ret
+		ret
 
-AccelerateFall:
-  ld    a,(ix+enemies_and_objects.v6)       ;v6 acceleration timer
-  inc   a
-  and   3
-  ld    (ix+enemies_and_objects.v6),a
-  ret   nz
-  ld    a,(ix+enemies_and_objects.v3)       ;vertical movement
-  inc   a
-  cp    5
-  ret   z
-  ld    (ix+enemies_and_objects.v3),a
-  ret
+.AccelerateFall:
+		ld    a,(ix+enemies_and_objects.v6)       ;v6 acceleration timer
+		inc   a
+		and   3
+		ld    (ix+enemies_and_objects.v6),a
+		ret   nz
+		ld    a,(ix+enemies_and_objects.v3)       ;vertical movement
+		inc   a
+		cp    5	;max velocity
+		ret   z
+		ld    (ix+enemies_and_objects.v3),a
+		ret
  
-MoveObject:                                 ;adds v3 to y, adds v4 to x. x+y are 8 bit
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  add   a,(ix+enemies_and_objects.v3)       ;add y movement to y
-  ld    (ix+enemies_and_objects.y),a        ;y object
+;adds v3 to y, adds v4 to x. x+y are 8 bit
+MoveObject:
+		ld    a,(ix+enemies_and_objects.y)        ;y object
+		add   a,(ix+enemies_and_objects.v3)       ;add y movement to y
+		ld    (ix+enemies_and_objects.y),a        ;y object
 
-  ld    a,(ix+enemies_and_objects.x)        ;x object
-  add   a,(ix+enemies_and_objects.v4)       ;add x movement to x
-  ld    (ix+enemies_and_objects.x),a        ;x object
-  ret
+		ld    a,(ix+enemies_and_objects.x)        ;x object
+		add   a,(ix+enemies_and_objects.v4)       ;add x movement to x
+		ld    (ix+enemies_and_objects.x),a        ;x object
+		ret
   
 SetCoordinatesPuzzlePushingStones:          ;if v7=0 then set coordinates
-  ld    (ix+enemies_and_objects.v7),1       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
+		ld    l,(ix+enemies_and_objects.tableRecordPointer)
+		ld    h,(ix+enemies_and_objects.tableRecordPointer+1)
+		ld    a,(hl)
+		ld    (ix+enemies_and_objects.y),a        ;y object
+		inc   hl
+		ld    a,(hl)
+		ld    (ix+enemies_and_objects.x),a        ;x object
+		ld    (ix+enemies_and_objects.v7),1       ;mark postision restored for this room
+		ret
 
-  ld    l,(ix+enemies_and_objects.coordinates)
-  ld    h,(ix+enemies_and_objects.coordinates+1)
-  
-  ld    a,(hl)
-  ld    (ix+enemies_and_objects.y),a        ;y object
-  inc   hl
-  ld    a,(hl)
-  ld    (ix+enemies_and_objects.x),a        ;x object
-  ret
-
-;Push Stone
+;Push Stone Handler
 PushingStone:
-  ld    a,1
-  ld    (CopyObject+sPage),a 
-
-  ld    a,216
-  ld    (CopyObject+sy),a
+		ld    a,1
+		ld    (CopyObject+sPage),a 
+		ld    a,216		;!! ro: should be in the object001Table, like .sx
+		ld    (CopyObject+sy),a
   
-  ld    a,(ix+enemies_and_objects.v7)       ;Puzzle pushing stones can resume the coordinates they had last time player entered screen
-  dec   a
-  jr    nz,SetCoordinatesPuzzlePushingStones
+		ld    a,(ix+enemies_and_objects.v7)       ;posision initializer for THIS room
+		and   a
+		jr    z,SetCoordinatesPuzzlePushingStones
       
-  ;Store Coordinates Puzzle Pushing Stones
-  ld    l,(ix+enemies_and_objects.coordinates)
-  ld    h,(ix+enemies_and_objects.coordinates+1)
-  
-  ld    a,(ix+enemies_and_objects.y)        ;y object
-  ld    (hl),a
-  inc   hl
-  ld    a,(ix+enemies_and_objects.x)        ;x object
-  ld    (hl),a
-  ;/Store Coordinates Puzzle Pushing Stones
+;Store Coordinates Puzzle Pushing Stones
+		ld    l,(ix+enemies_and_objects.tableRecordPointer)
+		ld    h,(ix+enemies_and_objects.tableRecordPointer+1)
+		ld    a,(ix+enemies_and_objects.y)
+		ld    (hl),a
+		inc   hl
+		ld    a,(ix+enemies_and_objects.x)
+		ld    (hl),a
 
-  ld    a,(ix+enemies_and_objects.v2)       ;falling stone?
-  or    a
-  jp    nz,FallingStone
+;phase
+		ld    a,(ix+enemies_and_objects.v2)       ;falling stone?
+		or    a
+		jp    nz,FallingStone
 
-  call  CheckFloorOrStonePushingStone       ;Check if Stone is still on a platform or on top of another stone. If not, stone falls. Out z=collision found
+		call  CheckFloorOrStonePushingStone       ;Check if Stone is still on a platform or on top of another stone. If not, stone falls. Out z=collision found
 
-  call  VramObjectsPushingStone             ;put object in Vram/screen
+		call  VramObjectsPushingStone             ;put object in Vram/screen
 
-  call  MoveStoneWhenPushed                 ;check if stoned needs to be moved
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object
-  inc   b
-  jp    z,.CollisionRightSide               ;if you collide with a pushing stone from the right side and you are running, then change to pushing pose; if you are pushing, then move stone
-  inc   b 
-  jp    z,.CollisionLeftSide                ;if you collide with a pushing stone from the left side and you are running, then change to pushing pose; if you are pushing, then move stone
-  ;at this point there is no collision
-  ld    a,(ix+enemies_and_objects.v4)       ;if there is no collision set horizontal movement to 0
-  or    a
-  ret   z
+		call  MoveStoneWhenPushed                 ;check if stoned needs to be moved
+		call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object. Out: b=255 collision right side of object. b=254 collision left side of object
+		inc   b
+		jp    z,.CollisionRightSide               ;if you collide with a pushing stone from the right side and you are running, then change to pushing pose; if you are pushing, then move stone
+		inc   b 
+		jp    z,.CollisionLeftSide                ;if you collide with a pushing stone from the left side and you are running, then change to pushing pose; if you are pushing, then move stone
+;at this point there is no collision
+		ld    a,(ix+enemies_and_objects.v4)       ;if there is no collision set horizontal movement to 0
+		or    a
+		ret   z
+		ld    a,(framecounter)
+		and   1
+		ret   z
+		ld    (ix+enemies_and_objects.v4),+0      ;if there is no collision set horizontal movement to 0
 
-  ld    a,(framecounter)
-  and   1
-  ret   z
-  ld    (ix+enemies_and_objects.v4),+0      ;if there is no collision set horizontal movement to 0
+		ld    a,(PlayerFacingRight?)          ;is player facing right ?
+		or    a
+		jr    nz,.right
+.left:	dec   (ix+enemies_and_objects.x)
+		set   0,(ix+enemies_and_objects.x)
+		ret
+.right:	set   0,(ix+enemies_and_objects.x)
+		ret
 
-  ld    a,(PlayerFacingRight?)          ;is player facing right ?
-  or    a
-  jr    nz,.right
-  
-  .left:
-  dec   (ix+enemies_and_objects.x)
-  set   0,(ix+enemies_and_objects.x)
-  ret
-  
-  .right:
-  set   0,(ix+enemies_and_objects.x)
-  ret
-
-  .CollisionRightSide:
+.CollisionRightSide:
 ;if you collide with a pushing stone from the right side and you are running, then change to pushing pose
-	ld		de,(PlayerSpriteStand)
-	ld		hl,Lrunning
-  sbc   hl,de
-  jp    z,Set_L_Push
+		ld		de,(PlayerSpriteStand)
+		ld		hl,Lrunning
+		sbc   hl,de
+		jp    z,Set_L_Push
 ;if you collide with a pushing stone from the right side and you are pushing, then move stone
-	ld		hl,Lpushing
-  xor   a
-  sbc   hl,de
-  ret   nz
+		ld		hl,Lpushing
+		xor   a
+		sbc   hl,de
+		ret   nz
 
-  ;unable to push stone if there is another stone lying on top of this one
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
+;unable to push stone if there is another stone lying on top of this one
+;!! ro: this is buggy, it should check ONLY stones
+		; ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		; add   a,16
+		; cp    (ix+enemies_and_objects.y)
+		; ret   z
+		; ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		; add   a,16
+		; cp    (ix+enemies_and_objects.y)
+		; ret   z
+		; ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		; add   a,16
+		; cp    (ix+enemies_and_objects.y)
+		; ret   z
 
-  ld    (ix+enemies_and_objects.v4),-1      ;horizontal movement
-  ret
+		ld    (ix+enemies_and_objects.v4),-1      ;horizontal movement
+		ret
 
-  .CollisionLeftSide:
+.CollisionLeftSide:
 ;if you collide with a pushing stone from the left side and you are running, then change to pushing pose
-	ld		de,(PlayerSpriteStand)
-	ld		hl,Rrunning
-  sbc   hl,de
-  jp    z,Set_R_Push
+		ld		de,(PlayerSpriteStand)
+		ld		hl,Rrunning
+		sbc   hl,de
+		jp    z,Set_R_Push
 ;if you collide with a pushing stone from the left side and you are pushing, then move stone
-	ld		hl,Rpushing
-  xor   a
-  sbc   hl,de
-  ret   nz
+		ld		hl,Rpushing
+		xor   a
+		sbc   hl,de
+		ret   nz
+;unable to push stone if there is another stone lying on top of this one
+;!! ro: this is buggy, it should check ONLY stones
+		; ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		; add   a,16
+		; cp    (ix+enemies_and_objects.y)
+		; ret   z
+		; ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		; add   a,16
+		; cp    (ix+enemies_and_objects.y)
+		; ret   z
+		; ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		; add   a,16
+		; cp    (ix+enemies_and_objects.y)
+		; ret   z
 
-  ;unable to push stone if there is another stone lying on top of this one
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  add   a,16
-  cp    (ix+enemies_and_objects.y)
-  ret   z
+		ld    (ix+enemies_and_objects.v4),+1      ;horizontal movement    
+		ret
 
-  ld    (ix+enemies_and_objects.v4),+1      ;horizontal movement    
-  ret
-
-;When Stone is not moving set x coordinate to odd. The reason we do that is that when copying the block x coordinate is even, and we then can use a fast copy instruction
-SetOddX:
-  ret
+; ;When Stone is not moving set x coordinate to odd. The reason we do that is that when copying the block x coordinate is even, and we then can use a fast copy instruction
+; SetOddX:
+; 	  ret
 
 MoveStoneWhenPushed:
 		ld    a,(framecounter)
@@ -1956,78 +1954,73 @@ MoveStoneWhenPushed:
 		ret
 
 CheckCollisionOtherStonesLeft:              ;out: z= collision found
-  ld    a,(AmountOfPushingStonesInCurrentRoom)
-  dec   a
-  jr    z,.EndCheckStone2
-  dec   a
-  jr    z,.EndCheckStone3
-
-  ;check collision with object 3 (stone 3)
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone3
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone3:
-
-  ;check collision with object 2 (stone 2)
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone2
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone2:
-
-  ;check collision with object 1 (stone 1)
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  ret   nz
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,18
-  cp    (ix+enemies_and_objects.x)
-  ret
+		ld    a,(AmountOfPushingStonesInCurrentRoom)
+		dec   a
+		jr    z,.EndCheckStone2
+		dec   a
+		jr    z,.EndCheckStone3
+;check collision with object 3 (stone 3)
+		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		cp    (ix+enemies_and_objects.y)
+		jr    nz,.EndCheckStone3
+		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,18
+		cp    (ix+enemies_and_objects.x)
+		ret   z
+.EndCheckStone3:
+;check collision with object 2 (stone 2)
+		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		cp    (ix+enemies_and_objects.y)
+		jr    nz,.EndCheckStone2
+		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,18
+		cp    (ix+enemies_and_objects.x)
+		ret   z
+.EndCheckStone2:
+;check collision with object 1 (stone 1)
+		ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		cp    (ix+enemies_and_objects.y)
+		ret   nz
+		ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,18
+		cp    (ix+enemies_and_objects.x)
+		ret
 
 CheckCollisionOtherStonesRight:             ;out: z= collision found
-  ld    a,(AmountOfPushingStonesInCurrentRoom)
-  dec   a
-  jr    z,.EndCheckStone2
-  dec   a
-  jr    z,.EndCheckStone3
+		ld    a,(AmountOfPushingStonesInCurrentRoom)
+		dec   a
+		jr    z,.EndCheckStone2
+		dec   a
+		jr    z,.EndCheckStone3
+;check collision with object 3 (stone 3)
+		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		cp    (ix+enemies_and_objects.y)
+		jr    nz,.EndCheckStone3
+		ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,-18
+		cp    (ix+enemies_and_objects.x)
+		ret   z
+.EndCheckStone3:
+;check collision with object 2 (stone 2)
+		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		cp    (ix+enemies_and_objects.y)
+		jr    nz,.EndCheckStone2  
+		ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,-18
+		cp    (ix+enemies_and_objects.x)
+		ret   z
+.EndCheckStone2:
+;check collision with object 1 (stone 1)
+		ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
+		cp    (ix+enemies_and_objects.y)
+		jr    nz,.EndCheckStone1
+		ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
+		add   a,-18
+		cp    (ix+enemies_and_objects.x)
+		ret   z
+.EndCheckStone1:
+		ret
 
-  ;check collision with object 3 (stone 3)
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone3
-  ld    a,(2*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,-18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone3:
-   
-  ;check collision with object 2 (stone 2)
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone2  
-  ld    a,(1*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,-18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone2:
-
-  ;check collision with object 1 (stone 1)
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.y)
-  cp    (ix+enemies_and_objects.y)
-  jr    nz,.EndCheckStone1
-  ld    a,(0*lenghtenemytable+enemies_and_objects+enemies_and_objects.x)
-  add   a,-18
-  cp    (ix+enemies_and_objects.x)
-  ret   z
-  .EndCheckStone1:
-  ret
 
 InitiatlizeSwitch:
 ;When player enters screen switch is in on or off position. Copy the correct position at the coordinates of the switch

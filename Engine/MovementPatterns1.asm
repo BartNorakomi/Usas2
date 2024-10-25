@@ -1636,84 +1636,79 @@ AreaSign:                                 ;Displays the name of the world in scr
 ;v7=step
 ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
 ;v9=wait timer / bottom of area sign
-  .HandlePhase:  
-  ld    a,(ix+enemies_and_objects.v8)     ;v8=Phase (0=build up area sign line by line, 1=wait, 2=remove area sign line by line)
-  or    a
-  jr    z,PutAreaSignLine                 ;0=show area sign
-  dec   a
-  jr    z,WaitUntilRemoveAreaSign         ;1=wait
-  RemoveAreaSign:                         ;2=remove area sign
-  ld    a,2                               ;copy from page 2 (where the area sign is NOT displayed)
-  ld    (FreeToUseFastCopy+sPage),a
+.HandlePhase:
+		ld    a,(ix+enemies_and_objects.v8)     ;v8=Phase (0=build up area sign line by line, 1=wait, 2=remove area sign line by line)
+		or    a
+		jr    z,PutAreaSignLine                 ;0=show area sign
+		dec   a
+		jr    z,WaitUntilRemoveAreaSign         ;1=wait
+RemoveAreaSign:                         ;2=remove area sign
+		ld    a,2                               ;copy from page 2 (where the area sign is NOT displayed)
+		ld    (FreeToUseFastCopy+sPage),a
+		ld    a,(ix+enemies_and_objects.v7)     ;v7=step
+		dec   a
+		ld    (ix+enemies_and_objects.v7),a     ;v7=step
+		jr    nz,.EndCheckEndPhase2
+		ld    (ix+enemies_and_objects.alive?),0 ;end   
+		ret
+.EndCheckEndPhase2:
+;area sign height=48 pixels. area sign starts from the middle and gets build up 1 line per frame (up AND down)
+		add   a,23
+		add   a,(ix+enemies_and_objects.y)
+		call  PutAreaSignLine.GoPutLine         ;put line going from the center to the bottom
 
-  ld    a,(ix+enemies_and_objects.v7)     ;v7=step
-  dec   a
-  ld    (ix+enemies_and_objects.v7),a     ;v7=step
-  jr    nz,.EndCheckEndPhase2
-  ld    (ix+enemies_and_objects.alive?),0 ;end   
-  ret
-  .EndCheckEndPhase2:
+;put line going from the center to the top
+		ld    a,(ix+enemies_and_objects.y)
+		add   a,24
+		sub   a,(ix+enemies_and_objects.v7)     ;v7=step
+		jp    PutAreaSignLine.GoPutLine         ;put line going from the center to the bottom
 
-  ;area sign height=48 pixels. area sign starts from the middle and gets build up 1 line per frame (up AND down)
-  add   a,23
-  add   a,(ix+enemies_and_objects.y)
-  call  PutAreaSignLine.GoPutLine         ;put line going from the center to the bottom
+WaitUntilRemoveAreaSign:
+		ld    a,(ix+enemies_and_objects.v7)     ;v7=step
+		inc   a
+		ld    (ix+enemies_and_objects.v7),a     ;v7=step
+		cp    140
+		ret   nz
+		ld    (ix+enemies_and_objects.v7),25    ;v7=step
+		ld    (ix+enemies_and_objects.v8),2     ;v8=Phase (0=build up area sign line by line, 1=wait, 2=remove area sign line by line)
+		ret
 
-  ;put line going from the center to the top
-  ld    a,(ix+enemies_and_objects.y)
-  add   a,24
-  sub   a,(ix+enemies_and_objects.v7)     ;v7=step
-  jp    PutAreaSignLine.GoPutLine         ;put line going from the center to the bottom
+PutAreaSignLine:
+		ld    a,3                               ;copy from page 3 (where the area sign is displayed in total)
+		ld    (FreeToUseFastCopy+sPage),a
+		ld    a,(ix+enemies_and_objects.v7)     ;v7=step
+		inc   a
+		ld    (ix+enemies_and_objects.v7),a     ;v7=step
+		cp    24+1
+		jr    nz,.EndCheckEndPhase0
+		ld    (ix+enemies_and_objects.v8),1     ;v8=Phase (0=build up area sign line by line, 1=wait, 2=remove area sign line by line)
+		ret
+.EndCheckEndPhase0:
+;area sign height=48 pixels. area sign starts from the middle and gets build up 1 line per frame (up AND down)
+		add   a,23
+		add   a,(ix+enemies_and_objects.y)
+		call  .GoPutLine                        ;put line going from the center to the bottom
 
-  WaitUntilRemoveAreaSign:
-  ld    a,(ix+enemies_and_objects.v7)     ;v7=step
-  inc   a
-  ld    (ix+enemies_and_objects.v7),a     ;v7=step
-  cp    140
-  ret   nz
-  ld    (ix+enemies_and_objects.v7),25    ;v7=step
-  ld    (ix+enemies_and_objects.v8),2     ;v8=Phase (0=build up area sign line by line, 1=wait, 2=remove area sign line by line)
-  ret
+;put line going from the center to the top
+		ld    a,(ix+enemies_and_objects.y)
+		add   a,24
+		sub   a,(ix+enemies_and_objects.v7)     ;v7=step
 
-  PutAreaSignLine:
-  ld    a,3                               ;copy from page 3 (where the area sign is displayed in total)
-  ld    (FreeToUseFastCopy+sPage),a
-
-  ld    a,(ix+enemies_and_objects.v7)     ;v7=step
-  inc   a
-  ld    (ix+enemies_and_objects.v7),a     ;v7=step
-  cp    24+1
-  jr    nz,.EndCheckEndPhase0
-  ld    (ix+enemies_and_objects.v8),1     ;v8=Phase (0=build up area sign line by line, 1=wait, 2=remove area sign line by line)
-  ret
-  .EndCheckEndPhase0:
-
-  ;area sign height=48 pixels. area sign starts from the middle and gets build up 1 line per frame (up AND down)
-  add   a,23
-  add   a,(ix+enemies_and_objects.y)
-  call  .GoPutLine                        ;put line going from the center to the bottom
-
-  ;put line going from the center to the top
-  ld    a,(ix+enemies_and_objects.y)
-  add   a,24
-  sub   a,(ix+enemies_and_objects.v7)     ;v7=step
-
-  .GoPutLine:
-  ld    (FreeToUseFastCopy+sy),a
-  ld    (FreeToUseFastCopy+dy),a
-
-  ld    a,(ix+enemies_and_objects.x)
-  ld    (FreeToUseFastCopy+sx),a
-  ld    (FreeToUseFastCopy+dx),a
-  xor   a                                 
-  ;copy to page 0 (this page is permanently active)
-  ld    (FreeToUseFastCopy+dPage),a  
-  ld    a,200
-  ld    (FreeToUseFastCopy+nx),a
-  ld    a,1
-  ld    (FreeToUseFastCopy+ny),a
-  ld    hl,FreeToUseFastCopy
-  jp    DoCopy
+.GoPutLine:
+		ld    (FreeToUseFastCopy+sy),a
+		ld    (FreeToUseFastCopy+dy),a
+		ld    a,(ix+enemies_and_objects.x)
+		ld    (FreeToUseFastCopy+sx),a
+		ld    (FreeToUseFastCopy+dx),a
+		xor   a                                 
+;copy to page 0 (this page is permanently active)
+		ld    (FreeToUseFastCopy+dPage),a  
+		ld    a,200
+		ld    (FreeToUseFastCopy+nx),a
+		ld    a,1
+		ld    (FreeToUseFastCopy+ny),a
+		ld    hl,FreeToUseFastCopy
+		jp    DoCopy
 
 
 ;Retracting and appearing platforms
@@ -2329,17 +2324,19 @@ WaterfallMouthGreyClosedSX: equ 139
 WaterfallMouthGreyOpenSX: equ 129 
 
 WaterfallMouth:
-		ld    a,216+32 
+		ld    a,216+32    ;!! ro: shouldn't this be in the objectTemplateTable? (like sx)
 		ld    (CopyObject+sy),a  
 		jp    VramObjectsTransparantCopies2
 
+;003-Waterfall grey
 WaterfallEyesGrey:
 		ld    b,WaterfallMouthGreyOpenSX
 		ld    c,WaterfallMouthGreyClosedSX
 		ld    d,WaterfallEyesGreyClosedSX
 		ld    e,WaterfallEyesGreyOpenSX
 		jp    WaterfallEyesYellow.EntryPointForGreyEyes
-  
+
+;002-Waterfall yellow 
 WaterfallEyesYellow:
 		ld    b,WaterfallMouthYellowOpenSX
 		ld    c,WaterfallMouthYellowClosedSX
@@ -2387,7 +2384,7 @@ WaterfallEyesYellow:
 .CloseEyes:
 		ld    (ix+(1*lenghtenemytable)+enemies_and_objects.v1),c
 		ld    (ix+enemies_and_objects.v1),d
-		ld    (ix+enemies_and_objects.v2),0       ;v2=Active?
+		ld    (ix+enemies_and_objects.v2),0       ;v2=ActiveTimer
 
 		ld    a,(AmountOfWaterfallsInCurrentRoom)
 		inc   a
@@ -2424,7 +2421,7 @@ WaterfallEyesYellow:
 		ld    (ix+enemies_and_objects.v2),1       ;v2=Active?
 		ret
 
-
+;object002.water
 ;v1=Animation Counter
 ;v2=Phase (0=Waterfall Start, 1=Waterfalling, 2=Waterfall End)
 ;v3=
@@ -3827,7 +3824,7 @@ BossRattyEnd:
 ;v2=pointer to movement table
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
-;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
 ;v6=active on which frame ?  
 ;v7=sprite frame
 ;v8=phase

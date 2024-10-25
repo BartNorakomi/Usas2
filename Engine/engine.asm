@@ -3634,51 +3634,51 @@ block1234:
 	ret
 
 SwapSpatColAndCharTable:
-	ld		a,(vdp_0+6)     ;check current sprite character table
-	cp    %0010 1111      ;spr chr table at $17800 now ?
-	ld    hl,$6c00        ;spr color table $16c00
-	ld    de,$7400        ;spr color table buffer $17400
-	ld		a,%1101 1111    ;spr att table to $16e00    
-	ld		b,%0010 1110    ;spr chr table to $17000
-	jp    z,.setspritetables
-;	ld    hl,$7400        ;spr color table $17400
-;	ld    de,$6c00        ;spr color table buffer $16c00
-	ex	 de,hl
-	ld		a,%1110 1111    ;spr att table to $17600
-	ld		b,%0010 1111    ;spr chr table to $17800
+		ld		a,(vdp_0+6)     ;check current sprite character table
+		cp    %0010 1111      ;spr chr table at $17800 now ?
+		ld    hl,$6c00        ;spr color table $16c00
+		ld    de,$7400        ;spr color table buffer $17400
+		ld		a,%1101 1111    ;spr att table to $16e00    
+		ld		b,%0010 1110    ;spr chr table to $17000
+		jp    z,.setspritetables
+		;	ld    hl,$7400        ;spr color table $17400
+		;	ld    de,$6c00        ;spr color table buffer $16c00
+		ex	 de,hl
+		ld		a,%1110 1111    ;spr att table to $17600
+		ld		b,%0010 1111    ;spr chr table to $17800
 
 .setspritetables:
-	di
-	ld		(vdp_0+5),a
-	out		($99),a		;spr att table to $17600
-	ld		a,5+128
-	out		($99),a
-	ld		a,$02     ;%0000 0010
-	ld		(vdp_8+3),a
-	out		($99),a
-	ld		a,11+128
-	out		($99),a
-	
-	ld		a,b
-	ld		(vdp_0+6),a
-	out		($99),a		;spr chr table to $17800
-	ld		a,6+128
-	ei
-	out		($99),a
+		di
+		ld		(vdp_0+5),a
+		out		($99),a		;spr att table to $17600
+		ld		a,5+128
+		out		($99),a
+		ld		a,$02     ;%0000 0010
+		ld		(vdp_8+3),a
+		out		($99),a
+		ld		a,11+128
+		out		($99),a
 
-  ld    bc,$200
-  ld    (sprcoltableaddress),hl
-  add   hl,bc
-  ld    (spratttableaddress),hl
-  add   hl,bc
-  ld    (sprchatableaddress),hl
-  ex    de,hl
-  ld    (invissprcoltableaddress),hl
-  add   hl,bc
-  ld    (invisspratttableaddress),hl
-  add   hl,bc
-  ld    (invissprchatableaddress),hl
-  ret
+		ld		a,b
+		ld		(vdp_0+6),a
+		out		($99),a		;spr chr table to $17800
+		ld		a,6+128
+		ei
+		out		($99),a
+
+		ld    bc,$200
+		ld    (sprcoltableaddress),hl
+		add   hl,bc
+		ld    (spratttableaddress),hl
+		add   hl,bc
+		ld    (sprchatableaddress),hl
+		ex    de,hl
+		ld    (invissprcoltableaddress),hl
+		add   hl,bc
+		ld    (invisspratttableaddress),hl
+		add   hl,bc
+		ld    (invissprchatableaddress),hl
+		ret
 
 SwapSpatColAndCharTable2:
 	ld		a,(vdp_0+6)     ;check current sprite character table

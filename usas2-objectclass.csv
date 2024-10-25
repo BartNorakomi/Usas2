@@ -1,30 +1,30 @@
-Enabled	ID	Name	propertyName	propertyType	propertyValue	Offset	numBytes	preConversion	postConversion	Description	Comment
-1	1	MovingPlatform	Xstart	custom	0	0	1	half		X start position (relative to box)	
-1	1	MovingPlatform	Ystart	custom	0	1	1			Y start position (relative to box)	
-1	1	MovingPlatform	X	default	0	2	1	half		X position boundary box	
-1	1	MovingPlatform	Y	default	0	3	1			Y position boundary box	
-1	1	MovingPlatform	Width	default	0	4	1	half		Width move box	
-1	1	MovingPlatform	Height	default	0	5	1			Height move box	
-1	1	MovingPlatform	Face	custom	3	6	1			Initial facing direction	
-1	1	MovingPlatform	Speed	custom	1	7	1			Initial move speed	
-1	1	MovingPlatform	Active	custom	1	8	1			Active (1) or non-active (0) platform	
-1	2	Platform	X	default	0	0	1	half		X position (top)	
-1	2	Platform	Y	default	0	1	1			Y position (left)	
-1	3	Enemy	X	default	0	0	1	half		X position (top)	
-1	3	Enemy	Y	default	0	1	1			Y position (left)	
-1	3	Enemy	Face	custom	3	2	1			Initial facing direction	
-1	3	Enemy	Speed	custom	1	3	1			Initial move speed	
-1	3	EnemySpawn	X	default	0	0	1	half		X position (top) of spawnpoint	
-1	3	EnemySpawn	Y	default	0	1	1			Y position (left) of spawnpoint	
-1	3	EnemySpawn	Face	custom	0	2	1			Initial facing direction 0=random	
-1	3	EnemySpawn	Speed	custom	1	3	1			Spawn Speed. 1= spawn zombie every 8 seconds, 2 every 4	
-1	3	EnemySpawn	maxNum	custom	1	4	1			Max amount of concurrent spawned offspring	
-1	4	glassBall	ballNumber	custom	0	0	1			Fixed balls with paths, only number needed (1-6)	
-1	5	General	X	default	0	0	1	half		X position (top)	
-1	5	General	Y	default	0	1	1			Y position (left)	
-1	6	BreakableWall	X	default	0	0	1	half		X position boundary box	
-1	6	BreakableWall	Y	default	0	1	1			Y position boundary box	
-1	6	BreakableWall	Width	default	0	2	1	half		Width move box	
-1	6	BreakableWall	Height	default	0	3	1			Height move box	
-1	6	BreakableWall	Xrestore	custom	0	4	1	half		Source location restore graphics	
-1	6	BreakableWall	Yrestore	custom	0	5	1			Source location restore graphics	
+Enabled	ID	Name	propertyName	propertyType	propertyValue	Offset	numBytes	preConversion	postConversion	Description	EQU	Comment
+1	1	MovingPlatform	Xstart	custom	0	0	1	half		X start position (relative to box)	roomObjectClass.MovingPlatform.Xstart: EQU 0+roomObjectClassIdOffset	
+1	1	MovingPlatform	Ystart	custom	0	1	1			Y start position (relative to box)	roomObjectClass.MovingPlatform.Ystart: EQU 1+roomObjectClassIdOffset	
+1	1	MovingPlatform	X	default	0	2	1	half		X position boundary box	roomObjectClass.MovingPlatform.X: EQU 2+roomObjectClassIdOffset	
+1	1	MovingPlatform	Y	default	0	3	1			Y position boundary box	roomObjectClass.MovingPlatform.Y: EQU 3+roomObjectClassIdOffset	
+1	1	MovingPlatform	Width	default	0	4	1	half		Width move box	roomObjectClass.MovingPlatform.Width: EQU 4+roomObjectClassIdOffset	
+1	1	MovingPlatform	Height	default	0	5	1			Height move box	roomObjectClass.MovingPlatform.Height: EQU 5+roomObjectClassIdOffset	
+1	1	MovingPlatform	Face	custom	3	6	1			Initial facing direction	roomObjectClass.MovingPlatform.Face: EQU 6+roomObjectClassIdOffset	
+1	1	MovingPlatform	Speed	custom	1	7	1			Initial move speed	roomObjectClass.MovingPlatform.Speed: EQU 7+roomObjectClassIdOffset	
+1	1	MovingPlatform	Active	custom	1	8	1			Active (1) or non-active (0) platform	roomObjectClass.MovingPlatform.Active: EQU 8+roomObjectClassIdOffset	
+1	2	Platform	X	default	0	0	1	half		X position (top)	roomObjectClass.Platform.X: EQU 0+roomObjectClassIdOffset	
+1	2	Platform	Y	default	0	1	1			Y position (left)	roomObjectClass.Platform.Y: EQU 1+roomObjectClassIdOffset	
+1	3	Enemy	X	default	0	0	1	half		X position (top)	roomObjectClass.Enemy.X: EQU 0+roomObjectClassIdOffset	
+1	3	Enemy	Y	default	0	1	1			Y position (left)	roomObjectClass.Enemy.Y: EQU 1+roomObjectClassIdOffset	
+1	3	Enemy	Face	custom	3	2	1			Initial facing direction	roomObjectClass.Enemy.Face: EQU 2+roomObjectClassIdOffset	
+1	3	Enemy	Speed	custom	1	3	1			Initial move speed	roomObjectClass.Enemy.Speed: EQU 3+roomObjectClassIdOffset	
+1	7	EnemySpawn	X	default	0	0	1	half		X position (top) of spawnpoint	roomObjectClass.EnemySpawn.X: EQU 0+roomObjectClassIdOffset	
+1	7	EnemySpawn	Y	default	0	1	1			Y position (left) of spawnpoint	roomObjectClass.EnemySpawn.Y: EQU 1+roomObjectClassIdOffset	
+1	7	EnemySpawn	Face	custom	3	2	1			Initial facing direction 0=random	roomObjectClass.EnemySpawn.Face: EQU 2+roomObjectClassIdOffset	
+1	7	EnemySpawn	Speed	custom	1	3	1			Spawn Speed. 1= spawn zombie every 8 seconds, 2 every 4	roomObjectClass.EnemySpawn.Speed: EQU 3+roomObjectClassIdOffset	
+1	7	EnemySpawn	maxNum	custom	1	4	1			Max amount of concurrent spawned offspring	roomObjectClass.EnemySpawn.maxNum: EQU 4+roomObjectClassIdOffset	
+1	4	glassBall	ballNumber	custom	0	0	1			Fixed balls with paths, only number needed (1-6)	roomObjectClass.glassBall.ballNumber: EQU 0+roomObjectClassIdOffset	
+1	5	General	X	default	0	0	1	half		X position (top)	roomObjectClass.General.X: EQU 0+roomObjectClassIdOffset	
+1	5	General	Y	default	0	1	1			Y position (left)	roomObjectClass.General.Y: EQU 1+roomObjectClassIdOffset	
+1	6	BreakableWall	X	default	0	0	1	half		X position boundary box	roomObjectClass.BreakableWall.X: EQU 0+roomObjectClassIdOffset	
+1	6	BreakableWall	Y	default	0	1	1			Y position boundary box	roomObjectClass.BreakableWall.Y: EQU 1+roomObjectClassIdOffset	
+1	6	BreakableWall	Width	default	0	2	1	half		Width move box	roomObjectClass.BreakableWall.Width: EQU 2+roomObjectClassIdOffset	
+1	6	BreakableWall	Height	default	0	3	1			Height move box	roomObjectClass.BreakableWall.Height: EQU 3+roomObjectClassIdOffset	
+1	6	BreakableWall	Xrestore	custom	0	4	1	half		Source location restore graphics	roomObjectClass.BreakableWall.Xrestore: EQU 4+roomObjectClassIdOffset	
+1	6	BreakableWall	Yrestore	custom	0	5	1			Source location restore graphics	roomObjectClass.BreakableWall.Yrestore: EQU 5+roomObjectClassIdOffset	

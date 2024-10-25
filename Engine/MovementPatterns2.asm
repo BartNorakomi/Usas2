@@ -27,7 +27,7 @@ BreakableWall:
 	;widen the hitbox of the wall for proper check with wallbash
 	ld    a,(ix+enemies_and_objects.x)        ;ro: X should be 16 bit
 	push af
-	add   a,12
+	add   a,12	;!! ro: this magic number is the distance to the players middle (clesX=midsprite) - i think?
 	ld    (ix+enemies_and_objects.x),a
 	ld    a,(ix+enemies_and_objects.nx)
 	push af
@@ -38,10 +38,12 @@ BreakableWall:
 	ld    (ix+enemies_and_objects.nx),a
 	pop af
 	ld    (ix+enemies_and_objects.x),a
-
-.CheckIfHit:
 	bit   0,(ix+enemies_and_objects.hit?)     ;check if hit
 	ret   z
+		; ld		d,-32		;hitboxPaddingXXYY (+16,+16)
+		; ld		e,0
+		; call	checkPlayerObjectHitboxCollision8
+		; ret		nc	
 
 	ld		hl,(PlayerSpriteStand)
 	ld		de,RBouncingBack

@@ -1,13 +1,5 @@
 phase	loaderAddress	;20240525;ro;moved from usas2.asm to this file
 
-loader:
-	call screenoff
-	call ReSetVariables
-	call SwapSpatColAndCharTable2
-	call SwapSpatColAndCharTable
-	call SwapSpatColAndCharTable2
-	call PopulateControls			;this allows for a double jump as soon as you enter a new map
- ret
 
 
 ObjectTestData: 
@@ -365,8 +357,90 @@ SetObjects:                             ;after unpacking the map to ram, all the
   		call	.copyObjectTemplate
 		ret
 
-;ro: here's an example how to generically apply a class
+;ro:  generically apply a class
 ;using IX as source, but I'd recommend using HL or DE
+
+;out: DE=numbBytes, HL=objectX, A=objectY
+.applyObjectClassMovingPlatform:
+		ld		a,(ix+roomObjectClass.MovingPlatform.Active)
+		ld		(iy+enemies_and_objects.v2),a
+
+		ld		a,(ix+roomObjectClass.MovingPlatform.Speed)
+		ld		(iy+enemies_and_objects.v10),a  ;speed (in frames)
+
+		ld		a,(ix+roomObjectClass.MovingPlatform.Face)
+		ld		b,1	;step is always one
+		call	.getfacing
+		ld		(iy+enemies_and_objects.v3),C	;vMove
+		ld		(iy+enemies_and_objects.v4),b	;hMove
+
+		ld		a,(ix+roomObjectClass.MovingPlatform.Y)
+		ld		(iy+enemies_and_objects.v8),a   ;boxY
+		add		a,(ix+roomObjectClass.MovingPlatform.Height)
+		sub		a,(iy+enemies_and_objects.ny)
+		ld		(iy+enemies_and_objects.v9),a   ;boxY'
+
+		ld		l,(ix+roomObjectClass.MovingPlatform.X)
+		ld		h,0
+		add		hl,hl
+		ld		(iy+enemies_and_objects.v6),l   ;boxX
+		ld		(iy+enemies_and_objects.v7),h
+		ex		de,hl
+		ld		a,(ix+roomObjectClass.MovingPlatform.width)
+		add		a,a
+		sub		a,(iy+enemies_and_objects.nx)
+		ld		h,0
+		ld		l,a
+		add		hl,de
+; 		call  .CheckIfObjectMovementIsWithinAllowedRange
+		ld		(iy+enemies_and_objects.v1-2),l ;boxX'
+		ld		(iy+enemies_and_objects.v1-1),h
+		ld		l,(ix+roomObjectClass.MovingPlatform.xstart)
+		ld		h,0
+		add		hl,hl
+		add		hl,de
+		ld		(iy+enemies_and_objects.x),l	;platformX
+		ld		(iy+enemies_and_objects.x+1),h
+		ld		a,(ix+roomObjectClass.MovingPlatform.Y)
+		add		a,(ix+roomObjectClass.MovingPlatform.Ystart)
+		ld		(iy+enemies_and_objects.y),a	;platformY
+		ld		de,roomObjectClass.MovingPlatform.numBytes
+		ret
+
+.CheckIfObjectMovementIsWithinAllowedRange:
+		ld    de,253                          ;box right edge
+		xor   a                               ;clear carry flag
+		sbc   hl,de
+		jr    c,.WithinRange
+		ld    hl,253                          ;16 pixels wide
+		ret
+.WithinRange:
+		add   hl,de
+		ret
+
+;out: DE=numbBytes, HL=objectX, A=objectY
+.applyObjectClassBreakableWall:
+		ld		a,(ix+roomObjectClass.BreakableWall.Width)
+		add		a,a
+		ld		(iy+enemies_and_objects.nx),a
+		ld		a,(ix+roomObjectClass.BreakableWall.height)
+		ld		(iy+enemies_and_objects.ny),a
+		ld		l,(ix+roomObjectClass.BreakableWall.Xrestore)
+		ld		h,0
+		add		hl,hl
+		ld		(iy+enemies_and_objects.v1),l		;!! 8bit
+		ld		a,(ix+roomObjectClass.BreakableWall.Yrestore)
+		ld		(iy+enemies_and_objects.v2),a
+
+		ld		l,(ix+roomObjectClass.BreakableWall.X)
+		ld		h,0
+		add		hl,hl
+		ld		(iy+enemies_and_objects.x),l
+		ld		(iy+enemies_and_objects.x+1),h
+		ld		a,(ix+roomObjectClass.BreakableWall.Y)
+		ld		(iy+enemies_and_objects.y),a
+		ld		de,roomObjectClass.BreakableWall.numBytes
+		ret
 
 ;out: DE=numbBytes, HL=objectX, A=objectY
 .applyObjectClassGeneral:
@@ -402,6 +476,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ret
 
 ;out: DE=numbBytes, HL=objectX, A=objectY
+;v3=vdir,v4=hdir
 .applyObjectClassEnemy:
 		ld		b,(ix+roomObjectClass.Enemy.Speed)
 		ld		a,(ix+roomObjectClass.Enemy.Face)
@@ -418,7 +493,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
 		ld		de,roomObjectClass.Enemy.numBytes
 		ret
-;v3=vdir,v4=hdir
+
 ;1=-y,x		| 0 n
 ;2=-y,+x	/ 1 ne
 ;3=y,+x		- 2 e
@@ -429,6 +504,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;8=-y,-x	\ 7 we
 .getFacing:	;ro: it's not the most beautiful code, but it gets the job done. Bart-style :)
 		ld		c,b
+		and		A
+		call	z,.random
 		cp		2
 		jr		c,.nor
 		jr		z,.ne
@@ -442,6 +519,10 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		jr		c,.wes
 		jr		z,.we
 		ld		bc,0
+		ret
+.random:	ld		a,R
+		and		7
+		inc		A
 		ret
 .nor:	ld		a,C
 		neg
@@ -726,31 +807,25 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;v2=pointer to movement table
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
-;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
+;;v5=Snap Player to Object ? This byte gets set in the CheckCollisionObjectPlayer routine
 ;v6=put line in all 3 pages
 ;v7=sprite frame
 ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
 ;v9=wait timer / bottom of area sign
 .Object005:
-		call	.initAreaSignObject
-		ld		de,roomObjectClass.general.numBytes
-		ret
-
-.initAreaSignObject:
 		ld		a,(PreviousRuin)		;Only apply if this is another ruin
 		ld		b,a
 		call	GetRoomRuinId
 		cp		b
-		ret		Z	;jr    z,.DontSetAreaSign
-
-		call	UnpackAreaSign
+		call	nz,.initAreaSignObject
+		ld		de,roomObjectClass.general.numBytes
+		ret
 
 ;Initialize object
-		ld    hl,Object005Table
-		push  iy
-		pop   de
-		ld    bc,lenghtenemytable
-		ldir
+.initAreaSignObject:
+		call	UnpackAreaSign
+		ld		hl,Object005Table
+		call	.copyObjectTemplate
 		call	.applyObjectClassGeneral
 
 ;start writing at (0,0) page 1 
@@ -901,167 +976,280 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    de,roomObjectclass.General.numBytes
 		ret   
 
+
+;huge block (HugeBlock)
+;v1-2=box right (16 bit)
+;v1-1=box right (16 bit)
+;v1=0 normal total block, v1=1 top half, v1=2 bottom half
+;v2=framenumber to handle this object on
+;v3=y movement
+;v4=x movement
+;v5=SnapPlayer?
+;v6=box left (16 bit)
+;v7=box left (16 bit)
+;v8=box top
+;v9=box bottom
+.HeightHugeBlock:   equ 48
+.WidthHugeBlock:    equ 48
+.Object010:
+		call  .SetHugeBlock
+;if spritesplit enabled, we split our block in 2 and put top and bottom as separate objects
+		ld    a,(scrollEngine)              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
+		cp    2
+		ret   z
+
+		ld    (iy+enemies_and_objects.v1),1   ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
+		ld    de,lenghtenemytable             ;lenght 1 object in object table
+		add   iy,de                           ;next object in object table
+		call  .SetHugeBlock
+		ld    (iy+enemies_and_objects.v1),2   ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
+  ret
+
+.SetHugeBlock:
+		ld    hl,Object010Table
+		push  iy
+		pop   de                              ;enemy object table
+		ld    bc,lenghtenemytable*1           ;1 objects
+		ldir
+
+		ld    a,(AmountOfSF2ObjectsCurrentRoom)
+		ld    (iy+enemies_and_objects.v2),a   ;v2=framenumber to handle this object on
+		inc   a
+		ld    (AmountOfSF2ObjectsCurrentRoom),a
+;set x (relative to box)
+		ld    a,(ix+Object010Table.xbox)
+		add   a,(ix+Object010Table.relativex)
+		ld    l,a
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (iy+enemies_and_objects.x),l
+		ld    (iy+enemies_and_objects.x+1),h
+;set y (relative to box)
+		ld    a,(ix+Object010Table.ybox)
+		add   a,(ix+Object010Table.relativey)
+		;  sub   a,.HeightHugeBlock/2
+		ld    (iy+enemies_and_objects.y),a
+;set box x left
+		ld    l,(ix+Object010Table.xbox)
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (iy+enemies_and_objects.v6),l   ;v6 and v7=box left (16bit)
+		ld    (iy+enemies_and_objects.v7),h   ;v6 and v7=box left (16bit)
+;set box x right
+		ld    a,(ix+Object010Table.xbox)
+		add   a,(ix+Object010Table.widthbox)
+		sub   a,.WidthHugeBlock/2
+		ld    l,a
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		call  .CheckIfObjectMovementIsWithinAllowedRange
+		ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
+		ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
+;set box y top
+		ld    a,(ix+Object010Table.ybox)
+		ld    (iy+enemies_and_objects.v8),a   ;v8=box top
+;set box y bottom
+		add   a,(ix+Object010Table.heightbox)
+		sub   a,.HeightHugeBlock
+		ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
+;set facing direction
+		ld    a,(ix+Object010Table.face)
+		add   a,a
+		ld    d,0
+		ld    e,a
+		ld    hl,Movementtable-2
+		add   hl,de
+		ld    a,(hl)                          ;y
+;mulu vertical movement with the object speed
+		ld    b,0
+		ld    c,(ix+Object010Table.speed)     ;object speed
+		push  hl
+		call  mulAxBC	;checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
+		ld    (iy+enemies_and_objects.v3),l   ;v3=y movement
+		pop   hl
+		inc   hl
+		ld    a,(hl)                          ;x
+
+;We multiplay the horizontal movement with the object speed
+		ld    b,0
+		ld    c,(ix+Object010Table.speed)     ;object speed
+		call  mulAxBC	;checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
+		ld    (iy+enemies_and_objects.v4),l   ;v4=x movement
+		ld    de,Object010Table.lenghtobjectdata
+		ret   
+
+
   
+;011-PlatformMovingSmall
+.Object011:
+		ld		hl,Object011Table
+		call	.copyObjectTemplate
+		call	SetCleanObjectNumber            ;each object has a reference cleanup table
+		call	.applyObjectClassMovingPlatform
+		ld		(iy+enemies_and_objects.v2),1		;activate
+		ret
 
 
+;012-PlatformMovingSmallSwitch
+.Object012:
+		ld		hl,Object012Table
+		call	.copyObjectTemplate
+		call	SetCleanObjectNumber            ;each object has a reference cleanup table
+		call	.applyObjectClassMovingPlatform
+		ld		a,(iy+enemies_and_objects.v2)	;active?
+		or		a
+		ret		z
+		ld		(iy+enemies_and_objects.v1),Object012Table.sxOn ;v1=sx software sprite in Vram on
+		ret
+
+;057-PlatformMovingMedium
+.Object057:
+		ld		hl,Object057Table
+		call	.copyObjectTemplate
+		call	SetCleanObjectNumber            ;each object has a reference cleanup table
+		call	.applyObjectClassMovingPlatform
+		ret
 
 
-;retracting platform 
-.Object015:
-  ld    hl,Object015Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*2
-  ldir    
-
+;015-PlatformRetracting 
   ;retracting platform has 3 different situations:
   ;1=only 1 retracting platform in total: animation will be platform1 on, platform1 off
   ;2=only 2 retracting platforms in total: animation will be platform1 on, platform2 on, platform1 off, platform2 off
   ;3=3 or more retracting platforms in total: animation will be platform1 on, platform3 off, platform2 on, platform1 off, platform3 on, platform2 off (this concept can then be used for more than 3)
+.Object015:
+		ld    hl,Object015Table
+		push  iy
+		pop   de                              ;enemy object table
+		ld    bc,lenghtenemytable*2
+		ldir
+
   
-  ;first let's find total amount of retracting platforms
-  ld    b,1                             ;amount of retracting platforms
-  ld    de,Object015Table.lenghtobjectdata
-  push  ix
-  call  .FindTotalAmountOfRetractingPlatforms
-  pop   ix
+;first let's find total amount of retracting platforms
+		ld    de,Object015Table.lenghtobjectdata
+		; ld    b,1                             ;amount of retracting platforms
+		; push  ix
+		; call  .FindTotalAmountOfRetractingPlatforms
+		; pop   ix
+		ld		a,015
+		call	.countEqualObjects
+		ld		a,b
+		ld		(AmountOfAppearingBlocks),a
+		dec		a                               ;only 1 platform ?
+		jp		z,.Only1RetractingPlatform ;only 1 platform uses the same placement routin as more than 2
+		dec		a                               ;only 2 platforms ?
+		jp		z,.Only2RetractingPlatforms
 
-  ld    a,b
-  ld    (AmountOfAppearingBlocks),a
-  dec   a                               ;only 1 platform ?
-;  jp    z,.MoreThan2RetractingPlatforms ;only 1 platform uses the same placement routin as more than 2
-  jp    z,.Only1RetractingPlatform ;only 1 platform uses the same placement routin as more than 2
-  dec   a                               ;only 2 platforms ?
-  jp    z,.Only2RetractingPlatforms
+.MoreThan2RetractingPlatforms:  
+		push  iy
+		ld    iy,AppearingBlocksTable
+		push  iy
+.PlatformLoop:
+		ld    a,(ix+Object015Table.y)
+		ld    l,a
+		ld    (iy+0),a                        ;y block 1 (block turns on)
+		ld    (iy+9),a                        ;y block 1 (block turns off)
+		ld    a,(ix+Object015Table.x)
+		add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    h,a
+		ld    (iy+1),a                        ;x block 1 (block turns on)
+		ld    (iy+2),1                        ;block 1 on
+		ld    (iy+10),a                       ;x block 1 (block turns off)
+		ld    (iy+11),0                       ;block 1 off
 
-  .MoreThan2RetractingPlatforms:  
-  push  iy
-  ld    iy,AppearingBlocksTable
-  push  iy
-  .PlatformLoop:
-  ld    a,(ix+Object015Table.y)
-  ld    l,a
-  ld    (iy+0),a                        ;y block 1 (block turns on)
-  ld    (iy+9),a                        ;y block 1 (block turns off)
-  ld    a,(ix+Object015Table.x)
-  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    h,a
-  ld    (iy+1),a                        ;x block 1 (block turns on)
-  ld    (iy+2),1                        ;block 1 on
-  ld    (iy+10),a                       ;x block 1 (block turns off)
-  ld    (iy+11),0                       ;block 1 off
+		ld    de,Object015Table.lenghtobjectdata	;next object
+		add   ix,de
+		ld    de,AppearingBlocksTable.reclen	;next record
+		add   iy,de
 
-  ld    de,Object015Table.lenghtobjectdata
-  add   ix,de                           ;next object
-  ld    de,6
-  add   iy,de                           ;next block that turns on in list
+		djnz  .PlatformLoop
+		ld    (iy+0),255                      ;end list
 
-  djnz  .PlatformLoop
-  ld    (iy+0),255                      ;end list
-
-  pop   iy  
-  ld    (iy+3),l                        ;y last block (block turns on)
-  ld    (iy+4),h                        ;x last block (block turns on)
-  ld    (iy+5),0                        ;off
-  pop   iy
+		pop   iy  
+		ld    (iy+3),l                        ;y last block (block turns on)
+		ld    (iy+4),h                        ;x last block (block turns on)
+		ld    (iy+5),0                        ;off
+		pop   iy
   
-  ld    de,Object015Table.lenghtobjectdata
-  ret  
+		ld    de,Object015Table.lenghtobjectdata
+		ret  
 
-  .Only2RetractingPlatforms:  
-  ld    a,1
-  ld    (AppearingBlocksTable+2),a
-  ld    (AppearingBlocksTable+5),a
-  xor   a
-  ld    (AppearingBlocksTable+8),a
-  ld    (AppearingBlocksTable+11),a
-  ld    a,255
-  ld    (AppearingBlocksTable+12),a
+.Only2RetractingPlatforms:  
+		ld    a,1
+		ld    (AppearingBlocksTable+2),a
+		ld    (AppearingBlocksTable+5),a
+		xor   a
+		ld    (AppearingBlocksTable+8),a
+		ld    (AppearingBlocksTable+11),a
+		ld    a,255
+		ld    (AppearingBlocksTable+12),a
 
-  ld    a,(ix+Object015Table.y)
-  ld    (AppearingBlocksTable+0),a
-  ld    (AppearingBlocksTable+6),a
-  ld    a,(ix+Object015Table.x)
-  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (AppearingBlocksTable+1),a
-  ld    (AppearingBlocksTable+7),a
+		ld    a,(ix+Object015Table.y)
+		ld    (AppearingBlocksTable+0),a
+		ld    (AppearingBlocksTable+6),a
+		ld    a,(ix+Object015Table.x)
+		add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (AppearingBlocksTable+1),a
+		ld    (AppearingBlocksTable+7),a
 
-  ld    de,Object015Table.lenghtobjectdata
-  add   ix,de                           ;next retracting platform
+		ld    de,Object015Table.lenghtobjectdata
+		add   ix,de                           ;next retracting platform
 
-  ld    a,(ix+Object015Table.y)
-  ld    (AppearingBlocksTable+3),a
-  ld    (AppearingBlocksTable+9),a
-  ld    a,(ix+Object015Table.x)
-  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (AppearingBlocksTable+4),a
-  ld    (AppearingBlocksTable+10),a
+		ld    a,(ix+Object015Table.y)
+		ld    (AppearingBlocksTable+3),a
+		ld    (AppearingBlocksTable+9),a
+		ld    a,(ix+Object015Table.x)
+		add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (AppearingBlocksTable+4),a
+		ld    (AppearingBlocksTable+10),a
 
-  ld    de,Object015Table.lenghtobjectdata
-  ret
+		ld    de,Object015Table.lenghtobjectdata
+		ret
 
-  .Only1RetractingPlatform:
-  ld    a,1
-  ld    (AppearingBlocksTable+2),a
-  xor   a
-  ld    (AppearingBlocksTable+5),a
-  ld    a,255
-  ld    (AppearingBlocksTable+6),a
+.Only1RetractingPlatform:
+		ld    a,1
+		ld    (AppearingBlocksTable+2),a
+		xor   a
+		ld    (AppearingBlocksTable+5),a
+		ld    a,255		;eod
+		ld    (AppearingBlocksTable+6),a
 
-  ld    a,(ix+Object015Table.y)
-  ld    (AppearingBlocksTable+0),a
-  ld    (AppearingBlocksTable+3),a
-  ld    a,(ix+Object015Table.x)
-  add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (AppearingBlocksTable+1),a
-  ld    (AppearingBlocksTable+4),a
+		ld    a,(ix+Object015Table.y)
+		ld    (AppearingBlocksTable+0),a
+		ld    (AppearingBlocksTable+3),a
+		ld    a,(ix+Object015Table.x)
+		add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (AppearingBlocksTable+1),a
+		ld    (AppearingBlocksTable+4),a
 
-  ld    de,Object015Table.lenghtobjectdata
-  ret
+		ld    de,Object015Table.lenghtobjectdata
+		ret
 
-  .FindTotalAmountOfRetractingPlatforms:
-  add   ix,de                           ;next object
-  ld    a,(ix)
-  cp    15
-  ret   nz
-  inc   b
-  jr    .FindTotalAmountOfRetractingPlatforms
+;Find number of sequencial equal objects
+;in:	A=objectNr, DE=recordLength
+;out:	B=amount
+.countEqualObjects:
+		push	ix
+		ld		b,0
+		call	.ceoL0
+		pop		ix
+		ret
+.ceoL0:	cp		(ix)
+		ret		nz
+		add		ix,de
+		inc		B
+		jr		.ceoL0
 
-  .Object057:                           ;big moving platform off
-  call  .Object011
+; .FindTotalAmountOfRetractingPlatforms:
+;   add   ix,de                           ;next object
+;   ld    a,(ix)
+;   cp    15
+;   ret   nz
+;   inc   b
+;   jr    .FindTotalAmountOfRetractingPlatforms
 
-  ;set box x right
-  ld    a,(ix+Object011Table.xbox)
-  add   a,(ix+Object011Table.widthbox)
-  sub   a,32/2                          ;subtract width platform
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  call  .CheckIfObjectMovementIsWithinAllowedRange
-  ld    de,Object011Table.lenghtobjectdata
-  ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
-  ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
 
-  ld    (iy+enemies_and_objects.nx),32  ;nx
-  ld    (iy+enemies_and_objects.v2),001 ;v2=active?
-  ld    (iy+enemies_and_objects.v1),032 ;v1=sx software sprite in Vram on
-  ld    a,(ix+Object011Table.active)
-  cp    1
-  ret   z
-  ld    (iy+enemies_and_objects.v1),000 ;v1=sx software sprite in Vram off
-  ld    (iy+enemies_and_objects.v2),000 ;v2=active?
-  ret
 
-;small moving platform (lighter version)
-.Object012:
-	call  .Object011
-	ld    (iy+enemies_and_objects.v1),080 ;v1=sx software sprite in Vram off
-	ld    a,(ix+Object011Table.active)
-	ld    (iy+enemies_and_objects.v2),a   ;v2=active?
-	or    a
-	ret   z
-	ld    (iy+enemies_and_objects.v1),096 ;v1=sx software sprite in Vram on
-ret
+
 
 
 ;013-bossPlant
@@ -1114,44 +1302,41 @@ ret
 
 ;014-BreakableWall
 .Object014:
-	ld    hl,Object014Table	;ro: why clear the whole table and rewrite some attribs? why not just (re)set only needed ones?
-	push  iy
-	pop   de                              ;enemy object table
-	ld    bc,lenghtenemytable*1           ;1 object(s)
-	ldir
+	ld		hl,Object014Table
+	call	.copyObjectTemplate
 
-;set x
-	ld    l,(ix+Object014Table.x)
-	ld    h,c	;=0
-	add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-	ld    (iy+enemies_and_objects.x),l
-	ld    (iy+enemies_and_objects.x+1),h
-;set y
-	ld    a,(ix+Object014Table.y)
-	ld    (iy+enemies_and_objects.y),a
-;set nx
-	ld    a,(ix+Object014Table.nx)
-	add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-	ld    (iy+enemies_and_objects.nx),a
-;set ny
-	ld    a,(ix+Object014Table.ny)
-	ld    (iy+enemies_and_objects.ny),a
-;set x repair gfx
-	ld    l,(ix+Object014Table.repairx)
-	ld    h,c ;=0
-	add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-	ld    (iy+enemies_and_objects.v1),l   ;sx repair gfx
-	;  ld    (iy+enemies_and_objects.x+1),h
-;set y repair gfx
-	ld    a,(ix+Object014Table.repairy)
-	ld    (iy+enemies_and_objects.v2),a   ;sy repair gfx
-
-	ld    de,Object014Table.lenghtobjectdata
-
-  call  .CheckWallLeftEdge              ;check if wall is at left edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
-  call  .CheckWallRightEdge             ;check if wall is at right edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
-
-	ld    de,Object014Table.lenghtobjectdata
+; ;set x
+; 	ld    l,(ix+Object014Table.x)
+; 	ld    h,c	;=0
+; 	add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+; 	ld    (iy+enemies_and_objects.x),l
+; 	ld    (iy+enemies_and_objects.x+1),h
+; ;set y
+; 	ld    a,(ix+Object014Table.y)
+; 	ld    (iy+enemies_and_objects.y),a
+; ;set nx
+; 	ld    a,(ix+Object014Table.nx)
+; 	add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
+; 	ld    (iy+enemies_and_objects.nx),a
+; ;set ny
+; 	ld    a,(ix+Object014Table.ny)
+; 	ld    (iy+enemies_and_objects.ny),a
+; ;set x repair gfx
+; 	ld    l,(ix+Object014Table.repairx)
+; 	ld    h,c ;=0
+; 	add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+; 	ld    (iy+enemies_and_objects.v1),l   ;sx repair gfx
+; 	;  ld    (iy+enemies_and_objects.x+1),h
+; ;set y repair gfx
+; 	ld    a,(ix+Object014Table.repairy)
+; 	ld    (iy+enemies_and_objects.v2),a   ;sy repair gfx
+	; ld    de,Object014Table.lenghtobjectdata
+		call	.applyObjectClassBreakableWall
+		push	de
+		call	.CheckWallLeftEdge              ;check if wall is at left edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
+		call	.CheckWallRightEdge             ;check if wall is at right edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
+		pop		de
+		; ld		de,Object014Table.lenghtobjectdata
   ret  
 
 ;check if wall is at left edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
@@ -1204,207 +1389,8 @@ ret
 		jp .remove
 
 
-;huge block (HugeBlock)
-;v1-2=box right (16 bit)
-;v1-1=box right (16 bit)
-;v1=0 normal total block, v1=1 top half, v1=2 bottom half
-;v2=framenumber to handle this object on
-;v3=y movement
-;v4=x movement
-;v5=SnapPlayer?
-;v6=box left (16 bit)
-;v7=box left (16 bit)
-;v8=box top
-;v9=box bottom
-.HeightHugeBlock:   equ 48
-.WidthHugeBlock:    equ 48
-.Object010:
-		call  .SetHugeBlock
-;if spritesplit enabled, we split our block in 2 and put top and bottom as separate objects
-		ld    a,(scrollEngine)              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
-		cp    2
-		ret   z
-
-		ld    (iy+enemies_and_objects.v1),1   ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
-		ld    de,lenghtenemytable             ;lenght 1 object in object table
-		add   iy,de                           ;next object in object table
-		call  .SetHugeBlock
-		ld    (iy+enemies_and_objects.v1),2   ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
-  ret
-
-.SetHugeBlock:
-		ld    hl,Object010Table
-		push  iy
-		pop   de                              ;enemy object table
-		ld    bc,lenghtenemytable*1           ;1 objects
-		ldir
-
-		ld    a,(AmountOfSF2ObjectsCurrentRoom)
-		ld    (iy+enemies_and_objects.v2),a   ;v2=framenumber to handle this object on
-		inc   a
-		ld    (AmountOfSF2ObjectsCurrentRoom),a
-
-;set x (relative to box)
-		ld    a,(ix+Object010Table.xbox)
-		add   a,(ix+Object010Table.relativex)
-		ld    l,a
-		ld    h,0
-		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		ld    (iy+enemies_and_objects.x),l
-		ld    (iy+enemies_and_objects.x+1),h
-
-;set y (relative to box)
-		ld    a,(ix+Object010Table.ybox)
-		add   a,(ix+Object010Table.relativey)
-		;  sub   a,.HeightHugeBlock/2
-		ld    (iy+enemies_and_objects.y),a
-
-;set box x left
-		ld    l,(ix+Object010Table.xbox)
-		ld    h,0
-		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		ld    (iy+enemies_and_objects.v6),l   ;v6 and v7=box left (16bit)
-		ld    (iy+enemies_and_objects.v7),h   ;v6 and v7=box left (16bit)
-
-;set box x right
-		ld    a,(ix+Object010Table.xbox)
-		add   a,(ix+Object010Table.widthbox)
-		sub   a,.WidthHugeBlock/2
-		ld    l,a
-		ld    h,0
-		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		call  .CheckIfObjectMovementIsWithinAllowedRange
-		ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
-		ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
-
-;set box y top
-		ld    a,(ix+Object010Table.ybox)
-		ld    (iy+enemies_and_objects.v8),a   ;v8=box top
-
-;set box y bottom
-		add   a,(ix+Object010Table.heightbox)
-		sub   a,.HeightHugeBlock
-		ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
-
-;set facing direction
-		ld    a,(ix+Object010Table.face)
-		add   a,a
-		ld    d,0
-		ld    e,a
-		ld    hl,Movementtable-2
-		add   hl,de
-		ld    a,(hl)                          ;y
-
-;mulu vertical movement with the object speed
-		ld    b,0
-		ld    c,(ix+Object010Table.speed)     ;object speed
-		push  hl
-		call  mulAxBC	;checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
-	;   or    a
-	;   sbc   hl,de                           ;AAAAAAAAAAAAAAAAAAAAAAH   > ro: duh! should've not called checktile but a generic mul16
-		ld    (iy+enemies_and_objects.v3),l   ;v3=y movement
-		pop   hl
-		inc   hl
-		ld    a,(hl)                          ;x
-
-;We multiplay the horizontal movement with the object speed
-		ld    b,0
-		ld    c,(ix+Object010Table.speed)     ;object speed
-		call  mulAxBC	;checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
-	;   or    a
-	;   sbc   hl,de                           ;AAAAAAAAAAAAAAAAAAAAAAH
-		ld    (iy+enemies_and_objects.v4),l   ;v4=x movement
-		ld    de,Object010Table.lenghtobjectdata
-ret   
 
 
-;small moving platform on (standard dark grey)
-;v1-2=box right (16 bit)
-;v1-1=box right (16 bit)
-;v1=sx software sprite in Vram
-;v2=active?
-;v3=y movement
-;v4=x movement
-;v5=SnapPlayer?
-;v6=box left (16 bit)
-;v7=box left (16 bit)
-;v8=box top
-;v9=box bottom
-;v10=speed
-.Object011:
-		ld    hl,Object011Table
-		push  iy
-		pop   de                              ;enemy object table
-		ld    bc,lenghtenemytable
-		ldir                                  ;copy enemy table
-
-		call  SetCleanObjectNumber            ;each object has a reference cleanup table
-;set x (relative to box)
-		ld    a,(ix+Object011Table.xbox)
-		add   a,(ix+Object011Table.relativex)
-		ld    l,a
-		ld    h,0
-		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		ld    (iy+enemies_and_objects.x),l
-		ld    (iy+enemies_and_objects.x+1),h
-;set y (relative to box)
-		ld    a,(ix+Object011Table.ybox)
-		add   a,(ix+Object011Table.relativey)
-		ld    (iy+enemies_and_objects.y),a
-;set box x left
-		ld    l,(ix+Object011Table.xbox)
-		ld    h,0
-		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		ld    (iy+enemies_and_objects.v6),l   ;v6 and v7=box left (16bit)
-		ld    (iy+enemies_and_objects.v7),h   ;v6 and v7=box left (16bit)
-;set box x right
-		ld    a,(ix+Object011Table.xbox)
-		add   a,(ix+Object011Table.widthbox)
-		sub   a,16/2                          ;subtract width platform
-		ld    l,a
-		ld    h,0
-		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		call  .CheckIfObjectMovementIsWithinAllowedRange
-		ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
-		ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
-;set box y top
-		ld    a,(ix+Object011Table.ybox)
-		ld    (iy+enemies_and_objects.v8),a   ;v8=box top
-;set box y bottom
-		add   a,(ix+Object011Table.heightbox)
-		sub   a,16                            ;subtract height platform
-		ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
-;set facing direction
-		ld    a,(ix+Object011Table.face)
-		add   a,a
-		ld    d,0
-		ld    e,a
-		ld    hl,Movementtable-2
-		add   hl,de
-		ld    a,(hl)                          ;y
-		ld    (iy+enemies_and_objects.v3),a   ;v3=y movement
-		inc   hl
-		ld    a,(hl)                          ;x
-		ld    (iy+enemies_and_objects.v4),a   ;v4=x movement
-;set speed
-		ld    a,(ix+Object011Table.speed)
-		ld    (iy+enemies_and_objects.v10),a  ;v10=speed
-;set active
-		ld    (iy+enemies_and_objects.v2),1   ;v2=active?
-
-		ld    de,Object011Table.lenghtobjectdata
- ret
-
-.CheckIfObjectMovementIsWithinAllowedRange:
-		ld    de,253                          ;box right edge
-		xor   a                               ;clear carry flag
-		sbc   hl,de
-		jr    c,.WithinRange
-		ld    hl,253                          ;16 pixels wide
-ret
-.WithinRange:
-		add   hl,de
-ret
 
 
 ;omni directional platform
@@ -2268,10 +2254,9 @@ Object001Table:
 		dw	cleanOb1,0 ;objnr,spatadr
 		db	0	;numsprites
 		dw	-1 ;pushStoneTable+pushStoneTable.roomY	;tableRec
-		db	.sx,0,0,0,0,0,0,14,14,.hit,.life,MovementPatternsFixedPage1block ;movementpatterns1block
+		db	.sx,0,0,0,0,0,0,14,14,.hit,.life,movementpatterns1block
 		ds	fill-1
 
-; db 1,0 dw PushingStone db 8*00 dw 8*00 db 16,16|dw CleanOb1,0 db 0 | dw pushStoneTable+pushStoneTable.roomY | db  112,+00,+00,+00,+00,+00,+00,+14,+14, 0|db 000,movementpatterns1block| ds fill-1
 
 ;002-Waterfall yellow
 ;v1=sx
@@ -2288,21 +2273,25 @@ Object002Table:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .water:   db isNotAlive,isSprite|dw Waterfall |db 0|dw 0|db 64,10|dw 16*16,spat+(16*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,-01,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
 
-Object003Table:               ;waterfall grey statue (WaterfallEyesYellow)
+;003-Waterfall grey
+Object003Table:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#             ,sx, v2, v3, v4, v5,    v6,    v7,    v8,    v9,   v10,   v11,   
 .eyes:    db isAliveSs,isNotSprite|dw WaterfallEyesGrey|db 0|dw 0|db 06,14|dw CleanOb3,0 db 0,0,0,+095,+00,200,+02,+01,8*15+3,8*06,8*15+3,8*28,8*00+3,8*00,movementpatterns1block| ds fill-1
 
-;Dripping Ooze Drop
-Object004Table:        
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   ,Hit?,life 
-		db isAliveSs,isNotSprite|dw DrippingOozeDrop    |db 8*09-5|dw 8*10+3|db 08,05|dw CleanOb1,0 db 0,0,0,                 +149,+02,+03,+00,+63,+00,+00,8*09-5,8*10+3, 0|db 000,movementpatterns1block| ds fill-1
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.Splash:db isAliveHs,isSprite|dw DrippingOoze        |db 8*22|dw 8*24|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+
+;004-PoisonDrop / Dripping Ooze Drop
+Object004Table:
+.sx:	equ	SXDrippingOoze1
+		;alive?,Sprite?,Movement Pattern,             y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8   , v9   ,Hit?,life 
+		db isAliveSs,isNotSprite|dw DrippingOozeDrop|db 0|dw 0|db 08,05|dw CleanOb1,0 db 0,0,0,.sx,+02,+03,+00,+63,+00,+00,8*09-5,8*10+3, 0|db 000,movementpatterns1block| ds fill-1
+		;alive?,Sprite?,Movement Pattern,     y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.Splash:db isAliveHs,isSprite|dw DrippingOoze|db 0|dw 0|db 32,32|dw 12*16,spat+(12*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+
 
 ;005-AreaSign
 Object005Table:               
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db isAliveSf2,isNotSprite|dw AreaSign             |db 8*05|dw 8*17|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+00,+00,190, 0|db 016,movementpatterns1block| ds fill-1
+		;alive?,Sprite?,Movement Pattern,     y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+		db isAliveSf2,isNotSprite|dw AreaSign|db 0|dw 0|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+00,+00,190, 0|db 016,movementpatterns1block| ds fill-1
 
 
 ;006-TeleportVortex
@@ -2375,12 +2364,11 @@ Object010cTable:               ;platform
 .lenghtobjectdata: equ 10
 
 
-
-
-
-Object011Table:               ;platform
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
-          db 1,        0|dw Platform            |db 8*09|dw 8*18|db 16,16|dw CleanOb1,0 db 0,0,0,                      +64,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
+;011-PlatformMovingSmall
+Object011Table:
+.sx:	equ	64
+		;alive?,Sprite?,Movement Pattern,    y,      x,   ny,nx,Objectnr#               ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
+		db isAliveSs,isNotSprite|dw Platform|db 0|dw 0|db 16,16|dw CleanOb1,0 db 0,0,0, .sx,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
 .ID: equ 0
 .relativex: equ 1
 .relativey: equ 2
@@ -2392,6 +2380,21 @@ Object011Table:               ;platform
 .speed: equ 8
 .active: equ 9
 .lenghtobjectdata: equ 10
+
+;012-PlatformMovingSmallSwitch
+Object012Table:
+.sxOff:	equ	80
+.sxOn:	equ 96
+		;alive?,Sprite?,Movement Pattern,    y,      x,   ny,nx,Objectnr#               ,sx,   v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
+		db isAliveSs,isNotSprite|dw Platform|db 0|dw 0|db 16,16|dw CleanOb1,0 db 0,0,0, .sxOff,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
+
+;057-PlatformMovingMedium
+Object057Table:
+.sxOff:	equ	00
+.sxOn:	equ 32
+		;alive?,Sprite?,Movement Pattern,    y,      x,   ny,nx,Objectnr#               ,sx,   v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
+		db isAliveSs,isNotSprite|dw Platform|db 0|dw 0|db 16,32|dw CleanOb1,0 db 0,0,0, .sxOn,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
+
 
 ;013-bossPlant
 Object013Table:
@@ -2408,19 +2411,10 @@ Object013Table:
 ;         db -0,        1|dw BossPlantBullet     |db 8*14|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns2block| ds fill-1
 
 
-
-Object014Table:               ;breakable wall
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 1,        0|dw BreakableWall       |db 0000|dw 000 |db 00,00|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 255,movementpatterns2block| ds fill-1
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.nx: equ 3
-.ny: equ 4
-.repairx: equ 5
-.repairy: equ 6
-.lenghtobjectdata: equ 7
-
+;014-BreakableWall
+Object014Table:
+		;alive?,Sprite?,Movement Pattern,         y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+		db isAliveSs,isNotSprite|dw BreakableWall|db 0000|dw 000 |db 00,00|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 255,movementpatterns2block| ds fill-1
 
 
 
@@ -2897,26 +2891,27 @@ CopyVramObjectsPage1and3:
   ld    a,40/2                    ;copy 40 lines..
   ld    b,0
   jp    copyGraphicsToScreen.loop1   
-  
-copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
-  ld    a,(ScoreBoardAlreadyInScreen?)
-  or    a
-  ret   nz
-  ld    a,1
-  ld    (ScoreBoardAlreadyInScreen?),a
 
-  ld    hl,$6C00+128                      ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
-  ld    a,Graphicsblock5              ;block to copy from
-  call  block34
-  
-	xor   a
-	call	SetVdp_Write	
-	ld		hl,scoreboard
-  ld    c,$98
-  ld    a,38/2                        ;copy 38 lines..
-  ld    b,0
-  call  copyGraphicsToScreen.loop1
-  jp    outix128
+
+copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
+		ld    a,(ScoreBoardAlreadyInScreen?)
+		or    a
+		ret   nz
+		ld    a,1
+		ld    (ScoreBoardAlreadyInScreen?),a
+
+		ld    a,Graphicsblock5              ;block to copy from
+		call  block34
+
+		ld    hl,$6C00+128                      ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
+		xor   a
+		call	SetVdp_Write	
+		ld		hl,scoreboard
+		ld    c,$98
+		ld    a,38/2                        ;copy 38 lines..
+		ld    b,0
+		call  copyGraphicsToScreen.loop1
+		jp    outix128
 
 
 
@@ -2925,85 +2920,7 @@ copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
 ;NoBorderMaskingSpritesCall:
 ;  nop | nop | nop                     ;skip border masking sprites
 
-;Set the engine properties for type [A]
-;sets engine type (1= 304x216 engine  2=256x216 SF2 engine), sets map lenghts and map exit right and adjusts X player player is completely in the right of screen
-;SetEngine:
-InitializeRoomType:
-	call getroomtype
-	ld	 a,(hl) ;width
-	ld	(roomMap.width),a
-  push hl
-  ld   l,A
-  ld   h,0
-  add  hl,hl ;x2
-  add  hl,hl ;x4
-  add  hl,hl ;x8
-  ld   (roomMap.widthPix),HL
-  pop hl
-	inc	 hl		; height
-	inc	 hl		; engine
-	ld	 a,(hl)
-	ld	 (scrollEngine),a              ;1= 304x216 engine, 2=256x216 SF2 engine, 3=256x216 SF2 engine sprite split ON 
-	dec	 a
-	jp	 z,.type1 ;.Engine304x216
-	dec	 a
-	jp	 z,.type2 ;256x216 SF2
-;	jp	 .type3	;256x216 SF2 engine sprite split ON 
 
-;SF2 engine
-; in the SF2 engine we can choose to have spritesplit active, which gives us 14 extra sprites  
-.type3:	;.Engine256x216WithSpriteSplit:
-	ld    a,1	;Mark sprite split active
-	jr	 .SetSpriteSplit
-
-;SF2 engine
-.type2:	;.Engine256x216:
-	xor	 a	;Mark sprite split inactive
-
-.SetSpriteSplit:
- 	ld    (SpriteSplitFlag),a   
-;	ld    de,CheckTile256x216MapLenght	;e3.asm > equ 32 + 2
-;	ld    (checktile.selfmodifyingcodeMapLenght+1),de
-;	ld    a,MapLenght256x216	;equ 32
-;	ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
-	ld    de,ExitRight256x216 ;equ 252 ; 29*8
-	ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-	; ld    de,roomMap-68 ;MapData- 68
-	; ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
-	
-;check if player enters on the left side of the screen or on the right side. On the left camerax = 0, on the right camerax=15
-	xor	 A
-	ld	 hl,256/2
-	ld	 de,(ClesX)
-	sbc	 hl,de
-	jr	 nc,.setCameraX
-	ld	 a,15
-.setCameraX:
-	ld    (CameraX),a
-
-;if engine type = 256x216 and x Cles = 34*8, then move cles 6 tiles to the left, because this Engine type has a screen width of 6 tiles less
-	ex	 de,hl	;	ld    hl,(ClesX)
-	ld	 de,ExitRight304x216
-	xor	 a
-	sbc	 hl,de
-	ret	 nz
-	ld	 hl,252 ;some magicnumber
-	ld	 (ClesX),hl
-ret
-
-.type1:	;.Engine304x216:
-	ld    a,1                           ;sprite split active
-	ld    (SpriteSplitFlag),a
-	; ld    a,MapLenght304x216 ;e3.asm > equ 38
-	; ld    (ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
-	; ld    de,CheckTile304x216MapLenght ;e3.asm > equ 38+2
-	; ld    (checktile.selfmodifyingcodeMapLenght+1),de
-	ld    de,ExitRight304x216 ;equ 38*8-3
-	ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
-	; ld    de,roomMap-80 ;MapData- 80
-	; ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
-ret
-  
 
 ReSetVariables:
   ;set player sprites to spritenumber 28 for char and color address
