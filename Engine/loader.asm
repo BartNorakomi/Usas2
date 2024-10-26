@@ -1125,14 +1125,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
   
 ;first let's find total amount of retracting platforms
-		ld    de,Object015Table.lenghtobjectdata
+		ld    de,roomObjectClass.General.numBytes	;Object015Table.lenghtobjectdata
 		; ld    b,1                             ;amount of retracting platforms
 		; push  ix
 		; call  .FindTotalAmountOfRetractingPlatforms
 		; pop   ix
-		ld		a,015
+		ld		a,roomObject.PlatformRetracting
 		call	.countEqualObjects
 		ld		a,b
+		;!! ro: what happens is the max of 7 is reached? there should be a check
 		ld		(AmountOfAppearingBlocks),a
 		dec		a                               ;only 1 platform ?
 		jp		z,.Only1RetractingPlatform ;only 1 platform uses the same placement routin as more than 2
@@ -1238,17 +1239,33 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		inc		B
 		jr		.ceoL0
 
-; .FindTotalAmountOfRetractingPlatforms:
-;   add   ix,de                           ;next object
-;   ld    a,(ix)
-;   cp    15
-;   ret   nz
-;   inc   b
-;   jr    .FindTotalAmountOfRetractingPlatforms
 
+;016-PlatformMovingSmallOmnidirectional
+.Object016:
+		ld		hl,Object016Table
+		call	.copyObjectTemplate
+		call	SetCleanObjectNumber            ;each object has a reference cleanup table
+		call	.applyObjectClassGeneral
+		call	.loadObject016
+		ret
 
-
-
+;write omni directional platforms to (216+16,0) page 1
+.loadObject016:
+		ld		a,(ObjectPresentInVramPage1)
+		cp		1
+		ret		z
+		Push	de
+		xor		a
+		ld		(PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld		hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld		de,$8000 + ((216+016)*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld		bc,$0000 + (016*256) + (128/2)        ;(ny*256) + (nx/2)
+		ld		a,GfxObjectsForVramBlock              ;block to copy graphics from
+		call	CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+		ld		a,1
+		ld		(ObjectPresentInVramPage1),a    ;1=omni directional platform
+		pop		de
+		ret
 
 
 ;013-bossPlant
@@ -1390,125 +1407,71 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
 
 
+;020-ratFaceBatSpawner
+.Object020:
+  		ld		hl,Object020Table			;object=RatFace
+		call	.copyObjectTemplate
 
+;set x
+		ld    a,(ix+Object020Table.x)
+		add   a,4                             ;10 pix to the right
+		ld    l,a
+		ld    h,0
+		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		ld    (iy+enemies_and_objects.x),l
+		ld    (iy+enemies_and_objects.x+1),h
+;set y
+		ld    a,(ix+Object020Table.y)
+		add   a,24                            ;8 pix down
+		ld    (iy+enemies_and_objects.y),a
 
-;omni directional platform
-.Object016:
-		ld    hl,Object016Table
+		ld    a,(ix+Object020Table.face)
+		ld    (iy+enemies_and_objects.v9),a   ;face
+
+		ld    b,(ix+Object020Table.MaxNum)
+		ld    (iy+enemies_and_objects.v10),b  ;max number
+
+		ld    hl,CuteMiniBatTable             ;cute mini bat
+.AddCuteMiniBatLoop:
+		push  bc
+		call  .AddCuteMiniBat                       ;adds a cute mini bat to the room's object table
+		pop   bc
+		djnz  .AddCuteMiniBatLoop
+
+		ld    a,(BigEnemyPresentInVramPage3)  ;1=big statue mouth, 2=huge blob, 3=huge spider
+		cp    1
+		jr    z,.EndPutObject020
+		ld    a,1
+		ld    (BigEnemyPresentInVramPage3),a  ;1=big statue mouth, 2=huge blob, 3=huge spider
+
+ ;write big statue mouth to (216,0) page 3
+		ld    a,1
+		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld    hl,$4000 + (016*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    de,$8000 + (216*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld    bc,$0000 + (031*256) + (056/2)        ;(ny*256) + (nx/2)
+		ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
+		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+.EndPutObject020:
+		ld    de,Object020Table.lenghtobjectdata
+		ret
+
+.AddCuteMiniBat:                      ;add a cute mini bat to the room's object table 
+		ld    de,lenghtenemytable             ;lenght 1 object in object table
+		add   iy,de                           ;next object in object table
+
 		push  iy
 		pop   de                              ;enemy object table
 		ld    bc,lenghtenemytable
 		ldir                                  ;copy enemy table
 
-		call  SetCleanObjectNumber            ;each object has a reference cleanup table
-
-;set  x
-		ld    a,(ix+Object016Table.x)
-		add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-		ld    (iy+enemies_and_objects.x),a
-
-;set  y
-		ld    a,(ix+Object016Table.y)
-		ld    (iy+enemies_and_objects.y),a
-
-		ld    a,(ObjectPresentInVramPage1)    ;1=omni directional platform
-		cp    1
-		jr    z,.EndPutObject016
-		ld    a,1
-		ld    (ObjectPresentInVramPage1),a    ;1=omni directional platform
-  
-;write omni directional platforms to (216+16,0) page 1
-		xor   a
-		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-		ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-		ld    de,$8000 + ((216+016)*128) + (000/2) - 128  ;(y*128) + (x/2)
-		ld    bc,$0000 + (016*256) + (128/2)        ;(ny*256) + (nx/2)
-		ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
-		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-.EndPutObject016:
-		ld    de,Object016Table.lenghtobjectdata
-ret
-
-;020-ratFaceBatSpawner
-.Object020:
-  ld    hl,Object020Table
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*1
-  ldir                                  ;copy enemy table
-
-  ;set x
-  ld    a,(ix+Object020Table.x)
-  add   a,4                             ;10 pix to the right
-  ld    l,a
-  ld    h,0
-  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-  ld    (iy+enemies_and_objects.x),l
-  ld    (iy+enemies_and_objects.x+1),h
-
-  ;set y
-  ld    a,(ix+Object020Table.y)
-  add   a,24                            ;8 pix down
-  ld    (iy+enemies_and_objects.y),a
-
-  ld    a,(ix+Object020Table.face)
-  ld    (iy+enemies_and_objects.v9),a   ;face
-
-  ld    b,(ix+Object020Table.MaxNum)
-  ld    (iy+enemies_and_objects.v10),b  ;max number
-  
-  ld    hl,CuteMiniBatTable             ;cute mini bat
-  .AddCuteMiniBatLoop:
-  push  bc
-  call  .AddCuteMiniBat                       ;adds a cute mini bat to the room's object table
-  pop   bc
-  djnz  .AddCuteMiniBatLoop
-
-  ld    a,(BigEnemyPresentInVramPage3)  ;1=big statue mouth, 2=huge blob, 3=huge spider
-  cp    1
-  jr    z,.EndPutObject020
-  ld    a,1
-  ld    (BigEnemyPresentInVramPage3),a  ;1=big statue mouth, 2=huge blob, 3=huge spider
-  
-  ;write big statue mouth to (216,0) page 3
-  ld    a,1
-  ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-  ld    hl,$4000 + (016*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    de,$8000 + (216*128) + (000/2) - 128  ;(y*128) + (x/2)
-  ld    bc,$0000 + (031*256) + (056/2)        ;(ny*256) + (nx/2)
-  ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
-  call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-;call screenon
-;	ld    a,3*32+31         ;set page 0
-;di
-;	out   ($99),a
-;	ld    a,2+128
-;	out   ($99),a
-;	ld    a,100 
-;	out   ($99),a
-;	ld    a,23+128
-;	out   ($99),a
-;ei
-;.kut: jp .kut
-
-.EndPutObject020:
-		ld    de,Object020Table.lenghtobjectdata
-ret
+		call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+		ret
 
 
-.AddCuteMiniBat:                      ;add a cute mini bat to the room's object table 
-  ld    de,lenghtenemytable             ;lenght 1 object in object table
-  add   iy,de                           ;next object in object table
 
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable
-  ldir                                  ;copy enemy table
 
-  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
-  ret
 
 ;061 - glass ball (GlassBallActivator)
   .Object061:                           
@@ -1550,7 +1513,7 @@ ret
 ;v4=Face direction
 ;class=EnemySpawn
 .Object062:                           
-		ld		hl,Object062Table
+		ld		hl,Object062Table		;spawnPoint
 		call	.copyObjectTemplate
 		call	.SetAlive?BasedOnEngineType		;!! ro:why?
 
@@ -2417,26 +2380,20 @@ Object014Table:
 
 
 ;015-PlatformRetracting
-Object015Table:               ;retracting platform (handler)
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
-          db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-                              ;AppearingBlocks
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
-          db 0,        0|dw AppearingBlocks     |db 8*21|dw 8*19|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.lenghtobjectdata: equ 3
+Object015Table:
+       		;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.handler:	db isAliveSs,isNotSprite|dw AppBlocksHandler|db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+       		;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+.platform:	db isNotAlive,isNotSprite|dw AppearingBlocks|db 0|dw 0|db 16,16|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 
-Object016Table:               ;omni directional platform
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.lenghtobjectdata: equ 3
+
+;016-PlatformMovingSmallOmnidirectional
+Object016Table:
 ;platform Omni Directionally
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
-          db 1,   0|dw PlatformOmniDirectionally|db 8*11|dw 8*10|db 16,16|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-          db 1,   0|dw PlatformOmniDirectionally|db 8*19|dw 8*25|db 16,16|dw CleanOb2,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+		db 1,   0|dw PlatformOmniDirectionally|db 8*11|dw 8*10|db 16,16|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+		; db 1,   0|dw PlatformOmniDirectionally|db 8*19|dw 8*25|db 16,16|dw CleanOb2,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+
 
 Object020Table:               ;bat spawner (BigStatueMouth)
 ;Big Statue Mouth
@@ -2459,6 +2416,7 @@ CuteMiniBatTable:
          db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,160, 0|db 001,movementpatterns1block| ds fill-1
          db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,030, 0|db 001,movementpatterns1block| ds fill-1
          db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,110, 0|db 001,movementpatterns1block| ds fill-1
+
 
 Object061Table:               ;glass ball (& GlassBallActivator)
 .ID: equ 0

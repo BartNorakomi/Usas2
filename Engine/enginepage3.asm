@@ -1527,7 +1527,7 @@ UnpackedRoomFile:
 
 ;roomObjects
 roomObject.PushStone: EQU 1
-
+roomObject.PlatformRetracting: EQU 15
 
 
 ;roomobject class byte offsets
@@ -1589,17 +1589,17 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .coordinates:           equ 14
 .tableRecordPointer:	equ 14
 .nrspritesTimes16:      equ 15
-.v1:                    equ 16
+.v1:                    equ 16 | .sx:		equ 16
 .v2:                    equ 17
-.v3:                    equ 18
-.v4:                    equ 19
-.v5:                    equ 20 | .SnapPlayer?:           equ 20
+.v3:                    equ 18 | .vMove:	equ 18
+.v4:                    equ 19 | .hMove:	equ 19
+.v5:                    equ 20 | .SnapPlayer?:	equ 20
 .v6:                    equ 21
 .v7:                    equ 22
 .v8:                    equ 23
 .v9:                    equ 24
-.hit?:                  equ 25 | .v10:                   equ 25
-.life:                  equ 26 | .v11:                   equ 26
+.hit?:                  equ 25 | .v10:	equ 25
+.life:                  equ 26 | .v11:	equ 26
 .movementpatternsblock: equ 27
 
 endenginepage3variables:  equ $+enginepage3length

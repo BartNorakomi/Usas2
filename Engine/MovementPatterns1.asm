@@ -2057,16 +2057,14 @@ RightCuteMiniBat:
 BigStatueMouthClosedSx: equ 00
 BigStatueMouthOpenSx:   equ 28
 BigStatueMouth:
-		ld    a,216+000
+		ld    a,216+000		;!! ro:magic number
 		ld    (CopyObject+sy),a  
 		ld    a,3
 		ld    (CopyObject+spage),a
-;  ld    (ix+enemies_and_objects.v1),BigStatueMouthOpenSx
-;  ld    (ix+enemies_and_objects.v1),BigStatueMouthClosedSx
 
-	call  OnlyPutVramObjectDontEraseFastCopy
-	ld    a,1
-	ld    (CopyObject+spage),a
+		call  OnlyPutVramObjectDontEraseFastCopy
+		ld    a,1
+		ld    (CopyObject+spage),a
   
 ;search for an open slot
 		push  ix
@@ -2122,7 +2120,7 @@ BigStatueMouth:
 		call  z,.CloseMouth
 		cp    50
 		ret   nz  
-		ld    a,(iy+enemies_and_objects.v1)
+		ld    a,(iy+enemies_and_objects.v1)	;sx
 		cp    BigStatueMouthOpenSx
 		ret   nz
 
