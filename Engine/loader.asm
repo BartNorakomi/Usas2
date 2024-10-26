@@ -1144,11 +1144,11 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    iy,AppearingBlocksTable
 		push  iy
 .PlatformLoop:
-		ld    a,(ix+Object015Table.y)
+		ld    a,(ix+roomObjectClass.General.Y)	;(ix+Object015Table.y)
 		ld    l,a
 		ld    (iy+0),a                        ;y block 1 (block turns on)
 		ld    (iy+9),a                        ;y block 1 (block turns off)
-		ld    a,(ix+Object015Table.x)
+		ld    a,(ix+roomObjectClass.General.X)	;(ix+Object015Table.x)
 		add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
 		ld    h,a
 		ld    (iy+1),a                        ;x block 1 (block turns on)
@@ -1156,11 +1156,10 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    (iy+10),a                       ;x block 1 (block turns off)
 		ld    (iy+11),0                       ;block 1 off
 
-		ld    de,Object015Table.lenghtobjectdata	;next object
-		add   ix,de
 		ld    de,AppearingBlocksTable.reclen	;next record
 		add   iy,de
-
+		ld    de,roomObjectClass.General.numBytes	;Object015Table.lenghtobjectdata	;next object
+		add   ix,de
 		djnz  .PlatformLoop
 		ld    (iy+0),255                      ;end list
 
@@ -1170,7 +1169,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    (iy+5),0                        ;off
 		pop   iy
   
-		ld    de,Object015Table.lenghtobjectdata
+		;ld    de,Object015Table.lenghtobjectdata
 		ret  
 
 .Only2RetractingPlatforms:  
@@ -1183,26 +1182,26 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    a,255
 		ld    (AppearingBlocksTable+12),a
 
-		ld    a,(ix+Object015Table.y)
+		ld    a,(ix+roomObjectClass.General.Y)	;(ix+Object015Table.y)
 		ld    (AppearingBlocksTable+0),a
 		ld    (AppearingBlocksTable+6),a
-		ld    a,(ix+Object015Table.x)
+		ld    a,(ix+roomObjectClass.General.X)	;(ix+Object015Table.x)
 		add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
 		ld    (AppearingBlocksTable+1),a
 		ld    (AppearingBlocksTable+7),a
 
-		ld    de,Object015Table.lenghtobjectdata
+		ld    de,roomObjectClass.General.numBytes	;Object015Table.lenghtobjectdata
 		add   ix,de                           ;next retracting platform
 
-		ld    a,(ix+Object015Table.y)
+		ld    a,(ix+roomObjectClass.General.Y)	;(ix+Object015Table.y)
 		ld    (AppearingBlocksTable+3),a
 		ld    (AppearingBlocksTable+9),a
-		ld    a,(ix+Object015Table.x)
+		ld    a,(ix+roomObjectClass.General.X)	;(ix+Object015Table.x)
 		add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
 		ld    (AppearingBlocksTable+4),a
 		ld    (AppearingBlocksTable+10),a
 
-		ld    de,Object015Table.lenghtobjectdata
+		;ld    de,Object015Table.lenghtobjectdata
 		ret
 
 .Only1RetractingPlatform:
@@ -1213,15 +1212,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    a,255		;eod
 		ld    (AppearingBlocksTable+6),a
 
-		ld    a,(ix+Object015Table.y)
+		ld    a,(ix+roomObjectClass.General.Y)	;(ix+Object015Table.y)
 		ld    (AppearingBlocksTable+0),a
 		ld    (AppearingBlocksTable+3),a
-		ld    a,(ix+Object015Table.x)
+		ld    a,(ix+roomObjectClass.General.X)	;(ix+Object015Table.x)
 		add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
 		ld    (AppearingBlocksTable+1),a
 		ld    (AppearingBlocksTable+4),a
 
-		ld    de,Object015Table.lenghtobjectdata
+		ld    de,roomObjectClass.General.numBytes	;Object015Table.lenghtobjectdata
 		ret
 
 ;Find number of sequencial equal objects
@@ -2417,7 +2416,7 @@ Object014Table:
 		db isAliveSs,isNotSprite|dw BreakableWall|db 0000|dw 000 |db 00,00|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 255,movementpatterns2block| ds fill-1
 
 
-
+;015-PlatformRetracting
 Object015Table:               ;retracting platform (handler)
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
           db 1,        0|dw AppBlocksHandler    |db 0*00|dw 0*00|db 00,00|dw CleanOb1,0 db 0,0,0,                     -001,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
