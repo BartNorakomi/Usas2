@@ -72,23 +72,18 @@ phase MovementPatterns1Address
 ;BossRatty
 ;BossRattyHandler
 
-ZombieSpawnPoint:
+;062-ZombieSpawnPoint
 ;v1=Zombie Spawn Timer
 ;v2=Max Number Of Zombies
 ;v3=Spawn Speed
 ;v4=Face direction and speed
+ZombieSpawnPoint:
 		ld		a,(framecounter)
 		rrca
 		ret		c
 
-		ld    a,(ix+enemies_and_objects.v3)     ;spawn speed: 1=slow. anything else =fast
-; 		cp    1
-; 		jr    z,.Go
-; 		dec   (ix+enemies_and_objects.v1)       ;v1=Zombie Spawn Timer
-; .Go:
-; 		dec   (ix+enemies_and_objects.v1)       ;v1=Zombie Spawn Timer
-; 		ret   nz
-		add		a,(ix+enemies_and_objects.v1)
+		ld		a,(ix+enemies_and_objects.v3)	;.speed
+		add		a,(ix+enemies_and_objects.v1)	;.spawnTimer
 		ld		(ix+enemies_and_objects.v1),A
 		ret		nc
 
@@ -97,40 +92,17 @@ ZombieSpawnPoint:
 		ld		bc,16                               ;all hardware sprites need to be put 16 pixel to the right
 		add		hl,bc
 		ld		c,(ix+enemies_and_objects.y)
-		ld		b,(ix+enemies_and_objects.v2)       ;v2=Max Number Of Zombies (max4)
-		ld		a,(ix+enemies_and_objects.v4)       ;v4=initial direction
-		; cp		3
-		; ld		a,1
-		; jr		z,.HorizontalMovementSpeedSet
-		; ld		a,-1
-; .HorizontalMovementSpeedSet:
+		ld		b,(ix+enemies_and_objects.v2)       ;.maxSpawn
+		ld		a,(ix+enemies_and_objects.v4)       ;.face
 		ex		af,af'
 
-		ld    de,lenghtenemytable
+		ld		de,lenghtenemytable
 .SearchEmptySlot:
-		add   ix,de
-		bit   0,(ix+enemies_and_objects.Alive?)
-		jr    z,.EmptySlotFound
+		add		ix,de
+		bit		0,(ix+enemies_and_objects.Alive?)
+		jr		z,.EmptySlotFound
 		djnz	.SearchEmptySlot
 		ret
-		; ld    a,b                                 ;Max Number Of Zombies
-		; cp    1
-		; ret   z
-		; add   ix,de
-		; bit   0,(ix+enemies_and_objects.Alive?)
-		; jr    z,.EmptySlotFound
-		; ld    a,b                                 ;Max Number Of Zombies
-		; cp    2
-		; ret   z
-		; add   ix,de
-		; bit   0,(ix+enemies_and_objects.Alive?)
-		; jr    z,.EmptySlotFound
-		; ld    a,b                                 ;Max Number Of Zombies
-		; cp    3
-		; ret   z
-		; add   ix,de
-		; bit   0,(ix+enemies_and_objects.Alive?)
-		; ret   nz
   
 .EmptySlotFound:
 		ld    (ix+enemies_and_objects.alive?),isAliveHs 
