@@ -1590,12 +1590,12 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .tableRecordPointer:	equ 14
 .nrspritesTimes16:      equ 15
 .v1:                    equ 16 | .sx:		equ 16
-.v2:                    equ 17
+.v2:                    equ 17 
 .v3:                    equ 18 | .vMove:	equ 18
 .v4:                    equ 19 | .hMove:	equ 19
 .v5:                    equ 20 | .SnapPlayer?:	equ 20
-.v6:                    equ 21
-.v7:                    equ 22
+.v6:                    equ 21 | .spawnSpeed:	equ 21
+.v7:                    equ 22 | .spawnMax:		equ 22
 .v8:                    equ 23
 .v9:                    equ 24
 .hit?:                  equ 25 | .v10:	equ 25

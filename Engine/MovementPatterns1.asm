@@ -82,7 +82,7 @@ ZombieSpawnPoint:
 		rrca
 		ret		c
 
-		ld		a,(ix+enemies_and_objects.v3)	;.speed
+		ld		a,(ix+enemies_and_objects.spawnSpeed)	;.speed
 		add		a,(ix+enemies_and_objects.v1)	;.spawnTimer
 		ld		(ix+enemies_and_objects.v1),A
 		ret		nc
@@ -92,12 +92,11 @@ ZombieSpawnPoint:
 		ld		bc,16                               ;all hardware sprites need to be put 16 pixel to the right
 		add		hl,bc
 		ld		c,(ix+enemies_and_objects.y)
-		ld		b,(ix+enemies_and_objects.v2)       ;.maxSpawn
 		ld		a,(ix+enemies_and_objects.v4)       ;.face
-		ex		af,af'
 
 		ld		de,lenghtenemytable
-.SearchEmptySlot:
+		ld		b,(ix+enemies_and_objects.spawnMax)       ;.maxSpawn
+.SearchEmptySlot:	;any of the maxSpawn objects?
 		add		ix,de
 		bit		0,(ix+enemies_and_objects.Alive?)
 		jr		z,.EmptySlotFound
@@ -112,7 +111,6 @@ ZombieSpawnPoint:
 		ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
 		ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
 		;  ld    (ix+enemies_and_objects.v3),1       ;v3=Vertical Movement
-		ex    af,af'
 		ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
 		ld    (ix+enemies_and_objects.ny),32       ;ny
 		ld    hl,RetardedZombie
@@ -2023,6 +2021,7 @@ RightCuteMiniBat:
   dw  RightCuteMiniBat3_Char
 
 
+;020-ratFaceBatSpawner
 ;v1=sx software sprite in Vram
 ;v9=face (3=right, 7=left, 0=random)
 ;v10=max number
@@ -2040,10 +2039,10 @@ BigStatueMouth:
   
 ;search for an open slot
 		push  ix
-		pop   iy
+		pop   iy	;spawnerObject
 		ld    de,lenghtenemytable
 
-		ld    a,(ix+enemies_and_objects.v10)  ;max number
+		ld    a,(ix+enemies_and_objects.spawnMax)  ;max number
 		dec   a
 		jr    z,.MaxNum1
 		dec   a
@@ -2083,7 +2082,8 @@ BigStatueMouth:
   cp    60
   call  z,.CloseMouth
   ret
-  
+
+ ;IX=childObject,IY=parentObject 
 .EmptySlotFound:
 		ld    a,(framecounter)
 		or    a
@@ -2092,7 +2092,7 @@ BigStatueMouth:
 		call  z,.CloseMouth
 		cp    50
 		ret   nz  
-		ld    a,(iy+enemies_and_objects.v1)	;sx
+		ld    a,(iy+enemies_and_objects.sx)
 		cp    BigStatueMouthOpenSx
 		ret   nz
 
@@ -2112,20 +2112,22 @@ BigStatueMouth:
 		ld    (ix+enemies_and_objects.v5),a       ;v5=repeating steps
 		ld    (ix+enemies_and_objects.v6),a       ;v6=pointer to movement table
 
-		ld    a,(iy+enemies_and_objects.v9)       ;v9=face (3=right, 7=left, 0=random)
-		cp    3
-		ld    b,+1
-		jr    z,.FaceFound
-		cp    7
-		ld    b,-1
-		jr    z,.FaceFound
-		ld    a,r
-		and   1
-		jr    nz,.FaceFoundRandom
-		ld    a,-1
-.FaceFoundRandom:
-		ld    b,a
-.FaceFound:
+; 		ld    a,(iy+enemies_and_objects.v9)       ;v9=face (3=right, 7=left, 0=random)
+; 		cp    3
+; 		ld    b,+1
+; 		jr    z,.FaceFound
+; 		cp    7
+; 		ld    b,-1
+; 		jr    z,.FaceFound
+; 		ld    a,r
+; 		and   1
+; 		jr    nz,.FaceFoundRandom
+; 		ld    a,-1
+; .FaceFoundRandom:
+; 		ld    b,a
+; .FaceFound:
+		; ld		b,(iy+enemies_and_objects.hMove)
+		ld  b,1	;!! ro: temp until bat hMove is in place
 		ld    (ix+enemies_and_objects.v8),b       ;v8=face left (-1) or face right (1)  
 		ld    hl,CuteMiniBat
 		ld    (ix+enemies_and_objects.movementpattern),l
@@ -2137,10 +2139,10 @@ BigStatueMouth:
 		ret  
 
 .OpenMouth:
-		ld    (iy+enemies_and_objects.v1),BigStatueMouthOpenSx
+		ld    (iy+enemies_and_objects.sx),BigStatueMouthOpenSx
 		ret
 .CloseMouth:
-		ld    (iy+enemies_and_objects.v1),BigStatueMouthClosedSx
+		ld    (iy+enemies_and_objects.sx),BigStatueMouthClosedSx
 		ret
 
 
@@ -7274,7 +7276,7 @@ RetardedZombie:
 ;v3=Vertical Movement
 ;v4=Horizontal Movement
 ;v5=Wait Timer
-		call  .HandlePhase                        ;(0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)  ;out hl -> sprite character data to out to Vram
+		call  .HandlePhase                        ;;out hl -> sprite character data to out to Vram
 		exx                                       ;store hl. hl now points to color data
 		call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
 		ld		a,RetardZombieSpriteblock           ;set block at $a000, page 2 - block containing sprite data

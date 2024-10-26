@@ -272,8 +272,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
   jp    z,.Object061                    ;glass ball (GlassBallActivator)
   cp    62
   jp    z,.Object062                    ;zombie spawn point
-;  cp    143
-;  jp    z,.Object143                    ;retarded zombie
+  cp    143
+  jp    z,.Object143                    ;retarded zombie
   cp    128
   jp    z,.Object128                    ;huge blob (HugeBlob)
   cp    129
@@ -455,15 +455,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ret
 
 ;!! ro;wip
-;out: DE=numbBytes, HL=objectX, A=objectY
+;out: DE=numbBytes, HL=objectX, A=objectY, B=maxSpawn
 .applyObjectClassEnemySpawn:
 		ld		b,(ix+roomObjectClass.EnemySpawn.Speed)
-		ld		(iy+enemies_and_objects.v3),b
+		ld		(iy+enemies_and_objects.spawnSpeed),b
 		ld		a,(ix+roomObjectClass.EnemySpawn.Face)
 		call	.getfacing
 		ld		(iy+enemies_and_objects.v4),b
-		ld		a,(ix+roomObjectClass.EnemySpawn.MaxNum)
-		ld		(iy+enemies_and_objects.v2),a
+		ld		b,(ix+roomObjectClass.EnemySpawn.MaxNum)
+		ld		(iy+enemies_and_objects.spawnMax),b
 		ld		l,(ix+roomObjectClass.EnemySpawn.X)
 		ld		h,0
 		add		hl,hl
@@ -1412,26 +1412,34 @@ SetObjects:                             ;after unpacking the map to ram, all the
   		ld		hl,Object020Table			;object=RatFace
 		call	.copyObjectTemplate
 
-;set x
-		ld    a,(ix+Object020Table.x)
-		add   a,4                             ;10 pix to the right
-		ld    l,a
-		ld    h,0
-		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		ld    (iy+enemies_and_objects.x),l
-		ld    (iy+enemies_and_objects.x+1),h
-;set y
-		ld    a,(ix+Object020Table.y)
-		add   a,24                            ;8 pix down
-		ld    (iy+enemies_and_objects.y),a
+		; ld    a,(ix+Object020Table.x)
+		; add   a,4                             ;n pix to the right
+		; ld    l,a
+		; ld    h,0
+		; add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
+		; ld    (iy+enemies_and_objects.x),l
+		; ld    (iy+enemies_and_objects.x+1),h
+		; ld    a,(ix+Object020Table.y)
+		; add   a,24                            ;n pix down
+		; ld    (iy+enemies_and_objects.y),a
+		; ld    a,(ix+Object020Table.face)
+		; ld    (iy+enemies_and_objects.v9),a 
+		; ld    b,(ix+Object020Table.MaxNum)
+		; ld    (iy+enemies_and_objects.spawnMax),b  ;max number
+		call	.applyObjectClassEnemySpawn
+		ld		de,8
+		add		hl,de
+		ld		(iy+enemies_and_objects.x),l
+		ld		(iy+enemies_and_objects.x+1),h
+		add		a,24
+		ld		(iy+enemies_and_objects.y),a
 
-		ld    a,(ix+Object020Table.face)
-		ld    (iy+enemies_and_objects.v9),a   ;face
-
-		ld    b,(ix+Object020Table.MaxNum)
-		ld    (iy+enemies_and_objects.v10),b  ;max number
-
-		ld    hl,CuteMiniBatTable             ;cute mini bat
+		ld		a,b	;(iy+enemies_and_objects.spawnMax)	;(iy+enemies_and_objects.v2)
+		cp		7
+		jr		c,.020l0
+		ld 		a,6	;max
+.020l0:	ld		b,a
+		ld		hl,CuteMiniBatTable             ;147-bat
 .AddCuteMiniBatLoop:
 		push  bc
 		call  .AddCuteMiniBat                       ;adds a cute mini bat to the room's object table
@@ -1506,50 +1514,29 @@ SetObjects:                             ;after unpacking the map to ram, all the
   ret    
 
 
-;zombie spawn point (ZombieSpawnPoint)
+;062-ZombieSpawnPoint
 ;v1=Zombie Spawn Timer
 ;v2=Max Number Of Zombies
-;v3=Spawn Speed
+;v3=Speed
 ;v4=Face direction
 ;class=EnemySpawn
 .Object062:                           
 		ld		hl,Object062Table		;spawnPoint
 		call	.copyObjectTemplate
 		call	.SetAlive?BasedOnEngineType		;!! ro:why?
-
-;replace the next part with applyClass function (wip)
-		;set x
-		; ld    a,(ix+Object062Table.x)
-		; ld    l,a
-		; ld    h,0
-		; add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		; ld    (iy+enemies_and_objects.x),l
-		; ld    (iy+enemies_and_objects.x+1),h
-		; ;set y
-		; ld    a,(ix+Object062Table.y)
-		; ld    (iy+enemies_and_objects.y),a
-		; ;set Max Number Of Zombies
-		; ld    a,(ix+Object062Table.MaxNum)
-		; ld    (iy+enemies_and_objects.v2),a
-		; ;set Zombies spawn speed
-		; ld    a,(ix+Object062Table.speed)
-		; ld    (iy+enemies_and_objects.v3),a
-		; ;set Zombies face direction
-		; ld    a,(ix+Object062Table.face)
-		; ld    (iy+enemies_and_objects.v4),a
 		call	.applyObjectClassEnemySpawn
 
 		call	.SetGfxZombieSpawnPoint
-		ld		a,(ix+Object062Table.MaxNum)
+		ld		a,(iy+enemies_and_objects.spawnMax)	;(iy+enemies_and_objects.v2)
 		dec		a
-		and		0x03
+		and		0x03	;max 4
 		inc		a
 		ld		b,a
 		call	.addZombies
 		ld		de,roomobjectClass.enemyspawn.numBytes
 		ret
 
-;add [b] extra zombie objects
+;add [b] zombie objects
 .addZombies:
 		push	bc
 		ld		de,lenghtenemytable	;next objectRecord
@@ -1572,6 +1559,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		hl,Object143Table               ;zombie
 		call	.copyObjectTemplate
 		call	.applyObjectSpriteProperties	; call	SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+		ld		(iy+enemies_and_objects.Alive?),0	;mark inactive
 		ret
 
 .SetGfxZombieSpawnPoint:
@@ -2119,44 +2107,15 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ret
 
 
+;143-zombie
+.Object143:
+		ld		hl,Object143Table
+		call	.copyObjectTemplate
+		call	.applyObjectClassEnemy
+		call	.applyObjectSpriteProperties
+		ld		(iy+enemies_and_objects.v2),1	;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
+		ret
 
-
-;  .Object143:                           ;retarded zombie
-;v1=Animation Counter
-;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
-;v3=Vertical Movement
-;v4=Horizontal Movement
-;v5=Wait Timer
-;  ld    hl,Object143Table
-;  push  iy
-;  pop   de                              ;enemy object table
-;  ld    bc,lenghtenemytable
-;  ldir                                  ;copy enemy table
-
-;  call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
-
-  ;set x
-;  ld    a,(ix+Object143Table.x)
-;  add   a,8                             ;all hardware sprites need to be put 16 pixel to the right
-;  ld    l,a
-;  ld    h,0
-;  add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-;  ld    (iy+enemies_and_objects.x),l
-;  ld    (iy+enemies_and_objects.x+1),h
-
-  ;set y
-;  ld    a,(ix+Object143Table.y)
-;  ld    (iy+enemies_and_objects.y),a
-
-  ;set facing direction
-;  ld    a,(ix+Object143Table.face)
-;  cp    3
-;  jr    z,.EndCheckMovingRight2          ;the standard movement direction of any object is right, if this is the facing direction, then we don't need to change movement direction
-;  ld    (iy+enemies_and_objects.v4),-1  ;v4=Horizontal Movement
-;  .EndCheckMovingRight2:
-
-;  ld    de,Object143Table.lenghtobjectdata
-;  ret
 
 SetCleanObjectNumber:                   ;each object has a reference cleanup table
   exx
@@ -2407,7 +2366,7 @@ Object020Table:               ;bat spawner (BigStatueMouth)
 .MaxNum: equ 5
 .lenghtobjectdata: equ 6
 
-;Cute Mini Bat
+;147-bat / Cute Mini Bat
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 CuteMiniBatTable:
          db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,095, 0|db 001,movementpatterns1block| ds fill-1
@@ -2444,18 +2403,12 @@ GlassBall1Data:
 Object062Table:
 		;alive?,Sprite?,Movement Pattern,   y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 		db  isAliveSs,0|dw ZombieSpawnPoint|db 0|dw 0|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+04,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.face: equ 3
-.speed: equ 4
-.MaxNum: equ 5
-.lenghtobjectdata: equ 6
+
 
 ;retarded zombie
 Object143Table:
 		;alive?,Sprite?,Movement Pattern,        y,   x,   ny,nx,   spnrinspat,spatadr,  nrsprites,  nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-		db isNotAlive,isSprite|dw RetardedZombie|db 0|dw 0|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04,04*16,   +00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
+		db isAliveHs,isSprite|dw RetardedZombie|db 0|dw 0|db 32,16|dw 12*16,spat+(12*2)|db 72-(04*6),04,04*16,   +00,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
 
 
 ;128-hugeBlob
