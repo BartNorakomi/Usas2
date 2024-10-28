@@ -1596,7 +1596,7 @@ enemies_and_objects:    rb  lenghtenemytable * amountofenemies
 .v5:                    equ 20 | .SnapPlayer?:	equ 20
 .v6:                    equ 21 | .spawnSpeed:	equ 21
 .v7:                    equ 22 | .spawnMax:		equ 22
-.v8:                    equ 23
+.v8:                    equ 23 | .phase:	equ 23
 .v9:                    equ 24
 .hit?:                  equ 25 | .v10:	equ 25
 .life:                  equ 26 | .v11:	equ 26

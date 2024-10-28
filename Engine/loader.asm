@@ -1411,21 +1411,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 .Object020:
   		ld		hl,Object020Table			;object=RatFace
 		call	.copyObjectTemplate
-
-		; ld    a,(ix+Object020Table.x)
-		; add   a,4                             ;n pix to the right
-		; ld    l,a
-		; ld    h,0
-		; add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		; ld    (iy+enemies_and_objects.x),l
-		; ld    (iy+enemies_and_objects.x+1),h
-		; ld    a,(ix+Object020Table.y)
-		; add   a,24                            ;n pix down
-		; ld    (iy+enemies_and_objects.y),a
-		; ld    a,(ix+Object020Table.face)
-		; ld    (iy+enemies_and_objects.v9),a 
-		; ld    b,(ix+Object020Table.MaxNum)
-		; ld    (iy+enemies_and_objects.spawnMax),b  ;max number
 		call	.applyObjectClassEnemySpawn
 		ld		de,8
 		add		hl,de
@@ -1433,50 +1418,52 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		(iy+enemies_and_objects.x+1),h
 		add		a,24
 		ld		(iy+enemies_and_objects.y),a
+		ld		(iy+enemies_and_objects.phase),0
+		ld		(iy+enemies_and_objects.v5),0
 
 		ld		a,b	;(iy+enemies_and_objects.spawnMax)	;(iy+enemies_and_objects.v2)
-		cp		7
+		cp		BigStatueMouth.maxBats
 		jr		c,.020l0
-		ld 		a,6	;max
+		ld 		a,BigStatueMouth.maxBats
 .020l0:	ld		b,a
-		ld		hl,CuteMiniBatTable             ;147-bat
-.AddCuteMiniBatLoop:
-		push  bc
-		call  .AddCuteMiniBat                       ;adds a cute mini bat to the room's object table
-		pop   bc
-		djnz  .AddCuteMiniBatLoop
+		call	.addBats
+		call	.LoadObject020Gfx
+		ld		de,roomobjectClass.enemyspawn.numBytes
+		ret
 
-		ld    a,(BigEnemyPresentInVramPage3)  ;1=big statue mouth, 2=huge blob, 3=huge spider
-		cp    1
-		jr    z,.EndPutObject020
-		ld    a,1
-		ld    (BigEnemyPresentInVramPage3),a  ;1=big statue mouth, 2=huge blob, 3=huge spider
+.addBats:
+		push	bc
+		ld		de,lenghtenemytable	;next objectRecord
+		add		iy,de
+		call	.object147Spawn
+		pop		bc
+		djnz	.addBats
+		ret
 
  ;write big statue mouth to (216,0) page 3
-		ld    a,1
-		ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-		ld    hl,$4000 + (016*128) + (000/2) - 128  ;(y*128) + (x/2)
-		ld    de,$8000 + (216*128) + (000/2) - 128  ;(y*128) + (x/2)
-		ld    bc,$0000 + (031*256) + (056/2)        ;(ny*256) + (nx/2)
-		ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
-		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+.LoadObject020Gfx:
+		ld		a,(BigEnemyPresentInVramPage3)  ;1=big statue mouth, 2=huge blob, 3=huge spider
+		cp		1
+		ret		z
+		ld		a,1
+		ld		(BigEnemyPresentInVramPage3),a  ;1=big statue mouth, 2=huge blob, 3=huge spider
 
-.EndPutObject020:
-		ld    de,Object020Table.lenghtobjectdata
+		ld		a,1
+		ld		(PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+		ld		hl,$4000 + (016*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld		de,$8000 + (Object020Table.sy*128) + (000/2) - 128  ;(y*128) + (x/2)
+		ld		bc,$0000 + (031*256) + (056/2)        ;(ny*256) + (nx/2)
+		ld		a,GfxObjectsForVramBlock              ;block to copy graphics from
+		call	CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 		ret
 
-.AddCuteMiniBat:                      ;add a cute mini bat to the room's object table 
-		ld    de,lenghtenemytable             ;lenght 1 object in object table
-		add   iy,de                           ;next object in object table
-
-		push  iy
-		pop   de                              ;enemy object table
-		ld    bc,lenghtenemytable
-		ldir                                  ;copy enemy table
-
-		call  SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+;147-bat
+.object147Spawn:
+		ld		hl,object147Table	;CuteMiniBatTable               ;bat
+		call	.copyObjectTemplate
+		call	.applyObjectSpriteProperties	; call	SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+		ld		(iy+enemies_and_objects.Alive?),0	;mark inactive
 		ret
-
 
 
 
@@ -2354,27 +2341,22 @@ Object016Table:
 		; db 1,   0|dw PlatformOmniDirectionally|db 8*19|dw 8*25|db 16,16|dw CleanOb2,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 
 
-Object020Table:               ;bat spawner (BigStatueMouth)
-;Big Statue Mouth
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-          db 1,        0|dw BigStatueMouth    |db 8*09+4|dw 8*13|db 31,28|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.face: equ 3
-.speed: equ 4
-.MaxNum: equ 5
-.lenghtobjectdata: equ 6
+;bat spawner (BigStatueMouth)
+Object020Table:
+.sy:	equ	216
+       ;alive?,Sprite?,Movement Pattern,           y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+		db isAliveSs,isNotSprite|dw BigStatueMouth|db 0|dw 0|db 31,28|dw CleanOb1,0 db 0,0,0,                     BigStatueMouthClosedSx,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 
 ;147-bat / Cute Mini Bat
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-CuteMiniBatTable:
-         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,095, 0|db 001,movementpatterns1block| ds fill-1
-         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,180, 0|db 001,movementpatterns1block| ds fill-1
-         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,045, 0|db 001,movementpatterns1block| ds fill-1
-         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,160, 0|db 001,movementpatterns1block| ds fill-1
-         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,030, 0|db 001,movementpatterns1block| ds fill-1
-         db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,110, 0|db 001,movementpatterns1block| ds fill-1
+object147Table:
+; CuteMiniBatTable:
+		;alive?,Sprite?,Movement Pattern,        y,   x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+			db isAliveHs,isSprite|dw CuteMiniBat|db 0|dw 0|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,095, 0|db 001,movementpatterns1block| ds fill-1
+        ;  db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,180, 0|db 001,movementpatterns1block| ds fill-1
+        ;  db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,045, 0|db 001,movementpatterns1block| ds fill-1
+        ;  db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,160, 0|db 001,movementpatterns1block| ds fill-1
+        ;  db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,030, 0|db 001,movementpatterns1block| ds fill-1
+        ;  db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,110, 0|db 001,movementpatterns1block| ds fill-1
 
 
 Object061Table:               ;glass ball (& GlassBallActivator)

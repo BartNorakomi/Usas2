@@ -89,8 +89,6 @@ ZombieSpawnPoint:
 
 		ld		l,(ix+enemies_and_objects.x)
 		ld		h,(ix+enemies_and_objects.x+1)
-		ld		bc,16                               ;all hardware sprites need to be put 16 pixel to the right
-		add		hl,bc
 		ld		c,(ix+enemies_and_objects.y)
 		ld		a,(ix+enemies_and_objects.v4)       ;.face
 
@@ -104,17 +102,19 @@ ZombieSpawnPoint:
 		ret
   
 .EmptySlotFound:
-		ld    (ix+enemies_and_objects.alive?),isAliveHs 
-		ld    (ix+enemies_and_objects.y),c
-		ld    (ix+enemies_and_objects.x),l
-		ld    (ix+enemies_and_objects.x+1),h
-		ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
-		ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
+		ld		(ix+enemies_and_objects.alive?),isAliveHs
+		ld		bc,16                               ;all hardware sprites need to be put 16 pixel to the right
+		add		hl,bc
+		ld		(ix+enemies_and_objects.y),c
+		ld		(ix+enemies_and_objects.x),l
+		ld		(ix+enemies_and_objects.x+1),h
+		ld		(ix+enemies_and_objects.v1),0       ;v1=Animation Counter
+		ld		(ix+enemies_and_objects.v2),0       ;v2=Phase (0=rising from grave, 1=walking, 2=falling, 3=turning, 4=sitting)
 		;  ld    (ix+enemies_and_objects.v3),1       ;v3=Vertical Movement
 		ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
 		ld    (ix+enemies_and_objects.ny),32       ;ny
 		ld    hl,RetardedZombie
-		;(re)set zombie properties, earlier version might have died and turned into a coin
+;(re)set object properties, earlier incarnation might have died and turned into a coin
 		ld    (ix+enemies_and_objects.movementpattern),l
 		ld    (ix+enemies_and_objects.movementpattern+1),h
 		ld    (ix+enemies_and_objects.nrsprites),72-(04*6)
@@ -2023,86 +2023,107 @@ RightCuteMiniBat:
 
 ;020-ratFaceBatSpawner
 ;v1=sx software sprite in Vram
+;v2=phase. 0=idle, 1=openmouth, 2=spawning, 3=closemouth
 ;v9=face (3=right, 7=left, 0=random)
 ;v10=max number
 BigStatueMouthClosedSx: equ 00
 BigStatueMouthOpenSx:   equ 28
 BigStatueMouth:
-		ld    a,216+000		;!! ro:magic number
+.phaseIdle:         equ 0
+.phaseOpenMouth:    equ 1
+.phaseSpawning:     equ 2
+.phaseClosingMouth: equ 3
+.maxBats:           equ 3
+
+;treat this as a animation object, and plot it every frame
+		ld    a,Object020Table.sy
 		ld    (CopyObject+sy),a  
 		ld    a,3
 		ld    (CopyObject+spage),a
-
 		call  OnlyPutVramObjectDontEraseFastCopy
 		ld    a,1
 		ld    (CopyObject+spage),a
-  
-;search for an open slot
-		push  ix
-		pop   iy	;spawnerObject
-		ld    de,lenghtenemytable
 
-		ld    a,(ix+enemies_and_objects.spawnMax)  ;max number
-		dec   a
-		jr    z,.MaxNum1
-		dec   a
-		jr    z,.MaxNum2
-		dec   a
-		jr    z,.MaxNum3
-		dec   a
-		jr    z,.MaxNum4
-		dec   a
-		jr    z,.MaxNum5
+		ld		a,(framecounter)	;skip every 1 frame to smooth stuff out
+		rrca
+		ret		c
+		; call	nc,.HandlePhase
+		; ret
+.HandlePhase:
+		ld		a,(ix+enemies_and_objects.phase)
+		cp		1
+		jp		c,.idle
+		jp		z,.openmouth
+		cp		3
+		jp		c,.spawning
+		jp		z,.closingMouth
+		ret
 
-  .MaxNum6:
-  add   ix,de
-  bit   0,(ix+enemies_and_objects.Alive?)
-  jr    z,.EmptySlotFound
-  .MaxNum5:
-  add   ix,de
-  bit   0,(ix+enemies_and_objects.Alive?)
-  jr    z,.EmptySlotFound
-  .MaxNum4:
-  add   ix,de
-  bit   0,(ix+enemies_and_objects.Alive?)
-  jr    z,.EmptySlotFound
-  .MaxNum3:
-  add   ix,de
-  bit   0,(ix+enemies_and_objects.Alive?)
-  jr    z,.EmptySlotFound
-  .MaxNum2:
-  add   ix,de
-  bit   0,(ix+enemies_and_objects.Alive?)
-  jr    z,.EmptySlotFound
-  .MaxNum1:
-  add   ix,de
-  bit   0,(ix+enemies_and_objects.Alive?)
-  jr    z,.EmptySlotFound
-  ld    a,(framecounter)
-  cp    60
-  call  z,.CloseMouth
-  ret
+.idle:    
+		ld		a,(ix+enemies_and_objects.spawnSpeed)
+		add		a,(ix+enemies_and_objects.v5)	;.timer
+		ld		(ix+enemies_and_objects.v5),A
+		ret		nc
+		ld		(ix+enemies_and_objects.v5),-1
+		ld		(ix+enemies_and_objects.phase),.phaseOpenMouth
+		ret
+		
+.openMouth:
+		ld		a,(ix+enemies_and_objects.v5)
+		inc		a
+		ld		(ix+enemies_and_objects.v5),A
+		call	z,.putOpenMouth
+		cp		10
+		ret		C
+		ld		(ix+enemies_and_objects.phase),.phaseSpawning
+		ret
 
- ;IX=childObject,IY=parentObject 
+.spawning:
+		ld		(ix+enemies_and_objects.v5),-1
+		ld		(ix+enemies_and_objects.phase),.phaseClosingMouth
+
+		ld		l,(ix+enemies_and_objects.x)
+		ld		h,(ix+enemies_and_objects.x+1)
+		ld		c,(ix+enemies_and_objects.y)
+		; ld		a,(ix+enemies_and_objects.v4)
+		ld		de,lenghtenemytable
+		ld		b,(ix+enemies_and_objects.spawnMax)       ;.maxSpawn
+.SearchEmptySlot:	;any of the maxSpawn objects?
+		add		ix,de
+		bit		0,(ix+enemies_and_objects.Alive?)
+		jr		z,.EmptySlotFound
+		djnz	.SearchEmptySlot
+		ret
+
+.closingMouth:
+		ld		a,(ix+enemies_and_objects.v5)
+		inc		a
+		ld		(ix+enemies_and_objects.v5),A
+		cp		10
+		ret		C
+		call	.putCloseMouth
+		ld		(ix+enemies_and_objects.phase),.phaseIdle
+		ld		(ix+enemies_and_objects.v5),0
+		ret
+
+.putOpenMouth:
+		ld    (ix+enemies_and_objects.sx),BigStatueMouthOpenSx
+		ret
+
+.putCloseMouth:
+		ld    (ix+enemies_and_objects.sx),BigStatueMouthClosedSx
+		ret
+
 .EmptySlotFound:
-		ld    a,(framecounter)
-		or    a
-		call  z,.OpenMouth
-		cp    60
-		call  z,.CloseMouth
-		cp    50
-		ret   nz  
-		ld    a,(iy+enemies_and_objects.sx)
-		cp    BigStatueMouthOpenSx
-		ret   nz
+		ld		(ix+enemies_and_objects.alive?),isAliveHs
+		ld		a,c
+		add		a,15
+		ld		(ix+enemies_and_objects.y),a
+		ld		bc,16+4		;hwSpr always 16 to the right, plus 4 for midface
+		add		hl,bc
+		ld    (ix+enemies_and_objects.x),L
+		ld    (ix+enemies_and_objects.x+1),h
 
-		ld    (ix+enemies_and_objects.alive?),-1 
-		ld    a,(iy+enemies_and_objects.y)
-		add   a,15
-		ld    (ix+enemies_and_objects.y),a
-		ld    a,(iy+enemies_and_objects.x)
-		add   a,20
-		ld    (ix+enemies_and_objects.x),a
 		xor	 a
 		ld    (ix+enemies_and_objects.x+1),a
 		ld    (ix+enemies_and_objects.v1),a       ;v1=Animation Counter
@@ -2127,6 +2148,7 @@ BigStatueMouth:
 ; 		ld    b,a
 ; .FaceFound:
 		; ld		b,(iy+enemies_and_objects.hMove)
+;(re)set object properties, earlier incarnation might have died and turned into a coin
 		ld  b,1	;!! ro: temp until bat hMove is in place
 		ld    (ix+enemies_and_objects.v8),b       ;v8=face left (-1) or face right (1)  
 		ld    hl,CuteMiniBat
@@ -2138,12 +2160,7 @@ BigStatueMouth:
 		ld    (ix+enemies_and_objects.life),1
 		ret  
 
-.OpenMouth:
-		ld    (iy+enemies_and_objects.sx),BigStatueMouthOpenSx
-		ret
-.CloseMouth:
-		ld    (iy+enemies_and_objects.sx),BigStatueMouthClosedSx
-		ret
+
 
 
 ;Driping Ooze
@@ -8562,8 +8579,8 @@ OnlyPutVramObjectDontEraseFastCopy:
 
   .ObjectOnRightSideOfScreen:
 ;set sx
-  ld    a,(ix+enemies_and_objects.v1)   ;v1 = sx
-  ld    (CopyObject+sx),a  
+  ld    a,(ix+enemies_and_objects.sx)   ;v1 = sx
+  ld    (CopyObject+sx),a
 ;set copy direction
   ld    a,%0000 0000      ;Copy from left to right
   ld    (CopyObject+copydirection),a
