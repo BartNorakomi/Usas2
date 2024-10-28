@@ -671,10 +671,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 .newObjectRecord:
 		push	hl
 		ld		hl,Object001Table
-		; push	iy
-		; pop		de                              ;=enemy object table
-		; ld		bc,lenghtenemytable
-		; ldir
 		call	.copyObjectTemplate
 		call	SetCleanObjectNumber            ;each object has a reference cleanup table
 		ld		hl,AmountOfPushingStonesInCurrentRoom
@@ -704,15 +700,10 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ret
 	
 .object002AddEyes:
-		; push	iy		;copy object template to objectRecord
-		; pop		de   
-		; ld		bc,lenghtenemytable
-		; ldir
 		call	.copyObjectTemplate
 		call	SetCleanObjectNumber            ;each object has a reference cleanup table
 
 		call	.applyObjectClassGeneral			;transfer class properties, ;out: DE=numbBytes, HL=objectX, A=objectY
-		;ld		a,(iy+enemies_and_objects.y)
 		add		a,3
 		ld		(iy+enemies_and_objects.y),a
 
@@ -1039,6 +1030,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		(iy+enemies_and_objects.v1),Object012Table.sxOn ;v1=sx software sprite in Vram on
 		ret
 
+
 ;057-PlatformMovingMedium
 .Object057:
 		ld		hl,Object057Table
@@ -1060,13 +1052,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    bc,lenghtenemytable*2
 		ldir
 
-  
 ;first let's find total amount of retracting platforms
 		ld    de,roomObjectClass.General.numBytes	;Object015Table.lenghtobjectdata
-		; ld    b,1                             ;amount of retracting platforms
-		; push  ix
-		; call  .FindTotalAmountOfRetractingPlatforms
-		; pop   ix
 		ld		a,roomObject.PlatformRetracting
 		call	.countEqualObjects
 		ld		a,b
@@ -1255,42 +1242,14 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
 ;014-BreakableWall
 .Object014:
-	ld		hl,Object014Table
-	call	.copyObjectTemplate
-
-; ;set x
-; 	ld    l,(ix+Object014Table.x)
-; 	ld    h,c	;=0
-; 	add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-; 	ld    (iy+enemies_and_objects.x),l
-; 	ld    (iy+enemies_and_objects.x+1),h
-; ;set y
-; 	ld    a,(ix+Object014Table.y)
-; 	ld    (iy+enemies_and_objects.y),a
-; ;set nx
-; 	ld    a,(ix+Object014Table.nx)
-; 	add   a,a                             ;*2 (all x values are halved, so *2 for their absolute values)
-; 	ld    (iy+enemies_and_objects.nx),a
-; ;set ny
-; 	ld    a,(ix+Object014Table.ny)
-; 	ld    (iy+enemies_and_objects.ny),a
-; ;set x repair gfx
-; 	ld    l,(ix+Object014Table.repairx)
-; 	ld    h,c ;=0
-; 	add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-; 	ld    (iy+enemies_and_objects.v1),l   ;sx repair gfx
-; 	;  ld    (iy+enemies_and_objects.x+1),h
-; ;set y repair gfx
-; 	ld    a,(ix+Object014Table.repairy)
-; 	ld    (iy+enemies_and_objects.v2),a   ;sy repair gfx
-	; ld    de,Object014Table.lenghtobjectdata
+		ld		hl,Object014Table
+		call	.copyObjectTemplate
 		call	.applyObjectClassBreakableWall
 		push	de
 		call	.CheckWallLeftEdge              ;check if wall is at left edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
 		call	.CheckWallRightEdge             ;check if wall is at right edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
 		pop		de
-		; ld		de,Object014Table.lenghtobjectdata
-  ret  
+		ret  
 
 ;check if wall is at left edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
 .CheckWallLeftEdge: 
@@ -1340,7 +1299,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		sbc   hl,de
 		ret   c
 		jp .remove
-
 
 
 
@@ -1401,7 +1359,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.applyObjectSpriteProperties	; call	SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
 		ld		(iy+enemies_and_objects.Alive?),0	;mark inactive
 		ret
-
 
 
 
@@ -1655,7 +1612,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.applyObjectClassEnemy
 		call	.applyObjectSpriteProperties
 		ret
-		; jp    .SetGeneralHardwareSprite
 
 
 ;132-fireEyeGreen, class=general
@@ -1704,7 +1660,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.copyObjectTemplate
 		call	.applyObjectClassEnemy
 		call	.applyObjectSpriteProperties
-		; call  .SetGeneralHardwareSprite
 
 		push	de
 		ld		hl,Object134Table.knife
@@ -1739,7 +1694,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.applyObjectClassEnemy
 		call	.applyObjectSpriteProperties
 		ret
-		; jp    .SetGeneralHardwareSprite
 
 
 ;137-Treeman, class=enemy
@@ -1749,7 +1703,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.applyObjectClassEnemy
 		call	.applyObjectSpriteProperties
 		ret
-		; jp    .SetGeneralHardwareSprite
 
 
 ;138-Hunchbak, class=enemy
@@ -1759,7 +1712,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.applyObjectClassEnemy
 		call	.applyObjectSpriteProperties
 		ret
-		; jp    .SetGeneralHardwareSprite
 
 
 ;139-Scorpion, class=enemy
@@ -1769,7 +1721,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.applyObjectClassEnemy
 		call	.applyObjectSpriteProperties
 		ret
-		; jp    .SetGeneralHardwareSprite
 
 
 ;140-Beetle, class=enemy
@@ -1785,12 +1736,9 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		hl,Object140Table
 		call	.copyObjectTemplate
 		call	.applyObjectClassEnemy
-;		ld    a,(iy+enemies_and_objects.y)
 		add   2                               ;ny=22, thats 2 below an 8-fold, therefor add 2 to it's y
 		ld    (iy+enemies_and_objects.y),a
 		call	.applyObjectSpriteProperties
-;		ret
-		; jp    .SetGeneralHardwareSprite
 
 ;set face in v8 for this object
 ;!! ro:why not just look at .v4 during operation as well and skip v8?
@@ -1810,7 +1758,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		(iy+enemies_and_objects.v6),0   ;v6=Green Spider(0) / Grey Spider(1)
 		call	.applyObjectSpriteProperties
 		ret
-		; jp    .SetGeneralHardwareSprite
 
 ;142-spiderGrey, class=enemy
 .Object142:
@@ -1820,7 +1767,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		(iy+enemies_and_objects.v6),1   ;v6=Green Spider(0) / Grey Spider(1)
 		call	.applyObjectSpriteProperties
 		ret
-		; jp    .SetGeneralHardwareSprite
 
 
 ;144-boringEyeGreen
@@ -1860,7 +1806,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.applyObjectClassEnemy
 		call	.applyObjectSpriteProperties
 		ret
-		; jp    .SetGeneralHardwareSprite
 
 
 ;148-landstrider, class=enemy
@@ -1869,7 +1814,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.copyObjectTemplate
 		call	.applyObjectClassEnemy
 		call	.applyObjectSpriteProperties
-		; jp    .SetGeneralHardwareSprite
 		exx                                   ;landstider uses 2 sprites when small, but 4 sprites when big, therefor we need to reserve 2 extra sprite positions for this object
 		inc   b                               ;next sprite position in b
 		inc   b                               ;next sprite position in b
@@ -1908,7 +1852,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.applyObjectClassEnemy
 		call	.applyObjectSpriteProperties
 		ret
-		; jp    .SetGeneralHardwareSprite
 
 
 ;151-waspGreen (hwSpr)
@@ -1938,35 +1881,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ret
 
 
-;!! ro: OLD CODE replace with .applyObjectSpriteProperties
-; .SetGeneralHardwareSpriteNotMovingObject:
-; 		call  .SetGeneralHardwareSprite
-; 		ld    de,3                            ;id, x, y
-; 		ret 
-.SetGeneralHardwareSprite:
-; 		call	.copyObjectTemplate
-; 		call	SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
-; ;set x
-; 	;	ld    a,(ix+Object150Table.x)	;ro: if A>256-8 then adding 8 will fail.. use 16 bit
-; 		add   a,8                             ;all hardware sprites need to be put 16 pixel to the right
-; 		ld    l,a
-; 		ld    h,0
-; 		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-; 		ld    (iy+enemies_and_objects.x),l
-; 		ld    (iy+enemies_and_objects.x+1),h
-; ;set y
-; 	;	ld    a,(ix+Object150Table.y)
-; 		ld    (iy+enemies_and_objects.y),a
-; ;set facing direction. Ro: when calling this using class=general, shit is broken cuz it has no FACE prop
-; 	;	ld    a,(ix+Object150Table.face)	;ro: this is not generic, but object150
-; 		cp    3
-; 		jr    z,.EndCheckMovingRight          ;the standard movement direction of any object is right, if this is the facing direction, then we don't need to change movement direction
-; 		ld    a,(iy+enemies_and_objects.v4)   ;v4=Horizontal Movement
-; 		neg
-; 		ld    (iy+enemies_and_objects.v4),a   ;v4=Horizontal Movement
-; .EndCheckMovingRight:
-; 		ld    de,5                            ;id, x, y, face, speed (lenght object data)
-; 		ret
 
 ;154-demonGreen, class=enemy
 ;v1=Animation Counter
@@ -1991,7 +1905,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.SetObjectBelongingToHardwareSprite
 		pop		de
 		ret
-		; jp    .SetGeneralHardwareSprite
 
 ;155-demonRed
 .Object155:
@@ -2016,7 +1929,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.applyObjectClassEnemy
 		call	.applyObjectSpriteProperties
 		ret
-		; jp    .SetGeneralHardwareSprite
 
 
 ;159-glassBallPipe, class=general
@@ -2025,7 +1937,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.copyObjectTemplate
 		call	.applyObjectClassGeneral
 		call	.applyObjectSpriteProperties
-		; call  .SetGeneralHardwareSpriteNotMovingObject
 		dec   (iy+enemies_and_objects.y)      ;should be 1 pixel up
 		dec   (iy+enemies_and_objects.x)      ;should be 1 pixel to the left
 		ret
@@ -2042,13 +1953,13 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
 
 SetCleanObjectNumber:                   ;each object has a reference cleanup table
-  exx
-  ld    (iy+enemies_and_objects.ObjectNumber),l
-  ld    (iy+enemies_and_objects.ObjectNumber+1),h
-  ld    de,CleanObjectTableLenght
-  add   hl,de                           ;set next clean object table for potential next object
-  exx
-  ret
+		exx
+		ld    (iy+enemies_and_objects.ObjectNumber),l
+		ld    (iy+enemies_and_objects.ObjectNumber+1),h
+		ld    de,CleanObjectTableLenght
+		add   hl,de                           ;set next clean object table for potential next object
+		exx
+		ret
 
 SetSPATPositionForThisSprite:           ;we need to define the position this sprite takes in the SPAT
 		exx
