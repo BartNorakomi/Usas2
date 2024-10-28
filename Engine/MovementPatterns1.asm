@@ -1953,7 +1953,6 @@ ret
 		call  .CheckTurnAround                    ;turn around at the left and right edge of screen
 		call  .MoveToTargetY                      ;Move Towards Target Y
 		call  .Move
-
 .Animate:
 		bit   7,(ix+enemies_and_objects.v8)       ;v8=face left (0) or face right (1)  
 		ld    hl,RightCuteMiniBat
@@ -2085,7 +2084,7 @@ BigStatueMouth:
 		ld		l,(ix+enemies_and_objects.x)
 		ld		h,(ix+enemies_and_objects.x+1)
 		ld		c,(ix+enemies_and_objects.y)
-		; ld		a,(ix+enemies_and_objects.v4)
+		ld		a,(ix+enemies_and_objects.v4)
 		ld		de,lenghtenemytable
 		ld		b,(ix+enemies_and_objects.spawnMax)       ;.maxSpawn
 .SearchEmptySlot:	;any of the maxSpawn objects?
@@ -2121,9 +2120,18 @@ BigStatueMouth:
 		ld		(ix+enemies_and_objects.y),a
 		ld		bc,16+4		;hwSpr always 16 to the right, plus 4 for midface
 		add		hl,bc
-		ld    (ix+enemies_and_objects.x),L
-		ld    (ix+enemies_and_objects.x+1),h
-
+		ld		(ix+enemies_and_objects.x),L
+		ld		(ix+enemies_and_objects.x+1),h
+		ld		(ix+enemies_and_objects.v8),a       ;v8=face left (-1) or face right (1)  
+;(re)set object properties, earlier incarnation might have died and turned into a coin
+		ld		hl,CuteMiniBat
+		ld		(ix+enemies_and_objects.movementpattern),l
+		ld		(ix+enemies_and_objects.movementpattern),l
+		ld		(ix+enemies_and_objects.movementpattern+1),h
+		ld		(ix+enemies_and_objects.nrsprites),72-(02*6)
+		ld		(ix+enemies_and_objects.nrspritesSimple),2
+		ld		(ix+enemies_and_objects.nrspritesTimes16),2*16
+		ld		(ix+enemies_and_objects.life),1
 		xor	 a
 		ld    (ix+enemies_and_objects.x+1),a
 		ld    (ix+enemies_and_objects.v1),a       ;v1=Animation Counter
@@ -2132,32 +2140,6 @@ BigStatueMouth:
 		ld    (ix+enemies_and_objects.v4),a       ;v4=Horizontal Movement
 		ld    (ix+enemies_and_objects.v5),a       ;v5=repeating steps
 		ld    (ix+enemies_and_objects.v6),a       ;v6=pointer to movement table
-
-; 		ld    a,(iy+enemies_and_objects.v9)       ;v9=face (3=right, 7=left, 0=random)
-; 		cp    3
-; 		ld    b,+1
-; 		jr    z,.FaceFound
-; 		cp    7
-; 		ld    b,-1
-; 		jr    z,.FaceFound
-; 		ld    a,r
-; 		and   1
-; 		jr    nz,.FaceFoundRandom
-; 		ld    a,-1
-; .FaceFoundRandom:
-; 		ld    b,a
-; .FaceFound:
-		; ld		b,(iy+enemies_and_objects.hMove)
-;(re)set object properties, earlier incarnation might have died and turned into a coin
-		ld  b,1	;!! ro: temp until bat hMove is in place
-		ld    (ix+enemies_and_objects.v8),b       ;v8=face left (-1) or face right (1)  
-		ld    hl,CuteMiniBat
-		ld    (ix+enemies_and_objects.movementpattern),l
-		ld    (ix+enemies_and_objects.movementpattern+1),h
-		ld    (ix+enemies_and_objects.nrsprites),72-(02*6)
-		ld    (ix+enemies_and_objects.nrspritesSimple),2
-		ld    (ix+enemies_and_objects.nrspritesTimes16),2*16
-		ld    (ix+enemies_and_objects.life),1
 		ret  
 
 

@@ -39,12 +39,12 @@
 ;SetObjectXY
 ;MoveObjectWithStepTableNew
 
-
-MoveObjectWithStepTableNew:                 ;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+;v3=y movement, v4=x movement, v5=repeating steps, v6=pointer to movement table
+MoveObjectWithStepTableNew:
   dec   (ix+enemies_and_objects.v5)         ;repeating steps
   jp    p,.moveObject
   
-  .NextStep:
+.NextStep:
   ld    a,(ix+enemies_and_objects.v6)         ;pointer to movement table
   ld    h,0
   ld    l,a
@@ -59,18 +59,18 @@ MoveObjectWithStepTableNew:                 ;v3=y movement, v4=x movement, v5=re
   ex    de,hl
   ld    a,(hl)
 
-  .EndCheckEndTable:
+.EndCheckEndTable:
   ld    (ix+enemies_and_objects.v5),a         ;repeating steps
   inc   hl
   ld    a,(hl)                                ;y movement
-  ld    (ix+enemies_and_objects.v3),a         ;v3=y movement
+  ld    (ix+enemies_and_objects.vMove),a         ;v3=y movement
   inc   hl
   ld    a,(hl)                                ;x movement
-  ld    (ix+enemies_and_objects.v4),a         ;v4=x movement
+  ld    (ix+enemies_and_objects.hMove),a         ;v4=x movement
 
-  .moveObject:
+.moveObject:
   ld    a,(ix+enemies_and_objects.y)          ;y object
-  add   a,(ix+enemies_and_objects.v3)         ;add y movement to y
+  add   a,(ix+enemies_and_objects.vMove)         ;add y movement to y
   ld    (ix+enemies_and_objects.y),a          ;y object
 
   ;8 bit
@@ -79,7 +79,7 @@ MoveObjectWithStepTableNew:                 ;v3=y movement, v4=x movement, v5=re
 ;  ld    (ix+enemies_and_objects.x),a          ;x object
 
   ;16 bit
-  ld    a,(ix+enemies_and_objects.v4)         ;x movement
+  ld    a,(ix+enemies_and_objects.hMove)         ;x movement
   or    a
   ld    d,0
   jp    p,.positive

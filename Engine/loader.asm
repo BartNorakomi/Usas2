@@ -369,7 +369,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		(iy+enemies_and_objects.v10),a  ;speed (in frames)
 
 		ld		a,(ix+roomObjectClass.MovingPlatform.Face)
-		ld		b,1	;step is always one
+		ld		b,1	;step is always one (is it?)
 		call	.getfacing
 		ld		(iy+enemies_and_objects.v3),C	;vMove
 		ld		(iy+enemies_and_objects.v4),b	;hMove
@@ -1003,81 +1003,18 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		add   iy,de                           ;next object in object table
 		call  .SetHugeBlock
 		ld    (iy+enemies_and_objects.v1),2   ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
-  ret
+		ret
 
 .SetHugeBlock:
-		ld    hl,Object010Table
-		push  iy
-		pop   de                              ;enemy object table
-		ld    bc,lenghtenemytable*1           ;1 objects
-		ldir
+		ld		hl,Object010Table
+		call	.copyObjectTemplate
+		call	.applyObjectClassMovingPlatform
 
-		ld    a,(AmountOfSF2ObjectsCurrentRoom)
-		ld    (iy+enemies_and_objects.v2),a   ;v2=framenumber to handle this object on
-		inc   a
-		ld    (AmountOfSF2ObjectsCurrentRoom),a
-;set x (relative to box)
-		ld    a,(ix+Object010Table.xbox)
-		add   a,(ix+Object010Table.relativex)
-		ld    l,a
-		ld    h,0
-		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		ld    (iy+enemies_and_objects.x),l
-		ld    (iy+enemies_and_objects.x+1),h
-;set y (relative to box)
-		ld    a,(ix+Object010Table.ybox)
-		add   a,(ix+Object010Table.relativey)
-		;  sub   a,.HeightHugeBlock/2
-		ld    (iy+enemies_and_objects.y),a
-;set box x left
-		ld    l,(ix+Object010Table.xbox)
-		ld    h,0
-		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		ld    (iy+enemies_and_objects.v6),l   ;v6 and v7=box left (16bit)
-		ld    (iy+enemies_and_objects.v7),h   ;v6 and v7=box left (16bit)
-;set box x right
-		ld    a,(ix+Object010Table.xbox)
-		add   a,(ix+Object010Table.widthbox)
-		sub   a,.WidthHugeBlock/2
-		ld    l,a
-		ld    h,0
-		add   hl,hl                           ;*2 (all x values are halved, so *2 for their absolute values)
-		call  .CheckIfObjectMovementIsWithinAllowedRange
-		ld    (iy+enemies_and_objects.v1-2),l ;v1-2 and v1-1=box right (16bit)
-		ld    (iy+enemies_and_objects.v1-1),h ;v1-2 and v1-1=box right (16bit)
-;set box y top
-		ld    a,(ix+Object010Table.ybox)
-		ld    (iy+enemies_and_objects.v8),a   ;v8=box top
-;set box y bottom
-		add   a,(ix+Object010Table.heightbox)
-		sub   a,.HeightHugeBlock
-		ld    (iy+enemies_and_objects.v9),a   ;v9=box bottom
-;set facing direction
-		ld    a,(ix+Object010Table.face)
-		add   a,a
-		ld    d,0
-		ld    e,a
-		ld    hl,Movementtable-2
-		add   hl,de
-		ld    a,(hl)                          ;y
-;mulu vertical movement with the object speed
-		ld    b,0
-		ld    c,(ix+Object010Table.speed)     ;object speed
-		push  hl
-		call  mulAxBC	;checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
-		ld    (iy+enemies_and_objects.v3),l   ;v3=y movement
-		pop   hl
-		inc   hl
-		ld    a,(hl)                          ;x
-
-;We multiplay the horizontal movement with the object speed
-		ld    b,0
-		ld    c,(ix+Object010Table.speed)     ;object speed
-		call  mulAxBC	;checktile.Mult12                ;Multiply 8-bit value with a 16-bit value. In: Multiply A with BC. Out: HL = result 
-		ld    (iy+enemies_and_objects.v4),l   ;v4=x movement
-		ld    de,Object010Table.lenghtobjectdata
-		ret   
-
+		ld		a,(AmountOfSF2ObjectsCurrentRoom)
+		ld		(iy+enemies_and_objects.v2),a   ;v2=framenumber to handle this object on
+		inc		a
+		ld		(AmountOfSF2ObjectsCurrentRoom),a
+		ret
 
   
 ;011-PlatformMovingSmall
@@ -1411,7 +1348,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 .Object020:
   		ld		hl,Object020Table			;object=RatFace
 		call	.copyObjectTemplate
-		call	.applyObjectClassEnemySpawn
+		call	.applyObjectClassEnemySpawn ;out: DE=numbBytes, HL=objectX, A=objectY, B=maxSpawn
 		ld		de,8
 		add		hl,de
 		ld		(iy+enemies_and_objects.x),l
@@ -1421,12 +1358,12 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		(iy+enemies_and_objects.phase),0
 		ld		(iy+enemies_and_objects.v5),0
 
-		ld		a,b	;(iy+enemies_and_objects.spawnMax)	;(iy+enemies_and_objects.v2)
-		cp		BigStatueMouth.maxBats
-		jr		c,.020l0
 		ld 		a,BigStatueMouth.maxBats
-.020l0:	ld		b,a
-		call	.addBats
+		cp		b
+		jr		nc,.020l0
+		ld		(iy+enemies_and_objects.spawnMax),a
+		ld		b,a
+.020l0:	call	.addBats
 		call	.LoadObject020Gfx
 		ld		de,roomobjectClass.enemyspawn.numBytes
 		ret
@@ -2227,34 +2164,23 @@ Object008Table:
 
 
 Object010Table:               ;platform
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
-          db 2,        0|dw HugeBlock           |db 8*06|dw 8*09|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movementpatterns1block| ds fill-1
-.ID: equ 0
-.relativex: equ 1
-.relativey: equ 2
-.xbox: equ 3
-.ybox: equ 4
-.widthbox: equ 5
-.heightbox: equ 6
-.face: equ 7
-.speed: equ 8
-.active: equ 9
-.lenghtobjectdata: equ 10
+       ;alive?,Sprite?,Movement Pattern,        y,  x,   ny,nx,Objectnr#					,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
+          db isAliveSf2,isNotSprite|dw HugeBlock|db 0|dw 0|db 48,48|dw 00000000,0 db 0,0,0,	+00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movementpatterns1block| ds fill-1
 
-Object010bTable:               ;platform
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
-          db 2,        0|dw HugeBlock           |db 8*06|dw 8*09|db 24,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movementpatterns1block| ds fill-1
-.ID: equ 0
-.relativex: equ 1
-.relativey: equ 2
-.xbox: equ 3
-.ybox: equ 4
-.widthbox: equ 5
-.heightbox: equ 6
-.face: equ 7
-.speed: equ 8
-.active: equ 9
-.lenghtobjectdata: equ 10
+; Object010bTable:               ;platform
+;        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
+;           db 2,        0|dw HugeBlock           |db 8*06|dw 8*09|db 24,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movementpatterns1block| ds fill-1
+; .ID: equ 0
+; .relativex: equ 1
+; .relativey: equ 2
+; .xbox: equ 3
+; .ybox: equ 4
+; .widthbox: equ 5
+; .heightbox: equ 6
+; .face: equ 7
+; .speed: equ 8
+; .active: equ 9
+; .lenghtobjectdata: equ 10
 
 Object010cTable:               ;platform
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
