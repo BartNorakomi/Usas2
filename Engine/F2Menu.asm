@@ -445,6 +445,7 @@ HMMC:   EX    AF,af' ;'
 	AND   A
 	JP    NZ,HMMC.0
 	EX    AF,af' ;'
+	OUT   (0x9B),A
 	RET
 HMMC.0: EX    AF,af' ;'           ;first time, activate the cmd
 	LD    (WMHMMC+VCMDCL),A

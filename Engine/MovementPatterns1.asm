@@ -103,9 +103,9 @@ ZombieSpawnPoint:
   
 .EmptySlotFound:
 		ld		(ix+enemies_and_objects.alive?),isAliveHs
+		ld		(ix+enemies_and_objects.y),c
 		ld		bc,16                               ;all hardware sprites need to be put 16 pixel to the right
 		add		hl,bc
-		ld		(ix+enemies_and_objects.y),c
 		ld		(ix+enemies_and_objects.x),l
 		ld		(ix+enemies_and_objects.x+1),h
 		ld		(ix+enemies_and_objects.v1),0       ;v1=Animation Counter

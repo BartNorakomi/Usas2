@@ -672,7 +672,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		push	hl
 		ld		hl,Object001Table
 		call	.copyObjectTemplate
-		call	SetCleanObjectNumber            ;each object has a reference cleanup table
+		call	SetCleanObjectNumber
 		ld		hl,AmountOfPushingStonesInCurrentRoom
 		inc		(hl)
 		pop		hl
@@ -701,7 +701,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 	
 .object002AddEyes:
 		call	.copyObjectTemplate
-		call	SetCleanObjectNumber            ;each object has a reference cleanup table
+		call	SetCleanObjectNumber
 
 		call	.applyObjectClassGeneral			;transfer class properties, ;out: DE=numbBytes, HL=objectX, A=objectY
 		add		a,3
@@ -727,7 +727,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		push	iy
 		pop		de 
 		ldir
-		call  SetCleanObjectNumber            ;each object has a reference cleanup table
+		call	SetCleanObjectNumber
 		ret
 
 .object002AddWaterfall:                     ;we also need to set a waterfall hardware sprite
@@ -737,7 +737,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		push	iy
 		pop		de
 		ldir
-		call	SetSPATPositionForThisSprite    ;we need to define the position this sprite takes in the SPAT
+		call	SetSPATPositionForThisSprite
 		ret
 
 
@@ -812,20 +812,18 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		de,roomObjectClass.general.numBytes
 		ret
 
-;Initialize object
 .initAreaSignObject:
 		call	UnpackAreaSign
 		ld		hl,Object005Table
 		call	.copyObjectTemplate
 		call	.applyObjectClassGeneral
 
-;start writing at (0,0) page 1 
-		xor   a
+		xor   a		;start writing at (0,0) page 1 
 		ld    hl,$8000
 		call	SetVdp_Write	
 
-		ld    hl,$8000
-		ld    c,$98                           ;out port
+		ld    hl,$8000	;RAM source
+		ld    c,$98	;out port
 		ld    d,24
 .Outiloop:
 		call  outix256
@@ -1361,38 +1359,34 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ret
 
 
-
+;ro: this is very, very quick and dirty code :) it asumes there's two balls in Tiled with the same number.
 ;061 - glass ball (GlassBallActivator)
-  .Object061:                           
-  ld    a,(ix+Object061Table.ballnr)
-  cp    4
-  jr    nc,.SetGlassBall4
+.Object061:  
+		ld    a,(ix+roomObjectClass.glassBall.ballNumber)
+		cp    4
+		jr    nc,.SetGlassBall4
 
-  .SetGlassBall1:
-  ld    hl,GlassBall1Data
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*3           ;3 objects (2 balls and 1 ball activator)
-  ldir
-
-  ld    de,lenghtenemytable*2           ;lenght 2 objects in object table
-  add   iy,de                           ;next object in object table
-
-  ld    de,Object061Table.lenghtobjectdata*2
-  ret    
+.SetGlassBall1:
+		ld    hl,GlassBall1Data
+		push  iy
+		pop   de                              ;enemy object table
+		ld    bc,lenghtenemytable*3           ;3 objects (2 balls and 1 ball activator)
+		ldir
+		ld    de,lenghtenemytable*2           ;lenght 2 objects in object table
+		add   iy,de                           ;next object in object table
+		ld    de,roomObjectClass.glassBall.numBytes*2 ;Object061Table.lenghtobjectdata*2
+		ret    
   
-  .SetGlassBall4:
-  ld    hl,GlassBall5Data
-  push  iy
-  pop   de                              ;enemy object table
-  ld    bc,lenghtenemytable*3           ;3 objects (2 balls and 1 ball activator)
-  ldir
-
-  ld    de,lenghtenemytable*2           ;lenght 2 objects in object table
-  add   iy,de                           ;next object in object table
-
-  ld    de,Object061Table.lenghtobjectdata*2
-  ret    
+.SetGlassBall4:
+		ld    hl,GlassBall5Data
+		push  iy
+		pop   de                              ;enemy object table
+		ld    bc,lenghtenemytable*3           ;3 objects (2 balls and 1 ball activator)
+		ldir
+		ld    de,lenghtenemytable*2           ;lenght 2 objects in object table
+		add   iy,de                           ;next object in object table
+		ld    de,roomObjectClass.glassBall.numBytes*2 ;Object061Table.lenghtobjectdata*2
+		ret    
 
 
 ;062-ZombieSpawnPoint
@@ -1989,7 +1983,8 @@ SetSPATPositionForThisSprite:           ;we need to define the position this spr
 Movementtable:    db  -1,+0,  -1,+1,      +0,+1,    +1,+1,        +1,+0,  +1,-1,      +0,-1,  -1,-1  
 
 
- 
+
+;##### Object definitions as template for objectdata ##### 
 isSprite:		equ 1
 isNotSprite:	equ 0
 isAliveSs:		equ 1	;alive=2 / sf2, alive=1 softSpr, alive=-1 hardSpr
@@ -2074,39 +2069,10 @@ Object008Table:
 		db isNotAlive,isSprite|dw BossDemonBullet     |db 8*14|dw 8*22|db 16,16|dw 26*16,spat+(26*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
 
 
-Object010Table:               ;platform
+;010-PlatformMovingLarge
+Object010Table:
        ;alive?,Sprite?,Movement Pattern,        y,  x,   ny,nx,Objectnr#					,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
-          db isAliveSf2,isNotSprite|dw HugeBlock|db 0|dw 0|db 48,48|dw 00000000,0 db 0,0,0,	+00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movementpatterns1block| ds fill-1
-
-; Object010bTable:               ;platform
-;        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
-;           db 2,        0|dw HugeBlock           |db 8*06|dw 8*09|db 24,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movementpatterns1block| ds fill-1
-; .ID: equ 0
-; .relativex: equ 1
-; .relativey: equ 2
-; .xbox: equ 3
-; .ybox: equ 4
-; .widthbox: equ 5
-; .heightbox: equ 6
-; .face: equ 7
-; .speed: equ 8
-; .active: equ 9
-; .lenghtobjectdata: equ 10
-
-Object010cTable:               ;platform
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
-          db 2,        0|dw HugeBlock           |db 8*06|dw 8*09|db 12,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movementpatterns1block| ds fill-1
-.ID: equ 0
-.relativex: equ 1
-.relativey: equ 2
-.xbox: equ 3
-.ybox: equ 4
-.widthbox: equ 5
-.heightbox: equ 6
-.face: equ 7
-.speed: equ 8
-.active: equ 9
-.lenghtobjectdata: equ 10
+		db isAliveSf2,isNotSprite|dw HugeBlock|db 0|dw 0|db 48,48|dw 00000000,0 db 0,0,0,	+00,+00,+00,+01,+00,+00,+16,+00,+00, 0|db 016,movementpatterns1block| ds fill-1
 
 
 ;011-PlatformMovingSmall
@@ -2114,17 +2080,7 @@ Object011Table:
 .sx:	equ	64
 		;alive?,Sprite?,Movement Pattern,    y,      x,   ny,nx,Objectnr#               ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
 		db isAliveSs,isNotSprite|dw Platform|db 0|dw 0|db 16,16|dw CleanOb1,0 db 0,0,0, .sx,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
-.ID: equ 0
-.relativex: equ 1
-.relativey: equ 2
-.xbox: equ 3
-.ybox: equ 4
-.widthbox: equ 5
-.heightbox: equ 6
-.face: equ 7
-.speed: equ 8
-.active: equ 9
-.lenghtobjectdata: equ 10
+
 
 ;012-PlatformMovingSmallSwitch
 Object012Table:
@@ -2174,8 +2130,7 @@ Object015Table:
 Object016Table:
 ;platform Omni Directionally
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
-		db 1,   0|dw PlatformOmniDirectionally|db 8*11|dw 8*10|db 16,16|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-		; db 1,   0|dw PlatformOmniDirectionally|db 8*19|dw 8*25|db 16,16|dw CleanOb2,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+		db isAliveSs,isNotSprite|dw PlatformOmniDirectionally|db 8*11|dw 8*10|db 16,16|dw CleanOb1,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 
 
 ;bat spawner (BigStatueMouth)
@@ -2186,42 +2141,30 @@ Object020Table:
 
 ;147-bat / Cute Mini Bat
 object147Table:
-; CuteMiniBatTable:
 		;alive?,Sprite?,Movement Pattern,        y,   x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-			db isAliveHs,isSprite|dw CuteMiniBat|db 0|dw 0|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,095, 0|db 001,movementpatterns1block| ds fill-1
-        ;  db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 14*16,spat+(14*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,180, 0|db 001,movementpatterns1block| ds fill-1
-        ;  db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 16*16,spat+(16*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,045, 0|db 001,movementpatterns1block| ds fill-1
-        ;  db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 18*16,spat+(18*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,160, 0|db 001,movementpatterns1block| ds fill-1
-        ;  db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 20*16,spat+(20*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,030, 0|db 001,movementpatterns1block| ds fill-1
-        ;  db -0,        1|dw CuteMiniBat         |db 8*14|dw 8*27|db 16,16|dw 22*16,spat+(22*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,110, 0|db 001,movementpatterns1block| ds fill-1
+		db isAliveHs,isSprite|dw CuteMiniBat|db 0|dw 0|db 16,16|dw 12*16,spat+(12*2)|db 72-(02*6),02  ,02*16,+00,+00,+00,+00,+00,+00,+00,+01,095, 0|db 001,movementpatterns1block| ds fill-1
 
 
-Object061Table:               ;glass ball (& GlassBallActivator)
-.ID: equ 0
-.ballnr: equ 1
-.lenghtobjectdata: equ 2
+;glass ball (& GlassBallActivator) @karnimata
+Object061Table:
 GlassBall5Data:
-;Glass Ball
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object1: db 2,        0|dw GlassBall3          |db 8*19|dw 8*02|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-.object2: db 2,        0|dw GlassBall4          |db 8*19|dw 8*24|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+.object1: db isAliveSf2,isNotSprite|dw GlassBall3          |db 8*19|dw 8*02|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+.object2: db isAliveSf2,isNotSprite|dw GlassBall4          |db 8*19|dw 8*24|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 ;Glass Ball Activator
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+.object3: db isAliveSf2,isNotSprite|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 GlassBall1Data:
-;Glass Ball
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object1: db 0,        0|dw GlassBall1          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-.object2: db 0,        0|dw GlassBall2          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+.object1: db isNotAlive,isNotSprite|dw GlassBall1          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+.object2: db isNotAlive,isNotSprite|dw GlassBall2          |db 8*03|dw 8*31|db 48,48|dw 00000000,0 db 0,0,0,                      +00,+00,+00,+00,+00,+01,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 ;Glass Ball Activator
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-.object3: db 2,        0|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+.object3: db isAliveSf2,isNotSprite|dw GlassBallActivator  |db 0*00|dw 0*00|db 00,00|dw 00000000,0 db 0,0,0,                      +01,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 
 
 ;062-zombieSpawnPoint
 Object062Table:
 		;alive?,Sprite?,Movement Pattern,   y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-		db  isAliveSs,0|dw ZombieSpawnPoint|db 0|dw 0|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+04,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+		db  isAliveSs,isNotSprite|dw ZombieSpawnPoint|db 0|dw 0|db 00,00|dw 00*00,spat+(00*0)|db 00-(00*0),00  ,00*00,+04,+00,+01,+01,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 
 
 ;retarded zombie
@@ -2241,30 +2184,16 @@ Object128Table:
 ;129-hugeSpider
 Object129Table:
 ;Huge Spider Legs
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-         db isAliveHs,isSprite|dw HugeSpiderLegs      |db 8*04|dw 8*14|db 24,64|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 005,movementpatterns1block| ds fill-1  
-;Huge Spider Body
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
-.body:    db isAliveSs,isNotSprite|dw HugeSpiderBody      |db 8*06|dw 8*14|db 21,27|dw CleanOb1,0 db 0,0,0,                     +027,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-; .ID: equ 0
-; .x: equ 1
-; .y: equ 2
-; .face: equ 3
-; .speed: equ 4
-; .lenghtobjectdata: equ 5
+       ;alive?,Sprite?,Movement Pattern,              y,   x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+.legs:	db isAliveHs,isSprite|dw HugeSpiderLegs      |db 0|dw 0|db 24,64|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 005,movementpatterns1block| ds fill-1  
+.body:	db isAliveSs,isNotSprite|dw HugeSpiderBody   |db 0|dw 0|db 21,27|dw CleanOb1,0 db 0,0,0,                     +027,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 
-Object130Table:               ;lancelot
+;130-lancelot
+Object130Table:
        ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-         db -1,        1|dw Lancelot            |db 8*13|dw 8*20|db 32,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
-;Lancelot Sword
-       ;alive?,Sprite?,Movement Pattern,               y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
-.sword:  db 1,        0|dw LancelotSword       |db 8*10|dw 8*10|db 07,27|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
-.ID: equ 0
-.x: equ 1
-.y: equ 2
-.face: equ 3
-.speed: equ 4
-.lenghtobjectdata: equ 5
+		db isAliveHs,isSprite   |dw Lancelot            |db 8*13|dw 8*20|db 32,16|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,+01,+01,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
+.sword:	db isAliveSs,isNotSprite|dw LancelotSword       |db 8*10|dw 8*10|db 07,27|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
+
 
 ;131-blackHoleAlien
 Object131Table:
@@ -2334,8 +2263,6 @@ Object140Table:
 Object141Table:               ;green / grey spider. v6=Green Spider(0) / Grey Spider(1)
        ;alive?,Sprite?,Movement Pattern,      y,      x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 		db isAliveHs,isSprite|dw GreenSpider|db 0|dw 0|db 16,30|dw 24*16,spat+(24*2)|db 72-(04*6),04  ,04*16,+00,+00,+00,-01,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
-
-
 
 
 ;144-boringEyeGreen

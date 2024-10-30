@@ -3,7 +3,7 @@ phase	enginepage3addr
 
 ;current location=karnimata
 roomX: equ ("B"-"A")*26 + "R"-"A"
-roomY: equ 28
+roomY: equ 27
 
 WorldMapPosition:
 .Y:  db  roomY-1
@@ -41,6 +41,12 @@ startTheGame:
 loadRoom:
 
 		call	loadGraphics
+		ld		a,(PreviousRuin)
+		ld		b,a
+		call	GetRoomRuinId
+		ld		(PreviousRuin),a
+		cp		b
+		call	nz,initRuin
 		call	addThisRoomToWorldmap
 		ret
 
@@ -66,12 +72,7 @@ loadGraphics:
 		call	getroomtypeId
 		call	InitializeRoomType
 		call	ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
-		ld		a,(PreviousRuin)
-		ld		b,a
-		call	GetRoomRuinId
-		ld		(PreviousRuin),a
-		cp		b
-		call	nz,initRuin
+
 
 
 		call	SwapSpatColAndCharTable2	;[engine.asm]
@@ -87,6 +88,8 @@ loadGraphics:
 
 		call	BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
 		call	SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
+		
+
 
 		call  RemoveSpritesFromScreen       ;|loader|
 		call  SwapSpatColAndCharTable
@@ -250,7 +253,6 @@ fillRoomMapData:
 
 ;currently this is in POC phase
 ;area files are spread out over multiple blocks, these are not:
-AreaSignList:	dw	AreaSign01,AreaSign02,AreaSign03,AreaSign04,AreaSign05,AreaSign06,AreaSign07,AreaSign08,AreaSign09,AreaSign10,AreaSign11,AreaSign12,AreaSign13,AreaSign14,AreaSign15,AreaSign16,AreaSign17,AreaSign18,AreaSign19
 UnpackAreaSign:
 		ld    a,(slot.page1rom)		;RAMROMROMRAM
 		out   ($a8),a	
@@ -272,21 +274,19 @@ UnpackAreaSign:
 		ld		h,(hl)
 		ld		l,a
 		ld		de,$8000
-		call	Depack						;In: HL: source, DE: destination
+		call	Depack		;In: HL: source, DE: destination
 
 		pop		hl
 		pop		bc
 		exx
 
-		ld    a,Loaderblock                 ;loader routine at $4000
+		ld    a,Loaderblock		;loader routine at $4000
 		call  block12
 		ret
+AreaSignList:	dw	AreaSign01,AreaSign02,AreaSign03,AreaSign04,AreaSign05,AreaSign06,AreaSign07,AreaSign08,AreaSign09,AreaSign10,AreaSign11,AreaSign12,AreaSign13,AreaSign14,AreaSign15,AreaSign16,AreaSign17,AreaSign18,AreaSign19
 
 
-VramGraphicsPage1And3AlreadyInScreen?: db  0
-ScoreBoardAlreadyInScreen?: db  0
-AmountOfFramesUntilScreenTurnsOn?:  ds  1
-CurrentSongBeingPlayed: db  0
+
 
 CheckSwitchNextSong:
 ; bit	7	6	  5		    4		    3		    2		  1		  0
@@ -1302,79 +1302,81 @@ PopulateControls:
 	ld		(NewPrContr),a
   ret
 
+
+;Copy ROM to VRAM using Direct VDP Access
+;in: A=ROMblock, HL=romAdr, DE=DyDx, BC=NyNx
 PageToWriteTo: ds  1                    ;0=page 0 or 1, 1=page 2 or 3
 AddressToWriteFrom: ds  2
 AddressToWriteTo: ds  2
 NXAndNY: ds  2
+CopyRomToVram:
+		ex    af,af'                          ;store rom block
+
+		in	 a,($a8)                         ;store current rom/ram settings of page 1+2
+		push af
+		ld	 a,(memblocks.1)
+		push af
+		ld	 a,(memblocks.2)
+		push af
+
+		ld    a,(slot.page12rom)              ;all RAM except page 1+2
+		out   ($a8),a      
+		ex    af,af'
+		call  block1234                       ;CARE!!! we can only switch block34 if page 1 is in rom  
+		call  .go                             ;go copy
+
+		pop   af
+		call  block34
+		pop   af
+		call  block12
+		pop   af
+		out   ($a8),a                         ;reset rom/ram settings of page 1+2
+		ret
+
+.go:
+		ld    (AddressToWriteFrom),hl
+		ld    (AddressToWriteTo),de
+		ld    (NXAndNY),bc
+
+		ld    c,$98                           ;out port
+		ld    de,128                          ;increase 128 bytes to go to the next line
+.loop:
+		call  .WriteOneLine
+		ld    a,(NXAndNY+1)
+		dec   a
+		ld    (NXAndNY+1),a
+		jp    nz,.loop
+		ret
+
+.WriteOneLine:
+		ld		hl,(AddressToWriteTo)           ;set next line to start writing to
+		add		hl,de                           ;increase 128 bytes to go to the next line
+		ld		(AddressToWriteTo),hl
+		ld		a,(PageToWriteTo)             ;0=page 0 or 1, 1=page 2 or 3
+		call	SetVdp_Write
+		ld		hl,(AddressToWriteFrom)         ;set next line to start writing from
+		add		hl,de                           ;increase 128 bytes to go to the next line
+		ld		(AddressToWriteFrom),hl
+		ld		a,(NXAndNY)
+		ld		b,a
+		otir
+		ret
+
+
+
+VramGraphicsPage1And3AlreadyInScreen?: db  0
+ScoreBoardAlreadyInScreen?: db  0
+AmountOfFramesUntilScreenTurnsOn?:  ds  1
+CurrentSongBeingPlayed: db  0
 BigEnemyPresentInVramPage3:   db 0      ;1=big statue mouth, 2=huge blob, 3=huge spider
 ObjectPresentInVramPage1:     db 0      ;1=omni directional platform
 
-;Copy ROM to VRAM using Direct VDP Access
-;in:HL=SxSy, DE=DxDy, BC=NxNy, A=ROMblock
-CopyRomToVram:
-	ex    af,af'                          ;store rom block
-
-	in	 a,($a8)                         ;store current rom/ram settings of page 1+2
-	push af
-	ld	 a,(memblocks.1)
-	push af
-	ld	 a,(memblocks.2)
-	push af
-
-	ld    a,(slot.page12rom)              ;all RAM except page 1+2
-	out   ($a8),a      
-	ex    af,af'
-	call  block1234                       ;CARE!!! we can only switch block34 if page 1 is in rom  
-	call  .go                             ;go copy
-
-	pop   af
-	call  block34
-	pop   af
-	call  block12
-	pop   af
-	out   ($a8),a                         ;reset rom/ram settings of page 1+2
-  ret
-
-.go:
-	ld    (AddressToWriteFrom),hl	;ro: write from? don't you mean READ from?
-	ld    (AddressToWriteTo),de
-	ld    (NXAndNY),bc
-
-	ld    c,$98                           ;out port
-	ld    de,128                          ;increase 128 bytes to go to the next line
-
-.loop:
-	call  .WriteOneLine
-	ld    a,(NXAndNY+1)
-	dec   a
-	ld    (NXAndNY+1),a
-	jp    nz,.loop
-ret
-
-.WriteOneLine:
-	ld    hl,(AddressToWriteTo)           ;set next line to start writing to
-	add   hl,de                           ;increase 128 bytes to go to the next line
-	ld    (AddressToWriteTo),hl
-
-	ld		a,(PageToWriteTo)             ;0=page 0 or 1, 1=page 2 or 3
-	call	SetVdp_Write
-
-	ld    hl,(AddressToWriteFrom)         ;set next line to start writing from
-	add   hl,de                           ;increase 128 bytes to go to the next line
-	ld    (AddressToWriteFrom),hl
-	ld    a,(NXAndNY)
-	;  cp    128
-	;  jr    z,.outi128
-	ld    b,a
-	otir
-  ret
-
-
-AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0)      255 = end
+;Table for 015-PlatformRetracting
+AppearingBlocksTable: ;dy, dx, appear(1)/dissapear(0). 255 = end
 .numrec:	equ 7
 .reclen:	equ 6
 .data:		ds	.numrec*.reclen ; 7 * 6 ;7 blocks maximum, 6 bytes per block
-			ds  .reclen ;   6 ;1 extra block buffer
+			ds  .reclen ;   6 ;1 extra block buffer	!!ro:why?
 AmountOfAppearingBlocks:  ds  1
 
 OctoPussyBulletSlowDownHandler:   db 0
@@ -1383,9 +1385,8 @@ EnemyHitByPrimairyAttack?:	db	0		;0=hit by secundary attack, 1=hit by primary at
 PlayerIsInWater?:				db	1
 
 
-
-
-SaveGameVariables:						;Here we store all variables that are required when saving game
+;Here we store all variables that are required when saving game
+SaveGameVariables:
 BossDead?:					db	%0000 0000		;bit 0=demon, bit 1=voodoo wasp, bit 2=zombie caterpillar, bit 3=ice goat, bit 4=huge blob, bit 5=boss plant
 
 SecundaryWeaponOwned:		db	%0000 0000	;bit 0=fire, bit 1=ice, bit 2=earth, bit 3=water
@@ -1567,6 +1568,9 @@ roomObjectClass.MovingPlatform.Face: EQU 6+roomObjectClassIdOffset
 roomObjectClass.MovingPlatform.Speed: EQU 7+roomObjectClassIdOffset
 roomObjectClass.MovingPlatform.Active: EQU 8+roomObjectClassIdOffset
 roomObjectClass.MovingPlatform.numBytes: EQU 9+roomObjectClassIdOffset
+
+roomObjectClass.glassBall.ballNumber: EQU 0+roomObjectClassIdOffset
+roomObjectClass.glassBall.numBytes: EQU 1+roomObjectClassIdOffset
 
 
 fill: equ 2
