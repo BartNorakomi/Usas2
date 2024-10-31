@@ -8,3 +8,5 @@ node_modules/
 tniasm.sym
 tools/versions/*
 versions/*
+tools/Usas2.Rom.dsm
+Engine/Usas2.rom
