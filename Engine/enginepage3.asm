@@ -2,7 +2,7 @@ phase	enginepage3addr
 
 
 ;current location=karnimata
-roomX: equ ("B"-"A")*26 + "W"-"A"
+roomX: equ ("B"-"A")*26 + "X"-"A"
 roomY: equ 27
 
 WorldMapPosition:
