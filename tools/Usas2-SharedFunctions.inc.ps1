@@ -19,6 +19,13 @@ function resolve-NewPath
 	return $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)	
 }
 
+#fill every array index with value $value
+function fill-array
+{	param ($array,$value)
+	for ($i=0;$i -lt $array.length;$i++){$array[$i]=$value}
+}
+
+
 
 #20240106
 # Write verbose if global parameter $verboseMore=$true
@@ -75,6 +82,8 @@ function convert-CsvToObject
 ##### USAS2 specific Functions #####
 $WorldMapColumnNames="AA AB AC AD AE AF AG AH AI AJ AK AL AM AN AO AP AQ AR AS AT AU AV AW AX AY AZ BA BB BC BD BE BF BG BH BI BJ BK BL BM BN BO BP BQ BR BS BT BU BV BW BX BY BZ" -split(" ")
 
+
+# Manifest
 function get-Usas2Globals
 {	param ([string]$usas2PropertiesFile="..\usas2-properties.csv", [switch]$force)
 	if (-not ($usas2.objectname -eq "usas2") -or $force)
@@ -86,7 +95,47 @@ return $usas2
 }
 
 
-# Room
+# Manifest
+#Get a file manifest
+function get-U2file
+{	param
+	(	[Parameter(ParameterSetName='identity',Mandatory)]$identity,$fileType=".*"
+	)
+	$fileManifest=$usas2.file|where{$_.identity -match $identity -and $_.fileTypeId -match $fileType}
+	return $fileManifest
+}
+
+
+# Manifest
+#Get a tileset manifest
+function get-U2Tileset
+{	param
+	(	[Parameter(ParameterSetName='identity')]$identity,
+		[Parameter(ParameterSetName='id')]$id
+	)
+	if ($identity) {$Manifest=$usas2.tileset|where{$_.identity -match $identity}}
+	elseif ($id) {$Manifest=$usas2.tileset|where{$_.Id -eq $id}}
+	return $Manifest
+}
+
+
+# Manifest
+#Get a ruin manifest
+function get-U2Ruin
+{	param
+	(	[Parameter(ParameterSetName='identity')]$identity,
+		[Parameter(ParameterSetName='id')]$id,
+		[Parameter(ParameterSetName='name')]$name
+	)
+	if ($identity) {$Manifest=$usas2.ruin|where{$_.identity -match $identity}}
+	elseif ($id) {$Manifest=$usas2.ruin|where{$_.ruinId -eq $id}}
+	elseif ($name) {$Manifest=$usas2.ruin|where{$_.name -match $name}}
+
+	return $Manifest
+}
+
+
+# Worldmap Room
 # return roomName located at(x,y)
 function get-roomName
 {	param ($x,$y)
@@ -94,7 +143,7 @@ function get-roomName
 	return $WorldMapColumnNames[$x]+([string]$Y).PadLeft(2,"0")
 }
 
-# Room
+# Worldmap Room
 # return the coordinates of a room by its name
 # in:	roomName (filename base)
 #out:	object (x,y)
@@ -160,19 +209,13 @@ function get-roomMaps
 	}
 }
 
-
+# WorldMap
 # Get WorldMapRooms > same as above, but with some presets and a filter on ruin and room
 function get-U2WorldMapRooms
 {	param ($ruinId=".*",$roomTypeId=".*",$roomName=".*")
 	$WorldMapSource=get-content ("..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile)
 	$roomMaps=get-roommaps -mapsource $WorldMapSource
 	$roomMaps|where{($_.ruinId -match $ruinId) -and ($_.roomType -match $roomTypeId) -and ($_.name -match $roomName)}
-}
-
-
-function fill-array
-{	param ($array,$value)
-	for ($i=0;$i -lt $array.length;$i++){$array[$i]=$value}
 }
 
 
@@ -245,23 +288,23 @@ function get-BitmapGfxIndex
 }
 
 
-#RuinPropertiesTable
-#Get Ruin Properties record by ruinId or idenity (name)
-function get-U2ruinProperties
-{	param
-	(	[Parameter(ParameterSetName='identity',Mandatory)]$identity,
-		[Parameter(ParameterSetName='ruinid',Mandatory)]$ruinid
-	)
-	if ($identity) {$ruins=$usas2.ruin|where{$_.identity -like $identity}}
-	elseif ($ruinid) {$ruins=$usas2.ruin|where{$_.ruinid -like $ruinid}}
-	foreach ($ruin in $ruins)
-	{	#$ruin|select tileset,palette,music,name
-		if (-not ($tilesetUid=($usas2.tileset|where{$_.identity -eq $ruin.tileset}).id)) {$tilesetUid=-1}
-		if (-not ($paletteUid=($usas2.palette|where{$_.identity -eq $ruin.palette}).id)) {$paletteUid=-1}
-		if (-not ($musicUid=($usas2.music|where{$_.identity -eq $ruin.music}).id)) {$musicUid=-1}
-		[pscustomobject]@{id=[byte]$ruin.ruinid;name=[string]$ruin.name;tileset=[byte]$tilesetUid;palette=[byte]$paletteUid;music=[byte]$musicUid}
-	}
-}
+# #RuinPropertiesTable
+# #Get Ruin Properties record by ruinId or idenity (name)
+# function get-U2ruinProperties
+# {	param
+# 	(	[Parameter(ParameterSetName='identity',Mandatory)]$identity,
+# 		[Parameter(ParameterSetName='ruinid',Mandatory)]$ruinid
+# 	)
+# 	if ($identity) {$ruins=$usas2.ruin|where{$_.identity -like $identity}}
+# 	elseif ($ruinid) {$ruins=$usas2.ruin|where{$_.ruinid -like $ruinid}}
+# 	foreach ($ruin in $ruins)
+# 	{	#$ruin|select tileset,palette,music,name
+# 		if (-not ($tilesetUid=($usas2.tileset|where{$_.identity -eq $ruin.tileset}).id)) {$tilesetUid=-1}
+# 		if (-not ($paletteUid=($usas2.palette|where{$_.identity -eq $ruin.palette}).id)) {$paletteUid=-1}
+# 		if (-not ($musicUid=($usas2.music|where{$_.identity -eq $ruin.music}).id)) {$musicUid=-1}
+# 		[pscustomobject]@{id=[byte]$ruin.ruinid;name=[string]$ruin.name;tileset=[byte]$tilesetUid;palette=[byte]$paletteUid;music=[byte]$musicUid}
+# 	}
+# }
 
 
 if ($getglobals) {$usas2=get-Usas2Globals -verbose -force}
@@ -269,6 +312,7 @@ if ($getglobals) {$usas2=get-Usas2Globals -verbose -force}
 exit
 #test
 $global:usas2=$usas2
+
 
 <#
 #RuinPropertiesTable to code

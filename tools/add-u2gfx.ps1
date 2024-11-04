@@ -31,12 +31,13 @@ $romfile="$(resolve-path "..\Engine\usas2.rom")" #\usas2.rom"
 function convert-BmpToSc5
 {	param ($bmpfile,$sc5file,$palfile)
 	#npx convertgfx --source "../grapx/tilesheets/pegu.tiles.bmp" --fixedPalette "../grapx/tilesheets/pegu.tiles.pl" --targetScreen5 "../grapx/tilesheets/pegu.tiles.sc5"
-	write-verbose "Converting `"$bmpfile`" to `"$sc5file`""
+	write-verbose "Converting `"$bmpfile`" to `"$sc5file`". Pal: `"$palfile`""
 	npx convertgfx --source $bmpfile --fixedPalette $palfile --targetScreen5 $sc5file --gamma 2.2
 }
 
 
 ##### MAIN #####
+$fileTypes=@{};$usas2.filetype|%{$fileTypes[$_.identity]=$_.id}
 $DataListProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistname}
 write-verbose "DSM: $dsmPath, Datalist:$datalistname"
 
@@ -56,16 +57,17 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 	if ($ruinid)
 	{	write-verbose "[ruinId] Adding Ruin(s) $ruinid"
 		foreach ($id in $ruinId)
-		{	$ruinProps=$usas2.ruin|where{$_.ruinid  -eq $id}
-			$tilesetProps=$usas2.tileset|where{$_.identity -eq $ruinprops.tileset}
-			$sc5File=($usas2.file|where{$_.identity -eq $tilesetprops.file}).path
-			if ($convertGfx)
-			{	$bmpFile=($usas2.file|where{$_.identity -eq $tilesetprops.imagesourcefile}).path
-				$palFile=($usas2.file|where{$_.identity -eq $tilesetprops.paletteSourceFile}).path
-				$x=convert-BmpToSc5 -bmpfile $bmpfile -sc5file $sc5file -palfile $palFile
+		{	$ruinManifest=get-u2Ruin -id $id
+			$tilesetManifest=get-u2TileSet -identity $ruinManifest.tileset
+			if	($sc5File=(get-U2File -identity $tilesetManifest.file -fileType $fileTypes["tileset"]).path)
+			{	if ($convertGfx)
+				{	$bmpFile=(get-u2file -identity $tilesetManifest.imagesourcefile -filetype $filetypes["TiledTileSetImage"]).path
+					$palFile=(get-u2file -identity $tilesetManifest.paletteSourcefile -filetype $filetypes["palette"]).path
+					$x=convert-BmpToSc5 -bmpfile $bmpfile -sc5file $sc5file -palfile $palFile
+				}
+				write-verbose "RuinId $id, Filename: $sc5file"
+				$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $sc5file -updateFileSpace
 			}
-			write-verbose "RuinId $id, Filename: $sc5file"
-			$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $sc5file -updateFileSpace
 		}
 	}
 
