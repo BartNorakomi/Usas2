@@ -134,6 +134,20 @@ function get-U2Ruin
 	return $Manifest
 }
 
+# Manifest
+#Get a room manifest
+function get-U2Room
+{	param
+	(	[Parameter(ParameterSetName='identity')]$identity,
+		[Parameter(ParameterSetName='id')]$id,
+		[Parameter(ParameterSetName='name')]$name
+	)
+	if ($identity) {$Manifest=$usas2.room|where{$_.identity -match $identity}}
+	elseif ($id) {$Manifest=$usas2.room|where{$_.roomType -eq $id}}
+	elseif ($name) {$Manifest=$usas2.room|where{$_.name -match $name}}
+	return $Manifest
+}
+
 
 # Worldmap Room
 # return roomName located at(x,y)
@@ -158,7 +172,7 @@ function get-roomLocation
 
 # WorldMap
 #Return the WorldMap (CSV data) as a matrix[y][x]=roomType/RuinId
-function get-roomMatrix
+function get-U2roomMatrix
 {	param ($mapsource)
 	$roomMatrix=$mapsource;$index=0
 	foreach ($row in $mapSource)
@@ -309,10 +323,9 @@ function get-BitmapGfxIndex
 
 if ($getglobals) {$usas2=get-Usas2Globals -verbose -force}
 
-exit
+# exit
 #test
 $global:usas2=$usas2
-
 
 <#
 #RuinPropertiesTable to code

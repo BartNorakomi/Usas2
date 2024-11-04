@@ -149,7 +149,7 @@ function convert-TmxObjects
 { param ($tiledMap)
 	write-verbose "Converting Objects"
 	[byte[]]$dataBlock=[byte]0
-	$objects=get-RoomObjects -tiledmap $tiledmap|sort Uid -Descending #sort so software sprite objects come first
+	$objects=get-TiledMapRoomObjects -tiledmap $tiledmap|sort Uid -Descending #sort so software sprite objects come first
 	$global:objects=$objects	#ro: is this for debugging? if so, disable it
 	foreach ($object in $objects)
 	{	$uid=$object.uid #get UID from map
@@ -193,7 +193,7 @@ function convert-TmxObjects
 # Get all valid room objects (objects with a UID) and merge all properties at object rool level
 #in:	TiledMap (xml)
 #out:	Array of objects
-function get-RoomObjects
+function get-TiledMapRoomObjects
 {	param ($tiledMap)
 	#$tiledMap.map.objectgroup.object
 	$objects=($tiledMap.map.objectgroup|where{-not $_.visible}).object|where{($_.properties.property.name -eq "uid") -and ($_.visible -ne "0" )}
@@ -235,7 +235,7 @@ $global:worldmap=$worldmap
 #tests
 #$path="C:\Users\rvand\OneDrive\Usas2\maps\Br21.tmx"
 #$tiledmap=get-tiledmap -path $path
-#get-RoomObjects -tiledmap $tiledmap
+#get-TiledMapRoomObjects -tiledmap $tiledmap
 #$tiledMap.map.objectgroup.object.properties.property|%{[pscustomobject]@{$_.name=$_.value}}
 #exit
 

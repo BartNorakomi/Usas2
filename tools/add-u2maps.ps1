@@ -59,24 +59,6 @@ if (-not ($dsm=load-dsm -path $dsmname))
 {	$null=$DSM|open-DSMFileSpace -path $romfile
 	$datalist=add-DSMDataList -dsm $dsm -name $datalistname
 	
-#$roomIndex=@{numrec=1024;reclen=4;size=4*1024;data=[byte[]]::new(4*1024)}
-# #Read the current roomIndex from the ROM
-# $roomIndex.data=read-DSMFileSpace -dsm $dsm -length ($roomindex.size) -block $indexBlock -segment $indexsegment
-# $global:roomindex=$roomindex
-# $roomindex.data=get-WorldMapRoomIndex -dsm $dsm -datalistname $dataListName
-
-# #Find a room in the binairy RoomIndex, and return the record-index
-# function get-roomIndexRoom
-# {	param ($RoomIndex,$roomName)
-# 	if ($room=get-roomLocation -name $roomName.Substring(0,4))
-# 	{	while ($i -lt $roomindex.numrec)
-# 		{	if ($roomindex.data[$i*$roomindex.reclen+0] -eq $room.x -and $roomindex.data[$i*$roomindex.reclen+1] -eq $room.y) {return $i;break}
-# 			$i++;
-# 		}
-# 	}
-# }
-# get-roomIndexRoom -roomindex $roomindex -roomname "aw27"
-
 	#Add Ruin(s)
 	if ($ruinid)
 	{	write-verbose "Adding Ruin(s) $ruinid"
@@ -132,20 +114,7 @@ if (-not ($dsm=load-dsm -path $dsmname))
 	save-dsm -dsm $dsm
 }
 
-#write "`n#datalist:"
-#$dsm.datalist
-#write "`n#Stats:"
+
 $dsm|get-DSMStatistics
 $global:dsm=$dsm
 EXIT
-
-<#
-#Create usas2.rom DSM
-. .\dsm.ps1
-$dsmName="Usas2.Rom"
-$DSM=new-DSM -name $dsmName -BlockSize 16KB -size 256 -SegmentSize 128 -firstblock 0xb7
-$dsm|exclude-dsmblock -block 0 #exlcude first block for index
-$dsm|save-dsm
-$DSM|create-DSMFileSpace -verbose -force -path "$(resolve-path ".\")\usas2.rom"
-
-#>

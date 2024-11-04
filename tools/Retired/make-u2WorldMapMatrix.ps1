@@ -149,7 +149,7 @@ if	($index -eq "wmmatrix")
 {	$global:DSM=new-DSM -name U2WorldMapMatrix -BlockSize 16KB -numBlocks 4 -SegmentSize 128
 	$datalist=$DSM|add-DSMDataList -name WorldMapIndex
 	$fileSpace=$DSM|create-DSMFileSpace
-	$global:WmMatrix=get-roomMatrix -mapsource $WorldMapSource
+	$global:WmMatrix=get-u2roomMatrix -mapsource $WorldMapSource
 	#print-worldMapMatrix -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"
 	$null=$DSM|open-DSMFileSpace
 	$global:binMatrix=get-WorldMapBinMatrix -DSM $DSM -wmmatrix $wmmatrix -ruinIdFilter "^(6)$"

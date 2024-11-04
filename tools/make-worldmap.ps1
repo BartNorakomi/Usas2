@@ -54,7 +54,7 @@ if (-not $mastermap) {$mastermap="..\"+($usas2.worldmap|where{$_.identity -eq "g
 
 # Return the worldmap as printable data
 # Just a test function, to see if the map is still correct
-# in:	WmMatrix=WorldMatrix data (get-roommatrix output)
+# in:	WmMatrix=WorldMatrix data (get-u2roommatrix output)
 #		$ruinIdFilter=optional filter for ruins. Default is no filter.
 function print-worldmapMatrix
 {	param ($wmmatrix,$ruinIdFilter=".*")
@@ -63,7 +63,7 @@ function print-worldmapMatrix
 	{	$x=0;$rowData=""
 		foreach ($column in $row)
 		{	$data="$($WmMatrix[$y][$x])" -band 0x1f #we'll skip roomtype here to make prettier print
-			if (-not ($data -match $ruinIdFilter)) {$data=""}
+			if (-not (($data -band 0x1f) -match $ruinIdFilter)) {$data=""}
 			if ($data.length -eq 0) {$data="  "} else {$data="$data".PadLeft(2,"0")}
 			$rowData+="$data "
 			$x++
@@ -79,27 +79,27 @@ function new-Usas2RoomTiledMapFile
 	param
 	(	$ruinId,$RoomType,$path	
 	)
-	$ruinProps=$usas2.ruin|where{$_.ruinid -eq $ruinId}
-	$roomProps=$usas2.room|where{$_.roomType -eq $roomType}
-	$width=$roomProps.width 
-	$height=$roomProps.height
-	if (-not ($tileSet=$ruinProps.TiledTileset)) {write-warning "Error: Tileset not defined";return}
+	$ruinManifest=get-u2ruin -id $roomMap.ruinid #$usas2.ruin|where{$_.ruinid -eq $roomMap.ruinId}
+	$roomManifest=get-u2room -id $roomMap.roomType #$usas2.room|where{$_.roomType -eq $roomMap.roomType}
+	$width=$roomManifest.width 
+	$height=$roomManifest.height
+	if (-not ($tileSet=$ruinManifest.TiledTileset)) {write-warning "Error: Tileset not defined";return}
 	#write-verbose " * $width, $height, $tileset"
 	if (-not ($width -and $height -and $tileSet))
-	{	write-warning "Roomproperties not defined for $($roomProps.identity), cannot create room"
+	{	write-warning "Roomproperties not defined for $($roomManifest.identity), cannot create room"
 	} else
 	{	write-verbose "Creating $path, width=$width, height=$height"
 		$xml=new-TiledMap -width $width -height $height
-		#Attach a TileSet to the map
+		#Attach a TiledTileSet to the map
 		$TileSetProps=$usas2.tiledtileset|where{$tileset -match $_.identity}
 		$tileSetPath=$TileSetProps.path
 		#Tileset overwrite for this roomType (like teleport room)?
-		$hasSet=($usas2.TiledtileSet|where{$_.identity -eq $roomProps.identity}).path
+		$hasSet=($usas2.TiledtileSet|where{$_.identity -eq $roomManifest.identity}).path
 		if ($hasSet) {$tileSetPath=$hasSet}
 		if (-not $tileSetPath)
-		{	write-warning "No TileSet defined for ruin $($ruinprops.identity)-or room $($roomProps.identity)"
+		{	write-warning "No Tiled-TileSet defined for ruin $($ruinManifest.identity)-or room $($roomManifest.identity)"
 		}	else
-		{	write-verbose "Tileset $tilesetPath"
+		{	write-verbose "Tiled-Tileset $tilesetPath"
 			$xml=add-TiledTileset -map $xml -source $tileSetPath -firstgid 1
 		}
 		$xml=add-TiledTileLayer -map $xml
@@ -117,9 +117,9 @@ function convert-Usas2WorldMapToTiledWorldMap
 	$global:roomMaps=get-roomMaps -mapsource $WorldMapSource #Return the masterMap as a array of map objects (all rooms)
 	foreach ($roomMap in $roomMaps|where{$_.ruinId -match $roomMatch})
 	{	$filename=$roomMap.name+".tmx"
-		$ruinProps=$usas2.ruin|where{$_.ruinid -eq $roomMap.ruinId}
-		$roomProps=$usas2.room|where{$_.roomType -eq $roomMap.roomType}
-		write-verbose "Ruin name: $($ruinProps.Name), Room name: $filename, Room type: $($roomProps.identity)"
+		$ruinManifest=get-u2ruin -id $roomMap.ruinid #$usas2.ruin|where{$_.ruinid -eq $roomMap.ruinId}
+		$roomManifest=get-u2room -id $roomMap.roomType #$usas2.room|where{$_.roomType -eq $roomMap.roomType}
+		write-verbose "Ruin name: $($ruinManifest.Name), Room name: $filename, Room type: $($roomManifest.identity)"
 		$fileExist=test-path "$TiledMapsLocation\$filename"
 		write-verbose "File $filename exist? $fileexist"
 		if ($forceOverWrite -or (-not $fileExist -and $createRoom))
@@ -146,7 +146,7 @@ $global:WorldMapSource=$WorldMapSource
 
 # optionally, print the map to host
 if ($printWorldMap)
-{	$global:WmMatrix=get-roomMatrix -mapsource $WorldMapSource
+{	$global:WmMatrix=get-U2roomMatrix -mapsource $WorldMapSource
 	print-worldMapMatrix -wmmatrix $wmmatrix -ruinIdFilter ("^("+($ruinId -join ("|"))+")$")
 }
 
