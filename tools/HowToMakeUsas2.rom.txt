@@ -20,3 +20,4 @@ $DSM|create-DSMFileSpace -verbose -force -path "$(resolve-path ".\")\usas2.rom"
 
 #.\add-u2maps.ps1 -roomname bs28 -convertTiledMap -Verbose
 #.\convert-tmxtoraw16.ps1 -verboseMore -verbose -path "C:\Users\rvand\OneDrive\Usas2\maps\Bs28.tmx"
+#convert pal to asm
