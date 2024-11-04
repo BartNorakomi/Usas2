@@ -8,9 +8,15 @@ $dsm|exclude-dsmblock -block 0 #exlcude first block for indexes
 $dsm|save-dsm
 $DSM|create-DSMFileSpace -verbose -force -path "$(resolve-path ".\")\usas2.rom"
 
+
+#How to add a ruin
+- .bmp (convert), or .sc5
+- .pal
+- .map files
+
 #Add  Karnimata
 .\add-u2maps.ps1 -ruinId 6 -convertTiledMap
-.\add-u2gfx.ps1 -path "C:\Users\rvand\GIT\Usas2\grapx\tilesheets\KarniMata.tiles.SC5"
+.\add-u2gfx.ps1 -path "..\grapx\tilesheets\KarniMata.tiles.SC5"
 
 #.\add-u2maps.ps1 -roomname bs28 -convertTiledMap -Verbose
 #.\convert-tmxtoraw16.ps1 -verboseMore -verbose -path "C:\Users\rvand\OneDrive\Usas2\maps\Bs28.tmx"

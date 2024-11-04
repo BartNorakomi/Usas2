@@ -500,7 +500,7 @@ RuinPropertiesLUT:
 	DB 0,0,0,"Ashoka's hell"
 	DB 0,0,0,"Taxilla      "
 	DB 0,0,0,"Euderus Set  "
-	DB 0,0,0,"Akna         "
+	DB 11,11,0,"Akna         "
 	DB 0,0,0,"Fate         "
 	DB 0,0,0,"Sepa         "
 	DB 0,0,0,"undefined    "

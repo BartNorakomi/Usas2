@@ -1,133 +1,59 @@
 Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Description	Comment	EQU	DS
-1	Usas2		DSM	usas2	blockExclusion	0		Block#0 is excluded for indexes		DSM.blockExclusion: EQU 0	
-1	Usas2		DSM	usas2	blocksize	16384		One block is 16KB		DSM.blocksize: EQU 16384	
-1	Usas2		DSM	usas2	description	Usas 2 ROM file				DSM.description: EQU Usas 2 ROM file	
-1	Usas2		DSM	usas2	fileSpaceName	usas2.rom		The destination file for the data		DSM.fileSpaceName: EQU usas2.rom	
-1	Usas2		DSM	usas2	firstblock	112		Managed blocks start at 0x70		DSM.firstblock: EQU 112	
-1	Usas2		DSM	usas2	name	usas2.rom				DSM.name: EQU usas2.rom	
-1	Usas2		DSM	usas2	segmentSize	128		One segment is 128bytes		DSM.segmentSize: EQU 128	
-1	Usas2		DSM	usas2	size	256		Total space size in blocks > 4MB		DSM.size: EQU 256	
-1	Usas2		DsmDatalist	BitmapGfx	IndexBlock	0					
-1	Usas2		DsmDatalist	BitmapGfx	IndexSegment	32					
-1	Usas2		DsmDatalist	BitmapGfx	name	BitmapGfx					
-1	Usas2		DsmDatalist	Worldmap	IndexBlock	0					
-1	Usas2		DsmDatalist	Worldmap	IndexSegment	0					
-1	Usas2		DsmDatalist	Worldmap	name	Worldmap					
-1	Usas2		file	pollux.tiles.bmp	fileTypeId	7					
-1	Usas2		file	pollux.tiles.bmp	path	..\grapx\tilesheets\pollux.tiles.bmp					
-1	Usas2		file	pollux.tiles.pl	fileTypeId	2					
-1	Usas2		file	pollux.tiles.pl	path	..\grapx\tilesheets\pollux.tiles.pl					
-1	Usas2		file	pollux.tiles.sc5	fileTypeId	1					
-1	Usas2		file	pollux.tiles.sc5	path	..\grapx\tilesheets\pollux.tiles.sc5					
-1	Usas2		file	KarniMata.tiles.bmp	fileTypeId	7					
-1	Usas2		file	KarniMata.tiles.bmp	path	..\grapx\tilesheets\KarniMata.tiles.bmp					
-1	Usas2		file	KarniMata.tiles.pl	fileTypeId	2					
-1	Usas2		file	KarniMata.tiles.pl	path	..\grapx\tilesheets\KarniMata.tiles.pl					
-1	Usas2		file	KarniMata.tiles.sc5	fileTypeId	1					
-1	Usas2		file	KarniMata.tiles.sc5	path	..\grapx\tilesheets\KarniMata.tiles.sc5					
-1	Usas2		file	Konark.tiles.bmp	path	..\grapx\tilesheets\Konark.tiles.bmp					
-1	Usas2		file	Konark.tiles.bmp	fileTypeId	7					
-1	Usas2		file	Konark.tiles.pl	path	..\grapx\tilesheets\Konark.tiles.pl					
-1	Usas2		file	Konark.tiles.pl	fileTypeId	2					
-1	Usas2		file	Konark.tiles.sc5	path	..\grapx\tilesheets\Konark.tiles.sc5					
-1	Usas2		file	Konark.tiles.sc5	fileTypeId	1					
-1	Usas2		file	Lemniscate.tiles.bmp	path	..\grapx\tilesheets\Lemniscate.tiles.bmp					
-1	Usas2		file	Lemniscate.tiles.bmp	fileTypeId	7					
-1	Usas2		file	Lemniscate.tiles.pl	path	..\grapx\tilesheets\Lemniscate.tiles.pl					
-1	Usas2		file	Lemniscate.tiles.pl	fileTypeId	2					
-1	Usas2		file	Lemniscate.tiles.sc5	path	..\grapx\tilesheets\Lemniscate.tiles.sc5					
-1	Usas2		file	Lemniscate.tiles.sc5	fileTypeId	1					
-1	Usas2		file	Pegu.tiles.bmp	path	..\grapx\tilesheets\Pegu.tiles.bmp					
-1	Usas2		file	Pegu.tiles.bmp	fileTypeId	7					
-1	Usas2		file	Pegu.tiles.pl	path	..\grapx\tilesheets\Pegu.tiles.pl					
-1	Usas2		file	Pegu.tiles.pl	fileTypeId	2					
-1	Usas2		file	Pegu.tiles.sc5	path	..\grapx\tilesheets\Pegu.tiles.sc5					
-1	Usas2		file	Pegu.tiles.sc5	fileTypeId	1					
-1	Usas2		file	ruin3.tiles.bmp	path	..\grapx\tilesheets\ruin3.tiles.bmp					
-1	Usas2		file	ruin3.tiles.bmp	fileTypeId	7					
-1	Usas2		file	ruin3.tiles.pl	path	..\grapx\tilesheets\ruin3.tiles.pl					
-1	Usas2		file	ruin3.tiles.pl	fileTypeId	2					
-1	Usas2		file	ruin3.tiles.sc5	path	..\grapx\tilesheets\ruin3.tiles.sc5					
-1	Usas2		file	ruin3.tiles.sc5	fileTypeId	1					
-1	Usas2		file	Worldmap.bmp	fileTypeId	9					
-1	Usas2		file	Worldmap.bmp	path	..\grapx\f2menu\worldmap.bmp					
-1	Usas2		file	Worldmap.sc5	fileTypeId	8					
-1	Usas2		file	Worldmap.sc5	path	..\grapx\f2menu\worldmap.sc5					
-1	Usas2		file	Worldmap.pl	fileTypeId	2					
-1	Usas2		file	Worldmap.pl	path	..\grapx\f2menu\worldmap.pl					
-1	Usas2		file	Teleport.tiles.bmp	fileTypeId	7					
-1	Usas2		file	Teleport.tiles.bmp	path	..\grapx\tilesheets\Teleport.tiles.bmp					
-1	Usas2		file	Teleport.tiles.pl	fileTypeId	2					
-1	Usas2		file	Teleport.tiles.pl	path	..\grapx\tilesheets\Teleport.tiles.pl					
-1	Usas2		file	Teleport.tiles.sc5	fileTypeId	1					
-1	Usas2		file	Teleport.tiles.sc5	path	..\grapx\tilesheets\Teleport.tiles.sc5					
-1	Usas2		FileType	ImageSc5	id	8					
-1	Usas2		FileType	ImageBmp	id	9					
-1	Usas2		FileType	default	id	0					
-1	Usas2		FileType	Palette	id	2					
-1	Usas2		FileType	Room	id	4					
-1	Usas2		FileType	RoomPacked	id	5					
-1	Usas2		FileType	TiledMap	id	3					
-1	Usas2		FileType	TiledTileSet	id	6					
-1	Usas2		FileType	TiledTileSetImage	id	7					
-1	Usas2		FileType	Tileset	id	1					
-1	Usas2		Index	GfxIndexPointer	numrec	32	attribute	Number of records in the table		.numrec: EQU 32	
-1	Usas2		Index	GfxIndexPointer	reclen	2	attribute	The length of one record		.reclen: EQU 2	
-1	Usas2		Index	GfxIndexTable	block	2	attribute	Offset of property "block" in the table		.block: EQU 2	
-1	Usas2		Index	GfxIndexTable	numrec	4	attribute	Number of records in the table		.numrec: EQU 4	
-1	Usas2		Index	GfxIndexTable	palette	0	attribute	Offset of property "palette" in the table		.palette: EQU 0	
-1	Usas2		Index	GfxIndexTable	parts	1	attribute	Offset of property "parts" in the table		.parts: EQU 1	
-1	Usas2		Index	GfxIndexTable	reclen	-1	attribute	The length of one record		.reclen: EQU -1	
-1	Usas2		Index	GfxIndexTable	segmentSize	3	attribute	Offset of property "segmentSize" in the table		.segmentSize: EQU 3	
-1	Usas2		Index	Rooms	numrec	1024	attribute	Number of records in the table		.numrec: EQU 1024	
-1	Usas2		Index	Rooms	reclen	4	attribute	The length of one record		.reclen: EQU 4	
-1	Usas2		music	KarniMata	file	KarniMata.vgm					
-1	Usas2		music	KarniMata	id	3					
-1	Usas2		music	Konark	id	7					
-1	Usas2		music	Konark	file	Konark.vgm					
-1	Usas2		Palette	pollux.tiles	file	pollux.tiles.pl					
-1	Usas2		Palette	pollux.tiles	id	1					
-1	Usas2		Palette	KarniMata.tiles	file	Karnimata.tiles.pl					
-1	Usas2		Palette	KarniMata.tiles	id	6					
-1	Usas2		Palette	ruin3.tiles	file	ruin3.tiles.pl					
-1	Usas2		Palette	worldmap	id	32					
-1	Usas2		Palette	worldmap	file	worldmap.pl					
-1	Usas2		Room	boss	engine	2					
-1	Usas2		Room	boss	height	27					
-1	Usas2		Room	boss	name	Boss Room					
-1	Usas2		Room	boss	roomType	96					
-1	Usas2		Room	boss	width	32					
-1	Usas2		Room	gate	engine	2					
-1	Usas2		Room	gate	height	27					
-1	Usas2		Room	gate	name	Gate Room					
-1	Usas2		Room	gate	roomType	128					
-1	Usas2		Room	gate	width	32					
-1	Usas2		Room	regular	engine	1					
-1	Usas2		Room	regular	height	27					
-1	Usas2		Room	regular	name	Regular Room					
-1	Usas2		Room	regular	roomType	0					
-1	Usas2		Room	regular	width	38					
-1	Usas2		Room	regularSmall	engine	2					
-1	Usas2		Room	regularSmall	height	27					
-1	Usas2		Room	regularSmall	name	Regular Room Small					
-1	Usas2		Room	regularSmall	roomType	160					
-1	Usas2		Room	regularSmall	width	32					
-1	Usas2		Room	secret	engine	1					
-1	Usas2		Room	secret	height	27					
-1	Usas2		Room	secret	name	Secret Room					
-1	Usas2		Room	secret	roomType	64					
-1	Usas2		Room	secret	width	38					
-1	Usas2		Room	teleport	engine	2					
-1	Usas2		Room	teleport	height	27					
-1	Usas2		Room	teleport	name	Teleport room					
-1	Usas2		Room	teleport	roomType	32					
-1	Usas2		Room	teleport	width	32					
+1	Usas2		TiledMap	.*	defaultLocation	C:\Users\$env:username\OneDrive\Usas2\maps					
+1	Usas2		TiledtileSet	.*	defaultLocation	C:\Users\$($env:username)\OneDrive\Usas2\maps					
+1	Usas2		TiledtileSet	.*	imageSourceHeight	256					
+1	Usas2		TiledtileSet	.*	imageSourceWidth	256					
+1	Usas2	 	TiledtileSet	.*	numTilesx	32					
+1	Usas2	 	TiledtileSet	.*	numTilesy	32					
+1	Usas2	 	TiledtileSet	.*	tileCount	1024					
+1	Usas2		TiledtileSet	.*	tileHeight	8					
+1	Usas2		TiledtileSet	.*	tileWidth	8					
+1	Usas2		TiledWorldMap	.*	defaultLocation	C:\Users\$($env:username)\OneDrive\Usas2\maps					
+1	Usas2		Ruin	Aggayu	description	Aggayu Ruins		Description of this ruin			
+1	Usas2		Ruin	Aggayu	ruinId	19		Identifier for this Ruin			
+1	Usas2		Ruin	Aggayu	name	Aggayu					
+1	Usas2		Ruin	Aggayu	music						
+1	Usas2		Ruin	Aggayu	Palette						
+1	Usas2		Ruin	Akna	description	Akna Ruins		Description of this ruin			
+1	Usas2		Ruin	Akna	music						
+1	Usas2		Ruin	Akna	name	Akna					
+1	Usas2		Ruin	Akna	Palette						
+1	Usas2		Ruin	Akna	ruinId	11		Identifier for this Ruin			
+1	Usas2		Ruin	Akna	TiledTileSet	Akna		Default TiledTileset (ID)			
+1	Usas2		Ruin	Akna	TiledWorldMap	Akna		Designated ruin worldmap in Tiled			
+1	Usas2		Ruin	Akna	tileSet	Akna		Default Tileset (ID)			
+1	Usas2		TiledtileSet	Akna	imageSourceFile	./tilesheets/images/Akna.tiles.bmp		Direct path to file			
+1	Usas2		TiledtileSet	Akna	path	tilesheets/Akna.tsx		Direct path to file			
+1	Usas2		TiledWorldMap	Akna	Name	Akna					
+1	Usas2		TiledWorldMap	Akna	path	Akna.world					
+1	Usas2		Tileset	Akna	file	Akna.Tiles.sc5					
+1	Usas2		Tileset	Akna	id	11					
+1	Usas2		Tileset	Akna	imageSourceFile	Akna.Tiles.bmp					
+1	Usas2		Tileset	Akna	paletteSourceFile	Akna.Tiles.pl					
+1	Usas2		Tileset	Akna	type	0					
+1	Usas2		file	Akna.tiles.bmp	fileTypeId	7					
+1	Usas2		file	Akna.tiles.bmp	path	..\grapx\tilesheets\Akna.tiles.bmp					
+1	Usas2		file	Akna.tiles.pl	fileTypeId	2					
+1	Usas2		file	Akna.tiles.pl	path	..\grapx\tilesheets\Akna.tiles.pl					
+1	Usas2		file	Akna.tiles.sc5	fileTypeId	1					
+1	Usas2		file	Akna.tiles.sc5	path	..\grapx\tilesheets\Akna.tiles.sc5					
 1	Usas2		RoomObject	AreaSign	uid	5					
 1	Usas2		RoomObject	AreaSign	objectClass	General					
+1	Usas2		Ruin	AshokasHell	description	Hell of Ashoka		Description of this ruin			
+1	Usas2		Ruin	AshokasHell	ruinId	8		Identifier for this Ruin			
+1	Usas2		Ruin	AshokasHell	name	Hell of Ashoka			aka verhakselaar		
+1	Usas2		Ruin	AshokasHell	music						
+1	Usas2		Ruin	AshokasHell	Palette						
+1	Usas2		Tile	Background	first	256		First number			
+1	Usas2		Tile	Background	groupId	0		Background			
+1	Usas2		Tile	Background	last	1023		Last number			
 1	Usas2		RoomObject	bat	uid	147					
 1	Usas2		RoomObject	bat	objectClass	Enemy					
 1	Usas2		RoomObject	beetle	uid	140					
 1	Usas2		RoomObject	beetle	objectClass	Enemy					
+1	Usas2		DsmDatalist	BitmapGfx	IndexBlock	0					
+1	Usas2		DsmDatalist	BitmapGfx	IndexSegment	32					
+1	Usas2		DsmDatalist	BitmapGfx	name	BitmapGfx					
 1	Usas2		RoomObject	blackHoleAlien	uid	131					
 1	Usas2		RoomObject	blackHoleAlien	objectClass	Enemy					
 1	Usas2		RoomObject	blackHoleAlienBaby	uid	146					
@@ -136,12 +62,27 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	boringEyeGreen	objectClass	General					
 1	Usas2		RoomObject	boringEyeRed	uid	145					
 1	Usas2		RoomObject	boringEyeRed	objectClass	General					
+1	Usas2		Room	boss	engine	2					
+1	Usas2		Room	boss	height	27					
+1	Usas2		Room	boss	name	Boss Room					
+1	Usas2		Room	boss	roomType	96					
+1	Usas2		Room	boss	width	32					
 1	Usas2		RoomObject	BossFireDemon	uid	8					
 1	Usas2		RoomObject	BossFireDemon	objectClass	General					
-1	Usas2		RoomObject	BossRat	uid	9					
-1	Usas2		RoomObject	BossRat	objectClass	General					
 1	Usas2		RoomObject	BossPlant	uid	13					
 1	Usas2		RoomObject	BossPlant	objectClass	General					
+1	Usas2		RoomObject	BossRat	uid	9					
+1	Usas2		RoomObject	BossRat	objectClass	General					
+1	Usas2		RoomObject	BreakableWall	uid	14					
+1	Usas2		RoomObject	BreakableWall	objectClass	BreakableWall					
+1	Usas2		Ruin	Chi	description	Realm of Chi		Description of this ruin			
+1	Usas2		Ruin	Chi	ruinId	15		Identifier for this Ruin			
+1	Usas2		Ruin	Chi	name	Chi					
+1	Usas2		Ruin	Chi	music						
+1	Usas2		Ruin	Chi	Palette						
+1	Usas2		FileType	default	id	0					
+1	Usas2		TiledMap	default	name	Je Moeder					
+1	Usas2		TiledMap	default	path	jemoeder.tmx					
 1	Usas2		RoomObject	demontje brown	uid	156					
 1	Usas2		RoomObject	demontje brown	objectClass	Enemy					
 1	Usas2		RoomObject	demontje green	uid	154					
@@ -150,14 +91,63 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	demontje grey	objectClass	Enemy					
 1	Usas2		RoomObject	demontje red	uid	155					
 1	Usas2		RoomObject	demontje red	objectClass	Enemy					
+1	Usas2		Tile	DiagonalStairsLeft	first	48		First number			
+1	Usas2		Tile	DiagonalStairsLeft	groupId	4		DiagonalStairsLeft			
+1	Usas2		Tile	DiagonalStairsLeft	last	49		Last number			
+1	Usas2		Tile	DiagonalStairsRight	first	50		First number			
+1	Usas2		Tile	DiagonalStairsRight	groupId	5		DiagonalStairsRight			
+1	Usas2		Tile	DiagonalStairsRight	last	51		Last number			
+1	Usas2		Tile	empty	first	0		First number			
+1	Usas2		Tile	empty	groupId	-		empty			
+1	Usas2		Tile	empty	last	0		Last number			
+1	Usas2		Ruin	EuderusSet	description	Euderus Set		Description of this ruin			
+1	Usas2		Ruin	EuderusSet	ruinId	10		Identifier for this Ruin			
+1	Usas2		Ruin	EuderusSet	name	Euderus Set					
+1	Usas2		Ruin	EuderusSet	music						
+1	Usas2		Ruin	EuderusSet	Palette						
+1	Usas2		Ruin	Fate	description	Fate		Description of this ruin			
+1	Usas2		Ruin	Fate	ruinId	12		Identifier for this Ruin			
+1	Usas2		Ruin	Fate	name	Fate					
+1	Usas2		Ruin	Fate	music						
+1	Usas2		Ruin	Fate	Palette						
 1	Usas2		RoomObject	fireEyeGreen	objectClass	General					
 1	Usas2		RoomObject	fireEyeGreen	uid	132					
 1	Usas2		RoomObject	fireEyeGrey	objectClass	General					
 1	Usas2		RoomObject	fireEyeGrey	uid	133					
+1	Usas2		Tile	Foreground	first	52		First number			
+1	Usas2		Tile	Foreground	groupId	1		Foreground			
+1	Usas2		Tile	Foreground	last	255		Last number			
+1	Usas2		Tile	Free	first	9		First number			
+1	Usas2		Tile	Free	groupId	-		Free			
+1	Usas2		Tile	Free	last	31		Last number			
+1	Usas2		Ruin	Fuu	description	Realm of Fu		Description of this ruin			
+1	Usas2		Ruin	Fuu	ruinId	22		Identifier for this Ruin			
+1	Usas2		Ruin	Fuu	name	Fuu					
+1	Usas2		Ruin	Fuu	music						
+1	Usas2		Ruin	Fuu	Palette						
+1	Usas2		Room	gate	engine	2					
+1	Usas2		Room	gate	height	27					
+1	Usas2		Room	gate	name	Gate Room					
+1	Usas2		Room	gate	roomType	128					
+1	Usas2		Room	gate	width	32					
+1	Usas2		Ruin	Genbu	description	Genbu Sanctuary		Description of this ruin			
+1	Usas2		Ruin	Genbu	ruinId	21		Identifier for this Ruin			
+1	Usas2		Ruin	Genbu	name	Genbu					
+1	Usas2		Ruin	Genbu	music						
+1	Usas2		Ruin	Genbu	Palette						
+1	Usas2		Index	GfxIndexPointer	numrec	32	attribute	Number of records in the table		.numrec: EQU 32	
+1	Usas2		Index	GfxIndexPointer	reclen	2	attribute	The length of one record		.reclen: EQU 2	
+1	Usas2		Index	GfxIndexTable	block	2	attribute	Offset of property "block" in the table		.block: EQU 2	
+1	Usas2		Index	GfxIndexTable	numrec	4	attribute	Number of records in the table		.numrec: EQU 4	
+1	Usas2		Index	GfxIndexTable	palette	0	attribute	Offset of property "palette" in the table		.palette: EQU 0	
+1	Usas2		Index	GfxIndexTable	parts	1	attribute	Offset of property "parts" in the table		.parts: EQU 1	
+1	Usas2		Index	GfxIndexTable	reclen	-1	attribute	The length of one record		.reclen: EQU -1	
+1	Usas2		Index	GfxIndexTable	segmentSize	3	attribute	Offset of property "segmentSize" in the table		.segmentSize: EQU 3	
 1	Usas2		RoomObject	glassBall	uid	61					
 1	Usas2		RoomObject	glassBall	objectClass	glassBall					
 1	Usas2		RoomObject	glassBallPipe	objectClass	general					
 1	Usas2		RoomObject	glassBallPipe	uid	159					
+1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv					
 1	Usas2		RoomObject	grinder	uid	136					
 1	Usas2		RoomObject	grinder	objectClass	Enemy					
 1	Usas2		RoomObject	huge spider	uid	129					
@@ -166,16 +156,131 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	hugeBlob	uid	128					
 1	Usas2		RoomObject	hunchback	uid	138					
 1	Usas2		RoomObject	hunchback	objectClass	Enemy					
+1	Usas2		FileType	ImageBmp	id	9					
+1	Usas2		FileType	ImageSc5	id	8					
+1	Usas2		Ruin	Indra	description	Lair of Demon Indra		Description of this ruin			
+1	Usas2		Ruin	Indra	ruinId	23		Identifier for this Ruin			
+1	Usas2		Ruin	Indra	name	Indra					
+1	Usas2		Ruin	Indra	music						
+1	Usas2		Ruin	Indra	Palette						
+1	Usas2		Ruin	Ka	description	Realm of Ka		Description of this ruin			
+1	Usas2		Ruin	Ka	ruinId	20		Identifier for this Ruin			
+1	Usas2		Ruin	Ka	name	Ka					
+1	Usas2		Ruin	Ka	music						
+1	Usas2		Ruin	Ka	Palette						
+1	Usas2		music	KarniMata	file	KarniMata.vgm					
+1	Usas2		music	KarniMata	id	3					
+1	Usas2		Ruin	KarniMata	description	Karni Mata Ruins		Description of this ruin			
+1	Usas2		Ruin	KarniMata	music	KarniMata		Default music (ID) for this ruin			
+1	Usas2		Ruin	KarniMata	name	Karni Mata		The display name			
+1	Usas2		Ruin	KarniMata	palette	KarniMata.tiles		Default Palette			
+1	Usas2		Ruin	KarniMata	ruinId	6		Identifier for this Ruin			
+1	Usas2		Ruin	KarniMata	TiledTileSet	KarniMata		Default TiledTileset (ID)			
+1	Usas2		Ruin	KarniMata	TiledWorldMap	KarniMata		Designated ruin worldmap in Tiled			
+1	Usas2		Ruin	KarniMata	tileSet	KarniMata		Default Tileset (ID)			
+1	Usas2		TiledtileSet	KarniMata	id	6					
+1	Usas2		TiledtileSet	KarniMata	imageSourceFile	./tilesheets/images/KarniMata.tiles.bmp		Direct path to file			
+1	Usas2		TiledtileSet	KarniMata	path	tilesheets/tsKarniMata.tsx		Direct path to file			
+1	Usas2		TiledWorldMap	KarniMata	Name	Karni Mata					
+1	Usas2		TiledWorldMap	KarniMata	path	KarniMata.world					
+1	Usas2		Tileset	KarniMata	file	KarniMata.Tiles.sc5					
+1	Usas2		Tileset	KarniMata	id	6					
+1	Usas2		Tileset	KarniMata	imageSourceFile	KarniMata.Tiles.bmp					
+1	Usas2		Tileset	KarniMata	paletteSourceFile	KarniMata.Tiles.pl					
+1	Usas2		Tileset	KarniMata	type	0					
+1	Usas2		Palette	KarniMata.tiles	file	Karnimata.tiles.pl					
+1	Usas2		Palette	KarniMata.tiles	id	6					
+1	Usas2		file	KarniMata.tiles.bmp	fileTypeId	7					
+1	Usas2		file	KarniMata.tiles.bmp	path	..\grapx\tilesheets\KarniMata.tiles.bmp					
+1	Usas2		file	KarniMata.tiles.pl	fileTypeId	2					
+1	Usas2		file	KarniMata.tiles.pl	path	..\grapx\tilesheets\KarniMata.tiles.pl					
+1	Usas2		file	KarniMata.tiles.sc5	fileTypeId	1					
+1	Usas2		file	KarniMata.tiles.sc5	path	..\grapx\tilesheets\KarniMata.tiles.sc5					
 1	Usas2		RoomObject	knifeThrower	uid	134					
 1	Usas2		RoomObject	knifeThrower	objectClass	Enemy					
+1	Usas2		music	Konark	id	7					
+1	Usas2		music	Konark	file	Konark.vgm					
+1	Usas2		Ruin	Konark	description	Konark Temple		Description of this ruin			
+1	Usas2		Ruin	Konark	ruinId	7		Identifier for this Ruin			
+1	Usas2		Ruin	Konark	music	Konark		Default music (ID) for this ruin			
+1	Usas2		Ruin	Konark	name	Konark		The display name			
+1	Usas2		Ruin	Konark	TiledTileSet	Konark		Default TiledTileset (ID)			
+1	Usas2		Ruin	Konark	TiledWorldMap	Konark		Designated ruin worldmap in Tiled			
+1	Usas2		Ruin	Konark	tileSet	Konark		Default Tileset (ID)			
+1	Usas2		Ruin	Konark	palette	Konark.tiles.pl		Default Palette			
+1	Usas2		TiledtileSet	Konark	id	7					
+1	Usas2		TiledtileSet	Konark	imageSourceFile	./tilesheets/images/Konark.tiles.bmp					
+1	Usas2		TiledtileSet	Konark	path	tilesheets/tsKonark.tsx					
+1	Usas2		TiledWorldMap	Konark	Name	Konark					
+1	Usas2		TiledWorldMap	Konark	path	Konark.world					
+1	Usas2		Tileset	Konark	file	Konark.tiles.sc5					
+1	Usas2		Tileset	Konark	id	7					
+1	Usas2		Tileset	Konark	type	0					
+1	Usas2		Tileset	Konark	imageSourceFile	Konark.tiles.bmp					
+1	Usas2		Tileset	Konark	paletteSourceFile	Konark.tiles.pl					
+1	Usas2		file	Konark.tiles.bmp	path	..\grapx\tilesheets\Konark.tiles.bmp					
+1	Usas2		file	Konark.tiles.bmp	fileTypeId	7					
+1	Usas2		file	Konark.tiles.pl	path	..\grapx\tilesheets\Konark.tiles.pl					
+1	Usas2		file	Konark.tiles.pl	fileTypeId	2					
+1	Usas2		file	Konark.tiles.sc5	path	..\grapx\tilesheets\Konark.tiles.sc5					
+1	Usas2		file	Konark.tiles.sc5	fileTypeId	1					
 1	Usas2		RoomObject	lancelot	uid	130					
 1	Usas2		RoomObject	lancelot	objectClass	Enemy					
-1	Usas2		RoomObject	BreakableWall	uid	14					
-1	Usas2		RoomObject	BreakableWall	objectClass	BreakableWall					
 1	Usas2		RoomObject	landstrider	uid	148					
 1	Usas2		RoomObject	landstrider	objectClass	Enemy					
+1	Usas2		Tile	Lava	first	40		First number			
+1	Usas2		Tile	Lava	groupId	6		Lava			
+1	Usas2		Tile	Lava	last	47		Last number			
+1	Usas2		Ruin	Lemniscate	description	Lemniscate		Description of this ruin			
+1	Usas2		Ruin	Lemniscate	ruinId	2		Identifier for this Ruin			
+1	Usas2		Ruin	Lemniscate	name	Lemniscate					
+1	Usas2		Ruin	Lemniscate	tileSet	Lemniscate					
+1	Usas2		Ruin	Lemniscate	music						
+1	Usas2		Ruin	Lemniscate	Palette						
+1	Usas2		TiledtileSet	Lemniscate	imageSourceFile	./tilesheets/images/Lemniscate.tiles.bmp					
+1	Usas2		TiledtileSet	Lemniscate	path	tilesheets/tsLemniscate.tsx					
+1	Usas2		Tileset	Lemniscate	imageSourceFile	Lemniscate.tiles.bmp					
+1	Usas2		Tileset	Lemniscate	paletteSourceFile	Lemniscate.tiles.pl					
+1	Usas2		Tileset	Lemniscate	file	Lemniscate.tiles.sc5					
+1	Usas2		Tileset	Lemniscate	id	2					
+1	Usas2		Tileset	Lemniscate	type	0					
+1	Usas2		file	Lemniscate.tiles.bmp	path	..\grapx\tilesheets\Lemniscate.tiles.bmp					
+1	Usas2		file	Lemniscate.tiles.bmp	fileTypeId	7					
+1	Usas2		file	Lemniscate.tiles.pl	path	..\grapx\tilesheets\Lemniscate.tiles.pl					
+1	Usas2		file	Lemniscate.tiles.pl	fileTypeId	2					
+1	Usas2		file	Lemniscate.tiles.sc5	path	..\grapx\tilesheets\Lemniscate.tiles.sc5					
+1	Usas2		file	Lemniscate.tiles.sc5	fileTypeId	1					
+1	Usas2		Ruin	Morana	description	Morana Temple		Description of this ruin			
+1	Usas2		Ruin	Morana	ruinId	24		Identifier for this Ruin			
+1	Usas2		Ruin	Morana	name	Morana					
+1	Usas2		Ruin	Morana	music						
+1	Usas2		Ruin	Morana	Palette						
 1	Usas2		RoomObject	octopussy	objectClass	General					
 1	Usas2		RoomObject	octopussy	uid	135					
+1	Usas2		FileType	Palette	id	2					
+1	Usas2		Ruin	Pegu	description	Sacred Pegu Ruins		Description of this ruin			
+1	Usas2		Ruin	Pegu	ruinId	4		Identifier for this Ruin			
+1	Usas2		Ruin	Pegu	name	Pegu		The display name			
+1	Usas2		Ruin	Pegu	TiledTileSet	Pegu		Default TiledTileset (ID)			
+1	Usas2		Ruin	Pegu	TiledWorldMap	Pegu		Designated ruin worldmap in Tiled			
+1	Usas2		Ruin	Pegu	tileSet	Pegu		Default Tileset (ID)			
+1	Usas2		Ruin	Pegu	music			Default music (ID) for this ruin			
+1	Usas2		Ruin	Pegu	Palette			Default Palette			
+1	Usas2		TiledtileSet	Pegu	imageSourceFile	./tilesheets/images/Pegu.tiles.bmp					
+1	Usas2		TiledtileSet	Pegu	path	tilesheets/tsPegu.tsx					
+1	Usas2		TiledWorldMap	Pegu	Name	Pegu					
+1	Usas2		TiledWorldMap	Pegu	path	Pegu.world					
+1	Usas2		Tileset	Pegu	imageSourceFile	Pegu.Tiles.bmp		bitmap source file			
+1	Usas2		Tileset	Pegu	paletteSourceFile	Pegu.Tiles.pl		palette source file			
+1	Usas2		Tileset	Pegu	file	Pegu.Tiles.sc5		MSX destination file			
+1	Usas2		Tileset	Pegu	id	4		RuinID			
+1	Usas2		Tileset	Pegu	type	0		FileType=Tileset			
+1	Usas2		file	Pegu.tiles.bmp	path	..\grapx\tilesheets\Pegu.tiles.bmp					
+1	Usas2		file	Pegu.tiles.bmp	fileTypeId	7					
+1	Usas2		file	Pegu.tiles.pl	path	..\grapx\tilesheets\Pegu.tiles.pl					
+1	Usas2		file	Pegu.tiles.pl	fileTypeId	2					
+1	Usas2		file	Pegu.tiles.sc5	path	..\grapx\tilesheets\Pegu.tiles.sc5					
+1	Usas2		file	Pegu.tiles.sc5	fileTypeId	1					
 1	Usas2		RoomObject	PlatformMovingLarge	uid	10					
 1	Usas2		RoomObject	PlatformMovingLarge	objectClass	MovingPlatform					
 1	Usas2		RoomObject	PlatformMovingMedium	uid	57					
@@ -190,92 +295,149 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	PlatformRetracting	objectClass	platform					
 1	Usas2		RoomObject	PoisonDrop	uid	4					
 1	Usas2		RoomObject	PoisonDrop	objectClass	General					
+1	Usas2		Ruin	pollux	description	Heart of Ro		Description of this ruin			
+1	Usas2		Ruin	pollux	ruinId	1		Identifier for this Ruin			
+1	Usas2		Ruin	pollux	name	Pollux					
+1	Usas2		Ruin	pollux	TiledTileSet	pollux		TiledTileset identity			
+1	Usas2		Ruin	pollux	TiledWorldMap	pollux		TiledWorldmap Identity			
+1	Usas2		Ruin	pollux	tileset	pollux		Tileset identity			
+1	Usas2		Ruin	pollux	palette	pollux.tiles		Palette Identity			
+1	Usas2		Ruin	pollux	music						
+1	Usas2		TiledtileSet	pollux	imageSourceFile	./tilesheets/images/pollux.tiles.bmp		Direct path to file			
+1	Usas2		TiledtileSet	pollux	path	tilesheets/pollux.tsx		Direct path to file			
+1	Usas2		TiledWorldMap	pollux	Name	pollux					
+1	Usas2		TiledWorldMap	pollux	path	pollux.world					
+1	Usas2		Tileset	pollux	id	1					
+1	Usas2		Tileset	pollux	imageSourceFile	pollux.Tiles.bmp					
+1	Usas2		Tileset	pollux	paletteSourceFile	pollux.Tiles.pl					
+1	Usas2		Tileset	pollux	file	pollux.Tiles.sc5					
+1	Usas2		Palette	pollux.tiles	file	pollux.tiles.pl					
+1	Usas2		Palette	pollux.tiles	id	1					
+1	Usas2		file	pollux.tiles.bmp	fileTypeId	7					
+1	Usas2		file	pollux.tiles.bmp	path	..\grapx\tilesheets\pollux.tiles.bmp					
+1	Usas2		file	pollux.tiles.pl	fileTypeId	2					
+1	Usas2		file	pollux.tiles.pl	path	..\grapx\tilesheets\pollux.tiles.pl					
+1	Usas2		file	pollux.tiles.sc5	fileTypeId	1					
+1	Usas2		file	pollux.tiles.sc5	path	..\grapx\tilesheets\pollux.tiles.sc5					
 1	Usas2		RoomObject	PushStone	objectClass	general					
 1	Usas2		RoomObject	PushStone	uid	1					
 1	Usas2		RoomObject	ratFaceBatSpawner	uid	20					
 1	Usas2		RoomObject	ratFaceBatSpawner	objectClass	enemySpawn					
+1	Usas2		Room	regular	engine	1					
+1	Usas2		Room	regular	height	27					
+1	Usas2		Room	regular	name	Regular Room					
+1	Usas2		Room	regular	roomType	0					
+1	Usas2		Room	regular	width	38					
+1	Usas2		Room	regularSmall	engine	2					
+1	Usas2		Room	regularSmall	height	27					
+1	Usas2		Room	regularSmall	name	Regular Room Small					
+1	Usas2		Room	regularSmall	roomType	160					
+1	Usas2		Room	regularSmall	width	32					
 1	Usas2		RoomObject	retardedZombie	uid	143					
 1	Usas2		RoomObject	retardedZombie	objectClass	Enemy					
+1	Usas2		FileType	Room	id	4					
+1	Usas2		FileType	RoomPacked	id	5					
+1	Usas2		Index	Rooms	numrec	1024	attribute	Number of records in the table		.numrec: EQU 1024	
+1	Usas2		Index	Rooms	reclen	4	attribute	The length of one record		.reclen: EQU 4	
+1	Usas2		TiledtileSet	Ruin3	imageSourceFile	./tilesheets/images/Ruin3.tiles.bmp					
+1	Usas2		TiledtileSet	Ruin3	path	tilesheets/Ruin3.tsx					
+1	Usas2		TiledWorldMap	ruin3	Name	ruin3					
+1	Usas2		TiledWorldMap	ruin3	path	ruin3.world					
+1	Usas2		Tileset	ruin3	file	ruin3.Tiles.sc5					
+1	Usas2		Tileset	ruin3	id	3					
+1	Usas2		Tileset	ruin3	type	0					
+1	Usas2		Tileset	ruin3	imageSourceFile	ruin3.Tiles.bmp					
+1	Usas2		Tileset	ruin3	paletteSourceFile	ruin3.Tiles.pl					
+1	Usas2		Palette	ruin3.tiles	file	ruin3.tiles.pl					
+1	Usas2		file	ruin3.tiles.bmp	path	..\grapx\tilesheets\ruin3.tiles.bmp					
+1	Usas2		file	ruin3.tiles.bmp	fileTypeId	7					
+1	Usas2		file	ruin3.tiles.pl	path	..\grapx\tilesheets\ruin3.tiles.pl					
+1	Usas2		file	ruin3.tiles.pl	fileTypeId	2					
+1	Usas2		file	ruin3.tiles.sc5	path	..\grapx\tilesheets\ruin3.tiles.sc5					
+1	Usas2		file	ruin3.tiles.sc5	fileTypeId	1					
 1	Usas2		RoomObject	scorpion	uid	139					
 1	Usas2		RoomObject	scorpion	objectClass	Enemy					
+1	Usas2		Room	secret	engine	1					
+1	Usas2		Room	secret	height	27					
+1	Usas2		Room	secret	name	Secret Room					
+1	Usas2		Room	secret	roomType	64					
+1	Usas2		Room	secret	width	38					
 1	Usas2		RoomObject	sensorTentacle	objectClass	General					
 1	Usas2		RoomObject	sensorTentacle	uid	149					
+1	Usas2		Ruin	Sepa	description	Sepa Temple		Description of this ruin			
+1	Usas2		Ruin	Sepa	ruinId	13		Identifier for this Ruin			
+1	Usas2		Ruin	Sepa	name	Sepa					
+1	Usas2		Ruin	Sepa	music						
+1	Usas2		Ruin	Sepa	Palette						
+1	Usas2		Ruin	Shalabha	description	Lair of Shalabha		Description of this ruin			
+1	Usas2		Ruin	Shalabha	ruinId	5		Identifier for this Ruin			
+1	Usas2		Ruin	Shalabha	name	Bio					
+1	Usas2		Ruin	Shalabha	music						
+1	Usas2		Ruin	Shalabha	Palette						
 1	Usas2		RoomObject	slimeBlack	uid	158					
 1	Usas2		RoomObject	slimeBlack	objectClass	Enemy					
 1	Usas2		RoomObject	spiderGreen	uid	141					
 1	Usas2		RoomObject	spiderGreen	objectClass	Enemy					
 1	Usas2		RoomObject	spiderGrey	uid	142					
 1	Usas2		RoomObject	spiderGrey	objectClass	Enemy					
+1	Usas2		Tile	SpikePoison	first	32		First number			
+1	Usas2		Tile	SpikePoison	groupId	3		Spike/Poison			
+1	Usas2		Tile	SpikePoison	last	39		Last number			
+1	Usas2		Ruin	Sui	description	Realm of Sui		Description of this ruin			
+1	Usas2		Ruin	Sui	ruinId	16		Identifier for this Ruin			
+1	Usas2		Ruin	Sui	name	Sui					
+1	Usas2		Ruin	Sui	music						
+1	Usas2		Ruin	Sui	Palette						
+1	Usas2		Ruin	Taxila	description	Taxila Ruins		Description of this ruin			
+1	Usas2		Ruin	Taxila	ruinId	9		Identifier for this Ruin			
+1	Usas2		Ruin	Taxila	name	Taxila					
+1	Usas2		Ruin	Taxila	music						
+1	Usas2		Ruin	Taxila	Palette						
+1	Usas2		Room	teleport	engine	2					
+1	Usas2		Room	teleport	height	27					
+1	Usas2		Room	teleport	name	Teleport room					
+1	Usas2		Room	teleport	roomType	32					
+1	Usas2		Room	teleport	width	32					
+1	Usas2		Ruin	Teleport	description			Description of this ruin			
+1	Usas2		Ruin	Teleport	ruinId	31		Identifier for this Ruin			
+1	Usas2		Ruin	Teleport	music	Teleport		Default music (ID) for this ruin			
+1	Usas2		Ruin	Teleport	TiledTileSet	Teleport		Default TiledTileset (ID)			
+1	Usas2		Ruin	Teleport	TiledWorldMap	Teleport		Designated ruin worldmap in Tiled			
+1	Usas2		Ruin	Teleport	tileSet	Teleport		Default Tileset (ID)			
+1	Usas2		Ruin	Teleport	name	Teleport room		The display name			
+1	Usas2		Ruin	Teleport	palette	Teleport.tiles		Default Palette			
+1	Usas2		TiledtileSet	teleport	imageSourceFile	./tilesheets/images/Teleport.tiles.bmp					
+1	Usas2		TiledtileSet	teleport	path	tilesheets/tsTeleport.tsx					
+1	Usas2		Tileset	Teleport	file	Teleport.tiles.sc5					
+1	Usas2		Tileset	Teleport	id	31					
+1	Usas2		Tileset	Teleport	imageSourceFile	Teleport.tiles.bmp					
+1	Usas2		Tileset	Teleport	paletteSourceFile	Teleport.tiles.pl					
+1	Usas2		file	Teleport.tiles.bmp	fileTypeId	7					
+1	Usas2		file	Teleport.tiles.bmp	path	..\grapx\tilesheets\Teleport.tiles.bmp					
+1	Usas2		file	Teleport.tiles.pl	fileTypeId	2					
+1	Usas2		file	Teleport.tiles.pl	path	..\grapx\tilesheets\Teleport.tiles.pl					
+1	Usas2		file	Teleport.tiles.sc5	fileTypeId	1					
+1	Usas2		file	Teleport.tiles.sc5	path	..\grapx\tilesheets\Teleport.tiles.sc5					
 1	Usas2		RoomObject	TeleportVortex	uid	6					
 1	Usas2		RoomObject	TeleportVortex	objectClass	General					
+1	Usas2		FileType	TiledMap	id	3					
+1	Usas2		FileType	TiledTileSet	id	6					
+1	Usas2		FileType	TiledTileSetImage	id	7					
+1	Usas2		FileType	Tileset	id	1					
+1	Usas2		Ruin	Tiwanaku	description	Tiwanaku		Description of this ruin			
+1	Usas2		Ruin	Tiwanaku	ruinId	18		Identifier for this Ruin			
+1	Usas2		Ruin	Tiwanaku	name	Tiwanaku					
+1	Usas2		Ruin	Tiwanaku	music						
+1	Usas2		Ruin	Tiwanaku	Palette						
 1	Usas2		RoomObject	trampolineSlimeGreen	uid	150					
 1	Usas2		RoomObject	trampolineSlimeGreen	objectClass	Enemy					
 1	Usas2		RoomObject	treeman	uid	137					
 1	Usas2		RoomObject	treeman	objectClass	Enemy					
-1	Usas2		RoomObject	waspBrown	uid	152					
-1	Usas2		RoomObject	waspBrown	objectClass	General					
-1	Usas2		RoomObject	waspGreen	uid	151					
-1	Usas2		RoomObject	waspGreen	objectClass	General					
-1	Usas2		RoomObject	waspYellow	uid	153					
-1	Usas2		RoomObject	waspYellow	objectClass	general					
-1	Usas2		RoomObject	Waterfall1	uid	2					
-1	Usas2		RoomObject	Waterfall1	objectClass	General					
-1	Usas2		RoomObject	Waterfall2	uid	3					
-1	Usas2		RoomObject	Waterfall2	objectClass	General					
-1	Usas2		RoomObject	WaterfallScene	uid	7					
-1	Usas2		RoomObject	WaterfallScene	objectClass	General					
-1	Usas2		RoomObject	ZombieSpawnPoint	uid	62					
-1	Usas2		RoomObject	ZombieSpawnPoint	objectClass	enemySpawn					
 1	Usas2		Ruin	undefined00	description	0		Description of this ruin			
 1	Usas2		Ruin	undefined00	ruinId	0		Identifier for this Ruin			
-1	Usas2		Ruin	pollux	description	Heart of Ro		Description of this ruin			
-1	Usas2		Ruin	pollux	ruinId	1		Identifier for this Ruin			
-1	Usas2		Ruin	Lemniscate	description	Lemniscate		Description of this ruin			
-1	Usas2		Ruin	Lemniscate	ruinId	2		Identifier for this Ruin			
-1	Usas2		Ruin	WorldForest	description	The World Forest		Description of this ruin			
-1	Usas2		Ruin	WorldForest	ruinId	3		Identifier for this Ruin			
-1	Usas2		Ruin	Pegu	description	Sacred Pegu Ruins		Description of this ruin			
-1	Usas2		Ruin	Pegu	ruinId	4		Identifier for this Ruin			
-1	Usas2		Ruin	Shalabha	description	Lair of Shalabha		Description of this ruin			
-1	Usas2		Ruin	Shalabha	ruinId	5		Identifier for this Ruin			
-1	Usas2		Ruin	KarniMata	description	Karni Mata Ruins		Description of this ruin			
-1	Usas2		Ruin	KarniMata	ruinId	6		Identifier for this Ruin			
-1	Usas2		Ruin	Konark	description	Konark Temple		Description of this ruin			
-1	Usas2		Ruin	Konark	ruinId	7		Identifier for this Ruin			
-1	Usas2		Ruin	AshokasHell	description	Hell of Ashoka		Description of this ruin			
-1	Usas2		Ruin	AshokasHell	ruinId	8		Identifier for this Ruin			
-1	Usas2		Ruin	Taxilla	description	Taxilla Ruins		Description of this ruin			
-1	Usas2		Ruin	Taxilla	ruinId	9		Identifier for this Ruin			
-1	Usas2		Ruin	EuderusSet	description	Euderus Set		Description of this ruin			
-1	Usas2		Ruin	EuderusSet	ruinId	10		Identifier for this Ruin			
-1	Usas2		Ruin	Akna	description	Akna Ruins		Description of this ruin			
-1	Usas2		Ruin	Akna	ruinId	11		Identifier for this Ruin			
-1	Usas2		Ruin	Fate	description	Fate		Description of this ruin			
-1	Usas2		Ruin	Fate	ruinId	12		Identifier for this Ruin			
-1	Usas2		Ruin	Sepa	description	Sepa Temple		Description of this ruin			
-1	Usas2		Ruin	Sepa	ruinId	13		Identifier for this Ruin			
 1	Usas2		Ruin	undefined14	description			Description of this ruin			
 1	Usas2		Ruin	undefined14	ruinId	14		Identifier for this Ruin			
-1	Usas2		Ruin	Chi	description	Realm of Chi		Description of this ruin			
-1	Usas2		Ruin	Chi	ruinId	15		Identifier for this Ruin			
-1	Usas2		Ruin	Sui	description	Realm of Sui		Description of this ruin			
-1	Usas2		Ruin	Sui	ruinId	16		Identifier for this Ruin			
-1	Usas2		Ruin	Vala	description	Cave of Vala		Description of this ruin			
-1	Usas2		Ruin	Vala	ruinId	17		Identifier for this Ruin			
-1	Usas2		Ruin	Tiwanaku	description	Tiwanaku		Description of this ruin			
-1	Usas2		Ruin	Tiwanaku	ruinId	18		Identifier for this Ruin			
-1	Usas2		Ruin	Aggayu	description	Aggayu Ruins		Description of this ruin			
-1	Usas2		Ruin	Aggayu	ruinId	19		Identifier for this Ruin			
-1	Usas2		Ruin	Ka	description	Realm of Ka		Description of this ruin			
-1	Usas2		Ruin	Ka	ruinId	20		Identifier for this Ruin			
-1	Usas2		Ruin	Genbu	description	Genbu Sanctuary		Description of this ruin			
-1	Usas2		Ruin	Genbu	ruinId	21		Identifier for this Ruin			
-1	Usas2		Ruin	Fuu	description	Realm of Fu		Description of this ruin			
-1	Usas2		Ruin	Fuu	ruinId	22		Identifier for this Ruin			
-1	Usas2		Ruin	Indra	description	Lair of Demon Indra		Description of this ruin			
-1	Usas2		Ruin	Indra	ruinId	23		Identifier for this Ruin			
-1	Usas2		Ruin	Morana	description	Morana Temple		Description of this ruin			
-1	Usas2		Ruin	Morana	ruinId	24		Identifier for this Ruin			
+1	Usas2		Ruin	undefined14	name	undefined					
 1	Usas2		Ruin	undefined25	description			Description of this ruin			
 1	Usas2		Ruin	undefined25	ruinId	25		Identifier for this Ruin			
 1	Usas2		Ruin	undefined26	description			Description of this ruin			
@@ -288,198 +450,52 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	undefined29	ruinId	29		Identifier for this Ruin			
 1	Usas2		Ruin	undefined30	description			Description of this ruin			
 1	Usas2		Ruin	undefined30	ruinId	30		Identifier for this Ruin			
-1	Usas2		Ruin	Teleport	description			Description of this ruin			
-1	Usas2		Ruin	Teleport	ruinId	31		Identifier for this Ruin			
-1	Usas2		Ruin	Aggayu	name	Aggayu					
-1	Usas2		Ruin	Akna	name	Akna					
-1	Usas2		Ruin	Shalabha	name	Bio					
-1	Usas2		Ruin	Chi	name	Chi					
-1	Usas2		Ruin	EuderusSet	name	Euderus Set					
-1	Usas2		Ruin	Fate	name	Fate					
-1	Usas2		Ruin	Fuu	name	Fuu					
-1	Usas2		Ruin	Genbu	name	Genbu					
+1	Usas2		DSM	usas2	blockExclusion	0		Block#0 is excluded for indexes		DSM.blockExclusion: EQU 0	
+1	Usas2		DSM	usas2	blocksize	16384		One block is 16KB		DSM.blocksize: EQU 16384	
+1	Usas2		DSM	usas2	description	Usas 2 ROM file				DSM.description: EQU Usas 2 ROM file	
+1	Usas2		DSM	usas2	fileSpaceName	usas2.rom		The destination file for the data		DSM.fileSpaceName: EQU usas2.rom	
+1	Usas2		DSM	usas2	firstblock	112		Managed blocks start at 0x70		DSM.firstblock: EQU 112	
+1	Usas2		DSM	usas2	name	usas2.rom				DSM.name: EQU usas2.rom	
+1	Usas2		DSM	usas2	segmentSize	128		One segment is 128bytes		DSM.segmentSize: EQU 128	
+1	Usas2		DSM	usas2	size	256		Total space size in blocks > 4MB		DSM.size: EQU 256	
+1	Usas2		Ruin	Vala	description	Cave of Vala		Description of this ruin			
+1	Usas2		Ruin	Vala	ruinId	17		Identifier for this Ruin			
 1	Usas2		Ruin	Vala	name	Grot					
-1	Usas2		Ruin	AshokasHell	name	Hell of Ashoka			aka verhakselaar		
-1	Usas2		Ruin	pollux	name	Pollux					
-1	Usas2		Ruin	pollux	TiledTileSet	pollux		TiledTileset identity			
-1	Usas2		Ruin	pollux	TiledWorldMap	pollux		TiledWorldmap Identity			
-1	Usas2		Ruin	pollux	tileset	pollux		Tileset identity			
-1	Usas2		Ruin	pollux	palette	pollux.tiles		Palette Identity			
-1	Usas2		Ruin	Indra	name	Indra					
-1	Usas2		Ruin	Ka	name	Ka					
-1	Usas2		Ruin	KarniMata	name	Karni Mata		The display name			
-1	Usas2		Ruin	KarniMata	music	KarniMata		Default music (ID) for this ruin			
-1	Usas2		Ruin	KarniMata	TiledTileSet	KarniMata		Default TiledTileset (ID)			
-1	Usas2		Ruin	KarniMata	TiledWorldMap	KarniMata		Designated ruin worldmap in Tiled			
-1	Usas2		Ruin	KarniMata	tileSet	KarniMata		Default Tileset (ID)			
-1	Usas2		Ruin	KarniMata	palette	KarniMata.tiles		Default Palette			
-1	Usas2		Ruin	Konark	music	Konark		Default music (ID) for this ruin			
-1	Usas2		Ruin	Konark	name	Konark		The display name			
-1	Usas2		Ruin	Konark	TiledTileSet	Konark		Default TiledTileset (ID)			
-1	Usas2		Ruin	Konark	TiledWorldMap	Konark		Designated ruin worldmap in Tiled			
-1	Usas2		Ruin	Konark	tileSet	Konark		Default Tileset (ID)			
-1	Usas2		Ruin	Konark	palette	Konark.tiles.pl		Default Palette			
-1	Usas2		Ruin	Lemniscate	name	Lemniscate					
-1	Usas2		Ruin	Lemniscate	tileSet	Lemniscate					
-1	Usas2		Ruin	Morana	name	Morana					
-1	Usas2		Ruin	Pegu	name	Pegu		The display name			
-1	Usas2		Ruin	Pegu	TiledTileSet	Pegu		Default TiledTileset (ID)			
-1	Usas2		Ruin	Pegu	TiledWorldMap	Pegu		Designated ruin worldmap in Tiled			
-1	Usas2		Ruin	Pegu	tileSet	Pegu		Default Tileset (ID)			
+1	Usas2		Ruin	Vala	music						
+1	Usas2		Ruin	Vala	Palette						
+1	Usas2		Tile	VerticalStairs	first	1		First number			
+1	Usas2		Tile	VerticalStairs	groupId	2		VerticalStairs			
+1	Usas2		Tile	VerticalStairs	last	8		Last number			
+1	Usas2		RoomObject	waspBrown	uid	152					
+1	Usas2		RoomObject	waspBrown	objectClass	General					
+1	Usas2		RoomObject	waspGreen	uid	151					
+1	Usas2		RoomObject	waspGreen	objectClass	General					
+1	Usas2		RoomObject	waspYellow	uid	153					
+1	Usas2		RoomObject	waspYellow	objectClass	general					
+1	Usas2		RoomObject	Waterfall1	uid	2					
+1	Usas2		RoomObject	Waterfall1	objectClass	General					
+1	Usas2		RoomObject	Waterfall2	uid	3					
+1	Usas2		RoomObject	Waterfall2	objectClass	General					
+1	Usas2		RoomObject	WaterfallScene	uid	7					
+1	Usas2		RoomObject	WaterfallScene	objectClass	General					
+1	Usas2		Ruin	WorldForest	description	The World Forest		Description of this ruin			
+1	Usas2		Ruin	WorldForest	ruinId	3		Identifier for this Ruin			
 1	Usas2		Ruin	WorldForest	TiledTileSet	ruin3		Default TiledTileset (ID)			
 1	Usas2		Ruin	WorldForest	TiledWorldMap	ruin3		Designated ruin worldmap in Tiled			
 1	Usas2		Ruin	WorldForest	tileSet	ruin3		Default Tileset (ID)			
 1	Usas2		Ruin	WorldForest	Palette	ruin3.tiles					
-1	Usas2		Ruin	Sepa	name	Sepa					
-1	Usas2		Ruin	Sui	name	Sui					
-1	Usas2		Ruin	Taxilla	name	Taxilla					
-1	Usas2		Ruin	Teleport	music	Teleport		Default music (ID) for this ruin			
-1	Usas2		Ruin	Teleport	TiledTileSet	Teleport		Default TiledTileset (ID)			
-1	Usas2		Ruin	Teleport	TiledWorldMap	Teleport		Designated ruin worldmap in Tiled			
-1	Usas2		Ruin	Teleport	tileSet	Teleport		Default Tileset (ID)			
-1	Usas2		Ruin	Teleport	name	Teleport room		The display name			
-1	Usas2		Ruin	Teleport	palette	Teleport.tiles		Default Palette			
-1	Usas2		Ruin	Tiwanaku	name	Tiwanaku					
-1	Usas2		Ruin	undefined14	name	undefined					
 1	Usas2		Ruin	WorldForest	name	World Forest					
-1	Usas2		Ruin	Aggayu	music						
-1	Usas2		Ruin	Akna	music						
-1	Usas2		Ruin	AshokasHell	music						
-1	Usas2		Ruin	Chi	music						
-1	Usas2		Ruin	EuderusSet	music						
-1	Usas2		Ruin	Fate	music						
-1	Usas2		Ruin	Fuu	music						
-1	Usas2		Ruin	Genbu	music						
-1	Usas2		Ruin	pollux	music						
-1	Usas2		Ruin	Indra	music						
-1	Usas2		Ruin	Ka	music						
-1	Usas2		Ruin	Lemniscate	music						
-1	Usas2		Ruin	Morana	music						
-1	Usas2		Ruin	Pegu	music			Default music (ID) for this ruin			
-1	Usas2		Ruin	Sepa	music						
-1	Usas2		Ruin	Shalabha	music						
-1	Usas2		Ruin	Sui	music						
-1	Usas2		Ruin	Taxilla	music						
-1	Usas2		Ruin	Tiwanaku	music						
-1	Usas2		Ruin	Vala	music						
 1	Usas2		Ruin	WorldForest	music						
-1	Usas2		Ruin	Aggayu	Palette						
-1	Usas2		Ruin	Akna	Palette						
-1	Usas2		Ruin	AshokasHell	Palette						
-1	Usas2		Ruin	Chi	Palette						
-1	Usas2		Ruin	EuderusSet	Palette						
-1	Usas2		Ruin	Fate	Palette						
-1	Usas2		Ruin	Fuu	Palette						
-1	Usas2		Ruin	Genbu	Palette						
-1	Usas2		Ruin	Indra	Palette						
-1	Usas2		Ruin	Ka	Palette						
-1	Usas2		Ruin	Lemniscate	Palette						
-1	Usas2		Ruin	Morana	Palette						
-1	Usas2		Ruin	Pegu	Palette			Default Palette			
-1	Usas2		Ruin	Sepa	Palette						
-1	Usas2		Ruin	Shalabha	Palette						
-1	Usas2		Ruin	Sui	Palette						
-1	Usas2		Ruin	Taxilla	Palette						
-1	Usas2		Ruin	Tiwanaku	Palette						
-1	Usas2		Ruin	Vala	Palette						
-1	Usas2		Tile	Background	first	256		First number			
-1	Usas2		Tile	Background	groupId	0		Background			
-1	Usas2		Tile	Background	last	1023		Last number			
-1	Usas2		Tile	DiagonalStairsLeft	first	48		First number			
-1	Usas2		Tile	DiagonalStairsLeft	groupId	4		DiagonalStairsLeft			
-1	Usas2		Tile	DiagonalStairsLeft	last	49		Last number			
-1	Usas2		Tile	DiagonalStairsRight	first	50		First number			
-1	Usas2		Tile	DiagonalStairsRight	groupId	5		DiagonalStairsRight			
-1	Usas2		Tile	DiagonalStairsRight	last	51		Last number			
-1	Usas2		Tile	empty	first	0		First number			
-1	Usas2		Tile	empty	groupId	-		empty			
-1	Usas2		Tile	empty	last	0		Last number			
-1	Usas2		Tile	Foreground	first	52		First number			
-1	Usas2		Tile	Foreground	groupId	1		Foreground			
-1	Usas2		Tile	Foreground	last	255		Last number			
-1	Usas2		Tile	Free	first	9		First number			
-1	Usas2		Tile	Free	groupId	-		Free			
-1	Usas2		Tile	Free	last	31		Last number			
-1	Usas2		Tile	Lava	first	40		First number			
-1	Usas2		Tile	Lava	groupId	6		Lava			
-1	Usas2		Tile	Lava	last	47		Last number			
-1	Usas2		Tile	SpikePoison	first	32		First number			
-1	Usas2		Tile	SpikePoison	groupId	3		Spike/Poison			
-1	Usas2		Tile	SpikePoison	last	39		Last number			
-1	Usas2		Tile	VerticalStairs	first	1		First number			
-1	Usas2		Tile	VerticalStairs	groupId	2		VerticalStairs			
-1	Usas2		Tile	VerticalStairs	last	8		Last number			
-1	Usas2		TiledMap	.*	defaultLocation	C:\Users\$env:username\OneDrive\Usas2\maps					
-1	Usas2		TiledMap	default	name	Je Moeder					
-1	Usas2		TiledMap	default	path	jemoeder.tmx					
-1	Usas2		TiledtileSet	.*	defaultLocation	C:\Users\$($env:username)\OneDrive\Usas2\maps					
-1	Usas2		TiledtileSet	.*	imageSourceHeight	256					
-1	Usas2		TiledtileSet	.*	imageSourceWidth	256					
-1	Usas2	 	TiledtileSet	.*	numTilesx	32					
-1	Usas2	 	TiledtileSet	.*	numTilesy	32					
-1	Usas2	 	TiledtileSet	.*	tileCount	1024					
-1	Usas2		TiledtileSet	.*	tileHeight	8					
-1	Usas2		TiledtileSet	.*	tileWidth	8					
-1	Usas2		TiledtileSet	Akna	imageSourceFile	./tilesheets/images/Akna.tiles.bmp					
-1	Usas2		TiledtileSet	Akna	path	tilesheets/Akna.tsx					
-1	Usas2		TiledtileSet	pollux	imageSourceFile	./tilesheets/images/pollux.tiles.bmp		Direct path to file			
-1	Usas2		TiledtileSet	pollux	path	tilesheets/pollux.tsx		Direct path to file			
-1	Usas2		TiledtileSet	KarniMata	id	6					
-1	Usas2		TiledtileSet	KarniMata	imageSourceFile	./tilesheets/images/Karnimata.tiles.bmp		Direct path to file			
-1	Usas2		TiledtileSet	KarniMata	path	tilesheets/tsKarniMata.tsx		Direct path to file			
-1	Usas2		TiledtileSet	Konark	id	7					
-1	Usas2		TiledtileSet	Konark	imageSourceFile	./tilesheets/images/Konark.tiles.bmp					
-1	Usas2		TiledtileSet	Konark	path	tilesheets/tsKonark.tsx					
-1	Usas2		TiledtileSet	Lemniscate	imageSourceFile	./tilesheets/images/Lemniscate.tiles.bmp					
-1	Usas2		TiledtileSet	Lemniscate	path	tilesheets/tsLemniscate.tsx					
-1	Usas2		TiledtileSet	Pegu	imageSourceFile	./tilesheets/images/Pegu.tiles.bmp					
-1	Usas2		TiledtileSet	Pegu	path	tilesheets/tsPegu.tsx					
-1	Usas2		TiledtileSet	Ruin3	imageSourceFile	./tilesheets/images/Ruin3.tiles.bmp					
-1	Usas2		TiledtileSet	Ruin3	path	tilesheets/Ruin3.tsx					
-1	Usas2		TiledtileSet	teleport	imageSourceFile	./tilesheets/images/Teleport.tiles.bmp					
-1	Usas2		TiledtileSet	teleport	path	tilesheets/tsTeleport.tsx					
-1	Usas2		TiledWorldMap	.*	defaultLocation	C:\Users\$($env:username)\OneDrive\Usas2\maps					
-1	Usas2		TiledWorldMap	pollux	Name	pollux					
-1	Usas2		TiledWorldMap	pollux	path	pollux.world					
-1	Usas2		TiledWorldMap	KarniMata	Name	Karni Mata					
-1	Usas2		TiledWorldMap	KarniMata	path	KarniMata.world					
-1	Usas2		TiledWorldMap	Konark	Name	Konark					
-1	Usas2		TiledWorldMap	Konark	path	Konark.world					
-1	Usas2		TiledWorldMap	Pegu	Name	Pegu					
-1	Usas2		TiledWorldMap	Pegu	path	Pegu.world					
-1	Usas2		TiledWorldMap	ruin3	Name	ruin3					
-1	Usas2		TiledWorldMap	ruin3	path	ruin3.world					
-1	Usas2		Tileset	pollux	id	1					
-1	Usas2		Tileset	pollux	imageSourceFile	pollux.Tiles.bmp					
-1	Usas2		Tileset	pollux	paletteSourceFile	pollux.Tiles.pl					
-1	Usas2		Tileset	pollux	file	pollux.Tiles.sc5					
-1	Usas2		Tileset	KarniMata	file	KarniMata.Tiles.sc5					
-1	Usas2		Tileset	KarniMata	id	6					
-1	Usas2		Tileset	KarniMata	imageSourceFile	KarniMata.Tiles.bmp					
-1	Usas2		Tileset	KarniMata	paletteSourceFile	KarniMata.Tiles.pl					
-1	Usas2		Tileset	KarniMata	type	0					
-1	Usas2		Tileset	Konark	file	Konark.tiles.sc5					
-1	Usas2		Tileset	Konark	id	7					
-1	Usas2		Tileset	Konark	type	0					
-1	Usas2		Tileset	Konark	imageSourceFile	Konark.tiles.bmp					
-1	Usas2		Tileset	Konark	paletteSourceFile	Konark.tiles.pl					
-1	Usas2		Tileset	Lemniscate	imageSourceFile	Lemniscate.tiles.bmp					
-1	Usas2		Tileset	Lemniscate	paletteSourceFile	Lemniscate.tiles.pl					
-1	Usas2		Tileset	Lemniscate	file	Lemniscate.tiles.sc5					
-1	Usas2		Tileset	Lemniscate	id	2					
-1	Usas2		Tileset	Lemniscate	type	0					
-1	Usas2		Tileset	Pegu	imageSourceFile	Pegu.Tiles.bmp		bitmap source file			
-1	Usas2		Tileset	Pegu	paletteSourceFile	Pegu.Tiles.pl		palette source file			
-1	Usas2		Tileset	Pegu	file	Pegu.Tiles.sc5		MSX destination file			
-1	Usas2		Tileset	Pegu	id	4		RuinID			
-1	Usas2		Tileset	Pegu	type	0		FileType=Tileset			
-1	Usas2		Tileset	ruin3	file	ruin3.Tiles.sc5					
-1	Usas2		Tileset	ruin3	id	3					
-1	Usas2		Tileset	ruin3	type	0					
-1	Usas2		Tileset	ruin3	imageSourceFile	ruin3.Tiles.bmp					
-1	Usas2		Tileset	ruin3	paletteSourceFile	ruin3.Tiles.pl					
-1	Usas2		Tileset	Teleport	file	Teleport.tiles.sc5					
-1	Usas2		Tileset	Teleport	id	31					
-1	Usas2		Tileset	Teleport	imageSourceFile	Teleport.tiles.bmp					
-1	Usas2		Tileset	Teleport	paletteSourceFile	Teleport.tiles.pl					
-1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv					
+1	Usas2		DsmDatalist	Worldmap	IndexBlock	0					
+1	Usas2		DsmDatalist	Worldmap	IndexSegment	0					
+1	Usas2		DsmDatalist	Worldmap	name	Worldmap					
+1	Usas2		Palette	worldmap	id	32					
+1	Usas2		Palette	worldmap	file	worldmap.pl					
+1	Usas2		file	Worldmap.bmp	fileTypeId	9					
+1	Usas2		file	Worldmap.bmp	path	..\grapx\f2menu\worldmap.bmp					
+1	Usas2		file	Worldmap.pl	fileTypeId	2					
+1	Usas2		file	Worldmap.pl	path	..\grapx\f2menu\worldmap.pl					
+1	Usas2		file	Worldmap.sc5	fileTypeId	8					
+1	Usas2		file	Worldmap.sc5	path	..\grapx\f2menu\worldmap.sc5					
+1	Usas2		RoomObject	ZombieSpawnPoint	uid	62					
+1	Usas2		RoomObject	ZombieSpawnPoint	objectClass	enemySpawn					

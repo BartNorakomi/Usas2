@@ -48,13 +48,13 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 
 	#Add FILE to DSM and inject to ROM
 	if ($path)
-	{	write-verbose "Adding File(s) $path"
+	{	write-verbose "[path] Adding File(s) $path"
 		$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $path -updateFileSpace
 	}
 
 	#Add ruin file
 	if ($ruinid)
-	{	write-verbose "Adding Ruin(s) $ruinid"
+	{	write-verbose "[ruinId] Adding Ruin(s) $ruinid"
 		foreach ($id in $ruinId)
 		{	$ruinProps=$usas2.ruin|where{$_.ruinid  -eq $id}
 			$tilesetProps=$usas2.tileset|where{$_.identity -eq $ruinprops.tileset}
