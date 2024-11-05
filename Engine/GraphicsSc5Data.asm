@@ -117,9 +117,9 @@ AreaSign02:   incbin "..\grapx\AreaSigns\02-Lemniscate.SC5.pck"      ;048 lines
 AreaSign03:   incbin "..\grapx\AreaSigns\03-Forest.SC5.pck"      ;048 lines
 AreaSign04:   incbin "..\grapx\AreaSigns\04-Pegu.SC5.pck"      ;048 lines
 AreaSign05:   incbin "..\grapx\AreaSigns\05-Shalabha.SC5.pck"      ;048 lines
-AreaSign06:   incbin "..\grapx\AreaSigns\08-Ashoka.SC5.pck"      ;048 lines
-AreaSign07:   incbin "..\grapx\AreaSigns\06-Karni Mata.SC5.pck"      ;048 lines
-AreaSign08:   incbin "..\grapx\AreaSigns\07-Konark.SC5.pck"      ;048 lines
+AreaSign06:   incbin "..\grapx\AreaSigns\06-Karni Mata.SC5.pck"      ;048 lines
+AreaSign07:   incbin "..\grapx\AreaSigns\07-Konark.SC5.pck"      ;048 lines
+AreaSign08:   incbin "..\grapx\AreaSigns\08-Ashoka.SC5.pck"      ;048 lines
 AreaSign09:   incbin "..\grapx\AreaSigns\09-Taxila.SC5.pck"      ;048 lines
 AreaSign10:   incbin "..\grapx\AreaSigns\10-Euderus Set.SC5.pck"      ;048 lines
 AreaSign11:   incbin "..\grapx\AreaSigns\11-Akna.SC5.pck"      ;048 lines

@@ -264,6 +264,7 @@ UnpackAreaSign:
 		push	hl
 
 		call	GetRoomRuinId
+		dec a
 		add		a,a
 		ld		hl,AreaSignList
 		ld		d,0
