@@ -1,6 +1,6 @@
 #Some BMP file functions operating on byte level #hardcore
 #Shadow@Fuzzylogic
-#20240304-20240813
+#20240304-20241106
 
 <#
 BmpFile Object props
@@ -109,6 +109,7 @@ function new-bmpFileObject
 		NumColors=[uint16]0;
 		colorTableSize=[uint16]0;
 		rawData=$Null #[byte[]]::new($filesize);
+		colorTableAsObject=[pscustomobject]
 	}
 	if ($numBitsPerPixel -le 8)
 	{	$bmpfile.colorTableOffset=$BmpFileStructure.BitMapFileHeader.size+$bmpfile.DibHeader.headersize
@@ -117,7 +118,17 @@ function new-bmpFileObject
 	$bmpfile.dibHeader.height=$height
 	$bmpfile.dibHeader.numbitsperpixel=$numBitsPerPixel
 	$bmpfile.dibHeader.ImageSize=$imagesize
-	return $bmpFile
+
+	# #Give this object a unique typename
+	# $bmpfile.PSObject.TypeNames.Insert(0,'bmpfile.explode')
+	# #Configure a default display set
+	# $defaultDisplaySet = 'name','width','height','numcolors'
+	# #Create the default property display set
+	# $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
+	# $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+	# $bmpfile|Add-Member MemberSet PSStandardMembers $PSStandardMembers
+
+	return ,$bmpFile
 }
 
 #[bmpObject]
@@ -187,6 +198,8 @@ function import-bmpFile
 		$bmpfile.colorTableOffset=$BmpFileStructure.BitMapFileHeader.size+$bmpfile.DibHeader.headersize
 		for($i=0;$i -lt $colorTableSize;$i++){$colorTable[$i]=$rawdata[$DibHeader.headersize+$i]}
 		$bmpfile.colortable=$colortable
+		$colorTableAsObject=[pscustomobject]@{numColors=$bmpfile.numcolors;size=$colorTableSize;raw=$colortable;rgb=(convert-ColorIndexTable -colortable $colortable)}
+		$bmpfile.colortableAsObject=$colortableAsObject
 	}
 	
 	#Get the pixelarray
@@ -260,6 +273,18 @@ function get-pixelArray
 	return $rawData
 }
 
+#convert raw RBB to hastable
+#return an array of objects with (index,r,g,b)
+function convert-ColorIndexTable
+{	param ($colorTable)
+	for ($i=0;$i -lt ($colortable.length/4);$I++)
+	{   $r=$colorTable[$i*4]
+		$g=$colorTable[$i*4+1]
+		$b=$colorTable[$i*4+2]
+		[pscustomobject]@{index=$i;r=$r;g=$g;b=$b}
+	}
+}
+
 
 #return a data struct with default values
 function get-defaultStruct
@@ -305,11 +330,24 @@ function write-toByteArray
 }
 
 
+# #convert 24bitsRGBa to 9bitsRGB for MSX
+function convert-rgb24toRgb9
+{	param ($bmpfile)
+	$rgb=$bmpfile.colorTableAsObject.rgb
+	for ($i=0;$i -lt $bmpfile.NumColors;$I++)
+	{  [pscustomobject]@{index=$i;r=[math]::Round($rgb[$i].r/255*7);g=[math]::Round($rgb[$i].g/255*7);b=[math]::Round($rgb[$i].b/255*7)}
+	}
+}
+
+ exit
+$path="..\grapx\tilesheets\Konark.Tiles.bmp"
+$global:bmpfile=$bmpfile=import-bmpFile -path $path -verbose
 
 
-exit
 
 
+# $bmpfile #.colorIndexTable
+convert-rgb24toRgb9 -bmpfile $bmpfile
 
 exit
 #TEST: dump one full frame to a .dat file (raw sc5)

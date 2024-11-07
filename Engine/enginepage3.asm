@@ -2,8 +2,8 @@ phase	enginepage3addr
 
 
 ;current location=karnimata
-roomX: equ ("B"-"A")*26 + "X"-"A"
-roomY: equ 27
+roomX: equ ("A"-"A")*26 + "Y"-"A"
+roomY: equ 25
 
 WorldMapPosition:
 .Y:  db  roomY-1
@@ -494,7 +494,7 @@ RuinPropertiesLUT:
 	DB 1,1,0,"Polux        "
 	DB 2,2,0,"Lemniscate   "
 	DB 6,6,3,"World Forrest"
-	DB 4,0,0,"Pegu         "
+	DB 4,4,0,"Pegu         "
 	DB 0,0,0,"Bio          "
 	DB 6,6,3,"Karni Mata   "
 	DB 7,7,2,"Konark       "
