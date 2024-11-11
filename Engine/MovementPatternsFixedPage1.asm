@@ -651,6 +651,43 @@ CheckOutOfMapSf2Engine:
   ret   c
   jr    RemoveSprite
 
+KeepMonsterInScreen:                 ;if monster was to leave the screen, move him back inside
+  ld    l,(ix+enemies_and_objects.x)  
+  ld    h,(ix+enemies_and_objects.x+1)      ;x  
+  ld    de,20                           ;map width + offset
+  xor   a
+  sbc   hl,de
+	jr		c,.MonsterIsInLeftEdge
+
+	ld		a,(RoomMap.width)						;32 or 38
+	cp		32
+	ld		de,256-20
+	jr		z,.widthFound
+	ld		de,304-20
+	.widthFound:	
+  ld    l,(ix+enemies_and_objects.x)  
+  ld    h,(ix+enemies_and_objects.x+1)      ;x  
+  xor   a
+  sbc   hl,de
+	ret		c
+	
+	.MonsterIsInRightEdge:
+  ld    (ix+enemies_and_objects.x),e
+  ld    (ix+enemies_and_objects.x+1),d
+  ret
+
+	.MonsterIsInLeftEdge:
+  ld    (ix+enemies_and_objects.x),e
+  ret
+
+;20241007;ro;refactored
+CheckCeilingEnemy:							;out: z=foreground found
+		ld	 de,0 ;x-offset
+		ld    b,0 ;y-offset
+		call checkTileObject
+		dec	 A
+		ret
+
 ;Generic Enemy/Object Routines ##############################################################################
 CheckOutOfMap:  
   ld    l,(ix+enemies_and_objects.x)  

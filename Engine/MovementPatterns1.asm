@@ -1606,6 +1606,7 @@ AreaSign:                                 ;Displays the name of the world in scr
 ;v7=step
 ;v8=Phase (0=put a new line for 3 frames, 1=wait, 2=remote all the lines in all the pages)
 ;v9=wait timer / bottom of area sign
+
 .HandlePhase:
 		ld    a,(ix+enemies_and_objects.v8)     ;v8=Phase (0=build up area sign line by line, 1=wait, 2=remove area sign line by line)
 		or    a
@@ -5261,7 +5262,19 @@ Hunchback:
   call  .Gravity
   call  CheckCollisionWallEnemy             ;checks for collision wall and if found invert direction / out z=collision found with wall  
   call  .CheckFloor                         ;checks for collision Floor and if found fall
-  
+
+
+  call  CheckCeilingEnemy                   ;out: z=foreground found
+  jr    nz,.EndCheckCollisionCeiling
+  ld    a,(ix+enemies_and_objects.y)
+  and   %1111 1000
+  add   a,8
+  ld    (ix+enemies_and_objects.y),a
+  .EndCheckCollisionCeiling:
+
+
+
+
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   ld    de,RightHunchback7_Char
   ld    hl,RightHunchback8_Char
@@ -5853,7 +5866,18 @@ Beetle:
 
   BeetleFlying:
   call  .Movement
-  call  CheckOutOfMap
+  call  KeepMonsterInScreen                 ;if monster was to leave the screen, move him back inside
+;  call  CheckOutOfMap
+
+  call  CheckCeilingEnemy                   ;out: z=foreground found
+  jr    nz,.EndCheckCollisionCeiling
+  ld    a,(ix+enemies_and_objects.y)
+  and   %1111 1000
+  add   a,8
+  ld    (ix+enemies_and_objects.y),a
+  .EndCheckCollisionCeiling:
+
+
   ld    a,(ix+enemies_and_objects.v3)       ;v3=y movement
   or    a
   jr    z,.EndFloorCheck                   ;don't perform floor check when y movement is negative
@@ -5873,6 +5897,13 @@ Beetle:
   jp    AnimateSprite                       ;out hl -> sprite character data to out to Vram
 
   .FloorFoundGoWalk:
+
+  ld    a,(ix+enemies_and_objects.y)
+  sub   a,6
+  and   %1111 1000
+  add   a,10
+  ld    (ix+enemies_and_objects.y),a
+
   ld    (ix+enemies_and_objects.v1),0       ;v1=Animation Counter
   ld    (ix+enemies_and_objects.v2),0       ;v2=Phase (0=walking, 1=flying, )
   ld    (ix+enemies_and_objects.v3),0       ;v3=Vertical Movement
@@ -5969,7 +6000,6 @@ Beetle:
   ld    a,(framecounter)
   rrca
   jr    c,.SetAttack1
-
   .SetAttack0:
   bit   7,(ix+enemies_and_objects.v4)       ;v4=Horizontal Movement
   ld    a,2
