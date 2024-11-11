@@ -2,13 +2,13 @@ phase	enginepage3addr
 
 
 ;current location=karnimata
-<<<<<<< HEAD
-roomX: equ ("B"-"A")*26 + "N"-"A"
-roomY: equ 19
-=======
-roomX: equ ("A"-"A")*26 + "R"-"A"
-roomY: equ 17
->>>>>>> 748573c89b44a5ad92a3dec9c9f5aa56b957a594
+;<<<<<<< HEAD
+;roomX: equ ("B"-"A")*26 + "N"-"A"
+;roomY: equ 19
+;=======
+roomX: equ ("A"-"A")*26 + "O"-"A"
+roomY: equ 06
+;>>>>>>> 748573c89b44a5ad92a3dec9c9f5aa56b957a594
 
 WorldMapPosition:
 .Y:  db  roomY-1
