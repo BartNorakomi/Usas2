@@ -8175,7 +8175,7 @@ PlatformOmniDirectionally:
 
 v3v4Table:  db +00,-01, -01,-01, -01,+00, -01,+01, +00,+01, +01,+01, +01,+00, +01,-01
 
-Platform:
+
 ;v1-2=box right (16 bit)
 ;v1-1=box right (16 bit)
 ;v1=sx software sprite in Vram
@@ -8188,110 +8188,107 @@ Platform:
 ;v8=box top
 ;v9=box bottom
 ;v10=speed
-  ld    a,216
-  ld    (CopyObject+sy),a
+Platform:	;!! should include an engine check
+		ld    a,Object011Table.sy
+		ld    (CopyObject+sy),a
+		call  VramObjectsTransparantCopies2       ;put object in Vram/screen
+		call  MovePlatForm
+		;  call  MovePlatFormHorizontally            ;move
+		call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
 
-  call  VramObjectsTransparantCopies2       ;put object in Vram/screen
-  call  MovePlatForm
-;  call  MovePlatFormHorizontally            ;move
-  call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
+;set platform on when jumping on it
+		bit   0,(ix+enemies_and_objects.v2)       ;active?
+		ret   nz                                  ;yes
+		bit   0,(ix+enemies_and_objects.SnapPlayer?)       ;v5
+		ret   z                                   ;snapped to this platform?
 
-  ;set platform on when jumping on it
-  bit   0,(ix+enemies_and_objects.v2)       ;v2=active?
-  ret   nz                                  ;return if already on
+		set   0,(ix+enemies_and_objects.v2)       ;mark active
+		ld    a,(ix+enemies_and_objects.nx)
+		cp    32		;really? !!ro: this is gonna break some day
+		jr    z,.BigPlatform
 
-  bit   0,(ix+enemies_and_objects.v5)       ;v5=SnapPlayer?
-  ret   z                                   ;have we already snapped to this platform yet ?
-
-  set   0,(ix+enemies_and_objects.v2)       ;v2=active?
-
-  ld    a,(ix+enemies_and_objects.nx)
-  cp    32
-  jr    z,.BigPlatform
-
-  .SmallPlatform:
-  ld    (ix+enemies_and_objects.v1),096     ;v1=sx software sprite in Vram
-  ret
+.SmallPlatform:
+		ld    (ix+enemies_and_objects.sx),096     ;v1=sx software sprite in Vram !! ro:magic number
+		ret
   
-  .BigPlatform:
-  ld    (ix+enemies_and_objects.v1),032     ;v1=sx software sprite in Vram
-  ret
+.BigPlatform:
+		ld    (ix+enemies_and_objects.sx),032     ;v1=sx software sprite in Vram !! ro:magic number
+		ret
 
 MovePlatForm:
-  bit   0,(ix+enemies_and_objects.v2)       ;v2=active?
-  ret   z
-  ld    a,(ix+enemies_and_objects.v10)      ;v10=speed
-  dec   a
-  ld    b,7
-  jr    z,.SpeedSet
-  dec   a
-  ld    b,3
-  jr    z,.SpeedSet
-  dec   a
-  ld    b,1
-  jr    z,.SpeedSet
-  ld    b,0
-  .SpeedSet:
+		bit   0,(ix+enemies_and_objects.v2)       ;v2=active?
+		ret   z
 
-  ld    a,(framecounter)
-  and   b
-  ret   nz
+		ld    a,(ix+enemies_and_objects.v10)      ;v10=speed
+		dec   a
+		ld    b,7
+		jr    z,.SpeedSet
+		dec   a
+		ld    b,3
+		jr    z,.SpeedSet
+		dec   a
+		ld    b,1
+		jr    z,.SpeedSet
+		ld    b,0
+.SpeedSet:
+		ld    a,(framecounter)
+		and   b
+		ret   nz
 
-  ld    a,(ix+enemies_and_objects.SnapPlayer?)
-  or    a
-  call  nz,MovePlayerAlongWithObject
+		ld    a,(ix+enemies_and_objects.SnapPlayer?)
+		or    a
+		call  nz,MovePlayerAlongWithObject
+		call  MoveObjectHorizontallyAndVertically
+		call  ChangeDirectionWhenOutOfBox
+		ret
 
-;move object
-  call  MoveObjectHorizontallyAndVertically
-  call  ChangeDirectionWhenOutOfBox
-  ret
-
+;Check box boundaries
 ChangeDirectionWhenOutOfBox:
-  ;check surpasses top side box
-  ld    a,(ix+enemies_and_objects.y)        ;y
-  sub   a,(ix+enemies_and_objects.v8)       ;v8=box top
-  jr    c,.OutOfBoxChangeDirection
+;top
+		ld    a,(ix+enemies_and_objects.y)
+		sub   a,(ix+enemies_and_objects.v8)       ;v8=box top
+		jr    c,.OutOfBoxChangeDirection
+;bottom
+		ld    a,(ix+enemies_and_objects.v9)       ;v9=box bottom
+		sub   a,(ix+enemies_and_objects.y)
+		jr    c,.OutOfBoxChangeDirection
+;left
+		ld    e,(ix+enemies_and_objects.v6)       ;v6 and v7=box left (16bit)
+		ld    d,(ix+enemies_and_objects.v7)       ;v6 and v7=box left (16bit)
+		ld    l,(ix+enemies_and_objects.x)        ;x
+		ld    h,(ix+enemies_and_objects.x+1)      ;x
+		sbc   hl,de
+		jr    c,.OutOfBoxChangeDirection
+;right
+		ld    l,(ix+enemies_and_objects.v1-2)     ;v1-2 and v1-1=box right (16bit)
+		ld    h,(ix+enemies_and_objects.v1-1)     ;v1-2 and v1-1=box right (16bit)
+		ld    e,(ix+enemies_and_objects.x)        ;x
+		ld    d,(ix+enemies_and_objects.x+1)      ;x
+		sbc   hl,de
+		jr    c,.OutOfBoxChangeDirection
+		ret
 
-  ;check surpasses bottom side box
-  ld    a,(ix+enemies_and_objects.v9)       ;v9=box bottom
-  sub   a,(ix+enemies_and_objects.y)        ;y
-  jr    c,.OutOfBoxChangeDirection
+;chance both directions
+.OutOfBoxChangeDirection:
+		ld    a,(ix+enemies_and_objects.vMove)         ;v3=y movement
+		neg
+		ld    (ix+enemies_and_objects.vMove),a         ;v3=y movement
+		ld    a,(ix+enemies_and_objects.hMove)         ;v4=x movement
+		neg
+		ld    (ix+enemies_and_objects.hMove),a         ;v4=x movement
+		ret
 
-  ;check surpasses left side box
-  ld    e,(ix+enemies_and_objects.v6)       ;v6 and v7=box left (16bit)
-  ld    d,(ix+enemies_and_objects.v7)       ;v6 and v7=box left (16bit)
-  ld    l,(ix+enemies_and_objects.x)        ;x
-  ld    h,(ix+enemies_and_objects.x+1)      ;x
-  sbc   hl,de
-  jr    c,.OutOfBoxChangeDirection
-
-  ;check surpasses right side box
-  ld    l,(ix+enemies_and_objects.v1-2)     ;v1-2 and v1-1=box right (16bit)
-  ld    h,(ix+enemies_and_objects.v1-1)     ;v1-2 and v1-1=box right (16bit)
-  ld    e,(ix+enemies_and_objects.x)        ;x
-  ld    d,(ix+enemies_and_objects.x+1)      ;x
-  sbc   hl,de
-  jr    c,.OutOfBoxChangeDirection
-  ret
-  
-  .OutOfBoxChangeDirection:
-  ld    a,(ix+enemies_and_objects.v3)         ;v3=y movement
-  neg
-  ld    (ix+enemies_and_objects.v3),a         ;v3=y movement
-  ld    a,(ix+enemies_and_objects.v4)         ;v4=x movement
-  neg
-  ld    (ix+enemies_and_objects.v4),a         ;v4=x movement
-  ret
 
 MoveObjectHorizontallyAndVertically:
-  ld    a,(ix+enemies_and_objects.y)
-  add   (ix+enemies_and_objects.v3)         ;v3=y movement
-  ld    (ix+enemies_and_objects.y),a
+		ld    a,(ix+enemies_and_objects.y)
+		add   (ix+enemies_and_objects.vMove)         ;v3=y movement
+		ld    (ix+enemies_and_objects.y),a
 
-  ld    a,(ix+enemies_and_objects.x)
-  add   (ix+enemies_and_objects.v4)         ;v4=x movement
-  ld    (ix+enemies_and_objects.x),a
-  ret
+		ld    a,(ix+enemies_and_objects.x)
+		add   (ix+enemies_and_objects.hMove)         ;v4=x movement
+		ld    (ix+enemies_and_objects.x),a
+		ret
+
 
 VramObjectsPushingStone:
 ;first clean the object
@@ -8652,7 +8649,9 @@ OnlyPutVramObjectDontEraseFastCopy:
   ld    hl,CopyObject
   jp    docopy
 
+
 ;This is an updated version in which the objects can now have an x between 15-254
+;!! ro: sure, but what does it dom, functionally? (abstract naming applies)
 VramObjectsTransparantCopies2:
   ld    l,(ix+enemies_and_objects.ObjectNumber)
   ld    h,(ix+enemies_and_objects.ObjectNumber+1)

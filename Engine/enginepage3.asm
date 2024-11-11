@@ -2,8 +2,8 @@ phase	enginepage3addr
 
 
 ;current location=karnimata
-roomX: equ ("A"-"A")*26 + "Y"-"A"
-roomY: equ 25
+roomX: equ ("A"-"A")*26 + "R"-"A"
+roomY: equ 17
 
 WorldMapPosition:
 .Y:  db  roomY-1
@@ -499,7 +499,7 @@ RuinPropertiesLUT:
 	DB 6,6,3,"Karni Mata   "
 	DB 7,7,2,"Konark       "
 	DB 0,0,0,"Ashoka's hell"
-	DB 0,0,0,"Taxilla      "
+	DB 9,9,0,"Taxilla      "
 	DB 0,0,0,"Euderus Set  "
 	DB 11,11,0,"Akna         "
 	DB 0,0,0,"Fate         "

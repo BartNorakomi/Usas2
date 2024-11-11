@@ -79,8 +79,8 @@ function new-Usas2RoomTiledMapFile
 	param
 	(	$ruinId,$RoomType,$path	
 	)
-	$ruinManifest=get-u2ruin -id $roomMap.ruinid #$usas2.ruin|where{$_.ruinid -eq $roomMap.ruinId}
-	$roomManifest=get-u2room -id $roomMap.roomType #$usas2.room|where{$_.roomType -eq $roomMap.roomType}
+	$ruinManifest=get-u2ruin -id $ruinid #$usas2.ruin|where{$_.ruinid -eq $ruinId}
+	$roomManifest=get-u2room -id $roomType #$usas2.room|where{$_.roomType -eq $roomType}
 	$width=$roomManifest.width 
 	$height=$roomManifest.height
 	if (-not ($tileSet=$ruinManifest.TiledTileset)) {write-warning "Error: Tileset not defined";return}
@@ -117,9 +117,10 @@ function convert-Usas2WorldMapToTiledWorldMap
 	$global:roomMaps=get-roomMaps -mapsource $WorldMapSource #Return the masterMap as a array of map objects (all rooms)
 	foreach ($roomMap in $roomMaps|where{$_.ruinId -match $roomMatch})
 	{	$filename=$roomMap.name+".tmx"
+		write-verbose "[convert-Usas2WorldMapToTiledWorldMap] name=$($roomMap.name), ruinId=$($roomMap.ruinid), roomId=$($roomMap.roomtype), filename=$filename"
 		$ruinManifest=get-u2ruin -id $roomMap.ruinid #$usas2.ruin|where{$_.ruinid -eq $roomMap.ruinId}
 		$roomManifest=get-u2room -id $roomMap.roomType #$usas2.room|where{$_.roomType -eq $roomMap.roomType}
-		write-verbose "Ruin name: $($ruinManifest.Name), Room name: $filename, Room type: $($roomManifest.identity)"
+		write-verbose "Ruin name: $($ruinManifest.Name), Room name: $filename, Room name: $($roomManifest.identity)"
 		$fileExist=test-path "$TiledMapsLocation\$filename"
 		write-verbose "File $filename exist? $fileexist"
 		if ($forceOverWrite -or (-not $fileExist -and $createRoom))
@@ -139,8 +140,8 @@ function convert-Usas2WorldMapToTiledWorldMap
 
 # If parameter "ruinName" was used, then resolve the ruinID
 if ($ruinName) {$ruinId=($usas2.ruin|where{$_.name -match ("^("+($ruinname -join ("|"))+")$")}).ruinid}
-write-verbose "RuinId: $ruinid"
-
+write-verbose "RuinId: $ruinid. Mastermap: $mastermap"
+if (-not $mastermap) {write-error "Mastermap file not defined";exit}
 $WorldMapSource=get-content $masterMap
 $global:WorldMapSource=$WorldMapSource
 

@@ -2078,6 +2078,7 @@ Object010Table:
 ;011-PlatformMovingSmall
 Object011Table:
 .sx:	equ	64
+.sy:	equ 216
 		;alive?,Sprite?,Movement Pattern,    y,      x,   ny,nx,Objectnr#               ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
 		db isAliveSs,isNotSprite|dw Platform|db 0|dw 0|db 16,16|dw CleanOb1,0 db 0,0,0, .sx,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
 

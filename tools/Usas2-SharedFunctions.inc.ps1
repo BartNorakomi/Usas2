@@ -113,8 +113,8 @@ function get-U2Tileset
 	(	[Parameter(ParameterSetName='identity')]$identity,
 		[Parameter(ParameterSetName='id')]$id
 	)
-	if ($identity) {$Manifest=$usas2.tileset|where{$_.identity -match $identity}}
-	elseif ($id) {$Manifest=$usas2.tileset|where{$_.Id -eq $id}}
+	if ($identity -ne $null) {$Manifest=$usas2.tileset|where{$_.identity -match $identity}}
+	elseif ($id -ne $null) {$Manifest=$usas2.tileset|where{$_.Id -eq $id}}
 	return $Manifest
 }
 
@@ -127,9 +127,9 @@ function get-U2Ruin
 		[Parameter(ParameterSetName='id')]$id,
 		[Parameter(ParameterSetName='name')]$name
 	)
-	if ($identity) {$Manifest=$usas2.ruin|where{$_.identity -match $identity}}
-	elseif ($id) {$Manifest=$usas2.ruin|where{$_.ruinId -eq $id}}
-	elseif ($name) {$Manifest=$usas2.ruin|where{$_.name -match $name}}
+	if ($identity -ne $null) {$Manifest=$usas2.ruin|where{$_.identity -match $identity}}
+	elseif ($id -ne $null) {$Manifest=$usas2.ruin|where{$_.ruinId -eq $id}}
+	elseif ($name -ne $null) {$Manifest=$usas2.ruin|where{$_.name -match $name}}
 
 	return $Manifest
 }
@@ -142,9 +142,9 @@ function get-U2Room
 		[Parameter(ParameterSetName='id')]$id,
 		[Parameter(ParameterSetName='name')]$name
 	)
-	if ($identity) {$Manifest=$usas2.room|where{$_.identity -match $identity}}
-	elseif ($id) {$Manifest=$usas2.room|where{$_.roomType -eq $id}}
-	elseif ($name) {$Manifest=$usas2.room|where{$_.name -match $name}}
+	if ($identity -ne $null) {$Manifest=$usas2.room|where{$_.identity -match $identity}}
+	elseif ($id -ne $null) {$Manifest=$usas2.room|where{$_.roomType -eq $id}}
+	elseif ($name -ne $null) {$Manifest=$usas2.room|where{$_.name -match $name}}
 	return $Manifest
 }
 

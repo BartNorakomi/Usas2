@@ -225,7 +225,7 @@ function get-U2objectClassDefinitions
 
 ##### Script globals #####
 $convertToAddress=$true
-$usas2=get-Usas2Globals -force
+$usas2=get-Usas2Globals # -force
 $U2objectClassDefinitions=get-U2objectClassDefinitions -force
 $WorldMap=get-roomMaps -mapsource (get-content ("..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile))
 $global:U2objectClassDefinitions=$U2objectClassDefinitions
