@@ -457,8 +457,9 @@ SetObjects:                             ;after unpacking the map to ram, all the
 ;!! ro;wip
 ;out: DE=numbBytes, HL=objectX, A=objectY, B=maxSpawn
 .applyObjectClassEnemySpawn:
-		ld		b,(ix+roomObjectClass.EnemySpawn.Speed)
+		ld		b,(ix+roomObjectClass.EnemySpawn.spawnSpeed)
 		ld		(iy+enemies_and_objects.spawnSpeed),b
+		ld		b,(ix+roomObjectClass.EnemySpawn.Speed)	;spawned offspring move speed (default 1)
 		ld		a,(ix+roomObjectClass.EnemySpawn.Face)
 		call	.getfacing
 		ld		(iy+enemies_and_objects.v4),b
