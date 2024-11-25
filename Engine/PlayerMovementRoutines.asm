@@ -2640,6 +2640,7 @@ RRolling:
 		and   15
 		ld    bc,SFX_roll
 		call  z,RePlayerSFX_PlayCh1
+		call  SetPrimaryWeaponHitBoxRightSitting
 
 		ld    a,(PlayerAniCount+1)
 		inc   a
@@ -2724,6 +2725,7 @@ RRolling:
 		;can we stand-up here?
 		ld	 b,playerstanding.head+4
 		ld	 de,playerstanding.leftside
+		call checkTilePlayer           ;out z=collision found with wall
 		jr    z,.ContinueRollingWhenCollisionTopFound
 		inc   hl                  ;check next tile
 		ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
