@@ -2,13 +2,8 @@ phase	enginepage3addr
 
 
 ;current location=karnimata
-;<<<<<<< HEAD
-;roomX: equ ("B"-"A")*26 + "N"-"A"
-;roomY: equ 19
-;=======
-roomX: equ ("A"-"A")*26 + "O"-"A"
-roomY: equ 06
-;>>>>>>> 748573c89b44a5ad92a3dec9c9f5aa56b957a594
+roomX: equ ("B"-"A")*26 + "S"-"A"
+roomY: equ 28
 
 WorldMapPosition:
 .Y:  db  roomY-1
@@ -1554,7 +1549,8 @@ roomObjectClass.EnemySpawn.Y: EQU 1+roomObjectClassIdOffset
 roomObjectClass.EnemySpawn.Face: EQU 2+roomObjectClassIdOffset
 roomObjectClass.EnemySpawn.Speed: EQU 3+roomObjectClassIdOffset
 roomObjectClass.EnemySpawn.maxNum: EQU 4+roomObjectClassIdOffset
-roomObjectClass.EnemySpawn.numBytes: EQU 5+roomObjectClassIdOffset
+roomObjectClass.EnemySpawn.spawnSpeed: EQU 5+roomObjectClassIdOffset
+roomObjectClass.EnemySpawn.numBytes: EQU 6+roomObjectClassIdOffset
 
 roomObjectClass.BreakableWall.X: EQU 0+roomObjectClassIdOffset
 roomObjectClass.BreakableWall.Y: EQU 1+roomObjectClassIdOffset
