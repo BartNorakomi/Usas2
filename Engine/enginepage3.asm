@@ -2,8 +2,8 @@ phase	enginepage3addr
 
 
 ;current location=karnimata
-roomX: equ ("B"-"A")*26 + "S"-"A"
-roomY: equ 28
+roomX: equ ("B"-"A")*26 + "W"-"A"
+roomY: equ 27
 
 WorldMapPosition:
 .Y:  db  roomY-1
@@ -876,23 +876,21 @@ StairLeftTilesStart:	equ 48
 StairLeftTilesEnd:	equ 49	;tilenr: 48 t/m 49 = stairs left
 StairRightTilesStart:	equ 50
 StairRightTilesEnd:	equ 51	;tilenr: 50 t/m 51 = stairs right
-
 WaterTilesStart:	equ	52
 WaterTilesEnd:		equ	57
-
 ForegroundTilesStart: equ 58
 ForegroundTilesEnd: equ 255	;tilenr: 52 t/m 255 = foreground
 BackgroundTilesStart:	equ 256
 BackgroundTilesEnd:	equ 1023;tilenr: 256 t/m 1023 = background
 ;tileClassIds
-BackgroundID:		equ 0	;tile 0 = background
-HardForeGroundID:	equ 1	;tile 1 = hardforeground
-LadderId:			equ 2	;tile 2 = LadderTilesEndAdrEnd
-SpikeId:			equ 3	;tile 3 = spikes/poison
-StairLeftId:		equ 4	;tile 4 = stairsleftup
-StairRightId:		equ 5	;tile 5 = stairsrightup
-LavaId:				equ 6	;tile 6 = lava
-WaterId:			equ 7	;tile 7 = water
+BackgroundID:		equ 0	; 0 = background
+HardForeGroundID:	equ 1	; 1 = hardforeground
+LadderId:			equ 2	; 2 = LadderTilesEndAdrEnd
+SpikeId:			equ 3	; 3 = spikes/poison
+StairLeftId:		equ 4	; 4 = stairsleftup
+StairRightId:		equ 5	; 5 = stairsrightup
+LavaId:				equ 6	; 6 = lava
+WaterId:			equ 7	; 7 = water
 
 tileConversionTable: ;(classid,tilenr) order desc
   DB  HardForeGroundID,ForegroundTilesStart,WaterID,WaterTilesStart,StairRightId,StairRightTilesStart

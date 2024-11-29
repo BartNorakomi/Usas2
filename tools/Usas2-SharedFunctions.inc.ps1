@@ -1,5 +1,5 @@
 # Usas2 shared functions
-# shadow@fuzzylogic 20231024-20231201
+# shadow@fuzzylogic 20231024-20241122
 
 [CmdletBinding()]
 param
@@ -64,7 +64,7 @@ function convert-CsvToObject
 	#Create child objects
 	foreach ($name in $names)
 	{	$nameRecords=$csv|where{$_.name -eq $name}
-		$nameIdentities=$nameRecords.identity|where{$_ -notmatch "(\*|\(|\)|\||\\)"}|select -Unique
+		$nameIdentities=$nameRecords.identity.tolower()|where{$_ -notmatch "(\*|\(|\)|\||\\)"}|select -Unique
 		$rootObj.$name=@()
 		foreach ($identity in $nameIdentities)
 		{ 
@@ -128,7 +128,7 @@ function get-U2Ruin
 		[Parameter(ParameterSetName='name')]$name
 	)
 	if ($identity -ne $null) {$Manifest=$usas2.ruin|where{$_.identity -match $identity}}
-	elseif ($id -ne $null) {$Manifest=$usas2.ruin|where{$_.ruinId -eq $id}}
+	elseif ($id -ne $null) {$Manifest=$usas2.ruin|where{$_.ruinId -match $id}}
 	elseif ($name -ne $null) {$Manifest=$usas2.ruin|where{$_.name -match $name}}
 
 	return $Manifest
@@ -323,9 +323,15 @@ function get-BitmapGfxIndex
 
 if ($getglobals) {$usas2=get-Usas2Globals -verbose -force}
 
-# exit
+ exit
 #test
 $global:usas2=$usas2
+
+#update maps with tiledTileset
+
+
+
+
 
 <#
 #RuinPropertiesTable to code

@@ -4,8 +4,8 @@
 [CmdletBinding()]
 param
 (	$room,$x,$y,
-	$dsmPath=".\Usas2.Rom.dsm",
-	$romfile="..\Engine\usas2.rom"
+	$dsmPath="..\Usas2.Rom.dsm",
+	$romfile="..\usas2.rom"
 
 )
 

@@ -3,7 +3,7 @@
 $usas2=get-Usas2Globals -force
 
 #Create the Managed data space
-$DSM=new-DSM -name $usas2.dsm.name -BlockSize $usas2.dsm.blocksize -size $usas2.dsm.size -SegmentSize $usas2.dsm.segmentSize -firstblock $usas2.dsm.firstBlock
+$DSM=new-DSM -name $usas2.dsm.name -BlockSize $usas2.dsm.blocksize -size $usas2.dsm.size -SegmentSize $usas2.dsm.segmentSize -firstblock $usas2.dsm.firstBlock -numBlocks $usas2.dsm.numblocks
 $blockExclusions=[int[]]$usas2.dsm.blockExclusion.split(",")
 $dsm|exclude-dsmblock -block $blockExclusions
 

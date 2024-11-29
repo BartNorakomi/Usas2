@@ -58,7 +58,7 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 	if ($ruinid)
 	{	write-verbose "[ruinId] Adding Ruin(s) $ruinid"
 		foreach ($id in $ruinId)
-		{	$ruinManifest=get-u2Ruin -id $id
+		{	$ruinManifest=get-u2Ruin -id "^$id$"
 			$tilesetManifest=get-u2TileSet -identity $ruinManifest.tileset
 			if	($sc5File=(get-U2File -identity $tilesetManifest.file -fileType $fileTypes["tileset"]).path)
 			{	if ($convertGfx)

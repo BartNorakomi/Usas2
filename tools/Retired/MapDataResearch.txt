@@ -1,0 +1,129 @@
+20240928;ro
+In earlier code changes I noticed that the MapData pointer is set to 2 tile lines back, pointing outside the mapdata. In later code, which uses mapdata, this is counter balanced by adding two rows again. Why is that? And, the pointer is written as SelfMod code, which is never good. Perhaps we can change both and make good code. Note that the mapdata Xlen is also +2 tiles, but that's just the table width and code wise that is fine. And, is it necessary to have the mapdata rowlength change depending on engine? - why not stick to 38 tiles wide always (as the space is already reserved). So many questions :)
+
+Have to find out WHY the -2 rows is added to the mapdataPointer by looking at all references that uses de mapdata code.
+
+enginepage3.asm
+;Space for room tile IDs
+MapData:	ds    (38+2) * (27+2) ,0  ;a map is 38 * 27 tiles big  
+
+In this table, tile classes are stored (like foreground, background, lave, stairs etc) when a room is being displayed. 
+The table is *atleast* 38x27 (tiles) in size, but as you can see it's 2 rows and 2 collumns bigger for some reason. It's cool.
+A room can either be 32*27 or 38*27 tiles wide. For mapdata processing this should not make a difference, but Bart changes the rowlen per room and reflects that in code with selfmodcode. In my opinion, the mapdata should just be 38 wide always. Functions should not even depend on that.
+
+Let's have a look at source code and, atleast, find out why mapdata pointer is -2 tile rows.
+I already know this is going to be messy...
+
+loader.asm
+---
+InitializeRoomType: #this is the primairy code that set mapdata and that selfmod data pointer in "checktile" routines in engine.asm
+	call getroomtype
+	ld	a,(hl) ;width
+	ld	(ConvertToMapinRam.SelfModifyingCodeMapLenght+1),a
+	add	a,2	;#here Rowlen +2 tiles
+	ld	(checktile.selfmodifyingcodeMapLenght+1),a
+---
+here, the Y-2 pointer for mapdata is set too:
+---
+.type2/3: #(sf2) 32 tiles wide
+	ld    de,ExitRight256x216 ;equ 252 ; 29*8 ;27+2 * 8 (tiles*8)
+	ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
+	ld    de,MapData- 68		;#68= 2x(32+2) tiles apearently (magic number)
+	ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
+---
+.type1:	;#38 tiles wide
+	ld    de,ExitRight304x216 ;equ 38*8-3
+	ld    (checkmapexit.selfmodifyingcodeMapexitRight+1),de
+	ld    de,MapData- 80		;2x(38+2) tiles
+	ld    (checktile.selfmodifyingcodeStartingPosMapForCheckTile+1),de
+---
+
+engine.asm
+---
+;in b->add y to check, de->add x to check	#the B here is that Y offset to add to the mapdata, should at least be -value 2
+checktile:                  
+	/..snip
+.EntryOutOfScreenLeft:
+	ld    a,(Clesy) ;get player Y in pixels and convert it to tiles
+	add   a,b	;#add that Y offset to
+.XandYset:
+	srl   h		;/2
+	rr    l
+	srl   l		;/4
+	srl   l		;/8
+	and   %11111000
+	rrca		;/2
+	rrca		;/4
+	rrca		;/8
+.selfmodifyingcodeStartingPosMapForCheckTile:	;# HERE is that mapdata pointer set (loader.asm) -> should be a variable instead of code mod.
+	ld	de,MapData- 000000  ;start 2 rows higher (MapData-80 for normal engine, MapData-68 for SF2 engine)
+	add	hl,de
+.selfmodifyingcodeMapLenght:		;#and mapdata rowlen is set here, could be static (38+2) tho.
+	ld	bc,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
+	ex	de,hl               ;de->x in tiles
+---
+
+# so, these two functions are connected where the loader.asm sets up the engine.asm. All checktile functions need B for Y offset, so lets find all of those and see if any is using B <2 (2 rows) or whatever.
+
+engine.asm
+> checktile: get tile class from player position
+> checktile.XandYset: get tile class from anything at HL,A (X,Y)
+> checktile.Mult12: multiply 8b*16b, this could be 8b*8b tho.
+> checktile.selfmodifyingcodeStartingPosMapForCheckTile: pointer to mapdata
+> checktile.selfmodifyingcodeMapLenght: rowlen used for mapdata (32+2 or 38+2, set in loader)
+  add   hl,de               ;(amount of Y tiles * map lenght ) + x in tiles
+  ld    a,(hl)              ;classes:  0=background, 1=hard foreground, 2=ladder, 3=spikes, 4=stairs left up, 5=stairs right up, 6=lava, 7=water
+  dec   a                   ;1 = wall
+ret
+#checktile should be rename to getRoomTileClass / getMapDataTileClass, or something, as it doesn't check but retrieves the tile class.
+YaddHeadPLayer:           equ 2 + 6 ;(changed) player can now jump further into ceilings above
+YaddmiddlePLayer:         equ 17
+YaddFeetPlayer:           equ 33
+XaddLeftPlayer:           equ 00 - 8
+XaddRightPlayer:          equ 15 - 8
+
+# a quick scan revealed many calls to CHECKTILE (root and sub)... this is not gonna be easy, especially seeing all those selfmodcode stuff - it's bad.
+
+20241005
+- mapData renamed to roomMap and using proper labels
+- changed initializeRoomType and remove selfmodcode
+- checktile split to seperate functions, one being getRoomMapTile
+- getRoomMapTile is a rewritten version of checktile.XandYset which gets the roomMap address and value of HL,A without selfmodcode. Also seperated the 16bit mulu function mulAxBc:. This mulu function was called from other places as well.
+- removed redundant code to get the roomMap value, and replaced it with the generic function getRoomMapData, which is a new function that uses the roomMap pointer correctly. I have to look through all instances that use getRoomMapTile and replace it with getRoomMapData.
+- consolidated checktileObject/Enemy/InHL functions
+- pushstone functions, changed code to check stone and not the player
+- added function checkTilePlayer:, which will replace checkTile: and uses the new getRoomMapData function
+- changed the following code to use checkTileObject instead of checkTileEnemyInHl
+	PlatformOmniDirectionally
+	CheckCollisionWallEnemy (also refactored redundant code)
+	CheckCollisionWallEnemyV8 (disabled; this is unused code)
+	CheckFloorEnemy, CheckFloorEnemyObject (what's with the "enemy" and "object" code? shouldn't those be the same?)
+	CheckFloorUnderBothFeetEnemy
+	CheckFloorEnemyObjectLeftSide
+- disable CheckTileEnemyInHL:
+#clean up when all's done
+- added checkTilePlayer to replaye checkTile and changed the following code that calls that function
+	Rsitting:
+	.PlayerMovedRight:
+	.PlayerMovedLeft:
+	CheckFloor:
+	CheckFloorInclLadder:
+	CheckFloorInclLadderWhileRolling:
+	CheckLavaPoisonSpikes:
+and all other player moves (a lot)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

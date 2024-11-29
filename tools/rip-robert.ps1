@@ -30,8 +30,8 @@ foreach ($map in $maps)
 {	$mapX=$map.x/8	#room start positions
 	$mapy=$map.y/8
 	$xml=new-TiledMap -width $roomwidth -height $roomheight
-	#$xml=add-TiledTileset -map $xml -source $tileset.source -firstgid 1
-	$xml=add-TiledTileset -map $xml -source $tileset.path -firstgid 1
+	#$xml=add-TiledMapTileset -map $xml -source $tileset.source -firstgid 1
+	$xml=add-TiledMapTileset -map $xml -source $tileset.path -firstgid 1
 
 	# iterate through layers
 	foreach ($layer in $layers)
@@ -49,7 +49,7 @@ foreach ($map in $maps)
 				$index++
 			}
 		}
-		$xml=add-TiledTileLayer -map $xml -name $layer.name -data ($data -join(","))
+		$xml=add-TiledMapTileLayer -map $xml -name $layer.name -data ($data -join(","))
 	}
 	
 	#$global:xml=$xml

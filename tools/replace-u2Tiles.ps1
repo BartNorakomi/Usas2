@@ -38,7 +38,7 @@ function replace-tiles
 			if (($value -ge 57) -and ($value -le 30*32)) {$value+=2*32;}
 			$newData[$i]=$value
 		}
-		Set-TiledTileLayer -tileLayer $layer -data ($newData -join(","))
+		Set-TiledMapTileLayer -tileLayer $layer -data ($newData -join(","))
 	}
 	set-TiledMap -map $map -path $path
 }
