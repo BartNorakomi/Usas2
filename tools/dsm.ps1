@@ -116,7 +116,8 @@ function clear-DsmBlock
 
 
 # SEGMENT
-# Exclude a block for new allocation (keep current allacations)
+# Exclude a block for new allocation (keep current allocations)
+# warning: this will not check if the block is already in use (hard exclude)
 function exclude-DSMblock
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,

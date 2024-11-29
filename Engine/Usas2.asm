@@ -1,4 +1,4 @@
-		fname	"Usas2.rom",0	;Append code to existing Usas2.Rom file
+		fname	"..\Usas2.rom",0	;Append code to existing Usas2.Rom file
 
 ;Debug stuff
 LoadSamples?: equ 0

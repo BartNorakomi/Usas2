@@ -5,7 +5,7 @@
 $dsmName="Usas2.Rom"
 $DSM=new-DSM -name $dsmName -BlockSize 16KB -size 256 -SegmentSize 128 -firstblock 0xb7
 $dsm|exclude-dsmblock -block 0 #exlcude first block for indexes
-$dsm|save-dsm
+$dsm|save-dsm 
 $DSM|create-DSMFileSpace -verbose -force -path "$(resolve-path ".\")\usas2.rom"
 
 

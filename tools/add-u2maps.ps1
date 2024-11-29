@@ -9,7 +9,8 @@ param
 	[Parameter(ParameterSetName='room')]$roomname,
 	[Parameter(ParameterSetName='file')]$path,
 	[Parameter(ParameterSetName='latestFile')]$newest,
-	$dsmName="Usas2.Rom.dsm",
+	$dsmPath=".\Usas2.Rom.dsm",
+	$romfile, #="$(resolve-path `"..\Engine\usas2.rom`")", #over rule DSM.filespace.path
 	$datalistName="WorldMap",
 	$mapslocation="..\maps",
 	$TiledMapsLocation="C:\Users\$($env:username)\OneDrive\Usas2\maps",
@@ -26,7 +27,6 @@ param
 ##### Global properties #####
 if ($resetGlobals) {$global:usas2=$null}
 $global:usas2=get-Usas2Globals
-$romfile="$(resolve-path "..\Engine\usas2.rom")" #\usas2.rom"
 
 
 ##### Functions #####
@@ -50,13 +50,15 @@ function add-roomToDsm
 
 ##### MAIN #####
 $DatalistProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistName}
-write-verbose "DSM: $dsmname, Datalist:$datalistname"
+write-verbose "DSM: $dsmPath, Datalist:$datalistname"
 $indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
 
-if (-not ($dsm=load-dsm -path $dsmname))
+if (-not ($dsm=load-dsm -path $dsmPath))
 {	write-error "DSM $dmsname not found"
 }	else
-{	$null=$DSM|open-DSMFileSpace -path $romfile
+{	if (-not $romfile) {$romfile=$dsm.filespace.path}
+	write-verbose "ROM file: $romfile"
+	$null=$DSM|open-DSMFileSpace -path $romfile
 	$datalist=add-DSMDataList -dsm $dsm -name $datalistname
 	
 	#Add Ruin(s)

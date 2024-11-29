@@ -10,6 +10,7 @@ param
 	#[Parameter(ParameterSetName='room')]$roomname,
 	[Parameter(ParameterSetName='file')]$path, #="..\grapx\tilesheets\KarniMata.Tiles.sc5",
 	$dsmPath=".\Usas2.Rom.dsm",
+	$romfile, #="$(resolve-path `"..\Engine\usas2.rom`")", #over rule DSM.filespace.path
 	$datalistName="BitMapGfx",
 	[switch]$convertGfx=$true,
 	[switch]$resetGlobals=$false,
@@ -24,7 +25,6 @@ param
 ##### Global properties #####
 if ($resetGlobals) {$global:usas2=$null}
 $global:usas2=get-Usas2Globals
-$romfile="$(resolve-path "..\Engine\usas2.rom")" #\usas2.rom"
 
 ##### Functions #####
 
@@ -44,7 +44,8 @@ write-verbose "DSM: $dsmPath, Datalist:$datalistname"
 if (-not ($dsm=load-dsm -path $dsmPath))
 {	write-error "DSM $dmsname not found"
 }	else
-{	$null=$DSM|open-DSMFileSpace -path $romfile
+{	if (-not $romfile) {$romfile=$dsm.filespace.path}
+	$null=$DSM|open-DSMFileSpace -path $romfile
 	$datalist=add-DSMDataList -dsm $dsm -name $datalistname
 
 	#Add FILE to DSM and inject to ROM
