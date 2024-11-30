@@ -2517,38 +2517,38 @@ CopyVramObjectsPage1and3:
   ld    a,1
   ld    (VramGraphicsPage1And3AlreadyInScreen?),a
 
-  ;Copy level objects to page 1
-  ld    a,(slot.page12rom)        ;all RAM except page 12
-  out   ($a8),a          
+;Copy level objects to page 1
+		ld    a,(slot.page12rom)        ;all RAM except page 12
+		out   ($a8),a          
 
-  ld    a,Graphicsblock5          ;block to copy from
-  call  block34
+		ld    a,Graphicsblock5          ;block to copy from
+		call  block34
   
-	xor   a
-  ld    hl,$6C00+$8000            ;page 1 - screen 5 - bottom 40 pixels (scoreboard) start at y = 216
-	call	SetVdp_Write	
-	ld		hl,itemsKarniMata
-  ld    c,$98
-  ld    a,40/2                    ;copy 40 lines..
-  ld    b,0
-  call  copyGraphicsToScreen.loop1     
+		xor   a
+		ld    hl,$6C00+$8000            ;page 1 - screen 5 - bottom 40 pixels (scoreboard) start at y = 216
+		call	SetVdp_Write	
+		ld		hl,itemsKarniMata
+		ld    c,$98
+		ld    a,40/2                    ;copy 40 lines..
+		ld    b,0
+		call  copyGraphicsToScreen.loop1     
 
-  ;copy Huge Blob graphics and primary and secundary weapons to page 3
-  ld    a,(slot.page12rom)        ;all RAM except page 12
-  out   ($a8),a          
+;copy Huge Blob graphics and primary and secundary weapons to page 3
+		ld    a,(slot.page12rom)        ;all RAM except page 12
+		out   ($a8),a          
 
-  ld    a,Graphicsblock4          ;block to copy from
-  call  block34
+		ld    a,Graphicsblock4          ;block to copy from
+		call  block34
 
-	ld    a,1
-  ld    hl,$6C00+$8000            ;page 3 - screen 5 - bottom 40 pixels (scoreboard) start at y = 216
-	call	SetVdp_Write	
+		ld    a,1
+		ld    hl,$6C00+$8000            ;page 3 - screen 5 - bottom 40 pixels (scoreboard) start at y = 216
+		call	SetVdp_Write
 
-	ld		hl,itemsKarniMataPage3
-  ld    c,$98
-  ld    a,40/2                    ;copy 40 lines..
-  ld    b,0
-  jp    copyGraphicsToScreen.loop1   
+		ld		hl,itemsKarniMataPage3 and 0x3fff +0x8000
+		ld    c,$98
+		ld    a,40/2                    ;copy 40 lines..
+		ld    b,0
+		jp    copyGraphicsToScreen.loop1   
 
 
 copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram

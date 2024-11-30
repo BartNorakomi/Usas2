@@ -377,13 +377,12 @@ function add-DSMFile
     foreach ($file in $Files)
     {   if ($datalist -and -not (get-DsmDataListAllocation -dataList $datalist -name $file.name))
         {   $fileSize=$file.length
-				write-verbose "[add-DSMFile] Adding file:$($file.fullname) size:$fileSize to DSM"
+            write-verbose "[add-DSMFile] Adding file:$($file.fullname) size:$fileSize to DSM"
             $fs=[io.file]::open($file.fullname,$filemodes["open"])
             $part=0
             while ($filesize)
             {   if ($filesize -gt 16KB) {$length=16KB}else{$length=$filesize}
                 write-verbose "[add-DSMFile] Writing part $part, $length"
-                #$data=get-content $file -Encoding byte|select -first $length
                 $Data=[byte[]]::new($length)
                 $fs.read($data,0,$data.length)
                 add-Dsmdata -dsm $dsm -dataList $datalist -name $file.name -part $part -data $data -updateFileSpace:$updateFileSpace

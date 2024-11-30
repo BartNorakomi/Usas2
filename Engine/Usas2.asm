@@ -453,7 +453,7 @@ tempisr:
 ;  ret
 
 
-
+;[CODE blocks]
 ;  boot, enginepage3, enginepage0
 engineRomBlock: 			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 EnginePage3RomStartAddress:	equ $-RomStartAddress
@@ -463,88 +463,106 @@ EnginePage0RomStartAddress:	equ $-RomStartAddress
 engine:						include	"engine.asm"	
 enginepage0RomEndAddress: 	equ $-1-RomStartAddress
 ;							ds	2*RomBlockSize - $ and $3fff,$ff		; fill remainder of blocks 00-01
+engineRomBlockLength:		equ $-RomStartAddress-EnginePage3RomStartAddress
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-;  f1menu
 F1Menublock:				equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$02
-f1MenuRomAddress:			equ $-RomStartAddress
+f1MenuRomStartAddress:		equ $-RomStartAddress
 							include	"F1Menu.asm"	
-f1MenuRomEndAddress:		equ $-1-RomStartAddress ;08572
+f1MenuRomEndAddress:		equ $-1-RomStartAddress
+f1MenuBlockLength:			equ $-RomStartAddress-f1MenuRomStartAddress
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-;  f2menu
 F2Menublock:				equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$02
-f2MenuRomAddress:			equ $-RomStartAddress
+f2MenuRomStartAddress:		equ $-RomStartAddress
 							include	"F2Menu.asm"	
-f2MenuRomEndAddress:		equ $-1-RomStartAddress ;08572
+f2MenuRomEndAddress:		equ $-1-RomStartAddress
+f2MenuBlockLength:			equ $-RomStartAddress-f2MenuRomStartAddress
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-;  loader
 Loaderblock:  				equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$03
 loaderRomStartAddress:		equ $-RomStartAddress
 							include	"loader.asm"
 loaderRomEndAddress:		equ $-1-loaderAddress
+loaderBlockLength:			equ $-RomStartAddress-loaderRomStartAddress
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-
 
 PlayerMovementRoutinesBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$04
-								include "PlayerMovementRoutines.asm" | endPlayerMovementRoutines:  
+PlayerMovementRomStartAddress:	equ $-RomStartAddress
+								include "PlayerMovementRoutines.asm"  
+PlayerMovementBlockLength:		equ $-RomStartAddress-PlayerMovementRomStartAddress
 								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-
-movementpatterns1block:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$05
-;movepatblo1:  				equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$05
-							include "MovementPatterns1.asm"
-							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+movementpatterns1block:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$05
+movementPat1RomStartAddress:	equ $-RomStartAddress
+								include "MovementPatterns1.asm"
+movementPat1BlockLength:		equ $-RomStartAddress-movementPat1RomStartAddress
+								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 MovementPatternsFixedPage1block:	equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$6
+movementPatFixedRomStartAddress:	equ $-RomStartAddress
 									include "MovementPatternsFixedPage1.asm"
+movementPatFixedBlockLength:		equ $-RomStartAddress-movementPatFixedRomStartAddress
 									DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-movementpatterns2block:	equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$7
-;movepatblo2:			equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$7
-						include "MovementPatterns2.asm"
-						DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+movementpatterns2block:			equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$7
+movementPat2RomStartAddress:	equ $-RomStartAddress
+								include "MovementPatterns2.asm"
+movementPat2BlockLength:		equ $-RomStartAddress-movementPat2RomStartAddress
+								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+
+teamNXTlogoblock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$8
+teamNXTlogoRomStartAddress:	equ $-RomStartAddress
+							phase	teamNXTlogoAddress
+							include "teamNXTlogo.asm"
+							dephase
+teamNXTlogoBlockLength:		equ $-RomStartAddress-teamNXTlogoRomStartAddress
+							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 
-teamNXTlogoblock:  equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$8
-	phase	teamNXTlogoAddress
-	include "teamNXTlogo.asm"
-	dephase
-						DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+;[VGM blocks]
+usas2sfx1repBlock:				equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+usas2sfx1repRomStartAddress:	equ $-RomStartAddress
+								phase	$0000
+								incbin "usas2sfx1.rep"
+								dephase
+usas2sfx1repBlockLength:		equ $-RomStartAddress-usas2sfx1repRomStartAddress
+								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+
+usas2sfx2repBlock:				equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+usas2sfx2repRomStartAddress:	equ $-RomStartAddress
+								phase	$0000
+								incbin "usas2sfx2.rep"
+								dephase
+usas2sfx2repBlockLength:		equ $-RomStartAddress-usas2sfx2repRomStartAddress
+								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+
+usas2repBlock:				equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+usas2repRomStartAddress:	equ $-RomStartAddress
+							phase	$0000
+							incbin "usas2.rep"
+							dephase
+usas2repBlockLength:		equ $-RomStartAddress-usas2repRomStartAddress
+							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 
-usas2sfx1repBlock:	equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
-					phase	$0000
-					incbin "usas2sfx1.rep"
-					dephase
-					DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-
-usas2sfx2repBlock:	equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
-					phase	$0000
-					incbin "usas2sfx2.rep"
-					dephase
-					DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-
-usas2repBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
-				phase	$0000
-				incbin "usas2.rep"
-				dephase
-				DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-
+;[GFX blocks]
 ;         (sc5 tilesheets)
-GraphicsSc5DataStartBlock:  equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $60
-GraphicsSc5DataEndBlock:    equ GraphicsSc5DataStartBlock+$1b
-							include "GraphicsSc5Data.asm"
+GraphicsSc5DataStartBlock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $60
+GraphicsSc5DataRomStartAddress:	equ $-RomStartAddress
+								include "GraphicsSc5Data.asm"
+GraphicsSc5DataBlockLength:		equ $-RomStartAddress-GraphicsSc5DataRomStartAddress
 
 ;          (hardware sprites)
-SpriteDataStartBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $7c
-;SpriteDataEndBlock:		equ SpriteDataStartBlock+$13
-						include "SpriteData.asm"
+SpriteDataStartBlock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $7c
+SpriteDataRomStartAddress:	equ $-RomStartAddress
+							include "SpriteData.asm"
+SpriteDataBlockLength:		equ $-RomStartAddress-SpriteDataRomStartAddress
 
-BossSpritesDataStartBlock:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-;BossSpritesDataEndBlock:	equ BossSpritesDataStartBlock+$28+2
-							include "BossSpriteData.asm"
+BossSpritesDataStartBlock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+BossSpritesDataRomStartAddress:	equ $-RomStartAddress
+								include "BossSpriteData.asm"
+BossSpritesDataBlockLength:		equ $-RomStartAddress-BossSpritesDataRomStartAddress
 
 
 lastblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$ and $ffc000/RomBlockSize

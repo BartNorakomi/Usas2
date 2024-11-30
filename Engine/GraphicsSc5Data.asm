@@ -1,114 +1,84 @@
-
+;Raw scraphics
 
 GfxObjectsForVramBlock: equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-;phase	$4000
 ;GfxObjectsForVram:
-  incbin "..\grapx\GfxObjectsForVram.SC5",7,128 * 128 ;skip header, 128 lines
-	DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block ;ds		$c000-$,$ff
-;dephase
+		incbin "..\grapx\GfxObjectsForVram.SC5",7,128 * 128 ;skip header, 128 lines
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-Graphicsblock4:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;GfxObjectsForVramBlock+2
-phase	$8000
-itemsKarniMataPage3:	incbin "..\grapx\itemsKarniMataPage3.SC5",7,128 * 40 ;skip header, 40 lines
-						DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	;ds		$c000-$,$ff
+Graphicsblock4: equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;GfxObjectsForVramBlock+2
+phase	$000
+itemsKarniMataPage3:
+		incbin "..\grapx\itemsKarniMataPage3.SC5",7,128 * 40 ;skip header, 40 lines
 dephase
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	;ds		$c000-$,$ff
 
-Graphicsblock5:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;Graphicsblock4+1 
+Graphicsblock5:			equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;Graphicsblock4+1 
 phase	$8000
 scoreboard:
-  incbin "..\grapx\scoreboard\scoreboard.SC5",7,39*128  ;39 lines high
+		incbin "..\grapx\scoreboard\scoreboard.SC5",7,39*128  ;39 lines high
 itemsKarniMata:
-  incbin "..\grapx\itemsKarniMata.SC5",7,40*128  ;40 lines high
+		incbin "..\grapx\itemsKarniMata.SC5",7,40*128  ;40 lines high
 ElementalWeapons:
-  incbin "..\grapx\ElementalWeapons.SC5",7,22*128  ;22 lines high
-	ds		$c000-$,$ff
+		incbin "..\grapx\ElementalWeapons.SC5",7,22*128  ;22 lines high
 dephase
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 TeamNXTLogoTransparantGraphicsblock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;Graphicsblock5+1
-phase	$4000
-  incbin "..\grapx\TeamNXTLogo\TransparantBlocks.SC5",7,200*128  ;skip header, height is 200, total bytes = $6400
-	ds		$c000-$,$ff
-dephase
-
+		incbin "..\grapx\TeamNXTLogo\TransparantBlocks.SC5",7,200*128  ;skip header, height is 200, total bytes = $6400
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 TeamNXTLogoNonTransparantGraphicsblock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;TeamNXTLogoTransparantGraphicsblock+2
-phase	$4000
-  incbin "..\grapx\TeamNXTLogo\NonTransparantBlocks.SC5",7,200*128  ;kip header, height is 200, total bytes = $6400
-	ds		$c000-$,$ff
-dephase
+		incbin "..\grapx\TeamNXTLogo\NonTransparantBlocks.SC5",7,200*128  ;kip header, height is 200, total bytes = $6400
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-BossAreaTilesBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;TeamNXTLogoNonTransparantGraphicsblock+2
-phase	$4000
-  incbin "..\grapx\tilesheets\sBossArea.SC5",7,208 * 128      ;208 lines
-;  incbin "..\grapx\tilesheets\sBossAreaBottom48Lines.SC5",7,48 * 128 ;48 lines
-	ds		$c000-$,$ff
-dephase
 
 F1MenuGraphicsBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;BossAreaTilesBlock+2
-phase	$4000
-  incbin "..\grapx\F1Menu\F1Menu.SC5",7,212 * 128      ;212 lines
-	ds		$c000-$,$ff
-dephase
+		incbin "..\grapx\F1Menu\F1Menu.SC5",7,212 * 128      ;212 lines
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 PrimaryWeaponSelectGraphicsBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;F1MenuGraphicsBlock+2
-phase	$4000
-  incbin "..\grapx\F1Menu\PrimaryWeaponSelectScreen.SC5",7,212 * 128      ;212 lines
-	ds		$c000-$,$ff
-dephase
+		incbin "..\grapx\F1Menu\PrimaryWeaponSelectScreen.SC5",7,212 * 128      ;212 lines
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 F2MenuGraphicsBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;Worldmap
-phase	$4000
-  incbin "..\grapx\F2Menu\worldmap.SC5",0,212 * 128      ;212 lines
-	ds		$c000-$,$ff
-dephase
+		incbin "..\grapx\F2Menu\worldmap.SC5",0,212 * 128      ;212 lines
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-;IceTempleTilesBlock:  equ   PrimaryWeaponSelectGraphicsBlock+2	;ruin Morana (24)
-;phase	$4000
-;  incbin "..\grapx\tilesheets\sIceTemple.SC5",7,208 * 128      ;208 lines
-;  incbin "..\grapx\tilesheets\sIceTempleBottom48Lines.SC5",7,48 * 128 ;48 lines;
-;	ds		$c000-$,$ff
-;dephase
 
 NPCDialogueFontBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;IceTempleTilesBlock+2
 phase	$4000
 ;NPCDialogueFontAddress:
 ;  incbin "..\grapx\font\NPCDialogueFont.SC5",7,016 * 128      ;016 lines
 NPCDialogueFontAndBackgroundAddress:
-  incbin "..\grapx\font\FontAndBackground.SC5",7,075 * 128      ;068 lines
-	ds		$8000-$,$ff
+		incbin "..\grapx\font\FontAndBackground.SC5",7,075 * 128      ;068 lines
 dephase
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 CharacterPortraitsBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;NPCDialogueFontBlock+1
 phase	$4000
 CharacterPortraits:
-  incbin "..\grapx\font\CharacterPortraits.SC5",7,056 * 128      ;016 lines
-	ds		$8000-$,$ff
+		incbin "..\grapx\font\CharacterPortraits.SC5",7,056 * 128      ;016 lines
 dephase
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+
 
 WaterfallSceneBlock1:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
-phase	$4000
-  incbin "..\grapx\WaterfallScene\Backdrop1.SC5",7,128 * 128      ;128 lines
-  incbin "..\grapx\WaterfallScene\Backdrop4.SC5",7,128 * 128      ;128 lines
-	ds		$c000-$,$ff
-dephase
+		incbin "..\grapx\WaterfallScene\Backdrop1.SC5",7,128 * 128      ;128 lines
+		incbin "..\grapx\WaterfallScene\Backdrop4.SC5",7,128 * 128      ;128 lines
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 WaterfallSceneBlock2:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
-phase	$4000
-  incbin "..\grapx\WaterfallScene\Backdrop3.SC5",7,128 * 128      ;128 lines
-  incbin "..\grapx\WaterfallScene\Backdrop2.SC5",7,128 * 128      ;128 lines
-	ds		$c000-$,$ff
-dephase
+		incbin "..\grapx\WaterfallScene\Backdrop3.SC5",7,128 * 128      ;128 lines
+		incbin "..\grapx\WaterfallScene\Backdrop2.SC5",7,128 * 128      ;128 lines
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+
 
 KonarkLavaSceneBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
-phase	$4000
-  incbin "..\grapx\animated backgrounds\KonarkLava\KonarkLava4Steps.SC5",7,160 * 128      ;160 lines
-	ds		$c000-$,$ff
-dephase
+		incbin "..\grapx\animated backgrounds\KonarkLava\KonarkLava4Steps.SC5",7,160 * 128      ;160 lines
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 BossPlantBackdropBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
-phase	$4000
-  incbin "..\grapx\BossPlant\BossPlantBackdrop.SC5",7,212 * 128      ;212 lines
-	ds		$c000-$,$ff
-dephase
+		incbin "..\grapx\BossPlant\BossPlantBackdrop.SC5",7,212 * 128      ;212 lines
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 AreaSignTestBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
 phase	$4000
@@ -125,7 +95,7 @@ AreaSign10:   incbin "..\grapx\AreaSigns\10-Euderus Set.SC5.pck"      ;048 lines
 AreaSign11:   incbin "..\grapx\AreaSigns\11-Akna.SC5.pck"      ;048 lines
 AreaSign12:   incbin "..\grapx\AreaSigns\12-Fate.SC5.pck"      ;048 lines
 AreaSign13:   incbin "..\grapx\AreaSigns\13-Sepa.SC5.pck"      ;048 lines
-AreaSign14:   ;incbin "..\grapx\AreaSigns\14- .SC5.pck"      ;048 lines
+AreaSign14:   ;incbin "..\grapx\AreaSigns\14- .SC5.pck"      ;048 lines >new:worldRoots
 AreaSign15:   incbin "..\grapx\AreaSigns\15-Chi.SC5.pck"      ;048 lines
 AreaSign16:   incbin "..\grapx\AreaSigns\16-Sui.SC5.pck"      ;048 lines
 AreaSign17:   incbin "..\grapx\AreaSigns\17-Vala.SC5.pck"      ;048 lines
@@ -138,5 +108,5 @@ AreaSign19:   incbin "..\grapx\AreaSigns\19-Aggayu.SC5.pck"      ;048 lines
 ;AreaSign22:   incbin "..\grapx\AreaSigns\22-Fuu.SC5.pck"      ;048 lines
 ;AreaSign23:   incbin "..\grapx\AreaSigns\23-Indra.SC5.pck"      ;048 lines
 ;AreaSign24:   incbin "..\grapx\AreaSigns\24-Morana.SC5.pck"      ;048 lines
-	ds		$c000-$,$ff
 dephase
+		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
