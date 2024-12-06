@@ -1,7 +1,7 @@
 # Put maps into the datalist, and write to the ROM
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
-# 20231128-202426
+# 20231128-20241206
 
 [CmdletBinding()]
 param
@@ -9,11 +9,11 @@ param
 	[Parameter(ParameterSetName='room')]$roomname,
 	[Parameter(ParameterSetName='file')]$path,
 	[Parameter(ParameterSetName='latestFile')]$newest,
-	$dsmPath=".\Usas2.Rom.dsm",
+	$dsmPath, #=".\Usas2.Rom.dsm",
 	$romfile, #="$(resolve-path `"..\Engine\usas2.rom`")", #over rule DSM.filespace.path
 	$datalistName="WorldMap",
 	$mapslocation="..\maps",
-	$TiledMapsLocation="C:\Users\$($env:username)\OneDrive\Usas2\maps",
+	$TiledMapsLocation="$env:onedrive\usas2\maps", #"C:\Users\$($env:username)\OneDrive\Usas2\maps",
 	[switch]$convertTiledMap=$true,
 	[switch]$resetGlobals=$false,
 	[switch]$updateIndex=$true
@@ -49,9 +49,8 @@ function add-roomToDsm
 
 
 ##### MAIN #####
-$DatalistProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistName}
+if (-not $dsmPath) {$dsmPath=$usas2.dsm.path}
 write-verbose "DSM: $dsmPath, Datalist:$datalistname"
-$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
 
 if (-not ($dsm=load-dsm -path $dsmPath))
 {	write-error "DSM $dmsname not found"
@@ -61,8 +60,15 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 	$null=$DSM|open-DSMFileSpace -path $romfile
 	$datalist=add-DSMDataList -dsm $dsm -name $datalistname
 	
+
+	#Add any FILE to DSM and inject to ROM
+	if ($path)
+	{	write-verbose "[path] Adding File(s) $path"
+		$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $path -updateFileSpace
+	}
+
 	#Add Ruin(s)
-	if ($ruinid)
+	elseif ($ruinid)
 	{	write-verbose "Adding Ruin(s) $ruinid"
 		$ruinIdFilter=("^("+($ruinId -join ("|"))+")$")
 		$rooms=get-U2WorldMapRooms -ruinid $ruinidfilter
@@ -77,35 +83,29 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 		add-roomToDsm -rooms $rooms
 	}
 
-	#Add file
-	elseif ($path)
-	{
-		write-warning "add TMX file (path) not yet supported"
-	}
-
 	#Add most recent TILED map files
 	elseif ($newest)
 	{	write-verbose "Adding most recent $newest Tiled Map files (.tmx)"
-		$files=gci $Tiledmapslocation\*.tmx|Sort-Object -Property lastWriteTime -Descending|select -first $newest
+		$files=gci $Tiledmapslocation\*.tmx|where{$_.basename -match "^[0-9[a-zA-Z0-9]{4}$"}|Sort-Object -Property lastWriteTime -Descending|select -first $newest
 		foreach ($file in $files)
-		{	write-verbose "File: $($file.fullname)"
+		{	write-verbose "Add File: $($file.fullname)"
 			if ($convertTiledMap)
 			{	$tiledMapPath=$file.fullname
 				.\convert-tmxtoraw16.ps1 -path $tiledMapPath -targetPath $mapsLocation -includeLayer ".*" -excludeLayer "(Objects|object|room numbers)" -pack
 			}
 			#Add to DSM and inject to ROM
 			$pckPath="$mapslocation\$($file.basename).map.pck"
-			#write-verbose $pckpath
-			$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $pckpath -name $pckpath -updateFileSpace
+			if ($pckPath) {$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $pckpath -name $pckpath -updateFileSpace}
 		}
 	}
 
 
 	#Make new maps index and inject into ROM
 	if ($updateIndex)
-	{	$indexRecords=get-WorldMapRoomIndex -dsm $dsm -datalistname $dataListName
-		if ($DatalistProperties)
-		{	$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
+	{	$indexRecords=get-U2WorldMapRomIndex -dsm $dsm -datalistname $dataListName
+		$index=$usas2.index|where{$_.identity -eq "rooms"}
+		if ($indexRecords -and $index)
+		{	$indexBlock=([int]$index.DsmBlock);$indexSegment=([int]$index.DsmSegment)
 			write-verbose "Writing Index to block:$indexblock, segment:$indexsegment"
 			write-DSMFileSpace -dsm $dsm -block $indexBlock -segment $indexSegment -data $indexrecords
 		}
@@ -113,7 +113,7 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 
 	#close the ROM file and save DSM
 	$null=$DSM|close-DSMFileSpace
-	save-dsm -dsm $dsm
+	save-dsm -dsm $dsm -path $dsmPath
 }
 
 

@@ -1,6 +1,6 @@
 #Data Space Manager
 #Shadow@FuzzyLogic
-#20231027-20240801
+#20231027-20241206
 
 ##### Globals #####
 $filemodes=@{Append=6;Create=2;CreateNew=1;Open=3;OpenOrCreate=4;Truncate=5}
@@ -550,19 +550,33 @@ function remove-DsmDatalistAllocation
 }    
 
 
+#20240729
+# #Resolve/convert a path to a new file
+# function resolve-newPath
+# {	param ($path)
+# 	return join-path -path (convert-path (split-path -Path $path -Parent)) -ChildPath (split-path -path $path -leaf)
+# }
+#Resolve-path but without test-path (making non existing paths possible)
+#https://blog.danskingdom.com/Resolve-PowerShell-paths-that-do-not-exist/
+function resolve-NewPath
+{	param (	$path)
+	return $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)	
+}
+
 # FILE SPACE
+# 20241202
 # Create an empty DSM fileSpace as file
 function create-DSMFileSpace
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM,
         $path, [switch]$force #force overwrite
     )
-	if (-not $path) {$path="$(resolve-path ".\")\$($DSM.name).$dsmSpaceFilenameExtention"}
+	if (-not $path) {$path="$($DSM.name).$dsmSpaceFilenameExtention"}
 	if  ((Test-Path $path) -and (-not $force))
     {   write-warning "File '$path' already exists. Use -force to overwrite"
     }   else
     {   write-verbose "Creating DSM space: $path"
-        if ($fs=[io.file]::create($path))
+        if ($fs=[io.file]::create((resolve-newPath -path $path)))
         {	$rawData=[byte[]]::new($DSM.blocksize)
             for ($i=0;$i -lt $DSM.size;$i++)
             {	write-verbose "Writing Block $i, size $($DSM.blocksize)"
@@ -583,7 +597,7 @@ function open-DSMFileSpace
     )
 	if (-not $DSM.filespace.stream)
 	{	if (-not $path) {if (-not ($path=$dsm.filespace.path)) {$path=".\$($DSM.name).$dsmSpaceFilenameExtention"}}
-		$DSM.filespace=@{path=$path;stream=$Null} #old versions don't have this hashtab, so create it
+		$DSM.filespace=@{path=$path;stream=$Null} #old DSM versions don't have this hashtab, so create it
 		write-verbose "Opening DSM file space $path"
 		if ($fs=[io.file]::open((resolve-path -path $path),$filemodes["open"]))
 		{	$DSM.filespace.stream=$fs
@@ -604,7 +618,7 @@ function close-DSMFileSpace
 {   param
     (   [Parameter(Mandatory,ValueFromPipeline)]$DSM
     )
-	
+
 	if ($DSM.filespace.stream)
 	{	write-verbose "Closing DSM file space $($dsm.filespace.path)"
 		$DSM.filespace.stream.close()

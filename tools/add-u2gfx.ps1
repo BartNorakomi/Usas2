@@ -1,7 +1,7 @@
 # Put gfx files into the datalist, and write to the ROM
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
-# 20231207-20231207
+# 20231207-20241206
 #Invoke-Expression  "dir $($usas2.tiledtileset[4].defaultLocation)$($usas2.tiledtileset[4].imagesourcefile)"
 
 [CmdletBinding()]
@@ -9,9 +9,10 @@ param
 (	[Parameter(ParameterSetName='ruin')]$ruinId,
 	#[Parameter(ParameterSetName='room')]$roomname,
 	[Parameter(ParameterSetName='file')]$path, #="..\grapx\tilesheets\KarniMata.Tiles.sc5",
-	$dsmPath=".\Usas2.Rom.dsm",
+	[Parameter(ParameterSetName='test')][switch]$test,
+	$dsmPath, #=".\Usas2.Rom.dsm",
 	$romfile, #="$(resolve-path `"..\Engine\usas2.rom`")", #over rule DSM.filespace.path
-	$datalistName="BitMapGfx",
+	$datalistName="Tileset", #"BitMapGfx",
 	[switch]$convertGfx=$true,
 	[switch]$resetGlobals=$false,
 	[switch]$updateIndex=$true
@@ -30,33 +31,41 @@ $global:usas2=get-Usas2Globals
 
 function convert-BmpToSc5
 {	param ($bmpfile,$sc5file,$palfile)
-	#npx convertgfx --source "../grapx/tilesheets/pegu.tiles.bmp" --fixedPalette "../grapx/tilesheets/pegu.tiles.pl" --targetScreen5 "../grapx/tilesheets/pegu.tiles.sc5"
 	write-verbose "Converting `"$bmpfile`" to `"$sc5file`". Pal: `"$palfile`""
 	npx convertgfx --source $bmpfile --fixedPalette $palfile --targetScreen5 $sc5file --gamma 2.2
 }
 
 
 ##### MAIN #####
-$fileTypes=@{};$usas2.filetype|%{$fileTypes[$_.identity]=$_.id}
-$DataListProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistname}
+if (-not $dsmPath) {$dsmPath=$usas2.dsm.path}
 write-verbose "DSM: $dsmPath, Datalist:$datalistname"
+$fileTypes=@{};$usas2.filetype|%{$fileTypes[$_.identity]=$_.id}
+# $DataListProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistname}
 
 if (-not ($dsm=load-dsm -path $dsmPath))
 {	write-error "DSM $dmsname not found"
 }	else
 {	if (-not $romfile) {$romfile=$dsm.filespace.path}
+	write-verbose "ROM file: $romfile"
 	$null=$DSM|open-DSMFileSpace -path $romfile
 	$datalist=add-DSMDataList -dsm $dsm -name $datalistname
 
-	#Add FILE to DSM and inject to ROM
-	if ($path)
-	{	write-verbose "[path] Adding File(s) $path"
+	if ($test)
+	{
+		write-verbose "Test mode"
+		$index=$usas2.index|where{$_.identity -eq $datalistName}
+		$index
+	}
+
+	#Add any FILE to DSM and inject to ROM
+	elseif ($path)
+	{	write-verbose "/path Adding File(s) $path"
 		$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $path -updateFileSpace
 	}
 
 	#Add ruin file
-	if ($ruinid)
-	{	write-verbose "[ruinId] Adding Ruin(s) $ruinid"
+	elseif ($ruinid)
+	{	write-verbose "/ruinId Adding Ruin(s) $ruinid"
 		foreach ($id in $ruinId)
 		{	$ruinManifest=get-u2Ruin -id "^$id$"
 			$tilesetManifest=get-u2TileSet -identity $ruinManifest.tileset
@@ -66,19 +75,21 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 					$palFile=(get-u2file -identity $tilesetManifest.paletteSourcefile -filetype $filetypes["palette"]).path
 					$x=convert-BmpToSc5 -bmpfile $bmpfile -sc5file $sc5file -palfile $palFile
 				}
-				write-verbose "RuinId $id, Filename: $sc5file"
-				$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $sc5file -updateFileSpace
+				write-verbose "RuinId $id, tilesetFile: $sc5file"
+				if ($sc5file) {$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $sc5file -updateFileSpace}
 			}
 		}
 	}
 
 	#Make index and inject into ROM
 	if ($updateIndex)
-	{	$BitmapGfxIndex=get-BitmapGfxIndex -dsm $dsm -datalist $datalistname
+	{	$BitmapGfxIndex=get-U2TilesetRomIndex -dsm $dsm -datalist $datalistname
 		write-verbose ($BitmapGfxIndex.indexPointerTable -join(",")); write-verbose ($BitmapGfxIndex.index -join(","))
 		$data=($BitmapGfxIndex.indexPointerTable+$BitmapGfxIndex.index)
-		if ($DataListProperties)
-		{	$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
+		$index=$usas2.index|where{$_.identity -eq $datalistName}
+		if ($index)
+		{	#$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
+			$indexBlock=([int]$index.DsmBlock);$indexSegment=([int]$index.DsmSegment)
 			write-verbose "Writing Index to block:$indexblock, segment:$indexsegment"
 			write-DSMFileSpace -dsm $dsm -block $indexBlock -segment $indexSegment -data $data
 		}
@@ -86,7 +97,8 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 	
 	#close the ROM file and save DSM
 	$null=$DSM|close-DSMFileSpace
-	save-dsm -dsm $dsm
+	save-dsm -dsm $dsm -path $dsmPath
+
 }
 
 #write "`n#datalist:"
