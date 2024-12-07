@@ -831,7 +831,7 @@ GetTilesetBitmap:
 		ld	bc,dsm.bitmapGfxindexAdr+dsm.bitmapGfxRecords ;$9000+64
 		add	hl,bc
 ;rm: voorlopig zo, met raw sc5 uitgaande van volledige 32K (als we niet gaan packen laten we dit zo)
-		LD    A,(HL)          ;pal
+;		LD    A,(HL)          ;pal
 		INC   HL
 ;		LD    B,(HL)          ;parts
 		INC   HL

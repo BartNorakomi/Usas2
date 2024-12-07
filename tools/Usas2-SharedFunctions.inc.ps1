@@ -103,7 +103,7 @@ function get-U2file
 {	param
 	(	[Parameter(ParameterSetName='identity')]$identity="*",$fileType="*"
 	)
-	$fileManifest=$usas2.file|where{$_.identity -like $identity -and $_.fileTypeId -like $fileType}
+	$fileManifest=$usas2.file|where{$_.identity -like $identity -and $_.dataTypeId -like $fileType}
 	return $fileManifest
 }
 

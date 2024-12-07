@@ -39,7 +39,7 @@ function convert-BmpToSc5
 ##### MAIN #####
 if (-not $dsmPath) {$dsmPath=$usas2.dsm.path}
 write-verbose "DSM: $dsmPath, Datalist:$datalistname"
-$fileTypes=@{};$usas2.filetype|%{$fileTypes[$_.identity]=$_.id}
+$fileTypes=@{};$usas2.datatype|%{$fileTypes[$_.identity]=$_.id}
 # $DataListProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistname}
 
 if (-not ($dsm=load-dsm -path $dsmPath))
