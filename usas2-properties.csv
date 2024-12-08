@@ -1,4 +1,16 @@
 Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Description	Comment	EQU	DS
+1	Usas2		dataType	default	id	0					
+1	Usas2		dataType	Tileset	id	1					
+1	Usas2		dataType	Palette	id	2					
+1	Usas2		dataType	TiledMap	id	3					
+1	Usas2		dataType	Room	id	4					
+1	Usas2		dataType	RoomPacked	id	5					
+1	Usas2		dataType	TiledTileSet	id	6					
+1	Usas2		dataType	TiledTileSetImage	id	7					
+1	Usas2		dataType	ImageSc5	id	8					
+1	Usas2		dataType	ImageBmp	id	9					
+1	Usas2		dataType	Tileset	DsmDataList	tileset					
+1	Usas2		dataType	RoomPacked	DsmDataList	worldmap					
 1	Usas2		DSM	usas2	blockExclusion	0		Excluded blocks (array)		DSM.blockExclusion: EQU 0	
 1	Usas2		DSM	usas2	blocksize	16384		One block is 16KB		DSM.blocksize: EQU 16384	
 1	Usas2		DSM	usas2	numBlocks	73		Explicit number of blocks for DSM		DSM.numBlocks: EQU 73	
@@ -82,18 +94,6 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		file	WorldRoots.tiles.pl	path	..\grapx\tilesheets\WorldRoots.tiles.pl					
 1	Usas2		file	WorldRoots.tiles.sc5	dataTypeId	1					
 1	Usas2		file	WorldRoots.tiles.sc5	path	..\grapx\tilesheets\WorldRoots.tiles.sc5					
-1	Usas2		dataType	default	id	0					
-1	Usas2		dataType	Tileset	id	1					
-1	Usas2		dataType	Palette	id	2					
-1	Usas2		dataType	TiledMap	id	3					
-1	Usas2		dataType	Room	id	4					
-1	Usas2		dataType	RoomPacked	id	5					
-1	Usas2		dataType	TiledTileSet	id	6					
-1	Usas2		dataType	TiledTileSetImage	id	7					
-1	Usas2		dataType	ImageSc5	id	8					
-1	Usas2		dataType	ImageBmp	id	9					
-1	Usas2		dataType	Tileset	DsmDataList	tileset					
-1	Usas2		dataType	RoomPacked	DsmDataList	worldmap					
 1	Usas2		Index	GfxIndexPointer	numrec	32	attribute	Number of records in the table		IndexGfxIndexPointer.numrec: EQU 32	
 1	Usas2		Index	GfxIndexPointer	reclen	2	attribute	The length of one record		IndexGfxIndexPointer.reclen: EQU 2	
 1	Usas2		Index	GfxIndexTable	block	2	property	Offset of property "block" in the table		IndexGfxIndexTable.block: EQU 2	
@@ -469,61 +469,61 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		TiledMap	default	name	Je Moeder					
 1	Usas2		TiledMap	default	path	jemoeder.tmx					
 1	Usas2		TiledtileSet	.*	defaultLocation	C:\Users\$($env:username)\OneDrive\Usas2\maps\tilesheets					
+1	Usas2		TiledtileSet	akna	id	11					
+1	Usas2		TiledtileSet	fate	id	12					
+1	Usas2		TiledtileSet	karniMata	id	6					
+1	Usas2		TiledtileSet	konark	id	7					
+1	Usas2		TiledtileSet	lemniscate	id	2					
+1	Usas2		TiledtileSet	pegu	id	4					
+1	Usas2		TiledtileSet	pollux	id	1					
+1	Usas2		TiledtileSet	shalabha	id	5					
+1	Usas2		TiledtileSet	taxila	id	4					
+1	Usas2		TiledtileSet	teleport	id	32					
+1	Usas2		TiledtileSet	WorldForest	id	3					
+1	Usas2		TiledtileSet	WorldRoots	id	14					
+1	Usas2		TiledtileSet	akna	imageSourceFile	images/akna.tiles.bmp		Direct path to file			
+1	Usas2		TiledtileSet	fate	imageSourceFile	images/fate.tiles.bmp		Direct path to file			
+1	Usas2		TiledtileSet	karniMata	imageSourceFile	images/karniMata.tiles.bmp		Direct path to file			
+1	Usas2		TiledtileSet	konark	imageSourceFile	images/konark.tiles.bmp					
+1	Usas2		TiledtileSet	lemniscate	imageSourceFile	images/lemniscate.tiles.bmp					
+1	Usas2		TiledtileSet	pegu	imageSourceFile	images/pegu.tiles.bmp					
+1	Usas2		TiledtileSet	pollux	imageSourceFile	images/pollux.tiles.bmp		Direct path to file			
+1	Usas2		TiledtileSet	shalabha	imageSourceFile	images/shalabha.tiles.bmp		Direct path to file			
+1	Usas2		TiledtileSet	taxila	imageSourceFile	images/taxila.tiles.bmp		Direct path to file			
+1	Usas2		TiledtileSet	teleport	imageSourceFile	images/teleport.tiles.bmp					
+1	Usas2		TiledtileSet	WorldForest	imageSourceFile	images/WorldForest.tiles.bmp					
+1	Usas2		TiledtileSet	WorldRoots	imageSourceFile	images/WorldRoots.tiles.bmp					
 1	Usas2		TiledtileSet	.*	imageSourceHeight	256					
 1	Usas2		TiledtileSet	.*	imageSourceWidth	256					
+1	Usas2		TiledtileSet	akna	name	Akna					
+1	Usas2		TiledtileSet	fate	name	Fate					
+1	Usas2		TiledtileSet	karniMata	name	Karni Mata					
+1	Usas2		TiledtileSet	konark	name	Konark					
+1	Usas2		TiledtileSet	lemniscate	name	Lemniscate					
+1	Usas2		TiledtileSet	pegu	name	Pegu					
+1	Usas2		TiledtileSet	pollux	name	Pollux (hub)					
+1	Usas2		TiledtileSet	shalabha	name	Shalabha					
+1	Usas2		TiledtileSet	taxila	name	Taxila					
+1	Usas2		TiledtileSet	teleport	name	Teleport					
+1	Usas2		TiledtileSet	WorldForest	name	World Forest					
+1	Usas2		TiledtileSet	WorldRoots	name	World Roots					
 1	Usas2	 	TiledtileSet	.*	numTilesx	32					
 1	Usas2	 	TiledtileSet	.*	numTilesy	32					
+1	Usas2		TiledtileSet	akna	path	tilesheets/akna.tsx		Direct path to file			
+1	Usas2		TiledtileSet	fate	path	tilesheets/fate.tsx		Direct path to file			
+1	Usas2		TiledtileSet	karniMata	path	tilesheets/tsKarniMata.tsx		Direct path to file			
+1	Usas2		TiledtileSet	konark	path	tilesheets/tsKonark.tsx					
+1	Usas2		TiledtileSet	lemniscate	path	tilesheets/tsLemniscate.tsx					
+1	Usas2		TiledtileSet	pegu	path	tilesheets/tsPegu.tsx					
+1	Usas2		TiledtileSet	pollux	path	tilesheets/pollux.tsx		Direct path to file			
+1	Usas2		TiledtileSet	shalabha	path	tilesheets/shalabha.tsx					
+1	Usas2		TiledtileSet	taxila	path	tilesheets/taxila.tsx		Direct path to file			
+1	Usas2		TiledtileSet	teleport	path	tilesheets/tsTeleport.tsx					
+1	Usas2		TiledtileSet	WorldForest	path	tilesheets/WorldForest.tsx					
+1	Usas2		TiledtileSet	WorldRoots	path	tilesheets/WorldRoots.tsx					
 1	Usas2	 	TiledtileSet	.*	tileCount	1024					
 1	Usas2		TiledtileSet	.*	tileHeight	8					
 1	Usas2		TiledtileSet	.*	tileWidth	8					
-1	Usas2		TiledtileSet	akna	id	11					
-1	Usas2		TiledtileSet	akna	imageSourceFile	images/akna.tiles.bmp		Direct path to file			
-1	Usas2		TiledtileSet	akna	path	tilesheets/akna.tsx		Direct path to file			
-1	Usas2		TiledtileSet	akna	name	Akna					
-1	Usas2		TiledtileSet	fate	id	12					
-1	Usas2		TiledtileSet	fate	imageSourceFile	images/fate.tiles.bmp		Direct path to file			
-1	Usas2		TiledtileSet	fate	path	tilesheets/fate.tsx		Direct path to file			
-1	Usas2		TiledtileSet	fate	name	Fate					
-1	Usas2		TiledtileSet	karniMata	id	6					
-1	Usas2		TiledtileSet	karniMata	imageSourceFile	images/karniMata.tiles.bmp		Direct path to file			
-1	Usas2		TiledtileSet	karniMata	path	tilesheets/tsKarniMata.tsx		Direct path to file			
-1	Usas2		TiledtileSet	karniMata	name	Karni Mata					
-1	Usas2		TiledtileSet	konark	id	7					
-1	Usas2		TiledtileSet	konark	imageSourceFile	images/konark.tiles.bmp					
-1	Usas2		TiledtileSet	konark	path	tilesheets/tsKonark.tsx					
-1	Usas2		TiledtileSet	konark	name	Konark					
-1	Usas2		TiledtileSet	lemniscate	id	2					
-1	Usas2		TiledtileSet	lemniscate	imageSourceFile	images/lemniscate.tiles.bmp					
-1	Usas2		TiledtileSet	lemniscate	path	tilesheets/tsLemniscate.tsx					
-1	Usas2		TiledtileSet	lemniscate	name	Lemniscate					
-1	Usas2		TiledtileSet	pegu	id	4					
-1	Usas2		TiledtileSet	pegu	imageSourceFile	images/pegu.tiles.bmp					
-1	Usas2		TiledtileSet	pegu	path	tilesheets/tsPegu.tsx					
-1	Usas2		TiledtileSet	pegu	name	Pegu					
-1	Usas2		TiledtileSet	pollux	id	1					
-1	Usas2		TiledtileSet	pollux	imageSourceFile	images/pollux.tiles.bmp		Direct path to file			
-1	Usas2		TiledtileSet	pollux	path	tilesheets/pollux.tsx		Direct path to file			
-1	Usas2		TiledtileSet	pollux	name	Pollux (hub)					
-1	Usas2		TiledtileSet	shalabha	id	5					
-1	Usas2		TiledtileSet	shalabha	imageSourceFile	images/shalabha.tiles.bmp		Direct path to file			
-1	Usas2		TiledtileSet	shalabha	path	tilesheets/shalabha.tsx					
-1	Usas2		TiledtileSet	shalabha	name	Shalabha					
-1	Usas2		TiledtileSet	taxila	id	4					
-1	Usas2		TiledtileSet	taxila	imageSourceFile	images/taxila.tiles.bmp		Direct path to file			
-1	Usas2		TiledtileSet	taxila	path	tilesheets/taxila.tsx		Direct path to file			
-1	Usas2		TiledtileSet	taxila	name	Taxila					
-1	Usas2		TiledtileSet	teleport	id	32					
-1	Usas2		TiledtileSet	teleport	imageSourceFile	images/teleport.tiles.bmp					
-1	Usas2		TiledtileSet	teleport	path	tilesheets/tsTeleport.tsx					
-1	Usas2		TiledtileSet	teleport	name	Teleport					
-1	Usas2		TiledtileSet	WorldForest	id	3					
-1	Usas2		TiledtileSet	WorldForest	imageSourceFile	images/WorldForest.tiles.bmp					
-1	Usas2		TiledtileSet	WorldForest	path	tilesheets/WorldForest.tsx					
-1	Usas2		TiledtileSet	WorldForest	name	World Forest					
-1	Usas2		TiledtileSet	WorldRoots	id	14					
-1	Usas2		TiledtileSet	WorldRoots	imageSourceFile	images/WorldRoots.tiles.bmp					
-1	Usas2		TiledtileSet	WorldRoots	path	tilesheets/WorldRoots.tsx					
-1	Usas2		TiledtileSet	WorldRoots	name	World Roots					
 1	Usas2		TiledWorldMap	.*	defaultLocation	C:\Users\$($env:username)\OneDrive\Usas2\maps					
 1	Usas2		TiledWorldMap	akna	Name	Akna					
 1	Usas2		TiledWorldMap	akna	path	akna.world					
@@ -540,51 +540,146 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		TiledWorldMap	WorldRoots	Name	World Roots					
 1	Usas2		TiledWorldMap	WorldRoots	path	WorldRoots.world					
 1	Usas2		Tileset	akna	file	akna.Tiles.sc5					
-1	Usas2		Tileset	akna	id	11					
-1	Usas2		Tileset	akna	imageSourceFile	akna.Tiles.bmp					
-1	Usas2		Tileset	akna	paletteSourceFile	akna.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		Tileset	fate	file	fate.Tiles.sc5		MSX screen tileset	bmp conversion output		
-1	Usas2		Tileset	fate	id	12		TileSetID	for ruins, the tilesetID is the same as the ruinID		
-1	Usas2		Tileset	fate	imageSourceFile	fate.Tiles.bmp					
-1	Usas2		Tileset	fate	paletteSourceFile	fate.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		Tileset	KarniMata	file	KarniMata.Tiles.sc5		MSX screen tileset	bmp conversion output		
-1	Usas2		Tileset	KarniMata	id	6		TileSetID	for ruins, the tilesetID is the same as the ruinID		
-1	Usas2		Tileset	KarniMata	imageSourceFile	KarniMata.Tiles.bmp					
-1	Usas2		Tileset	KarniMata	paletteSourceFile	KarniMata.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		Tileset	Konark	file	Konark.tiles.sc5		MSX screen tileset	bmp conversion output		
-1	Usas2		Tileset	Konark	id	7		TileSetID	for ruins, the tilesetID is the same as the ruinID		
-1	Usas2		Tileset	Konark	imageSourceFile	Konark.tiles.bmp					
-1	Usas2		Tileset	Konark	paletteSourceFile	Konark.tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		Tileset	Lemniscate	file	Lemniscate.tiles.sc5		MSX screen tileset	bmp conversion output		
-1	Usas2		Tileset	Lemniscate	id	2		TileSetID	for ruins, the tilesetID is the same as the ruinID		
-1	Usas2		Tileset	Lemniscate	imageSourceFile	Lemniscate.tiles.bmp					
-1	Usas2		Tileset	Lemniscate	paletteSourceFile	Lemniscate.tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		Tileset	Pegu	file	Pegu.Tiles.sc5		MSX screen tileset	bmp conversion output		
-1	Usas2		Tileset	Pegu	id	4		TileSetID	for ruins, the tilesetID is the same as the ruinID		
-1	Usas2		Tileset	Pegu	imageSourceFile	Pegu.Tiles.bmp		bitmap source file			
-1	Usas2		Tileset	Pegu	paletteSourceFile	Pegu.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		Tileset	pollux	file	pollux.Tiles.sc5		MSX screen tileset	bmp conversion output		
-1	Usas2		Tileset	pollux	id	1		TileSetID	for ruins, the tilesetID is the same as the ruinID		
-1	Usas2		Tileset	pollux	imageSourceFile	pollux.Tiles.bmp					
-1	Usas2		Tileset	pollux	paletteSourceFile	pollux.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		Tileset	Shalabha	file	Shalabha.Tiles.sc5		MSX screen tileset	bmp conversion output		
-1	Usas2		Tileset	Shalabha	id	14		TileSetID	for ruins, the tilesetID is the same as the ruinID		
-1	Usas2		Tileset	Shalabha	imageSourceFile	Shalabha.Tiles.bmp					
-1	Usas2		Tileset	Shalabha	paletteSourceFile	Shalabha.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
-1	Usas2		Tileset	Taxila	id	9		TileSetID	for ruins, the tilesetID is the same as the ruinID		
-1	Usas2		Tileset	Taxila	imageSourceFile	taxila.tiles.bmp		File identity tiles bitmap	Source fileIdentity for conversion input		
-1	Usas2		Tileset	Taxila	paletteSourceFile	taxila.tiles.pl		File identity tiles palette	Source fileIdentity for conversion input		
 1	Usas2		Tileset	Taxila	file	taxila.tiles.sc5		File identity tiles destination	Source fileIdentity for conversion output		
 1	Usas2		Tileset	Teleport	file	Teleport.tiles.sc5		MSX screen tileset	bmp conversion output		
-1	Usas2		Tileset	Teleport	id	31		TileSetID	for ruins, the tilesetID is the same as the ruinID		
-1	Usas2		Tileset	Teleport	imageSourceFile	Teleport.tiles.bmp					
-1	Usas2		Tileset	Teleport	paletteSourceFile	Teleport.tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		Tileset	WorldForest	file	WorldForest.Tiles.sc5		MSX screen tileset	bmp conversion output		
-1	Usas2		Tileset	WorldForest	id	3		TileSetID	for ruins, the tilesetID is the same as the ruinID		
-1	Usas2		Tileset	WorldForest	imageSourceFile	WorldForest.Tiles.bmp					
-1	Usas2		Tileset	WorldForest	paletteSourceFile	WorldForest.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		Tileset	WorldRoots	file	WorldRoots.Tiles.sc5		MSX screen tileset	bmp conversion output		
+1	Usas2		Tileset	akna	id	11					
+1	Usas2		Tileset	fate	id	12		TileSetID	for ruins, the tilesetID is the same as the ruinID		
+1	Usas2		Tileset	KarniMata	id	6		TileSetID	for ruins, the tilesetID is the same as the ruinID		
+1	Usas2		Tileset	Konark	id	7		TileSetID	for ruins, the tilesetID is the same as the ruinID		
+1	Usas2		Tileset	Lemniscate	id	2		TileSetID	for ruins, the tilesetID is the same as the ruinID		
+1	Usas2		Tileset	Pegu	id	4		TileSetID	for ruins, the tilesetID is the same as the ruinID		
+1	Usas2		Tileset	pollux	id	1		TileSetID	for ruins, the tilesetID is the same as the ruinID		
+1	Usas2		Tileset	Shalabha	id	5		TileSetID	for ruins, the tilesetID is the same as the ruinID		
+1	Usas2		Tileset	Taxila	id	9		TileSetID	for ruins, the tilesetID is the same as the ruinID		
+1	Usas2		Tileset	Teleport	id	31		TileSetID	for ruins, the tilesetID is the same as the ruinID		
+1	Usas2		Tileset	WorldForest	id	3		TileSetID	for ruins, the tilesetID is the same as the ruinID		
 1	Usas2		Tileset	WorldRoots	id	14		TileSetID	for ruins, the tilesetID is the same as the ruinID		
+1	Usas2		Tileset	akna	imageSourceFile	akna.Tiles.bmp					
+1	Usas2		Tileset	fate	imageSourceFile	fate.Tiles.bmp					
+1	Usas2		Tileset	KarniMata	imageSourceFile	KarniMata.Tiles.bmp					
+1	Usas2		Tileset	Konark	imageSourceFile	Konark.tiles.bmp					
+1	Usas2		Tileset	Lemniscate	imageSourceFile	Lemniscate.tiles.bmp					
+1	Usas2		Tileset	Pegu	imageSourceFile	Pegu.Tiles.bmp		bitmap source file			
+1	Usas2		Tileset	pollux	imageSourceFile	pollux.Tiles.bmp					
+1	Usas2		Tileset	Shalabha	imageSourceFile	Shalabha.Tiles.bmp					
+1	Usas2		Tileset	Taxila	imageSourceFile	taxila.tiles.bmp		File identity tiles bitmap	Source fileIdentity for conversion input		
+1	Usas2		Tileset	Teleport	imageSourceFile	Teleport.tiles.bmp					
+1	Usas2		Tileset	WorldForest	imageSourceFile	WorldForest.Tiles.bmp					
 1	Usas2		Tileset	WorldRoots	imageSourceFile	WorldRoots.Tiles.bmp					
+1	Usas2		Tileset	akna	paletteSourceFile	akna.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
+1	Usas2		Tileset	fate	paletteSourceFile	fate.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
+1	Usas2		Tileset	KarniMata	paletteSourceFile	KarniMata.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
+1	Usas2		Tileset	Konark	paletteSourceFile	Konark.tiles.pl		Tileset palette file	32byte file used for BMP conversion		
+1	Usas2		Tileset	Lemniscate	paletteSourceFile	Lemniscate.tiles.pl		Tileset palette file	32byte file used for BMP conversion		
+1	Usas2		Tileset	Pegu	paletteSourceFile	Pegu.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
+1	Usas2		Tileset	pollux	paletteSourceFile	pollux.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
+1	Usas2		Tileset	Shalabha	paletteSourceFile	Shalabha.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
+1	Usas2		Tileset	Taxila	paletteSourceFile	taxila.tiles.pl		File identity tiles palette	Source fileIdentity for conversion input		
+1	Usas2		Tileset	Teleport	paletteSourceFile	Teleport.tiles.pl		Tileset palette file	32byte file used for BMP conversion		
+1	Usas2		Tileset	WorldForest	paletteSourceFile	WorldForest.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		Tileset	WorldRoots	paletteSourceFile	WorldRoots.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv					
+1	Usas2		dataType	areaSign	id	10					
+1	Usas2		dataType	areaSign	DsmDataList	areaSign					
+1	Usas2		areaSign	Pollux	file	01-hub.sc5.pck					
+1	Usas2		areaSign	Lemniscate	file	02-Lemniscate.sc5.pck					
+1	Usas2		areaSign	WorldForest	file	03-Forest.sc5.pck					
+1	Usas2		areaSign	Pegu	file	04-Pegu.sc5.pck					
+1	Usas2		areaSign	Shalabha	file	05-Shalabha.sc5.pck					
+1	Usas2		areaSign	KarniMata	file	06-Karni Mata.sc5.pck					
+1	Usas2		areaSign	Konark	file	07-Konark.sc5.pck					
+1	Usas2		areaSign	Ashoka	file	08-Ashoka.sc5.pck					
+1	Usas2		areaSign	Taxila	file	09-Taxila.sc5.pck					
+1	Usas2		areaSign	EuderusSet	file	10-Euderus Set.sc5.pck					
+1	Usas2		areaSign	Akna	file	11-Akna.sc5.pck					
+1	Usas2		areaSign	Fate	file	12-Fate.sc5.pck					
+1	Usas2		areaSign	Sepa	file	13-Sepa.sc5.pck					
+1	Usas2		areaSign	Chi	file	15-Chi.sc5.pck					
+1	Usas2		areaSign	Sui	file	16-Sui.sc5.pck					
+1	Usas2		areaSign	Vala	file	17-Vala.sc5.pck					
+1	Usas2		areaSign	Tiwanaku	file	18-Tiwanaku.sc5.pck					
+1	Usas2		areaSign	Aggayu	file	19-Aggayu.sc5.pck					
+1	Usas2		areaSign	Ka	file	20-Ka.sc5.pck					
+1	Usas2		areaSign	Genbu	file	21-Genbu.sc5.pck					
+1	Usas2		areaSign	Fuu	file	22-Fuu.sc5.pck					
+1	Usas2		areaSign	Indra	file	23-Indra.sc5.pck					
+1	Usas2		areaSign	Morana	file	24-Morana.sc5.pck					
+1	Usas2		areaSign	Pollux	id	1					
+1	Usas2		areaSign	Lemniscate	id	2					
+1	Usas2		areaSign	WorldForest	id	3					
+1	Usas2		areaSign	Pegu	id	4					
+1	Usas2		areaSign	Shalabha	id	5					
+1	Usas2		areaSign	KarniMata	id	6					
+1	Usas2		areaSign	Konark	id	7					
+1	Usas2		areaSign	Ashoka	id	8					
+1	Usas2		areaSign	Taxila	id	9					
+1	Usas2		areaSign	EuderusSet	id	10					
+1	Usas2		areaSign	Akna	id	11					
+1	Usas2		areaSign	Fate	id	12					
+1	Usas2		areaSign	Sepa	id	13					
+1	Usas2		areaSign	WorldRoots	id	14					
+1	Usas2		areaSign	Chi	id	15					
+1	Usas2		areaSign	Sui	id	16					
+1	Usas2		areaSign	Vala	id	17					
+1	Usas2		areaSign	Tiwanaku	id	18					
+1	Usas2		areaSign	Aggayu	id	19					
+1	Usas2		areaSign	Ka	id	20					
+1	Usas2		areaSign	Genbu	id	21					
+1	Usas2		areaSign	Fuu	id	22					
+1	Usas2		areaSign	Indra	id	23					
+1	Usas2		areaSign	Morana	id	24					
+1	Usas2		file	01-hub.sc5.pck	path	..\grapx\tilesheets\01-hub.sc5.pck					
+1	Usas2		file	02-Lemniscate.sc5.pck	path	..\grapx\tilesheets\02-Lemniscate.sc5.pck					
+1	Usas2		file	03-Forest.sc5.pck	path	..\grapx\tilesheets\03-Forest.sc5.pck					
+1	Usas2		file	04-Pegu.sc5.pck	path	..\grapx\tilesheets\04-Pegu.sc5.pck					
+1	Usas2		file	05-Shalabha.sc5.pck	path	..\grapx\tilesheets\05-Shalabha.sc5.pck					
+1	Usas2		file	06-Karni Mata.sc5.pck	path	..\grapx\tilesheets\06-Karni Mata.sc5.pck					
+1	Usas2		file	07-Konark.sc5.pck	path	..\grapx\tilesheets\07-Konark.sc5.pck					
+1	Usas2		file	08-Ashoka.sc5.pck	path	..\grapx\tilesheets\08-Ashoka.sc5.pck					
+1	Usas2		file	09-Taxila.sc5.pck	path	..\grapx\tilesheets\09-Taxila.sc5.pck					
+1	Usas2		file	10-Euderus Set.sc5.pck	path	..\grapx\tilesheets\10-Euderus Set.sc5.pck					
+1	Usas2		file	11-Akna.sc5.pck	path	..\grapx\tilesheets\11-Akna.sc5.pck					
+1	Usas2		file	12-Fate.sc5.pck	path	..\grapx\tilesheets\12-Fate.sc5.pck					
+1	Usas2		file	13-Sepa.sc5.pck	path	..\grapx\tilesheets\13-Sepa.sc5.pck					
+1	Usas2		file	15-Chi.sc5.pck	path	..\grapx\tilesheets\15-Chi.sc5.pck					
+1	Usas2		file	16-Sui.sc5.pck	path	..\grapx\tilesheets\16-Sui.sc5.pck					
+1	Usas2		file	17-Vala.sc5.pck	path	..\grapx\tilesheets\17-Vala.sc5.pck					
+1	Usas2		file	18-Tiwanaku.sc5.pck	path	..\grapx\tilesheets\18-Tiwanaku.sc5.pck					
+1	Usas2		file	19-Aggayu.sc5.pck	path	..\grapx\tilesheets\19-Aggayu.sc5.pck					
+1	Usas2		file	20-Ka.sc5.pck	path	..\grapx\tilesheets\20-Ka.sc5.pck					
+1	Usas2		file	21-Genbu.sc5.pck	path	..\grapx\tilesheets\21-Genbu.sc5.pck					
+1	Usas2		file	22-Fuu.sc5.pck	path	..\grapx\tilesheets\22-Fuu.sc5.pck					
+1	Usas2		file	23-Indra.sc5.pck	path	..\grapx\tilesheets\23-Indra.sc5.pck					
+1	Usas2		file	24-Morana.sc5.pck	path	..\grapx\tilesheets\24-Morana.sc5.pck					
+1	Usas2		file	01-hub.sc5.pck	dataTypeId	10					
+1	Usas2		file	02-Lemniscate.sc5.pck	dataTypeId	10					
+1	Usas2		file	03-Forest.sc5.pck	dataTypeId	10					
+1	Usas2		file	04-Pegu.sc5.pck	dataTypeId	10					
+1	Usas2		file	05-Shalabha.sc5.pck	dataTypeId	10					
+1	Usas2		file	06-Karni Mata.sc5.pck	dataTypeId	10					
+1	Usas2		file	07-Konark.sc5.pck	dataTypeId	10					
+1	Usas2		file	08-Ashoka.sc5.pck	dataTypeId	10					
+1	Usas2		file	09-Taxila.sc5.pck	dataTypeId	10					
+1	Usas2		file	10-Euderus Set.sc5.pck	dataTypeId	10					
+1	Usas2		file	11-Akna.sc5.pck	dataTypeId	10					
+1	Usas2		file	12-Fate.sc5.pck	dataTypeId	10					
+1	Usas2		file	13-Sepa.sc5.pck	dataTypeId	10					
+1	Usas2		file	15-Chi.sc5.pck	dataTypeId	10					
+1	Usas2		file	16-Sui.sc5.pck	dataTypeId	10					
+1	Usas2		file	17-Vala.sc5.pck	dataTypeId	10					
+1	Usas2		file	18-Tiwanaku.sc5.pck	dataTypeId	10					
+1	Usas2		file	19-Aggayu.sc5.pck	dataTypeId	10					
+1	Usas2		file	20-Ka.sc5.pck	dataTypeId	10					
+1	Usas2		file	21-Genbu.sc5.pck	dataTypeId	10					
+1	Usas2		file	22-Fuu.sc5.pck	dataTypeId	10					
+1	Usas2		file	23-Indra.sc5.pck	dataTypeId	10					
+1	Usas2		file	24-Morana.sc5.pck	dataTypeId	10					

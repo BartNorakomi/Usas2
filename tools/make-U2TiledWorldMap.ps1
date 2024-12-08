@@ -84,12 +84,11 @@ function new-Usas2RoomTiledMapFile
 	$roomManifest=get-u2room -id $roomType #$usas2.room|where{$_.roomType -eq $roomType}
 	$width=$roomManifest.width 
 	$height=$roomManifest.height
-	if (-not ($tileSet=$ruinManifest.TiledTileset)) {write-warning "Error: TiledTileset not defined";return}
-	#write-verbose " * $width, $height, $tileset"
+	$tileSet=$ruinManifest.TiledTileset
 	if (-not ($width -and $height -and $tileSet))
-	{	write-warning "Roomproperties not defined for $($roomManifest.identity), cannot create room"
+	{	write-error "[new-Usas2RoomTiledMapFile] Room manifest not (fully) defined for $($roomManifest.identity), cannot create room"
 	} else
-	{	write-verbose "Creating $path, width=$width, height=$height"
+	{	write-verbose "[new-Usas2RoomTiledMapFile] Creating $path, width=$width, height=$height"
 		$xml=new-TiledMap -width $width -height $height
 		#Attach a TiledTileSet to the map
 		$TileSetProps=$usas2.tiledtileset|where{$tileset -match $_.identity}
@@ -98,13 +97,18 @@ function new-Usas2RoomTiledMapFile
 		$hasSet=($usas2.TiledtileSet|where{$_.identity -eq $roomManifest.identity}).path
 		if ($hasSet) {$tileSetPath=$hasSet}
 		if (-not $tileSetPath)
-		{	write-warning "No Tiled-TileSet defined for ruin $($ruinManifest.identity)-or room $($roomManifest.identity)"
+		{	write-warning "[new-Usas2RoomTiledMapFile] No Tiled-TileSet defined for ruin $($ruinManifest.identity)-or room $($roomManifest.identity)"
 		}	else
-		{	write-verbose "Tiled-Tileset $tilesetPath"
+		{	write-verbose "[new-Usas2RoomTiledMapFile] Tiled-Tileset $tilesetPath"
 			$xml=add-TiledMapTileset -map $xml -source $tileSetPath -firstgid 1
 		}
-		$xml=add-TiledMapTileLayer -map $xml
-		set-content -Value $xml.OuterXml -Path $path
+		#add the default TileLayers
+		$xml=add-TiledMapTileLayer -map $xml -name "bgShadow"
+		$xml=add-TiledMapTileLayer -map $xml -name "bg"
+		$xml=add-TiledMapTileLayer -map $xml -name "bgOrna"
+		$xml=add-TiledMapTileLayer -map $xml -name "fg"
+		#and write the file
+		set-TiledMap -map $xml -path $path #   set-content -Value $xml.OuterXml -Path $path
 	}
 }
 
@@ -121,16 +125,16 @@ function convert-Usas2WorldMapToTiledWorldMap
 		write-verbose "[convert-Usas2WorldMapToTiledWorldMap] name=$($roomMap.name), ruinId=$($roomMap.ruinid), roomId=$($roomMap.roomtype), filename=$filename"
 		$ruinManifest=get-u2ruin -id "^$($roomMap.ruinid)$" #$usas2.ruin|where{$_.ruinid -eq $roomMap.ruinId}
 		$roomManifest=get-u2room -id $roomMap.roomType #$usas2.room|where{$_.roomType -eq $roomMap.roomType}
-		write-verbose "Ruin name: $($ruinManifest.Name), Room name: $filename, Room name: $($roomManifest.identity)"
+		write-verbose "[convert-Usas2WorldMapToTiledWorldMap] Ruin name: $($ruinManifest.Name), Room name: $filename, Room name: $($roomManifest.identity)"
 		$fileExist=test-path "$TiledMapsLocation\$filename"
-		write-verbose "File $filename exist? $fileexist"
+		write-verbose "[convert-Usas2WorldMapToTiledWorldMap] File $TiledMapsLocation\$filename exist? $fileexist"
 		if ($forceOverWrite -or (-not $fileExist -and $createRoom))
 		{	new-Usas2RoomTiledMapFile -ruinId $roomMap.ruinId -roomType $roomMap.roomType -path "$TiledMapsLocation\$filename"
 		}
 		if (-not (test-path "$TiledMapsLocation\$filename"))	# test it again, in case it has just been created
-		{	write-verbose "$filename does not exist - skipping"
+		{	write-verbose "[convert-Usas2WorldMapToTiledWorldMap] $filename does not exist - skipping"
 		} else
-		{	write-verbose "Adding room"
+		{	write-verbose "[convert-Usas2WorldMapToTiledWorldMap] Adding room"
 			new-TiledWorldMapMap -filename $filename -width ($mapWidth*8) -height ($mapHeight*8) -x ($roomMap.x*($mapWidth*8+$marginX)) -y ($roomMap.y*($mapHeight*8+$marginY))
 		}
 	}
@@ -200,5 +204,8 @@ foreach ($worldmapMap in $maps)
 
 # create specific sections
  .\make-U2TiledWorldMap.ps1 -ruinId 12 -masterMap ..\Usas2-Section1.csv -createRoom -forceOverWrite -resetGlobals -Verbose
+
+# Create set for Robert
+.\make-U2TiledWorldMap.ps1 -ruinId 1 -TiledMapsLocation F:\Usas2TiledMaps -Verbose -createRoom -forceOverWrite -name pollux
 
 #>

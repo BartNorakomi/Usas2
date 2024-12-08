@@ -30,7 +30,7 @@ function set-TiledMap
 	)
 	if (-not $path) {$path=($map.map.properties.property|where{$_.name -eq "path"}).value}
 	if ($path)
-	{	write-verbose "Writing Tiled .map file $path"
+	{	write-verbose "Writing Tiled map (.tmx) file $path"
 		$null= set-content -Value $map.OuterXml -Path $path
 	}
 }

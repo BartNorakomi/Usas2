@@ -3,7 +3,7 @@
 
 [CmdletBinding()]
 param
-(	[switch]$getglobals
+(	[switch]$getglobals,[switch]$test
 )
 
 #20240729
@@ -244,7 +244,7 @@ function get-U2WorldMapRooms
 
 
 
-# ROOM MAP FILE INDEX 20231201
+# ROOM MAP FILE INDEX FOR ROM 20231201
 # return a WorldMap index of the files in a datalist as byte array of records (id(xxyy)[16],block[8],segment[8]) 
 function get-U2WorldMapRomIndex
 {	param
@@ -252,8 +252,8 @@ function get-U2WorldMapRomIndex
 	)
 
 	#ROM:roomindex
-	$index=$usas2.index|where{$_.identity -eq "rooms"}
-	$indexNumRec=[uint32]$index.numrec;$indexRecLen=[uint32]$index.reclen;$indexSize=$indexNumRec*$indexRecLen;$indexDefaultId=0xff
+	$indexManifest=$usas2.index|where{$_.identity -eq "rooms"}
+	$indexNumRec=[uint32]$indexManifest.numrec;$indexRecLen=[uint32]$indexManifest.reclen;$indexSize=$indexNumRec*$indexRecLen;$indexDefaultId=0xff
 	$indexIdOffset=0;$indexBlockOffset=2;$indexSegmentOffset=3
 
 	$datalist=get-dsmdatalist -dsm $dsm -name $datalistName
@@ -285,18 +285,18 @@ function get-U2TilesetRomIndex
 	# $indexIdOffset=0;$indexBlockOffset=2;$indexSegmentOffset=3
 
 	$datalist=get-dsmdatalist -dsm $dsm -name $datalistName
-	# [System.Collections.Generic.List[byte]]
 	$indexPointerTable=[byte[]]::new($indexSize)
 	$indexRecords=[System.Collections.Generic.List[byte]]::new()
 	[byte[]]$emptyIndexRecord=0,0
 
+	#in: $dsm.datalist object, fileIndexPointerTable array, fileIndexPartsTable array, tileset object array, numRec 
 	for ($index=0;$index -lt $indexNumRec;$index++)
 	{	$L=$indexRecords.count -band 255
 		$H=$indexRecords.count -shr 8
 		$indexPointerTable[$index*2]=$l
 		$indexPointerTable[$index*2+1]=$h
-		$tileset=get-u2TileSet -id $index # $usas2.tileset|where{$_.id -eq $index}
-		$sc5File=(get-u2File -identity $tileset.file).path #($usas2.file|where{$_.identity -eq $tileset.file}).path
+		$tileset=get-u2TileSet -id $index
+		$sc5File=(get-u2File -identity $tileset.file).path
 		if ($sc5File)
 		{	$claims=$datalist.allocations|where{$_.name -eq (split-path -path $sc5file -leaf)}|sort part
 			$parts=$claims.count
@@ -312,57 +312,71 @@ function get-U2TilesetRomIndex
 		{	$indexRecords.AddRange($emptyIndexRecord)			
 		}
 	}
-	# return [pscustomobject]@{indexPointerTable=$indexPointerTable.toarray();index=$indexRecords.toarray()}
 	return [pscustomobject]@{indexPointerTable=$indexPointerTable;index=$indexRecords.toarray()}
 }
 
+#Return the file claims for a given file
+#20241208
+#in: DSM, fileIdentity
+function get-u2FileClaim
+{	param ([Parameter(Mandatory,ValueFromPipeline)]$DSM,$fileIdentity)
+	if ($file=get-u2file -identity $fileIdentity)
+	{	$dataType=$usas2.datatype|where{$_.id -eq $file.dataTypeId}
+		$datalist=get-dsmdatalist -dsm $dsm -name $dataType.dsmDataList
+		$claims=$datalist.allocations|where{$_.name -eq (split-path -path $file.path -leaf)}
+		#write-verbose "[get-u2FileClaim] $fileIdentity $claims"
+	}
+	return ,$claims
+}
 
-# #RuinPropertiesTable
-# #Get Ruin Properties record by ruinId or idenity (name)
-# function get-U2ruinProperties
-# {	param
-# 	(	[Parameter(ParameterSetName='identity',Mandatory)]$identity,
-# 		[Parameter(ParameterSetName='ruinid',Mandatory)]$ruinid
-# 	)
-# 	if ($identity) {$ruins=$usas2.ruin|where{$_.identity -like $identity}}
-# 	elseif ($ruinid) {$ruins=$usas2.ruin|where{$_.ruinid -like $ruinid}}
-# 	foreach ($ruin in $ruins)
-# 	{	#$ruin|select tileset,palette,music,name
-# 		if (-not ($tilesetUid=($usas2.tileset|where{$_.identity -eq $ruin.tileset}).id)) {$tilesetUid=-1}
-# 		if (-not ($paletteUid=($usas2.palette|where{$_.identity -eq $ruin.palette}).id)) {$paletteUid=-1}
-# 		if (-not ($musicUid=($usas2.music|where{$_.identity -eq $ruin.music}).id)) {$musicUid=-1}
-# 		[pscustomobject]@{id=[byte]$ruin.ruinid;name=[string]$ruin.name;tileset=[byte]$tilesetUid;palette=[byte]$paletteUid;music=[byte]$musicUid}
-# 	}
-# }
+
+#create a ROM FileIndex from collection of items (like TileSet)
+#20241208
+function new-U2RomFileIndex
+{	param	([Parameter(Mandatory,ValueFromPipeline)]$DSM,$collection
+			)
+
+	$indexNumRec=($collection|measure -Maximum -Property id).maximum + 1
+	$fileIndexPointerTable=[byte[]]::new($indexNumRec*2) #pointers are 2bytes (16bit)
+	$fileIndexPartsTable=[System.Collections.Generic.List[byte]]::new()
+	write-verbose "Index number of entries: $indexNumRec"
+
+	for ($index=0;$index -lt $indexNumRec;$index++)
+	{	#Update the index pointer table by adding the current recordAddress
+		$L=$fileIndexPartsTable.count -band 255
+		$H=$fileIndexPartsTable.count -shr 8
+		$fileIndexPointerTable[$index*2]=$l
+		$fileIndexPointerTable[$index*2+1]=$h
+
+		#Add file claims to the index table, if any
+		$this=$source|where{$_.id -eq $index}
+		$claims=$null;$claims=get-u2FileClaim -dsm $dsm -fileIdentity $this.file
+		$parts=($claims|measure).count
+		# write-verbose "$index $($this.file) has $parts part(s)"
+		$fileIndexPartsTable.add($parts) #write first byte=parts
+		foreach ($claim in $claims)
+		{	#Write part bytes
+			$fileIndexPartsTable.add($claim.block)
+			$fileIndexPartsTable.add($claim.segment)
+			$fileIndexPartsTable.add($claim.length)
+		}
+	}
+
+	#return both the indexPointerTable and PartsTable as one object
+	return [pscustomobject]@{indexPointerTable=$fileIndexPointerTable;indexPartsTable=$fileIndexPartsTable.toarray()}
+}
 
 
 if ($getglobals) {$usas2=get-Usas2Globals -verbose -force}
+if (-not $test) {Exit}
 
- exit
-#test
-$global:usas2=$usas2
+#test:indexes
+# $source=get-U2Tileset -identity .* #object with "id" and "file" properties
+# # $source=$usas2.areasign #object with "id" and "file" properties
+# $fileIndex=new-U2RomFileIndex -DSM $dsm -collection $source
+# $fileindex.indexPointerTable -join (",")
+# $fileIndex.indexPartsTable -join (",")
 
-#update maps with tiledTileset
-
-
-
-
-
-<#
-#RuinPropertiesTable to code
-foreach ($this in (get-U2ruinProperties -identity "karnimata"|sort id))
-{	write "	DB	$($this.tileset),$($this.palette),$($this.music),`"$(($this.name+"             ").substring(0,13))`""
-}
-#>
-
-<#
-#bitmapIndex
-$datalist=$dsm|add-DSMDataList -name BitMapGfx
-$dsm|add-dsmfile -path "..\grapx\tilesheets\KarniMataTiles.sc5" -datalistname bitmapgfx
-#$datalist.allocations|ft
-$BitmapGfxIndex=get-U2TilesetRomIndex -dsm $dsm -Verbose
-$BitmapGfxIndex.indexPointerTable -join(",")
-$BitmapGfxIndex.index -join(",")
-#>
+exit
 
 

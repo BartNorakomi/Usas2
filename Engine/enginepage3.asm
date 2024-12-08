@@ -831,36 +831,22 @@ GetTilesetBitmap:
 		ld	bc,dsm.bitmapGfxindexAdr+dsm.bitmapGfxRecords ;$9000+64
 		add	hl,bc
 ;rm: voorlopig zo, met raw sc5 uitgaande van volledige 32K (als we niet gaan packen laten we dit zo)
-;		LD    A,(HL)          ;pal
-		INC   HL
-;		LD    B,(HL)          ;parts
-		INC   HL
-		LD    A,(HL)          ;block part 1
-		add	a,dsm.firstblock ;temp
+;		LD		B,(HL)          ;parts
+		INC		HL
+		LD		A,(HL)          ;block part 1
+		add		a,dsm.firstblock ;temp
 		Call	block12
-		INC   HL
-;	    LD    D,(HL)          ;seg
-		INC   HL
-;   	 LD    E,0
+		INC		HL
+;	    LD		D,(HL)          ;seg=0 atm
+		INC		HL
+;		LD		E,0
 ;    	SRL   D               ;seglen=128
 ;	    RR    E
+		inc		hl;len
 		LD    A,(HL)          ;block part 2
 		add a,dsm.firstBlock ;temp
 		jp	block34
 
-;        LD    A,(HL)          ;pal
-;        INC   HL
-;        LD    B,(HL)          ;parts
-;        INC   HL
-;GFX.0:  LD    A,(HL)          ;block
-;        INC   HL
-;        LD    D,(HL)          ;seg
-;        INC   HL
-;        LD    E,0
-;        SRL   D               ;seglen=128
-;        RR    E
-;        DJNZ  GFX.0
-;        RET
 
 
 ; Tiles numbering

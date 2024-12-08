@@ -1,14 +1,13 @@
 # Put gfx files into the datalist, and write to the ROM
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
-# 20231207-20241206
-#Invoke-Expression  "dir $($usas2.tiledtileset[4].defaultLocation)$($usas2.tiledtileset[4].imagesourcefile)"
+# 20231207-20241208
+#Invoke-Expression  "dir $($usas2.tiledtileset[4].defaultLocation)\$($usas2.tiledtileset[4].imagesourcefile)"
 
 [CmdletBinding()]
 param
 (	[Parameter(ParameterSetName='ruin')]$ruinId,
-	#[Parameter(ParameterSetName='room')]$roomname,
-	[Parameter(ParameterSetName='file')]$path, #="..\grapx\tilesheets\KarniMata.Tiles.sc5",
+	[Parameter(ParameterSetName='file')]$path,
 	[Parameter(ParameterSetName='test')][switch]$test,
 	$dsmPath, #=".\Usas2.Rom.dsm",
 	$romfile, #="$(resolve-path `"..\Engine\usas2.rom`")", #over rule DSM.filespace.path
@@ -83,9 +82,10 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 
 	#Make index and inject into ROM
 	if ($updateIndex)
-	{	$BitmapGfxIndex=get-U2TilesetRomIndex -dsm $dsm -datalist $datalistname
-		write-verbose ($BitmapGfxIndex.indexPointerTable -join(",")); write-verbose ($BitmapGfxIndex.index -join(","))
-		$data=($BitmapGfxIndex.indexPointerTable+$BitmapGfxIndex.index)
+	{	write-verbose "Updating the ROM index for this collection of files"
+		$fileIndex=new-U2RomFileIndex -DSM $dsm -collection $usas2.tileset
+		write-verbose ($fileIndex.indexPointerTable -join(",")); write-verbose ($fileIndex.indexPartsTable -join(","))
+		$data=($fileIndex.indexPointerTable+$fileIndex.indexPartsTable)
 		$index=$usas2.index|where{$_.identity -eq $datalistName}
 		if ($index)
 		{	#$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
