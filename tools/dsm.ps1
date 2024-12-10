@@ -338,27 +338,55 @@ function add-DSMData
     (	[Parameter(Mandatory,ValueFromPipeline)]$DSM,
         [Parameter(ParameterSetName='ListName',Mandatory)]$dataListName,
         [Parameter(ParameterSetName='ListObject',Mandatory)]$dataList,
-        $name,$part,$data,
+        $name,$part=0,$data,
         [switch]$updateFileSpace #optional
     )
     if (-not $datalist) {$datalist=get-DSMDataList -dsm $dsm -name $datalistname|select -first 1}
-    write-verbose "[add-DSMData] adding $($data.length) bytes"
-    if ($alloc=$DSM|alloc-DSMSpace -lengthBytes $data.length)
-    {	if ($datalist)
-        {	write-verbose "adding '$name' to datalist: $($datalist.name)"
-            $result=$DataList|add-DSMDataListAllocation -name $name -alloc $alloc -part $part
-            write-verbose $result
-        }   
-        if ($updateFileSpace -and $DSM.filespace.stream)
-        {	write-verbose "[add-DSMData] updating file space / block:$($alloc.block) segment:$($alloc.segment) len:$($alloc.length)"
-            $null=$DSM|write-DSMFileSpace -block $alloc.block -segment $alloc.segment -data $data
+
+    if ($DataListAllocation=get-DsmDataListAllocation -dataList $datalist -name $name -part $part)
+    {   write-warning "[add-DSMData] `"$name`" part $part already in datalist `"$($datalist.name)`"" 
+    }   else
+    {   write-verbose "[add-DSMData] adding `"$name`" to datalist `"$($datalist.name)`" with $($data.length) bytes"
+        if ($alloc=$DSM|alloc-DSMSpace -lengthBytes $data.length)
+        {	if ($datalist)
+            {	write-verbose "adding '$name' to datalist `"$($datalist.name)`""
+                $result=$DataList|add-DSMDataListAllocation -name $name -alloc $alloc -part $part
+                write-verbose $result
+            }   
+            if ($updateFileSpace -and $DSM.filespace.stream)
+            {	write-verbose "[add-DSMData] updating file space / block:$($alloc.block) segment:$($alloc.segment) len:$($alloc.length)"
+                $null=$DSM|write-DSMFileSpace -block $alloc.block -segment $alloc.segment -data $data
+            }
+            $alloc
+        } else
+        {	write-warning "Allocation fault"
         }
-        $alloc
-    } else
-    {	write-warning "Allocation fault"
     }
 }
 
+# DATA LIST
+# Remove data entry from a datalist, and free up the allocation
+# 20241209
+function remove-DSMdata
+{   param
+    (	[Parameter(Mandatory,ValueFromPipeline)]$DSM,
+        [Parameter(ParameterSetName='ListName',Mandatory)]$dataListName,
+        [Parameter(ParameterSetName='ListObject')]$dataList,
+        $name,$part=0,$allocation,  #either name or object
+        [switch]$updateFileSpace #optional
+    )
+    if (-not $datalist) {$datalist=get-DSMDataList -dsm $dsm -name $datalistname|select -first 1}
+	if (-not $allocation) {$allocation=get-DsmDataListAllocation -dataList $datalist -name $name}
+    
+    foreach ($this in $allocation) #handle all parts
+    {   if (free-DSMSpace -dsm $dsm -alloc $this)
+        {   write-verbose "[remove-DSMData] Removing Datalist Allocation name:$($this.name), part: $($this.part) / $this"
+            remove-DsmDatalistAllocation -dataList $datalist -allocation $this
+            #don't really need to update the file space
+            #if ($updateFileSpace) {$null=$DSM|write-DSMFileSpace -block $allocation["block"] -segment $allocaction["segment"] -data $data
+        }
+    }
+}
 
 # DATA LIST
 # Add one, or more file(s) to DSM.datalist and optionally update the file space file
@@ -391,14 +419,16 @@ function add-DSMFile
             }
             $fs.close()
         } else
-        {   write-warning "[add-DSMFile] file $($file.name) already in datalist $($datalist.name)" 
+        {   write-warning "[add-DSMFile] file `"$($file.name)`" already in datalist `"$($datalist.name)`"" 
         }
     }
 }
 
 
+
 # DATA LIST
 # Remove a file from the data list, and free up the allocation
+# note: this is virutally the same as remove-DsmData (should be refactored)
 function remove-DSMfile
 {   param
     (	[Parameter(Mandatory,ValueFromPipeline)]$DSM,
@@ -498,9 +528,10 @@ function get-DsmDataListAllocation
 {   [CmdletBinding()]
     param
     (   [Parameter(Mandatory,ValueFromPipeline)]$dataList,
-        [Parameter(Mandatory)]$name="",$part=0
+        [Parameter(Mandatory)]$name="",$part
     )
-    return ($datalist.allocations|where{($_.name -eq $name) -and ($_.part -eq $part)})
+    if ($part) {return ($datalist.allocations|where{($_.name -eq $name) -and ($_.part -eq $part)})}
+    else {return ($datalist.allocations|where{($_.name -eq $name)})}
 }
 
 

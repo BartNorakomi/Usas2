@@ -24,22 +24,42 @@ teamNXTlogoAddress:		equ $8000
 DSM:					equ 0
 .segmentSize:			equ 128
 .blockSize:				equ 16*1024
-.firstBlock:			equ $b7
+.firstBlock:			equ 0xb7
 .numBlocks:				equ 73
 .indexBlock:			equ 0	;offset of firstblock
-.worldMapIndexAdr:		equ $8000
-.worldMapIndexRecLen:	equ 4
-.bitmapGfxindexAdr:		equ $9000
-.bitmapGfxPointersAdr:	equ +0
-.bitmapGfxRecords:		equ +64
+.indexBaseAdr:			equ 0x8000
 
-RoomIndex:				equ	0		;Room index record structure
-.numrec:				EQU 1024
-.reclen: 				EQU 4
-.id:					equ +0
-.block:					equ +1
-.segmentSize:			equ +2
-.data:					equ dsm.worldMapIndexAdr
+worldMapIndex:			equ 0
+.block:					equ dsm.firstblock+dsm.indexblock
+.adr:					equ dsm.indexBaseAdr
+.numRec:				equ 1024
+.recLen:				equ 4
+; worldMapIndexRecord:	equ 0
+; .id:					equ +0
+; .block:					equ +2
+; .segmentSize:			equ +3
+
+dataTypeIndex:			equ 0
+.dsmSegment:			equ 32
+.block:					equ dsm.firstblock+dsm.indexblock
+.Adr:					equ dsm.indexBaseAdr +.dsmSegment*dsm.segmentSize ;worldMapIndex.Adr +worldMapIndex.NumRec *worldMapIndex.RecLen
+.numRec:				equ 32
+.reclen:				equ 2
+
+dataType: EQU 0
+.default: EQU 0
+.Tileset: EQU 1
+.Palette: EQU 2
+.TiledMap: EQU 3
+.Room: EQU 4
+.RoomPacked: EQU 5
+.TiledTileSet: EQU 6
+.TiledTileSetImage: EQU 7
+.ImageSc5: EQU 8
+.ImageBmp: EQU 9
+
+
+
 
 ruinId:					equ 0
 .Polux: EQU 1

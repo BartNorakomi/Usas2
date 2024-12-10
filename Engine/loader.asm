@@ -2378,10 +2378,10 @@ ret
 ;In:	DE=IndexID (D=X,E=Y)
 ;out:	HL=Address(relative, 0-3fff), A=block(relative)
 GetWorldMapRoomLocation:
-		ld    a,Dsm.firstBlock ;+dsm.indexBlock
+		ld    a,worldmapIndex.block
 		call  block34
-        LD    HL,roomindex.data
-        LD    BC,roomindex.reclen-1
+        LD    HL,worldMapIndex.adr
+        LD    BC,worldMapIndex.reclen-1
 GWMR.1: LD    A,D             ;x
         CP    (HL)
         INC   HL

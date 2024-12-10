@@ -3,8 +3,12 @@
 
 [CmdletBinding()]
 param
-(	[switch]$getglobals,[switch]$test
+(	[switch]$getglobals#,[switch]$test
 )
+
+##### Includes #####
+. .\DSM.ps1
+
 
 #20240729
 # #Resolve/convert a path to a new file
@@ -101,9 +105,14 @@ return $usas2
 #Get a file manifest
 function get-U2file
 {	param
-	(	[Parameter(ParameterSetName='identity')]$identity="*",$fileType="*"
+	(	[Parameter(ParameterSetName='identity')]$identity,
+		[Parameter(ParameterSetName='path')]$path,
+		$fileType="*"
 	)
-	$fileManifest=$usas2.file|where{$_.identity -like $identity -and $_.dataTypeId -like $fileType}
+
+	if ($identity) {$fileManifest=$usas2.file|where{$_.identity -like $identity -and $_.dataTypeId -like $fileType}}
+	elseif ($path) {$fileManifest=$usas2.file|where{$_.path -like $path -and $_.dataTypeId -like $fileType}}
+
 	return $fileManifest
 }
 
@@ -272,48 +281,6 @@ function get-U2WorldMapRomIndex
 	return ,$indexRecords #.toarray()
 }
 
-# BITMAP GFX INDEX 20231207
-# return an index with tilesets
-function get-U2TilesetRomIndex
-{	param
-	(	[Parameter(Mandatory,ValueFromPipeline)]$DSM,$datalistName="TileSet"
-	)
-
-	#ROM:tilesetindex
-	$indexManifest=$usas2.index|where{$_.identity -eq "tileset"}
-	$indexNumRec=[uint32]$indexManifest.numrec;$indexRecLen=[uint32]$indexManifest.reclen;$indexSize=$indexNumRec*$indexRecLen;$indexDefaultId=0xff
-	# $indexIdOffset=0;$indexBlockOffset=2;$indexSegmentOffset=3
-
-	$datalist=get-dsmdatalist -dsm $dsm -name $datalistName
-	$indexPointerTable=[byte[]]::new($indexSize)
-	$indexRecords=[System.Collections.Generic.List[byte]]::new()
-	[byte[]]$emptyIndexRecord=0,0
-
-	#in: $dsm.datalist object, fileIndexPointerTable array, fileIndexPartsTable array, tileset object array, numRec 
-	for ($index=0;$index -lt $indexNumRec;$index++)
-	{	$L=$indexRecords.count -band 255
-		$H=$indexRecords.count -shr 8
-		$indexPointerTable[$index*2]=$l
-		$indexPointerTable[$index*2+1]=$h
-		$tileset=get-u2TileSet -id $index
-		$sc5File=(get-u2File -identity $tileset.file).path
-		if ($sc5File)
-		{	$claims=$datalist.allocations|where{$_.name -eq (split-path -path $sc5file -leaf)}|sort part
-			$parts=$claims.count
-			write-verbose "[get-U2TilesetRomIndex] $($tileset.identity), index:$index, $($tileset.file)=$sc5file, Parts: $parts"
-			$indexRecords.add(0)	#palette
-			$indexRecords.add($parts)	#parts
-			foreach ($claim in $claims)
-			{	write-verbose "[get-U2TilesetRomIndex] Block: $($claim.block), segment:$($claim.segment)"
-				$indexRecords.add($claim.block)
-				$indexRecords.add($claim.segment)
-			}
-		} else
-		{	$indexRecords.AddRange($emptyIndexRecord)			
-		}
-	}
-	return [pscustomobject]@{indexPointerTable=$indexPointerTable;index=$indexRecords.toarray()}
-}
 
 #Return the file claims for a given file
 #20241208
@@ -342,17 +309,16 @@ function new-U2RomFileIndex
 	write-verbose "Index number of entries: $indexNumRec"
 
 	for ($index=0;$index -lt $indexNumRec;$index++)
-	{	#Update the index pointer table by adding the current recordAddress
-		$L=$fileIndexPartsTable.count -band 255
-		$H=$fileIndexPartsTable.count -shr 8
-		$fileIndexPointerTable[$index*2]=$l
-		$fileIndexPointerTable[$index*2+1]=$h
+	{	#Update the index pointer table by adding the current recordAddress+pointerTableLength(=offset to data)
+		$pointer=$fileIndexPointerTable.Length+$fileIndexPartsTable.count
+		$fileIndexPointerTable[$index*2]=$pointer -band 255	#L
+		$fileIndexPointerTable[$index*2+1]=$pointer -shr 8	#H
 
 		#Add file claims to the index table, if any
-		$this=$source|where{$_.id -eq $index}
+		$this=$collection|where{$_.id -eq $index}
 		$claims=$null;$claims=get-u2FileClaim -dsm $dsm -fileIdentity $this.file
 		$parts=($claims|measure).count
-		# write-verbose "$index $($this.file) has $parts part(s)"
+		write-verbose "$index $($this.file) has $parts part(s) / index $h$l"
 		$fileIndexPartsTable.add($parts) #write first byte=parts
 		foreach ($claim in $claims)
 		{	#Write part bytes
@@ -361,22 +327,54 @@ function new-U2RomFileIndex
 			$fileIndexPartsTable.add($claim.length)
 		}
 	}
-
-	#return both the indexPointerTable and PartsTable as one object
+	
 	return [pscustomobject]@{indexPointerTable=$fileIndexPointerTable;indexPartsTable=$fileIndexPartsTable.toarray()}
+}
+
+#return the MasterIndexArray for other indexes (2bytes per record, 32 records)
+function new-u2RomMasterFileIndex
+{	$collection=$usas2.datatype
+	$indexNumRec=($collection|measure -Maximum -Property id).maximum + 1
+	$wordTable=[byte[]]::new($indexNumRec*2)
+	for ($index=0;$index -lt $indexNumRec;$index++)
+	{	
+		$dataType=$collection|where{$_.id -eq $index}
+		if (-not ($alloc=get-DsmDataListAllocation -dataList $datalist -name $datatype.identity))
+		{	$alloc=[pscustomobject]@{block=0;segment=0;}
+		}
+		$wordTable[$index*2]=$alloc.block
+		$wordTable[$index*2+1]=$alloc.segment
+	}
+	return ,$wordtable
 }
 
 
 if ($getglobals) {$usas2=get-Usas2Globals -verbose -force}
+exit
 if (-not $test) {Exit}
 
 #test:indexes
-# $source=get-U2Tileset -identity .* #object with "id" and "file" properties
-# # $source=$usas2.areasign #object with "id" and "file" properties
-# $fileIndex=new-U2RomFileIndex -DSM $dsm -collection $source
-# $fileindex.indexPointerTable -join (",")
-# $fileIndex.indexPartsTable -join (",")
+$datalistName="index"
+$datalist=add-DSMDataList -dsm $dsm -name $datalistname
 
+$collectionName="tileset"
+# $collectionName="areasign"
+$fileIndex=new-U2RomFileIndex -DSM $dsm -collection $usas2.$collectionName
+# $global:fileindex=$fileindex
+# write-verbose ($fileindex.indexPointerTable -join(","));
+# write-verbose ($fileindex.indexPartsTable -join(","));
+$data=$fileindex.indexPointerTable+$fileindex.indexPartsTable
+write-verbose ($data -join(","));
 exit
+# $data -join (",")
+# #replace existing allocation and datalist record
+remove-dsmdata -dsm $dsm -datalist $datalist -name $collectionName
+$alloc=add-DSMData -dsm $dsm -dataList $datalist -name $collectionName -part 0 -data $data
+
+$masterIndex=new-u2RomMasterFileIndex
+$masterIndex -join(",")
+
+
+	exit
 
 

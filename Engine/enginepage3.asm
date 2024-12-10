@@ -816,35 +816,48 @@ ret
 
 
 ;Get GFX location, and set blocks at page 1,2
-GetTilesetBitmap: 
-		LD	BC,dsm.bitmapGfxindexAdr	; $9000 		;start of the gfx index (temp)
-        LD	L,A
-        LD	H,0
-        ADD	HL,HL
-        ADD	HL,BC
-		LD A,dsm.firstblock+dsm.indexblock 		;indexblock (temp)
-		call block34							;map it to p2
-        LD	A,(HL)
-        INC	HL
-        LD	H,(HL)
-        LD	L,A
-		ld	bc,dsm.bitmapGfxindexAdr+dsm.bitmapGfxRecords ;$9000+64
-		add	hl,bc
+;in: A=ruinId
+GetTilesetBitmap:
+		ld		c,a
+		ld		A,dataTypeIndex.block
+		call	block34							;map it to p2
+		ld		hl,dataType.Tileset *dataTypeIndex.reclen +dataTypeIndex.Adr
+		ld		a,(hl)		;dataTypeIndexRecord.DsmBlock
+		inc		hl
+		ld		d,(hl)		;dataTypeIndexRecord.DsmSegment
+		add		a,dsm.firstblock
+		call	block34
+		LD		E,0
+    	SRL		D			;seglen=128
+	    RR		E
+		ld		hl,0x8000
+		add		hl,de
+
+		push	hl
+		ld		b,0
+		add		hl,bc
+		add		hl,bc
+		ld		c,(hl)		;offset in partsTable
+		inc		hl
+		ld		b,(hl)
+		pop		hl
+		add		hl,bc
+
 ;rm: voorlopig zo, met raw sc5 uitgaande van volledige 32K (als we niet gaan packen laten we dit zo)
 ;		LD		B,(HL)          ;parts
 		INC		HL
-		LD		A,(HL)          ;block part 1
+		LD		A,(HL)          ;DsmBlock part 1
+		INC		HL
 		add		a,dsm.firstblock ;temp
 		Call	block12
-		INC		HL
 ;	    LD		D,(HL)          ;seg=0 atm
 		INC		HL
 ;		LD		E,0
 ;    	SRL   D               ;seglen=128
 ;	    RR    E
-		inc		hl;len
-		LD    A,(HL)          ;block part 2
-		add a,dsm.firstBlock ;temp
+		inc hl ;len
+		LD		A,(HL)          ;DsmBlock part 2
+		add		a,dsm.firstBlock
 		jp	block34
 
 

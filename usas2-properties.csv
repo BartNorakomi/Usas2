@@ -1,16 +1,65 @@
 Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Description	Comment	EQU	DS
-1	Usas2		dataType	default	id	0					
-1	Usas2		dataType	Tileset	id	1					
-1	Usas2		dataType	Palette	id	2					
-1	Usas2		dataType	TiledMap	id	3					
-1	Usas2		dataType	Room	id	4					
-1	Usas2		dataType	RoomPacked	id	5					
-1	Usas2		dataType	TiledTileSet	id	6					
-1	Usas2		dataType	TiledTileSetImage	id	7					
-1	Usas2		dataType	ImageSc5	id	8					
-1	Usas2		dataType	ImageBmp	id	9					
+1	Usas2		areaSign	Pollux	file	01-hub.sc5.pck					
+1	Usas2		areaSign	Lemniscate	file	02-Lemniscate.sc5.pck					
+1	Usas2		areaSign	WorldForest	file	03-Forest.sc5.pck					
+1	Usas2		areaSign	Pegu	file	04-Pegu.sc5.pck					
+1	Usas2		areaSign	Shalabha	file	05-Shalabha.sc5.pck					
+1	Usas2		areaSign	KarniMata	file	06-Karni Mata.sc5.pck					
+1	Usas2		areaSign	Konark	file	07-Konark.sc5.pck					
+1	Usas2		areaSign	Ashoka	file	08-Ashoka.sc5.pck					
+1	Usas2		areaSign	Taxila	file	09-Taxila.sc5.pck					
+1	Usas2		areaSign	EuderusSet	file	10-Euderus Set.sc5.pck					
+1	Usas2		areaSign	Akna	file	11-Akna.sc5.pck					
+1	Usas2		areaSign	Fate	file	12-Fate.sc5.pck					
+1	Usas2		areaSign	Sepa	file	13-Sepa.sc5.pck					
+1	Usas2		areaSign	Chi	file	15-Chi.sc5.pck					
+1	Usas2		areaSign	Sui	file	16-Sui.sc5.pck					
+1	Usas2		areaSign	Vala	file	17-Vala.sc5.pck					
+1	Usas2		areaSign	Tiwanaku	file	18-Tiwanaku.sc5.pck					
+1	Usas2		areaSign	Aggayu	file	19-Aggayu.sc5.pck					
+1	Usas2		areaSign	Ka	file	20-Ka.sc5.pck					
+1	Usas2		areaSign	Genbu	file	21-Genbu.sc5.pck					
+1	Usas2		areaSign	Fuu	file	22-Fuu.sc5.pck					
+1	Usas2		areaSign	Indra	file	23-Indra.sc5.pck					
+1	Usas2		areaSign	Morana	file	24-Morana.sc5.pck					
+1	Usas2		areaSign	Pollux	id	1					
+1	Usas2		areaSign	Lemniscate	id	2					
+1	Usas2		areaSign	WorldForest	id	3					
+1	Usas2		areaSign	Pegu	id	4					
+1	Usas2		areaSign	Shalabha	id	5					
+1	Usas2		areaSign	KarniMata	id	6					
+1	Usas2		areaSign	Konark	id	7					
+1	Usas2		areaSign	Ashoka	id	8					
+1	Usas2		areaSign	Taxila	id	9					
+1	Usas2		areaSign	EuderusSet	id	10					
+1	Usas2		areaSign	Akna	id	11					
+1	Usas2		areaSign	Fate	id	12					
+1	Usas2		areaSign	Sepa	id	13					
+1	Usas2		areaSign	WorldRoots	id	14					
+1	Usas2		areaSign	Chi	id	15					
+1	Usas2		areaSign	Sui	id	16					
+1	Usas2		areaSign	Vala	id	17					
+1	Usas2		areaSign	Tiwanaku	id	18					
+1	Usas2		areaSign	Aggayu	id	19					
+1	Usas2		areaSign	Ka	id	20					
+1	Usas2		areaSign	Genbu	id	21					
+1	Usas2		areaSign	Fuu	id	22					
+1	Usas2		areaSign	Indra	id	23					
+1	Usas2		areaSign	Morana	id	24					
 1	Usas2		dataType	Tileset	DsmDataList	tileset					
 1	Usas2		dataType	RoomPacked	DsmDataList	worldmap					
+1	Usas2		dataType	areaSignPacked	DsmDataList	areaSign					
+1	Usas2		dataType	default	id	0				.default: EQU 0	
+1	Usas2		dataType	Tileset	id	1				.Tileset: EQU 1	
+1	Usas2		dataType	Palette	id	2				.Palette: EQU 2	
+1	Usas2		dataType	TiledMap	id	3				.TiledMap: EQU 3	
+1	Usas2		dataType	Room	id	4				.Room: EQU 4	
+1	Usas2		dataType	RoomPacked	id	5				.RoomPacked: EQU 5	
+1	Usas2		dataType	TiledTileSet	id	6				.TiledTileSet: EQU 6	
+1	Usas2		dataType	TiledTileSetImage	id	7				.TiledTileSetImage: EQU 7	
+1	Usas2		dataType	ImageSc5	id	8				.ImageSc5: EQU 8	
+1	Usas2		dataType	ImageBmp	id	9				.ImageBmp: EQU 9	
+1	Usas2		dataType	areaSignPacked	id	10				.areaSignPacked: EQU 10	
 1	Usas2		DSM	usas2	blockExclusion	0		Excluded blocks (array)		DSM.blockExclusion: EQU 0	
 1	Usas2		DSM	usas2	blocksize	16384		One block is 16KB		DSM.blocksize: EQU 16384	
 1	Usas2		DSM	usas2	numBlocks	73		Explicit number of blocks for DSM		DSM.numBlocks: EQU 73	
@@ -27,81 +76,119 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		DsmDatalist	Worldmap	IndexBlock	0					
 1	Usas2		DsmDatalist	Worldmap	IndexSegment	0					
 1	Usas2		DsmDatalist	Worldmap	name	Worldmap					
-1	Usas2		file	akna.tiles.bmp	dataTypeId	7					
-1	Usas2		file	akna.tiles.bmp	path	..\grapx\tilesheets\akna.tiles.bmp					
-1	Usas2		file	akna.tiles.pl	dataTypeId	2					
-1	Usas2		file	akna.tiles.pl	path	..\grapx\tilesheets\akna.tiles.pl					
 1	Usas2		file	akna.tiles.sc5	dataTypeId	1					
-1	Usas2		file	akna.tiles.sc5	path	..\grapx\tilesheets\akna.tiles.sc5					
-1	Usas2		file	akna.tiles.sc5	compress	no					
-1	Usas2		file	KarniMata.tiles.bmp	dataTypeId	7					
-1	Usas2		file	KarniMata.tiles.bmp	path	..\grapx\tilesheets\KarniMata.tiles.bmp					
-1	Usas2		file	KarniMata.tiles.pl	dataTypeId	2					
-1	Usas2		file	KarniMata.tiles.pl	path	..\grapx\tilesheets\KarniMata.tiles.pl					
 1	Usas2		file	KarniMata.tiles.sc5	dataTypeId	1					
-1	Usas2		file	KarniMata.tiles.sc5	path	..\grapx\tilesheets\KarniMata.tiles.sc5					
-1	Usas2		file	Konark.tiles.bmp	dataTypeId	7					
-1	Usas2		file	Konark.tiles.bmp	path	..\grapx\tilesheets\Konark.tiles.bmp					
-1	Usas2		file	Konark.tiles.pl	dataTypeId	2					
-1	Usas2		file	Konark.tiles.pl	path	..\grapx\tilesheets\Konark.tiles.pl					
 1	Usas2		file	Konark.tiles.sc5	dataTypeId	1					
-1	Usas2		file	Konark.tiles.sc5	path	..\grapx\tilesheets\Konark.tiles.sc5					
-1	Usas2		file	Lemniscate.tiles.bmp	dataTypeId	7					
-1	Usas2		file	Lemniscate.tiles.bmp	path	..\grapx\tilesheets\Lemniscate.tiles.bmp					
-1	Usas2		file	Lemniscate.tiles.pl	dataTypeId	2					
-1	Usas2		file	Lemniscate.tiles.pl	path	..\grapx\tilesheets\Lemniscate.tiles.pl					
 1	Usas2		file	Lemniscate.tiles.sc5	dataTypeId	1					
-1	Usas2		file	Lemniscate.tiles.sc5	path	..\grapx\tilesheets\Lemniscate.tiles.sc5					
-1	Usas2		file	Pegu.tiles.bmp	dataTypeId	7					
-1	Usas2		file	Pegu.tiles.bmp	path	..\grapx\tilesheets\Pegu.tiles.bmp					
-1	Usas2		file	Pegu.tiles.pl	dataTypeId	2					
-1	Usas2		file	Pegu.tiles.pl	path	..\grapx\tilesheets\Pegu.tiles.pl					
 1	Usas2		file	Pegu.tiles.sc5	dataTypeId	1					
-1	Usas2		file	Pegu.tiles.sc5	path	..\grapx\tilesheets\Pegu.tiles.sc5					
-1	Usas2		file	pollux.tiles.bmp	dataTypeId	7					
-1	Usas2		file	pollux.tiles.bmp	path	..\grapx\tilesheets\pollux.tiles.bmp					
-1	Usas2		file	pollux.tiles.pl	dataTypeId	2					
-1	Usas2		file	pollux.tiles.pl	path	..\grapx\tilesheets\pollux.tiles.pl					
 1	Usas2		file	pollux.tiles.sc5	dataTypeId	1					
-1	Usas2		file	pollux.tiles.sc5	path	..\grapx\tilesheets\pollux.tiles.sc5					
-1	Usas2		file	taxila.tiles.bmp	dataTypeId	7					
-1	Usas2		file	taxila.tiles.bmp	path	..\grapx\tilesheets\taxila.tiles.bmp					
-1	Usas2		file	taxila.tiles.pl	dataTypeId	2					
-1	Usas2		file	taxila.tiles.pl	path	..\grapx\tilesheets\taxila.tiles.pl					
 1	Usas2		file	taxila.tiles.sc5	dataTypeId	1					
-1	Usas2		file	taxila.tiles.sc5	path	..\grapx\tilesheets\taxila.tiles.sc5					
-1	Usas2		file	Teleport.tiles.bmp	dataTypeId	7					
-1	Usas2		file	Teleport.tiles.bmp	path	..\grapx\tilesheets\Teleport.tiles.bmp					
-1	Usas2		file	Teleport.tiles.pl	dataTypeId	2					
-1	Usas2		file	Teleport.tiles.pl	path	..\grapx\tilesheets\Teleport.tiles.pl					
 1	Usas2		file	Teleport.tiles.sc5	dataTypeId	1					
-1	Usas2		file	Teleport.tiles.sc5	path	..\grapx\tilesheets\Teleport.tiles.sc5					
-1	Usas2		file	WorldForest.tiles.bmp	dataTypeId	7					
-1	Usas2		file	WorldForest.tiles.bmp	path	..\grapx\tilesheets\WorldForest.tiles.bmp					
-1	Usas2		file	WorldForest.tiles.pl	dataTypeId	2					
-1	Usas2		file	WorldForest.tiles.pl	path	..\grapx\tilesheets\WorldForest.tiles.pl					
 1	Usas2		file	WorldForest.tiles.sc5	dataTypeId	1					
-1	Usas2		file	WorldForest.tiles.sc5	path	..\grapx\tilesheets\WorldForest.tiles.sc5					
-1	Usas2		file	Worldmap.bmp	dataTypeId	9					
-1	Usas2		file	Worldmap.bmp	path	..\grapx\f2menu\worldmap.bmp					
-1	Usas2		file	Worldmap.pl	dataTypeId	2					
-1	Usas2		file	Worldmap.pl	path	..\grapx\f2menu\worldmap.pl					
-1	Usas2		file	Worldmap.sc5	dataTypeId	8					
-1	Usas2		file	Worldmap.sc5	path	..\grapx\f2menu\worldmap.sc5					
-1	Usas2		file	WorldRoots.tiles.bmp	dataTypeId	7					
-1	Usas2		file	WorldRoots.tiles.bmp	path	..\grapx\tilesheets\WorldRoots.tiles.bmp					
-1	Usas2		file	WorldRoots.tiles.pl	dataTypeId	2					
-1	Usas2		file	WorldRoots.tiles.pl	path	..\grapx\tilesheets\WorldRoots.tiles.pl					
 1	Usas2		file	WorldRoots.tiles.sc5	dataTypeId	1					
+1	Usas2		file	akna.tiles.pl	dataTypeId	2					
+1	Usas2		file	KarniMata.tiles.pl	dataTypeId	2					
+1	Usas2		file	Konark.tiles.pl	dataTypeId	2					
+1	Usas2		file	Lemniscate.tiles.pl	dataTypeId	2					
+1	Usas2		file	Pegu.tiles.pl	dataTypeId	2					
+1	Usas2		file	pollux.tiles.pl	dataTypeId	2					
+1	Usas2		file	taxila.tiles.pl	dataTypeId	2					
+1	Usas2		file	Teleport.tiles.pl	dataTypeId	2					
+1	Usas2		file	WorldForest.tiles.pl	dataTypeId	2					
+1	Usas2		file	Worldmap.pl	dataTypeId	2					
+1	Usas2		file	WorldRoots.tiles.pl	dataTypeId	2					
+1	Usas2		file	akna.tiles.bmp	dataTypeId	7					
+1	Usas2		file	KarniMata.tiles.bmp	dataTypeId	7					
+1	Usas2		file	Konark.tiles.bmp	dataTypeId	7					
+1	Usas2		file	Lemniscate.tiles.bmp	dataTypeId	7					
+1	Usas2		file	Pegu.tiles.bmp	dataTypeId	7					
+1	Usas2		file	pollux.tiles.bmp	dataTypeId	7					
+1	Usas2		file	taxila.tiles.bmp	dataTypeId	7					
+1	Usas2		file	Teleport.tiles.bmp	dataTypeId	7					
+1	Usas2		file	WorldForest.tiles.bmp	dataTypeId	7					
+1	Usas2		file	WorldRoots.tiles.bmp	dataTypeId	7					
+1	Usas2		file	Worldmap.sc5	dataTypeId	8					
+1	Usas2		file	Worldmap.bmp	dataTypeId	9					
+1	Usas2		file	01-hub.sc5.pck	dataTypeId	10					
+1	Usas2		file	02-Lemniscate.sc5.pck	dataTypeId	10					
+1	Usas2		file	03-Forest.sc5.pck	dataTypeId	10					
+1	Usas2		file	04-Pegu.sc5.pck	dataTypeId	10					
+1	Usas2		file	05-Shalabha.sc5.pck	dataTypeId	10					
+1	Usas2		file	06-Karni Mata.sc5.pck	dataTypeId	10					
+1	Usas2		file	07-Konark.sc5.pck	dataTypeId	10					
+1	Usas2		file	08-Ashoka.sc5.pck	dataTypeId	10					
+1	Usas2		file	09-Taxila.sc5.pck	dataTypeId	10					
+1	Usas2		file	10-Euderus Set.sc5.pck	dataTypeId	10					
+1	Usas2		file	11-Akna.sc5.pck	dataTypeId	10					
+1	Usas2		file	12-Fate.sc5.pck	dataTypeId	10					
+1	Usas2		file	13-Sepa.sc5.pck	dataTypeId	10					
+1	Usas2		file	15-Chi.sc5.pck	dataTypeId	10					
+1	Usas2		file	16-Sui.sc5.pck	dataTypeId	10					
+1	Usas2		file	17-Vala.sc5.pck	dataTypeId	10					
+1	Usas2		file	18-Tiwanaku.sc5.pck	dataTypeId	10					
+1	Usas2		file	19-Aggayu.sc5.pck	dataTypeId	10					
+1	Usas2		file	20-Ka.sc5.pck	dataTypeId	10					
+1	Usas2		file	21-Genbu.sc5.pck	dataTypeId	10					
+1	Usas2		file	22-Fuu.sc5.pck	dataTypeId	10					
+1	Usas2		file	23-Indra.sc5.pck	dataTypeId	10					
+1	Usas2		file	24-Morana.sc5.pck	dataTypeId	10					
+1	Usas2		file	Worldmap.bmp	path	..\grapx\f2menu\worldmap.bmp					
+1	Usas2		file	Worldmap.pl	path	..\grapx\f2menu\worldmap.pl					
+1	Usas2		file	Worldmap.sc5	path	..\grapx\f2menu\worldmap.sc5					
+1	Usas2		file	01-hub.sc5.pck	path	..\grapx\areasigns\01-hub.sc5.pck					
+1	Usas2		file	02-Lemniscate.sc5.pck	path	..\grapx\areasigns\02-Lemniscate.sc5.pck					
+1	Usas2		file	03-Forest.sc5.pck	path	..\grapx\areasigns\03-Forest.sc5.pck					
+1	Usas2		file	04-Pegu.sc5.pck	path	..\grapx\areasigns\04-Pegu.sc5.pck					
+1	Usas2		file	05-Shalabha.sc5.pck	path	..\grapx\areasigns\05-Shalabha.sc5.pck					
+1	Usas2		file	06-Karni Mata.sc5.pck	path	..\grapx\areasigns\06-Karni Mata.sc5.pck					
+1	Usas2		file	07-Konark.sc5.pck	path	..\grapx\areasigns\07-Konark.sc5.pck					
+1	Usas2		file	08-Ashoka.sc5.pck	path	..\grapx\areasigns\08-Ashoka.sc5.pck					
+1	Usas2		file	09-Taxila.sc5.pck	path	..\grapx\areasigns\09-Taxila.sc5.pck					
+1	Usas2		file	10-Euderus Set.sc5.pck	path	..\grapx\areasigns\10-Euderus Set.sc5.pck					
+1	Usas2		file	11-Akna.sc5.pck	path	..\grapx\areasigns\11-Akna.sc5.pck					
+1	Usas2		file	12-Fate.sc5.pck	path	..\grapx\areasigns\12-Fate.sc5.pck					
+1	Usas2		file	13-Sepa.sc5.pck	path	..\grapx\areasigns\13-Sepa.sc5.pck					
+1	Usas2		file	15-Chi.sc5.pck	path	..\grapx\areasigns\15-Chi.sc5.pck					
+1	Usas2		file	16-Sui.sc5.pck	path	..\grapx\areasigns\16-Sui.sc5.pck					
+1	Usas2		file	17-Vala.sc5.pck	path	..\grapx\areasigns\17-Vala.sc5.pck					
+1	Usas2		file	18-Tiwanaku.sc5.pck	path	..\grapx\areasigns\18-Tiwanaku.sc5.pck					
+1	Usas2		file	19-Aggayu.sc5.pck	path	..\grapx\areasigns\19-Aggayu.sc5.pck					
+1	Usas2		file	20-Ka.sc5.pck	path	..\grapx\areasigns\20-Ka.sc5.pck					
+1	Usas2		file	21-Genbu.sc5.pck	path	..\grapx\areasigns\21-Genbu.sc5.pck					
+1	Usas2		file	22-Fuu.sc5.pck	path	..\grapx\areasigns\22-Fuu.sc5.pck					
+1	Usas2		file	23-Indra.sc5.pck	path	..\grapx\areasigns\23-Indra.sc5.pck					
+1	Usas2		file	24-Morana.sc5.pck	path	..\grapx\areasigns\24-Morana.sc5.pck					
+1	Usas2		file	akna.tiles.bmp	path	..\grapx\tilesheets\akna.tiles.bmp					
+1	Usas2		file	akna.tiles.pl	path	..\grapx\tilesheets\akna.tiles.pl					
+1	Usas2		file	akna.tiles.sc5	path	..\grapx\tilesheets\akna.tiles.sc5					
+1	Usas2		file	KarniMata.tiles.bmp	path	..\grapx\tilesheets\KarniMata.tiles.bmp					
+1	Usas2		file	KarniMata.tiles.pl	path	..\grapx\tilesheets\KarniMata.tiles.pl					
+1	Usas2		file	KarniMata.tiles.sc5	path	..\grapx\tilesheets\KarniMata.tiles.sc5					
+1	Usas2		file	Konark.tiles.bmp	path	..\grapx\tilesheets\Konark.tiles.bmp					
+1	Usas2		file	Konark.tiles.pl	path	..\grapx\tilesheets\Konark.tiles.pl					
+1	Usas2		file	Konark.tiles.sc5	path	..\grapx\tilesheets\Konark.tiles.sc5					
+1	Usas2		file	Lemniscate.tiles.bmp	path	..\grapx\tilesheets\Lemniscate.tiles.bmp					
+1	Usas2		file	Lemniscate.tiles.pl	path	..\grapx\tilesheets\Lemniscate.tiles.pl					
+1	Usas2		file	Lemniscate.tiles.sc5	path	..\grapx\tilesheets\Lemniscate.tiles.sc5					
+1	Usas2		file	Pegu.tiles.bmp	path	..\grapx\tilesheets\Pegu.tiles.bmp					
+1	Usas2		file	Pegu.tiles.pl	path	..\grapx\tilesheets\Pegu.tiles.pl					
+1	Usas2		file	Pegu.tiles.sc5	path	..\grapx\tilesheets\Pegu.tiles.sc5					
+1	Usas2		file	pollux.tiles.bmp	path	..\grapx\tilesheets\pollux.tiles.bmp					
+1	Usas2		file	pollux.tiles.pl	path	..\grapx\tilesheets\pollux.tiles.pl					
+1	Usas2		file	pollux.tiles.sc5	path	..\grapx\tilesheets\pollux.tiles.sc5					
+1	Usas2		file	taxila.tiles.bmp	path	..\grapx\tilesheets\taxila.tiles.bmp					
+1	Usas2		file	taxila.tiles.pl	path	..\grapx\tilesheets\taxila.tiles.pl					
+1	Usas2		file	taxila.tiles.sc5	path	..\grapx\tilesheets\taxila.tiles.sc5					
+1	Usas2		file	Teleport.tiles.bmp	path	..\grapx\tilesheets\Teleport.tiles.bmp					
+1	Usas2		file	Teleport.tiles.pl	path	..\grapx\tilesheets\Teleport.tiles.pl					
+1	Usas2		file	Teleport.tiles.sc5	path	..\grapx\tilesheets\Teleport.tiles.sc5					
+1	Usas2		file	WorldForest.tiles.bmp	path	..\grapx\tilesheets\WorldForest.tiles.bmp					
+1	Usas2		file	WorldForest.tiles.pl	path	..\grapx\tilesheets\WorldForest.tiles.pl					
+1	Usas2		file	WorldForest.tiles.sc5	path	..\grapx\tilesheets\WorldForest.tiles.sc5					
+1	Usas2		file	WorldRoots.tiles.bmp	path	..\grapx\tilesheets\WorldRoots.tiles.bmp					
+1	Usas2		file	WorldRoots.tiles.pl	path	..\grapx\tilesheets\WorldRoots.tiles.pl					
 1	Usas2		file	WorldRoots.tiles.sc5	path	..\grapx\tilesheets\WorldRoots.tiles.sc5					
-1	Usas2		Index	GfxIndexPointer	numrec	32	attribute	Number of records in the table		IndexGfxIndexPointer.numrec: EQU 32	
-1	Usas2		Index	GfxIndexPointer	reclen	2	attribute	The length of one record		IndexGfxIndexPointer.reclen: EQU 2	
-1	Usas2		Index	GfxIndexTable	block	2	property	Offset of property "block" in the table		IndexGfxIndexTable.block: EQU 2	
-1	Usas2		Index	GfxIndexTable	numrec	4	attribute	Number of records in the table		IndexGfxIndexTable.numrec: EQU 4	
-1	Usas2		Index	GfxIndexTable	palette	0	property	Offset of property "palette" in the table		IndexGfxIndexTable.palette: EQU 0	
-1	Usas2		Index	GfxIndexTable	parts	1	property	Offset of property "parts" in the table		IndexGfxIndexTable.parts: EQU 1	
-1	Usas2		Index	GfxIndexTable	reclen	-1	attribute	The length of one record		IndexGfxIndexTable.reclen: EQU -1	
-1	Usas2		Index	GfxIndexTable	segmentSize	3	property	Offset of property "segmentSize" in the table		IndexGfxIndexTable.segmentSize: EQU 3	
+1	Usas2		file	akna.tiles.sc5	compress	no					
 1	Usas2		Index	Rooms	numrec	1024	attribute	Number of records in the table		IndexRooms.numrec: EQU 1024	
 1	Usas2		Index	Rooms	reclen	4	attribute	The length of one record		IndexRooms.reclen: EQU 4	
 1	Usas2		Index	Rooms	DsmBlock	0	attribute	DSM block number for this index (reserved)		IndexRooms.DsmBlock: EQU 0	
@@ -110,6 +197,14 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Index	TileSet	reclen	2	attribute	The length of one record		IndexTileSet.reclen: EQU 2	
 1	Usas2		Index	TileSet	DsmBlock	0	attribute	DSM block number for this index (reserved)		IndexTileSet.DsmBlock: EQU 0	
 1	Usas2		Index	TileSet	DsmSegment	32	attribute	DSM blocksegment number for this index (reserved)		IndexTileSet.DsmSegment: EQU 32	
+1	Usas2		Index	AreaSign	numrec	32	attribute	Number of records in the table		IndexAreaSign.numrec: EQU 32	
+1	Usas2		Index	AreaSign	reclen	2	attribute	The length of one record		IndexAreaSign.reclen: EQU 2	
+1	Usas2		Index	AreaSign	DsmBlock	0	attribute	DSM block number for this index (reserved)		IndexAreaSign.DsmBlock: EQU 0	
+1	Usas2		Index	AreaSign	DsmSegment	35	attribute	DSM blocksegment number for this index (reserved)		IndexAreaSign.DsmSegment: EQU 35	
+1	Usas2		Index	master	numrec	32	attribute	Number of records in the table		Indexmaster.numrec: EQU 32	
+1	Usas2		Index	master	reclen	2	attribute	The length of one record		Indexmaster.reclen: EQU 2	
+1	Usas2		Index	master	DsmBlock	0	attribute	DSM block number for this index (reserved)		Indexmaster.DsmBlock: EQU 0	
+1	Usas2		Index	master	DsmSegment	32	attribute	DSM blocksegment number for this index (reserved)		Indexmaster.DsmSegment: EQU 32	
 1	Usas2		music	KarniMata	file	KarniMata.vgm					
 1	Usas2		music	KarniMata	id	3					
 1	Usas2		music	Konark	file	Konark.vgm					
@@ -588,98 +683,3 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Tileset	WorldForest	paletteSourceFile	WorldForest.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		Tileset	WorldRoots	paletteSourceFile	WorldRoots.Tiles.pl		Tileset palette file	32byte file used for BMP conversion		
 1	Usas2		WorldMap	global	SourceFile	Usas2-WorldMap.csv					
-1	Usas2		dataType	areaSign	id	10					
-1	Usas2		dataType	areaSign	DsmDataList	areaSign					
-1	Usas2		areaSign	Pollux	file	01-hub.sc5.pck					
-1	Usas2		areaSign	Lemniscate	file	02-Lemniscate.sc5.pck					
-1	Usas2		areaSign	WorldForest	file	03-Forest.sc5.pck					
-1	Usas2		areaSign	Pegu	file	04-Pegu.sc5.pck					
-1	Usas2		areaSign	Shalabha	file	05-Shalabha.sc5.pck					
-1	Usas2		areaSign	KarniMata	file	06-Karni Mata.sc5.pck					
-1	Usas2		areaSign	Konark	file	07-Konark.sc5.pck					
-1	Usas2		areaSign	Ashoka	file	08-Ashoka.sc5.pck					
-1	Usas2		areaSign	Taxila	file	09-Taxila.sc5.pck					
-1	Usas2		areaSign	EuderusSet	file	10-Euderus Set.sc5.pck					
-1	Usas2		areaSign	Akna	file	11-Akna.sc5.pck					
-1	Usas2		areaSign	Fate	file	12-Fate.sc5.pck					
-1	Usas2		areaSign	Sepa	file	13-Sepa.sc5.pck					
-1	Usas2		areaSign	Chi	file	15-Chi.sc5.pck					
-1	Usas2		areaSign	Sui	file	16-Sui.sc5.pck					
-1	Usas2		areaSign	Vala	file	17-Vala.sc5.pck					
-1	Usas2		areaSign	Tiwanaku	file	18-Tiwanaku.sc5.pck					
-1	Usas2		areaSign	Aggayu	file	19-Aggayu.sc5.pck					
-1	Usas2		areaSign	Ka	file	20-Ka.sc5.pck					
-1	Usas2		areaSign	Genbu	file	21-Genbu.sc5.pck					
-1	Usas2		areaSign	Fuu	file	22-Fuu.sc5.pck					
-1	Usas2		areaSign	Indra	file	23-Indra.sc5.pck					
-1	Usas2		areaSign	Morana	file	24-Morana.sc5.pck					
-1	Usas2		areaSign	Pollux	id	1					
-1	Usas2		areaSign	Lemniscate	id	2					
-1	Usas2		areaSign	WorldForest	id	3					
-1	Usas2		areaSign	Pegu	id	4					
-1	Usas2		areaSign	Shalabha	id	5					
-1	Usas2		areaSign	KarniMata	id	6					
-1	Usas2		areaSign	Konark	id	7					
-1	Usas2		areaSign	Ashoka	id	8					
-1	Usas2		areaSign	Taxila	id	9					
-1	Usas2		areaSign	EuderusSet	id	10					
-1	Usas2		areaSign	Akna	id	11					
-1	Usas2		areaSign	Fate	id	12					
-1	Usas2		areaSign	Sepa	id	13					
-1	Usas2		areaSign	WorldRoots	id	14					
-1	Usas2		areaSign	Chi	id	15					
-1	Usas2		areaSign	Sui	id	16					
-1	Usas2		areaSign	Vala	id	17					
-1	Usas2		areaSign	Tiwanaku	id	18					
-1	Usas2		areaSign	Aggayu	id	19					
-1	Usas2		areaSign	Ka	id	20					
-1	Usas2		areaSign	Genbu	id	21					
-1	Usas2		areaSign	Fuu	id	22					
-1	Usas2		areaSign	Indra	id	23					
-1	Usas2		areaSign	Morana	id	24					
-1	Usas2		file	01-hub.sc5.pck	path	..\grapx\tilesheets\01-hub.sc5.pck					
-1	Usas2		file	02-Lemniscate.sc5.pck	path	..\grapx\tilesheets\02-Lemniscate.sc5.pck					
-1	Usas2		file	03-Forest.sc5.pck	path	..\grapx\tilesheets\03-Forest.sc5.pck					
-1	Usas2		file	04-Pegu.sc5.pck	path	..\grapx\tilesheets\04-Pegu.sc5.pck					
-1	Usas2		file	05-Shalabha.sc5.pck	path	..\grapx\tilesheets\05-Shalabha.sc5.pck					
-1	Usas2		file	06-Karni Mata.sc5.pck	path	..\grapx\tilesheets\06-Karni Mata.sc5.pck					
-1	Usas2		file	07-Konark.sc5.pck	path	..\grapx\tilesheets\07-Konark.sc5.pck					
-1	Usas2		file	08-Ashoka.sc5.pck	path	..\grapx\tilesheets\08-Ashoka.sc5.pck					
-1	Usas2		file	09-Taxila.sc5.pck	path	..\grapx\tilesheets\09-Taxila.sc5.pck					
-1	Usas2		file	10-Euderus Set.sc5.pck	path	..\grapx\tilesheets\10-Euderus Set.sc5.pck					
-1	Usas2		file	11-Akna.sc5.pck	path	..\grapx\tilesheets\11-Akna.sc5.pck					
-1	Usas2		file	12-Fate.sc5.pck	path	..\grapx\tilesheets\12-Fate.sc5.pck					
-1	Usas2		file	13-Sepa.sc5.pck	path	..\grapx\tilesheets\13-Sepa.sc5.pck					
-1	Usas2		file	15-Chi.sc5.pck	path	..\grapx\tilesheets\15-Chi.sc5.pck					
-1	Usas2		file	16-Sui.sc5.pck	path	..\grapx\tilesheets\16-Sui.sc5.pck					
-1	Usas2		file	17-Vala.sc5.pck	path	..\grapx\tilesheets\17-Vala.sc5.pck					
-1	Usas2		file	18-Tiwanaku.sc5.pck	path	..\grapx\tilesheets\18-Tiwanaku.sc5.pck					
-1	Usas2		file	19-Aggayu.sc5.pck	path	..\grapx\tilesheets\19-Aggayu.sc5.pck					
-1	Usas2		file	20-Ka.sc5.pck	path	..\grapx\tilesheets\20-Ka.sc5.pck					
-1	Usas2		file	21-Genbu.sc5.pck	path	..\grapx\tilesheets\21-Genbu.sc5.pck					
-1	Usas2		file	22-Fuu.sc5.pck	path	..\grapx\tilesheets\22-Fuu.sc5.pck					
-1	Usas2		file	23-Indra.sc5.pck	path	..\grapx\tilesheets\23-Indra.sc5.pck					
-1	Usas2		file	24-Morana.sc5.pck	path	..\grapx\tilesheets\24-Morana.sc5.pck					
-1	Usas2		file	01-hub.sc5.pck	dataTypeId	10					
-1	Usas2		file	02-Lemniscate.sc5.pck	dataTypeId	10					
-1	Usas2		file	03-Forest.sc5.pck	dataTypeId	10					
-1	Usas2		file	04-Pegu.sc5.pck	dataTypeId	10					
-1	Usas2		file	05-Shalabha.sc5.pck	dataTypeId	10					
-1	Usas2		file	06-Karni Mata.sc5.pck	dataTypeId	10					
-1	Usas2		file	07-Konark.sc5.pck	dataTypeId	10					
-1	Usas2		file	08-Ashoka.sc5.pck	dataTypeId	10					
-1	Usas2		file	09-Taxila.sc5.pck	dataTypeId	10					
-1	Usas2		file	10-Euderus Set.sc5.pck	dataTypeId	10					
-1	Usas2		file	11-Akna.sc5.pck	dataTypeId	10					
-1	Usas2		file	12-Fate.sc5.pck	dataTypeId	10					
-1	Usas2		file	13-Sepa.sc5.pck	dataTypeId	10					
-1	Usas2		file	15-Chi.sc5.pck	dataTypeId	10					
-1	Usas2		file	16-Sui.sc5.pck	dataTypeId	10					
-1	Usas2		file	17-Vala.sc5.pck	dataTypeId	10					
-1	Usas2		file	18-Tiwanaku.sc5.pck	dataTypeId	10					
-1	Usas2		file	19-Aggayu.sc5.pck	dataTypeId	10					
-1	Usas2		file	20-Ka.sc5.pck	dataTypeId	10					
-1	Usas2		file	21-Genbu.sc5.pck	dataTypeId	10					
-1	Usas2		file	22-Fuu.sc5.pck	dataTypeId	10					
-1	Usas2		file	23-Indra.sc5.pck	dataTypeId	10					
-1	Usas2		file	24-Morana.sc5.pck	dataTypeId	10					

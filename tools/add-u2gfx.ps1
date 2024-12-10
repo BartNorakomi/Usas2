@@ -7,7 +7,8 @@
 [CmdletBinding()]
 param
 (	[Parameter(ParameterSetName='ruin')]$ruinId,
-	[Parameter(ParameterSetName='file')]$path,
+	[Parameter(ParameterSetName='path')]$path,
+	[Parameter(ParameterSetName='file')]$file,
 	[Parameter(ParameterSetName='test')][switch]$test,
 	$dsmPath, #=".\Usas2.Rom.dsm",
 	$romfile, #="$(resolve-path `"..\Engine\usas2.rom`")", #over rule DSM.filespace.path
@@ -39,7 +40,6 @@ function convert-BmpToSc5
 if (-not $dsmPath) {$dsmPath=$usas2.dsm.path}
 write-verbose "DSM: $dsmPath, Datalist:$datalistname"
 $fileTypes=@{};$usas2.datatype|%{$fileTypes[$_.identity]=$_.id}
-# $DataListProperties=$usas2.DsmDatalist|where{$_.identity -eq $datalistname}
 
 if (-not ($dsm=load-dsm -path $dsmPath))
 {	write-error "DSM $dmsname not found"
@@ -52,13 +52,21 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 	if ($test)
 	{
 		write-verbose "Test mode"
-		$index=$usas2.index|where{$_.identity -eq $datalistName}
-		$index
+		# $fileTypes[$datalistname]
+		$usas2.datatype|where{$_.DsmDatalist -eq $datalistname}
 	}
 
+	#Add a defined FILE to DSM and inject to ROM
+	elseif ($file)
+	{	write-verbose "-file Adding File(s) $path"
+		$files=get-u2file -path $file
+		$files
+		# $x=replace-dsmfile -dsm $dsm -dataList $datalist -path $path -updateFileSpace
+	}
+	
 	#Add any FILE to DSM and inject to ROM
 	elseif ($path)
-	{	write-verbose "/path Adding File(s) $path"
+	{	write-verbose "-path Adding File(s) $path"
 		$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $path -updateFileSpace
 	}
 
@@ -82,16 +90,26 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 
 	#Make index and inject into ROM
 	if ($updateIndex)
-	{	write-verbose "Updating the ROM index for this collection of files"
-		$fileIndex=new-U2RomFileIndex -DSM $dsm -collection $usas2.tileset
-		write-verbose ($fileIndex.indexPointerTable -join(",")); write-verbose ($fileIndex.indexPartsTable -join(","))
-		$data=($fileIndex.indexPointerTable+$fileIndex.indexPartsTable)
-		$index=$usas2.index|where{$_.identity -eq $datalistName}
+	{	write-verbose "-==== Updating the ROM index for this collection of files ====-"
+		$datalistName="index"
+		$datalist=add-DSMDataList -dsm $dsm -name $datalistname
+		
+		$collectionName="tileset"
+		$fileIndex=new-U2RomFileIndex -DSM $dsm -collection $usas2.$collectionName
+		$data=$fileindex.indexPointerTable+$fileindex.indexPartsTable
+		$null=remove-dsmdata -dsm $dsm -datalist $datalist -name $collectionName
+		$alloc=add-DSMData -dsm $dsm -dataList $datalist -name $collectionName -part 0 -data $data -updateFileSpace:$true
+		# write-verbose ($fileindex.indexPointerTable -join(","));
+		# write-verbose ($fileindex.indexPartsTable -join(","));
+		
+		#update the Master Index as well
+		$index=$usas2.index|where{$_.identity -eq "master"}
 		if ($index)
-		{	#$indexBlock=([int]$DataListProperties.IndexBlock);$indexSegment=([int]$DataListProperties.IndexSegment)
-			$indexBlock=([int]$index.DsmBlock);$indexSegment=([int]$index.DsmSegment)
-			write-verbose "Writing Index to block:$indexblock, segment:$indexsegment"
-			write-DSMFileSpace -dsm $dsm -block $indexBlock -segment $indexSegment -data $data
+		{	$indexBlock=([int]$index.DsmBlock);$indexSegment=([int]$index.DsmSegment)
+			write-verbose "Writing MasterIndex to block:$indexblock, segment:$indexsegment"
+			$masterIndex=new-u2RomMasterFileIndex
+			# write-verbose ($masterIndex -join(","))
+			write-DSMFileSpace -dsm $dsm -block $indexBlock -segment $indexSegment -data $masterIndex
 		}
 	}
 	
