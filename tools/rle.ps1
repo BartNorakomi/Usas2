@@ -35,7 +35,8 @@ function Decode-RLE
     return $output
 }
 
-$data=(get-content -path "..\grapx\WaterfallScene\Backdrop1.SC5" -Encoding Byte)
+# $data=(get-content -path "..\grapx\WaterfallScene\Backdrop1.SC5" -Encoding Byte)
+$data=(get-content -path ".\b1.SC5" -Encoding Byte)
 $data.length
 $out=Encode-RLE -data $data 
 $out.length

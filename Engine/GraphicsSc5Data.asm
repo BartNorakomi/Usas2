@@ -61,14 +61,14 @@ dephase
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 
+;These 4 in total are 64KB of RAW screen5 pixels... we can do better.
 WaterfallSceneBlock1:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
-		incbin "..\grapx\WaterfallScene\Backdrop1.SC5",7,128 * 128      ;128 lines
-		incbin "..\grapx\WaterfallScene\Backdrop4.SC5",7,128 * 128      ;128 lines
+		incbin "..\grapx\WaterfallScene\Backdrop1.SC5",7,128 * 128      ;128 lines;16K
+		incbin "..\grapx\WaterfallScene\Backdrop4.SC5",7,128 * 128      ;128 lines;16K
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-
 WaterfallSceneBlock2:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
-		incbin "..\grapx\WaterfallScene\Backdrop3.SC5",7,128 * 128      ;128 lines
-		incbin "..\grapx\WaterfallScene\Backdrop2.SC5",7,128 * 128      ;128 lines
+		incbin "..\grapx\WaterfallScene\Backdrop3.SC5",7,128 * 128      ;128 lines;16K
+		incbin "..\grapx\WaterfallScene\Backdrop2.SC5",7,128 * 128      ;128 lines;16K
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 

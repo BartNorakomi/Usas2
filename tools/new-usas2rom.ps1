@@ -14,6 +14,10 @@ $dsm|save-dsm -path $usas2.dsm.path -verbose
 
 #add Karnimata
 .\add-u2maps.ps1 -convertTiledMap:$false -ruinId 6 #-dsmPath $usas2.dsm.path
-.\add-u2gfx.ps1 -path "..\grapx\tilesheets\KarniMata.tiles.SC5" #-dsmPath $usas2.dsm.path
+
+#add all tilesets
+.\add-u2file.ps1 -verbose -updateIndex:$true -identity * -dataType 1
+#add all areasigns	
+.\add-u2file.ps1 -verbose -updateIndex:$true -identity * -dataType 10
 
 $DSM

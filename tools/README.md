@@ -34,3 +34,5 @@ gci "..\grapx\AreaSigns\*-*.bmp"|%{npx convertgfx --path "..\grapx\AreaSigns" --
 
 npx convertgfx --path "..\grapx\F2Menu" --source ".\WORLDMAP.bmp" --targetScreen5 ".\Worldmap.sc5" --targetPalette ".\Worldmap.pl"
 
+#take the backdrop of 192*128 to a raw stream
+npx convertgfx --source "C:\Users\rvand\git\Usas2.code\grapx\WaterfallScene\Backdrop1.bmp" --targetScreen5 "b1.sc5" --fixedPalette ..\grapx\tilesheets\Karnimata.tiles.PL 
