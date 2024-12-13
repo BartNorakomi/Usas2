@@ -3,7 +3,7 @@
 
 [CmdletBinding()]
 param
-(	[switch]$getglobals#,[switch]$test
+(	[switch]$getglobals,[switch]$test2
 )
 
 ##### Includes #####
@@ -318,10 +318,10 @@ function new-U2RomFileIndex
 		$this=$collection|where{$_.id -eq $index}
 		$claims=$null;$claims=get-u2FileClaim -dsm $dsm -fileIdentity $this.file
 		$parts=($claims|measure).count
-		write-verbose "$index $($this.file) has $parts part(s) / index $h$l"
+		# write-verbose "$index $($this.file) has $parts part(s) / index $h$l"
 		$fileIndexPartsTable.add($parts) #write first byte=parts
-		foreach ($claim in $claims)
-		{	#Write part bytes
+		foreach ($claim in $claims|sort part)
+		{	
 			$fileIndexPartsTable.add($claim.block)
 			$fileIndexPartsTable.add($claim.segment)
 			$fileIndexPartsTable.add($claim.length)
@@ -333,14 +333,21 @@ function new-U2RomFileIndex
 
 #return the MasterIndexArray for other indexes (2bytes per record, 32 records)
 function new-u2RomMasterFileIndex
-{	$collection=$usas2.datatype
+{	$datalist=get-DSMDataList -dsm $dsm -name "index"
+	
+	$collection=$usas2.datatype
 	$indexNumRec=($collection|measure -Maximum -Property id).maximum + 1
+	
 	$wordTable=[byte[]]::new($indexNumRec*2)
+	
 	for ($index=0;$index -lt $indexNumRec;$index++)
 	{	
 		$dataType=$collection|where{$_.id -eq $index}
-		if (-not ($alloc=get-DsmDataListAllocation -dataList $datalist -name $datatype.identity))
+		write-verbose "$datatype"
+		if (-not $datatype.dsmdatalist)
 		{	$alloc=[pscustomobject]@{block=0;segment=0;}
+		} else
+		{	$alloc=get-DsmDataListAllocation -dataList $datalist -name $datatype.dsmDatalist
 		}
 		$wordTable[$index*2]=$alloc.block
 		$wordTable[$index*2+1]=$alloc.segment
@@ -350,8 +357,9 @@ function new-u2RomMasterFileIndex
 
 
 if ($getglobals) {$usas2=get-Usas2Globals -verbose -force}
+if (-not $test2) {Exit}
+(new-u2RomMasterFileIndex) -join (",")
 exit
-if (-not $test) {Exit}
 
 #test:indexes
 $datalistName="index"

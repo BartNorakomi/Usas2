@@ -6,7 +6,7 @@
 
 [CmdletBinding()]
 param
-(	[Parameter(ParameterSetName='ruin')]$ruinId,
+(	[Parameter(ParameterSetName='ruin')]$TilesetRuinId,
 	[Parameter(ParameterSetName='path')]$path,
 	[Parameter(ParameterSetName='file')]$file,
 	[Parameter(ParameterSetName='test')][switch]$test,
@@ -56,12 +56,19 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 		$usas2.datatype|where{$_.DsmDatalist -eq $datalistname}
 	}
 
-	#Add a defined FILE to DSM and inject to ROM
+	#Add a manifest FILE to DSM and inject to ROM
 	elseif ($file)
-	{	write-verbose "-file Adding File(s) $path"
-		$files=get-u2file -path $file
-		$files
-		# $x=replace-dsmfile -dsm $dsm -dataList $datalist -path $path -updateFileSpace
+	{	write-verbose "-file"
+		foreach ($thisFile in $file)
+		{	write-verbose "Adding File $thisfile"
+			$fileManifest=get-u2file -identity (split-path -path $thisfile -leaf)
+			write-verbose "$fileManifest"
+			$datatype=$usas2.datatype|where{$_.id -eq $fileManifest.dataTypeId}
+			if ($datatype.dsmdatalist)
+			{	write-verbose " file datatype $datatype"
+				$x=replace-dsmfile -dsm $dsm -dataListName "$($datatype.dsmdatalist)" -path "$($filemanifest.path)" -updateFileSpace
+			}
+		}
 	}
 	
 	#Add any FILE to DSM and inject to ROM
@@ -70,10 +77,10 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 		$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $path -updateFileSpace
 	}
 
-	#Add ruin file
-	elseif ($ruinid)
-	{	write-verbose "/ruinId Adding Ruin(s) $ruinid"
-		foreach ($id in $ruinId)
+	#Add ruin tileset
+	elseif ($TilesetRuinid)
+	{	write-verbose "/ruinId Adding Ruin(s) $tileSetRuinid"
+		foreach ($id in $tilesetRuinId)
 		{	$ruinManifest=get-u2Ruin -id "^$id$"
 			$tilesetManifest=get-u2TileSet -identity $ruinManifest.tileset
 			if	($sc5File=(get-U2File -identity $tilesetManifest.file -fileType $fileTypes["tileset"]).path)
@@ -90,25 +97,26 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 
 	#Make index and inject into ROM
 	if ($updateIndex)
-	{	write-verbose "-==== Updating the ROM index for this collection of files ====-"
+	{	write-verbose "-==== Updating the ROM index for collection(s) of files ====-"
 		$datalistName="index"
 		$datalist=add-DSMDataList -dsm $dsm -name $datalistname
 		
-		$collectionName="tileset"
-		$fileIndex=new-U2RomFileIndex -DSM $dsm -collection $usas2.$collectionName
-		$data=$fileindex.indexPointerTable+$fileindex.indexPartsTable
-		$null=remove-dsmdata -dsm $dsm -datalist $datalist -name $collectionName
-		$alloc=add-DSMData -dsm $dsm -dataList $datalist -name $collectionName -part 0 -data $data -updateFileSpace:$true
-		# write-verbose ($fileindex.indexPointerTable -join(","));
-		# write-verbose ($fileindex.indexPartsTable -join(","));
-		
+		$collections="tileset","areasign"
+		foreach ($collectionName in $collections)
+		{	write-verbose "Updating index for collection $collectionname"
+			$fileIndex=new-U2RomFileIndex -DSM $dsm -collection $usas2.$collectionName
+			$data=$fileindex.indexPointerTable+$fileindex.indexPartsTable
+			$null=remove-dsmdata -dsm $dsm -datalist $datalist -name $collectionName
+			$alloc=add-DSMData -dsm $dsm -dataList $datalist -name $collectionName -part 0 -data $data -updateFileSpace:$true
+			# write-verbose ($fileindex.indexPointerTable -join(","));
+			# write-verbose ($fileindex.indexPartsTable -join(","));
+		}
 		#update the Master Index as well
 		$index=$usas2.index|where{$_.identity -eq "master"}
 		if ($index)
 		{	$indexBlock=([int]$index.DsmBlock);$indexSegment=([int]$index.DsmSegment)
 			write-verbose "Writing MasterIndex to block:$indexblock, segment:$indexsegment"
 			$masterIndex=new-u2RomMasterFileIndex
-			# write-verbose ($masterIndex -join(","))
 			write-DSMFileSpace -dsm $dsm -block $indexBlock -segment $indexSegment -data $masterIndex
 		}
 	}
@@ -127,12 +135,5 @@ $global:dsm=$dsm
 EXIT
 
 <#
-#Create usas2.rom DSM
-. .\dsm.ps1
-$dsmPath="Usas2.Rom"
-$DSM=new-DSM -name $dsmPath -BlockSize 16KB -size 256 -SegmentSize 128 -firstblock 0xb7
-$dsm|exclude-dsmblock -block 0 #exlcude first block for index
-$dsm|save-dsm
-$DSM|create-DSMFileSpace -verbose -force -path "$(resolve-path ".\")\usas2.rom"
-
+.\add-u2gfx.ps1 -Verbose -updateIndex:$false -file (gci ..\grapx\AreaSigns\*.sc5.pck)
 #>

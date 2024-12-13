@@ -80,33 +80,33 @@ BossPlantBackdropBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
 		incbin "..\grapx\BossPlant\BossPlantBackdrop.SC5",7,212 * 128      ;212 lines
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
-AreaSignTestBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
-phase	$4000
-AreaSign01:   incbin "..\grapx\AreaSigns\01-hub.SC5.pck"      ;048 lines
-AreaSign02:   incbin "..\grapx\AreaSigns\02-Lemniscate.SC5.pck"      ;048 lines
-AreaSign03:   incbin "..\grapx\AreaSigns\03-Forest.SC5.pck"      ;048 lines
-AreaSign04:   incbin "..\grapx\AreaSigns\04-Pegu.SC5.pck"      ;048 lines
-AreaSign05:   incbin "..\grapx\AreaSigns\05-Shalabha.SC5.pck"      ;048 lines
-AreaSign06:   incbin "..\grapx\AreaSigns\06-Karni Mata.SC5.pck"      ;048 lines
-AreaSign07:   incbin "..\grapx\AreaSigns\07-Konark.SC5.pck"      ;048 lines
-AreaSign08:   incbin "..\grapx\AreaSigns\08-Ashoka.SC5.pck"      ;048 lines
-AreaSign09:   incbin "..\grapx\AreaSigns\09-Taxila.SC5.pck"      ;048 lines
-AreaSign10:   incbin "..\grapx\AreaSigns\10-Euderus Set.SC5.pck"      ;048 lines
-AreaSign11:   incbin "..\grapx\AreaSigns\11-Akna.SC5.pck"      ;048 lines
-AreaSign12:   incbin "..\grapx\AreaSigns\12-Fate.SC5.pck"      ;048 lines
-AreaSign13:   incbin "..\grapx\AreaSigns\13-Sepa.SC5.pck"      ;048 lines
-AreaSign14:   ;incbin "..\grapx\AreaSigns\14- .SC5.pck"      ;048 lines >new:worldRoots
-AreaSign15:   incbin "..\grapx\AreaSigns\15-Chi.SC5.pck"      ;048 lines
-AreaSign16:   incbin "..\grapx\AreaSigns\16-Sui.SC5.pck"      ;048 lines
-AreaSign17:   incbin "..\grapx\AreaSigns\17-Vala.SC5.pck"      ;048 lines
-AreaSign18:   incbin "..\grapx\AreaSigns\18-Tiwanaku.SC5.pck"      ;048 lines
-AreaSign19:   incbin "..\grapx\AreaSigns\19-Aggayu.SC5.pck"      ;048 lines
+; AreaSignTestBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
+; phase	$4000
+; AreaSign01:   incbin "..\grapx\AreaSigns\01-hub.SC5.pck"      ;048 lines
+; AreaSign02:   incbin "..\grapx\AreaSigns\02-Lemniscate.SC5.pck"      ;048 lines
+; AreaSign03:   incbin "..\grapx\AreaSigns\03-Forest.SC5.pck"      ;048 lines
+; AreaSign04:   incbin "..\grapx\AreaSigns\04-Pegu.SC5.pck"      ;048 lines
+; AreaSign05:   incbin "..\grapx\AreaSigns\05-Shalabha.SC5.pck"      ;048 lines
+; AreaSign06:   incbin "..\grapx\AreaSigns\06-Karni Mata.SC5.pck"      ;048 lines
+; AreaSign07:   incbin "..\grapx\AreaSigns\07-Konark.SC5.pck"      ;048 lines
+; AreaSign08:   incbin "..\grapx\AreaSigns\08-Ashoka.SC5.pck"      ;048 lines
+; AreaSign09:   incbin "..\grapx\AreaSigns\09-Taxila.SC5.pck"      ;048 lines
+; AreaSign10:   incbin "..\grapx\AreaSigns\10-Euderus Set.SC5.pck"      ;048 lines
+; AreaSign11:   incbin "..\grapx\AreaSigns\11-Akna.SC5.pck"      ;048 lines
+; AreaSign12:   incbin "..\grapx\AreaSigns\12-Fate.SC5.pck"      ;048 lines
+; AreaSign13:   incbin "..\grapx\AreaSigns\13-Sepa.SC5.pck"      ;048 lines
+; AreaSign14:   ;incbin "..\grapx\AreaSigns\14- .SC5.pck"      ;048 lines >new:worldRoots
+; AreaSign15:   incbin "..\grapx\AreaSigns\15-Chi.SC5.pck"      ;048 lines
+; AreaSign16:   incbin "..\grapx\AreaSigns\16-Sui.SC5.pck"      ;048 lines
+; AreaSign17:   incbin "..\grapx\AreaSigns\17-Vala.SC5.pck"      ;048 lines
+; AreaSign18:   incbin "..\grapx\AreaSigns\18-Tiwanaku.SC5.pck"      ;048 lines
+; AreaSign19:   incbin "..\grapx\AreaSigns\19-Aggayu.SC5.pck"      ;048 lines
 
-;these next area signs don't fit the block
-;AreaSign20:   incbin "..\grapx\AreaSigns\20-Ka.SC5.pck"      ;048 lines
-;AreaSign21:   incbin "..\grapx\AreaSigns\21-Genbu.SC5.pck"      ;048 lines
-;AreaSign22:   incbin "..\grapx\AreaSigns\22-Fuu.SC5.pck"      ;048 lines
-;AreaSign23:   incbin "..\grapx\AreaSigns\23-Indra.SC5.pck"      ;048 lines
-;AreaSign24:   incbin "..\grapx\AreaSigns\24-Morana.SC5.pck"      ;048 lines
+; ;these next area signs don't fit the block
+; ;AreaSign20:   incbin "..\grapx\AreaSigns\20-Ka.SC5.pck"      ;048 lines
+; ;AreaSign21:   incbin "..\grapx\AreaSigns\21-Genbu.SC5.pck"      ;048 lines
+; ;AreaSign22:   incbin "..\grapx\AreaSigns\22-Fuu.SC5.pck"      ;048 lines
+; ;AreaSign23:   incbin "..\grapx\AreaSigns\23-Indra.SC5.pck"      ;048 lines
+; ;AreaSign24:   incbin "..\grapx\AreaSigns\24-Morana.SC5.pck"      ;048 lines
 dephase
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block

@@ -2,9 +2,9 @@
 . .\Usas2-SharedFunctions.inc.ps1
 $global:usas2=get-Usas2Globals -force
 
-$tableProperties=[pscustomObject]@{ruinTileset=@{offset=0;length=1};ruinPalette=@{offset=1;length=1};ruinMusic=@{offset=2;length=1};ruinNAme=@{offset=3;length=13}}
+#$tableProperties=[pscustomObject]@{ruinTileset=@{offset=0;length=1};ruinPalette=@{offset=1;length=1};ruinMusic=@{offset=2;length=1};ruinNAme=@{offset=3;length=13}}
 $tableAttributes=[pscustomObject]@{numrec=32;reclen=16}
-write ";RuinPropertiesLUT"
+write ";RuinPropertiesLUT: tileset,palette,music,name"
 for ($i=0;$i -lt $tableAttributes.numrec;$i++)
 {	$ruinProps=$usas2.ruin|where{$_.ruinId -eq $i}
 	if (-not ($ruinTileset=($usas2.tileset|where{$_.identity -eq $ruinProps.tileset}).id)) {$ruinTileset=0}

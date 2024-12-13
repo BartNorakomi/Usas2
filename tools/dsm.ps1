@@ -528,7 +528,7 @@ function get-DsmDataListAllocation
 {   [CmdletBinding()]
     param
     (   [Parameter(Mandatory,ValueFromPipeline)]$dataList,
-        [Parameter(Mandatory)]$name="",$part
+        [Parameter(Mandatory)]$name,$part
     )
     if ($part) {return ($datalist.allocations|where{($_.name -eq $name) -and ($_.part -eq $part)})}
     else {return ($datalist.allocations|where{($_.name -eq $name)})}

@@ -27,7 +27,7 @@ DSM:					equ 0
 .firstBlock:			equ 0xb7
 .numBlocks:				equ 73
 .indexBlock:			equ 0	;offset of firstblock
-.indexBaseAdr:			equ 0x8000
+.indexBaseAdr:			equ 0x0000 ;offset in page
 
 worldMapIndex:			equ 0
 .block:					equ dsm.firstblock+dsm.indexblock
@@ -57,7 +57,7 @@ dataType: EQU 0
 .TiledTileSetImage: EQU 7
 .ImageSc5: EQU 8
 .ImageBmp: EQU 9
-
+.areasignpacked: EQU 10
 
 
 

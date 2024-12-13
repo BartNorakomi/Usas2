@@ -2380,7 +2380,7 @@ ret
 GetWorldMapRoomLocation:
 		ld    a,worldmapIndex.block
 		call  block34
-        LD    HL,worldMapIndex.adr
+        LD    HL,worldMapIndex.adr+0x8000
         LD    BC,worldMapIndex.reclen-1
 GWMR.1: LD    A,D             ;x
         CP    (HL)

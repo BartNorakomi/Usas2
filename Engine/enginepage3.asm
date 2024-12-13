@@ -254,26 +254,27 @@ fillRoomMapData:
 ;currently this is in POC phase
 ;area files are spread out over multiple blocks, these are not:
 UnpackAreaSign:
-		ld    a,(slot.page1rom)		;RAMROMROMRAM
-		out   ($a8),a	
-		ld    a,AreaSignTestBlock	;packed area signs at $4000
-		call  block12
-
 		exx
 		push	bc
 		push	hl
 
-		call	GetRoomRuinId
-		dec a
-		add		a,a
-		ld		hl,AreaSignList
-		ld		d,0
-		ld		e,a
-		add		hl,de
-		ld		a,(hl)
-		inc		hl
-		ld		h,(hl)
-		ld		l,a
+		ld    a,(slot.page1rom)		;RAMROMROMRAM
+		out   ($a8),a	
+		; ld    a,AreaSignTestBlock	;packed area signs at $4000
+		; call  block12
+		; call	GetRoomRuinId
+		; dec a
+		; add		a,a
+		; ld		hl,AreaSignList
+		; ld		d,0
+		; ld		e,a
+		; add		hl,de
+		; ld		a,(hl)
+		; inc		hl
+		; ld		h,(hl)
+		; ld		l,a
+		call	GetRoomRuinId ;20241212;ro;new
+		call	getAreaSign
 		ld		de,$8000
 		call	Depack		;In: HL: source, DE: destination
 
@@ -284,7 +285,7 @@ UnpackAreaSign:
 		ld    a,Loaderblock		;loader routine at $4000
 		call  block12
 		ret
-AreaSignList:	dw	AreaSign01,AreaSign02,AreaSign03,AreaSign04,AreaSign05,AreaSign06,AreaSign07,AreaSign08,AreaSign09,AreaSign10,AreaSign11,AreaSign12,AreaSign13,AreaSign14,AreaSign15,AreaSign16,AreaSign17,AreaSign18,AreaSign19
+; AreaSignList:	dw	AreaSign01,AreaSign02,AreaSign03,AreaSign04,AreaSign05,AreaSign06,AreaSign07,AreaSign08,AreaSign09,AreaSign10,AreaSign11,AreaSign12,AreaSign13,AreaSign14,AreaSign15,AreaSign16,AreaSign17,AreaSign18,AreaSign19
 
 
 
@@ -590,7 +591,7 @@ BuildUpMap:
 		ld    a,(slot.page12rom)
 		out   ($a8),a
 		call GetRoomTilesetId
-		call GetTilesetBitmap
+		call getTileset
 
 		;start writing VDP at 0,0,0 
 		xor   a
@@ -813,28 +814,38 @@ ret
 		djnz .put8blines
 		ret
 
-
-
-;Get GFX location, and set blocks at page 1,2
-;in: A=ruinId
-GetTilesetBitmap:
-		ld		c,a
+;Get block and Address of dataTypeIndex [A]
+;out: A=block, HL=adr (p1) (block is set at p1)
+getDataTypeIndex:
+		ld		e,A	
+		ld		d,0
+		ld		hl,dataTypeIndex.Adr+0x4000
+		add		hl,de
+		add		hl,de
 		ld		A,dataTypeIndex.block
-		call	block34							;map it to p2
-		ld		hl,dataType.Tileset *dataTypeIndex.reclen +dataTypeIndex.Adr
+		call	block12
 		ld		a,(hl)		;dataTypeIndexRecord.DsmBlock
 		inc		hl
 		ld		d,(hl)		;dataTypeIndexRecord.DsmSegment
 		add		a,dsm.firstblock
-		call	block34
+		call	block12
 		LD		E,0
     	SRL		D			;seglen=128
 	    RR		E
-		ld		hl,0x8000
+		ld		hl,0x4000
 		add		hl,de
+		ret
+
+;Get GFX location, and set blocks at page 1,2
+;in: A=ruinId
+getTileset:
+		ld		c,a
+		ld		b,0
+
+		ld		a,dataType.Tileset
+		call	getDataTypeIndex
 
 		push	hl
-		ld		b,0
 		add		hl,bc
 		add		hl,bc
 		ld		c,(hl)		;offset in partsTable
@@ -849,18 +860,49 @@ GetTilesetBitmap:
 		LD		A,(HL)          ;DsmBlock part 1
 		INC		HL
 		add		a,dsm.firstblock ;temp
-		Call	block12
+		ex		af,af'
 ;	    LD		D,(HL)          ;seg=0 atm
 		INC		HL
 ;		LD		E,0
 ;    	SRL   D               ;seglen=128
 ;	    RR    E
-		inc hl ;len
+		inc		hl ;len
 		LD		A,(HL)          ;DsmBlock part 2
 		add		a,dsm.firstBlock
-		jp	block34
+		call		block34
+		ex	af,af'
+		jp	block12
 
 
+;Get GFX location, and set block at page 1
+;in: A=ruinId
+getAreaSign:
+		ld		c,a
+		ld		b,0
+
+		ld		a,dataType.areasignpacked
+		call	getDataTypeIndex
+		push	hl
+		add		hl,bc
+		add		hl,bc
+		ld		c,(hl)		;offset in partsTable
+		inc		hl
+		ld		b,(hl)
+		pop		hl
+		add		hl,bc
+
+		INC		HL
+		LD		A,(HL)          ;DsmBlock
+		INC		HL
+	    LD		D,(HL)          ;seg
+		add		a,dsm.firstblock ;temp
+		Call	block12
+		LD		E,0
+	   	SRL   D               ;seglen=128
+	    RR    E
+		LD		HL,0x4000
+		add		hl,de
+		ret
 
 ; Tiles numbering
 LadderTilesEndAdrStart:	equ 1
