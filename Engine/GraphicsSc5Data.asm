@@ -1,7 +1,9 @@
 ;Raw scraphics
 
+
 GfxObjectsForVramBlock: equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 ;GfxObjectsForVram:
+phase	$000
 		incbin "..\grapx\GfxObjectsForVram.SC5",7,128 * 128 ;skip header, 128 lines
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 

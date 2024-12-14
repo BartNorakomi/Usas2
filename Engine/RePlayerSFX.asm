@@ -10,7 +10,7 @@ RePlayerSFX_Initialize:
 RePlayerSFX_Initialize_Loop:
 	ld (ix + 0),SFX_nop and 0FFH
 	ld (ix + 1),SFX_nop >> 8
-	ld (ix + 2),usas2sfx1repBlock
+	ld (ix + 2),usas2sfx1repBlock and 255
 	ld (ix + 3),1
 	add ix,de
 	djnz RePlayerSFX_Initialize_Loop
@@ -25,7 +25,7 @@ RePlayerSFX_PlayCh1:
 	di
 	ld (iy + 0),c
 	ld (iy + 1),b
-	ld (iy + 2),usas2sfx1repBlock
+	ld (iy + 2),usas2sfx1repBlock and 255
 	ei
 	ld (iy + 3),1
 	ret
@@ -39,7 +39,7 @@ RePlayerSFX_PlayCh2:
 	di
 	ld (iy + 0),c
 	ld (iy + 1),b
-	ld (iy + 2),usas2sfx2repBlock
+	ld (iy + 2),usas2sfx2repBlock and 255
 	ei
 	ld (iy + 3),1
 	ret

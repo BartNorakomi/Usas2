@@ -316,7 +316,7 @@ setMusic:
 		ld		(CurrentSongBeingPlayed),a
 		ld		c,a
 		ld		b,0
-		ld		a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
+		ld		a,usas2repBlock and 255               ;ahl = sound data (after format ID, so +1)
 		ld		hl,$8000+1
 		call	RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
 		call	RePlayer_Tick                 ;initialise, load samples
@@ -351,7 +351,7 @@ initializeVGMRePlay:
 		and A
 		ret z
 		ld    bc,0                          ;track nr 0 will alos initialize samples
-		ld    a,usas2repBlock               ;ahl = sound data (after format ID, so +1)
+		ld    a,usas2repBlock and 255               ;ahl = sound data (after format ID, so +1)
 		ld    hl,$8000+1
 		call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)
 		call	RePlayer_Tick

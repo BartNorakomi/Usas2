@@ -10,6 +10,14 @@ PlayerCanJumpThroughTopOfScreen?: equ 0
 RomSize: 				equ 8*1024*1024 ;8MB
 RomBlockSize:			equ 16*1024	;16KB
 RomStartAddress:		equ $4000
+RomBlockLayout:	equ 0
+.Base: EQU 0
+.Game: EQU 1
+.CutScene: EQU 9
+.AnchoredData: EQU 13
+.FloatingData: EQU 128
+.VGM: EQU 256
+.Misc: EQU 384
 
 engaddr:				equ	$03e
 loaderAddress:			equ	$4000
@@ -24,8 +32,8 @@ teamNXTlogoAddress:		equ $8000
 DSM:					equ 0
 .segmentSize:			equ 128
 .blockSize:				equ 16*1024
-.firstBlock:			equ 0xb7
-.numBlocks:				equ 73
+.firstBlock:			equ 128 ;0xb7
+.numBlocks:				equ 128 ;73
 .indexBlock:			equ 0	;offset of firstblock
 .indexBaseAdr:			equ 0x0000 ;offset in page
 
@@ -534,6 +542,31 @@ teamNXTlogoBlockLength:		equ $-RomStartAddress-teamNXTlogoRomStartAddress
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 
+;Skip block to #13
+forg RomBlockLayout.AnchoredData*romblocksize | org RomBlockLayout.AnchoredData*romblocksize+RomStartAddress
+
+;[GFX blocks]
+;         (sc5 tilesheets)
+GraphicsSc5DataStartBlock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $60
+GraphicsSc5DataRomStartAddress:	equ $-RomStartAddress
+								include "GraphicsSc5Data.asm"
+GraphicsSc5DataBlockLength:		equ $-RomStartAddress-GraphicsSc5DataRomStartAddress
+
+;          (hardware sprites)
+SpriteDataStartBlock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $7c
+SpriteDataRomStartAddress:	equ $-RomStartAddress
+							include "SpriteData.asm"
+SpriteDataBlockLength:		equ $-RomStartAddress-SpriteDataRomStartAddress
+
+BossSpritesDataStartBlock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
+BossSpritesDataRomStartAddress:	equ $-RomStartAddress
+								include "BossSpriteData.asm"
+BossSpritesDataBlockLength:		equ $-RomStartAddress-BossSpritesDataRomStartAddress
+
+
+;Skip block to #256
+forg RomBlockLayout.VGM*romblocksize | org RomBlockLayout.VGM*romblocksize+RomStartAddress
+
 ;[VGM blocks]
 usas2sfx1repBlock:				equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize
 usas2sfx1repRomStartAddress:	equ $-RomStartAddress
@@ -558,25 +591,6 @@ usas2repRomStartAddress:	equ $-RomStartAddress
 							dephase
 usas2repBlockLength:		equ $-RomStartAddress-usas2repRomStartAddress
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-
-
-;[GFX blocks]
-;         (sc5 tilesheets)
-GraphicsSc5DataStartBlock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $60
-GraphicsSc5DataRomStartAddress:	equ $-RomStartAddress
-								include "GraphicsSc5Data.asm"
-GraphicsSc5DataBlockLength:		equ $-RomStartAddress-GraphicsSc5DataRomStartAddress
-
-;          (hardware sprites)
-SpriteDataStartBlock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $7c
-SpriteDataRomStartAddress:	equ $-RomStartAddress
-							include "SpriteData.asm"
-SpriteDataBlockLength:		equ $-RomStartAddress-SpriteDataRomStartAddress
-
-BossSpritesDataStartBlock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
-BossSpritesDataRomStartAddress:	equ $-RomStartAddress
-								include "BossSpriteData.asm"
-BossSpritesDataBlockLength:		equ $-RomStartAddress-BossSpritesDataRomStartAddress
 
 
 lastblock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$ and $ffc000/RomBlockSize

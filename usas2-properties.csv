@@ -62,14 +62,14 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		dataType	areaSignPacked	id	10				.areaSignPacked: EQU 10	
 1	Usas2		DSM	usas2	blockExclusion	0		Excluded blocks (array)		DSM.blockExclusion: EQU 0	
 1	Usas2		DSM	usas2	blocksize	16384		One block is 16KB		DSM.blocksize: EQU 16384	
-1	Usas2		DSM	usas2	numBlocks	73		Explicit number of blocks for DSM		DSM.numBlocks: EQU 73	
+1	Usas2		DSM	usas2	numBlocks	128		Explicit number of blocks for DSM		DSM.numBlocks: EQU 128	
 1	Usas2		DSM	usas2	description	Usas 2 ROM file				DSM.description: EQU Usas 2 ROM file	
 1	Usas2		DSM	usas2	fileSpace	..\usas2.rom		The destination file for the block data		DSM.fileSpace: EQU ..\usas2.rom	
 1	Usas2		DSM	usas2	path	..\usas2.rom.dsm		The destination file for the DSM config		DSM.path: EQU ..\usas2.rom.dsm	
-1	Usas2		DSM	usas2	firstblock	183		Managed blocks start at 0x70		DSM.firstblock: EQU 183	
+1	Usas2		DSM	usas2	firstblock	128		Managed blocks start at 0x70		DSM.firstblock: EQU 128	
 1	Usas2		DSM	usas2	name	usas2.rom				DSM.name: EQU usas2.rom	
 1	Usas2		DSM	usas2	segmentSize	128		One segment is 128bytes		DSM.segmentSize: EQU 128	
-1	Usas2		DSM	usas2	size	256		Total space size in blocks (512=8mb)		DSM.size: EQU 256	
+1	Usas2		DSM	usas2	size	512		Total space size in blocks (512=8mb)		DSM.size: EQU 512	
 1	Usas2		DsmDatalist	BitmapGfx	IndexBlock	0					
 1	Usas2		DsmDatalist	BitmapGfx	IndexSegment	32					
 1	Usas2		DsmDatalist	BitmapGfx	name	BitmapGfx					
@@ -369,7 +369,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		Ruin	akna	tileSet	Akna		Default Tileset (ID)			
 1	Usas2		Ruin	akna	description	Akna Ruins		Description of this ruin			
 1	Usas2		Ruin	akna	music						
-1	Usas2		Ruin	akna	Palette			Default Palette			
+1	Usas2		Ruin	akna	Palette	akna.tiles		Default Palette			
 1	Usas2		Ruin	AshokasHell	ruinId	8		Identifier for this Ruin			
 1	Usas2		Ruin	AshokasHell	description	Hell of Ashoka		Description of this ruin			
 1	Usas2		Ruin	AshokasHell	name	Hell of Ashoka		The display name	aka verhakselaar		

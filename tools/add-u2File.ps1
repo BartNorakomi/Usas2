@@ -13,7 +13,7 @@ param
 	[Parameter(ParameterSetName='identity')]$identity,
 	[Parameter(ParameterSetName='identity')]$dataType="*",
 	[Parameter(ParameterSetName='test')][switch]$test,
-	[Parameter(ParameterSetName='test')]$datalistName,
+	# [Parameter(ParameterSetName='test')]$datalistName,
 	$dsmPath, #=".\Usas2.Rom.dsm",
 	$romfile, #="$(resolve-path `"..\Engine\usas2.rom`")", #over rule DSM.filespace.path
 
