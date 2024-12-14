@@ -2,22 +2,22 @@ The "tools" directory contains external tooling files for the Usas2 project. It 
 
 In the case of Powershell, only the Powershell host (CLI) is needed and comes default with Windows. There's also a Linux and Mac version, but need to be installed manually. Node.js files need to have the js parser installed, which isn't a default Windows program.
 
-#The following Powershell tools are available
-add-u2gfx.ps1	;add a bitmap gfx file to usas2.rom using DSM (updated 20240427)
+#The following Powershell tools are available (20241213)
+add-u2File.ps1	;add file or a bitmap gfx file to usas2.rom using DSM (updated 20241213)
 add-u2maps.ps1	;add one or more room map files to usas2.rom using DSM (updated 20240427)
 archive-file.ps1	;archive one or more files to "versions\"
 commit.ps1		;shortcut for <<git add -A;git commit -m "x">>
 concat-sc5files.ps1	;temp tool to concatenate two .sc5 files (*obsolete when Laurens his image convertor tool is available)
 convert-tmxtoraw16.ps1	;Convert one or more Tiled .tmx map files to Usas2 custom format
-convertpal-toasm.ps1	;temp tool to convert a 256 bytes *.pl file to 32 bytes asm text
+convert-pal.ps1	;convert a 256 bytes *.pl file to 32 bytes asm text, and/or 24bit PC RBG table
 dsm.ps1			;Core functions for DataSpaceManager (DSM) (include file)
-get-U2RomSpace.ps1	;get usas2.rom statistics, based on old ROM format (*obsolete)
 make-worldmap.ps1	;make a Tiled worldmap for one or more ruins (using excel map as source)
 pack.exe		;bitbuster executable
 Tiled-Functions.inc.ps1	;Tiled functions for powershell
 Usas2-SharedFunctions.inc.ps1	;General powershell functions for usas2 tools
-Usas2.Rom.dsm	;DSM config
 rip-robert.ps1	;a temp converter for old Tiles map files (used by Robert, hence the filename)
+get-RomBlockStats.ps1	;gather statistics for block usage based on set symbol file labels
+get-U2RuinPropertiesLookUpTable.ps1	;spit out a .asm list of the ruin props
 
 
 #The next tools are Node.js based
@@ -26,26 +26,41 @@ romspace	;get the available ROM space and statistics, based on old ROM format (*
 
 
 
-add-u2gfx.ps1
+add-u2file.ps1
 =============
-Add one or more graphic files to usas2.rom. The files will be indexed as Ruin bitmap graphics in a datalist (default "BitMapGfx"). Files get split into sections of max 16K.
-You either give the -path to an .sc5 files, or give the -ruinid. The latter can will also convert bmp to sc5 by default.
+Use this tool to add one or more defined files in de ROM. Files are defined in the manifest (usas2-properties.csv).
+It can also be used to convert and add ruin tileset graphics
 
-add-u2gfx.ps1 [-ruinId <Object>] [-dsmName <Object>] [-datalistName <Object>] [-convertGfx] [-resetGlobals] [-updateIndex] [<CommonParameters>]
-add-u2gfx.ps1 [-path <Object>] [-dsmName <Object>] [-datalistName <Object>] [-convertGfx] [-resetGlobals] [-updateIndex] [<CommonParameters>]
+.\add-u2File.ps1
+add-u2File.ps1 [-TilesetRuinId <Object>] [-convertGfx] [-dsmPath <Object>] [-romfile <Object>] [-resetGlobals] [-updateIndex] [<CommonParameters>]
+add-u2File.ps1 [-path <Object>] [-dsmPath <Object>] [-romfile <Object>] [-resetGlobals] [-updateIndex] [<CommonParameters>]
+add-u2File.ps1 [-identity <Object>] [-dataType <Object>] [-dsmPath <Object>] [-romfile <Object>] [-resetGlobals] [-updateIndex] [<CommonParameters>]
 
-path*:		Path to the graphic file to be inserted in the ROM. example: -path "..\grapx\tilesheets\KarniMata.Tiles.sc5"
-ruinId*:		One or more ruinId number(s). This will also convert to sc5 first (if not disabled)
+Adding a ruin tileset.sc5:
+> add-u2File.ps1 -TilesetRuinId <n>
+Default this will convert the ruin .bmp file to an .sc5 file before putting it in the ROM. Use -convertGfx:$false to skip that process and add the existing .sc5 file.
+Can use an array of <n> to add more than 1 tileset.
+example: the next example will convert the Pegu (ruin 4) bmp file to sc5, insert it into ROM, and update the index. This is the most simple way to quickly add tileset image file(s)
+> add-u2File.ps1 -ruinId 4
+you can also use more than one id, like: -ruinId 4,6. This will add Pegu and Karnimate files
+
+Adding any file:
+> add-u2File.ps1 -path <file> -datalistName <datalist>
+Will add any file to the ROM.
+
+Adding a defined file:
+> add-u2File.ps1 -identity <filename> -datatype <n>
+This will add any file that is present in the manifest (known file) and update indexes. This is the most powerful command, as you can use wildcards.
+for example: add-u2File.ps1 -identity * -datatype 1, will add all known tileset files.
+
+path*:		Path a file
 dsmName:	Path to the DSM meta file, default is "Usas2.Rom.dsm" (note: should be changed to -dsmPath)
 datalistName:	Name of the DSM datalist this file belongs to, default  is "BitMapGfx"
 convertGfx:	Convert BMP to SC5 file first (only when using -ruinId as input0, enabled by default
 resetGlobals:	clear known globals (use when updating global properties file in between adding)
 updateIndex:	update the ROM index for this datalist, enabled by default (used for debugging)
-* use only one of these option as input
 
-example: the next example will convert the Pegu (ruin 4) bmp file to sc5, insert it into ROM, and update the index. This is the most simple way to quickly add tileset image file(s)
-> add-u2gfx.ps1 -ruinId 4
-you can also use more than one id, like: -ruinId 4,6. This will add Pegu and Karnimate files
+
 
 
 add-u2maps.ps1
@@ -89,6 +104,9 @@ b.v.: .\add-u2maps.ps1 -ruinid 4 -convertTiledMap -Verbose
 losse room:
 .\add-u2maps.ps1 -roomname AY23 -convertTiledMap
 
+convert latest:
+.\add-u2maps.ps1 -newest 1
+
 convert palette
 ===============
 convert-pal.ps1 [-path <Object>] [-toAsm] [-to8bitRgb] [<CommonParameters>]
@@ -97,12 +115,3 @@ convert-pal.ps1 [-path <Object>] [-toAsm] [-to8bitRgb] [<CommonParameters>]
 om de palette naar DB RB,0G formaat te tonen
 
 
-
-convert gfx
-===========
-npx convertgfx .\Lemniscate.tiles.json
-.\add-u2gfx.ps1 -ruinId 2 (Deze zet de Lemniscate bmp om naar SC5 en pleurt'm in de ROM)
-.\add-u2gfx.ps1 -ruinId 4 (Deze zet de Pegu bmp om naar SC5 en pleurt'm in de ROM)
-
-convert latest:
-.\add-u2maps.ps1 -newest 1

@@ -1,4 +1,4 @@
-# Put gfx files into the datalist, and write to the ROM
+# Put files into the datalist, and write to the ROM
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
 # 20231207-20241208
@@ -7,14 +7,16 @@
 [CmdletBinding()]
 param
 (	[Parameter(ParameterSetName='ruinTileset')]$TilesetRuinId,
+	[Parameter(ParameterSetName='ruinTileset')][switch]$convertGfx=$true,
 	[Parameter(ParameterSetName='path')]$path,
+	[Parameter(ParameterSetName='path')]$datalistName,
 	[Parameter(ParameterSetName='identity')]$identity,
 	[Parameter(ParameterSetName='identity')]$dataType="*",
 	[Parameter(ParameterSetName='test')][switch]$test,
 	[Parameter(ParameterSetName='test')]$datalistName,
 	$dsmPath, #=".\Usas2.Rom.dsm",
 	$romfile, #="$(resolve-path `"..\Engine\usas2.rom`")", #over rule DSM.filespace.path
-	[switch]$convertGfx=$true,
+
 	[switch]$resetGlobals=$false,
 	[switch]$updateIndex=$true
 )
@@ -63,7 +65,7 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 		#-path: Add any FILE to DSM and inject to ROM
 		"path"
 		{	write-verbose "-path Adding File(s) $path"
-			$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $path -updateFileSpace
+			$x=replace-dsmfile -dsm $dsm -dataListname $datalistName -path $path -updateFileSpace
 			break
 		}
 		
@@ -84,7 +86,7 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 		}
 	
 
-		#Add ruin tileset
+		#Add ruin tileset, convert gfx first
 		"ruinTileset"
 		{	write-verbose "/ruinId Adding Ruin(s) $tileSetRuinid"
 			$datalist=add-DSMDataList -dsm $dsm -name "tileset"

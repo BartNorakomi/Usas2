@@ -34,15 +34,11 @@ worldMapIndex:			equ 0
 .adr:					equ dsm.indexBaseAdr
 .numRec:				equ 1024
 .recLen:				equ 4
-; worldMapIndexRecord:	equ 0
-; .id:					equ +0
-; .block:					equ +2
-; .segmentSize:			equ +3
 
 dataTypeIndex:			equ 0
 .dsmSegment:			equ 32
 .block:					equ dsm.firstblock+dsm.indexblock
-.Adr:					equ dsm.indexBaseAdr +.dsmSegment*dsm.segmentSize ;worldMapIndex.Adr +worldMapIndex.NumRec *worldMapIndex.RecLen
+.Adr:					equ dsm.indexBaseAdr +.dsmSegment*dsm.segmentSize
 .numRec:				equ 32
 .reclen:				equ 2
 
@@ -58,8 +54,6 @@ dataType: EQU 0
 .ImageSc5: EQU 8
 .ImageBmp: EQU 9
 .areasignpacked: EQU 10
-
-
 
 ruinId:					equ 0
 .Polux: EQU 1

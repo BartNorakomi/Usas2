@@ -837,7 +837,7 @@ getDataTypeIndex:
 		ret
 
 ;Get GFX location, and set blocks at page 1,2
-;in: A=ruinId
+;in: A=tileSetId
 getTileset:
 		ld		c,a
 		ld		b,0
@@ -848,7 +848,7 @@ getTileset:
 		push	hl
 		add		hl,bc
 		add		hl,bc
-		ld		c,(hl)		;offset in partsTable
+		ld		c,(hl)		;get pointer
 		inc		hl
 		ld		b,(hl)
 		pop		hl
@@ -875,7 +875,7 @@ getTileset:
 
 
 ;Get GFX location, and set block at page 1
-;in: A=ruinId
+;in: A=areaSignId (=ruinId)
 getAreaSign:
 		ld		c,a
 		ld		b,0
@@ -885,7 +885,7 @@ getAreaSign:
 		push	hl
 		add		hl,bc
 		add		hl,bc
-		ld		c,(hl)		;offset in partsTable
+		ld		c,(hl)		;get pointer
 		inc		hl
 		ld		b,(hl)
 		pop		hl
@@ -1015,11 +1015,7 @@ ConvertToMapinRam:
         inc hl
         jp .loop0
   
-; SetTile:
-;   db    000,000,000,001   ;sx,--,sy,spage
-;   db    000,000,000,000   ;dx,--,dy,dpage
-;   db    008,000,008,000   ;nx,--,ny,--
-;   db    000,000,$D0       ;fast copy   
+
 
 TinyCopyWhichFunctionsAsWaitVDPReady:
 	db		0,0,0,0
