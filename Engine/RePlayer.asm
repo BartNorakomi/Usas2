@@ -6,6 +6,8 @@
 
 RePlayer_BANK_REGISTER: equ 7000H
 RePlayer_STACK_CAPACITY: equ 128
+RePlayer_MIN_VOLUME: equ 00H
+RePlayer_MAX_VOLUME: equ 0EH
 FormatOPL4_ID: equ 1
 
 ; a = format ID (first byte of sound data)
@@ -36,7 +38,7 @@ FormatOPL4_Detect:
 ; hl = jump table
 RePlayer_SetJumpTable:
 	ld de,RePlayer_Process
-	ld bc,3 * 3
+	ld bc,4 * 3
 	ldir
 	ret
 
@@ -44,7 +46,7 @@ RePlayer_SetJumpTable:
 RePlayer_ClearJumpTable:
 	ld hl,RePlayer_Process
 	ld de,RePlayer_Process + 1
-	ld bc,3 * 3 - 1
+	ld bc,4 * 3 - 1
 	ld (hl),0C9H  ; ret
 	ldir
 	ret
@@ -101,6 +103,9 @@ RePlayer_Tick:
 	ld a,(RePlayer_playing)
 	and a
 	ret z
+
+	call RePlayer_TickFade
+
 	ld ix,(RePlayer_stackPointer)
 	dec (ix)
 	ret nz
@@ -133,6 +138,45 @@ RePlayer_Tick:
 ;	RePlayer_SetBank_M
 	ld (RePlayer_BANK_REGISTER),a
 	ret
+
+; Set fade volume target
+; a = volume
+RePlayer_SetFadeTarget:
+	and RePlayer_MAX_VOLUME
+	ld (RePlayer_volumeTarget),a
+	ret
+
+; Whether the fade target is reached
+; a <- 0: at target
+; f <- z: at target
+RePlayer_AtFadeTarget:
+	ld a,(RePlayer_volume)
+	ld b,a
+	ld a,(RePlayer_volumeTarget)
+	sub b
+	ret
+
+; Set volume immediately
+; a = volume
+RePlayer_SetVolume:
+	and RePlayer_MAX_VOLUME
+	ld (RePlayer_volumeTarget),a
+	ld (RePlayer_volume),a
+	jp RePlayer_UpdateVolume
+
+; Perform a fade step
+RePlayer_TickFade:
+	ld a,(RePlayer_volume)
+	ld b,a
+	ld a,(RePlayer_volumeTarget)
+	cp b
+	ret z
+	sbc a,a
+	add a,a
+	inc a
+	add a,b
+	ld (RePlayer_volume),a
+	jp RePlayer_UpdateVolume
 
 ; hl = sound data
 ;RePlayer_Jump_M: MACRO
@@ -205,9 +249,15 @@ RePlayer_stackPointer:
 	dw RePlayer_stack
 RePlayer_stack:
 	ds RePlayer_STACK_CAPACITY * 3 + 1
+RePlayer_volume:
+	db RePlayer_MAX_VOLUME
+RePlayer_volumeTarget:
+	db RePlayer_MAX_VOLUME
 RePlayer_Process:
 	db 0C9H, 0, 0
 RePlayer_Mute:
 	db 0C9H, 0, 0
 RePlayer_Restore:
+	db 0C9H, 0, 0
+RePlayer_UpdateVolume:
 	db 0C9H, 0, 0

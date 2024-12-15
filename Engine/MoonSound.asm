@@ -35,6 +35,7 @@ MoonSound_JumpTable:
 	jp MoonSound_Process
 	jp MoonSound_Mute
 	jp MoonSound_Restore
+	jp MoonSound_UpdateVolume
 
 ; hl = sound data
 ; ix = stack pointer
@@ -283,6 +284,21 @@ MoonSound_MuteWave_Loop:
 MoonSound_Restore:
 	ret
 
+; a = volume
+MoonSound_UpdateVolume:
+	add a,a
+	ld e,a
+	ld d,0
+	ld hl,MoonSound_volumeTable
+	add hl,de
+	ld d,0F8H
+	ld e,(hl)
+	call MoonSound_WriteWaveRegister
+	inc hl
+	ld d,0F9H
+	ld e,(hl)
+	jp MoonSound_WriteWaveRegister
+
 ; d = register
 ; e = value
 MoonSound_WriteFM1Register:
@@ -361,3 +377,21 @@ MoonSound_WriteMemory_Loop:
 	dec a
 	jr nz,MoonSound_WriteMemory_Loop
 	ret
+
+MoonSound_volumeTable:
+	db 3FH, 3FH
+	db 3FH, 3FH
+	db 3FH, 36H
+	db 3FH, 36H
+	db 3FH, 2DH
+	db 3FH, 2DH
+	db 3FH, 24H
+	db 36H, 24H
+	db 36H, 1BH
+	db 2DH, 1BH
+	db 2DH, 12H
+	db 24H, 12H
+	db 24H, 09H
+	db 1BH, 09H
+	db 1BH, 00H
+	db 1BH, 00H
