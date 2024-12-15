@@ -350,7 +350,7 @@ initializeVGMRePlay:
 		ld a,LoadSamples?					;debug function to skip sample load
 		and A
 		ret z
-		ld    bc,0                          ;track nr 0 will alos initialize samples
+		ld    bc,0                          ;track nr 0 is samples
 		ld    a,usas2repBlock and 255               ;ahl = sound data (after format ID, so +1)
 		ld    hl,$8000+1
 		call  RePlayer_Play                 ;bc = track number, ahl = sound data (after format ID, so +1)

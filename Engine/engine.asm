@@ -278,7 +278,7 @@ enableWorldMap:
 		out	 ($a8),a
 		ld		a,2
 		out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
-		ld	 a,F2Menublock                 ;F1 Menu routine at $4000
+		ld	 a,F2Menublock
 		jp	 block12
 
 

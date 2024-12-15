@@ -1,5 +1,5 @@
 ;Usas2 F2 menu
-phase	f1MenuAddress ;at $4000 page 1
+;phase	f1MenuAddress ;at $4000 page 1
 
 worldMapScreenPosition: equ 0
 .x: equ 28

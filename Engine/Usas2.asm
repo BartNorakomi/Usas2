@@ -1,8 +1,8 @@
 		fname	"..\Usas2.rom",0	;Append code to existing Usas2.Rom file
 
 ;Debug stuff
-LoadSamples?: equ 0
-MusicOn?:   equ 0
+LoadSamples?: equ 1
+MusicOn?:   equ 1
 LogoOn?:    equ 0
 PlayerCanJumpThroughTopOfScreen?: equ 0
 
@@ -491,15 +491,14 @@ engineRomBlockLength:		equ $-RomStartAddress-EnginePage3RomStartAddress
 F1Menublock:				equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$02
 f1MenuRomStartAddress:		equ $-RomStartAddress
 							include	"F1Menu.asm"	
-f1MenuRomEndAddress:		equ $-1-RomStartAddress
-f1MenuBlockLength:			equ $-RomStartAddress-f1MenuRomStartAddress
-							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-
-F2Menublock:				equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$02
-f2MenuRomStartAddress:		equ $-RomStartAddress
+; f1MenuRomEndAddress:		equ $-1-RomStartAddress
+; f1MenuBlockLength:			equ $-RomStartAddress-f1MenuRomStartAddress
+;							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+F2Menublock:				equ F1Menublock ;($-RomStartAddress) and (romsize-1) /RomBlockSize ;$02
+; f2MenuRomStartAddress:		equ $-RomStartAddress
 							include	"F2Menu.asm"	
 f2MenuRomEndAddress:		equ $-1-RomStartAddress
-f2MenuBlockLength:			equ $-RomStartAddress-f2MenuRomStartAddress
+; f2MenuBlockLength:			equ $-RomStartAddress-f2MenuRomStartAddress
 							DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 Loaderblock:  				equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$03
@@ -533,6 +532,8 @@ movementPat2RomStartAddress:	equ $-RomStartAddress
 movementPat2BlockLength:		equ $-RomStartAddress-movementPat2RomStartAddress
 								DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
+;Skip block to #9
+forg RomBlockLayout.CutScene*romblocksize | org RomBlockLayout.CutScene*romblocksize+RomStartAddress
 teamNXTlogoblock:			equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ;$8
 teamNXTlogoRomStartAddress:	equ $-RomStartAddress
 							phase	teamNXTlogoAddress
@@ -546,13 +547,11 @@ teamNXTlogoBlockLength:		equ $-RomStartAddress-teamNXTlogoRomStartAddress
 forg RomBlockLayout.AnchoredData*romblocksize | org RomBlockLayout.AnchoredData*romblocksize+RomStartAddress
 
 ;[GFX blocks]
-;         (sc5 tilesheets)
 GraphicsSc5DataStartBlock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $60
 GraphicsSc5DataRomStartAddress:	equ $-RomStartAddress
 								include "GraphicsSc5Data.asm"
 GraphicsSc5DataBlockLength:		equ $-RomStartAddress-GraphicsSc5DataRomStartAddress
 
-;          (hardware sprites)
 SpriteDataStartBlock:		equ ($-RomStartAddress) and (romsize-1) /RomBlockSize ; $7c
 SpriteDataRomStartAddress:	equ $-RomStartAddress
 							include "SpriteData.asm"

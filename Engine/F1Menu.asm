@@ -756,4 +756,4 @@ SelectWeapon:                         ;just set the next magic weapon
   nop | nop | nop                     ;magic 13 (nothing)
   
 
-  dephase
+ ; dephase
