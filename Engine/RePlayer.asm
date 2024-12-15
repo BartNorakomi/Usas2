@@ -4,6 +4,7 @@
 	INCLUDE "MoonSound.asm"
 	INCLUDE "RePlayerSFX.asm"
 
+RePlayer_BANK_REGISTER: equ 7000H
 RePlayer_STACK_CAPACITY: equ 128
 FormatOPL4_ID: equ 1
 
@@ -114,7 +115,7 @@ RePlayer_Tick:
 	ld a,(ix + 2)
 	ld (RePlayer_currentBank),a
 ;	RePlayer_SetBank_M
-	ld (7000H),a
+	ld (RePlayer_BANK_REGISTER + 100H),a
 	call RePlayer_Process
 	ld b,a
 	ld a,(RePlayer_currentBank)
@@ -130,7 +131,7 @@ RePlayer_Tick:
 	pop af
 	ld (RePlayer_currentBank),a
 ;	RePlayer_SetBank_M
-	ld (7000H),a
+	ld (RePlayer_BANK_REGISTER),a
 	ret
 
 ; hl = sound data

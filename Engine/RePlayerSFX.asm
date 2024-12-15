@@ -58,7 +58,7 @@ RePlayerSFX_Tick_Loop:
 	ld a,(ix + 2)
 	ld (RePlayer_currentBank),a
 ;	RePlayerSFX_SetBank_M
-	ld (7000H),a
+	ld (RePlayer_BANK_REGISTER + 100H),a
 	call RePlayer_Process
 	ld (ix + 3),a
 	ld a,(RePlayer_currentBank)
@@ -75,7 +75,7 @@ RePlayerSFX_Tick_Next:
 	pop af
 	ld (RePlayer_currentBank),a
 ;	RePlayer_SetBank_M
-	ld (7000H),a
+	ld (RePlayer_BANK_REGISTER),a
 	ret
 
 RePlayerSFX_channels:

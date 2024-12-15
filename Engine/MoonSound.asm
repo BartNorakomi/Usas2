@@ -196,7 +196,7 @@ MoonSound_Jump:
 	add hl,de
 	ld (RePlayer_currentBank),a
 ;	RePlayer_SetBank_M
-	ld (7000H),a
+	ld (RePlayer_BANK_REGISTER + 100H),a
 	jp MoonSound_Process_Loop
 
 ; hl = sound data
@@ -221,7 +221,7 @@ MoonSound_Call:
 	add a,b
 	ld (RePlayer_currentBank),a
 ;	RePlayer_SetBank_M
-	ld (7000H),a
+	ld (RePlayer_BANK_REGISTER + 100H),a
 	jp MoonSound_Process_Loop
 
 ; hl = sound data
@@ -237,7 +237,7 @@ MoonSound_Return:
 	ld a,(ix + 2)
 	ld (RePlayer_currentBank),a
 ;	RePlayer_SetBank_M
-	ld (7000H),a
+	ld (RePlayer_BANK_REGISTER + 100H),a
 	jp MoonSound_Process_Loop
 
 MoonSound_Mute:
