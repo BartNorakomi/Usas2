@@ -15,12 +15,14 @@ MoonSound_WAVE_DATA: equ MoonSound_WAVE_BASE + 1
 
 ; f <- c: found
 MoonSound_Detect:
-	call MoonSound_ReadStatusRegister  ; skip potential 02H read
 	call MoonSound_ReadStatusRegister
 	and a
 	ret nz
 	ld de,0503H
 	call MoonSound_WriteFM2Register  ; enable FM2, WAVE
+	call MoonSound_ReadStatusRegister  ; confirm 02H enable confirm status (openMSX supports, webMSX does not)
+	xor 02H                            ; Note: only works one time after reset, so never detect more than once!
+	ret nz
 	ld a,02H
 	call MoonSound_ReadWaveRegister  ; check ID
 	and 11100000B
