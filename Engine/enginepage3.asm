@@ -1392,11 +1392,12 @@ CopyRomToVram:
 		ld		a,(PageToWriteTo)             ;0=page 0 or 1, 1=page 2 or 3
 		call	SetVdp_Write
 		ld		hl,(AddressToWriteFrom)         ;set next line to start writing from
-		add		hl,de                           ;increase 128 bytes to go to the next line
-		ld		(AddressToWriteFrom),hl
+;		add		hl,de                           ;increase 128 bytes to go to the next line
+;		ld		(AddressToWriteFrom),hl
 		ld		a,(NXAndNY)
 		ld		b,a
 		otir
+		ld		(AddressToWriteFrom),hl
 		ret
 
 

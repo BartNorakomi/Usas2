@@ -1293,6 +1293,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
 		ld		de,$8000 + ((216+016)*128) + (000/2) - 128  ;(y*128) + (x/2)
 		ld		bc,$0000 + (016*256) + (128/2)        ;(ny*256) + (nx/2)
+		ld hl,gfx.PlatformMovingSmallOmnidirectional+$4000
 		ld		a,GfxObjectsForVramBlock              ;block to copy graphics from
 		call	CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 		ld		a,1
@@ -1348,6 +1349,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		hl,$4000 + (016*128) + (000/2) - 128  ;(y*128) + (x/2)
 		ld		de,$8000 + (Object020Table.sy*128) + (000/2) - 128  ;(y*128) + (x/2)
 		ld		bc,$0000 + (031*256) + (056/2)        ;(ny*256) + (nx/2)
+		ld hl,gfx.ratFaceBatSpawner+0x4000
 		ld		a,GfxObjectsForVramBlock              ;block to copy graphics from
 		call	CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 		ret
@@ -1578,6 +1580,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    hl,$4000 + (016*128) + (186/2) - 128  ;(y*128) + (x/2)
 		ld    de,$8000 + (216*128) + (000/2) - 128  ;(y*128) + (x/2)
 		ld    bc,$0000 + (021*256) + (054/2)        ;(ny*256) + (nx/2)
+		ld	hl,gfx.129hugeSpider.sc5+0x4000
 		ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
 		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 		ret

@@ -4,12 +4,16 @@
 GfxObjectsForVramBlock: equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 ;GfxObjectsForVram:
 phase	$000
-		incbin "..\grapx\GfxObjectsForVram.SC5",7,48 * 128 ;skip header, 128 lines=6K
+		incbin "..\grapx\GfxObjectsForVram.SC5",7,48 * 128 ;skip header, 48 lines=6K
 		; DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+gfx.PlatformMovingSmallOmnidirectional: incbin "..\grapx\016-PlatformMovingSmallOmnidirectional.sc5.gfx"
+gfx.ratFaceBatSpawner: incbin "..\grapx\020-ratFaceBatSpawner.sc5.gfx"
+gfx.129hugeSpider.sc5: incbin "..\grapx\129-hugeSpider.sc5.gfx"
 Graphicsblock4: equ   GfxObjectsForVramBlock ;($-RomStartAddress) and (romsize-1) /RomBlockSize ;GfxObjectsForVramBlock+2
 ; phase	$000
 itemsKarniMataPage3:
 		incbin "..\grapx\itemsKarniMataPage3.SC5",7,40 * 128 ;skip header, 40 lines=5K
+
 dephase
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	;ds		$c000-$,$ff
 
