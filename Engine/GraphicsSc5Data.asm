@@ -4,27 +4,27 @@
 GfxObjectsForVramBlock: equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 ;GfxObjectsForVram:
 phase	$000
-		incbin "..\grapx\GfxObjectsForVram.SC5",7,128 * 128 ;skip header, 128 lines
-		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-
-Graphicsblock4: equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;GfxObjectsForVramBlock+2
-phase	$000
+		incbin "..\grapx\GfxObjectsForVram.SC5",7,48 * 128 ;skip header, 128 lines=6K
+		; DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+Graphicsblock4: equ   GfxObjectsForVramBlock ;($-RomStartAddress) and (romsize-1) /RomBlockSize ;GfxObjectsForVramBlock+2
+; phase	$000
 itemsKarniMataPage3:
-		incbin "..\grapx\itemsKarniMataPage3.SC5",7,128 * 40 ;skip header, 40 lines
+		incbin "..\grapx\itemsKarniMataPage3.SC5",7,40 * 128 ;skip header, 40 lines=5K
 dephase
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	;ds		$c000-$,$ff
 
 Graphicsblock5:			equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;Graphicsblock4+1 
 phase	$8000
 scoreboard:
-		incbin "..\grapx\scoreboard\scoreboard.SC5",7,39*128  ;39 lines high
+		incbin "..\grapx\scoreboard\scoreboard.SC5",7,39*128  ;39 lines high =5K
 itemsKarniMata:
-		incbin "..\grapx\itemsKarniMata.SC5",7,40*128  ;40 lines high
+		incbin "..\grapx\itemsKarniMata.SC5",7,40*128  ;40 lines high=5K
 ElementalWeapons:
-		incbin "..\grapx\ElementalWeapons.SC5",7,22*128  ;22 lines high
+		incbin "..\grapx\ElementalWeapons.SC5",7,22*128  ;22 lines high=4K
 dephase
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
+;Ro: the following ones could be packed and managed:
 TeamNXTLogoTransparantGraphicsblock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;Graphicsblock5+1
 		incbin "..\grapx\TeamNXTLogo\TransparantBlocks.SC5",7,200*128  ;skip header, height is 200, total bytes = $6400
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
@@ -34,15 +34,15 @@ TeamNXTLogoNonTransparantGraphicsblock:  equ   ($-RomStartAddress) and (romsize-
 
 
 F1MenuGraphicsBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;BossAreaTilesBlock+2
-		incbin "..\grapx\F1Menu\F1Menu.SC5",7,212 * 128      ;212 lines
+		incbin "..\grapx\F1Menu\F1Menu.SC5",7,212 * 128      ;212 lines > could be packed from 30 to 1,5KB
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 PrimaryWeaponSelectGraphicsBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;F1MenuGraphicsBlock+2
-		incbin "..\grapx\F1Menu\PrimaryWeaponSelectScreen.SC5",7,212 * 128      ;212 lines
+		incbin "..\grapx\F1Menu\PrimaryWeaponSelectScreen.SC5",7,212 * 128      ;212 lines > could be packed from 30 to 1,6KB
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 F2MenuGraphicsBlock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;Worldmap
-		incbin "..\grapx\F2Menu\worldmap.SC5",0,212 * 128      ;212 lines
+		incbin "..\grapx\F2Menu\worldmap.SC5",0,212 * 128      ;212 lines	> could be packed from 30 to 3,8KB
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
 

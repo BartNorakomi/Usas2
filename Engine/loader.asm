@@ -1039,6 +1039,116 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ret
 
 
+;013-bossPlant
+.Object013: 
+		ld		hl,Object013Table
+		call	.copyObjectTemplate
+		; call	.applyObjectClassGeneral
+		call	.object013CopyBackDrop
+		ld		de,roomObjectClass.General.numBytes
+		ret
+
+;put boss plant backdrop in all 4 pages
+.object013CopyBackDrop:
+	ld    a,0
+	ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+	ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+	ld    de,$0000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+	ld    bc,$0000 + (212*256) + (256/2)        ;(ny*256) + (nx/2)
+	ld    a,BossPlantBackdropBlock              ;block to copy graphics from
+	call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+	ld    hl,.Page0ToPage1CopyTable
+	call  DoCopy
+
+	ld    a,1
+	ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
+	ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+	ld    de,$0000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
+	ld    bc,$0000 + (212*256) + (256/2)        ;(ny*256) + (nx/2)
+	ld    a,BossPlantBackdropBlock              ;block to copy graphics from
+	call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
+
+	ld    hl,.Page0ToPage3CopyTable
+	call  DoCopy
+	ld    hl,TinyCopyWhichFunctionsAsWaitVDPReady
+	call  DoCopy
+	ret  
+
+.Page0ToPage1CopyTable:
+	db    000,000,000,000   ;sx,--,sy,spage
+	db    000,000,000,001   ;dx,--,dy,dpage
+	db    000,001,212,000   ;nx,--,ny,--
+	db    000,000,$E0       ;fast copy HMMM > ro: changed to YMMM, which is faster
+.Page0ToPage3CopyTable:
+	db    000,000,000,000   ;sx,--,sy,spage
+	db    000,000,000,003   ;dx,--,dy,dpage
+	db    000,001,212,000   ;nx,--,ny,--
+	db    000,000,$E0       ;fast copy YMMM
+
+
+;014-BreakableWall
+.Object014:
+		ld		hl,Object014Table
+		call	.copyObjectTemplate
+		call	.applyObjectClassBreakableWall
+		push	de
+		call	.CheckWallLeftEdge              ;check if wall is at left edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
+		call	.CheckWallRightEdge             ;check if wall is at right edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
+		pop		de
+		ret  
+
+;check if wall is at left edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
+.CheckWallLeftEdge: 
+		ld    a,(iy+enemies_and_objects.x)
+		or    (iy+enemies_and_objects.x+1)
+		ret   nz
+
+		ld    hl,(clesX)
+		ld    de,16
+		sbc   hl,de
+		ret   nc
+
+.remove:push  ix
+		push  iy
+		pop   ix
+		call  removeObjectFromRoomMapData	;RemoveWallFromRoomTiles
+		set   0,(iy+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=wall bashed)
+		set   0,(iy+enemies_and_objects.v3)       ;v3=entered room inside a wall ?
+		pop   ix
+		ret
+
+;check if wall is at right edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
+.CheckWallRightEdge:
+	;ro:this is gonna be shitty - but gets the job done
+;	ld	a,(checktile.selfmodifyingcodeMapLenght+1)
+;	sub 2
+		ld	 a,(roomMap.width)
+		ld	 l,A
+		ld	 h,0
+		add	 hl,hl	;x2
+		add	 hl,hl	;x4
+		add	 hl,hl	;x8
+		ld	 de,16
+		sbc  hl,de 	;cy=0 since sub2 is > 0
+		ex	 de,hl
+
+		ld    hl,(clesX)
+		sbc   hl,de
+		ret   c
+
+		ld	 l,(iy+enemies_and_objects.x)
+		ld	 h,(iy+enemies_and_objects.x+1)
+		ld	 c,(iy+enemies_and_objects.nx)
+		ld	 b,0
+		add	 hl,bc
+		;	ld    de,271                          ;lets say that if a wall's x>272 is on the right edge of the screen.
+		sbc   hl,de
+		ret   c
+		jp .remove
+
+
+
 ;015-PlatformRetracting 
   ;retracting platform has 3 different situations:
   ;1=only 1 retracting platform in total: animation will be platform1 on, platform1 off
@@ -1191,117 +1301,8 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ret
 
 
-;013-bossPlant
-.Object013: 
-		ld		hl,Object013Table
-		call	.copyObjectTemplate
-		; call	.applyObjectClassGeneral
-		call	.object013CopyBackDrop
-		ld		de,roomObjectClass.General.numBytes
-		ret
 
-;put boss plant backdrop in all 4 pages
-.object013CopyBackDrop:
-	ld    a,0
-	ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-	ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-	ld    de,$0000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-	ld    bc,$0000 + (212*256) + (256/2)        ;(ny*256) + (nx/2)
-	ld    a,BossPlantBackdropBlock              ;block to copy graphics from
-	call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-	ld    hl,.Page0ToPage1CopyTable
-	call  DoCopy
-
-	ld    a,1
-	ld    (PageToWriteTo),a                     ;0=page 0 or 1, 1=page 2 or 3
-	ld    hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-	ld    de,$0000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
-	ld    bc,$0000 + (212*256) + (256/2)        ;(ny*256) + (nx/2)
-	ld    a,BossPlantBackdropBlock              ;block to copy graphics from
-	call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
-
-	ld    hl,.Page0ToPage3CopyTable
-	call  DoCopy
-	ld    hl,TinyCopyWhichFunctionsAsWaitVDPReady
-	call  DoCopy
-	ret  
-
-.Page0ToPage1CopyTable:
-	db    000,000,000,000   ;sx,--,sy,spage
-	db    000,000,000,001   ;dx,--,dy,dpage
-	db    000,001,212,000   ;nx,--,ny,--
-	db    000,000,$E0       ;fast copy HMMM > ro: changed to YMMM, which is faster
-.Page0ToPage3CopyTable:
-	db    000,000,000,000   ;sx,--,sy,spage
-	db    000,000,000,003   ;dx,--,dy,dpage
-	db    000,001,212,000   ;nx,--,ny,--
-	db    000,000,$E0       ;fast copy YMMM
-
-
-;014-BreakableWall
-.Object014:
-		ld		hl,Object014Table
-		call	.copyObjectTemplate
-		call	.applyObjectClassBreakableWall
-		push	de
-		call	.CheckWallLeftEdge              ;check if wall is at left edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
-		call	.CheckWallRightEdge             ;check if wall is at right edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
-		pop		de
-		ret  
-
-;check if wall is at left edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
-.CheckWallLeftEdge: 
-		ld    a,(iy+enemies_and_objects.x)
-		or    (iy+enemies_and_objects.x+1)
-		ret   nz
-
-		ld    hl,(clesX)
-		ld    de,16
-		sbc   hl,de
-		ret   nc
-
-.remove:push  ix
-		push  iy
-		pop   ix
-		call  removeObjectFromRoomMapData	;RemoveWallFromRoomTiles
-		set   0,(iy+enemies_and_objects.v8)       ;v8=Phase (0=idle, 1=wall bashed)
-		set   0,(iy+enemies_and_objects.v3)       ;v3=entered room inside a wall ?
-		pop   ix
-		ret
-
-;check if wall is at right edge of screen AND player enters IN the wall. If so, remove wall from roomtiles
-.CheckWallRightEdge:
-	;ro:this is gonna be shitty - but gets the job done
-;	ld	a,(checktile.selfmodifyingcodeMapLenght+1)
-;	sub 2
-		ld	 a,(roomMap.width)
-		ld	 l,A
-		ld	 h,0
-		add	 hl,hl	;x2
-		add	 hl,hl	;x4
-		add	 hl,hl	;x8
-		ld	 de,16
-		sbc  hl,de 	;cy=0 since sub2 is > 0
-		ex	 de,hl
-
-		ld    hl,(clesX)
-		sbc   hl,de
-		ret   c
-
-		ld	 l,(iy+enemies_and_objects.x)
-		ld	 h,(iy+enemies_and_objects.x+1)
-		ld	 c,(iy+enemies_and_objects.nx)
-		ld	 b,0
-		add	 hl,bc
-		;	ld    de,271                          ;lets say that if a wall's x>272 is on the right edge of the screen.
-		sbc   hl,de
-		ret   c
-		jp .remove
-
-
-
-;020-ratFaceBatSpawner
+;020-ratFaceBatSpawner (karnimata)
 .Object020:
   		ld		hl,Object020Table			;object=RatFace
 		call	.copyObjectTemplate
