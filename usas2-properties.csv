@@ -313,7 +313,7 @@ Enabled	configName	target	Name	identity	PropertyName	PropertyValue	type	Descript
 1	Usas2		RoomObject	PlatformMovingMedium	uid	57					
 1	Usas2		RoomObject	PlatformMovingSmall	objectClass	MovingPlatform					
 1	Usas2		RoomObject	PlatformMovingSmall	uid	11					
-1	Usas2		RoomObject	PlatformMovingSmallOmnidirectional	objectClass	platform					
+1	Usas2		RoomObject	PlatformMovingSmallOmnidirectional	objectClass	general					
 1	Usas2		RoomObject	PlatformMovingSmallOmnidirectional	uid	16					
 1	Usas2		RoomObject	PlatformMovingSmallSwitch	objectClass	MovingPlatform					
 1	Usas2		RoomObject	PlatformMovingSmallSwitch	uid	12					

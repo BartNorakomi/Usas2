@@ -1507,7 +1507,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
 
 
-;128-hugeBlob, class=general
+;128-hugeBlob, class=general SF2 only (there's no check)
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=jumping)
 ;v3=Vertical Movement
@@ -2512,11 +2512,11 @@ RemoveSpritesFromScreen:
   ret
 
 CopyVramObjectsPage1and3:
-  ld    a,(VramGraphicsPage1And3AlreadyInScreen?)
-  or    a
-  ret   nz
-  ld    a,1
-  ld    (VramGraphicsPage1And3AlreadyInScreen?),a
+		ld    a,(VramGraphicsPage1And3AlreadyInScreen?)
+		or    a
+		ret   nz
+		ld    a,1
+		ld    (VramGraphicsPage1And3AlreadyInScreen?),a
 
 ;Copy level objects to page 1
 		ld    a,(slot.page12rom)        ;all RAM except page 12
@@ -2552,7 +2552,8 @@ CopyVramObjectsPage1and3:
 		jp    copyGraphicsToScreen.loop1   
 
 
-copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
+;display the scoreboard (copy it from ROM)
+copyScoreBoard:
 		ld    a,(ScoreBoardAlreadyInScreen?)
 		or    a
 		ret   nz
@@ -2562,15 +2563,15 @@ copyScoreBoard:                       ;set scoreboard from page 2 rom to Vram
 		ld    a,Graphicsblock5              ;block to copy from
 		call  block34
 
-		ld    hl,$6C00+128                      ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
+		ld    hl,216*128+128                      ;page 0 - screen 5 - bottom 40 pixels (scoreboard)
 		xor   a
 		call	SetVdp_Write	
 		ld		hl,scoreboard
 		ld    c,$98
-		ld    a,38/2                        ;copy 38 lines..
+		ld    a,38/2                        ;copy 38 lines.. 
 		ld    b,0
 		call  copyGraphicsToScreen.loop1
-		jp    outix128
+		jp    outix128						;last line
 
 
 

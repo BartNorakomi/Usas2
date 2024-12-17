@@ -27,13 +27,18 @@ startTheGame:
 		call	enableWorldmap
 		ld		hl,$B000
 		call	newwm
-		; call	ResetPushStones	;[engine.asm]
+
+		ld		a,(slot.page12rom)            ;RAMROMROMRAM
+		out		($a8),a
+		ld		a,Loaderblock                 ;loader routine at $4000
+		call	block12
+		call	CopyScoreBoard                ;display the scoreboard
+		call	CopyVramObjectsPage1and3      ;copy some ruin specific shizl > should be at ruinInit:
 
 		ld		a,-1
 		ld		(PreviousRuin),a
 		call	loadRoom
-		; di
-		; halt
+
 		jp		LevelEngine
 
 
@@ -73,23 +78,19 @@ loadGraphics:
 		call	InitializeRoomType
 		call	ConvertToMapinRam             ;convert 16bit tiles into 0=background, 1=hard foreground, 2=ladder, 3=lava. Converts from map in $4000 to MapData in page 3
 
-
-
 		call	SwapSpatColAndCharTable2	;[engine.asm]
 		call	SwapSpatColAndCharTable		;[engine.asm]
 		call	SwapSpatColAndCharTable2	;[engine.asm]
 		
-		call	CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
-		call	CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
+		; call	CopyScoreBoard                ;set scoreboard from page 2 rom to Vram -> to page 0 - bottom 40 pixels (scoreboard) |loader|
+		; call	CopyVramObjectsPage1and3      ;copy VRAM objects to page 1 and 3 - screen 5 - bottom 40 pixels |loader|
 
 		call	GetRoomPaletteId
 		call	getPalette
 		call	SetMapPalette
 
 		call	BuildUpMap                    ;build up the map in Vram to page 1,2,3,4
-		call	SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables
-		
-
+		call	SetObjects                    ;after unpacking the map to ram, all the object data is found at the end of the mapdata. Convert this into the object/enemytables		
 
 		call  RemoveSpritesFromScreen       ;|loader|
 		call  SwapSpatColAndCharTable
