@@ -33,7 +33,7 @@ startTheGame:
 		ld		a,Loaderblock                 ;loader routine at $4000
 		call	block12
 		call	CopyScoreBoard                ;display the scoreboard
-		; call	CopyVramObjectsPage1and3      ;copy some ruin specific shizl > should be at ruinInit:
+		call	CopyVramObjectsPage1and3      ;copy some ruin specific shizl > should be at ruinInit:
 
 		ld		a,-1
 		ld		(PreviousRuin),a
