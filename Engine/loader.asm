@@ -1545,6 +1545,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    hl,$4000 + (016*128) + (112/2) - 128  ;(y*128) + (x/2)
 		ld    de,$8000 + (216*128) + (000/2) - 128  ;(y*128) + (x/2)
 		ld    bc,$0000 + (032*256) + (074/2)        ;(ny*256) + (nx/2)
+	ld	hl,0x4000+gfx.128HugeBlob.sc5
 		ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
 		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 		ret
@@ -1580,7 +1581,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld    hl,$4000 + (016*128) + (186/2) - 128  ;(y*128) + (x/2)
 		ld    de,$8000 + (216*128) + (000/2) - 128  ;(y*128) + (x/2)
 		ld    bc,$0000 + (021*256) + (054/2)        ;(ny*256) + (nx/2)
-		ld	hl,gfx.129hugeSpider.sc5+0x4000
+	ld	hl,gfx.129hugeSpider.sc5+0x4000
 		ld    a,GfxObjectsForVramBlock              ;block to copy graphics from
 		call  CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 		ret
@@ -2181,15 +2182,12 @@ Object143Table:
 
 ;128-hugeBlob
 Object128Table:
-       ;alive?,Sprite?,Movement Pattern,  y,   x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
-		db isAliveHs,isSprite|dw HugeBlob|db 0|dw 0|db 48,46|dw 16*16,spat+(16*2)|db 72-(12*6),12  ,12*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005,movementpatterns1block| ds fill-1
-;Huge Blob software sprite part
-       ;alive?,Sprite?,Movement Pattern,             y,      x,   ny,nx,Objectnr#                                    ,sx, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life,   
+       ;alive?,Sprite?,			Movement Pattern,  	 y,	  x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
+		db isAliveHs,isSprite	|dw HugeBlob		|db 0|dw 0|db 48,46|dw 16*16,spat+(16*2)|db 72-(12*6),12  ,12*16,+00,+00,+00,+01,+00,+00,+00,+00,+00, 0|db 005,movementpatterns1block| ds fill-1
 .body:	db isAliveSs,isNotSprite|dw HugeBlobSWsprite|db 0|dw 0|db 21,14|dw CleanOb1,0 db 0,0,0,                     +000,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1
 
 ;129-hugeSpider
 Object129Table:
-;Huge Spider Legs
        ;alive?,Sprite?,Movement Pattern,              y,   x,   ny,nx,spnrinspat,spataddress,nrsprites,nrspr,nrS*16,v1, v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life 
 .legs:	db isAliveHs,isSprite|dw HugeSpiderLegs      |db 0|dw 0|db 24,64|dw 12*16,spat+(12*2)|db 72-(08*6),08  ,08*16,+00,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 005,movementpatterns1block| ds fill-1  
 .body:	db isAliveSs,isNotSprite|dw HugeSpiderBody   |db 0|dw 0|db 21,27|dw CleanOb1,0 db 0,0,0,                     +027,+00,+00,+00,+00,+00,+00,+00,+00, 0|db 000,movementpatterns1block| ds fill-1

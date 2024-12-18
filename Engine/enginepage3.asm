@@ -2,8 +2,8 @@ phase	enginepage3addr
 
 
 ;current location=karnimata
-roomX: equ ("B"-"A")*26 + "V"-"A"
-roomY: equ 27
+roomX: equ ("B"-"A")*26 + "R"-"A"
+roomY: equ 28
 
 WorldMapPosition:
 .Y:  db  roomY-1
@@ -33,7 +33,7 @@ startTheGame:
 		ld		a,Loaderblock                 ;loader routine at $4000
 		call	block12
 		call	CopyScoreBoard                ;display the scoreboard
-		call	CopyVramObjectsPage1and3      ;copy some ruin specific shizl > should be at ruinInit:
+		; call	CopyVramObjectsPage1and3      ;copy some ruin specific shizl > should be at ruinInit:
 
 		ld		a,-1
 		ld		(PreviousRuin),a
@@ -495,7 +495,7 @@ RuinPropertiesLUT:
 	DB 0,0,0,"             "
 	DB 1,1,0,"Polux        "
 	DB 2,2,0,"Lemniscate   "
-	DB 6,6,3,"World Forrest"
+	DB 3,3,3,"World Forest "
 	DB 4,4,0,"Pegu         "
 	DB 0,0,0,"Bio          "
 	DB 6,6,3,"Karni Mata   "

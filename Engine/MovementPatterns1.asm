@@ -3512,6 +3512,7 @@ SensorTentaclesAnimation:
   dw  SensorTentacles4_Char
   dw  SensorTentacles5_Char
 
+
 HugeBlock:
 
 ;  call  BackdropRed
@@ -3556,13 +3557,13 @@ HugeBlock:
   jp    nz,CheckCollisionObjectPlayer
 ;/check if this object has to be put this frame. If not, then only check collision with player
 
-  call  .MovePlatForm               
+  call  .Move        
   ld    a,(ix+enemies_and_objects.SnapPlayer?)
   or    a
   call  nz,MovePlayerAlongWithObject
   call  CheckCollisionObjectPlayer          ;check collision with player - and handle interaction of player with object
   call  RestoreBackgroundForObjectInCurrentFrame
-  call  .AnimateHugeBlock
+  call  .Animate
 
   push  ix
   call  PutSF2ObjectInCurrentFrame ;CHANGES IX   
@@ -3574,7 +3575,7 @@ HugeBlock:
   jp    z,switchpageSF2Engine               ;when last object of this frame is handled, switch page
   ret
 
-.MovePlatForm:
+.Move:
 		;  ld    a,(ix+enemies_and_objects.v10)        ;v10=speed
 		call  MoveObjectHorizontallyAndVertically
 		call  ChangeDirectionWhenOutOfBox
@@ -3586,34 +3587,34 @@ HugeBlock:
 		call	setSf2ObjectXY
 		ret
 
-  .AnimateHugeBlock:
-  ld    a,(ix+enemies_and_objects.v1)         ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
-  or    a
-  ld    hl,.HugeBlockFrame
-  jr    z,.HugeBlockVersionFound
-  dec   a
-  ld    hl,.HugeBlockTopHalfFrame
-  jr    z,.HugeBlockVersionFound
-  ld    hl,.HugeBlockBottomHalfFrame
-  .HugeBlockVersionFound:
-  
-  ld    a,(hl)
-  ld    (Player1Frame),a
-  inc   hl
-  ld    a,(hl)
-  ld    (Player1Frame+1),a
-  inc   hl
-  ld    b,(hl)                              ;frame list block
-  inc   hl
-  ld    c,(hl)                              ;sprite data block
-  ret
+.Animate:
+    ld    a,(ix+enemies_and_objects.v1)         ;v1=0 normal total block, v1=1 top half, v1=2 bottom half
+    or    a
+    ld    hl,.HugeBlockFrame
+    jr    z,.HugeBlockVersionFound
+    dec   a
+    ld    hl,.HugeBlockTopHalfFrame
+    jr    z,.HugeBlockVersionFound
+    ld    hl,.HugeBlockBottomHalfFrame
+.HugeBlockVersionFound:
+    ld    a,(hl)
+    ld    (Player1Frame),a
+    inc   hl
+    ld    a,(hl)
+    ld    (Player1Frame+1),a
+    inc   hl
+    ld    b,(hl)                              ;frame list block
+    inc   hl
+    ld    c,(hl)                              ;sprite data block
+    ret
 
-  .HugeBlockFrame:
+.HugeBlockFrame:
   dw ryupage0frame000 | db ryuframelistblock, ryuspritedatablock
-  .HugeBlockTopHalfFrame:
+.HugeBlockTopHalfFrame:
   dw ryupage0frame001 | db ryuframelistblock, ryuspritedatablock
-  .HugeBlockBottomHalfFrame:
+.HugeBlockBottomHalfFrame:
   dw ryupage0frame002 | db ryuframelistblock, ryuspritedatablock
+
 
 RestoreBackgroundForObjectInCurrentFrame:
 	ld    a,(HugeObjectFrame)
@@ -3645,10 +3646,10 @@ PutSF2ObjectInCurrentFrame:
 ;  jp    z,restoreBackgroundObject3
   jp    PutSF2Object5
 
+
+
 WaterfallPalette:
-  incbin "..\grapx\tilesheets\WaterfallScene.tiles.PL"
-
-
+  incbin "..\grapx\tilesheets\WaterfallScene.tiles.PL" ;< tiles? should be default karnimata, right? (ro)
 ;v1=
 ;v2= table
 ;v3=Vertical Movement
@@ -4389,7 +4390,6 @@ GlassBallMovementTable4:  ;repeating steps(128 = end table/repeat), move y, move
   db  128
 
 
-HugeBlob:
 ;v1=Animation Counter
 ;v2=Phase (0=walking slow, 1=jumping)
 ;v3=Vertical Movement
@@ -4398,56 +4398,55 @@ HugeBlob:
 ;v6=Gravity timer
 ;v7=Dont Check Land Platform First x Frames
 ;v8=Has Player Been Hit While on the outer right ladder?
-
-  call  .HandlePlayerFallingOutOfScreenAfterDamaged
-
-  call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
-  exx                                       ;store hl. hl now points to color data
-  call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
-  call  CollisionEnemyPlayer                ;Check if player is hit by enemy
-  ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
-  ld    d,(ix+enemies_and_objects.sprnrinspat+1)
-  bit   1,(ix+enemies_and_objects.hit?)         ;check if enemy is hit ? If so, out white sprite
-	ld		a,HugeBlobWhiteSpriteblock          ;set block at $a000, page 2 - block containing sprite data
-  ret   nz
-	ld		a,HugeBlobSpriteblock               ;set block at $a000, page 2 - block containing sprite data
-  ret
+HugeBlob:
+    call  .HandlePlayerFallingOutOfScreenAfterDamaged
+    call  .HandlePhase                        ;(0=walking, 1=attacking) ;out hl -> sprite character data to out to Vram
+    exx                                       ;store hl. hl now points to color data
+    call  CheckPlayerPunchesEnemy             ;Check if player hit's enemy
+    call  CollisionEnemyPlayer                ;Check if player is hit by enemy
+    ld    e,(ix+enemies_and_objects.sprnrinspat)  ;sprite number * 16 (used for the character and color data in Vram)
+    ld    d,(ix+enemies_and_objects.sprnrinspat+1)
+    bit   1,(ix+enemies_and_objects.hit?)         ;check if enemy is hit ? If so, out white sprite
+    ld		a,HugeBlobWhiteSpriteblock          ;set block at $a000, page 2 - block containing sprite data
+    ret   nz
+    ld		a,HugeBlobSpriteblock               ;set block at $a000, page 2 - block containing sprite data
+    ret
   
-  .HandlePlayerFallingOutOfScreenAfterDamaged:
-  bit   0,(ix+enemies_and_objects.v8)       ;v8=Has Player Been Hit While on the outer right ladder?
-;  jp    nz,PopulateControls.FreezeControls
-  jr    nz,.FreezeControls
-  ld    a,(ShakeScreen?)
-  or    a
-  ret   z
+.HandlePlayerFallingOutOfScreenAfterDamaged:
+    bit   0,(ix+enemies_and_objects.v8)       ;v8=Has Player Been Hit While on the outer right ladder?
+    ;  jp    nz,PopulateControls.FreezeControls
+    jr    nz,.FreezeControls
+    ld    a,(ShakeScreen?)
+    or    a
+    ret   z
 
-  .CheckPlayerOnRightLadder:
-  ld    hl,(ClesX)
-  ld    de,275
-  sbc   hl,de
-  ret   c
-  set   0,(ix+enemies_and_objects.v8)       ;v8=Has Player Been Hit?
-  jp    CollisionEnemyPlayer.PlayerIsHit
+.CheckPlayerOnRightLadder:  ;ro: wot?
+      ld    hl,(ClesX)
+      ld    de,275
+      sbc   hl,de
+      ret   c
+      set   0,(ix+enemies_and_objects.v8)       ;v8=Has Player Been Hit?
+      jp    CollisionEnemyPlayer.PlayerIsHit
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
-  .FreezeControls:
-	ld		a,(Controls)
-  and   %00001100                           ;only able to move right and left
-	ld		(Controls),a
-	ld		a,(NewPrContr)
-  and   %00001100                           ;only able to move right and left
-	ld		(NewPrContr),a
-  ret
+.FreezeControls:
+    ld		a,(Controls)
+    and   %00001100                           ;only able to move right and left
+    ld		(Controls),a
+    ld		a,(NewPrContr)
+    and   %00001100                           ;only able to move right and left
+    ld		(NewPrContr),a
+    ret
   
-  .HandlePhase:
-  ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking, 1=Jumping)  
-  or    a
-  jp    z,HugeBlobWalking
-  
-  HugeBlobJumping:
+.HandlePhase:
+    ld    a,(ix+enemies_and_objects.v2)       ;v2=Phase (0=walking, 1=Jumping)  
+    or    a
+    jp    z,HugeBlobWalking
+
+HugeBlobJumping:
   call  MoveSpriteVertically
   call  .Gravity
   call  .CheckLandOnPlatform
@@ -4461,22 +4460,20 @@ HugeBlob:
   ld    hl,HugeBlob6_Char
   ret
 
-  .CheckLandOnPlatform:  
+.CheckLandOnPlatform:  
   ld    a,(ix+enemies_and_objects.v7)       ;v7=Dont Check Land Platform First x Frames
   dec   a
   jr    z,.ReadyToCheck
   ld    (ix+enemies_and_objects.v7),a       ;v7=Dont Check Land Platform First x Frames
   ret
-  .ReadyToCheck:
-
+.ReadyToCheck:
   ld    a,(ix+enemies_and_objects.v3)       ;v3=Vertical Movement
   or    a
   ret   m
-  
   call  .CheckFloor                         ;checks for floor. if found switch to walking phase
   ret
   
-  .CheckFloor:                              ;checks for floor. if not found invert direction
+.CheckFloor:                              ;checks for floor. if not found invert direction
   call  CheckFloorEnemyObjectLeftSide       ;checks for floor, out z=collision found with floor
   dec A
   jr    z,.ForegroundFound
@@ -4486,7 +4483,7 @@ HugeBlob:
   dec   a                                   ;1 = wall  
   ret   nz
 
-  .ForegroundFound:                         ;both tiles are foreground so lets snap and continue walking
+.ForegroundFound:                         ;both tiles are foreground so lets snap and continue walking
   ;snap to platform
   ld    a,(ix+enemies_and_objects.y)        ;y
   and   %1111 1000
@@ -4496,7 +4493,7 @@ HugeBlob:
   ld    (ShakeScreen?),a 
   jp    DamagePlayerIfNotJumping
 
-  .Gravity:
+.Gravity:
   ld    a,(ix+enemies_and_objects.v6)       ;v6=Gravity timer
   inc   a
   and   3
@@ -4510,7 +4507,7 @@ HugeBlob:
   ld    (ix+enemies_and_objects.v3),a       ;v3=Vertical Movement
   ret
 
-  HugeBlobWalking:
+HugeBlobWalking:
   ld    a,(ix+enemies_and_objects.hit?)     ;check if enemy is hit ? If so, out white sprite
   or    a
   jr    z,.EndCheckHit
@@ -4626,7 +4623,7 @@ HugeBlobSWsprite:
   jr    z,.SetCoordinates
   sub   2
   ld    hl,HugeBlobSwSprite7
-  .SetCoordinates:
+.SetCoordinates:
   ld    a,(hl)                              ;sx
   ld    (ix+enemies_and_objects.v1),a
   inc   hl
@@ -4636,22 +4633,19 @@ HugeBlobSWsprite:
   ld    a,(hl)                              ;ny
   ld    (ix+enemies_and_objects.ny),a
 
-  ld    a,(enemies_and_objects+enemies_and_objects.y)
-
+  ld    a,(enemies_and_objects+enemies_and_objects.y) ;offsetY
   inc   hl
   add   a,(hl)                              ;add to y
   ld    (ix+enemies_and_objects.y),a
 
-  inc   hl
+  inc   hl  ;offsetX
   ld    d,0
   ld    e,(hl)                              ;add to x
-
   ld    a,(enemies_and_objects+enemies_and_objects.x)
   ld    l,a
   ld    a,(enemies_and_objects+enemies_and_objects.x+1)
   ld    h,a
   add   hl,de
-
   ld    (ix+enemies_and_objects.x),l
   ld    (ix+enemies_and_objects.x+1),h
   
