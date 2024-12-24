@@ -10,6 +10,7 @@ gfx.016PlatformMovingSmallOmnidirectional.sc5: incbin "..\grapx\016-PlatformMovi
 gfx.020ratFaceBatSpawner.sc5: incbin "..\grapx\020-ratFaceBatSpawner.sc5.gfx" ;0,868KB
 gfx.128HugeBlob.sc5: incbin "..\grapx\128-HugeBlob.sc5.gfx" ;1,15KB
 gfx.129hugeSpider.sc5: incbin "..\grapx\129-hugeSpider.sc5.gfx" ;0,567KB
+;0E3B=3,5K
 
 Graphicsblock4: equ   GfxObjectsForVramBlock ;($-RomStartAddress) and (romsize-1) /RomBlockSize ;GfxObjectsForVramBlock+2
 ; phase	$000
@@ -26,7 +27,7 @@ scoreboard:
 itemsKarniMata:
 		incbin "..\grapx\itemsKarniMata.SC5",7,40*128  ;40 lines high=5K
 ElementalWeapons:
-		incbin "..\grapx\ElementalWeapons.SC5",7,22*128  ;22 lines high=4K
+		incbin "..\grapx\ElementalWeapons.SC5",7,22*128  ;22 lines high=3K
 dephase
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
 
