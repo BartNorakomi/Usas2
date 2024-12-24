@@ -76,167 +76,145 @@ herospritenrTimes2:       equ 28*2
 CurrentPalette: ds  32
 fadeoutsteps: equ 2
 FadeOutScreenEdges:
-  ld    bc,fadeoutsteps           ;fade out steps per x pixels              
+		ld    bc,fadeoutsteps           ;fade out steps per x pixels              
+		xor   a
+		ld    hl,(clesX)                ;301 = rightmost position
+		ld    de,fadeoutsteps*7                   
+		sbc   hl,de
+		jp    c,FadeOutLeftSide
+		ld    hl,(clesX)                ;301 = rightmost position
+		ld    de,301 - (fadeoutsteps*7)                   
+		sbc   hl,de
+		jp    nc,FadeOutRightSide
+		ret
 
-  xor   a
-  ld    hl,(clesX)                ;301 = rightmost position
-  ld    de,fadeoutsteps*7                   
-  sbc   hl,de
-  jp    c,FadeOutLeftSide
-
-  ld    hl,(clesX)                ;301 = rightmost position
-  ld    de,301 - (fadeoutsteps*7)                   
-  sbc   hl,de
-  jp    nc,FadeOutRightSide
-  ret
-
-  ForceMoveLeft:
 ;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
-  ld    a,(Controls)
-  and   %1111 0111                ;right unpressed
-  or    %0000 0100                ;left pressed
-  ld    (Controls),a  
-  ret
+ForceMoveLeft:
+		ld    a,(Controls)
+		and   %1111 0111                ;right unpressed
+		or    %0000 0100                ;left pressed
+		ld    (Controls),a  
+		ret
+
+ForceMoveRight:
+		ld    a,(Controls)
+		and   %1111 1011                ;left unpressed
+		or    %0000 1000                ;right pressed
+		ld    (Controls),a  
+		ret
   
-  ForceMoveRight:
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-  ld    a,(Controls)
-  and   %1111 1011                ;left unpressed
-  or    %0000 1000                ;right pressed
-  ld    (Controls),a  
-  ret
-  
-  FadeOutRightSide:
-  ld    a,(PlayerFacingRight?)          ;is player facing right ?
-  or    a
-  call  z,ForceMoveLeft
-  ld    a,(PlayerFacingRight?)          ;is player facing right ?
-  or    a
-  call  nz,ForceMoveRight
+FadeOutRightSide:
+		ld    a,(PlayerFacingRight?)          ;is player facing right ?
+		or    a
+		call  z,ForceMoveLeft
+		ld    a,(PlayerFacingRight?)          ;is player facing right ?
+		or    a
+		call  nz,ForceMoveRight
 
-  sbc   hl,bc
-  ld    d,0                       ;palette step (0=normal map palette, 7=completely black)
-  .loop:
-  jr    c,SetPaletteFadeStep
-  inc   d
-  sbc   hl,bc
-  jr    .loop
+		sbc   hl,bc
+		ld    d,0                       ;palette step (0=normal map palette, 7=completely black)
+.loop:
+		jr    c,SetPaletteFadeStep
+		inc   d
+		sbc   hl,bc
+		jr    .loop
 
-  FadeOutLeftSide:
-  ld    a,(PlayerFacingRight?)          ;is player facing right ?
-  or    a
-  call  nz,ForceMoveRight
-  ld    a,(PlayerFacingRight?)          ;is player facing right ?
-  or    a
-  call  z,ForceMoveLeft
-  
-  add   hl,bc
-  ld    d,0                       ;palette step (0=normal map palette, 7=completely black)
-  .loop:
-  jr    c,SetPaletteFadeStep
-  inc   d
-  add   hl,bc
-  jr    .loop
+FadeOutLeftSide:
+		ld    a,(PlayerFacingRight?)          ;is player facing right ?
+		or    a
+		call  nz,ForceMoveRight
+		ld    a,(PlayerFacingRight?)          ;is player facing right ?
+		or    a
+		call  z,ForceMoveLeft
 
-  SetPaletteFadeStep:
-	xor		a                         ;start writing to palette color 0
-	di
-	out		($99),a
-	ld		a,16+128
-	out		($99),a  
-  
-  ld    b,16                      ;16 colors
-  ld    hl,CurrentPalette
-  .loop:                          ;in d=palette step, b=amount of colors
-  ;blue
-  ld    a,(hl)                    ;0 R2 R1 R0 0 B2 B1 B0
-  and   %0000 1111                ;only blue
-  sub   a,d                       ;extract palette step / apply darkening
-  jr    nc,.EndCheckOverFlowBlue  ;overflow ?
-  xor   a                         ;no green
-  .EndCheckOverFlowBlue:
-  ld    c,a                       ;store blue in b
-  ;red
-  ld    a,(hl)                    ;0 R2 R1 R0 0 B2 B1 B0
-  and   %1111 0000                ;only red
-  srl   a                         ;shift all bits 1 step right
-  srl   a                         ;shift all bits 1 step right
-  srl   a                         ;shift all bits 1 step right
-  srl   a                         ;shift all bits 1 step right
-  sub   a,d                       ;extract palette step / apply darkening
-  jr    nc,.EndCheckOverFlowRed   ;overflow ?
-  xor   a                         ;no green
-  .EndCheckOverFlowRed:
-  add   a,a                       ;shift all bits 1 step left
-  add   a,a                       ;shift all bits 1 step left
-  add   a,a                       ;shift all bits 1 step left
-  add   a,a                       ;shift all bits 1 step left
-  or    a,c                       ;add blue to red
-  out   ($9a),a                   ;red + blue
+		add   hl,bc
+		ld    d,0                       ;palette step (0=normal map palette, 7=completely black)
+		.loop:
+		jr    c,SetPaletteFadeStep
+		inc   d
+		add   hl,bc
+		jr    .loop
 
-  inc   hl                        ;green
-  ld    a,(hl)                    ;0 0 0 0 0 G2 G1 G0
-  sub   a,d                       ;extract palette step / apply darkening
-  jr    nc,.EndCheckOverFlowGreen ;overflow ?
-  xor   a                         ;no green
-  .EndCheckOverFlowGreen:
-  out   ($9a),a                   ;green
-  inc   hl  
-  djnz  .loop
+SetPaletteFadeStep:
+		xor		a                         ;start writing to palette color 0
+		di
+		out		($99),a
+		ld		a,16+128
+		out		($99),a  
 
-	ei
-  ret
+		ld    b,16                      ;16 colors
+		ld    hl,CurrentPalette
+.loop:                          ;in d=palette step, b=amount of colors
+;blue
+		ld    a,(hl)                    ;0 R2 R1 R0 0 B2 B1 B0
+		and   %0000 1111                ;only blue
+		sub   a,d                       ;extract palette step / apply darkening
+		jr    nc,.EndCheckOverFlowBlue  ;overflow ?
+		xor   a                         ;no green
+.EndCheckOverFlowBlue:
+		ld    c,a
+;red
+		ld    a,(hl)                    ;0 R2 R1 R0 0 B2 B1 B0
+		and   %1111 0000                ;only red
+		srl   a                         ;shift all bits 1 step right
+		srl   a                         ;shift all bits 1 step right
+		srl   a                         ;shift all bits 1 step right
+		srl   a                         ;shift all bits 1 step right
+		sub   a,d                       ;extract palette step / apply darkening
+		jr    nc,.EndCheckOverFlowRed   ;overflow ?
+		xor   a                         ;no green
+.EndCheckOverFlowRed:
+		add   a,a                       ;shift all bits 1 step left
+		add   a,a                       ;shift all bits 1 step left
+		add   a,a                       ;shift all bits 1 step left
+		add   a,a                       ;shift all bits 1 step left
+		or    a,c                       ;add blue to red
+		out   ($9a),a                   ;red + blue
+;green
+		inc   hl
+		ld    a,(hl)                    ;0 0 0 0 0 G2 G1 G0
+		sub   a,d                       ;extract palette step / apply darkening
+		jr    nc,.EndCheckOverFlowGreen ;overflow ?
+		xor   a                         ;no green
+.EndCheckOverFlowGreen:
+		out   ($9a),a                   ;green
+		inc   hl  
+		djnz  .loop
 
-
-
-
-
-
-
-
-
-
+		ei
+		ret
 
 
 
 BackdropRandom:
   ld    a,r
   jp    SetBackDrop
-
 BackdropOrange:
   ld    a,13
   jp    SetBackDrop
-
 BackdropGreen:
   ld    a,10
   jp    SetBackDrop
-
 BackdropRed:
   ld    a,14
   jp    SetBackDrop
-
 BackdropBlack:
   ld    a,15
   jp    SetBackDrop
-
 BackdropBlue:
   xor   a
-  SetBackDrop:
+SetBackDrop:
 ret
-  di
-  out   ($99),a
-  ld    a,7+128
-  ei
-  out   ($99),a	
-  ret
+	di
+	out   ($99),a
+	ld    a,7+128
+	ei
+	out   ($99),a	
+	ret
 
 ;objects using this: area sign, npc interaction, BreakableWall
 FreeToUseFastCopy:                    ;freely usable anywhere
@@ -263,80 +241,81 @@ FreeToUseFastCopyF1Menu:               ;freely usable in F1 menu
   db    004,000,004,000   ;nx,--,ny,--
   db    000,%0000 0000,$D0       ;fast copy -> Copy from right to left     
 
-CheckF2Menu:                        ;check if F2 is pressed and the map can be entered
+
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
-		ld    a,(NewPrContr)	
-		bit		7,a           ;F2 pressed ?
-		ret   z
-		call enableWorldMap
-		jp    F2MenuRoutine
+;Check for F2 key to enter the world map screen
+CheckF2Menu:
+		ld		a,(NewPrContr)	
+		and		0x80
+		ret		z
+		call	enableWorldMap
+		jp		F2MenuRoutine
 
 enableWorldMap:
-		ld	 a,(slot.page1rom)            ;all RAM except page 1
+		ld	 a,(slot.page1rom)            ;RAMROMRAMRAM
 		out	 ($a8),a
 		ld		a,2
-		out   ($fe),a          	            ;$ff = page 0 ($c000-$ffff) _ $fe = page 1 ($8000-$bfff) _ $fd = page 2 ($4000-$7fff) _ $fc = page 3 ($0000-$3fff) 
+		out   ($fe),A
 		ld	 a,F2Menublock
 		jp	 block12
 
 
-CheckF1Menu:                        ;check if F1 is pressed and the menu can be entered
-;
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;
-  ld    a,(NewPrContr)	
-	bit		6,a           ;F1 pressed ?
-  ret   z
-
-  ld    a,(slot.page1rom)            ;all RAM except page 1
-  out   ($a8),a
-
-  ld    a,F1Menublock                 ;F1 Menu routine at $4000
-  call  block12
-  jp    F1MenuRoutine
+;check if F1 is pressed and the menu can be entered
+CheckF1Menu:
+		ld		a,(NewPrContr)	
+		; bit		6,a
+		and		0x40
+		ret 	z
+		ld    a,(slot.page1rom)            ;RAMROMRAMRAM
+		out   ($a8),a
+		ld    a,F1Menublock                 ;F1 Menu routine at $4000
+		call  block12
+		jp    F1MenuRoutine
   
 RestoreBackground:                  ;all background restores should be done simultaneously at start of frame (after vblank)
-  ld    hl,CleanPlayerProjectile+restorebackground?
-  bit   0,(hl)
-  call  nz,.Restore
+		ld    hl,CleanPlayerProjectile+restorebackground?
+		bit   0,(hl)
+		call  nz,.Restore
 
-  ld    hl,CleanPlayerWeapon+restorebackground?
-  bit   0,(hl)
-  call  nz,.Restore
+		ld    hl,CleanPlayerWeapon+restorebackground?
+		bit   0,(hl)
+		call  nz,.Restore
 
-  ld    hl,CleanOb1+restorebackground?
-  bit   0,(hl)
-  call  nz,.Restore
+		ld    hl,CleanOb1+restorebackground?
+		bit   0,(hl)
+		call  nz,.Restore
 
-  ld    hl,CleanOb2+restorebackground?
-  bit   0,(hl)
-  call  nz,.Restore
+		ld    hl,CleanOb2+restorebackground?
+		bit   0,(hl)
+		call  nz,.Restore
 
-  ld    hl,CleanOb3+restorebackground?
-  bit   0,(hl)
-  call  nz,.Restore
+		ld    hl,CleanOb3+restorebackground?
+		bit   0,(hl)
+		call  nz,.Restore
 
-  ld    hl,CleanOb4+restorebackground?
-  bit   0,(hl)
-  call  nz,.Restore
+		ld    hl,CleanOb4+restorebackground?
+		bit   0,(hl)
+		call  nz,.Restore
 
-  ld    hl,CleanOb5+restorebackground?
-  bit   0,(hl)
-  call  nz,.Restore
+		ld    hl,CleanOb5+restorebackground?
+		bit   0,(hl)
+		call  nz,.Restore
 
-  ld    hl,CleanOb6+restorebackground?
-  bit   0,(hl)
-  call  nz,.Restore
-  ret
+		ld    hl,CleanOb6+restorebackground?
+		bit   0,(hl)
+		call  nz,.Restore
+		ret
 
-  .Restore:
-  ld    (hl),0
-  inc   hl
-  jp    DoCopy  
+.Restore:
+		ld    (hl),0
+		inc   hl
+		jp    DoCopy
   
 
 ;switch to next page
@@ -355,25 +334,22 @@ SetSF2DisplayPage:
 	add   a,a
 	add   a,31
 	ld    (PageOnNextVblank),a
-ret
+	ret
+
 
 ;handle movement
 ;out: character, color and spat data  > ro: which regs, and why?
-Handle_HardWareSprite_Enemies_And_objects:
 ;several optimizations are possible here:
 ;1. selfmodifying ld hl,(invissprchatableaddress) into ld hl,nn
 ;2. several calls can be written out, like call SetVdp_Write
 ;3. the call outix32 can be changed into their respective numbers with a jp endOutChar at the end
 ;4. ld a,(CameraX) and %1111 0000 neg can be hardcoded
-		ld		a,(slot.page12rom)	;RAM ROM ROM RAM
+Handle_HardWareSprite_Enemies_And_objects:
+		ld		a,(slot.page12rom)	;RAMROMROMRAM
 		out		($a8),a	
 
 ;set the general movement pattern block at address $4000 in page 1
-		; di
 		ld		a,MovementPatternsFixedPage1block
-		; ld		(memblocks.1),a
-		; ld		($6000),a
-		; ei
 		call	block12
 
 		ld    de,enemies_and_objects+(0*lenghtenemytable)                           
@@ -407,10 +383,6 @@ Handle_HardWareSprite_Enemies_And_objects:
 
 		;set the movement pattern block of this enemy/object at address $8000 in page 2 
 		ld    a,(ix+enemies_and_objects.movementpatternsblock)
-		; di
-		; ld		(memblocks.2),a
-		; ld		($7000),a
-		; ei
 		call	block34
 		call	invokeObjectMovementPattern ;movement_enemies_and_objects            ;handle sprite movement and animation
 ;out hl -> address of sprite character data to out to Vram
@@ -419,10 +391,6 @@ Handle_HardWareSprite_Enemies_And_objects:
 ;out de -> spritenumber*26 (used for character and color data addreess)
 
 ;set block containing sprite data of this enemy/object at address $8000 in page 2 
-		; di
-		; ld		(memblocks.2),a                         ;set to block 2 at $8000- $c000
-		; ld		($7000),a
-		; ei
 		call	block34
 
 ;set address to write sprite character data to
@@ -610,138 +578,142 @@ handle_enemies_and_objects:
 		out		($a8),a	
 
 ;set the general movement pattern block at address $4000 in page 1
-		; di
 		ld    a,MovementPatternsFixedPage1block
-		; ld		(memblocks.1),a
-		; ld		($6000),a
-		; ei
 		call	block12
 		
-  ld    de,enemies_and_objects+(0*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(1*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(2*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(3*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(4*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(5*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(6*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(7*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(8*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(9*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(10*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(11*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(12*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(13*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(14*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(15*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(16*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(17*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(18*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(19*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(20*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
-  ld    de,enemies_and_objects+(21*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
-  ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(0*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(1*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(2*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(3*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(4*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(5*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(6*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(7*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(8*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(9*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(10*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(11*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(12*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(13*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(14*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(15*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(16*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(17*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(18*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(19*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(20*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
+		ld    de,enemies_and_objects+(21*lenghtenemytable)   ;3. check object in screen display (if within movement area)                                    
+		ld    a,(de) | dec a | call z,.docheck             ;4. set x&y of object in spat and out the col and char (if within screen display)
 
-	ld		a,(slot.ram)	      ;back to full RAM
-	out		($a8),a	
-  ret
+		ld		a,(slot.ram)	      ;back to full RAM
+		out		($a8),a	
+		ret
 
 .docheck:
 		ld    ixl,e
 		ld    ixh,d
-
 ;set the movement pattern block of this enemy/object at address $8000 in page 2 
 		ld    a,(ix+enemies_and_objects.movementpatternsblock)
-		; di
-		; ld		(memblocks.2),a
-		; ld		($7000),a
-		; ei
 		call	block34
-		call	invokeObjectMovementPattern ;movement_enemies_and_objects                  ;sprite is in movement area, so let it move !! ^__^
+		call	invokeObjectMovementPattern
 		ret
   
 movementpatternsblock:  db  movementpatterns1block
 ; movement_enemies_and_objects:
 invokeObjectMovementPattern:
-		ld    l,(ix+enemies_and_objects.movementpattern)    ;movementpattern
-		ld    h,(ix+enemies_and_objects.movementpattern+1)  ;movementpattern
+		ld    l,(ix+enemies_and_objects.movementpattern)
+		ld    h,(ix+enemies_and_objects.movementpattern+1)
 		jp    (hl)
 
 
-
-; VramObjectX:  db  000
-; VramObjectY:  db  000
-
-CopyObject:                                           ;copy any object into screen in the normal engine
-  db    000,000,216,001   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    000,000,000,000   ;nx,--,ny,--
-;  db    000,%0000 0100,$d0       ;slow transparant copy -> Copy from right to left
-  db    000,%0000 0100,$90       ;slow transparant copy -> Copy from right to left
+;copy any object into screen in the normal engine
+CopyObject:
+		db    000,000,216,001   ;sx,--,sy,spage
+		db    000,000,000,000   ;dx,--,dy,dpage
+		db    000,000,000,000   ;nx,--,ny,--
+		db    000,%0000 0100,$90       ;slow transparant copy -> Copy from right to left
 
 CleanObjectTableLenght: equ CleanOb2-CleanOb1
-
-  db    0                 ;restorebackground?
+		db    0                 ;restorebackground?
 CleanOb1:                                             ;these 3 objects are used in the normal engine to clean up any object that has been placed (platform, pushing stone etc)
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    002,000,001,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+		db    000,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,000   ;dx,--,dy,dpage
+		db    002,000,001,000   ;nx,--,ny,--
+		db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
-  db    0                 ;restorebackground?
+		db    0                 ;restorebackground?
 CleanOb2:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    002,000,001,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+		db    000,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,000   ;dx,--,dy,dpage
+		db    002,000,001,000   ;nx,--,ny,--
+		db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
-  db    0                 ;restorebackground?
+		db    0                 ;restorebackground?
 CleanOb3:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    002,000,001,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+		db    000,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,000   ;dx,--,dy,dpage
+		db    002,000,001,000   ;nx,--,ny,--
+		db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
-  db    0                 ;restorebackground?
+		db    0                 ;restorebackground?
 CleanOb4:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    002,000,001,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+		db    000,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,000   ;dx,--,dy,dpage
+		db    002,000,001,000   ;nx,--,ny,--
+		db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
-  db    0                 ;restorebackground?
+		db    0                 ;restorebackground?
 CleanOb5:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    002,000,001,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+		db    000,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,000   ;dx,--,dy,dpage
+		db    002,000,001,000   ;nx,--,ny,--
+		db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
 
-  db    0                 ;restorebackground?
+		db    0                 ;restorebackground?
 CleanOb6:
-  db    000,000,000,000   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    002,000,001,000   ;nx,--,ny,--
-  db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+		db    000,000,000,000   ;sx,--,sy,spage
+		db    000,000,000,000   ;dx,--,dy,dpage
+		db    002,000,001,000   ;nx,--,ny,--
+		db    000,%0000 0100,$D0       ;fast copy -> Copy from right to left     
+
+CopySwitch1:
+		db    000,000,232,001   ;sx,--,sy,spage
+		db    000,000,000,000   ;dx,--,dy,dpage
+		db    016,000,004,000   ;nx,--,ny,--
+		db    000,%0000 0000,$d0       ;fast copy
+ 
+ActivateSwitch:
+		db    000,000,232,001   ;sx,--,sy,spage
+		db    000,000,000,000   ;dx,--,dy,dpage
+		db    016,000,001,000   ;nx,--,ny,--
+		db    000,%0000 0000,$D0       ;fast copy  
+  
+CopySwitch2:
+		db    000,000,232,001   ;sx,--,sy,spage
+		db    000,000,000,000   ;dx,--,dy,dpage
+		db    016,000,016,000   ;nx,--,ny,--
+		db    000,%0000 0000,$D0       ;fast copy
 
 PuzzleSwitchTable1: db  3,0,1,0,2,3,1,0,2,3
 PuzzleSwitchTable2: db  0,1,2,3,1,3,0,   0,0,0
@@ -754,68 +726,6 @@ PuzzleSwitchTable8: db  2,2,2,   0,0,0,0,0,0,0
 PuzzleSwitchTable9: db  3,   0,0,0,0,0,0,0,0,0
 PuzzleSwitchTable10: db 0,3,2,0,1,   0,0,0,0,0
 ShowOverView?:  db  1
-
-CopySwitch1:
-  db    000,000,232,001   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    016,000,004,000   ;nx,--,ny,--
-  db    000,%0000 0000,$d0       ;fast copy
- 
-ActivateSwitch:
-  db    000,000,232,001   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    016,000,001,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy  
-  
-CopySwitch2:
-  db    000,000,232,001   ;sx,--,sy,spage
-  db    000,000,000,000   ;dx,--,dy,dpage
-  db    016,000,016,000   ;nx,--,ny,--
-  db    000,%0000 0000,$D0       ;fast copy
-
-;Fill RAM
-;in: HL=start, BC=length, A=value
-fillRam:
-		push de
-		push hl
-		pop	 de
-		inc	 de
-		ld 	 (hl),A
-		dec bc
-		ldir
-		pop	de
-		ret
-
-
-;Clear the stones table
-ResetPushStones:
-		ld	 hl,pushStoneTable.data
-		ld	 bc,pushStoneTable.numrec*pushStoneTable.reclen
-		ld	 a,-1
-		jp	 fillRam
-
-; 		ld    hl,PuzzleBlocks1Y+3             ;y stone 1
-; 		ld    de,pushStoneTable.reclen
-; 		ld    b,pushStoneTable.numrec
-; 		xor   a
-; .loop:
-; 		ld    (hl),a
-; 		add   hl,de
-; 		djnz  .loop
-; 		ret
-
-AmountOfPushingStonesInCurrentRoom: ds  1
-PushStoneTable:
-.numRec:	equ 31
-.recLen:	equ 4
-.stoneY:	equ +0
-.stoneX:	equ +1
-.roomX:		equ +2
-.roomY:		equ +3
-.data:		ds pushStoneTable.numrec*pushStoneTable.reclen
-
-
-
 
 PuzzleSwitch1On?: db  000
 PuzzleSwitch2On?: db  000
@@ -890,6 +800,40 @@ PuzzleSwitch61On?:db  000
 PuzzleSwitch62On?:db  000
 PuzzleSwitch63On?:db  000
 PuzzleSwitch64On?:db  000
+
+
+;Fill RAM
+;in: HL=start, BC=length, A=value
+fillRam:
+		push de
+		push hl
+		pop	 de
+		inc	 de
+		ld 	 (hl),A
+		dec bc
+		ldir
+		pop	de
+		ret
+
+
+;Clear the pushStone table
+ResetPushStones:
+		ld	 hl,pushStoneTable.data
+		ld	 bc,pushStoneTable.numrec*pushStoneTable.reclen
+		ld	 a,-1
+		jp	 fillRam
+
+AmountOfPushingStonesInCurrentRoom: ds  1
+PushStoneTable:
+.numRec:	equ 31
+.recLen:	equ 4
+.stoneY:	equ +0
+.stoneX:	equ +1
+.roomX:		equ +2
+.roomY:		equ +3
+.data:		ds pushStoneTable.numrec*pushStoneTable.reclen
+
+
 
 SnapToPlatform?:  db  0
 
@@ -1502,37 +1446,24 @@ Object7RestoreBackgroundTable:
 ;if we are in page 3 we prepare to restore page 0 in the next frame
 restoreBackgroundObject1:
   ld    hl,Object1RestoreBackgroundTable
-;  ld    ix,RestoreBackgroundCopyObject1
   jp    GoRestoreObject
-
 restoreBackgroundObject2:
   ld    hl,Object2RestoreBackgroundTable
-;  ld    ix,RestoreBackgroundCopyObject2
   jp    GoRestoreObject
-
 restoreBackgroundObject3:
   ld    hl,Object3RestoreBackgroundTable
-;  ld    ix,RestoreBackgroundCopyObject3
   jp    GoRestoreObject
-
 restoreBackgroundObject4:
   ld    hl,Object4RestoreBackgroundTable
-;  ld    ix,RestoreBackgroundCopyObject4
   jp    GoRestoreObject
-
 restoreBackgroundObject5:
   ld    hl,Object5RestoreBackgroundTable
-;  ld    ix,RestoreBackgroundCopyObject5
   jp    GoRestoreObject
-
 restoreBackgroundObject6:
   ld    hl,Object6RestoreBackgroundTable
-;  ld    ix,RestoreBackgroundCopyObject5
   jp    GoRestoreObject
-
 restoreBackgroundObject7:
   ld    hl,Object7RestoreBackgroundTable
-;  ld    ix,RestoreBackgroundCopyObject5
   jp    GoRestoreObject
 
 GoRestoreObject:
@@ -1546,40 +1477,6 @@ GoRestoreObject:
   ld    h,(hl)
   ld    l,a
   jp    docopy
-
-
-  
-;RestoreBackgroundCopyObject1:
-;	db    0,0,0,0
-;	db    0,0,0,0
-;	db    $02,0,$02,0
-;	db    0,0,$d0  
-
-;RestoreBackgroundCopyObject2:
-;	db    0,0,0,0
-;	db    0,0,0,0
-;	db    $02,0,$02,0
-;	db    0,0,$d0  
-
-;RestoreBackgroundCopyObject3:
-;	db    0,0,0,0
-;	db    0,0,0,0
-;	db    $02,0,$02,0
-;	db    0,0,$d0  
-
-;RestoreBackgroundCopyObject4:
-;	db    0,0,0,0
-;	db    0,0,0,0
-;	db    $02,0,$02,0
-;	db    0,0,$d0  
-
-;RestoreBackgroundCopyObject5:
-;	db    0,0,0,0
-;	db    0,0,0,0
-;	db    $02,0,$02,0
-;	db    0,0,$d0  
-
-
 
 
 
@@ -1770,37 +1667,30 @@ PutSF2Object:	;section#1
   ld    hl,Object1RestoreTable
 ;  ld    ix,RestoreBackgroundCopyObject1
   jp    PutSF2ObjectSlice
-
 PutSF2Object2:	;section#2
   ld    hl,Object2RestoreTable
 ;  ld    ix,RestoreBackgroundCopyObject2
   jp    PutSF2ObjectSlice
-
 PutSF2Object3:	;section#3
   ld    hl,Object3RestoreTable
 ;  ld    ix,RestoreBackgroundCopyObject3
   jp    PutSF2ObjectSlice
-
 PutSF2Object4:	;section#4
   ld    hl,Object4RestoreTable
 ;  ld    ix,RestoreBackgroundCopyObject4
   jp    PutSF2ObjectSlice
-
 PutSF2Object5:	;section#5
   ld    hl,Object5RestoreTable
 ;  ld    ix,RestoreBackgroundCopyObject5
   jp    PutSF2ObjectSlice
-
 PutSF2Object6:	;section#5
   ld    hl,Object6RestoreTable
 ;  ld    ix,RestoreBackgroundCopyObject5
   jp    PutSF2ObjectSlice
-
 PutSF2Object7:	;section#5
   ld    hl,Object7RestoreTable
 ;  ld    ix,RestoreBackgroundCopyObject5
   jp    PutSF2ObjectSlice
-
 
 ;if we are in page 0 we prepare to restore page 1 in the next frame
 ;if we are in page 1 we prepare to restore page 2 in the next frame
@@ -1831,7 +1721,6 @@ PutSF2ObjectSlice:
 ;  inc   a
 ;  and   3
 ;  ld    (ix+dPage),a
-
 
 ;Put a section of an SF2 object on screen, max 5 sections.
 ;in b->framelistblock, c->spritedatablock
@@ -1887,18 +1776,14 @@ GoPutSF2Object:
 ;.LimitLeft:
 
 ;Prep restore-copy for this slice. IX=copyTable
-;set width
 	ld    a,(hl)		;(sliceWidth)
 	inc   hl
 	ld    (ix+nx),a		
-;set height
 	ld    a,(hl)		;(sliceHeight)
 	inc   hl
 	ld    (ix+ny),a
 ;set sy,dy by adding offset y to object y
-;	inc   hl
 	ld    a,c ;(bc)		;object Y
-;	inc   bc
 	inc   hl
 	add   a,(hl)		;(sliceY)
 	dec   hl
@@ -1969,7 +1854,8 @@ SkipFrameBytes:
 	add   hl,bc  
 	ret
 
-putplayer_noclip:		;in: HL=frameHeader.frameOffset
+;in: HL=frameHeader.frameOffset
+putplayer_noclip:
 	ld    a,b ;(bc)		;object.X
 	add   a,(hl)		;add frameOffset for first line to destination x
 	inc   hl
@@ -2759,13 +2645,12 @@ CheckMapExit:
 
 
 .LoadnextMap:
-;  pop   hl                  ;pop the call to this routine
-  call  CameraEngine304x216.setR18R19R23andPage  
+		call  CameraEngine304x216.setR18R19R23andPage  
+		xor   a
+		ld    (CheckNewPressedControlUpForDoubleJump),a
+		call  DisableLineint	
+		jp    loadRoom
 
-  xor   a
-  ld    (CheckNewPressedControlUpForDoubleJump),a
-  call  DisableLineint	
-  jp    loadRoom
   
 DisableLineint:
   di
@@ -2775,38 +2660,36 @@ DisableLineint:
 ;	ld		de,$38
 ;	ld		bc,6
 ;	ldir
+		ld    hl,InterruptHandlerLoader
+		ld    ($38+1),hl          ;set new normal interrupt
+		ld    a,$c3               ;jump command
+		ld    ($38),a
 
-  ld    hl,InterruptHandlerLoader
-  ld    ($38+1),hl          ;set new normal interrupt
-  ld    a,$c3               ;jump command
-  ld    ($38),a
+		xor   a                 ;set s#0
+		out   ($99),a
+		ld    a,15+128
+		out   ($99),a
 
+		ld    a,(vdp_0)           ;set ei1
+		and   %1110 1111          ;ei1 checks for lineint and vblankint
+		ld    (vdp_0),a           ;ei0 (which is default at boot) only checks vblankint
+		;  di
+		out   ($99),a
+		ld    a,128
+		;  ei
+		out   ($99),a
 
-  xor   a                 ;set s#0
-  out   ($99),a
-  ld    a,15+128
-  out   ($99),a
-  
-  ld    a,(vdp_0)           ;set ei1
-  and   %1110 1111          ;ei1 checks for lineint and vblankint
-  ld    (vdp_0),a           ;ei0 (which is default at boot) only checks vblankint
-;  di
-  out   ($99),a
-  ld    a,128
-;  ei
-  out   ($99),a
+		xor   a
+		out   ($99),a
+		ld    a,19+128            ;set lineinterrupt height
+		out   ($99),a
 
-  xor   a
-  out   ($99),a
-  ld    a,19+128            ;set lineinterrupt height
-  out   ($99),a
-
-  xor   a
-  out   ($99),a
-  ld    a,23+128            ;set r#23 height
-  out   ($99),a
-  ei
-  ret
+		xor   a
+		out   ($99),a
+		ld    a,23+128            ;set r#23 height
+		out   ($99),a
+		ei
+		ret
 
 tempisr2:	
 	push	af
@@ -2819,28 +2702,28 @@ tempisr2:
 
 CheckNewPressedControlUpForDoubleJump:  db    0
 InterruptHandlerLoader:
-	push	af
-	push	bc
-	push	de
-	push	hl
-	push	ix
-	push	iy
-	
-	in		a,($99)             ;check and acknowledge vblank int (ei0 is set)
+		push	af
+		push	bc
+		push	de
+		push	hl
+		push	ix
+		push	iy
 
-  in	  a,($a8)
-  push	af					      ;store current RAM/ROM state
-  ld    a,(memblocks.1)
-  push  af                ;store current memblock1 
-  ld    a,(memblocks.2)
-  push  af                ;store current memblock2 
+		in		a,($99)             ;check and acknowledge vblank int (ei0 is set)
 
-  call  RePlayer_Tick     ;music player
+		in	  a,($a8)
+		push	af					      ;store current RAM/ROM state
+		ld    a,(memblocks.1)
+		push  af                ;store current memblock1 
+		ld    a,(memblocks.2)
+		push  af                ;store current memblock2 
 
-	ld		a,(NewPrContr)
-  push  af
-	ld		a,(Controls)
-	push  af
+		call  RePlayer_Tick     ;music player
+
+		ld		a,(NewPrContr)
+		push  af
+		ld		a,(Controls)
+		push  af
 
   call  PopulateControls  ;this allows for a double jump as soon as you enter a new map
 
@@ -2871,58 +2754,30 @@ InterruptHandlerLoader:
   ld    (CheckNewPressedControlUpForDoubleJump),a
   .EndCheckUpNotPressed:
 
-  pop   af
-	ld		(Controls),a
+		pop   af
+		ld		(Controls),a
 
-  pop   af
-	ld		(NewPrContr),a
+		pop   af
+		ld		(NewPrContr),a
 
-  pop   af                ;pop current memblock2 
-  ld    (memblocks.2),a
-	ld		($7000),a
-  pop   af                ;pop current memblock1 
-  ld    (memblocks.1),a
-	ld		($6000),a
-  pop	  af					      ;back to former RAM/ROM state
-  out	  ($a8),a	
-    
-	pop		iy
-	pop		ix
-	pop		hl
-	pop		de
-	pop		bc
-	pop		af
-	ei	
-	ret  
+		pop   af                ;pop current memblock2 
+		ld    (memblocks.2),a
+		ld		($7000),a
+		pop   af                ;pop current memblock1 
+		ld    (memblocks.1),a
+		ld		($6000),a
+		pop	  af					      ;back to former RAM/ROM state
+		out	  ($a8),a	
 
+		pop		iy
+		pop		ix
+		pop		hl
+		pop		de
+		pop		bc
+		pop		af
+		ei	
+		ret  
 
-
-; Int. Service Routine (RST &H38)
-;ISR:	PUSH	AF
-;	IN	A,($99)
-;	RLCA	
-;LNIISR:	JP	NC,LNIISR ;Line interrupt
-;	CALL	VBLISR	; VBL vector
-;    POP af
-;	EI	
-;	RET	
-
-
-;Dit zou dan het laatste in je LNI zijn:
-;        LD    A,1             ;s#1
-;        OUT   (#99),A
-;        LD    A,#80+15
-;        OUT   (#99),A
-;        LD    A,0
-;        IN    A,(#99)         ;Clear FH
-;        LD    A,0             ; s#0
-;        OUT   (#99),A
-;        LD    A,#80+15
-;        OUT   (#99),A
-;        POP   AF              ;from ISR
-;        EI
-;        RETI
-;
 
 
 vblankintflag:  db  0
@@ -2982,22 +2837,12 @@ vblank:
   .SetSplitLine:
   
 ;  ld    (r19),a
-  
   out   ($99),a
   ld    a,19+128
   out   ($99),a
 
   ld    a,(PageOnNextVblank)  ;set page
-
-
-
-
-
-
-
 ;  ld    a,3*32+31           ;x*32+31 (x=page)
-
-
   out   ($99),a
   ld    a,2+128
   out   ($99),a
@@ -3014,91 +2859,88 @@ vblank:
   ei
   ret
 
-;r19: ds 1
 
 lineintBorderMaskingSplit:
-  push  bc
-  push  hl
-  
-;  call  BackdropOrange
+		push  bc
+		push  hl
 
-  ;Set address to Write to Spat
-; ld    a,$05
-;	out   ($99),a       ;set bits 15-17
-;	ld    a,14+128
-;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
-;	ld    a,$00
-  xor   a
-	out   ($99),a       ;set bits 0-7
-  .SelfmodifyingCodeSpatAddress: equ $+1
-	ld    a,$6e         ;$6e /$76 
-;  nop
-  ld    c,$98         ;port to write to and deal with the nop required wait time 
-	out   ($99),a       ;set bits 8-14 + write access
+		;  call  BackdropOrange
+		;Set address to Write to Spat
+		; ld    a,$05
+		;	out   ($99),a       ;set bits 15-17
+		;	ld    a,14+128
+		;	out   ($99),a       ;/first set register 14 (actually this only needs to be done once)
+		;	ld    a,$00
+		xor   a
+		out   ($99),a       ;set bits 0-7
+.SelfmodifyingCodeSpatAddress: equ $+1
+		ld    a,$6e         ;$6e /$76 
+		ld    c,$98         ;port to write to and deal with the nop required wait time 
+		out   ($99),a       ;set bits 8-14 + write access
 
   ;Out bordermasking sprites all 96 pixels lower
-  ld    hl,BorderMaskingSpat
-  outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)  ;18 + 7 + 12 + 5 + 12 + 5 + 12 = 69
-  outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
-  outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
-  outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
-  outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
-  outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
-  outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
-  outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
-  outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
-  outi  
+		ld    hl,BorderMaskingSpat
+		outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)  ;18 + 7 + 12 + 5 + 12 + 5 + 12 = 69
+		outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
+		outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
+		outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
+		outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
+		outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
+		outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
+		outi |    nop | in a,($98) | nop | in a,($98) | nop | in a,($98)
+		outi | dec hl | in a,($98) | nop | in a,($98) | nop | in a,($98)
+		outi  
 
   ;prepare y bordermasking splitsprites for next frame
-  ld    a,(CameraY)
-  add   a,95
-  ld    (BorderMaskingSpat+00),a | add   a,16				;rm: I'd do ADD A,B (have LD B,16)
-  ld    (BorderMaskingSpat+01),a | add   a,16
-  ld    (BorderMaskingSpat+02),a | add   a,16
-  ld    (BorderMaskingSpat+03),a | add   a,16
-  ld    (BorderMaskingSpat+04),a
+		ld    a,(CameraY)
+		add   a,95
+		ld		b,16
+		ld    (BorderMaskingSpat+00),a | add a,b ;add   a,16				;rm: I'd do ADD A,B (have LD B,16)
+		ld    (BorderMaskingSpat+01),a | add a,b ;add   a,16
+		ld    (BorderMaskingSpat+02),a | add a,b ;add   a,16
+		ld    (BorderMaskingSpat+03),a | add a,b ; add   a,16
+		ld    (BorderMaskingSpat+04),a
 
 ;  xor   a                  ;set s#15 to 0 / Warning. Interrupts should end in Status Register 15=0 (normally)
 ;  out   ($99),a            ;we don't do this to save time, but it's not a good practise
 ;  ld    a,15+128           ;we do set to s#15 to 0 when mapExit is found and a new map is loaded
 ;  out   ($99),a
 
-  xor   a                     ;next splitline will be at scoreboard
-  ld    (SpriteSplitAtY100?),a
+		xor   a                     ;next splitline will be at scoreboard
+		ld    (SpriteSplitAtY100?),a
 
-  ld    a,(R19onVblank)       ;splitline height
-  out   ($99),a
-  ld    a,19+128
-  out   ($99),a
+		ld    a,(R19onVblank)       ;splitline height
+		out   ($99),a
+		ld    a,19+128
+		out   ($99),a
   
-  pop   hl
-  pop   bc
-  pop   af 
-  ei
-  ret  
+		pop   hl
+		pop   bc
+		pop   af 
+		ei
+		ret  
 BorderMaskingSpat:  db  0,0,0,0,0
 
 LineIntNPCInteractions:
-	ld    a,(SpriteSplitAtY100?)				;rm:why? you set LNI Y pos, right? each LNI is unique that way
-	or    a
-	jp    nz,lineintBorderMaskingSplit
+		ld    a,(SpriteSplitAtY100?)				;rm:why? you set LNI Y pos, right? each LNI is unique that way
+		or    a
+		jp    nz,lineintBorderMaskingSplit
 
-	;on the lineint we turn the screen off at the end of the line using polling for HR
-	;then we switch page
-	;we set horizontal and vertical adjust
-	;and we turn screen on again at the end of the line
-	;and set s#0 again
-	;LineIntAtScoreboard:
-	;  call  BackdropBlack
+;on the lineint we turn the screen off at the end of the line using polling for HR
+;then we switch page
+;we set horizontal and vertical adjust
+;and we turn screen on again at the end of the line
+;and set s#0 again
+;LineIntAtScoreboard:
+;  call  BackdropBlack
 
-	;screen always gets turned on/off at the END of the line
-	ld    a,(VDP_0+1)       ;screen off
-	and   %1011 1111
-	out   ($99),a
-	ld    a,1+128
-	out   ($99),a
-	;so after turning off the screen wait till the end of HBLANK, then perform actions
-
+;screen always gets turned on/off at the END of the line
+		ld    a,(VDP_0+1)       ;screen off
+		and   %1011 1111
+		out   ($99),a
+		ld    a,1+128
+		out   ($99),a
+;so after turning off the screen wait till the end of HBLANK, then perform actions
 	ld    a,2               ;Set Status register #2
 	out   ($99),a
 	ld    a,15+128          ;we are about to check for HR
@@ -3194,9 +3036,9 @@ NPCtableForR23:
 
  
 LineInt:
-  ld    a,(SpriteSplitAtY100?)
-  or    a
-  jp    nz,lineintBorderMaskingSplit
+		ld    a,(SpriteSplitAtY100?)
+		or    a
+		jp    nz,lineintBorderMaskingSplit
 
 ;on the lineint we turn the screen off at the end of the line using polling for HR
 ;then we switch page
@@ -3610,28 +3452,26 @@ CameraEngine304x216:
 ;    ld (hl),l     ; select bank 147H in 1st page (4000-7FFF, C000-FFFF)
 
 block12:	
-  di
-	ld		(memblocks.1),a
-	ld		($6000),a
-	ei
-	ret
-
+		di
+		ld		(memblocks.1),a
+		ld		($6000),a
+		ei
+		ret
 block34:	
-  di
-	ld		(memblocks.2),a
-	ld		($7000),a
-	ei
-	ret
-
+		di
+		ld		(memblocks.2),a
+		ld		($7000),a
+		ei
+		ret
 block1234:	 
-  di
-	ld		(memblocks.1),a
-	ld		($6000),a
-	inc   a
-	ld		(memblocks.2),a
-	ld		($7000),a
-	ei
-	ret
+		di
+		ld		(memblocks.1),a
+		ld		($6000),a
+		inc   a
+		ld		(memblocks.2),a
+		ld		($7000),a
+		ei
+		ret
 
 SwapSpatColAndCharTable:
 		ld		a,(vdp_0+6)     ;check current sprite character table
@@ -3752,6 +3592,7 @@ SwapSpatColAndCharTable2:
   ld    (invissprchatableaddress),hl
   ret
 
+
 CollisionObjectPlayerBoss:
 CollisionObjectPlayerDemon:
 ;  ld    a,-50
@@ -3851,25 +3692,6 @@ CollisionEnemyPlayer:
 
 
 
-;get enemy X in tiles
-;in: IX=object, HL=.X offset, A=.Y offset
-;ro: this looks a lot like checkTileObjects, so I consolodated these 20241007
-; CheckTileEnemyInHL:  
-		; ld    e,(ix+enemies_and_objects.x)  
-		; ld    d,(ix+enemies_and_objects.x+1)
-		; add   hl,de
-		; add   a,(ix+enemies_and_objects.y)
-		; jp    getRoomMapTile ;checktile.XandYset
-
-;UNUSED
-; ;get enemy X in tiles
-; ;in: IX=object, DE=.x offset, A=.Y offset
-; CheckTileEnemy:  
-; 		ld    l,(ix+enemies_and_objects.x)  
-; 		ld    h,(ix+enemies_and_objects.x+1)      ;x
-; 		add   hl,de
-; 		add   a,(ix+enemies_and_objects.y)  
-; 		jp    getRoomMapTile ;checktile.XandYset
 
 ;20241005;ro;refactored and moved
 ;in:	DE=X-offset, B=Y-offset
@@ -3885,7 +3707,7 @@ checktileObject:   ;same as checktile for player, but now for object
 ;Check tile PLAYER (replacement code for checktile:)
 ;in DE=X-offset, B=Y-offset
 checkTilePlayer:            
-	ld	 a,(Clesy)
+		ld	 a,(Clesy)
 		add	 a,b
 		ld	 hl,(ClesX)
 		add	 hl,de
@@ -3896,65 +3718,6 @@ checkTilePlayer:
 		dec	 A
 		ret
 
-;20241009;ro;disabled, use checkTilePlayer instead
-; ;Check tile (PLAYER)
-; ;in b->add y to check, de->add x to check
-; checktile:                  
-; 		ld    a,(Clesy)
-; 		add   a,b
-; 		ld    hl,(ClesX)
-; 		add   hl,de
-; 		bit   7,h
-; 		jp    z,getRoomMapTile	;.XandYset
-; 		ld    hl,0
-
-; ;Get roomMap tileClass
-; ;in: HL=X, A=Y
-; ;out:HL=address, A=value, Z=wall
-; getRoomMapTile:	;.XandYset:	;y/8, x/8
-; 		srl   h		;/2
-; 		rr    l
-; 		srl   l		;/4
-; 		srl   l		;/8
-; 		rrca		;/2
-; 		rrca		;/4
-; 		rrca		;/8
-; 		and 0x1f
-; ;at this point: HL=TileX, A=TileY
-
-; ; ;20241001;ro;dunno why this doesn't work...
-; ; 		ld	 h,a	;y
-; ; 		ld	 a,l	;x
-; ; 		ld	 e,roomMap.numcol
-; ; ;mul8: HL=H*E	> HL=Y*40
-; ; mul8:	ld	 d,0
-; ; 		ld	 l,d
-; ; 		ld	 b,8
-; ; Mul8.0:	add	 hl,hl
-; ; 		jr	 nc,mul8.1
-; ; 		add	 hl,de
-; ; mul8.1:	djnz mul8.0
-; ; 		ld	 e,A
-; ; 		add	 hl,de
-; ; 		ld	 de,roomMap.data-(2*roomMap.numcol)
-; ; 		add  hl,de
-; ; 		ld	 a,(hl)	;retrieve classID
-; ; 		dec	 A
-; ; ret
-
-; ;.selfmodifyingcodeStartingPosMapForCheckTile:
-; ;	ld		de,roomMap ;MapData- 000000  ;start 2 rows higher (MapData-80 for normal engine, MapData-68 for SF2 engine)
-; 		ld	 de,roomMap.data-(2*roomMap.numcol)
-; 		add   hl,de
-; 		ex    de,hl               ;de->roommapadr+x in tiles
-; ;.selfmodifyingcodeMapLenght:
-; ;	ld		bc,000              ;32+2 for 256x216 and 38+2 tiles for 304x216
-; 		ld	 bc,roomMap.numcol
-; 		call mulAxBC
-; 		add	 hl,de               ;(amount of Y tiles * map lenght ) + x in tiles
-; 		ld	 a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=spikes, 4=stairs left up, 5=stairs right up, 6=lava, 7=water
-; 		dec	 a                   ;1 = wall
-; ret
 
 
 ;Get room map data (tile) class (replaced getRoomMapTile)
@@ -4613,12 +4376,11 @@ ShootArrowWhileJump?:     db  0
 HowManyFramesAgoWasLeftPressed?:    db  0
 HowManyFramesAgoWasRightPressed?:   db  0
 
-CheckWallbashRight:         ;check if right+right are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
-;
+
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
+CheckWallbashRight:         ;check if right+right are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
   ld    a,(NewPrContr)
   bit   3,a                 ;is right pressed ?
   jr    z,.RightIsNotPressed
@@ -4641,11 +4403,6 @@ CheckWallbashRight:         ;check if right+right are quickly pressed in success
   ret
 
 CheckWallbashLeft:         ;check if left+left are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
   ld    a,(NewPrContr)
   bit   2,a                 ;is left pressed ?
   jr    z,.LeftIsNotPressed
@@ -4667,52 +4424,50 @@ CheckWallbashLeft:         ;check if left+left are quickly pressed in succession
   ld    (HowManyFramesAgoWasLeftPressed?),a
   ret
 
+
+; bit	7	6	  5		    4		    3		    2		  1		  0
+;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
+;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
 CheckWallwalk:              ;check if triga + trigb are pressed while standing. if so, setwallwalk pose and DON'T return to this routine
-;
+		ld    a,(Controls)
+		and   %0011 0010                  ;check if triga+trigb are pressed
+		cp    %0011 0000
+		ret   nz
+
+		pop   af                          ;don't return to the current pose
+		;  xor   a
+		;  ld    (PrimaryWeaponActive?),a    ;this interrupts any weapon animation (punch, draw bow etc)
+		;  ld    (SecundaryWeaponActive?),a    ;this interrupts any weapon animation (punch, draw bow etc)
+
+		ld    a,(PlayerFacingRight?)
+		or    a
+		jp    z,Set_L_SilhouetteKick
+		jp    Set_R_SilhouetteKick
+
+
 ; bit	7	6	  5		    4		    3		    2		  1		  0
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-  ld    a,(Controls)
-  and   %0011 0010                  ;check if triga+trigb are pressed
-  cp    %0011 0000
-  ret   nz
-
-  pop   af                          ;don't return to the current pose
-;  xor   a
-;  ld    (PrimaryWeaponActive?),a    ;this interrupts any weapon animation (punch, draw bow etc)
-;  ld    (SecundaryWeaponActive?),a    ;this interrupts any weapon animation (punch, draw bow etc)
-
-  ld    a,(PlayerFacingRight?)
-  or    a
-  jp    z,Set_L_SilhouetteKick
-  jp    Set_R_SilhouetteKick
-
 CheckMeditateAndRolling:
-;
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		 F2	F1	'M'		  space	  right	  left	down	up	(keyboard)
-;
-  ld    a,(Controls)
-  and   %0011 0010                  ;check if down+triga+trigb are pressed
-  cp    %0011 0010
-  ret   nz
+		ld    a,(Controls)
+		and   %0011 0010                  ;check if down+triga+trigb are pressed
+		cp    %0011 0010
+		ret   nz
 
-  pop   af                          ;don't return to the current pose
-  xor   a
-  ld    (PrimaryWeaponActive?),a    ;this interrupts any weapon animation (punch, draw bow etc)
+		pop   af                          ;don't return to the current pose
+		xor   a
+		ld    (PrimaryWeaponActive?),a    ;this interrupts any weapon animation (punch, draw bow etc)
 
-  ld    a,(Controls)
-  bit   3,a                         ;check if right is pressed. if so, roll right
-  jp    nz,Set_R_Rolling
-  bit   2,a                         ;check if left is pressed. if so, roll left
-  jp    nz,Set_L_Rolling
+		ld    a,(Controls)
+		bit   3,a                         ;check if right is pressed. if so, roll right
+		jp    nz,Set_R_Rolling
+		bit   2,a                         ;check if left is pressed. if so, roll left
+		jp    nz,Set_L_Rolling
 
-  ld    a,(PlayerFacingRight?)
-  or    a
-  jp    z,Set_L_Meditate
-  jp    Set_R_Meditate
+		ld    a,(PlayerFacingRight?)
+		or    a
+		jp    z,Set_L_Meditate
+		jp    Set_R_Meditate
 
 Lsitting:
 		ld    a,(ForceVerticalMovementCameraTimer)
@@ -6200,45 +5955,45 @@ Set_Climb:
 		ret
 
 Set_jump:
-  ld    bc,SFX_jump
-  call  RePlayerSFX_PlayCh1
+		ld    bc,SFX_jump
+		call  RePlayerSFX_PlayCh1
 
-  call  SetHitBoxPlayerStanding
+		call  SetHitBoxPlayerStanding
 
-;  ld    a,(ClesY)
-;  sub   a,3
-;  ld    (ClesY),a
-  
-;  xor   a
-;  ld    (EnableHitbox?),a
-  
-  ld    a,(FlyingObtained?)
-  or    a
-  ld    a,1
-  jr    z,.SetAmountOfDoubleJumps
-  ld    a,2
-  .SetAmountOfDoubleJumps:
-  ld    (DoubleJumpAvailable?),a
+		;  ld    a,(ClesY)
+		;  sub   a,3
+		;  ld    (ClesY),a
 
-  .SkipTurnOnDoubleJump:  
-	ld		hl,Jump
-	ld		(PlayerSpriteStand),hl
+		;  xor   a
+		;  ld    (EnableHitbox?),a
 
-	ld    a,(StartingJumpSpeed)
-	ld		(JumpSpeed),a
+		ld    a,(FlyingObtained?)
+		or    a
+		ld    a,1
+		jr    z,.SetAmountOfDoubleJumps
+		ld    a,2
+.SetAmountOfDoubleJumps:
+		ld    (DoubleJumpAvailable?),a
 
-  ld    a,(PrimaryWeaponActivatedWhileJumping?)  
-  or    a
-  ret   nz                                                      ;don't reset PlayerAnicount if we initiate a double jump while primary attack is used
+.SkipTurnOnDoubleJump:  
+		ld		hl,Jump
+		ld		(PlayerSpriteStand),hl
 
-;  ld    hl,0
-;	ld		(PlayerAniCount),hl
+		ld    a,(StartingJumpSpeed)
+		ld		(JumpSpeed),a
 
-  xor   a
-	ld		(PlayerAniCount),a
-  ld    a,3
-	ld		(PlayerAniCount+1),a
-  ret
+		ld    a,(PrimaryWeaponActivatedWhileJumping?)  
+		or    a
+		ret   nz                                                      ;don't reset PlayerAnicount if we initiate a double jump while primary attack is used
+
+		;  ld    hl,0
+		;	ld		(PlayerAniCount),hl
+
+		xor   a
+		ld		(PlayerAniCount),a
+		ld    a,3
+		ld		(PlayerAniCount+1),a
+		ret
 
 Set_Fall: 
   call  SetHitBoxPlayerStanding
@@ -6735,7 +6490,7 @@ palettes:
 .0:				DS .reclen		;incBin filename,0,.reclen
 .1Pollux:		DB $06,$05,$12,$01,$32,$03,$34,$03,$20,$01,$21,$02,$07,$05,$73,$06,$05,$03,$77,$07,$53,$05,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
 .2Lemniscate:	DB $06,$05,$12,$01,$32,$03,$34,$03,$20,$01,$21,$02,$07,$05,$73,$06,$05,$03,$77,$07,$53,$05,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
-.3WorldForrest:	DB $21,$02,$12,$01,$20,$05,$34,$03,$20,$02,$00,$03,$32,$03,$73,$06,$00,$02,$77,$07,$40,$06,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
+.3WorldForrest:	DB $32,$03,$12,$01,$20,$05,$34,$03,$10,$01,$00,$03,$21,$02,$73,$06,$00,$02,$77,$07,$40,$06,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
 .4Pegu:		    DB $60,$05,$12,$01,$20,$05,$34,$03,$20,$01,$00,$03,$50,$03,$73,$06,$40,$02,$77,$07,$40,$06,$23,$02,$45,$04,$70,$05,$70,$02,$00,$00
 .5:				DS .reclen
 .6KarniMata:	DB 71,5,18,1,32,5,52,3,32,1,0,3,80,3,115,6,0,2,119,7,64,6,35,2,69,4,112,5,112,2,0,0

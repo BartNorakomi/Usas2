@@ -573,49 +573,27 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ret
 
 
+;20241219;ro;refactored
 ;001-PushStone
-;v1=sx
-;v2=falling stone?
-;v3=y movement
-;v4=x movement
-;v7=set/store coord
-;v9=special width for Pushing Stone Puzzle Switch
-;v1-2= coordinates in pushing stone table (PuzzleBlocks1Y, PuzzleBlocks2Y etc)
 .Object001:
 		call	.newObjectRecord
-		ld		hl,pushStonetable.data+pushStoneTable.roomY	;table record #0
 		Call	.CheckBlock
+		call	.getPushStoneGfx	;placeholder for future implementations (wip)
 		ld		de,roomObjectClass.General.numBytes
 		ret
 
 ;check if this block is already present in the pushing block table
-;find the first record with the correct roomNumber and store all blocks from this room in sequencial order
+;find the FIRST record with the correct roomNumber and store all blocks from this room in sequencial order
 .CheckBlock:
-		ld		de,PushStoneTable.reclen			;4
-.checkblockL0:
-		ld		a,(hl)	;.roomY
-		cp		-1  		;free or oed
-		jr		z,.NotYetPresent
-		ld		a,(WorldMapPosition.y)
-		cp		(hl)
-		jr		nz,.ThisBlockBelongsInADifferentRoom
-		dec		hl
-		ld		b,(hl)
-		inc		hl
-		ld		a,(WorldMapPosition.X)
-		cp		b
-		jp		z,.isPresent
-.ThisBlockBelongsInADifferentRoom:
-		add		hl,de								;next block in pushing block table
-		jp		.CheckBlockL0
-
+		ld		bc,(WorldMapPosition)	;BC=XXYY search for this room in the pushStoneTable
+		call	.getPushStoneRecord
+		jp		c,.isNotRegistered
+.isRegistered:                   
 ;when a block is already in the table, set table coordinates in v1-2 and take x,y from table and feed it into the object
 ;!! ro: coordinates are NOT set in v1/v2 atm.
-.isPresent:                   
 		dec		hl
 		dec		hl
-		dec		hl
-		ld		(iy+enemies_and_objects.tableRecordPointer),l ;store pointer to tableRecord
+.isReg0:ld		(iy+enemies_and_objects.tableRecordPointer),l ;store pointer to tableRecord
 		ld		(iy+enemies_and_objects.tableRecordPointer+1),h
 
 		ld		a,(ix+roomObjectClass.General.numBytes)	;check if next object is another pushing stone
@@ -630,12 +608,13 @@ SetObjects:                             ;after unpacking the map to ram, all the
     
 		ld		de,PushStoneTable.reclen				;next tableRecord +4
 		add		hl,de
-		jr		.isPresent						;look for more pushing stones in this room
+		jr		.isReg0					;look for more pushing stones in this room
 
-.NotYetPresent:
+.isNotRegistered:
 		push	hl
 		call	.applyObjectClassGeneral
 		pop		hl
+		ld		bc,(WorldMapPosition)
 		call	.newPushStoneRecord 
 
 		ld		a,(ix+roomObjectClass.General.numBytes)	;check if next object is another pushing stone
@@ -650,14 +629,33 @@ SetObjects:                             ;after unpacking the map to ram, all the
 
 		ld		de,pushStoneTable.reclen+pushStoneTable.roomy   ;7	;next record, and move to .roomY
 		add		hl,de                           ;room y for next block in pushing block table
-		jr		.NotYetPresent                  ;now loop this routine and look for more pushing stones in this room
+		jr		.isNotRegistered                  ;now loop this routine and look for more pushing stones in this room
 
-.newPushStoneRecord:
-		ld		a,(WorldMapPosition.Y)	;.roomY
-		ld		(hl),a
+;Look for a pushStoneRecord for room [BC=xxyy]
+.getPushStoneRecord:
+		ld		hl,pushStonetable.data+pushStoneTable.roomY	;table record #0
+		ld		de,PushStoneTable.reclen	;4bytes
+.getPSR0:
+		ld		a,(hl)	;.roomY
+		cp		-1	;free or oed
+		scf
+		ret		z
+		cp		c
+		jr		nz,.getPSRnext
 		dec		hl
-		ld		a,(WorldMapPosition.X)	;.roomX
-		ld		(hl),a
+		ld		a,(hl)	;.roomX
+		cp		b
+		ret		Z ;cy=0
+		inc		hl
+.getPSRnext:
+		add		hl,de								;next block in pushing block table
+		jp		.getPSR0
+
+;Add a pushStoneRecord for room [BC=xxyy]
+.newPushStoneRecord:
+		ld		(hl),c
+		dec		hl
+		ld		(hl),b
 		dec		hl
 		ld		a,(iy+enemies_and_objects.x)	;transfer stone coordinates to current tableRecord *8bit
 		ld		(hl),A
@@ -679,6 +677,10 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		pop		hl
 		ret
 
+.getPushStoneGFX:
+		ret
+
+
 
 ;waterfall grey statue (WaterfallEyesGrey)
 .Object003:                           
@@ -686,10 +688,6 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		jr    .EntryForObject003
 
 ;waterfall yellow statue (WaterfallEyesYellow)
-;v1=sx
-;v2=Active Timer
-;v3=wait timer in case only 1 waterfall
-;v4=Waterfall nr
 .Object002:                           
 		ld    hl,Object002Table.eyes
 .EntryForObject003:
@@ -722,24 +720,22 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ret  
 
 .object002AddMouth:
-		ld		bc,lenghtenemytable             ;next objectRecord
+		ld		bc,lenghtenemytable		;next objectRecord
 		add		iy,bc
 		ld		hl,Object002Table.mouth
 		push	iy
 		pop		de 
 		ldir
-		call	SetCleanObjectNumber
-		ret
+		jp		SetCleanObjectNumber
 
-.object002AddWaterfall:                     ;we also need to set a waterfall hardware sprite
-		ld		bc,lenghtenemytable             ;next objecgt record
-		add		iy,bc                          ;next object in object table
-		ld		hl,Object002Table.water         ;we also need to set a waterfall hardware sprite
+.object002AddWaterfall:
+		ld		bc,lenghtenemytable		;next objectRecord
+		add		iy,bc					;next object in object table
+		ld		hl,Object002Table.water	;we also need to set a waterfall hardware sprite
 		push	iy
 		pop		de
 		ldir
-		call	SetSPATPositionForThisSprite
-		ret
+		jp		SetSPATPositionForThisSprite
 
 
 ;004-PoisonDrop
@@ -819,13 +815,13 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		call	.copyObjectTemplate
 		call	.applyObjectClassGeneral
 
-		xor   a		;start writing at (0,0) page 1 
-		ld    hl,$8000
+		xor		a		;page 1 (0,0)
+		ld		hl,$8000
 		call	SetVdp_Write	
 
-		ld    hl,$8000	;RAM source
-		ld    c,$98	;out port
-		ld    d,24
+		ld		hl,$8000	;RAM source
+		ld		c,$98	;out port
+		ld	d,24
 .Outiloop:
 		call  outix256
 		dec   d
@@ -1293,7 +1289,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		hl,$4000 + (000*128) + (000/2) - 128  ;(y*128) + (x/2)
 		ld		de,$8000 + ((216+016)*128) + (000/2) - 128  ;(y*128) + (x/2)
 		ld		bc,$0000 + (016*256) + (128/2)        ;(ny*256) + (nx/2)
-		ld hl,gfx.PlatformMovingSmallOmnidirectional+$4000
+	ld hl,$4000+gfx.016PlatformMovingSmallOmnidirectional.sc5
 		ld		a,GfxObjectsForVramBlock              ;block to copy graphics from
 		call	CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 		ld		a,1
@@ -1349,7 +1345,7 @@ SetObjects:                             ;after unpacking the map to ram, all the
 		ld		hl,$4000 + (016*128) + (000/2) - 128  ;(y*128) + (x/2)
 		ld		de,$8000 + (Object020Table.sy*128) + (000/2) - 128  ;(y*128) + (x/2)
 		ld		bc,$0000 + (031*256) + (056/2)        ;(ny*256) + (nx/2)
-		ld hl,gfx.ratFaceBatSpawner+0x4000
+	ld hl,gfx.020ratFaceBatSpawner.sc5+0x4000
 		ld		a,GfxObjectsForVramBlock              ;block to copy graphics from
 		call	CopyRomToVram                         ;in: hl->sx,sy, de->dx, dy, bc->NXAndNY
 		ret
@@ -2001,6 +1997,7 @@ isNotAlive:		equ 0
 ;001-pushStone
 Object001Table:
 .sx:	equ 112	;graphics location
+.sy:	equ 216
 .hit:	equ 0
 .life:	equ 0
 ;Pushing Stones: v1=sx, v2=falling stone?, v3=y movement, v4=x movement, v7=set/store coord, v9=special width for Pushing Stone Puzzle Switch, v1-2= coordinates
@@ -2011,7 +2008,7 @@ Object001Table:
 		dw	cleanOb1,0 ;objnr,spatadr
 		db	0	;numsprites
 		dw	-1 ;pushStoneTable+pushStoneTable.roomY	;tableRec
-		db	.sx,0,0,0,0,0,0,14,14,.hit,.life,movementpatterns1block
+		db	.sx,0,0,0,0,0,0,14,14,.hit,.life,movementpatterns1block  ;fixedp1
 		ds	fill-1
 
 
@@ -2093,6 +2090,7 @@ Object011Table:
 Object012Table:
 .sxOff:	equ	80
 .sxOn:	equ 96
+.sy:	equ 216
 		;alive?,Sprite?,Movement Pattern,    y,      x,   ny,nx,Objectnr#               ,sx,   v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
 		db isAliveSs,isNotSprite|dw Platform|db 0|dw 0|db 16,16|dw CleanOb1,0 db 0,0,0, .sxOff,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
 
@@ -2100,6 +2098,7 @@ Object012Table:
 Object057Table:
 .sxOff:	equ	00
 .sxOn:	equ 32
+.sy:	equ 216
 		;alive?,Sprite?,Movement Pattern,    y,      x,   ny,nx,Objectnr#               ,sx,   v2, v3, v4, v5, v6, v7, v8, v9,Hit?,life   
 		db isAliveSs,isNotSprite|dw Platform|db 0|dw 0|db 16,32|dw CleanOb1,0 db 0,0,0, .sxOn,+05,+00,+01,+00,+00,+00,+00,+00, 0|db 001,movementpatterns1block| ds fill-1
 

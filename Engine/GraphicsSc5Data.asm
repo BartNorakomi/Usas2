@@ -4,10 +4,10 @@
 GfxObjectsForVramBlock: equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 ;GfxObjectsForVram:
 phase	$000
-		incbin "..\grapx\GfxObjectsForVram.SC5",7,48 * 128 ;skip header, 48 lines=6K
+		; incbin "..\grapx\GfxObjectsForVram.SC5",7,48 * 128 ;skip header, 48 lines=6K
 		; DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
-gfx.PlatformMovingSmallOmnidirectional: incbin "..\grapx\016-PlatformMovingSmallOmnidirectional.sc5.gfx" ;1KB
-gfx.ratFaceBatSpawner: incbin "..\grapx\020-ratFaceBatSpawner.sc5.gfx" ;0,868KB
+gfx.016PlatformMovingSmallOmnidirectional.sc5: incbin "..\grapx\016-PlatformMovingSmallOmnidirectional.sc5.gfx" ;1KB
+gfx.020ratFaceBatSpawner.sc5: incbin "..\grapx\020-ratFaceBatSpawner.sc5.gfx" ;0,868KB
 gfx.128HugeBlob.sc5: incbin "..\grapx\128-HugeBlob.sc5.gfx" ;1,15KB
 gfx.129hugeSpider.sc5: incbin "..\grapx\129-hugeSpider.sc5.gfx" ;0,567KB
 
@@ -15,11 +15,11 @@ Graphicsblock4: equ   GfxObjectsForVramBlock ;($-RomStartAddress) and (romsize-1
 ; phase	$000
 itemsKarniMataPage3:
 		incbin "..\grapx\itemsKarniMataPage3.SC5",7,40 * 128 ;skip header, 40 lines=5K
-
+		;0223Bh
 dephase
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block	;ds		$c000-$,$ff
 
-Graphicsblock5:			equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;Graphicsblock4+1 
+Graphicsblock5:	equ ($-RomStartAddress) and (romsize-1) /RomBlockSize
 phase	$8000
 scoreboard:
 		incbin "..\grapx\scoreboard\scoreboard.SC5",7,39*128  ;39 lines high =5K
@@ -29,6 +29,7 @@ ElementalWeapons:
 		incbin "..\grapx\ElementalWeapons.SC5",7,22*128  ;22 lines high=4K
 dephase
 		DS RomBlockSize- $ and (RomBlockSize-1),-1	;fill remainder of block
+
 
 ;Ro: the following ones could be packed and managed:
 TeamNXTLogoTransparantGraphicsblock:  equ   ($-RomStartAddress) and (romsize-1) /RomBlockSize ;Graphicsblock5+1
