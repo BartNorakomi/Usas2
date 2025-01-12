@@ -1077,11 +1077,11 @@ Lwalljump:
 		; ld    b,YaddmiddlePLayer-1-2  ;add y to check (y is expressed in pixels)
 		; ld    de,XaddLeftPlayer-4   ;add 0 to x to check left side of player for collision (player moved left)
 		; call  checktile           ;out z=collision found with wall
-		ld	 de,playerStanding.LeftSide-1
-		ld	 b,playerStanding.torso
-		call checktilePlayer
-		ret   z
-		jp    Set_Fall
+		ld		de,playerStanding.LeftSide-1
+		ld		b,playerStanding.torso
+		call	checktilePlayer
+		ret		z
+		jp		Set_Fall
 
 .UpPressed:
 		ld    a,RunningTablePointerRunRightEndValue
@@ -3847,23 +3847,23 @@ Jump:
 ;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
 ;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;  call  .HandlePrimaryAttackHitboxWhileJump        ;if player kicks in the air, enable hitbox and set hixbox coordinates
-		call AnimateWhileJump
-		call MoveHorizontallyWhileJump
-		ld	 a,(NewPrContr)
-		bit	 0,a           ;cursor up pressed ?
-		call nz,CheckSnapToStairsWhileJump
-		call .VerticalMovement
-		ld	 a,(NewPrContr)
-		bit	 0,a           ;cursor up pressed ?
-		call nz,CheckSnapToStairsWhileJump
+		call	AnimateWhileJump
+		call	MoveHorizontallyWhileJump
+		ld		a,(NewPrContr)
+		bit		0,a           ;cursor up pressed ?
+		call	nz,CheckSnapToStairsWhileJump
+		call	.VerticalMovement
+		ld		a,(NewPrContr)
+		bit		0,a           ;cursor up pressed ?
+		call	nz,CheckSnapToStairsWhileJump
 
-		ld	 a,(NewPrContr)
-		bit	 4,a           ;trig a pressed ?
-		jp	 nz,.SetPrimaryAttackWhileJump
-		bit	 5,a           ;trig b pressed ?
-		jp	 nz,.SetShootMagicWhileJump
-		bit	 0,a           ;cursor up pressed ?
-		jp	 nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
+		ld		a,(NewPrContr)
+		bit		4,a           ;trig a pressed ?
+		jp		nz,.SetPrimaryAttackWhileJump
+		bit		5,a           ;trig b pressed ?
+		jp		nz,.SetShootMagicWhileJump
+		bit		0,a           ;cursor up pressed ?
+		jp		nz,.CheckJumpOrClimbLadder  ;while jumping player can double jump can snap to a ladder and start climbing
 		ret
 
 .SetPrimaryAttackWhileJump:             ;trigger a pressed
@@ -3934,20 +3934,20 @@ Jump:
 		jp    RePlayerSFX_PlayCh1
 
 .VerticalMovement:
-		ld	 hl,JumpSpeed			;check up key during ascend
+		ld	 hl,JumpSpeed	;If ascending, then check if UP is still pressed
 		bit	 7,(hl)
 		jr	 z,.EndCheckUpPressed  
-		ld	 a,(Controls)			;UP still used?
+		ld	 a,(Controls)			;UP?
 		rrca                       
 		jr	 c,.EndCheckUpPressed	;no
 		ld	 a,(framecounter)
 		rrca
 		jr	 c,.EndCheckUpPressed
-		inc	 (hl)                  ;increase JumpSpeed 
+		inc	 (hl)                  ;increase JumpSpeed every other frame
 .EndCheckUpPressed:
 		ld	 a,(PlayerAniCount+1)
 		inc	 a
-		cp	 GravityTimer
+		cp	 GravityTimer	;=4
 		jr	 nz,.set
 		ld	 a,(hl)
 		inc	 a
@@ -3970,12 +3970,11 @@ else
 .EndCheckTopOfScreen:
   ;/unable to jump through the top of the screen
 endif
-  
-;move player y
-		ld    a,(Clesy)
+
+		ld    a,(Clesy)	;player Y change up or down
 		add   a,(hl)
 		ld    (Clesy),a
-.SkipverticalMovement:
+;.SkipverticalMovement:
 		ld    a,(hl)              ;if UP then check ceiling, else check floor
 		or    a
 		jp    m,.CheckCeiling
@@ -4037,11 +4036,12 @@ ret
 		jp    z,Set_L_stand       ;on collision change to L_Stand  
 		jp    Set_R_stand         ;on collision change to R_Stand    
 
+.headInCeiling: equ 3
 .CheckCeiling:
 		; ld    b,YaddHeadPLayer;delta Y
 		; ld    de,XaddRightPlayer-3  ;delta X
 		; call  checktile           ;out z=collision found with wall
-		ld	 b,playerStanding.head
+		ld	 b,playerStanding.head+.headInCeiling
 		ld	 de,playerStanding.Leftside+3
 		call checkTilePlayer
 		jr    z,.SnapToCeilingAbove
@@ -4052,7 +4052,7 @@ ret
 .SnapToCeilingAbove:
 		ld    a,(Clesy)           ;on collision snap y player to ceiling above
 		and   %1111 1000
-		add   a,6 + 2             ;(changed) player can now jump further into ceilings above
+		add   a,8-.headInCeiling
 		ld    (Clesy),a
 		ret
 

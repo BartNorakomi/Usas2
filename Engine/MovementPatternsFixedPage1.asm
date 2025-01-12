@@ -1826,15 +1826,14 @@ SetCoordinatesPuzzlePushingStones:          ;if v7=0 then set coordinates
 
 ;Push Stone Handler
 PushingStone:
-		ld    a,1
-		ld    (CopyObject+sPage),a 
-		ld    a,216		;!! ro: should be in the object001Table, like .sx
-		ld    (CopyObject+sy),a
-  
-		ld    a,(ix+enemies_and_objects.v7)       ;posision initializer for THIS room
-		and   a
-		jr    z,SetCoordinatesPuzzlePushingStones
-      
+		ld		a,1	
+		ld		(CopyObject+sPage),a 
+		; ld    a,216		;!! ro: should be in the object001Table, like .sx
+		ld		a,Object001Table.sy
+		ld		(CopyObject+sy),a
+		ld		a,(ix+enemies_and_objects.v7)       ;posision initializer for THIS room
+		and		a
+		jr		z,SetCoordinatesPuzzlePushingStones
 ;Store Coordinates Puzzle Pushing Stones
 		ld    l,(ix+enemies_and_objects.tableRecordPointer)
 		ld    h,(ix+enemies_and_objects.tableRecordPointer+1)
