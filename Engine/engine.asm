@@ -4319,7 +4319,7 @@ AttackRotator:  db 0
 
 InitiateNewAttack?:  db  0
 
-StartingJumpSpeedEqu:     equ -6    ;initial starting jump take off speed
+StartingJumpSpeedEqu:     equ -6   ;initial starting jump take off speed
 StartingJumpSpeed:        db -6 ;equ -5    ;initial starting jump take off speed
 StartingDoubleJumpSpeed:  db -3 ;-4 ;equ -5    ;initial starting jump take off speed
 StartingJumpSpeedWhenHit: db -4 ;equ -5    ;initial starting jump take off speed
@@ -4959,9 +4959,6 @@ DoMovePlayer:               ;carry: collision detected
 ;checkFloorPlayer
 ;out:	Cy,floor not found
 CheckFloor:
-		; ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
-		; ld    de,+3 ;XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
-		; call  checktile           ;out z=collision found with wall
 		ld	 de,playerStanding.LeftSide+3
 		ld	 b,playerStanding.feet+8
 		call checkTilePlayer           ;out z=collision found with wall
@@ -4978,9 +4975,6 @@ CheckFloor:
 ;checkFloorPlayer
 ;out:	Cy,floor or ladder not found
 CheckFloorInclLadder:
-;   ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
-;   ld    de,+3 ;XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
-;   call  checktile           ;out z=collision found with wall
 		ld	 de,playerStanding.LeftSide+3
 		ld	 b,playerStanding.feet+8
 		call checkTilePlayer           ;out z=collision found with wall
@@ -5001,19 +4995,6 @@ CheckFloorInclLadder:
 ;checkFloorPlayer
 ;out:	Cy,floor or ladder not found
 CheckFloorInclLadderWhileRolling:
-		; ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
-		; ld    de,XaddLeftPlayer-2   ;add x to check (x is expressed in pixels)
-		; call  checktile           ;out z=collision found with wall
-		; ret   z
-		; dec   a                   ;check for tilenr 2=ladder 
-		; ret   z  
-		; ld    b,YaddFeetPlayer    ;add y to check (y is expressed in pixels)
-		; ld    de,XaddRightPlayer+2  ;add x to check (x is expressed in pixels)
-		; call  checktile           ;out z=collision found with wall
-		; ret   z
-		; dec   a                   ;check for tilenr 2=ladder 
-		; ret   z  
-
 		call CheckFloorInclLadder
 		ret	 nc
 
@@ -5033,23 +5014,23 @@ CheckFloorInclLadderWhileRolling:
 		scf
 		ret
 
-;20241007;ro
+;20241007;ro > this only checks for spike/poison, is that correct?
+;Lava, Poison or Spikes under player?
+;Z, yes
 CheckLavaPoisonSpikes:      ;out z-> lava poison or spikes found
-		ld    a,(PlayerInvulnerable?)
-		or    a
-		ret   nz
-		; ld    b,YaddFeetPlayer-7    ;add y to check (y is expressed in pixels)
-		; ld    de,+3 ;XaddRightPlayer-2  ;add x to check (x is expressed in pixels)
-		; call  checktile           ;out z=collision found with wall
-  		ld	 de,playerStanding.LeftSide
-		ld	 b,playerStanding.feet+8
-		call checkTilePlayer           ;out z=collision found with wall
-		sub   2                   ;check for tilenr 3=lava poison spikes
-		ret   z  
-		inc   hl                  ;check next tile
-		ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
-		sub   3                   ;check for tilenr 3=lava poison spikes
+		ld		a,(PlayerInvulnerable?)
+		or		a
+		ret		nz
+  		ld		de,playerStanding.LeftSide
+		ld		b,playerStanding.feet+8
+		call	checkTilePlayer
+		sub		SpikeId-1		;check for tilenr 3=Spike/Poison
+		ret		z
+		inc		hl                  ;check next tile
+		ld		a,(hl)
+		sub		SpikeId		;check for tilenr 3=Spike/Poison
 		ret
+
 
 Lrunning:
 		call  CheckWallbashLeft           ;check if left+left  are quickly pressed in succession. if so, wallbash pose and DON'T return to this routine

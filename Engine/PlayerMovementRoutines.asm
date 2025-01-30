@@ -3738,20 +3738,15 @@ SetRShootArrowWhenJumping:
 ;check if there are stairs when pressing up, if so climb the stairs.
 ;[Check stairs going Right UP] /
 CheckSnapToStairsWhileJump:
-;ret		;20241008;ro;disabled this cuz I hate it  - mohaaaahahahahahaa
-		; ld    b,YaddFeetPlayer-00	;delta Y
-		; ld    de,XaddLeftPlayer+08-08   ;delta X
-		; call  checktile           ;out z=collision found with wall
 		ld	 b,playerStanding.feet+8
 		ld	 de,playerStanding.leftSide
 		call checkTilePlayer
-		sub   4                   ;check for tilenr 5=stairssrightup
+		sub   StairRightId-1 ;4                   ;check for tilenr 5=stairssrightup
 		jp    z,.stairsfoundrightup
 		inc   hl                  ;1 tile to the right
 		ld    a,(hl)              ;0=background, 1=hard foreground, 2=ladder, 3=lava.
-		sub   4                   ;check for tilenr 4=stairsleftup
+		sub   StairLeftId	;4                   ;check for tilenr 4=stairsleftup
 		ret   nz
-
 .stairsfoundleftup:  
 		pop   af                    ;pop the call  
 		call  Set_Stairs_Climb_LeftUp
@@ -3762,20 +3757,18 @@ CheckSnapToStairsWhileJump:
 		ld    a,l
 		and   %1111 1000
 		ld    l,a
-		ld    (ClesX),hl
-
+;		ld    (ClesX),hl
 		ld    a,(ClesY)
 		and   %1111 1000
-
-  ;We need to build an exception in case player snaps to stairs when y<8, so player doesn't clip throught the screen
+  ;exception: in case player snaps to stairs when y<8, player shouldn't clip throught the screen
 		jr    nz,.NotZero2
-		ld    hl,(ClesX)
+;		ld    hl,(ClesX)
 		ld    de,8
 		add   hl,de
-		ld    (ClesX),hl
-		ld    a,8  
-  .NotZero2:
-  ;/We need to build an exception in case player snaps to stairs when y<8, so player doesn't clip throught the screen
+;		ld    (ClesX),hl
+		ld    a,e ;8  
+.NotZero2:
+  		ld    (ClesX),hl
 		dec   a
 		ld    (ClesY),a
 
@@ -3785,7 +3778,7 @@ CheckSnapToStairsWhileJump:
 		ld	 b,playerStanding.feet+8
 		ld	 de,playerStanding.leftSide+8
 		call checkTilePlayer
-		sub   3                   ;check for tilenr 4=stairsleftup
+		sub   StairLeftId-1 ;3                   ;check for tilenr 4=stairsleftup
 		ret   z
 
 		ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
@@ -3804,20 +3797,19 @@ CheckSnapToStairsWhileJump:
 		ld    a,l
 		and   %1111 1000
 		ld    l,a
-		ld    (ClesX),hl
+;		ld    (ClesX),hl
 
 		ld    a,(ClesY)
 		and   %1111 1000
-
-		;We need to build an exception in case player snaps to stairs when y<8, so player doesn't clip throught the screen
+	;We need to build an exception in case player snaps to stairs when y<8, so player doesn't clip throught the screen
 		jr    nz,.NotZero
-		ld    hl,(ClesX)
+;		ld    hl,(ClesX)
 		ld    de,-8
 		add   hl,de
-		ld    (ClesX),hl
+;		ld    (ClesX),hl
 		ld    a,8  
 .NotZero:
-;/We need to build an exception in case player snaps to stairs when y<8, so player doesn't clip throught the screen
+		ld    (ClesX),hl
 		dec   a
 		ld    (ClesY),a
 		; ld    b,YaddFeetPlayer-00;delta Y
@@ -3826,7 +3818,7 @@ CheckSnapToStairsWhileJump:
 		ld	 b,playerStanding.feet+8
 		ld	 de,playerStanding.leftSide
 		call checkTilePlayer
-		sub   4                   ;check for tilenr 5=stairssrightup
+		sub   StairRightId-1	;4                   ;check for tilenr 5=stairssrightup
 		ret   z
 		ld    hl,(ClesX)          ;in case stairs are detected, snap to the x position of the stairs
 		ld    de,8
@@ -3834,29 +3826,32 @@ CheckSnapToStairsWhileJump:
 		ld    (ClesX),hl
 		ret  
 
+
 PlayerNotInWaterRunningTable:
 		dw    -2,-2,-1,-1,-1,-0,-0,-0,-0,0,+0,+0,+0,+0,+1,+1,+1,+2,+2  
 PlayerInWaterRunningTable:
 		dw    -1,-1,-1,-1,-0,-0,-0,-0,-0,0,+0,+0,+0,+0,+0,+1,+1,+1,+1
 
 
+;Controls:
+;bit	7	6	5	4	3	2	1	0
+;key	f2	f1	m	spc	rgt	lft	dwn	up
+;joy	0	0	b	a	rgt	lft	dwn	up
+
 ;regular Jump
 ;20241010;ro;refactored and small changes
 Jump:
-; bit	7	6	  5		    4		    3		    2		  1		  0
-;		  0	0	  trig-b	trig-a	right	  left	down	up	(joystick)
-;		  0	F1	'M'		  space	  right	  left	down	up	(keyboard)
 ;  call  .HandlePrimaryAttackHitboxWhileJump        ;if player kicks in the air, enable hitbox and set hixbox coordinates
 		call	AnimateWhileJump
 		call	MoveHorizontallyWhileJump
-		ld		a,(NewPrContr)
-		bit		0,a           ;cursor up pressed ?
-		call	nz,CheckSnapToStairsWhileJump
+		
+		; ld		a,(NewPrContr)
+		; bit		0,a           ;cursor up pressed ?
+		; call	nz,CheckSnapToStairsWhileJump
 		call	.VerticalMovement
 		ld		a,(NewPrContr)
-		bit		0,a           ;cursor up pressed ?
+		bit		0,a           ;on release/press up, snap to possible stairs
 		call	nz,CheckSnapToStairsWhileJump
-
 		ld		a,(NewPrContr)
 		bit		4,a           ;trig a pressed ?
 		jp		nz,.SetPrimaryAttackWhileJump
@@ -3937,9 +3932,9 @@ Jump:
 		ld	 hl,JumpSpeed	;If ascending, then check if UP is still pressed
 		bit	 7,(hl)
 		jr	 z,.EndCheckUpPressed  
-		ld	 a,(Controls)			;UP?
+		ld	 a,(Controls)			;up?
 		rrca                       
-		jr	 c,.EndCheckUpPressed	;no
+		jr	 c,.EndCheckUpPressed	;yes
 		ld	 a,(framecounter)
 		rrca
 		jr	 c,.EndCheckUpPressed

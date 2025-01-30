@@ -1496,7 +1496,18 @@ restorebackground?:         equ   -1
 framecounter:               rb    1
 Bossframecounter:           rb    1
 
-Controls:	                  rb		1
+;bit	7	6	5	4	3	2	1	0
+;key	f2	f1	m	spc	rgt	lft	dwn	up
+;joy	0	0	b	a	rgt	lft	dwn	up
+Controls:	rb		1
+.up:	equ	0
+.dwn:	equ 1
+.lft:	equ 2
+.rgt:	equ 3
+.trigA:	equ 4
+.trigB:	equ 5
+.inv:	equ	6
+.map:	equ 7
 NewPrContr:	                rb		1
 oldControls: 				        rb    1
 amountoftimeSamecontrols: 	rb    1
@@ -1560,7 +1571,7 @@ roomDataBlock:	equ 0
 ;Space for room tiles data 
 UnpackedRoomFile:
 .meta:		rb 8
-.tiledata:  rb  38*27*2	;no really, but it'll do for now (this is the MAX storage needed)
+.tiledata:  rb  38*27*2	; (this is the MAX storage needed)
 .object:	rb 256
 
 

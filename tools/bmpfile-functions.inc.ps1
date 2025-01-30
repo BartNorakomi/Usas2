@@ -1,6 +1,6 @@
 #Some BMP file functions operating on byte level #hardcore
 #Shadow@Fuzzylogic
-#20240304-20241106
+# 20240304-20241106
 
 <#
 BmpFile Object props
