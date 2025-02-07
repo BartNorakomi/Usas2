@@ -3966,8 +3966,19 @@ else
   ;/unable to jump through the top of the screen
 endif
 
-		ld    a,(Clesy)	;player Y change up or down
+  	ld    a,(Clesy)	;player Y change up or down
 		add   a,(hl)
+;<<<--- 20250207;ro. check max jump heigth
+    bit   7,(hl)  
+    jr    z,.vmovefall
+    ld    c,A
+    ld    a,(jumpStartY)
+    sub   C
+    cp    7*8   ;max jump#1 height=7 tiles
+    ret   nc
+    ld    a,c
+.vmoveFall:
+;--->>>
 		ld    (Clesy),a
 ;.SkipverticalMovement:
 		ld    a,(hl)              ;if UP then check ceiling, else check floor

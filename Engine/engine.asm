@@ -4325,6 +4325,7 @@ StartingDoubleJumpSpeed:  db -3 ;-4 ;equ -5    ;initial starting jump take off s
 StartingJumpSpeedWhenHit: db -4 ;equ -5    ;initial starting jump take off speed
 FallingJumpSpeed:         equ 1
 JumpSpeed:                db  0
+JumpStartY:				db 0 ;Where did the jump start?
 MaxDownwardFallSpeed:     equ 6
 GravityTimer:             equ 4     ;every x frames gravity changes jump speed
 ; YaddHeadPLayer:           equ 2 + 6 ;(changed) player can now jump further into ceilings above
@@ -5962,6 +5963,8 @@ Set_jump:
 
 		ld    a,(StartingJumpSpeed)
 		ld		(JumpSpeed),a
+		ld		a,(clesy)
+		ld		(jumpStartY),a
 
 		ld    a,(PrimaryWeaponActivatedWhileJumping?)  
 		or    a
