@@ -115,3 +115,15 @@ convert-pal.ps1 [-path <Object>] [-toAsm] [-to8bitRgb] [<CommonParameters>]
 om de palette naar DB RB,0G formaat te tonen
 
 
+
+
+Registry
+========
+$path="registry::HKEY_CURRENT_USER\SOFTWARE\TeamNxt\Usas2"
+#remove-item -path $path
+if (-not (Test-Path -Path $path)) {$null=new-item -Path $path -ItemType Directory -Force}
+set-ItemProperty registry::HKEY_CURRENT_USER\SOFTWARE\TeamNxt\Usas2 -Name TiledMapLocation -Value "C:\Users\rvand\SynologyDrive\Usas2\maps"
+
+
+
+

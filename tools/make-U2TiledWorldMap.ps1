@@ -1,7 +1,7 @@
 # Create a Tiled.worldmap files and optional its maps
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
-# 20231015-20241117
+# 20231015-20250305
 
 <#
 required manifest properties:
@@ -18,15 +18,16 @@ param
 (	[Parameter(ParameterSetName='ruinid')]$ruinId,	#ruin.UID ()
 	[Parameter(ParameterSetName='ruinname')]$ruinName,	#ruin.name
 	[Parameter(ParameterSetName='ruinIdentity')]$ruinIdentity, #IdentifierString
-	$name="",
+	$worldMapname,
 	$marginX=8,
 	$marginY=8,
 	$sourceOffsetX=0,
 	$sourceOffsetY=0,
 	$mapWidth=38,
 	$mapHeight=27,
-	$TiledMapsLocation="C:\Users\$($env:username)\OneDrive\Usas2\maps",
-	$targetLocation="$TiledMapsLocation\",
+	$TiledMapsLocation, #="C:\Users\$($env:username)\OneDrive\Usas2\maps",
+	$targetLocation, #="$TiledMapsLocation\",
+	$exportToPath,
 	[switch]$createRoom,
 	[switch]$openWorldMap=$false,
 	[switch]$printWorldMap=$false,
@@ -36,10 +37,7 @@ param
 	$usas2PropertiesFile="..\usas2-properties.csv"
 )
 
-$worldMapFile=$targetLocation+$name+".world"
-#write-verbose "input file: $masterMap"
-if ($name) {write-verbose "output file: $worldMapFile"}
-write-verbose "maps location: $TiledMapsLocation"
+
 
 
 ##### Includes #####
@@ -50,6 +48,12 @@ write-verbose "maps location: $TiledMapsLocation"
 if ($resetGlobals) {$global:usas2=$null}
 $global:usas2=get-Usas2Globals
 if (-not $mastermap) {$mastermap="..\"+($usas2.worldmap|where{$_.identity -eq "global"}).sourcefile}
+#write-verbose "input file: $masterMap"
+if ($worldMapname) {write-verbose "output file: $worldMapFile"}
+if (-not $tiledmapsLocation) {$tiledmapsLocation=get-U2TiledMapLocation} else {set-U2TiledMapLocation -path $TiledMapsLocation}
+write-verbose "Tiled maps location: $tiledmapsLocation"
+if (-not $targetLocation) {$targetLocation=$tiledmapsLocation}
+$worldMapFile=$targetLocation.TrimEnd("\")+"\"+$worldMapname+".world"
 
 ##### Functions #####
 
@@ -174,15 +178,31 @@ if ($printWorldMap)
 $global:maps=convert-Usas2WorldMapToTiledWorldMap -WorldmapSource $WorldMapSource -roomMatch ("^("+($ruinManifest.ruinId -join ("|"))+")$")
 
 # Create tiled.worldmap
-if (-not $name)
+if (-not $worldMapname)
 {	write-verbose "No name defined, couldn't create worldmap."
 }	else
-{	$worldmap=new-TiledWorldMap -name $name -DefaultMapWidth=$mapWidth -DefaultMapHeight=$mapHeight
+{	write-verbose "Creating worldmap file $worldmapfile"
+	$worldmap=new-TiledWorldMap -name $worldMapname -DefaultMapWidth=$mapWidth -DefaultMapHeight=$mapHeight
 	$worldmap.maps=$maps
 	$worldmap|convertto-json|set-content $worldMapFile
 	if ($openWorldMap) {& $worldmapfile}
 }
 
+#Export all files to a specific location
+if ($exportToPath)
+{	if ($exportToPath.EndsWith("\")) {$exportToPath=$exportToPath.remove($exportToPath.LastIndexOf("\"),1) }
+	$dstPath=resolve-newPath -path $exportToPath
+	if (-not (Test-path -path $dstPath))
+	{	write-verbose "create export path $dstPath"
+		New-Item -Path $dstPath -ItemType Directory
+	}
+	foreach ($map in $maps)
+	{	$SrcFile="$TiledMapsLocation\$($map.fileName)"
+		$dstFile="$dstPath\$($map.fileName)"
+		copy-item $srcFile $dstfile
+	}
+
+}
 
 <#
 $p=(invoke-expression "write $($usas2.TiledWorldMap.defaultlocation[0])")

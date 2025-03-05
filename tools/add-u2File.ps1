@@ -1,4 +1,4 @@
-# Put files into the datalist, and write to the ROM
+# Put (known) files into the datalist, and write to the ROM
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
 # 20231207-20241208
@@ -117,7 +117,7 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 		
 		$collections="tileset","areasign"
 		foreach ($collectionName in $collections)
-		{	write-verbose "Updating index for collection $collectionname"
+		{	write-verbose "Updating index for collection `"$collectionname`""
 			$fileIndex=new-U2RomFileIndex -DSM $dsm -collection $usas2.$collectionName
 			$data=$fileindex.indexPointerTable+$fileindex.indexPartsTable
 			$null=remove-dsmdata -dsm $dsm -datalist $datalist -name $collectionName

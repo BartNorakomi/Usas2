@@ -1,7 +1,7 @@
 # Create one or more TiledTileSet.tsx files
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
-# 20241121-20241121
+# 20241121-20250225
 
 <#
 required manifest properties:
@@ -17,15 +17,13 @@ param
 (	[Parameter(ParameterSetName='ruinid')]$ruinId, #UID number
     [Parameter(ParameterSetName='ruinname')]$ruinName, #name property String
     [Parameter(ParameterSetName='ruinIdentity')]$ruinIdentity, #IdentifierString
-	[string]$TiledMapsLocation="C:\Users\$($env:username)\OneDrive\Usas2\maps",
+	[string]$TiledMapsLocation, #="C:\Users\$($env:username)\OneDrive\Usas2\maps",
 	[string]$targetLocation="$TiledMapsLocation\",
 	[switch]$forceOverWrite,
 	[switch]$resetGlobals=$false
 #	$usas2PropertiesFile="..\usas2-properties.csv"
 )
 
-
-write-verbose "maps location: $TiledMapsLocation"
 
 
 ##### Includes #####
@@ -35,6 +33,8 @@ write-verbose "maps location: $TiledMapsLocation"
 ##### Global properties #####
 if ($resetGlobals) {$global:usas2=$null}
 $global:usas2=get-Usas2Globals
+if (-not $tiledmapsLocation) {$tiledmapsLocation=get-U2TiledMapLocation} else {set-U2TiledMapLocation -path $TiledMapsLocation}
+write-verbose "Tiled maps location: $tiledmapsLocation"
 
 ##### Functions #####
 
@@ -81,7 +81,8 @@ foreach ($this in $RuinManifest)
     write-verbose "TiledTileset name=$($TiledTileSetManifest.name), width=$($TiledTileSetManifest.tileWidth), height=$($TiledTileSetManifest.tileHeight), imagePath=$($TiledTileSetManifest.imageSourceFile)"
     $TiledTileset=new-TiledTileSet -name $TiledTileSetManifest.name -tileWidth $TiledTileSetManifest.tileWidth -tileHeight $TiledTileSetManifest.tileHeight -imagePath $TiledTileSetManifest.imageSourceFile
     write-verbose $TiledTileset.tileset.OuterXml
-    $path=resolve-NewPath -path (Invoke-Expression -Command `"$($TiledTileSetManifest.defaultLocation)\$($TiledTileSetManifest.name).tsx`")
+    #$path=resolve-NewPath -path (Invoke-Expression -Command `"$($TiledTileSetManifest.defaultLocation)\$($TiledTileSetManifest.name).tsx`")
+    $path=resolve-newpath -path "$TiledMapsLocation\$($TiledTileSetManifest.path)"
     write-verbose "file: $path"
-    set-TiledTileSet -tileset $TiledTileset -path $path
+    #set-TiledTileSet -tileset $TiledTileset -path $path
 }

@@ -1,7 +1,7 @@
 # Put maps into the datalist, and write to the ROM
 # A custom script for the MSX Usas2 project
 # Shadow@FuzzyLogic
-# 20231128-20241206
+# 20231128-20250225
 
 [CmdletBinding()]
 param
@@ -13,7 +13,7 @@ param
 	$romfile, #="$(resolve-path `"..\Engine\usas2.rom`")", #over rule DSM.filespace.path
 	$datalistName="WorldMap",
 	$mapslocation="..\maps",
-	$TiledMapsLocation="$env:onedrive\usas2\maps", #"C:\Users\$($env:username)\OneDrive\Usas2\maps",
+	$TiledMapsLocation, #="C:\Users\rvand\SynologyDrive\Usas2\maps", #"$env:onedrive\usas2\maps", #"C:\Users\$($env:username)\OneDrive\Usas2\maps",
 	[switch]$convertTiledMap=$true,
 	[switch]$resetGlobals=$false,
 	[switch]$updateIndex=$true
@@ -27,7 +27,8 @@ param
 ##### Global properties #####
 if ($resetGlobals) {$global:usas2=$null}
 $global:usas2=get-Usas2Globals
-
+if (-not $tiledmapsLocation) {$tiledmapsLocation=get-U2TiledMapLocation} else {set-U2TiledMapLocation -path $TiledMapsLocation}
+write-verbose "Tiled maps location: $tiledmapsLocation"
 
 ##### Functions #####
 
@@ -87,6 +88,7 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 	elseif ($newest)
 	{	write-verbose "Adding most recent $newest Tiled Map files (.tmx)"
 		$files=gci $Tiledmapslocation\*.tmx|where{$_.basename -match "^[0-9[a-zA-Z0-9]{4}$"}|Sort-Object -Property lastWriteTime -Descending|select -first $newest
+		if (-not $files) {write "No files found at $tiledmapslocation"}
 		foreach ($file in $files)
 		{	write-verbose "Add File: $($file.fullname)"
 			if ($convertTiledMap)

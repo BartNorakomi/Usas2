@@ -497,7 +497,7 @@ RuinPropertiesLUT:
 	DB 2,2,0,"Lemniscate   "
 	DB 3,3,3,"World Forest "
 	DB 4,4,0,"Pegu         "
-	DB 0,0,0,"Bio          "
+	DB 5,5,0,"Shalabha     "
 	DB 6,6,3,"Karni Mata   "
 	DB 7,7,2,"Konark       "
 	DB 0,0,0,"Ashoka's hell"

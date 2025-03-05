@@ -1,5 +1,6 @@
 # Usas2 shared functions
-# shadow@fuzzylogic 20231024-20241206
+# shadow@fuzzylogic
+# 20231024-20250225
 
 [CmdletBinding()]
 param
@@ -10,7 +11,7 @@ param
 . .\DSM.ps1
 
 
-#20240729
+# 20240729
 # #Resolve/convert a path to a new file
 # function resolve-newPath
 # {	param ($path)
@@ -31,7 +32,7 @@ function fill-array
 
 
 
-#20240106
+# 20240106
 # Write verbose if global parameter $verboseMore=$true
 function write-verboseMore
 {	param ([Parameter(Mandatory, Position=0,ValueFromPipeline)]$message)
@@ -87,6 +88,41 @@ function convert-CsvToObject
 
 ##### USAS2 specific Functions #####
 $WorldMapColumnNames="AA AB AC AD AE AF AG AH AI AJ AK AL AM AN AO AP AQ AR AS AT AU AV AW AX AY AZ BA BB BC BD BE BF BG BH BI BJ BK BL BM BN BO BP BQ BR BS BT BU BV BW BX BY BZ" -split(" ")
+
+#20250225
+#Create Usas2 registry path
+function new-U2RegistryPath
+{	$path="registry::HKEY_CURRENT_USER\SOFTWARE\TeamNxt\Usas2"
+	#remove-item -path $path
+	if (-not (Test-Path -Path $path)) {$null=new-item -Path $path -ItemType Directory -Force}
+	return $path
+}
+
+#20250225
+#Add an item to the Usas2 registry
+function new-U2RegistryItem
+{	param ($name,$value)
+	$path=new-U2RegistryPath
+	set-ItemProperty -path $path -Name $name -value $value
+}
+	
+#20250225
+#Get an item from the Usas2 registry
+function get-U2RegistryItem
+{	param ($name)
+	$path=new-U2RegistryPath
+	(Get-ItemProperty -Path $path -name $name -ErrorAction SilentlyContinue).$name
+}
+
+function set-U2TiledMapLocation
+{	param ($path)
+	new-U2RegistryItem -name TiledMapLocation -Value $path 
+}
+function get-U2TiledMapLocation
+{	$path=get-U2RegistryItem -name TiledMapLocation 
+	if (-not $path) {$path="."}
+	return $path
+}
 
 
 # Manifest
