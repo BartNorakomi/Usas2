@@ -35,7 +35,11 @@ $global:usas2=get-Usas2Globals
 function convert-BmpToSc5
 {	param ($bmpfile,$sc5file,$palfile)
 	write-verbose "Converting `"$bmpfile`" to `"$sc5file`". Pal: `"$palfile`""
-	npx convertgfx --source $bmpfile --fixedPalette $palfile --targetScreen5 $sc5file --gamma 2.2
+	if (-not (test-path $bmpfile)) {write "$bmpfile not found"}
+	elseif (-not (test-path $palfile)) {write "$palfile not found"}
+	else
+	{	npx convertgfx --source $bmpfile --fixedPalette $palfile --targetScreen5 $sc5file --gamma 2.2
+	}
 }
 
 
@@ -54,7 +58,7 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 	
 	switch ($PSCmdlet.ParameterSetName)
 	{	"test"
-	{	write-verbose "Test mode"
+	{	write-verbose "mode: Test mode"
 			write-verbose "DSM: $dsmPath, Datalist:$datalistname"
 			$datalist=add-DSMDataList -dsm $dsm -name $datalistname
 			# $fileTypes[$datalistname]
@@ -71,7 +75,7 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 		
 		#Add a manifest FILE to DSM and inject to ROM
 		"identity"
-		{	write-verbose "-add by identity $identity"
+		{	write-verbose "mode: add by identity $identity"
 			$files=get-u2file -identity $identity -filetype $datatype
 			foreach ($file in $files)
 			{	write-verbose " File: $file"
@@ -86,14 +90,17 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 		}
 	
 
-		#Add ruin tileset, convert gfx first
+		#Add ruin tileset, convert gfx first if needed.
 		"ruinTileset"
-		{	write-verbose "/ruinId Adding Ruin(s) $tileSetRuinid"
+		{	write-verbose "mode: ruinId Adding Ruin(s) $tileSetRuinid"
 			$datalist=add-DSMDataList -dsm $dsm -name "tileset"
 			foreach ($id in $tilesetRuinId)
 			{	$ruinManifest=get-u2Ruin -id "^$id$"
 				$tilesetManifest=get-u2TileSet -identity $ruinManifest.tileset
-				if	($sc5File=(get-U2File -identity $tilesetManifest.file -fileType $fileTypes["tileset"]).path)
+				$sc5File=(get-U2File -identity $tilesetManifest.file -fileType $fileTypes["tileset"]).path
+				if	(-not $sc5File)
+				{	write-verbose "sc5file not found in manifest"
+				} else
 				{	if ($convertGfx)
 					{	$bmpFile=(get-u2file -identity $tilesetManifest.imagesourcefile -filetype $filetypes["TiledTileSetImage"]).path
 						$palFile=(get-u2file -identity $tilesetManifest.paletteSourcefile -filetype $filetypes["palette"]).path

@@ -504,7 +504,7 @@ RuinPropertiesLUT:
 	DB 9,9,0,"Taxilla      "
 	DB 0,0,0,"Euderus Set  "
 	DB 11,11,0,"Akna         "
-	DB 0,0,0,"Fate         "
+	DB 12,12,0,"Fate         "
 	DB 0,0,0,"Sepa         "
 	DB 0,0,0,"undefined    "
 	DB 0,0,0,"Chi          "

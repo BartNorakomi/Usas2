@@ -6,7 +6,7 @@
 [CmdletBinding()]
 param
 (	[Parameter(ParameterSetName='ruin')]$ruinId,
-	[Parameter(ParameterSetName='room')]$roomname,
+	[Parameter(ParameterSetName='room')][ValidateLength(4,4)]$roomname,
 	[Parameter(ParameterSetName='file')]$path,
 	[Parameter(ParameterSetName='latestFile')]$newest,
 	$dsmPath, #=".\Usas2.Rom.dsm",

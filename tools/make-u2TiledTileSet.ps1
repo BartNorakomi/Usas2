@@ -84,5 +84,5 @@ foreach ($this in $RuinManifest)
     #$path=resolve-NewPath -path (Invoke-Expression -Command `"$($TiledTileSetManifest.defaultLocation)\$($TiledTileSetManifest.name).tsx`")
     $path=resolve-newpath -path "$TiledMapsLocation\$($TiledTileSetManifest.path)"
     write-verbose "file: $path"
-    #set-TiledTileSet -tileset $TiledTileset -path $path
+    set-TiledTileSet -tileset $TiledTileset -path $path
 }

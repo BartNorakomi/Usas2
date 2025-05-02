@@ -190,7 +190,7 @@ if (-not $worldMapname)
 
 #Export all files to a specific location
 if ($exportToPath)
-{	if ($exportToPath.EndsWith("\")) {$exportToPath=$exportToPath.remove($exportToPath.LastIndexOf("\"),1) }
+{	$exportToPath=$exportToPath.TrimEnd("\")
 	$dstPath=resolve-newPath -path $exportToPath
 	if (-not (Test-path -path $dstPath))
 	{	write-verbose "create export path $dstPath"
@@ -223,9 +223,14 @@ foreach ($worldmapMap in $maps)
 %{$map=get-TiledMap $tmxLocation\$_;$map|Get-TiledMapTileset|where{$_.firstgid -ne 1}|%{$_|remove-tiledMaptileset};$map|set-tiledmap  $tmxLocation\$_}
 
 # create specific sections
- .\make-U2TiledWorldMap.ps1 -ruinId 12 -masterMap ..\Usas2-Section1.csv -createRoom -forceOverWrite -resetGlobals -Verbose
-
+ .\make-U2TiledWorldMap.ps1 -ruinId 1,2,3,4,5,7,12 -masterMap ..\Usas2-Section1.csv -createRoom -resetGlobals -Verbose -worldMapname Section1
+ 
 # Create set for Robert
 .\make-U2TiledWorldMap.ps1 -ruinId 1 -TiledMapsLocation F:\Usas2TiledMaps -Verbose -createRoom -forceOverWrite -name pollux
+
+
+#copy some lost maps (from old onedrive 20250304)
+foreach ($map in ($roommaps|where{$_.ruinid -eq "9"})){copy-item "C:\Users\rvand\Downloads\usas2-maps\maps\$($map.name).tmx" "$tiledmapsLocation\$($map.name).tmx"}
+
 
 #>
