@@ -168,16 +168,26 @@ initMem:
 	or		c
 	ld		(slot.page12rom),a
 	
+	; The engine only does primary slot selection via I/O port $a8.
+	; To still support having the game ROM and/or RAM in subslots,
+	; it pre-sets the subslot for RAM and ROM in the secondary slot
+	; register by enabling them once through the BIOS, which will
+	; set up the secondary slot register appropriately.
+	; Note: The game ROM and RAM can not be in the same primary slot.
+	ld		a,(page2ram)
+	ld		h,$80  ; pre-set RAM secondary slot register in page 2
+	call	$24
+	
 	ld		a,(romSlot)
-	ld		h,$80
+	ld		h,$80  ; pre-set ROM secondary slot register in page 2
 	call	$24
 	
 	ld		a,(page1ram)
-	ld		h,$40
+	ld		h,$40  ; pre-set RAM secondary slot register in page 1
 	call	$24
 	
 	ld		a,(romSlot)
-	ld		h,$40
+	ld		h,$40  ; pre-set ROM secondary slot register in page 1
 	call	$24
 	
 	ld		b,3
