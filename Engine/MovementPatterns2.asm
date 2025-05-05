@@ -1499,8 +1499,8 @@ DisplayCharacterPortrait:                   ;this routine is executed during SDM
 ;  ld    (FreeToUseFastCopy+dx),a
   ret
   
-  .dydxtable: ;relative y, relative x
-;circular appearance of character portrait
+  ;circular appearance of character portrait
+  .dydxtable: ;dy,dx,sy,sx
   db  024,024, 024,028, 028,024, 028,028, 024,024, 024,028, 028,024, 028,028
   db  020,024, 020,028, 032,024, 032,028, 024,020, 024,032, 028,020, 028,032
   db  020,020, 016,024, 016,028, 020,032, 032,020, 032,032, 036,024, 036,028
