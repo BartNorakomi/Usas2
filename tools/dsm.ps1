@@ -349,7 +349,7 @@ function add-DSMData
     {   write-verbose "[add-DSMData] adding `"$name`" to datalist `"$($datalist.name)`" with $($data.length) bytes"
         if ($alloc=$DSM|alloc-DSMSpace -lengthBytes $data.length)
         {	if ($datalist)
-            {	write-verbose "adding '$name' to datalist `"$($datalist.name)`""
+            {	write-verbose "[add-DSMData] adding '$name' to datalist `"$($datalist.name)`""
                 $result=$DataList|add-DSMDataListAllocation -name $name -alloc $alloc -part $part
                 write-verbose $result
             }   
@@ -372,7 +372,8 @@ function remove-DSMdata
     (	[Parameter(Mandatory,ValueFromPipeline)]$DSM,
         [Parameter(ParameterSetName='ListName',Mandatory)]$dataListName,
         [Parameter(ParameterSetName='ListObject')]$dataList,
-        $name,$part=0,$allocation,  #either name or object
+        $name,$allocation,  #either name or object
+        #$part=0,
         [switch]$updateFileSpace #optional
     )
     if (-not $datalist) {$datalist=get-DSMDataList -dsm $dsm -name $datalistname|select -first 1}
@@ -387,6 +388,25 @@ function remove-DSMdata
         }
     }
 }
+
+
+# DATA LIST
+# replace data in  DSM Datalist
+function replace-DSMdata
+{   param
+    (	[Parameter(Mandatory,ValueFromPipeline)]$DSM,
+        [Parameter(ParameterSetName='ListName',Mandatory)]$dataListName,
+        [Parameter(ParameterSetName='ListObject')]$dataList,
+        $name,$data,
+        [switch]$updateFileSpace #optional
+    )
+    if (-not $datalist) {$datalist=get-DSMDataList -dsm $dsm -name $datalistname|select -first 1}
+
+    write-verbose "[replace-DsmData] $name from $datalist"
+    remove-dsmdata -dsm $dsm -datalist $datalist -name $name
+	add-DSMData -dsm $dsm -dataList $datalist -name $name -data $data -updateFileSpace:$true
+}
+
 
 # DATA LIST
 # Add one, or more file(s) to DSM.datalist and optionally update the file space file

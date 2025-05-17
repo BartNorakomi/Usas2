@@ -6,19 +6,21 @@
 
 [CmdletBinding()]
 param
-(	[Parameter(ParameterSetName='ruinTileset')]$TilesetRuinId,
-	[Parameter(ParameterSetName='ruinTileset')][switch]$convertGfx=$true,
+(	#[Parameter(ParameterSetName='ruinTileset')]$TilesetRuinId,
+	#@[Parameter(ParameterSetName='ruinTileset')][switch]$convertGfx=$true,
 	[Parameter(ParameterSetName='path')]$path,
-	[Parameter(ParameterSetName='path')]$datalistName,
-	[Parameter(ParameterSetName='identity')]$identity,
-	[Parameter(ParameterSetName='identity')]$dataType="*",
-	[Parameter(ParameterSetName='test')][switch]$test,
+	[Parameter(ParameterSetName='path',Mandatory=$true)]$datalistName,
+	[Parameter(ParameterSetName='manifest')]$identity,
+	[Parameter(ParameterSetName='manifest',Mandatory=$true)]$dataTypeId="*",
+	#[Parameter(ParameterSetName='test')][switch]$test,
+	#[Parameter(ParameterSetName='generic')][switch]$generic,
 	# [Parameter(ParameterSetName='test')]$datalistName,
 	$dsmPath, #=".\Usas2.Rom.dsm",
 	$romfile, #="$(resolve-path `"..\Engine\usas2.rom`")", #over rule DSM.filespace.path
-
+	[switch]$convertDataFirst=$false,
 	[switch]$resetGlobals=$false,
-	[switch]$updateIndex=$true
+	[switch]$updateIndex=$true,
+	[string]$exportPath	#for test purposes
 )
 
 ##### Includes #####
@@ -30,8 +32,8 @@ param
 if ($resetGlobals) {$global:usas2=$null}
 $global:usas2=get-Usas2Globals
 
-##### Functions #####
 
+##### Functions #####
 function convert-BmpToSc5
 {	param ($bmpfile,$sc5file,$palfile)
 	write-verbose "Converting `"$bmpfile`" to `"$sc5file`". Pal: `"$palfile`""
@@ -47,6 +49,7 @@ function convert-BmpToSc5
 if (-not $dsmPath) {$dsmPath=$usas2.dsm.path}
 write-verbose "DSM: $dsmPath"
 $fileTypes=@{};$usas2.datatype|%{$fileTypes[$_.identity]=$_.id}
+$dataListUpdates=@();$portraitList=$null;
 
 if (-not ($dsm=load-dsm -path $dsmPath))
 {	write-error "DSM $dmsname not found"
@@ -55,11 +58,14 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 	write-verbose "ROM file: $romfile"
 	$null=$DSM|open-DSMFileSpace -path $romfile
 	
-	
+	#The ROM must have an "index" data list
+	$indexDatalist=add-DSMDataList -dsm $dsm -name "index"
+
+	write-verbose "Mode: $($PSCmdlet.ParameterSetName)"
 	switch ($PSCmdlet.ParameterSetName)
 	{	"test"
-	{	write-verbose "mode: Test mode"
-			write-verbose "DSM: $dsmPath, Datalist:$datalistname"
+	{	write-verbose "[Test]"
+			write-verbose "DSM:`"$dsmPath`", Datalist:`"$datalistname`""
 			$datalist=add-DSMDataList -dsm $dsm -name $datalistname
 			# $fileTypes[$datalistname]
 			$usas2.datatype|where{$_.DsmDatalist -eq $datalistname}
@@ -68,62 +74,107 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 
 		#-path: Add any FILE to DSM and inject to ROM
 		"path"
-		{	write-verbose "-path Adding File(s) $path"
+		{	write-verbose "- Adding File(s) $path"
 			$x=replace-dsmfile -dsm $dsm -dataListname $datalistName -path $path -updateFileSpace
 			break
 		}
-		
-		#Add a manifest FILE to DSM and inject to ROM
-		"identity"
-		{	write-verbose "mode: add by identity $identity"
-			$files=get-u2file -identity $identity -filetype $datatype
+
+		#Add one or more manifest-FILEs to DSM and inject to ROM
+		"manifest"
+		{	write-verbose "Add id(s): $identity"
+			$files=get-u2file -identity $identity -filetype $datatypeId
 			foreach ($file in $files)
-			{	write-verbose " File: $file"
+			{	write-verbose "File: $file"
 				$datatype=$usas2.datatype|where{$_.id -eq $file.dataTypeId}
+				write-verbose "datatype: $datatype"
+				#handle necessary data conversions
+				switch -Regex ($dataType.Id)
+				{	"(^1$)" #tileset
+					{	if ($convertDataFirst)
+						{	$tilesetManifest=get-u2TileSet -identity .*|where{$_.file -eq $file.identity}
+							write-verbose "$tilesetManifest"
+							$sc5file=$file.path
+							$bmpFile=(get-u2file -identity $tilesetManifest.imagesourcefile -filetype $filetypes["TiledTileSetImage"]).path
+							$palFile=(get-u2file -identity $tilesetManifest.paletteSourcefile -filetype $filetypes["palette"]).path
+							$x=convert-BmpToSc5 -bmpfile $bmpfile -sc5file $sc5file -palfile $palFile
+						}
+					}
+					"(^16$)" #assetName
+					{	$idName="id";$propertyName="name"
+					}
+					"(^17$)" #assetDescription
+					{	$idName="id";$propertyName="description"
+					}
+					"(^18$)" #portraitName
+					{	$idName="id";$propertyName="displayName"
+					}
+					"(^16$|^17$|^18$)" #general IndexedDataBlock
+					{	write-verbose "converting CSV file `"$($file.path)`" to indexedDataBlock [$idname,$propertyname]"
+						$collection=Import-Csv -Path $file.path -Delimiter `t|where{$_.ena -eq 1}
+						$indexedDataBlock=new-u2RomCsvIndexedDataBlock -collection $collection -idName $idname -propertyName $propertyName
+						write-verbose "Block length: $($indexedDataBlock.length)"
+						if ($exportPath) {$indexedDataBlock|set-content -Encoding byte -path $exportPath}
+						if ($indexDataList -and $datatype.indexName) {$alloc=replace-DSMData -dsm $dsm -dataList $indexDataList -name $datatype.indexName -data $indexedDataBlock -updateFileSpace:$true}
+					}
+					"(^19$)" #portrait
+					{	if ($convertDataFirst)
+						{	#create .por file
+							if (-not $portraitList) {$portraitList=Import-Csv -Path "..\usas2-portrait.csv" -Delimiter `t|where{$_.ena -eq 1}}
+							$portrait=@{header=[byte[]]::new(0x1f);face=[byte[]]::new;eyesOpen=[byte[]]::new;eyesClosed=[byte[]]::new;mouthOpen=[byte[]]::new;mouthClosed=[byte[]]::new}
+							$elements="face","eyesOpen","eyesClosed","mouthOpen","mouthClosed"
+							$headerPointer=1;$imageOffset=$portrait["header"].length;
+							foreach($element in $elements)
+							{	$record=$portraitList|where{$_.id -eq 14 -and $_.element -eq $element}
+								$portrait["header"][$headerPointer+0]=$imageOffset -band 255;$portrait["header"][$headerPointer+1]=$imageOffset -shr 8;$headerPointer+=2
+								$portrait["header"][$headerPointer]=$record.width;$headerPointer++
+								$portrait["header"][$headerPointer]=$record.height;$headerPointer++
+								$portrait["header"][$headerPointer]=$record.dx;$headerPointer++
+								$portrait["header"][$headerPointer]=$record.dy;$headerPointer++
+								$bmpFile=Resolve-Path -path ("..\"+$record.sourceBmp)
+								$sc5File=Resolve-Path -path ("..\grapx\$($record.name)$($record.element).4bpp.gfx")
+								$palFile=Resolve-Path -path ("..\grapx\tilesheets\karnimata.tiles.pl")
+								$cmd="npx convertgfx --source `"$bmpfile`"  --slice.x $($record.sx) --slice.y $($record.sy) --slice.width $($record.width) --slice.height $($record.height) --fixedPalette `"$PalFile`" --targetScreen5 `"$sc5File`" --gamma 2.2"
+								write-verbose $cmd
+								# $x=Invoke-Expression ($cmd)
+								$portrait[$element]=Get-Content -path $sc5file -Encoding Byte;$imageOffset+=$portrait[$element].length
+							}
+							$portrait["header"][0]=$portrait["header"][0] -bor 0x86
+							write-verbose "header: $($portrait["header"] -join(","))"
+							[byte[]]$data=$portrait["header"]+$portrait["face"]+$portrait["eyesOpen"]+$portrait["eyesClosed"]+$portrait["mouthOpen"]+$portrait["mouthClosed"]
+							write-verbose "$($file.path) is $($data.length) bytes long"
+							Set-Content -path $file.path -Value $data -Encoding byte
+						}
+
+					}
+				}
+				
+				#add file to datalist if necessary
 				if ($datatype.dsmdatalist)
-				{	write-verbose " Adding to datalist `"$($datatype.dsmdatalist)`", and injecting it into the ROM space"
-					$datalist=add-DSMDataList -dsm $dsm -name $datatype.dsmdatalist
-					$x=replace-dsmfile -dsm $dsm -dataList $datalist -path "$($file.path)" -updateFileSpace
+				{	
+					$datalist=add-DSMDataList -dsm $dsm -name $datatype.dsmdatalist	#add new, or get existing dataList
+					if ( -not (resolve-path $file.path -ErrorAction SilentlyContinue))
+					{	write-verbose "File `"$($file.path)`" not found"
+					} else
+						{write-verbose "Adding `"$($file.identity)`" to datalist `"$($datatype.dsmdatalist)`", and injecting it into the ROM space"
+						$x=replace-dsmfile -dsm $dsm -dataList $datalist -path "$($file.path)" -updateFileSpace
+					}
+					if (-not $dataListUpdates.contains($dataType.dsmdataList)) {$dataListUpdates+=$dataType.dsmdataList} #mark for update
 				}
 			}
 			break
 		}
 	
-
-		#Add ruin tileset, convert gfx first if needed.
-		"ruinTileset"
-		{	write-verbose "mode: ruinId Adding Ruin(s) $tileSetRuinid"
-			$datalist=add-DSMDataList -dsm $dsm -name "tileset"
-			foreach ($id in $tilesetRuinId)
-			{	$ruinManifest=get-u2Ruin -id "^$id$"
-				$tilesetManifest=get-u2TileSet -identity $ruinManifest.tileset
-				$sc5File=(get-U2File -identity $tilesetManifest.file -fileType $fileTypes["tileset"]).path
-				if	(-not $sc5File)
-				{	write-verbose "sc5file not found in manifest"
-				} else
-				{	if ($convertGfx)
-					{	$bmpFile=(get-u2file -identity $tilesetManifest.imagesourcefile -filetype $filetypes["TiledTileSetImage"]).path
-						$palFile=(get-u2file -identity $tilesetManifest.paletteSourcefile -filetype $filetypes["palette"]).path
-						$x=convert-BmpToSc5 -bmpfile $bmpfile -sc5file $sc5file -palfile $palFile
-					}
-					write-verbose "RuinId $id, tilesetFile: $sc5file"
-					if ($sc5file) {$x=replace-dsmfile -dsm $dsm -dataList $datalist -path $sc5file -updateFileSpace}
-				}
-			}
-			break
-		}
-
 	}
 
 
 	#Make index and inject into ROM
 	if ($updateIndex)
-	{	write-verbose "-==== Updating the ROM index for collection(s) of files ====-"
+	{	write-verbose "-==== Updating the ROM indexes ====-"
+	
+		write-verbose "datalist updates: $datalistupdates"
 		$datalistName="index"
 		$datalist=add-DSMDataList -dsm $dsm -name $datalistname
-		
-		$collections="tileset","areasign"
-		foreach ($collectionName in $collections)
+		foreach ($collectionName in $dataListUpdates)
 		{	write-verbose "Updating index for collection `"$collectionname`""
 			$fileIndex=new-U2RomFileIndex -DSM $dsm -collection $usas2.$collectionName
 			$data=$fileindex.indexPointerTable+$fileindex.indexPartsTable
@@ -132,12 +183,13 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 			# write-verbose ($fileindex.indexPointerTable -join(","));
 			# write-verbose ($fileindex.indexPartsTable -join(","));
 		}
+
 		#update the Master Index as well
 		$index=$usas2.index|where{$_.identity -eq "master"}
 		if ($index)
-		{	$indexBlock=([int]$index.DsmBlock);$indexSegment=([int]$index.DsmSegment)
+		{	$masterIndex=new-u2RomMasterFileIndex
+			$indexBlock=([int]$index.DsmBlock);$indexSegment=([int]$index.DsmSegment)
 			write-verbose "Writing MasterIndex to block:$indexblock, segment:$indexsegment"
-			$masterIndex=new-u2RomMasterFileIndex
 			write-verbose ($masterindex -join(","));
 			write-DSMFileSpace -dsm $dsm -block $indexBlock -segment $indexSegment -data $masterIndex
 		}
@@ -149,13 +201,6 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 
 }
 
-#write "`n#datalist:"
-#$dsm.datalist
-#write "`n#Stats:"
 $dsm|get-DSMStatistics
 $global:dsm=$dsm
 EXIT
-
-<#
-.\add-u2gfx.ps1 -Verbose -updateIndex:$false -file (gci ..\grapx\AreaSigns\*.sc5.pck)
-#>

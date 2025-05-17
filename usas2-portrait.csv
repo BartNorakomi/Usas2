@@ -1,0 +1,7 @@
+ ena	ID	Class	Name	DisplayName	Description	Element	SourceBMP	sX	sY	width	height	dX	dY	GfxReady	inCode	inTiled	--	Comment
+1	0	system	EOD															Reserverd for EndOfData marker
+1	14	npc	Mika	[Mika]	Mika is a big phat biaaatch	face	.\grapx\U2-Portrait.bmp	0	0	36	40	0	0					
+1	14	npc	Mika			eyesOpen	.\grapx\U2-Portrait.bmp	8	19	22	6	8	19					
+1	14	npc	Mika			eyesClosed	.\grapx\U2-Portrait.bmp	48	19	22	6	8	19					
+1	14	npc	Mika			mouthOpen	.\grapx\U2-Portrait.bmp	56	30	6	6	16	30					
+1	14	npc	Mika			mouthClosed	.\grapx\U2-Portrait.bmp	16	30	6	6	16	30					

@@ -305,12 +305,12 @@ function get-U2WorldMapRomIndex
 	if ($datalist.allocations)
 	{	$indexRecords=[byte[]]::new($indexSize);fill-array -array $indexRecords -value $indexDefaultId
 		$index=0
-		foreach ($this in $datalist.allocations)
-		{	$location=get-roomLocation $this.name.substring(0,4)
+		foreach ($room in $datalist.allocations)
+		{	$location=get-roomLocation $room.name.substring(0,4)
 			$indexRecords[$index+$indexIdOffset+0]=[byte]$location.x
 			$indexRecords[$index+$indexIdOffset+1]=[byte]$location.y
-			$indexRecords[$index+$indexBlockOffset+0]=[byte]$this.block
-			$indexRecords[$index+$indexSegmentOffset+0]=[byte]$this.segment
+			$indexRecords[$index+$indexBlockOffset+0]=[byte]$room.block
+			$indexRecords[$index+$indexSegmentOffset+0]=[byte]$room.segment
 			$index+=$indexRecLen
 		}
 	}
@@ -367,23 +367,50 @@ function new-U2RomFileIndex
 	return [pscustomobject]@{indexPointerTable=$fileIndexPointerTable;indexPartsTable=$fileIndexPartsTable.toarray()}
 }
 
+#make an indexedDataBlock of any object data (like a CSV imported file)
+#in:	The data collection, and the fieldnames of the ID and the property that needs to be indexed
+#out:	indexed-data-block (index+records) an array of bytes
+function new-u2RomCsvIndexedDataBlock
+{	param ($collection,$idName,$propertyName)
+	$indexNumRec=($collection|measure -Maximum -Property $idName).maximum + 1
+	$indexedDataBlockPointerTable=[byte[]]::new($indexNumRec*2) #pointers are 2bytes (16bit)
+	$indexedDataBlockRecords=[System.Collections.Generic.List[byte]]::new()
+	for ($index=0;$index -lt $indexNumRec;$index++)
+	{	$pointer=$indexedDataBlockPointerTable.Length+$indexedDataBlockRecords.count
+		$indexedDataBlockPointerTable[$index*2]=$pointer -band 255	#L
+		$indexedDataBlockPointerTable[$index*2+1]=$pointer -shr 8	#H
+		# write-verbose "[new-u2RomCsvIndexedDataBlock] index: $index"
+		if ($record=$collection|where{$_.$idName -eq $index -and $_.$propertyName.length -ne 0}|select -First 1)
+		{	write-verbose "[new-u2RomCsvIndexedDataBlock] record: $record"
+			for ($i=0;$i -lt $record.$propertyName.length;$i++)
+			{	$indexedDataBlockRecords.add($record.$propertyName[$i])
+			}
+		}
+		$indexedDataBlockRecords.add(0x00) #eod
+	}
+	# $indexedDataBlockPointerTable
+	# $indexedDataBlockRecords
+	return ($indexedDataBlockPointerTable+$indexedDataBlockRecords)
+}
+
+
+
 #return the MasterIndexArray for other indexes (2bytes per record, 32 records)
 function new-u2RomMasterFileIndex
-{	$datalist=get-DSMDataList -dsm $dsm -name "index"
+{	write-verbose "[new-u2RomMasterFileIndex]"
+	$datalist=get-DSMDataList -dsm $dsm -name "index"
 	
 	$collection=$usas2.datatype
 	$indexNumRec=($collection|measure -Maximum -Property id).maximum + 1
-	
 	$wordTable=[byte[]]::new($indexNumRec*2)
-	
+	write-verbose "numRec:$indexNumRec"
 	for ($index=0;$index -lt $indexNumRec;$index++)
-	{	
-		$dataType=$collection|where{$_.id -eq $index}
-		write-verbose "$datatype"
-		if (-not $datatype.dsmdatalist)
+	{	$dataType=$collection|where{$_.id -eq $index}
+		if (-not $datatype.indexName)
 		{	$alloc=[pscustomobject]@{block=0;segment=0;}
 		} else
-		{	$alloc=get-DsmDataListAllocation -dataList $datalist -name $datatype.dsmDatalist
+		{	write-verbose "$datatype"
+			$alloc=get-DsmDataListAllocation -dataList $datalist -name $datatype.indexName
 		}
 		$wordTable[$index*2]=$alloc.block
 		$wordTable[$index*2+1]=$alloc.segment
