@@ -537,7 +537,7 @@ $pointerTable=new-sf2SlicePointerTable -sf2object $sf2object
 export-Sf2PixelData -framePixels $framePixels -path $datfile
 export-sf2MetaData -Sf2object $sf2object -pointerTable $pointertable -path $lstFile
 
-#exit
+exit
 #tests for Ro only :)
 copy-item $lstfile -Destination "C:\Users\rvand\OneDrive\Documents\openMSX\DirAsDisk\frame.lst"
 copy-item $datfile -Destination "C:\Users\rvand\OneDrive\Documents\openMSX\DirAsDisk\frame.dat"

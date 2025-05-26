@@ -1,7 +1,30 @@
  ena	ID	Class	Name	DisplayName	Description	Element	SourceBMP	sX	sY	width	height	dX	dY	GfxReady	inCode	inTiled	--	Comment
 1	0	system	EOD															Reserverd for EndOfData marker
+0	1	vessel	PlayerSad															
+0	2	vessel	PlayerAngry															
+0	3	vessel	PlayerHappy															
+0	4	vessel	PlayerNutral															
+0	5	familiar	Shiroki															
+0	6	familiar	Kuroki															
+0	7	usas1Boss	Lahnda 															
+0	8	usas1Boss	Haanguri															
+0	9	usas1Boss	Kryyan															
+0	10	usas1Boss																
+0	11	guildeMember	Dhanvantari		Consumables shop owner													
+0	12	guildeMember	Ribhus		Weapons smith													
+0	13	guildeMember	Ganesha		Item shop keeper													
 1	14	npc	Mika	[Mika]	Mika is a big phat biaaatch	face	.\grapx\U2-Portrait.bmp	0	0	36	40	0	0					
 1	14	npc	Mika			eyesOpen	.\grapx\U2-Portrait.bmp	8	19	22	6	8	19					
 1	14	npc	Mika			eyesClosed	.\grapx\U2-Portrait.bmp	48	19	22	6	8	19					
 1	14	npc	Mika			mouthOpen	.\grapx\U2-Portrait.bmp	56	30	6	6	16	30					
 1	14	npc	Mika			mouthClosed	.\grapx\U2-Portrait.bmp	16	30	6	6	16	30					
+1	15	npc	Geezer	[old Geezer]		face	.\grapx\U2-Portrait.bmp	0	40	32	32	0	0					
+1	15	npc	Geezer			eyesOpen	.\grapx\U2-Portrait.bmp	12	53	6	4	12	13					
+1	15	npc	Geezer			eyesClosed	.\grapx\U2-Portrait.bmp	52	53	6	4	12	13					
+1	15	npc	Geezer			mouthOpen	.\grapx\U2-Portrait.bmp	56	61	14	10	16	21					
+1	15	npc	Geezer			mouthClosed	.\grapx\U2-Portrait.bmp	16	61	14	10	16	21					
+1	16	npc	Wolf	[Wolf]		face	.\grapx\U2-Portrait.bmp	120	0	40	40	0	0					
+1	16	npc	Wolf			eyesOpen	.\grapx\U2-Portrait.bmp	146	8	6	7	26	8					
+1	16	npc	Wolf			eyesClosed	.\grapx\U2-Portrait.bmp	194	8	6	7	26	8					
+1	16	npc	Wolf			mouthOpen	.\grapx\U2-Portrait.bmp	176	24	30	15	8	24					
+1	16	npc	Wolf			mouthClosed	.\grapx\U2-Portrait.bmp	128	24	30	15	8	24					

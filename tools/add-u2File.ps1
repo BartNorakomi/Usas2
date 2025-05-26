@@ -120,25 +120,27 @@ if (-not ($dsm=load-dsm -path $dsmPath))
 					{	if ($convertDataFirst)
 						{	#create .por file
 							if (-not $portraitList) {$portraitList=Import-Csv -Path "..\usas2-portrait.csv" -Delimiter `t|where{$_.ena -eq 1}}
+							$portraitManifest=$usas2.portrait|where{$_.file -eq $file.identity}
 							$portrait=@{header=[byte[]]::new(0x1f);face=[byte[]]::new;eyesOpen=[byte[]]::new;eyesClosed=[byte[]]::new;mouthOpen=[byte[]]::new;mouthClosed=[byte[]]::new}
 							$elements="face","eyesOpen","eyesClosed","mouthOpen","mouthClosed"
 							$headerPointer=1;$imageOffset=$portrait["header"].length;
 							foreach($element in $elements)
-							{	$record=$portraitList|where{$_.id -eq 14 -and $_.element -eq $element}
+							{	$record=$portraitList|where{$_.id -eq $portraitManifest.id -and $_.element -eq $element}
+								write-verbose "$record"
 								$portrait["header"][$headerPointer+0]=$imageOffset -band 255;$portrait["header"][$headerPointer+1]=$imageOffset -shr 8;$headerPointer+=2
 								$portrait["header"][$headerPointer]=$record.width;$headerPointer++
 								$portrait["header"][$headerPointer]=$record.height;$headerPointer++
 								$portrait["header"][$headerPointer]=$record.dx;$headerPointer++
 								$portrait["header"][$headerPointer]=$record.dy;$headerPointer++
 								$bmpFile=Resolve-Path -path ("..\"+$record.sourceBmp)
-								$sc5File=Resolve-Path -path ("..\grapx\$($record.name)$($record.element).4bpp.gfx")
+								$sc5File=Resolve-newPath -path ("..\grapx\$($record.name)$($record.element).4bpp.gfx")
 								$palFile=Resolve-Path -path ("..\grapx\tilesheets\karnimata.tiles.pl")
 								$cmd="npx convertgfx --source `"$bmpfile`"  --slice.x $($record.sx) --slice.y $($record.sy) --slice.width $($record.width) --slice.height $($record.height) --fixedPalette `"$PalFile`" --targetScreen5 `"$sc5File`" --gamma 2.2"
 								write-verbose $cmd
-								# $x=Invoke-Expression ($cmd)
+								$x=Invoke-Expression ($cmd)
 								$portrait[$element]=Get-Content -path $sc5file -Encoding Byte;$imageOffset+=$portrait[$element].length
 							}
-							$portrait["header"][0]=$portrait["header"][0] -bor 0x86
+							$portrait["header"][0]=$portrait["header"][0] -bor 0x8c
 							write-verbose "header: $($portrait["header"] -join(","))"
 							[byte[]]$data=$portrait["header"]+$portrait["face"]+$portrait["eyesOpen"]+$portrait["eyesClosed"]+$portrait["mouthOpen"]+$portrait["mouthClosed"]
 							write-verbose "$($file.path) is $($data.length) bytes long"

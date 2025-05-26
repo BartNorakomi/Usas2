@@ -20,7 +20,7 @@ BmpFile Object props
 #>
 
 [CmdletBinding()]
-
+param ()
 
 ##### Globals #####
 #source: https://en.wikipedia.org/wiki/BMP_file_format#Bitmap_file_header
@@ -216,14 +216,14 @@ function import-bmpFile
 #[bmpObject]
 #return .bmp header block as object
 function new-bmpFileHeader
-{	$data=get-defaultStruct -name "bitmapFileHeader" -struct $BitMapFileHeaderStructure
+{	$data=new-StructInstance -name "bitmapFileHeader" -struct $BitMapFileHeaderStructure
 	return $data
 }
 
 #[bmpObject]
 #return .bmp default dibheader
 function new-dibheader
-{	$data=get-defaultStruct -name "BITMAPINFOHEADER" -struct $dibBITMAPINFOHEADER
+{	$data=new-StructInstance -name "BITMAPINFOHEADER" -struct $dibBITMAPINFOHEADER
 	return $data
 }
 
@@ -246,7 +246,8 @@ function get-bmpDibHeader
 }
 
 #[bmpObject]
-#Return a block of pixels from bmpFileObject
+#Return a block of pixels from bmpFileObject (image flipped on X-asis, to origin is at the top-left)
+#in: X,Y(topleft),width,height,bmpObject
 function get-pixelArray
 {	param ($bmpfile,$x,$y,$width,$height)
 	if ($x+$width -gt $bmpfile.width)
@@ -257,14 +258,17 @@ function get-pixelArray
 	{	write-error "$y+$height exceeds pixelarray boundaries"
 		return
 	}
-	$size=$bmpfile.numBitsPerPixel/8*$width*$height
+	$size=($bmpfile.numBitsPerPixel/8)*$width*$height
 	$rawData=[byte[]]::new($size)
 	$index=0
-	$y=$bmpfile.height-1-$y-$height #image start at the bottom, so adjust Y
+	#write-verbose "[get-pixelArray] x:$x; y:$y; width:$width; heigth:$height; datasize: $size"
+	$y=($bmpfile.height)-1-$y-($height-1) #image start at the bottom, so adjust Y
+	# write-verbose "new Y: $y"
 	$widthBytes=($bmpfile.numBitsPerPixel/8*$width)
 	$startOffset=($bmpfile.numBitsPerPixel/8*$x)+($bmpfile.rowsize*$y)
-	for ($row=0;$row -lt $height;$row++)
-	{	$rowOffset=($row*$bmpfile.rowsize)
+	#write-verbose "[get-pixelArray] size: $($bmpfile.pixelarray.length) startOffset:$startOffset"
+	for ($row=$height;$row -ne 0;$row--)
+	{	$rowOffset=(($row-1)*$bmpfile.rowsize)
 		for ($colm=0;$colm -lt $widthBytes;$colm++)
 		{	$rawdata[$index]=$bmpfile.pixelArray[$startOffset+$rowOffset+$colm]
 			$index++
@@ -285,9 +289,9 @@ function convert-ColorIndexTable
 	}
 }
 
-
+#new-StructInstance
 #return a data struct with default values
-function get-defaultStruct
+function new-StructInstance
 {	param ($struct,$name)
 	$data=[pscustomobject]@{Name=$name}
 	foreach ($record in $struct)
@@ -340,9 +344,12 @@ function convert-rgb24toRgb9
 }
 
  exit
-$path="..\grapx\tilesheets\Konark.Tiles.bmp"
-$global:bmpfile=$bmpfile=import-bmpFile -path $path -verbose
 
+$path="C:\Users\rvand\SynologyDrive\Usas2\Graphics\Diversen\u2fonts8x12.4bpp.bmp"
+$global:bmpfile=$bmpfile=import-bmpFile -path $path -verbose
+$pixels=get-pixelArray -bmpfile $bmpfile -x 8 -y 0 -width 8 -height 11
+$pixels|format-hex
+exit
 
 
 
