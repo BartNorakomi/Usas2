@@ -1,3 +1,49 @@
+Vessel=@{
+		all=`
+	@{	name="Vessel";
+		imagePath="..\grapx\test\vessel156x125.bmp";
+		palettePath="..\..\TheVessel\grapx\arcadehall\arcadehall.PL";
+		destinationPath="..\grapx\test";
+		pixelFilePath="Vessel.dat";
+		transparentColor=-1;fillcolor=15;
+		canvasX=0;canvasY=0;canvasWidth=14*156;canvasHeight=(1*125);
+		frameWidth=156;frameHeight=125;
+		subjectX=0;subjectWidth=156;subjectY=-1;subjectHeight=-1;
+		slices=1;
+	};
+};
+
+Vesselleft=@{
+		all=`
+	@{	name="Vesselleft";
+		imagePath="..\grapx\test\vessel156x125left.bmp";
+		palettePath="..\..\TheVessel\grapx\arcadehall\arcadehall.PL";
+		destinationPath="..\grapx\test";
+		pixelFilePath="Vesselleft.dat";
+		transparentColor=-1;fillcolor=15;
+		canvasX=0;canvasY=0;canvasWidth=14*156;canvasHeight=(1*125);
+		frameWidth=156;frameHeight=125;
+		subjectX=0;subjectWidth=156;subjectY=-1;subjectHeight=-1;
+		slices=1;
+	};
+};
+
+host=@{
+		all=`
+	@{	name="Host";
+		imagePath="..\grapx\test\host90x103.bmp";
+		palettePath="..\..\TheVessel\grapx\arcadehall\arcadehall.PL";
+		destinationPath="..\grapx\test";
+		pixelFilePath="host.dat";
+		transparentColor=-1;fillcolor=15;
+		canvasX=0;canvasY=0;canvasWidth=16*90;canvasHeight=(1*103);
+		frameWidth=90;frameHeight=103;
+		subjectX=0;subjectWidth=90;subjectY=-1;subjectHeight=-1;
+		slices=1;
+	};
+};
+
+
 BossPlant=@{
 		all=`
 	@{	name="BossPlantAll";
