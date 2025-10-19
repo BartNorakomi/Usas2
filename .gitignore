@@ -10,3 +10,6 @@ tools/versions/*
 versions/*
 tools/Usas2.Rom.dsm
 Engine/Usas2.rom
+tools/.asm
+usas2.rom
+tools/.asm
